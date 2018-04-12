@@ -1,0 +1,17 @@
+package ${package}.service;
+
+import ${package}.domain.${className};
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * ${comments}
+ * 
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public interface ${className}Service extends ICommonService<${className},${pk.attrType}>{
+	
+}

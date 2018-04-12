@@ -1,0 +1,31 @@
+package ${package}.service.impl;
+
+
+import com.abcft.mapping.dao.ICommonDao;
+import com.abcft.mapping.service.AbsCommonService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+
+import ${package}.dao.${className}Dao;
+import ${package}.domain.${className};
+import ${package}.service.${className}Service;
+
+
+
+@Service
+public class ${className}ServiceImpl extends AbsCommonService<${className},${pk.attrType}> implements ${className}Service {
+
+    @Autowired
+	private ${className}Dao ${classname}Dao;
+
+
+
+    @Override
+    public ICommonDao<${className}, ${pk.attrType}> getDao() {
+        return ${classname}Dao;
+    }
+	
+}

@@ -1,0 +1,19 @@
+package ${package}.dao;
+
+import ${package}.domain.${className};
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Mapper;
+
+/**
+ * ${comments}
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+@Mapper
+public interface ${className}Dao extends ICommonDao<${className},${pk.attrType}>{
+
+}

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="${package}.dao.${className}Dao">
+    <resultMap id="${className}ResultMap" type="${package}.domain.${className}">
+        #foreach($tempColumn in $columns)
+            #if(${tempColumn.attrname}==${pk.attrname})
+                <id column="${tempColumn.columnName}"  property="${tempColumn.attrname}" />
+            #else
+            <result column="${tempColumn.columnName}"  property="${tempColumn.attrname}" />
+            #end
+        #end
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        #foreach( $tempColumn in $columns)${tempColumn.columnName}#if($velocityCount!=$columns.size()),#end#end
+    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="${className}ResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from ${tableName}
+        <where>
+        ${pk.columnName} = #{${pk.attrname}}
+        </where>
+    </select>
+
+    <select id="findAll"  resultMap="${className}ResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from ${tableName}
+    </select>
+
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from ${tableName}
+        <where>
+            ${pk.columnName} = #{${pk.attrname}}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="${package}.domain.${className}">
+        insert into
+        ${tableName} (#foreach( $tempColumn in $columns)#if(${tempColumn.attrname}!=${pk.attrname})${tempColumn.columnName}#if($velocityCount!=$columns.size()),#end#end#end)
+        values
+        (#foreach( $tempColumn in $columns)#if(${tempColumn.attrname}!=${pk.attrname})#{${tempColumn.attrname}}#if($velocityCount!=$columns.size()),#end#end#end)
+    </insert>
+
+    <update id="update" parameterType="${package}.domain.${className}">
+        update ${tableName}
+        <set>
+            #foreach($tempColumn in $columns)
+                #if(${tempColumn.attrname}!=${pk.attrname})
+
+                    <if test="${tempColumn.attrname} != null">
+                        ${tempColumn.columnName} = #{${tempColumn.attrname}},
+                    </if>
+                #end
+            #end
+        </set>
+        <where>
+            ${pk.columnName} = #{${pk.attrname}}
+        </where>
+    </update>
+</mapper>
