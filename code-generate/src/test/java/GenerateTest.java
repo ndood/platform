@@ -29,7 +29,6 @@ public class GenerateTest {
                 .build();
 
         generateFactory.generatorCode("mp_model_statis");
-
     }
 
 
