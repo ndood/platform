@@ -2,8 +2,6 @@ package com.fulu.generate.entity;
 
 /**
  * 列的属性
- * 
- * 
  */
 public class Column {
 	// 列名
