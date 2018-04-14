@@ -1,8 +1,8 @@
-package com.fulu.game.service.impl;
+package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.core.dao.ICommonDao;
-import com.fulu.game.service.ICommonService;
+import com.fulu.game.core.service.ICommonService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.transaction.annotation.Transactional;

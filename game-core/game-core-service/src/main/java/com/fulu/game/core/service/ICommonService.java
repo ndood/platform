@@ -1,4 +1,4 @@
-package com.fulu.game.service;
+package com.fulu.game.core.service;
 
 import com.github.pagehelper.PageInfo;
 

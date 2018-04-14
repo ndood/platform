@@ -1,9 +1,9 @@
-package com.fulu.game.service.impl;
+package com.fulu.game.core.service.impl;
 
 
 
 import com.fulu.game.core.dao.ICommonDao;
-import com.fulu.game.service.SysUserService;
+import com.fulu.game.core.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
