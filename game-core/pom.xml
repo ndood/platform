@@ -16,6 +16,8 @@
         <module>game-core-dao</module>
         <module>game-core-common</module>
         <module>game-core-entity</module>
+        <module>game-core-service</module>
+        <module>game-core-service-impl</module>
     </modules>
 
 
