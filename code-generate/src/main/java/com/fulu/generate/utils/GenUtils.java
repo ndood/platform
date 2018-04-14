@@ -52,8 +52,8 @@ public class GenUtils {
      * 获取文件名
      */
     public static String getFileName(String template, String className) {
-        if(template.contains("Domain.java.vm")){
-            template = template.replace("Domain","");
+        if(template.contains("Entity.java.vm")){
+            template = template.replace("Entity","");
         }
        return className+template.replace(".vm","");
     }

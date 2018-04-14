@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="${package}.dao.${className}Dao">
-    <resultMap id="${className}ResultMap" type="${package}.domain.${className}">
+    <resultMap id="${className}ResultMap" type="${package}.entity.${className}">
         #foreach($tempColumn in $columns)
             #if(${tempColumn.attrname}==${pk.attrname})
                 <id column="${tempColumn.columnName}"  property="${tempColumn.attrname}" />
@@ -40,14 +40,14 @@
         </where>
     </delete>
 
-    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="${package}.domain.${className}">
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="${package}.entity.${className}">
         insert into
         ${tableName} (#foreach( $tempColumn in $columns)#if(${tempColumn.attrname}!=${pk.attrname})${tempColumn.columnName}#if($velocityCount!=$columns.size()),#end#end#end)
         values
         (#foreach( $tempColumn in $columns)#if(${tempColumn.attrname}!=${pk.attrname})#{${tempColumn.attrname}}#if($velocityCount!=$columns.size()),#end#end#end)
     </insert>
 
-    <update id="update" parameterType="${package}.domain.${className}">
+    <update id="update" parameterType="${package}.entity.${className}">
         update ${tableName}
         <set>
             #foreach($tempColumn in $columns)

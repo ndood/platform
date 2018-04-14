@@ -47,7 +47,7 @@ public class GenerateFactory {
 
     private static final String GENERATOR_PATH = "generator/";
 
-    private static final String[] TEMPLATES = new String[]{"Mapper.xml.vm","Domain.java.vm","Dao.java.vm","Service.java.vm","ServiceImpl.java.vm"};
+    private static final String[] TEMPLATES = new String[]{"Mapper.xml.vm","Entity.java.vm","Dao.java.vm","Service.java.vm","ServiceImpl.java.vm"};
 
 
     /**

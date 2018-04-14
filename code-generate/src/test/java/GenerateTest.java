@@ -14,44 +14,24 @@ public class GenerateTest {
     @Test
     public void test1() {
         String driver = "com.mysql.jdbc.Driver";
-        String uri = "jdbc:mysql://10.11.255.60:3306/mapping?&characterEncoding=utf-8&useUnicode=true";
-        String username = "mapping";
-        String password = "cae8458046cb";
+        String uri = "jdbc:mysql://localhost:3306/play_admin_db?&characterEncoding=utf-8&useUnicode=true";
+        String username = "root";
+        String password = "123456";
 
         Connection connection = DBUtils.getConnectionByJDBC(driver, uri, username, password);
         GenerateFactory generateFactory = GenerateFactory.GenerateFactoryBuilder
                 .aGenerateFactory()
                 .withConnection(connection)
-                .withAutoRemovePre(true)
+                .withAutoRemovePre(false)
                 .withOutPath("E:\\templates")
-                .withPackageName("com.abcft.mapping")
+                .withPackageName("com.fulu.game.core")
                 .withAuthor("wangbin")
                 .build();
 
-        generateFactory.generatorCode("mp_model_statis");
+        generateFactory.generatorCode("sys_user");
     }
 
 
-    @Test
-    public void test2() {
-        String driver = "com.mysql.jdbc.Driver";
-        String uri = "jdbc:mysql://10.11.255.60:3306/mapping?&characterEncoding=utf-8&useUnicode=true";
-        String username = "mapping";
-        String password = "cae8458046cb";
-
-        Connection connection = DBUtils.getConnectionByJDBC(driver, uri, username, password);
-        GenerateFactory generateFactory = GenerateFactory.GenerateFactoryBuilder
-                .aGenerateFactory()
-                .withConnection(connection)
-                .withAutoRemovePre(true)
-                .withOutPath("D:\\CodeSpace\\gencode")
-                .withPackageName("com.abcft.mapping")
-                .withAuthor("jiangqs")
-                .build();
-
-        generateFactory.generatorCode("mp_job_flow_instance");
-
-    }
 
 
 

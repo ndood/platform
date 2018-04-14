@@ -1,6 +1,6 @@
 package ${package}.dao;
 
-import ${package}.domain.${className};
+import ${package}.entity.${className};
 
 import java.util.List;
 import java.util.Map;

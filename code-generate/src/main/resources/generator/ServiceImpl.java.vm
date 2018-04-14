@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import ${package}.dao.${className}Dao;
-import ${package}.domain.${className};
+import ${package}.entity.${className};
 import ${package}.service.${className}Service;
 
 

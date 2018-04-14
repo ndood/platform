@@ -1,0 +1,6 @@
+datasource:
+    playAdminDb:
+        url: jdbc:mysql://localhost:3306/play_admin_db?autoReconnect=true&failOverReadOnly=false&characterEncoding=utf-8&useUnicode=true&zeroDateTimeBehavior=convertToNull
+        username: root
+        password: '123456'
+        driverClassName: com.mysql.jdbc.Driver

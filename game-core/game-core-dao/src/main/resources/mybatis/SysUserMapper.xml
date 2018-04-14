@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.SysUserDao">
+    <resultMap id="SysUserResultMap" type="com.fulu.game.core.entity.SysUser">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        id,name,username,password,status,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="SysUserResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_user
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="SysUserResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_user
+    </select>
+
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from sys_user
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.SysUser">
+        insert into
+        sys_user (name,username,password,status,create_time,update_time)
+        values
+        (#{name},#{username},#{password},#{status},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.SysUser">
+        update sys_user
+        <set>
+
+            <if test="name != null">
+                name = #{name},
+            </if>
+
+            <if test="username != null">
+                username = #{username},
+            </if>
+
+            <if test="password != null">
+                password = #{password},
+            </if>
+
+            <if test="status != null">
+                status = #{status},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>
