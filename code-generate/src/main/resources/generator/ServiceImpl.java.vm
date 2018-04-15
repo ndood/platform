@@ -1,8 +1,7 @@
 package ${package}.service.impl;
 
 
-import com.abcft.mapping.dao.ICommonDao;
-import com.abcft.mapping.service.AbsCommonService;
+import ${package}.dao.ICommonDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

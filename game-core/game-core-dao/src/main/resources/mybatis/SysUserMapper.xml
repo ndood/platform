@@ -7,14 +7,15 @@
         <result column="name" property="name"/>
         <result column="username" property="username"/>
         <result column="password" property="password"/>
-        <result column="status" property="status"/>
+        <result column="salt" property="salt"/>
+        <result column="state" property="state"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
 
     <sql id="Base_Column_List">
-        id,name,username,password,status,create_time,update_time    </sql>
+        id,name,username,password,salt,state,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="SysUserResultMap">
         select
@@ -31,6 +32,15 @@
         from sys_user
     </select>
 
+    <select id="findByUsername" parameterType="java.lang.String" resultMap="SysUserResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_user
+        <where>
+            username = #{username}
+        </where>
+    </select>
+
 
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from sys_user
@@ -41,9 +51,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.SysUser">
         insert into
-        sys_user (name,username,password,status,create_time,update_time)
+        sys_user (name,username,password,salt,state,create_time,update_time)
         values
-        (#{name},#{username},#{password},#{status},#{createTime},#{updateTime})
+        (#{name},#{username},#{password},#{salt},#{state},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.SysUser">
@@ -62,8 +72,12 @@
                 password = #{password},
             </if>
 
-            <if test="status != null">
-                status = #{status},
+            <if test="salt != null">
+                salt = #{salt},
+            </if>
+
+            <if test="state != null">
+                state = #{state},
             </if>
 
             <if test="createTime != null">

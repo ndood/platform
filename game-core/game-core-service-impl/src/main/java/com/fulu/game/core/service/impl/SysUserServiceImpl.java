@@ -24,5 +24,9 @@ public class SysUserServiceImpl extends AbsCommonService<SysUser,Integer> implem
     public ICommonDao<SysUser, Integer> getDao() {
         return sysUserDao;
     }
-	
+
+    @Override
+    public SysUser findByUsername(String userName) {
+        return sysUserDao.findByUsername(userName);
+    }
 }

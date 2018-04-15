@@ -14,8 +14,22 @@
     <dependencies>
         <dependency>
             <groupId>com.fulu.game</groupId>
-            <artifactId>game-core-common</artifactId>
-            <version>1.0</version>
+            <artifactId>game-core-service-impl</artifactId>
+            <version>${game.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-spring</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.nekohtml</groupId>
+            <artifactId>nekohtml</artifactId>
+            <version>1.9.22</version>
         </dependency>
     </dependencies>
 

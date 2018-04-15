@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.SysUserRoleDao">
+    <resultMap id="SysUserRoleResultMap" type="com.fulu.game.core.entity.SysUserRole">
+        <id column="role_id" property="roleId"/>
+        <result column="user_id" property="userId"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List">  role_id,user_id    </sql>
+
+    <select id="findSysRoleByUserId" parameterType="java.lang.Integer" resultType="com.fulu.game.core.entity.SysRole">
+        SELECT * FROM sys_role r
+        WHERE r.id
+        in
+        (
+            SELECT role_id FROM sys_user_role sr
+            WHERE sr.user_id = #{userId}
+        )
+    </select>
+
+</mapper>

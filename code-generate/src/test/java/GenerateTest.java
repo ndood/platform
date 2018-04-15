@@ -28,7 +28,7 @@ public class GenerateTest {
                 .withAuthor("wangbin")
                 .build();
 
-        generateFactory.generatorCode("sys_user");
+        generateFactory.generatorCode("sys_user","sys_role","sys_permission","sys_role_permission","sys_user_role");
     }
 
 

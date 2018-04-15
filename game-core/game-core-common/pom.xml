@@ -8,7 +8,9 @@
         <version>1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <properties>
+        <main.basedir>${basedir}/../..</main.basedir>
+    </properties>
     <artifactId>game-core-common</artifactId>
 
     <dependencies>

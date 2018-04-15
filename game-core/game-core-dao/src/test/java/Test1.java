@@ -1,3 +1,5 @@
+import com.fulu.game.common.domain.Password;
+import com.fulu.game.common.utils.EncryptUtil;
 import com.fulu.game.core.CoreDaoApplication;
 import com.fulu.game.core.dao.SysUserDao;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +22,10 @@ public class Test1 {
 
     @Test
     public void  test1(){
-        sysUserDao.findAll();
+
+        Password pass = EncryptUtil.PiecesEncode("123456");
+        System.out.println(pass);
+
     }
 
 }

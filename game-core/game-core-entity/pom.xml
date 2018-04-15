@@ -11,5 +11,12 @@
 
     <artifactId>game-core-entity</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.fulu.game</groupId>
+            <artifactId>game-core-common</artifactId>
+            <version>${game.core.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>
