@@ -3,7 +3,6 @@ package com.fulu.game.core.entity;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 
 
