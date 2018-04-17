@@ -1,0 +1,235 @@
+数据库设计
+
+1.用户表
+CREATE TABLE IF NOT EXISTS `t_user`(
+   `id` INT UNSIGNED AUTO_INCREMENT,
+   `name` VARCHAR(100) NOT NULL,
+   `pwd` VARCHAR(40) NOT NULL,
+   `phone` VARCHAR(40) NOT NULL,
+   `user_info_auth` INT(6) NOT NULL,
+   `create_time` DATETIME,
+   `update_time` DATETIME,
+   PRIMARY KEY ( `id` )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+2.信息认证表
+CREATE TABLE IF NOT EXISTS `t_user_info_auth`(
+   `id` INT UNSIGNED AUTO_INCREMENT,
+   `uid` INT NOT NULL,
+   `qq` VARCHAR(40) NOT NULL,
+   `wechart` VARCHAR(40) NOT NULL,
+   `create_time` DATETIME,
+   `update_time` DATETIME,
+   CONSTRAINT FOREIGN KEY(uid) REFERENCES t_user(id), 
+   PRIMARY KEY ( `id` )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+3.用户信息文件表（图片、声音）
+CREATE TABLE IF NOT EXISTS `t_user_info_auth_file`(
+   `id` INT UNSIGNED AUTO_INCREMENT,
+   `user_id` INT NOT NULL,
+   `type` VARCHAR(100) NOT NULL,
+   `name` VARCHAR(40) NOT NULL,
+   `url` VARCHAR(40) NOT NULL,
+   `create_time` DATETIME,
+   `update_time` DATETIME,
+   CONSTRAINT FOREIGN KEY(user_id) REFERENCES t_user(id), 
+   PRIMARY KEY ( `id` )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+4.信息认证文件表（图片、声音）
+CREATE TABLE IF NOT EXISTS `t_user_info_auth_file`(
+   `id` INT UNSIGNED AUTO_INCREMENT,
+   `info_auth_id` INT NOT NULL,
+   `type` VARCHAR(100) NOT NULL,
+   `name` VARCHAR(40) NOT NULL,
+   `url` VARCHAR(40) NOT NULL,
+   `create_time` DATETIME,
+   `update_time` DATETIME,
+   CONSTRAINT FOREIGN KEY(info_auth_id) REFERENCES t_user_info_auth(id), 
+   PRIMARY KEY ( `id` )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+5.渠道商表
+CREATE TABLE IF NOT EXISTS `t_channel`(
+   `id` INT UNSIGNED AUTO_INCREMENT,
+   `user_id` INT NOT NULL,
+   `name` VARCHAR(100) NOT NULL,
+   `charge` VARCHAR(100) NOT NULL,
+   `create_time` DATETIME,
+   `update_time` DATETIME,
+   CONSTRAINT FOREIGN KEY(user_id) REFERENCES t_user(id), 
+   PRIMARY KEY ( `id` )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+6.分类表
+CREATE TABLE IF NOT EXISTS `t_category`(
+   `id` INT UNSIGNED AUTO_INCREMENT,
+   `pid` INT NOT NULL,
+   `name` VARCHAR(100) NOT NULL,
+   `status` INT DEFAULT 0 NOT NULL,
+   `create_time` DATETIME,
+   `update_time` DATETIME,
+   PRIMARY KEY ( `id` )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+6.技能认证表
+CREATE TABLE IF NOT EXISTS `t_user_tech_auth`(
+   `id` INT UNSIGNED AUTO_INCREMENT,
+   `category_id` INT NOT NULL,
+   `user_id` INT NOT NULL,
+   `name` VARCHAR(100) NOT NULL,
+   `status` INT(6) NOT NULL,'表示是否审核通过'
+   `active` INT(6) NOT NULL,'表示是否上下架'
+   `create_time` DATETIME,
+   `update_time` DATETIME,
+   CONSTRAINT FOREIGN KEY(category_id) REFERENCES t_category(id), 
+   CONSTRAINT FOREIGN KEY(user_id) REFERENCES t_user(id), 
+   PRIMARY KEY ( `id` )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+7.技能属性表
+
+CREATE TABLE IF NOT EXISTS `t_tech_attr`(
+   `id` INT UNSIGNED AUTO_INCREMENT,
+   `name` VARCHAR(100) NOT NULL,
+   `status` INT DEFAULT 0 NOT NULL,
+   `create_time` DATETIME,
+   `update_time` DATETIME,
+   PRIMARY KEY ( `id` )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+8.技能属性值表
+CREATE TABLE IF NOT EXISTS `t_tech_value`(
+   `id` INT UNSIGNED AUTO_INCREMENT,
+   `tech_auth_id` INT NOT NULL,
+   `name` VARCHAR(100) NOT NULL,
+   `status` INT DEFAULT 0 NOT NULL,
+   `create_time` DATETIME,
+   `update_time` DATETIME,
+   CONSTRAINT FOREIGN KEY(tech_auth_id) REFERENCES t_tech_attr(id),
+   PRIMARY KEY ( `id` )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+9.技能关联表
+CREATE TABLE IF NOT EXISTS `t_user_tech`(
+   `id` INT UNSIGNED AUTO_INCREMENT,
+   `tech_auth_id` INT NOT NULL,
+   `tech_attr_id` INT NOT NULL,
+   `attr` VARCHAR(100) NOT NULL,
+   `tech_value_id` INT NOT NULL,
+   `value` VARCHAR(100) NOT NULL,
+   `status` INT DEFAULT 0 NOT NULL,
+   `create_time` DATETIME,
+   `update_time` DATETIME,
+   CONSTRAINT FOREIGN KEY(tech_attr_id) REFERENCES t_tech_attr(id),
+   CONSTRAINT FOREIGN KEY(tech_value_id) REFERENCES t_tech_value(id),
+   CONSTRAINT FOREIGN KEY(tech_auth_id) REFERENCES t_user_tech_auth(id),
+   PRIMARY KEY ( `id` )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+10.标签字典表
+CREATE TABLE IF NOT EXISTS `t_tag`(
+   `id` INT UNSIGNED AUTO_INCREMENT,
+   `pid` INT NOT NULL,
+   `name` VARCHAR(100) NOT NULL,
+   `create_time` DATETIME,
+   `update_time` DATETIME,
+   PRIMARY KEY ( `id` )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+11.技能标签关联表
+CREATE TABLE IF NOT EXISTS `t_tech_tag`(
+   `id` INT UNSIGNED AUTO_INCREMENT,
+   `tag_id` INT NOT NULL,
+   `user_id` INT NOT NULL,
+   `name` VARCHAR(100) NOT NULL,'tag冗余数据，避免多次关联tag字典表做查询'
+   `create_time` DATETIME,
+   `update_time` DATETIME,
+   CONSTRAINT FOREIGN KEY(tag_id) REFERENCES t_tag(id),
+   CONSTRAINT FOREIGN KEY(user_id) REFERENCES t_user(id),
+   PRIMARY KEY ( `id` )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+12.个人标签关联表
+
+CREATE TABLE IF NOT EXISTS `t_person_tag`(
+   `id` INT UNSIGNED AUTO_INCREMENT,
+   `tag_id` INT NOT NULL,
+   `user_id` INT NOT NULL,
+   `name` VARCHAR(100) NOT NULL,'tag冗余数据，避免多次关联tag字典表做查询'
+   `create_time` DATETIME,
+   `update_time` DATETIME,
+   CONSTRAINT FOREIGN KEY(tag_id) REFERENCES t_tag(id),
+   CONSTRAINT FOREIGN KEY(user_id) REFERENCES t_user(id),
+   PRIMARY KEY ( `id` )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+13.评价字典表
+
+CREATE TABLE IF NOT EXISTS `t_comments`(
+   `id` INT UNSIGNED AUTO_INCREMENT,
+   `star` INT(6) NOT NULL,
+   `name` VARCHAR(100) NOT NULL,
+   `create_time` DATETIME,
+   `update_time` DATETIME,
+   PRIMARY KEY ( `id` )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+14.订单表（订单退款的记录）
+
+CREATE TABLE IF NOT EXISTS `t_order`(
+   `id` INT UNSIGNED AUTO_INCREMENT,
+   `order_no` INT(6) NOT NULL,
+   `user_id` INT(6) NOT NULL,'下单用户'
+   `name` VARCHAR(100) NOT NULL,
+   `create_time` DATETIME,
+   `update_time` DATETIME,
+   PRIMARY KEY ( `id` )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+15.商品订单关联
+
+CREATE TABLE IF NOT EXISTS `t_order_tech`(
+   `id` INT UNSIGNED AUTO_INCREMENT,
+   `order_no` INT(6) NOT NULL,
+   `user_tech_auth_id` INT(6) NOT NULL,
+   `name` VARCHAR(100) NOT NULL,
+   `create_time` DATETIME,
+   `update_time` DATETIME,
+   CONSTRAINT FOREIGN KEY(order_no) REFERENCES t_order(order_no),
+   CONSTRAINT FOREIGN KEY(user_tech_auth_id) REFERENCES t_user_info_auth(id),
+   PRIMARY KEY ( `id` )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+16.零钱流水
+
+CREATE TABLE IF NOT EXISTS `t_money_details`(
+   `id` INT UNSIGNED AUTO_INCREMENT,
+   `user_id` INT NOT NULL,
+   `desc` VARCHAR(100) NOT NULL,
+   `money` VARCHAR(100) NOT NULL,
+   `create_time` DATETIME,
+   `update_time` DATETIME,
+   CONSTRAINT FOREIGN KEY(user_id) REFERENCES t_user(id),
+   PRIMARY KEY ( `id` )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+17.后台管理员
+
+CREATE TABLE IF NOT EXISTS `t_admin`(
+   `id` INT UNSIGNED AUTO_INCREMENT,
+   `name` VARCHAR(100) NOT NULL,
+   `pwd` VARCHAR(40) NOT NULL,
+   `create_time` DATETIME,
+   `update_time` DATETIME,
+   PRIMARY KEY ( `id` )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
