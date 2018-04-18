@@ -12,6 +12,8 @@
         #end
     </resultMap>
 
+    <resultMap id="${className}ResultVOMap" type="${package}.entity.vo.${className}VO" extends="${className}ResultMap">
+    </resultMap>
 
     <sql id="Base_Column_List">
         #foreach( $tempColumn in $columns)${tempColumn.columnName}#if($velocityCount!=$columns.size()),#end#end
@@ -32,6 +34,20 @@
         from ${tableName}
     </select>
 
+    <select id="findByParameter" resultMap="${className}ResultMap" parameterType="${package}.entity.vo.${className}VO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM ${tableName}
+        <where>
+            #foreach($tempColumn in $columns)
+                #if(${tempColumn.attrname}!=${pk.attrname})
+                    <if test="${tempColumn.attrname} != null">
+                       and ${tempColumn.columnName} = #{${tempColumn.attrname}},
+                    </if>
+                #end
+            #end
+        </where>
+    </select>
 
     <delete id="deleteById" parameterType="java.lang.${pk.attrType}">
         delete from ${tableName}

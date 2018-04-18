@@ -1,11 +1,9 @@
 import com.fulu.game.common.domain.Password;
 import com.fulu.game.common.utils.EncryptUtil;
 import com.fulu.game.core.CoreDaoApplication;
-import com.fulu.game.core.dao.SysUserDao;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -17,15 +15,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @Slf4j
 public class Test1 {
 
-    @Autowired
-    private SysUserDao sysUserDao;
-
     @Test
-    public void  test1(){
+    public void test1(){
 
-        Password pass = EncryptUtil.PiecesEncode("123456");
-        System.out.println(pass);
+        Password password =EncryptUtil.PiecesEncode("123456");
 
+        System.out.println(password);
     }
 
 }

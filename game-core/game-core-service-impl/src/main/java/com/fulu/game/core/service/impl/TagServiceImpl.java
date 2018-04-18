@@ -1,0 +1,62 @@
+package com.fulu.game.core.service.impl;
+
+
+import com.fulu.game.common.Constant;
+import com.fulu.game.common.enums.GenderEnum;
+import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.entity.Category;
+import com.fulu.game.core.service.CategoryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import com.fulu.game.core.dao.TagDao;
+import com.fulu.game.core.entity.Tag;
+import com.fulu.game.core.service.TagService;
+
+
+
+@Service
+public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements TagService {
+
+    @Autowired
+	private TagDao tagDao;
+
+    @Autowired
+    private CategoryService categoryService;
+
+    @Override
+    public ICommonDao<Tag, Integer> getDao() {
+        return tagDao;
+    }
+
+    @Override
+    public Tag createTag(Integer categoryId, String tagName) {
+        Category category = categoryService.findById(categoryId);
+        //该游戏没有没有标签组
+        if(category.getTagId()==null){
+            Tag parentTag = new Tag();
+            parentTag.setName(tagName);
+            parentTag.setGender(GenderEnum.ASEXUALITY.getType());
+            parentTag.setPid(Constant.DEF_PID);
+            parentTag.setCreateTime(new Date());
+            parentTag.setUpdateTime(new Date());
+            parentTag.setName(category.getName()+"标签组");
+            create(parentTag);
+            category.setTagId(parentTag.getId());
+            category.setUpdateTime(new Date());
+            categoryService.update(category);
+        }
+        Tag tag = new Tag();
+        tag.setName(tagName);
+        tag.setPid(category.getTagId());
+        tag.setCreateTime(new Date());
+        tag.setUpdateTime(new Date());
+        tag.setGender(GenderEnum.ASEXUALITY.getType());
+        create(tag);
+        return tag;
+    }
+}

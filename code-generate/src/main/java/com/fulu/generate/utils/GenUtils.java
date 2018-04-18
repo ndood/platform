@@ -55,6 +55,9 @@ public class GenUtils {
         if(template.contains("Entity.java.vm")){
             template = template.replace("Entity","");
         }
+        if(template.contains("EntityVO.java.vm")){
+            template = template.replace("Entity","");
+        }
        return className+template.replace(".vm","");
     }
 

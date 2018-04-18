@@ -14,21 +14,21 @@ public class GenerateTest {
     @Test
     public void test1() {
         String driver = "com.mysql.jdbc.Driver";
-        String uri = "jdbc:mysql://localhost:3306/play_admin_db?&characterEncoding=utf-8&useUnicode=true";
+        String uri = "jdbc:mysql://localhost:3306/accompany_play_db?&characterEncoding=utf-8&useUnicode=true";
         String username = "root";
-        String password = "123456";
+        String password = "";
 
         Connection connection = DBUtils.getConnectionByJDBC(driver, uri, username, password);
         GenerateFactory generateFactory = GenerateFactory.GenerateFactoryBuilder
                 .aGenerateFactory()
                 .withConnection(connection)
-                .withAutoRemovePre(false)
+                .withAutoRemovePre(true)
                 .withOutPath("E:\\templates")
                 .withPackageName("com.fulu.game.core")
                 .withAuthor("wangbin")
                 .build();
 
-        generateFactory.generatorCode("sys_user","sys_role","sys_permission","sys_role_permission","sys_user_role");
+        generateFactory.generatorCode("t_tag","t_tech_attr","t_tech_value");
     }
 
 

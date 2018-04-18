@@ -13,8 +13,7 @@ import java.security.MessageDigest;
  *
  *
  */
-public class EncryptUtil
-{
+public class EncryptUtil {
 	private static final String DEFAULT_ENCODE = "UTF-8";
 	
 	/**注册时调用，此方法用于通过原生密码生成随机盐和加密密码
