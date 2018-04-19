@@ -27,7 +27,7 @@ public class Category implements Serializable {
 	//游戏名称
 	private String name;
 	//状态(1激活,0失效)
-	private Integer status;
+	private Boolean status;
 	//排序
 	private Integer sort;
 	//手续费

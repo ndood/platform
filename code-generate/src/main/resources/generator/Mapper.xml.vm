@@ -42,7 +42,7 @@
             #foreach($tempColumn in $columns)
                 #if(${tempColumn.attrname}!=${pk.attrname})
                     <if test="${tempColumn.attrname} != null">
-                       and ${tempColumn.columnName} = #{${tempColumn.attrname}},
+                       and ${tempColumn.columnName} = #{${tempColumn.attrname}}
                     </if>
                 #end
             #end

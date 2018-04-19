@@ -15,6 +15,6 @@ import java.util.Map;
 public interface TagService extends ICommonService<Tag,Integer>{
 
 
-    Tag createTag(Integer categoryId,String tagName);
+    Tag create(Integer categoryId, String tagName);
 
 }

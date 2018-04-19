@@ -11,7 +11,6 @@ import org.apache.ibatis.annotations.Mapper;
 /**
  * 标签表
  * @author wangbin
- * @email ${email}
  * @date 2018-04-18 16:29:26
  */
 @Mapper

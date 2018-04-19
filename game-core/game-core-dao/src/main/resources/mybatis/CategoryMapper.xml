@@ -40,31 +40,31 @@
         FROM t_category
         <where>
             <if test="pid != null">
-                and pid = #{pid},
+                and pid = #{pid}
             </if>
             <if test="tagId != null">
-                and tag_id = #{tagId},
+                and tag_id = #{tagId}
             </if>
             <if test="icon != null">
-                and icon = #{icon},
+                and icon = #{icon}
             </if>
             <if test="name != null">
-                and name = #{name},
+                and name = #{name}
             </if>
             <if test="status != null">
-                and status = #{status},
+                and status = #{status}
             </if>
             <if test="sort != null">
-                and sort = #{sort},
+                and sort = #{sort}
             </if>
             <if test="charges != null">
-                and charges = #{charges},
+                and charges = #{charges}
             </if>
             <if test="createTime != null">
-                and create_time = #{createTime},
+                and create_time = #{createTime}
             </if>
             <if test="updateTime != null">
-                and update_time = #{updateTime},
+                and update_time = #{updateTime}
             </if>
         </where>
     </select>

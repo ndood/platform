@@ -19,10 +19,12 @@ public class TechAttr implements Serializable {
 	private Integer id;
 	//
 	private Integer categoryId;
+	//游戏类型
+	private Integer type;
 	//游戏ID
-	private Integer name;
+	private String name;
 	//技能字典名称(段位)
-	private String status;
+	private Boolean status;
 	//
 	private Date createTime;
 	//

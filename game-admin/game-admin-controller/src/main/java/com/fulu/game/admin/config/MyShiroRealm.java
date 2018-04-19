@@ -53,10 +53,16 @@ public class MyShiroRealm extends AuthorizingRealm {
         if(member == null){
             return null;
         }
+        String password = member.getPassword();
+        String salt = member.getSalt();
+
+        member.setPassword(null);
+        member.setSalt(null);
+
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
                 member, //用户名
-                member.getPassword(), //密码
-                ByteSource.Util.bytes(member.getSalt()),//salt=username+salt
+                password, //密码
+                ByteSource.Util.bytes(salt),//salt=username+salt
                 getName()  //realm name
         );
         return authenticationInfo;

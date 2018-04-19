@@ -22,7 +22,7 @@ public class TechValue implements Serializable {
 	//
 	private String name;
 	//
-	private Integer status;
+	private Boolean status;
 	//
 	private Integer rank;
 	//

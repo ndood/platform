@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Category;
+import com.fulu.game.core.entity.TechValue;
 
 import java.util.List;
 import java.util.Map;
@@ -13,5 +14,5 @@ import java.util.Map;
  * @date 2018-04-18 15:55:39
  */
 public interface CategoryService extends ICommonService<Category,Integer>{
-	
+
 }

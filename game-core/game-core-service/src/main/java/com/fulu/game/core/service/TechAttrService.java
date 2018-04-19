@@ -13,5 +13,7 @@ import java.util.Map;
  * @date 2018-04-18 16:29:27
  */
 public interface TechAttrService extends ICommonService<TechAttr,Integer>{
-	
+
+
+    public TechAttr findByCategoryAndType(Integer categoryId,Integer type);
 }

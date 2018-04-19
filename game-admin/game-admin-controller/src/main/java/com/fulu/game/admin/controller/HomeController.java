@@ -35,7 +35,7 @@ public class HomeController {
             UsernamePasswordToken token = new UsernamePasswordToken(username, password,rememberMe);
             Subject subject = SecurityUtils.getSubject();
             subject.login(token);
-            return Result.success().msg("登录成功!");
+            return Result.success().data(subject.getPrincipal()).msg("登录成功!");
         }
         catch (Exception e){
             e.printStackTrace();

@@ -13,5 +13,9 @@ import java.util.Map;
  * @date 2018-04-18 16:39:55
  */
 public interface TechValueService extends ICommonService<TechValue,Integer>{
-	
+
+
+     TechValue createSalesMode(Integer categoryId,String salesmodeName);
+
+
 }

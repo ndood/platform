@@ -3,6 +3,7 @@ package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.GenderEnum;
+import com.fulu.game.common.enums.TagTypeEnum;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.service.CategoryService;
@@ -34,7 +35,7 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
     }
 
     @Override
-    public Tag createTag(Integer categoryId, String tagName) {
+    public Tag create(Integer categoryId, String tagName) {
         Category category = categoryService.findById(categoryId);
         //该游戏没有没有标签组
         if(category.getTagId()==null){
@@ -42,6 +43,7 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
             parentTag.setName(tagName);
             parentTag.setGender(GenderEnum.ASEXUALITY.getType());
             parentTag.setPid(Constant.DEF_PID);
+            parentTag.setType(TagTypeEnum.GAME.getType());
             parentTag.setCreateTime(new Date());
             parentTag.setUpdateTime(new Date());
             parentTag.setName(category.getName()+"标签组");
@@ -53,6 +55,7 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
         Tag tag = new Tag();
         tag.setName(tagName);
         tag.setPid(category.getTagId());
+        tag.setType(TagTypeEnum.GAME.getType());
         tag.setCreateTime(new Date());
         tag.setUpdateTime(new Date());
         tag.setGender(GenderEnum.ASEXUALITY.getType());

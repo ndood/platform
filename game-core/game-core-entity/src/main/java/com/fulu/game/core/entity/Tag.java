@@ -21,6 +21,9 @@ public class Tag implements Serializable {
 	private Integer pid;
 	//标签名称
 	private String name;
+	//类型
+	private Integer type;
+
 	//性别(0:不限制,1:男，2:女)
 	private Integer gender;
 	//创建时间
