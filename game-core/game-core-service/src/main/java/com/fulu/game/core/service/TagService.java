@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Tag;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -17,4 +18,5 @@ public interface TagService extends ICommonService<Tag,Integer>{
 
     Tag create(Integer categoryId, String tagName);
 
+    PageInfo<Tag> parentList(Integer pageNum, Integer pageSize);
 }

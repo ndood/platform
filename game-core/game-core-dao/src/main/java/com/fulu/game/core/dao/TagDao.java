@@ -16,6 +16,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface TagDao extends ICommonDao<Tag,Integer>{
 
-    Tag findByParameter(TagVO tagVO);
+    List<Tag> findByParameter(TagVO tagVO);
 
 }

@@ -8,6 +8,8 @@
         <result column="name" property="name"/>
         <result column="gender" property="gender"/>
         <result column="type" property="type"/>
+        <result column="sort" property="sort"/>
+        <result column="most" property="most"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
     </resultMap>
@@ -16,7 +18,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,pid,name,gender,type,create_time,update_time    </sql>
+        id,pid,name,gender,type,sort,most,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="TagResultMap">
         select
@@ -47,6 +49,12 @@
             <if test="type != null">
                 and type = #{type}
             </if>
+            <if test="sort != null">
+                and sort = #{sort}
+            </if>
+            <if test="most != null">
+                and most = #{most}
+            </if>
             <if test="gender != null">
                 and gender = #{gender}
             </if>
@@ -68,9 +76,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Tag">
         insert into
-        t_tag (pid,name,gender,type,create_time,update_time)
+        t_tag (pid,name,gender,type,sort,most,create_time,update_time)
         values
-        (#{pid},#{name},#{gender},#{type},#{createTime},#{updateTime})
+        (#{pid},#{name},#{gender},#{type},#{sort},#{most},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Tag">
@@ -91,10 +99,15 @@
             <if test="type != null">
                 type = #{type},
             </if>
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+            <if test="most != null">
+                most = #{most},
+            </if>
             <if test="createTime != null">
                 create_time = #{createTime},
             </if>
-
             <if test="updateTime != null">
                 update_time = #{updateTime},
             </if>

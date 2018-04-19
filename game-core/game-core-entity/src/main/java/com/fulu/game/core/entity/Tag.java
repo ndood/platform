@@ -24,6 +24,9 @@ public class Tag implements Serializable {
 	//类型
 	private Integer type;
 
+	private Integer sort;
+
+	private Integer most;
 	//性别(0:不限制,1:男，2:女)
 	private Integer gender;
 	//创建时间
