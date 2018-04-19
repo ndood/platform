@@ -26,10 +26,18 @@ public class CategoryController extends BaseController {
     @Autowired
     private TechValueService techValueService;
 
+    /**
+     * 内容列表
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     @PostMapping(value = "/list")
-    public Result list(Integer pageNum,Integer pageSize){
-        PageInfo<Category> categoryPageInfo =  categoryService.find(pageNum,pageSize);
-        return Result.success();
+    public Result list(Integer pageNum,
+                       Integer pageSize,
+                       Boolean status) {
+        PageInfo<Category> page = categoryService.list(pageNum, pageSize,status,null);
+        return Result.success().data(page);
     }
 
     /**
@@ -37,12 +45,12 @@ public class CategoryController extends BaseController {
      * @return
      */
     @PostMapping(value = "/save")
-    public Result save(@RequestParam(required=false,defaultValue = "1")Integer sort,
+    public Result save(Integer sort,
                        String name,
-                       @RequestParam(required=false,defaultValue = "false")Boolean status,
+                       Boolean status,
                        BigDecimal charges,
                        String icon,
-                       Integer id){
+                       Integer id) {
         Category category = new Category();
         category.setName(name);
         category.setSort(sort);
@@ -50,16 +58,17 @@ public class CategoryController extends BaseController {
         category.setCharges(charges);
         category.setIcon(icon);
         category.setId(id);
-        if(category.getId()==null){
+        if (category.getId() == null) {
             category.setPid(CategoryParentEnum.ACCOMPANY_PLAY.getType());
             category.setCreateTime(new Date());
             category.setUpdateTime(new Date());
             categoryService.create(category);
-        }else{
+            return Result.success().data(category).msg("内容创建成功!");
+        } else {
             category.setUpdateTime(new Date());
             categoryService.update(category);
         }
-        return Result.success().data(category).msg("内容创建成功!");
+        return Result.success().data(category).msg("内容修改成功!");
     }
 
 
@@ -69,12 +78,42 @@ public class CategoryController extends BaseController {
      */
     @PostMapping(value = "/salesmode/create")
     public Result salesModeCreate(Integer categoryId,
-                            String  modeName){
-        TechValue techValue = techValueService.createSalesMode(categoryId,modeName);
+                                  String modeName) {
+        TechValue techValue = techValueService.createSalesMode(categoryId, modeName);
         return Result.success().msg("销售方式创建成功!").data(techValue);
     }
 
+    /**
+     * 删除销售方式
+     * @return
+     */
+    @PostMapping(value = "/salesmode/delete")
+    public Result saleModeDelete(Integer id){
+        techValueService.deleteById(id);
+        return Result.success().msg("销售方式删除成功!");
+    }
 
+    /**
+     * 创建段位
+     **/
+    @PostMapping(value = "/dan/create")
+    public Result danCreate(Integer categoryId,
+                            String danName,
+                            Integer rank) {
+        TechValue techValue = techValueService.createDan(categoryId, danName,rank);
+        return Result.success().msg("段位创建成功!").data(techValue);
+    }
+
+    /**
+     * 删除段位
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "/dan/delete")
+    public Result danDelete(Integer id){
+        techValueService.deleteById(id);
+        return Result.success().msg("段位删除成功!");
+    }
 
 
 }

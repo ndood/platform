@@ -32,7 +32,12 @@ public class TechValueServiceImpl extends AbsCommonService<TechValue,Integer> im
         return techValueDao;
     }
 
-
+    /**
+     * 创建销售方式
+     * @param categoryId
+     * @param salesmodeName
+     * @return
+     */
     @Override
     public TechValue createSalesMode(Integer categoryId, String salesmodeName) {
         Category category = categoryService.findById(categoryId);
@@ -51,6 +56,39 @@ public class TechValueServiceImpl extends AbsCommonService<TechValue,Integer> im
         techValue.setTechAttrId(techAttr.getId());
         techValue.setName(salesmodeName);
         techValue.setStatus(true);
+        techValue.setRank(0);
+        techValue.setCreateTime(new Date());
+        techValue.setUpdateTime(new Date());
+        create(techValue);
+        return techValue;
+    }
+
+    /**
+     * 创建段位
+     * @param categoryId
+     * @param danName
+     * @param rank
+     * @return
+     */
+    @Override
+    public TechValue createDan(Integer categoryId, String danName, Integer rank) {
+        Category category = categoryService.findById(categoryId);
+        TechAttr techAttr =techAttrService.findByCategoryAndType(categoryId,TechAttrTypeEnum.DAN.getType());
+        if(techAttr==null){
+            techAttr = new TechAttr();
+            techAttr.setCategoryId(category.getId());
+            techAttr.setName(category.getName()+"段位");
+            techAttr.setType(TechAttrTypeEnum.DAN.getType());
+            techAttr.setStatus(true);
+            techAttr.setCreateTime(new Date());
+            techAttr.setUpdateTime(new Date());
+            techAttrService.create(techAttr);
+        }
+        TechValue techValue = new TechValue();
+        techValue.setTechAttrId(techAttr.getId());
+        techValue.setName(danName);
+        techValue.setRank(rank);
+        techValue.setStatus(false);
         techValue.setCreateTime(new Date());
         techValue.setUpdateTime(new Date());
         create(techValue);

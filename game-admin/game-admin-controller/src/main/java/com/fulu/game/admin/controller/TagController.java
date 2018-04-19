@@ -17,18 +17,31 @@ public class TagController extends BaseController {
 
     @Autowired
     private TagService tagService;
-    @Autowired
-    private CategoryService categoryService;
 
+    /**
+     * 创建内容标签
+     * @param categoryId
+     * @param tagName
+     * @return
+     */
     @PostMapping(value = "/category/create")
-    public Result create(Integer categoryId,
+    public Result categoryTagCreate(Integer categoryId,
                          String tagName) {
         Tag tag = tagService.create(categoryId,tagName);
-        return Result.success().data(tag);
+        return Result.success().data(tag).msg("添加游戏标签成功!");
     }
 
 
-
+    /**
+     * 删除内容标签
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "/del")
+    public Result tagDelete(Integer id) {
+        tagService.deleteById(id);
+        return Result.success().msg("删除标签成功!");
+    }
 
 
 
