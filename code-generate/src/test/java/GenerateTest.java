@@ -14,9 +14,9 @@ public class GenerateTest {
     @Test
     public void test1() {
         String driver = "com.mysql.jdbc.Driver";
-        String uri = "jdbc:mysql://localhost:3306/accompany_play_db?&characterEncoding=utf-8&useUnicode=true";
+        String uri = "jdbc:mysql://10.0.3.105:3306/game_service?&characterEncoding=utf-8&useUnicode=true";
         String username = "root";
-        String password = "";
+        String password = "123456";
 
         Connection connection = DBUtils.getConnectionByJDBC(driver, uri, username, password);
         GenerateFactory generateFactory = GenerateFactory.GenerateFactoryBuilder
@@ -28,7 +28,7 @@ public class GenerateTest {
                 .withAuthor("wangbin")
                 .build();
 
-        generateFactory.generatorCode("t_tag","t_tech_attr","t_tech_value");
+        generateFactory.generatorCode("t_person_tag");
     }
 
 

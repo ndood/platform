@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.UserInfoAuthDao">
+    <resultMap id="UserInfoAuthResultMap" type="com.fulu.game.core.entity.UserInfoAuth">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="mobile" property="mobile"/>
+        <result column="qq" property="qq"/>
+        <result column="wechat" property="wechat"/>
+        <result column="main_pic_url" property="mainPicUrl"/>
+        <result column="allow_export" property="allowExport"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="UserInfoAuthResultVOMap" type="com.fulu.game.core.entity.vo.UserInfoAuthVO"
+               extends="UserInfoAuthResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,mobile,qq,wechat,main_pic_url,allow_export,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="UserInfoAuthResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user_info_auth
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="UserInfoAuthResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user_info_auth
+    </select>
+
+    <select id="findByParameter" resultMap="UserInfoAuthResultMap"
+            parameterType="com.fulu.game.core.entity.vo.UserInfoAuthVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_user_info_auth
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="mobile != null">
+                and mobile = #{mobile}
+            </if>
+            <if test="qq != null">
+                and qq = #{qq}
+            </if>
+            <if test="wechat != null">
+                and wechat = #{wechat}
+            </if>
+            <if test="mainPicUrl != null">
+                and main_pic_url = #{mainPicUrl}
+            </if>
+            <if test="allowExport != null">
+                and allow_export = #{allowExport}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_user_info_auth
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserInfoAuth">
+        insert into
+        t_user_info_auth (user_id,mobile,qq,wechat,main_pic_url,allow_export,create_time,update_time)
+        values
+        (#{userId},#{mobile},#{qq},#{wechat},#{mainPicUrl},#{allowExport},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.UserInfoAuth">
+        update t_user_info_auth
+        <set>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="mobile != null">
+                mobile = #{mobile},
+            </if>
+
+            <if test="qq != null">
+                qq = #{qq},
+            </if>
+
+            <if test="wechat != null">
+                wechat = #{wechat},
+            </if>
+            <if test="mainPicUrl != null">
+                main_pic_url = #{mainPicUrl},
+            </if>
+            <if test="allowExport != null">
+                allow_export = #{allowExport},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

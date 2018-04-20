@@ -14,4 +14,7 @@ public class ResultStatus {
     public static Integer ERROR = 500;
 
 
+    public static Integer NOLOGIN = 501;
+
+
 }

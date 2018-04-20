@@ -1,6 +1,7 @@
 package com.fulu.game.admin.controller.exception;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.common.exception.ServiceErrorException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
@@ -40,6 +41,11 @@ public class ExceptionHandlerAdvice {
         return	Result.error().msg("必填参数空:"+e.getMessage());
     }
 
+    @ExceptionHandler(ServiceErrorException.class)
+    public Result  serviceErrorException(ServiceErrorException e){
+        log.error(e.getMessage(), e);
+        return	Result.error().msg(e.getMessage());
+    }
 
     @ExceptionHandler(Exception.class)
     public Result handleException(Exception e) {

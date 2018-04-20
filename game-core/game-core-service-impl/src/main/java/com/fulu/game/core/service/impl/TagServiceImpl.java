@@ -37,6 +37,13 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
         return tagDao;
     }
 
+
+    public List<Tag> findAllPersonTags(){
+        TagVO tagVO = new TagVO();
+        tagVO.setType(TagTypeEnum.PERSON.getType());
+        return tagDao.findByParameter(tagVO);
+    }
+
     @Override
     public Tag create(Integer categoryId, String tagName) {
         Category category = categoryService.findById(categoryId);

@@ -19,4 +19,6 @@ public interface TagService extends ICommonService<Tag,Integer>{
     Tag create(Integer categoryId, String tagName);
 
     PageInfo<Tag> parentList(Integer pageNum, Integer pageSize);
+
+    public List<Tag> findAllPersonTags();
 }
