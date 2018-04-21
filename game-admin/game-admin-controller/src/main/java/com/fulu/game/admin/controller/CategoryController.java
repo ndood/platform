@@ -7,7 +7,6 @@ import com.fulu.game.core.entity.TechValue;
 import com.fulu.game.core.service.CategoryService;
 import com.fulu.game.core.service.TechValueService;
 import com.github.pagehelper.PageInfo;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,22 +26,23 @@ public class CategoryController extends BaseController {
     private TechValueService techValueService;
 
     @PostMapping(value = "/list")
-    public Result list(Integer pageNum,Integer pageSize){
-        PageInfo<Category> categoryPageInfo =  categoryService.find(pageNum,pageSize);
+    public Result list(Integer pageNum, Integer pageSize) {
+        PageInfo<Category> categoryPageInfo = categoryService.find(pageNum, pageSize);
         return Result.success();
     }
 
     /**
      * 保存内容
+     *
      * @return
      */
     @PostMapping(value = "/save")
-    public Result save(@RequestParam(required=false,defaultValue = "1")Integer sort,
+    public Result save(@RequestParam(required = false, defaultValue = "1") Integer sort,
                        String name,
-                       @RequestParam(required=false,defaultValue = "false")Boolean status,
+                       @RequestParam(required = false, defaultValue = "false") Boolean status,
                        BigDecimal charges,
                        String icon,
-                       Integer id){
+                       Integer id) {
         Category category = new Category();
         category.setName(name);
         category.setSort(sort);
@@ -50,12 +50,12 @@ public class CategoryController extends BaseController {
         category.setCharges(charges);
         category.setIcon(icon);
         category.setId(id);
-        if(category.getId()==null){
+        if (category.getId() == null) {
             category.setPid(CategoryParentEnum.ACCOMPANY_PLAY.getType());
             category.setCreateTime(new Date());
             category.setUpdateTime(new Date());
             categoryService.create(category);
-        }else{
+        } else {
             category.setUpdateTime(new Date());
             categoryService.update(category);
         }
@@ -65,16 +65,15 @@ public class CategoryController extends BaseController {
 
     /**
      * 创建销售方式
+     *
      * @return
      */
     @PostMapping(value = "/salesmode/create")
     public Result salesModeCreate(Integer categoryId,
-                            String  modeName){
-        TechValue techValue = techValueService.createSalesMode(categoryId,modeName);
+                                  String modeName) {
+        TechValue techValue = techValueService.createSalesMode(categoryId, modeName);
         return Result.success().msg("销售方式创建成功!").data(techValue);
     }
-
-
 
 
 }
