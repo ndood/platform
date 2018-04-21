@@ -1,62 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.fulu.game.core.dao.TagDao">
-    <resultMap id="TagResultMap" type="com.fulu.game.core.entity.Tag">
+<mapper namespace="com.fulu.game.core.dao.UserInfoAuthFileDao">
+    <resultMap id="UserInfoAuthFileResultMap" type="com.fulu.game.core.entity.UserInfoAuthFile">
         <id column="id" property="id"/>
-        <result column="pid" property="pid"/>
         <result column="name" property="name"/>
-        <result column="gender" property="gender"/>
+        <result column="info_auth_id" property="infoAuthId"/>
         <result column="type" property="type"/>
-        <result column="sort" property="sort"/>
-        <result column="most" property="most"/>
+        <result column="url" property="url"/>
+        <result column="ext" property="ext"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
-    <resultMap id="TagResultVOMap" type="com.fulu.game.core.entity.vo.TagVO" extends="TagResultMap">
+    <resultMap id="UserInfoAuthFileResultVOMap" type="com.fulu.game.core.entity.vo.UserInfoAuthFileVO"
+               extends="UserInfoAuthFileResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,pid,name,gender,type,sort,most,create_time,update_time    </sql>
+        id,name,info_auth_id,type,url,ext,create_time,update_time    </sql>
 
-    <select id="findById" parameterType="java.lang.Integer" resultMap="TagResultMap">
+    <select id="findById" parameterType="java.lang.Integer" resultMap="UserInfoAuthFileResultMap">
         select
         <include refid="Base_Column_List"/>
-        from t_tag
+        from t_user_info_auth_file
         <where>
             id = #{id}
         </where>
     </select>
 
-    <select id="findAll" resultMap="TagResultMap">
+    <select id="findAll" resultMap="UserInfoAuthFileResultMap">
         select
         <include refid="Base_Column_List"/>
-        from t_tag
+        from t_user_info_auth_file
     </select>
 
-    <select id="findByParameter" resultMap="TagResultMap" parameterType="com.fulu.game.core.entity.vo.TagVO">
+    <select id="findByParameter" resultMap="UserInfoAuthFileResultMap"
+            parameterType="com.fulu.game.core.entity.vo.UserInfoAuthFileVO">
         SELECT
         <include refid="Base_Column_List"/>
-        FROM t_tag
+        FROM t_user_info_auth_file
         <where>
-            <if test="pid != null">
-                and pid = #{pid}
-            </if>
             <if test="name != null">
                 and name = #{name}
+            </if>
+            <if test="infoAuthId != null">
+                and info_auth_id = #{infoAuthId}
             </if>
             <if test="type != null">
                 and type = #{type}
             </if>
-            <if test="sort != null">
-                and sort = #{sort}
+            <if test="url != null">
+                and url = #{url}
             </if>
-            <if test="most != null">
-                and most = #{most}
-            </if>
-            <if test="gender != null">
-                and gender = #{gender}
+            <if test="ext != null">
+                and ext = #{ext}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime}
@@ -68,46 +66,48 @@
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">
-        delete from t_tag
+        delete from t_user_info_auth_file
         <where>
             id = #{id}
         </where>
     </delete>
 
-    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Tag">
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.UserInfoAuthFile">
         insert into
-        t_tag (pid,name,gender,type,sort,most,create_time,update_time)
+        t_user_info_auth_file (name,info_auth_id,type,url,ext,create_time,update_time)
         values
-        (#{pid},#{name},#{gender},#{type},#{sort},#{most},#{createTime},#{updateTime})
+        (#{name},#{infoAuthId},#{type},#{url},#{ext},#{createTime},#{updateTime})
     </insert>
 
-    <update id="update" parameterType="com.fulu.game.core.entity.Tag">
-        update t_tag
+    <update id="update" parameterType="com.fulu.game.core.entity.UserInfoAuthFile">
+        update t_user_info_auth_file
         <set>
-
-            <if test="pid != null">
-                pid = #{pid},
-            </if>
 
             <if test="name != null">
                 name = #{name},
             </if>
 
-            <if test="gender != null">
-                gender = #{gender},
+            <if test="infoAuthId != null">
+                info_auth_id = #{infoAuthId},
             </if>
+
             <if test="type != null">
                 type = #{type},
             </if>
-            <if test="sort != null">
-                sort = #{sort},
+
+            <if test="url != null">
+                url = #{url},
             </if>
-            <if test="most != null">
-                most = #{most},
+
+            <if test="ext != null">
+                ext = #{ext},
             </if>
+
             <if test="createTime != null">
                 create_time = #{createTime},
             </if>
+
             <if test="updateTime != null">
                 update_time = #{updateTime},
             </if>

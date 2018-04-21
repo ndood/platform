@@ -5,11 +5,14 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum TechAttrTypeEnum implements TypeEnum<Integer>{
+public enum  UserTypeEnum implements TypeEnum<Integer>{
 
-    SALES_MODE(1,"销售方式"),
-    DAN(2,"段位");
+    GENERAL_USER(1,"普通用户"),
+    ACCOMPANY_PLAYER(2,"陪玩师"),
+    CHANNEL_MERCHANT(3,"普通用户");
 
     private Integer type;
     private String msg;
+
+
 }

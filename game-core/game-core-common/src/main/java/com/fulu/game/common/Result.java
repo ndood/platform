@@ -53,6 +53,12 @@ public class Result implements Serializable {
         return result;
     }
 
+    public static Result noLogin() {
+        Result result = new Result();
+        result.setStatus(ResultStatus.NOLOGIN);
+        return result;
+    }
+
 
 
     public Object getData() {

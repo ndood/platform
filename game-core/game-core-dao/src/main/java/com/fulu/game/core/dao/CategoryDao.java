@@ -5,6 +5,7 @@ import com.fulu.game.core.entity.Category;
 import java.util.List;
 import java.util.Map;
 
+import com.fulu.game.core.entity.vo.CategoryVO;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -16,4 +17,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface CategoryDao extends ICommonDao<Category,Integer>{
 
+
+    List<Category> findByParameter(CategoryVO categoryVO);
 }

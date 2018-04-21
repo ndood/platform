@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.UserDao">
+    <resultMap id="UserResultMap" type="com.fulu.game.core.entity.User">
+        <id column="id" property="id"/>
+        <result column="mobile" property="mobile"/>
+        <result column="nickname" property="nickname"/>
+        <result column="gender" property="gender"/>
+        <result column="head_portraits_url" property="headPortraitsUrl"/>
+        <result column="password" property="password"/>
+        <result column="salt" property="salt"/>
+        <result column="realname" property="realname"/>
+        <result column="idcard" property="idcard"/>
+        <result column="type" property="type"/>
+        <result column="user_info_auth" property="userInfoAuth"/>
+        <result column="balance" property="balance"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="UserResultVOMap" type="com.fulu.game.core.entity.vo.UserVO" extends="UserResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="UserResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="UserResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user
+    </select>
+
+    <select id="findByParameter" resultMap="UserResultMap" parameterType="com.fulu.game.core.entity.vo.UserVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_user
+        <where>
+            <if test="mobile != null">
+                and mobile = #{mobile}
+            </if>
+            <if test="nickname != null">
+                and nickname = #{nickname}
+            </if>
+            <if test="gender != null">
+                and gender = #{gender}
+            </if>
+            <if test="headPortraitsUrl != null">
+                and head_portraits_url = #{headPortraitsUrl}
+            </if>
+            <if test="password != null">
+                and password = #{password}
+            </if>
+            <if test="salt != null">
+                and salt = #{salt}
+            </if>
+            <if test="realname != null">
+                and realname = #{realname}
+            </if>
+            <if test="idcard != null">
+                and idcard = #{idcard}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="userInfoAuth != null">
+                and user_info_auth = #{userInfoAuth}
+            </if>
+            <if test="balance != null">
+                and balance = #{balance}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_user
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.User">
+        insert into
+        t_user (mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time)
+        values
+        (#{mobile},#{nickname},#{gender},#{headPortraitsUrl},#{password},#{salt},#{realname},#{idcard},#{type},#{userInfoAuth},#{balance},#{status},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.User">
+        update t_user
+        <set>
+
+            <if test="mobile != null">
+                mobile = #{mobile},
+            </if>
+
+            <if test="nickname != null">
+                nickname = #{nickname},
+            </if>
+
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+
+            <if test="headPortraitsUrl != null">
+                head_portraits_url = #{headPortraitsUrl},
+            </if>
+
+            <if test="password != null">
+                password = #{password},
+            </if>
+
+            <if test="salt != null">
+                salt = #{salt},
+            </if>
+
+            <if test="realname != null">
+                realname = #{realname},
+            </if>
+
+            <if test="idcard != null">
+                idcard = #{idcard},
+            </if>
+
+            <if test="type != null">
+                type = #{type},
+            </if>
+
+            <if test="userInfoAuth != null">
+                user_info_auth = #{userInfoAuth},
+            </if>
+
+            <if test="balance != null">
+                balance = #{balance},
+            </if>
+
+            <if test="status != null">
+                status = #{status},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

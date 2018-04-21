@@ -6,30 +6,28 @@ import lombok.Data;
 
 
 /**
- * 标签表
+ * 信息认证文件表（图片、声音）
  * 
  * @author wangbin
- * @date 2018-04-18 16:29:26
+ * @date 2018-04-20 11:12:13
  */
 @Data
-public class Tag implements Serializable {
+public class UserInfoAuthFile implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	//
 	private Integer id;
-	//父类id（根目录0）
-	private Integer pid;
-	//标签名称
+	//文件名称
 	private String name;
-	//类型
+	//关联信息认证ID
+	private Integer infoAuthId;
+	//类型(1图片,2声音)
 	private Integer type;
-
-	private Integer sort;
-
-	private Integer most;
-	//性别(0:不限制,1:男，2:女)
-	private Integer gender;
-	//创建时间
+	//
+	private String url;
+	//扩展名
+	private String ext;
+	//
 	private Date createTime;
 	//
 	private Date updateTime;

@@ -6,7 +6,10 @@ import com.fulu.game.common.enums.GenderEnum;
 import com.fulu.game.common.enums.TagTypeEnum;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Category;
+import com.fulu.game.core.entity.vo.TagVO;
 import com.fulu.game.core.service.CategoryService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +35,13 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
     @Override
     public ICommonDao<Tag, Integer> getDao() {
         return tagDao;
+    }
+
+
+    public List<Tag> findAllPersonTags(){
+        TagVO tagVO = new TagVO();
+        tagVO.setType(TagTypeEnum.PERSON.getType());
+        return tagDao.findByParameter(tagVO);
     }
 
     @Override
@@ -61,5 +71,16 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
         tag.setGender(GenderEnum.ASEXUALITY.getType());
         create(tag);
         return tag;
+    }
+
+    @Override
+    public PageInfo<Tag> parentList(Integer pageNum, Integer pageSize) {
+        TagVO tagVO = new TagVO();
+        tagVO.setPid(Constant.DEF_PID);
+        tagVO.setType(TagTypeEnum.PERSON.getType());
+        PageHelper.startPage(pageNum, pageSize);
+        List<Tag> tagList = tagDao.findByParameter(tagVO);
+        PageInfo page = new PageInfo(tagList);
+        return page;
     }
 }

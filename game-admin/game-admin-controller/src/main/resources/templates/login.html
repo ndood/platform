@@ -23,7 +23,7 @@
         var password = $("#password").val();
 
         $.ajax({
-            url: "/login",
+            url: "http://api.wangbin.com/login",
             type: "POST",
             data: {username:username,password:password},
             dataType: "json",
@@ -31,6 +31,7 @@
                 console.log(result)
             },
             error: function (msg) {
+
             }
         })
 

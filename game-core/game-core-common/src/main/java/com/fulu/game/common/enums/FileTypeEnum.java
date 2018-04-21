@@ -5,11 +5,12 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum TechAttrTypeEnum implements TypeEnum<Integer>{
+public enum FileTypeEnum implements TypeEnum<Integer>{
 
-    SALES_MODE(1,"销售方式"),
-    DAN(2,"段位");
+    PIC(1,"图片"),
+    VOICE(2,"声音");
 
     private Integer type;
     private String msg;
+
 }

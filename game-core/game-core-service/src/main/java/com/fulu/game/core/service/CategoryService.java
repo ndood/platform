@@ -2,6 +2,7 @@ package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.TechValue;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -15,4 +16,6 @@ import java.util.Map;
  */
 public interface CategoryService extends ICommonService<Category,Integer>{
 
+
+     PageInfo<Category> list(int pageNum, int pageSize, Boolean status, String orderBy);
 }
