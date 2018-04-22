@@ -3,7 +3,9 @@ package com.fulu.game.admin.controller;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
+import com.fulu.game.core.service.UserInfoAuthFileService;
 import com.fulu.game.core.service.UserInfoAuthService;
+import com.fulu.game.core.service.UserInfoFileService;
 import com.fulu.game.core.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +22,44 @@ public class UserInfoController extends BaseController{
     private UserInfoAuthService userInfoAuthService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserInfoFileService userInfoFileService;
+    @Autowired
+    private UserInfoAuthFileService userInfoAuthFileService;
+
+
     /**
      * 认证信息创建
      * @return
      */
-    @PostMapping(value = "/auth/create")
+    @PostMapping(value = "/auth/save")
     public Result userInfoAuthCreate(UserInfoAuthVO userInfoAuthVO){
-        userInfoAuthService.create(userInfoAuthVO);
+        userInfoAuthService.save(userInfoAuthVO);
         return Result.success().data(userInfoAuthVO);
     }
+
+    /**
+     * 删除身份证照片
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "/idcard/delete")
+    public Result deleteIdCard(Integer id){
+        userInfoFileService.deleteById(id);
+        return Result.success().msg("删除成功!");
+    }
+
+    /**
+     * 删除认证信息图片
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "/auth/file/delete")
+    public Result deleteAuthFile(Integer id){
+        userInfoAuthFileService.deleteById(id);
+        return Result.success().msg("删除成功!");
+    }
+
 
     /**
      * 查询用户个人认证信息
@@ -46,7 +77,7 @@ public class UserInfoController extends BaseController{
      * @param mobile
      * @return
      */
-    @PostMapping(value = "/mobile")
+    @PostMapping(value = "/get")
     public Result findByMobile(String mobile){
         User user = userService.findByMobile(mobile);
         return Result.success().data(user);

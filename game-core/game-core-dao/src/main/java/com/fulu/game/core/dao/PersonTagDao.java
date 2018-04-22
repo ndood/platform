@@ -19,4 +19,6 @@ public interface PersonTagDao extends ICommonDao<PersonTag,Integer>{
 
     List<PersonTag> findByParameter(PersonTagVO personTagVO);
 
+    int deleteByUserId(Integer userId);
+
 }

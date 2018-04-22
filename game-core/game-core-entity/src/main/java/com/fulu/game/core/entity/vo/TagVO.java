@@ -4,6 +4,8 @@ package com.fulu.game.core.entity.vo;
 import com.fulu.game.core.entity.Tag;
 import lombok.Data;
 
+import java.util.List;
+
 
 /**
  * 标签表
@@ -14,5 +16,9 @@ import lombok.Data;
 @Data
 public class TagVO  extends Tag {
 
+    private List<Tag> sonTags;
+
     private boolean selected;
+
+
 }

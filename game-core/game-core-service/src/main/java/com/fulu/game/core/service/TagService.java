@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Tag;
+import com.fulu.game.core.entity.vo.TagVO;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -20,5 +21,19 @@ public interface TagService extends ICommonService<Tag,Integer>{
 
     PageInfo<Tag> parentList(Integer pageNum, Integer pageSize);
 
-    public List<Tag> findAllPersonTags();
+    List<Tag> findByPid(Integer tagPid);
+
+
+    /**
+     * 查询所有个人标签
+     * @return
+     */
+    List<Tag> findAllPersonTags();
+
+    /**
+     * 查询标签组和子标签
+     * @param tagPid
+     * @return
+     */
+    TagVO  findTagsByTagPid(Integer tagPid);
 }

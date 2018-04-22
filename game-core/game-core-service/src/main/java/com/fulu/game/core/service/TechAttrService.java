@@ -16,4 +16,6 @@ public interface TechAttrService extends ICommonService<TechAttr,Integer>{
 
 
     public TechAttr findByCategoryAndType(Integer categoryId,Integer type);
+
+    public List<TechAttr> findByCategory(Integer categoryId);
 }

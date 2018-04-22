@@ -20,7 +20,7 @@ public interface TechValueService extends ICommonService<TechValue,Integer>{
       * @param salesmodeName
       * @return
       */
-     TechValue createSalesMode(Integer categoryId,String salesmodeName);
+     TechValue createSalesMode(Integer categoryId,String salesmodeName,Integer rank);
 
      /**
       * 创建段位
@@ -32,4 +32,5 @@ public interface TechValueService extends ICommonService<TechValue,Integer>{
      TechValue createDan(Integer categoryId,String danName,Integer rank);
 
 
+     public List<TechValue> findByTechAttrId(Integer attrId);
 }

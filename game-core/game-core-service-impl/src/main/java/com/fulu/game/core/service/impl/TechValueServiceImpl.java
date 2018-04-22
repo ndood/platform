@@ -5,6 +5,7 @@ import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.TechAttr;
+import com.fulu.game.core.entity.vo.TechValueVO;
 import com.fulu.game.core.service.CategoryService;
 import com.fulu.game.core.service.TechAttrService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import com.fulu.game.core.entity.TechValue;
 import com.fulu.game.core.service.TechValueService;
 
 import java.util.Date;
+import java.util.List;
 
 
 @Service
@@ -32,6 +34,8 @@ public class TechValueServiceImpl extends AbsCommonService<TechValue,Integer> im
         return techValueDao;
     }
 
+
+
     /**
      * 创建销售方式
      * @param categoryId
@@ -39,7 +43,7 @@ public class TechValueServiceImpl extends AbsCommonService<TechValue,Integer> im
      * @return
      */
     @Override
-    public TechValue createSalesMode(Integer categoryId, String salesmodeName) {
+    public TechValue createSalesMode(Integer categoryId, String salesmodeName,Integer rank) {
         Category category = categoryService.findById(categoryId);
         TechAttr techAttr = techAttrService.findByCategoryAndType(categoryId, TechAttrTypeEnum.SALES_MODE.getType());
         if(techAttr==null){
@@ -56,7 +60,7 @@ public class TechValueServiceImpl extends AbsCommonService<TechValue,Integer> im
         techValue.setTechAttrId(techAttr.getId());
         techValue.setName(salesmodeName);
         techValue.setStatus(true);
-        techValue.setRank(0);
+        techValue.setRank(rank);
         techValue.setCreateTime(new Date());
         techValue.setUpdateTime(new Date());
         create(techValue);
@@ -93,5 +97,13 @@ public class TechValueServiceImpl extends AbsCommonService<TechValue,Integer> im
         techValue.setUpdateTime(new Date());
         create(techValue);
         return techValue;
+    }
+
+    @Override
+    public List<TechValue> findByTechAttrId(Integer attrId) {
+        TechValueVO techValueVO = new TechValueVO();
+        techValueVO.setTechAttrId(attrId);
+        List<TechValue> techValues =techValueDao.findByParameter(techValueVO);
+        return techValues;
     }
 }

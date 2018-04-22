@@ -17,6 +17,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface TechAttrDao extends ICommonDao<TechAttr,Integer>{
 
-    TechAttr findByParameter(TechAttrVO techAttrVO);
+    List<TechAttr> findByParameter(TechAttrVO techAttrVO);
 
 }

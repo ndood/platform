@@ -63,6 +63,13 @@
         </where>
     </delete>
 
+    <delete id="deleteByUserId" parameterType="java.lang.Integer">
+        delete from t_person_tag
+        <where>
+            user_id = #{userId}
+        </where>
+    </delete>
+
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.PersonTag">
         insert into
         t_person_tag (tag_id,user_id,name,create_time,update_time)

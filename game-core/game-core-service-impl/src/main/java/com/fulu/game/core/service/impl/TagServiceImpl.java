@@ -10,6 +10,7 @@ import com.fulu.game.core.entity.vo.TagVO;
 import com.fulu.game.core.service.CategoryService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.xiaoleilu.hutool.util.BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +43,17 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
         TagVO tagVO = new TagVO();
         tagVO.setType(TagTypeEnum.PERSON.getType());
         return tagDao.findByParameter(tagVO);
+    }
+
+
+    @Override
+    public TagVO findTagsByTagPid(Integer tagPid) {
+        Tag tag = findById(tagPid);
+        TagVO tagVO = new TagVO();
+        BeanUtil.copyProperties(tag,tagVO);
+        List<Tag> sonTagList = findByPid(tagPid);
+        tagVO.setSonTags(sonTagList);
+        return tagVO;
     }
 
     @Override
@@ -83,4 +95,13 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
         PageInfo page = new PageInfo(tagList);
         return page;
     }
+
+    @Override
+    public List<Tag> findByPid(Integer tagPid) {
+        TagVO tagVO = new TagVO();
+        tagVO.setPid(tagPid);
+        return tagDao.findByParameter(tagVO);
+    }
+
+
 }

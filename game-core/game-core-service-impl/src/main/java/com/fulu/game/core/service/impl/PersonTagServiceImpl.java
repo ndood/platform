@@ -33,4 +33,9 @@ public class PersonTagServiceImpl extends AbsCommonService<PersonTag,Integer> im
         personTagVO.setUserId(userId);
         return personTagDao.findByParameter(personTagVO);
     }
+
+    @Override
+    public int deleteByUserId(Integer userId) {
+        return personTagDao.deleteByUserId(userId);
+    }
 }

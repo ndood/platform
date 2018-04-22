@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public interface UserInfoAuthService extends ICommonService<UserInfoAuth,Integer>{
 
-    UserInfoAuthVO create(UserInfoAuthVO userInfoAuthVO);
+    UserInfoAuthVO save(UserInfoAuthVO userInfoAuthVO);
 
     /**
      * 查找用户个人认证信息

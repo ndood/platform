@@ -33,7 +33,18 @@ public class TechAttrServiceImpl extends AbsCommonService<TechAttr,Integer> impl
         TechAttrVO techAttrVO = new TechAttrVO();
         techAttrVO.setCategoryId(categoryId);
         techAttrVO.setType(type);
-        TechAttr techAttr = techAttrDao.findByParameter(techAttrVO);
-        return techAttr;
+        List<TechAttr> techAttrList = techAttrDao.findByParameter(techAttrVO);
+        if(techAttrList!=null&&techAttrList.size()>0){
+            return techAttrList.get(0);
+        }
+        return null;
+    }
+
+    @Override
+    public List<TechAttr> findByCategory(Integer categoryId) {
+        TechAttrVO techAttrVO = new TechAttrVO();
+        techAttrVO.setCategoryId(categoryId);
+        List<TechAttr> techAttrList = techAttrDao.findByParameter(techAttrVO);
+        return techAttrList;
     }
 }

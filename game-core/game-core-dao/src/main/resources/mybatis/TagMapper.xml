@@ -74,6 +74,7 @@
         </where>
     </delete>
 
+
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Tag">
         insert into
         t_tag (pid,name,gender,type,sort,most,create_time,update_time)

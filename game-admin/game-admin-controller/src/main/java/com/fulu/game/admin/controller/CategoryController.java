@@ -4,6 +4,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.CategoryParentEnum;
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.TechValue;
+import com.fulu.game.core.entity.vo.CategoryVO;
 import com.fulu.game.core.service.CategoryService;
 import com.fulu.game.core.service.TechValueService;
 import com.github.pagehelper.PageInfo;
@@ -38,6 +39,17 @@ public class CategoryController extends BaseController {
                        Boolean status) {
         PageInfo<Category> page = categoryService.list(pageNum, pageSize,status,null);
         return Result.success().data(page);
+    }
+
+    /**
+     * 查询单个内容所有信息
+     * @param categoryId
+     * @return
+     */
+    @PostMapping(value = "/info")
+    public Result info(Integer categoryId){
+        CategoryVO categoryVO =categoryService.findCategoryVoById(categoryId);
+        return Result.success().data(categoryVO);
     }
 
     /**
@@ -78,8 +90,9 @@ public class CategoryController extends BaseController {
      */
     @PostMapping(value = "/salesmode/create")
     public Result salesModeCreate(Integer categoryId,
-                                  String modeName) {
-        TechValue techValue = techValueService.createSalesMode(categoryId, modeName);
+                                  String name,
+                                  Integer rank) {
+        TechValue techValue = techValueService.createSalesMode(categoryId, name,rank);
         return Result.success().msg("销售方式创建成功!").data(techValue);
     }
 
@@ -98,9 +111,9 @@ public class CategoryController extends BaseController {
      **/
     @PostMapping(value = "/dan/create")
     public Result danCreate(Integer categoryId,
-                            String danName,
+                            String name,
                             Integer rank) {
-        TechValue techValue = techValueService.createDan(categoryId, danName,rank);
+        TechValue techValue = techValueService.createDan(categoryId, name,rank);
         return Result.success().msg("段位创建成功!").data(techValue);
     }
 

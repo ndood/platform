@@ -16,4 +16,6 @@ public interface PersonTagService extends ICommonService<PersonTag,Integer>{
 
     List<PersonTag> findByUserId(Integer userId);
 
+    int deleteByUserId(Integer userId);
+
 }

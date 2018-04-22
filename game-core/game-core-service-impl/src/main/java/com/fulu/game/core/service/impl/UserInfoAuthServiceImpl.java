@@ -47,7 +47,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
     }
 
     @Override
-    public UserInfoAuthVO create(UserInfoAuthVO userInfoAuthVO) {
+    public UserInfoAuthVO save(UserInfoAuthVO userInfoAuthVO) {
         //更新用户信息
         User user = userService.findById(userInfoAuthVO.getUserId());
         user.setHeadPortraitsUrl(userInfoAuthVO.getHeadUrl());
@@ -62,9 +62,13 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         //添加认证信息
         UserInfoAuth userInfoAuth = new UserInfoAuth();
         BeanUtil.copyProperties(userInfoAuthVO,userInfoAuth,copyOptions);
-        userInfoAuth.setCreateTime(new Date());
         userInfoAuth.setUpdateTime(new Date());
-        create(userInfoAuth);
+        if(userInfoAuth.getId()==null){
+            userInfoAuth.setCreateTime(new Date());
+            create(userInfoAuth);
+        }else{
+            update(userInfoAuth);
+        }
         //添加认证身份证文件
         Map<String,String> userInfoMap = new HashMap<>();
         userInfoMap.put("身份证人像面",userInfoAuthVO.getIdCardHeadUrl());
@@ -79,6 +83,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         createUserInfoTags(userInfoAuthVO.getTags(),user.getId());
         return userInfoAuthVO;
     }
+
 
 
     @Override
@@ -142,7 +147,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
             userInfoFile.setUserId(userId);
             userInfoFile.setCreateTime(new Date());
             userInfoFile.setType(FileTypeEnum.PIC.getType());
-            userInfoFileService.create(userInfoFile);
+            if(v!=null){
+                userInfoFileService.create(userInfoFile);
+            }
         });
     }
 
@@ -152,6 +159,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
      * @param userInfoAuthId
      */
     public void createUserAuthPortrait(String[] portraitUrls,Integer userInfoAuthId){
+        if(portraitUrls==null){
+            return;
+        }
         for(int i=0;i<portraitUrls.length;i++){
             UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
             String portraitUrl = portraitUrls[i];
@@ -170,6 +180,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
      * @param userInfoAuthId
      */
     public void createUserAuthVoice(String voiceUrl,Integer userInfoAuthId){
+        if(voiceUrl==null){
+            return;
+        }
         UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
         userInfoAuthFile.setUrl(voiceUrl);
         userInfoAuthFile.setInfoAuthId(userInfoAuthId);
@@ -177,6 +190,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         userInfoAuthFile.setCreateTime(new Date());
         userInfoAuthFile.setType(FileTypeEnum.VOICE.getType());
         userInfoAuthFileService.create(userInfoAuthFile);
+
+
     }
 
     /**
@@ -185,6 +200,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
      * @param userId
      */
     public void createUserInfoTags(Integer[] tags,Integer userId){
+        if(tags.length>0){
+            personTagService.deleteByUserId(userId);
+        }
         for(Integer tagId : tags){
             Tag tag = tagService.findById(tagId);
             PersonTag personTag = new PersonTag();
