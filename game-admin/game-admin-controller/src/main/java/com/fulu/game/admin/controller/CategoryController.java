@@ -8,11 +8,9 @@ import com.fulu.game.core.entity.vo.CategoryVO;
 import com.fulu.game.core.service.CategoryService;
 import com.fulu.game.core.service.TechValueService;
 import com.github.pagehelper.PageInfo;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
@@ -54,6 +52,7 @@ public class CategoryController extends BaseController {
 
     /**
      * 保存内容
+     *
      * @return
      */
     @PostMapping(value = "/save")
@@ -86,6 +85,7 @@ public class CategoryController extends BaseController {
 
     /**
      * 创建销售方式
+     *
      * @return
      */
     @PostMapping(value = "/salesmode/create")
