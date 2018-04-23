@@ -7,10 +7,12 @@ import com.fulu.game.core.service.UserInfoAuthFileService;
 import com.fulu.game.core.service.UserInfoAuthService;
 import com.fulu.game.core.service.UserInfoFileService;
 import com.fulu.game.core.service.UserService;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -26,6 +28,19 @@ public class UserInfoController extends BaseController{
     private UserInfoFileService userInfoFileService;
     @Autowired
     private UserInfoAuthFileService userInfoAuthFileService;
+
+    /**
+     * 用户认证信息列表
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @PostMapping(value = "/auth/list")
+    public Result userInfoAuthList(Integer pageNum,
+                                   Integer pageSize){
+        PageInfo<UserInfoAuthVO> pageInfo = userInfoAuthService.list(pageNum,pageSize,null);
+        return Result.success().data(pageInfo);
+    }
 
 
     /**
@@ -50,7 +65,7 @@ public class UserInfoController extends BaseController{
     }
 
     /**
-     * 删除认证信息图片
+     * 删除认证信息(写真和声音)
      * @param id
      * @return
      */
@@ -67,7 +82,7 @@ public class UserInfoController extends BaseController{
      * @return
      */
     @PostMapping(value = "/auth/info")
-    public Result userAuthInfo(Integer userId){
+    public Result userAuthInfo(@RequestParam(required=false,name = "userId") Integer userId){
         UserInfoAuthVO userInfoAuthVO =userInfoAuthService.findUserAuthInfoByUserId(userId);
         return Result.success().data(userInfoAuthVO);
     }

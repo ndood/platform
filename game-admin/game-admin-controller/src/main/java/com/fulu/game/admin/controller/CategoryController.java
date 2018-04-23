@@ -2,12 +2,18 @@ package com.fulu.game.admin.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.CategoryParentEnum;
+import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.core.entity.Category;
+import com.fulu.game.core.entity.Tag;
+import com.fulu.game.core.entity.TechAttr;
 import com.fulu.game.core.entity.TechValue;
 import com.fulu.game.core.entity.vo.CategoryVO;
 import com.fulu.game.core.service.CategoryService;
+import com.fulu.game.core.service.TagService;
+import com.fulu.game.core.service.TechAttrService;
 import com.fulu.game.core.service.TechValueService;
 import com.github.pagehelper.PageInfo;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/category")
@@ -24,7 +31,10 @@ public class CategoryController extends BaseController {
     private CategoryService categoryService;
     @Autowired
     private TechValueService techValueService;
-
+    @Autowired
+    private TechAttrService techAttrService;
+    @Autowired
+    private TagService tagService;
     /**
      * 内容列表
      * @param pageNum
@@ -38,6 +48,8 @@ public class CategoryController extends BaseController {
         PageInfo<Category> page = categoryService.list(pageNum, pageSize,status,null);
         return Result.success().data(page);
     }
+
+
 
     /**
      * 查询单个内容所有信息
@@ -127,6 +139,34 @@ public class CategoryController extends BaseController {
         techValueService.deleteById(id);
         return Result.success().msg("段位删除成功!");
     }
+
+
+    /**
+     * 查询游戏所有标签
+     * @param categoryId
+     * @return
+     */
+    @PostMapping(value = "/tag/list")
+    public Result techTags(Integer categoryId){
+        Category category =categoryService.findById(categoryId);
+        if(category.getTagId()==null){
+            return Result.error().msg("该游戏没有设置标签!");
+        }
+        List<Tag> tagList = tagService.findByPid(category.getTagId());
+        return Result.success().data(tagList);
+    }
+
+    /**
+     * 查询游戏所有段位
+     * @return
+     */
+    @PostMapping(value = "/dan/list")
+    public Result danList(Integer categoryId){
+        TechAttr techAttr = techAttrService.findByCategoryAndType(categoryId, TechAttrTypeEnum.DAN.getType());
+        List<TechValue>  techValueList =   techValueService.findByTechAttrId(techAttr.getId());
+        return Result.success().data(techValueList);
+    }
+
 
 
 }

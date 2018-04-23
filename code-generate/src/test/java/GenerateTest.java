@@ -28,8 +28,10 @@ public class GenerateTest {
                 .withAuthor("wangbin")
                 .build();
 
-        generateFactory.generatorCode("t_person_tag");
+        generateFactory.generatorCode("t_tech_tag");
     }
+
+
 
 
 

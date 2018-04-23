@@ -65,6 +65,8 @@
                 and update_time = #{updateTime}
             </if>
         </where>
+        ORDER BY pid ASC
+
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">

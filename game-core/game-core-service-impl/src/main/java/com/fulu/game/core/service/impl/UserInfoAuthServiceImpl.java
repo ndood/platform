@@ -3,13 +3,18 @@ package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.enums.AuthStatusEnum;
 import com.fulu.game.common.enums.FileTypeEnum;
+import com.fulu.game.common.enums.UserInfoFileTypeEnum;
 import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.TagVO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.service.*;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
+import com.xiaoleilu.hutool.util.ObjectUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -70,11 +75,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
             update(userInfoAuth);
         }
         //添加认证身份证文件
-        Map<String,String> userInfoMap = new HashMap<>();
-        userInfoMap.put("身份证人像面",userInfoAuthVO.getIdCardHeadUrl());
-        userInfoMap.put("身份证国徽面",userInfoAuthVO.getIdCardEmblemUrl());
-        userInfoMap.put("手持身份证照片",userInfoAuthVO.getIdCardHandUrl());
-        createUserInfoFile(userInfoMap,user.getId());
+        createUserIdCard(user.getId(),userInfoAuthVO.getIdCardHeadUrl(),userInfoAuthVO.getIdCardEmblemUrl(),userInfoAuthVO.getIdCardHandUrl());
         //添加用户认证写真图片
         createUserAuthPortrait(userInfoAuthVO.getPortraitUrls(),userInfoAuth.getId());
         //添加语音介绍
@@ -96,61 +97,135 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         }
         UserInfoAuthVO userInfoAuthVO = new UserInfoAuthVO();
         BeanUtil.copyProperties(userInfoAuth,userInfoAuthVO);
-        userInfoAuthVO.setHeadUrl(user.getHeadPortraitsUrl());
-        userInfoAuthVO.setIdCard(user.getIdcard());
-        userInfoAuthVO.setGender(user.getGender());
-        userInfoAuthVO.setRealname(user.getRealname());
-
+        copyUserInfo2InfoAuthVo(user,userInfoAuthVO);
         //查询身份证信息
         List<UserInfoFile> userInfoFileList=  userInfoFileService.findByUserId(userId);
         userInfoAuthVO.setIdCardList(userInfoFileList);
         //查询写真信息和声音
+        copyAuthFile2InfoAuthVo(userInfoAuthVO);
+        List<TagVO> allPersonTagVos = findAllUserTag(userId);
+        userInfoAuthVO.setGroupTags(allPersonTagVos);
+        return userInfoAuthVO;
+    }
+
+
+
+    @Override
+    public PageInfo<UserInfoAuthVO> list(Integer pageNum, Integer pageSize, String orderBy) {
+        if(StringUtils.isNotBlank(orderBy)){
+            orderBy = "create_time desc";
+        }
+        List<UserInfoAuthVO> userInfoAuthVOList = new ArrayList<>();
+        PageHelper.startPage(pageNum,pageSize,orderBy);
+        List<UserInfoAuth> userInfoAuths =  findAll();
+        for(UserInfoAuth userInfoAuth : userInfoAuths){
+            UserInfoAuthVO userInfoAuthVO = new UserInfoAuthVO();
+            BeanUtil.copyProperties(userInfoAuth,userInfoAuthVO);
+            User user = userService.findById(userInfoAuthVO.getUserId());
+            copyUserInfo2InfoAuthVo(user,userInfoAuthVO);
+            //查询身份证信息
+            List<UserInfoFile> userInfoFileList=  userInfoFileService.findByUserId(user.getId());
+            userInfoAuthVO.setIdCardList(userInfoFileList);
+            //查询写真信息和声音
+            copyAuthFile2InfoAuthVo(userInfoAuthVO);
+            List<TagVO> allPersonTagVos = findAllUserTag(user.getId());
+            userInfoAuthVO.setGroupTags(allPersonTagVos);
+            userInfoAuthVOList.add(userInfoAuthVO);
+        }
+        PageInfo page = new PageInfo(userInfoAuthVOList);
+        return page;
+    }
+
+    private void copyAuthFile2InfoAuthVo(UserInfoAuthVO userInfoAuthVO){
         if(userInfoAuthVO.getId()!=null){
             List<UserInfoAuthFile> portraitFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthVO.getId(),FileTypeEnum.PIC.getType());
             userInfoAuthVO.setPortraitList(portraitFiles);
             List<UserInfoAuthFile> voiceFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthVO.getId(),FileTypeEnum.VOICE.getType());
             userInfoAuthVO.setVoiceList(voiceFiles);
         }
+    }
 
-        //查询所有标签组
-        List<Tag> allPersonTags = tagService.findAllPersonTags();
 
-        //查询用户个人标签
-        List<PersonTag> userPersonTagList =  personTagService.findByUserId(userId);
-        List<TagVO> allPersonTagVos = new ArrayList<>();
-        if(userPersonTagList!=null){
-            for(Tag tag : allPersonTags){
-                TagVO tagVO = new TagVO();
-                BeanUtil.copyProperties(tag,tagVO);
-                for(PersonTag personTag :userPersonTagList){
-                    if(personTag.getTagId().equals(tagVO.getId())){
-                        tagVO.setSelected(true);
-                    }
-                }
-                allPersonTagVos.add(tagVO);
-            }
-        }
-        userInfoAuthVO.setGroupTags(allPersonTagVos);
-        return userInfoAuthVO;
+    private void copyUserInfo2InfoAuthVo(User user, UserInfoAuthVO userInfoAuthVO){
+        userInfoAuthVO.setHeadUrl(user.getHeadPortraitsUrl());
+        userInfoAuthVO.setIdCard(user.getIdcard());
+        userInfoAuthVO.setGender(user.getGender());
+        userInfoAuthVO.setRealname(user.getRealname());
     }
 
     /**
-     * 添加用户身份文件
-     * @param userInfoMap
+     * 查询用户信息所有标签
      * @param userId
+     * @return
      */
-    public void  createUserInfoFile(Map<String,String> userInfoMap,Integer userId){
-        userInfoMap.forEach((k,v)->{
-            UserInfoFile userInfoFile = new UserInfoFile();
-            userInfoFile.setName(k);
-            userInfoFile.setUrl(v);
-            userInfoFile.setUserId(userId);
-            userInfoFile.setCreateTime(new Date());
-            userInfoFile.setType(FileTypeEnum.PIC.getType());
-            if(v!=null){
-                userInfoFileService.create(userInfoFile);
+    private List<TagVO> findAllUserTag(Integer userId){
+        List<Tag> allPersonTags = tagService.findAllPersonTags();
+        List<TagVO> tagVOList = new ArrayList<>();
+        Map<Integer,TagVO> tagVOMap = new HashMap<>();
+        for(Tag tag:allPersonTags){
+            if(ObjectUtil.equal(0,tag.getPid())){
+                TagVO groupTag = new TagVO();
+                BeanUtil.copyProperties(tag,groupTag);
+                tagVOMap.put(tag.getId(),groupTag);
+                tagVOList.add(groupTag);
+            }else{
+                if(tagVOMap.containsKey(tag.getPid())){
+                    TagVO sonTag = new TagVO();
+                    BeanUtil.copyProperties(tag,sonTag);
+                    if(isUserTag(userId,tag)){
+                        sonTag.setSelected(true);
+                    }
+                    tagVOMap.get(tag.getPid()).getSonTags().add(sonTag);
+                }
             }
-        });
+        }
+
+        return tagVOList;
+    }
+
+    /**
+     * 判断一个标签是否是用户选择的标签
+     * @return
+     */
+    private Boolean isUserTag(Integer userId,Tag tag){
+        List<PersonTag> userPersonTagList =  personTagService.findByUserId(userId);
+        for(PersonTag personTag : userPersonTagList){
+            if(personTag.getTagId().equals(tag.getId())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+    /**
+     * 添加用户身份文件
+     * @param userId
+     * @param idCardHeadUrl
+     * @param idCardEmblemUrl
+     * @param idCardHandUrl
+     */
+    public void  createUserIdCard(Integer userId,String idCardHeadUrl,String idCardEmblemUrl,String idCardHandUrl){
+        if(idCardHeadUrl!=null){
+            createUserInfoFile(userId,idCardHeadUrl,UserInfoFileTypeEnum.IDCARD_HEAD.getMsg(), UserInfoFileTypeEnum.IDCARD_HEAD.getType());
+        }
+        if(idCardEmblemUrl!=null){
+            createUserInfoFile(userId,idCardHeadUrl,UserInfoFileTypeEnum.IDCARD_EMBLEM.getMsg(), UserInfoFileTypeEnum.IDCARD_EMBLEM.getType());
+        }
+        if(idCardHandUrl!=null){
+            createUserInfoFile(userId,idCardHeadUrl,UserInfoFileTypeEnum.IDCARD_HAND.getMsg(), UserInfoFileTypeEnum.IDCARD_HAND.getType());
+        }
+    }
+
+    private void createUserInfoFile(Integer userId,String fileUrl,String name,Integer type){
+        UserInfoFile userInfoFile = new UserInfoFile();
+        userInfoFile.setName(name);
+        userInfoFile.setUrl(fileUrl);
+        userInfoFile.setUserId(userId);
+        userInfoFile.setCreateTime(new Date());
+        userInfoFile.setType(type);
+        userInfoFileService.create(userInfoFile);
     }
 
     /**
@@ -190,8 +265,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         userInfoAuthFile.setCreateTime(new Date());
         userInfoAuthFile.setType(FileTypeEnum.VOICE.getType());
         userInfoAuthFileService.create(userInfoAuthFile);
-
-
     }
 
     /**
