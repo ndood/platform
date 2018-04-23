@@ -73,56 +73,43 @@
         </dependencies>
     </dependencyManagement>
 
-    <!--<repositories>-->
-        <!--<repository>-->
-            <!--<id>maven-ali</id>-->
-            <!--<url>http://maven.aliyun.com/nexus/content/groups/public//</url>-->
-            <!--<releases>-->
-                <!--<enabled>true</enabled>-->
-            <!--</releases>-->
-            <!--<snapshots>-->
-                <!--<enabled>true</enabled>-->
-                <!--<updatePolicy>always</updatePolicy>-->
-                <!--<checksumPolicy>fail</checksumPolicy>-->
-            <!--</snapshots>-->
-        <!--</repository>-->
-        <!--<repository>-->
-            <!--<id>nexus</id>-->
-            <!--<name>Team Nexus Repository</name>-->
-            <!--<url>http://10.0.3.105:8081/repository/maven-public/</url>-->
-            <!--<snapshots>-->
-                <!--<checksumPolicy>warn</checksumPolicy>-->
-                <!--<enabled>true</enabled>-->
-                <!--<updatePolicy>interval:-1</updatePolicy>-->
-            <!--</snapshots>-->
-        <!--</repository>-->
+    <repositories>
+        <repository>
+            <id>nexus</id>
+            <name>Team Nexus Repository</name>
+            <url>http://10.0.3.105:8081/repository/maven-public/</url>
+            <snapshots>
+                <checksumPolicy>warn</checksumPolicy>
+                <enabled>true</enabled>
+                <updatePolicy>interval:-1</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
 
-    <!--</repositories>-->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>nexus</id>
+            <name>Team Nexus Repository</name>
+            <url>http://10.0.3.105:8081/repository/maven-public/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
-    <!--<pluginRepositories>-->
-        <!--<pluginRepository>-->
-            <!--<id>nexus</id>-->
-            <!--<name>Team Nexus Repository</name>-->
-            <!--<url>http://10.0.3.105:8081/repository/maven-public/</url>-->
-            <!--<snapshots>-->
-                <!--<enabled>false</enabled>-->
-            <!--</snapshots>-->
-        <!--</pluginRepository>-->
-    <!--</pluginRepositories>-->
+    <distributionManagement>
+        <repository>
+            <id>nexus-releases</id>
+            <name>Local Nexus Repository</name>
+            <url>http://10.0.3.105:8081/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <name>Local Nexus Repository</name>
+            <url>http://10.0.3.105:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
 
-    <!--<distributionManagement>-->
-        <!--<repository>-->
-            <!--<id>nexus-releases</id>-->
-            <!--<name>Local Nexus Repository</name>-->
-            <!--<url>http://10.0.3.105:8081/repository/maven-releases/</url>-->
-        <!--</repository>-->
-        <!--<snapshotRepository>-->
-            <!--<id>nexus-snapshots</id>-->
-            <!--<name>Local Nexus Repository</name>-->
-            <!--<url>http://10.0.3.105:8081/repository/maven-snapshots/</url>-->
-        <!--</snapshotRepository>-->
-
-    <!--</distributionManagement>-->
+    </distributionManagement>
 
     <build>
         <pluginManagement>

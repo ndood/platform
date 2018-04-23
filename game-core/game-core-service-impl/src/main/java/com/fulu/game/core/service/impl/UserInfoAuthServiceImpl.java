@@ -200,6 +200,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
      * @param userId
      */
     public void createUserInfoTags(Integer[] tags,Integer userId){
+        if(tags==null){
+            return;
+        }
         if(tags.length>0){
             personTagService.deleteByUserId(userId);
         }
@@ -214,6 +217,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
             personTagService.create(personTag);
         }
     }
+
 
 
 
