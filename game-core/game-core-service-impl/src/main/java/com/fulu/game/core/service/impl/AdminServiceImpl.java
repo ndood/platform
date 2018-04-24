@@ -35,7 +35,7 @@ public class AdminServiceImpl extends AbsCommonService<Admin,Integer> implements
     }
 
     @Override
-    public void save(AdminVO adminVO){
+    public Admin save(AdminVO adminVO){
         Admin admin = new Admin();
         admin.setName(adminVO.getName());
         admin.setUsername(adminVO.getUsername());
@@ -46,6 +46,7 @@ public class AdminServiceImpl extends AbsCommonService<Admin,Integer> implements
         admin.setCreateTime(new Date());
         admin.setUpdateTime(admin.getCreateTime());
         adminDao.create(admin);
+        return admin;
     }
 
     @Override

@@ -40,6 +40,7 @@
         FROM t_admin
         <where>
             <if test="username != null"> and username = #{username}</if>
+            <if test="name != null"> and name = #{name}</if>
         </where>
     </select>
 

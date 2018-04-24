@@ -7,12 +7,12 @@ import lombok.Data;
 
 /**
  * 用户表
- *
  * @author wangbin
  * @date 2018-04-20 11:12:12
  */
 @Data
 public class UserVO  extends User {
     private String orderBy = "create_time DESC";
-
+    private String startTime;
+    private String endTime;
 }
