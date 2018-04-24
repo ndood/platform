@@ -11,9 +11,11 @@ import com.fulu.game.core.service.CategoryService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
+import com.xiaoleilu.hutool.util.CollectionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +54,13 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
         TagVO tagVO = new TagVO();
         BeanUtil.copyProperties(tag,tagVO);
         List<Tag> sonTagList = findByPid(tagPid);
-        tagVO.setSonTags(sonTagList);
+        List<TagVO> sonTagVoList = new ArrayList<>();
+        for(Tag sonTag : sonTagList){
+            TagVO sonTagVo = new TagVO();
+            BeanUtil.copyProperties(sonTag,sonTagVo);
+            sonTagVoList.add(sonTagVo);
+        }
+        tagVO.setSonTags(sonTagVoList);
         return tagVO;
     }
 

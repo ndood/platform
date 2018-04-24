@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.UserTechInfoDao">
+    <resultMap id="UserTechInfoResultMap" type="com.fulu.game.core.entity.UserTechInfo">
+        <id column="id" property="id"/>
+        <result column="tech_auth_id" property="techAuthId"/>
+        <result column="tech_attr_id" property="techAttrId"/>
+        <result column="attr" property="attr"/>
+        <result column="tech_value_id" property="techValueId"/>
+        <result column="value" property="value"/>
+        <result column="status" property="status"/>
+        <result column="rank" property="rank"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="UserTechInfoResultVOMap" type="com.fulu.game.core.entity.vo.UserTechInfoVO"
+               extends="UserTechInfoResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,tech_auth_id,tech_attr_id,attr,tech_value_id,value,status,rank,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="UserTechInfoResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user_tech_info
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="UserTechInfoResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user_tech_info
+    </select>
+
+    <select id="findByParameter" resultMap="UserTechInfoResultMap"
+            parameterType="com.fulu.game.core.entity.vo.UserTechInfoVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_user_tech_info
+        <where>
+            <if test="techAuthId != null">
+                and tech_auth_id = #{techAuthId}
+            </if>
+            <if test="techAttrId != null">
+                and tech_attr_id = #{techAttrId}
+            </if>
+            <if test="attr != null">
+                and attr = #{attr}
+            </if>
+            <if test="techValueId != null">
+                and tech_value_id = #{techValueId}
+            </if>
+            <if test="value != null">
+                and value = #{value}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="rank != null">
+                and rank = #{rank}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_user_tech_info
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <delete id="deleteByTechAuthId" parameterType="java.lang.Integer">
+        delete from t_user_tech_info
+        <where>
+            tech_auth_id = #{techAuthId}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserTechInfo">
+        insert into
+        t_user_tech_info (tech_auth_id,tech_attr_id,attr,tech_value_id,value,status,rank,create_time,update_time)
+        values
+        (#{techAuthId},#{techAttrId},#{attr},#{techValueId},#{value},#{status},#{rank},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.UserTechInfo">
+        update t_user_tech_info
+        <set>
+
+            <if test="techAuthId != null">
+                tech_auth_id = #{techAuthId},
+            </if>
+
+            <if test="techAttrId != null">
+                tech_attr_id = #{techAttrId},
+            </if>
+
+            <if test="attr != null">
+                attr = #{attr},
+            </if>
+
+            <if test="techValueId != null">
+                tech_value_id = #{techValueId},
+            </if>
+
+            <if test="value != null">
+                value = #{value},
+            </if>
+
+            <if test="status != null">
+                status = #{status},
+            </if>
+
+            <if test="rank != null">
+                rank = #{rank},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

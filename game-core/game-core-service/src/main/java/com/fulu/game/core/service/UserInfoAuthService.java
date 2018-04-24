@@ -2,6 +2,7 @@ package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -23,4 +24,7 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth,Integer
      * @return
      */
     UserInfoAuthVO findUserAuthInfoByUserId(Integer userId);
+
+
+    PageInfo<UserInfoAuthVO> list(Integer pageNum, Integer pageSize, String orderBy);
 }

@@ -2,7 +2,7 @@ package com.fulu.game.core.entity.vo;
 
 
 import com.fulu.game.core.entity.TechValue;
-
+import lombok.Data;
 
 
 /**
@@ -11,6 +11,9 @@ import com.fulu.game.core.entity.TechValue;
  * @author wangbin
  * @date 2018-04-18 16:39:55
  */
+@Data
 public class TechValueVO  extends TechValue {
 
+
+    private Boolean selected;
 }

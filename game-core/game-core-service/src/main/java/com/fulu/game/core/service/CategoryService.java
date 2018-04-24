@@ -20,6 +20,8 @@ public interface CategoryService extends ICommonService<Category,Integer>{
 
      PageInfo<Category> list(int pageNum, int pageSize, Boolean status, String orderBy);
 
-
      CategoryVO findCategoryVoById(Integer id);
+
+
+
 }
