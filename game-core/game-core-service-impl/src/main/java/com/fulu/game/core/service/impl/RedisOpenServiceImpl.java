@@ -117,5 +117,23 @@ public class RedisOpenServiceImpl {
         return redisTemplate.opsForHash().entries(key);
     }
 
+    /**
+     * 根据key删除整个hashtable
+     * @param key
+     * @return
+     */
+    public void delete(String key) {
+        redisTemplate.delete(key);
+    }
+
+    /**
+     * 判断key是否存在
+     * @param key
+     * @return
+     */
+    public boolean hasKey(String key) {
+        return redisTemplate.hasKey(key);
+    }
+
 
 }

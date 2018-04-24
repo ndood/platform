@@ -1,4 +1,4 @@
-package com.fulu.game.admin.config;
+package com.fulu.game.admin.shiro;
 
 
 import com.fulu.game.core.entity.Admin;
@@ -61,7 +61,8 @@ public class MyShiroRealm extends AuthorizingRealm {
         admin.setPassword(null);
         admin.setSalt(null);
 
-        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
+        AdminAuthenticationInfo authenticationInfo = new AdminAuthenticationInfo(
+                admin.getId(),
                 admin, //用户名
                 password, //密码
                 ByteSource.Util.bytes(salt),//salt=username+salt
