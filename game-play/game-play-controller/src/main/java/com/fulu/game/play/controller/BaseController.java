@@ -1,4 +1,4 @@
-package com.fulu.game.admin.controller;
+package com.fulu.game.play.controller;
 
 import com.fulu.game.common.editor.*;
 import org.springframework.web.bind.WebDataBinder;
@@ -21,5 +21,4 @@ public class BaseController {
         binder.registerCustomEditor(String.class, new CustomStringEditor());
         binder.registerCustomEditor(BigDecimal.class, new CustomBigDecimalEditor());
     }
-
 }
