@@ -56,7 +56,7 @@ public class CategoryController extends BaseController {
      * @param categoryId
      * @return
      */
-    @PostMapping(value = "/info")
+    @PostMapping(value = "/query")
     public Result info(Integer categoryId){
         CategoryVO categoryVO =categoryService.findCategoryVoById(categoryId);
         return Result.success().data(categoryVO);

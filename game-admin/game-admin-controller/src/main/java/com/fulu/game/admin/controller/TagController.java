@@ -39,7 +39,7 @@ public class TagController extends BaseController {
      * @param id
      * @return
      */
-    @PostMapping(value = "/group/info")
+    @PostMapping(value = "/group/query")
     public Result groupInfo(Integer id){
         TagVO tagVO = tagService.findTagsByTagPid(id);
         return Result.success().data(tagVO);
