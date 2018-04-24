@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.Constant;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.github.pagehelper.PageHelper;
@@ -60,6 +61,11 @@ public class UserServiceImpl extends AbsCommonService<User,Integer> implements U
         PageHelper.startPage(pageNum, pageSize,userVO.getOrderBy());
         List<User> list = userDao.findByParameter(userVO);
         return new PageInfo(list);
+    }
+
+
+    public static String generateKey(int productId){
+        return Constant.REDIS_USER_ORDER_RECEIVE_TIME+"-"+productId;
     }
 
 }

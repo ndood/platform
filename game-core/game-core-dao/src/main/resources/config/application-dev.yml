@@ -9,7 +9,7 @@ datasource:
 spring:
   redis:
     database: 0
-    host: localhost
+    host: 10.0.3.105
     port: 6379
     password:
     timeout: 0

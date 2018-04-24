@@ -113,7 +113,7 @@ public class RedisOpenServiceImpl {
      * @param key
      * @return
      */
-    public Map<String, String> hget(String key) {
+    public Map<String, Object> hget(String key) {
         return redisTemplate.opsForHash().entries(key);
     }
 
