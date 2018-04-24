@@ -81,7 +81,7 @@ public class UserController extends BaseController{
      * @param userId
      * @return
      */
-    @PostMapping(value = "/info-auth/info")
+    @PostMapping(value = "/info-auth/query")
     public Result userAuthInfo(@RequestParam(required=false,name = "userId") Integer userId){
         UserInfoAuthVO userInfoAuthVO =userInfoAuthService.findUserAuthInfoByUserId(userId);
         return Result.success().data(userInfoAuthVO);
