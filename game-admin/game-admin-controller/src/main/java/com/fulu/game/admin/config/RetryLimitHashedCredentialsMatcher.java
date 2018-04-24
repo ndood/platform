@@ -2,12 +2,18 @@ package com.fulu.game.admin.config;
 
 import com.fulu.game.common.domain.Password;
 import com.fulu.game.common.utils.EncryptUtil;
+import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.UserVO;
+import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SaltedAuthenticationInfo;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.UUID;
 
 /**
  * 用于验证密码是否匹配
@@ -15,7 +21,8 @@ import org.springframework.beans.factory.InitializingBean;
  */
 public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher implements InitializingBean {
 
-
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -50,7 +57,13 @@ public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher
         Password passObj = EncryptUtil.PiecesEncode(new String((char[])token.getCredentials()), salt);
         String tokenHashedCredentials = passObj.getPassword();
         String infoHashCredentials = (String)info.getCredentials();
-        return super.equals(tokenHashedCredentials, infoHashCredentials);
+        if(super.equals(tokenHashedCredentials, infoHashCredentials)){
+//            UserVO user = new UserVO();
+//            user.setMobile();
+//            redisOpenService.hset(UUID.randomUUID(), );
+            return true;
+        }
+        return false;
     }
 
 
