@@ -1,116 +1,44 @@
 package com.fulu.game.common.utils;
 
-import com.fulu.game.common.domain.Password;
-import com.xiaoleilu.hutool.lang.Base64;
-import com.xiaoleilu.hutool.util.ArrayUtil;
-import com.xiaoleilu.hutool.util.RandomUtil;
-
-
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
  *
  */
-public class EncryptUtil {
-	private static final String DEFAULT_ENCODE = "UTF-8";
-	
-	/**注册时调用，此方法用于通过原生密码生成随机盐和加密密码
-	 */
-	public static Password PiecesEncode(String plainPassword){
-		String random= RandomUtil.randomString(32);
-		return PiecesEncode(plainPassword,random);
-	}
-	
-	/**登录时调用，此方法用于通过原生密码和盐生成加密密码
-	 * 
-	 * @param plainPassword
-	 * @param salt
-	 * @return Password class which contains salted password and salt.
-	 */
-    public static Password PiecesEncode(String plainPassword,String salt,String... encodes){
-		String encode = ArrayUtil.isEmpty(encodes)?DEFAULT_ENCODE:encodes[0];
-		plainPassword = salt+plainPassword;
-		Password p = new Password();
-		p.setPlainPassword(plainPassword);
-		p.setSalt(salt);
-		p.setPassword(EncryptUtil.getSHA1(plainPassword, encode));
-		return p;
-	}
-    
-	public static String getMD5(String str,String encode)
-	{
-		return encode(str, "MD5",encode);
-	}
+public class BeanUtil {
 
-	public static String getSHA1(String str,String encode)
-	{
-		return encode(str, "SHA-1",encode);
-	}
-
-	private static String encode(String str, String type,String encode)
-	{
-		try
-		{
-			MessageDigest alga = MessageDigest.getInstance(type);
-			alga.update(str.getBytes(encode));
-			byte[] digesta = alga.digest();
-			return byte2hex(digesta);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return "";
-		}
-	}
-
-	public static String byte2hex(byte[] b)
-	{
-		String hs = "";
-		String stmp = "";
-		for (int n = 0; n < b.length; n++)
-		{
-			stmp = (Integer.toHexString(b[n] & 0XFF));
-			if (stmp.length() == 1)
-				hs = hs + "0" + stmp;
-			else
-				hs = hs + stmp;
-		}
-		return hs.toUpperCase();
-	}
-
-	public static byte[] hex2byte(byte[] b)
-	{
-		if ((b.length % 2) != 0)
-			throw new IllegalArgumentException("长度不是偶数");
-		byte[] b2 = new byte[b.length / 2];
-		for (int n = 0; n < b.length; n += 2)
-		{
-			String item = new String(b, n, 2);
-			b2[n / 2] = (byte) Integer.parseInt(item, 16);
-		}
-		return b2;
-	}
-	
-	 // 将 s 进行 BASE64 编码
-    public static String base64Encode(String s,String encode) throws UnsupportedEncodingException {
-        if (s == null)
+    /**
+     * 注册时调用，此方法用于通过原生密码生成随机盐和加密密码
+     */
+    public static <T> Map<String, Object> bean2Map(T bean) throws Exception {
+        if (bean == null) {
             return null;
-        return Base64.encode(s.getBytes(encode));
+        }
+        Map<String, Object> mp = new HashMap<>();
+        BeanInfo beanInfo = Introspector.getBeanInfo(bean.getClass());
+        PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+
+        for (PropertyDescriptor property : propertyDescriptors) {
+            String key = property.getName();
+
+            if (!key.equals("class")) {
+
+                Method getter = property.getReadMethod();// Java中提供了用来访问某个属性的
+                // getter/setter方法
+                Object value;
+
+                value = getter.invoke(bean);
+                mp.put(key, value);
+            }
+
+        }
+        return mp;
     }
 
-    // 将 BASE64 编码的字符串 s 进行解码
-    public static String base64Decode(String s,String encode) {
-        if (s == null)
-            return null;
-        try {
-        	byte[] b =  Base64.decode(s);
-			return new String(b,encode);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			return null;
-		}
-    }
-    
 }
