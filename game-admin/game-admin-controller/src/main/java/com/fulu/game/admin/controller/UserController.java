@@ -4,14 +4,14 @@ import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
+import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 @RestController
 @Slf4j
@@ -134,6 +134,41 @@ public class UserController extends BaseController{
         return Result.success().data(userTechAuthVO);
     }
 
+    /**
+     * 单个用户-封禁
+     * @param id
+     * @return
+     */
+    @RequestMapping("/lock")
+    public Result lock(@RequestParam("userId") Integer id){
+        userService.lock(id);
+        log.info("user "+ id + " is locked at " + new Date());
+        return Result.success().msg("用户" + id + "封禁成功！");
+    }
+
+    /**
+     * 单个用户-解封
+     * @param id
+     * @return
+     */
+    @RequestMapping("/unlock")
+    public Result unlock(@RequestParam("userId") Integer id){
+        userService.unlock(id);
+        log.info("unlock user "+ id + " at " + new Date());
+        return Result.success().msg("用户" + id + "解封成功！");
+    }
+    /**
+     * 查询-用户-列表
+     * @param userVO
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @RequestMapping("/list")
+    public Result list(@ModelAttribute UserVO userVO, Integer pageNum, Integer pageSize){
+        PageInfo<User> userList = userService.list(userVO,pageNum,pageSize);
+        return Result.success().data(userList);
+    }
 
 
 

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.AdminDao">
+    <resultMap id="AdminResultMap" type="com.fulu.game.core.entity.Admin">
+        <id column="id"  property="id" />
+        <result column="name"  property="name" />
+        <result column="username"  property="username" />
+        <result column="password"  property="password" />
+        <result column="salt"  property="salt" />
+        <result column="status"  property="status" />
+        <result column="create_time"  property="createTime" />
+        <result column="update_time"  property="updateTime" />
+    </resultMap>
+
+    <resultMap id="AdminResultVOMap" type="com.fulu.game.core.entity.vo.AdminVO" extends="AdminResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,username,password,salt,status,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="AdminResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_admin
+        <where>
+        id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll"  resultMap="AdminResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_admin
+    </select>
+
+    <select id="findByParameter" resultMap="AdminResultMap" parameterType="com.fulu.game.core.entity.vo.AdminVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_admin
+        <where>
+            <if test="username != null"> and username = #{username}</if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_admin
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Admin">
+        insert into
+        t_admin (name,username,password,salt,status,create_time,update_time)
+        values
+        (#{name},#{username},#{password},#{salt},#{status},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.Admin">
+        update t_admin
+        <set>
+                                                        
+                    <if test="name != null">
+                        name = #{name},
+                    </if>
+                                            
+                    <if test="username != null">
+                        username = #{username},
+                    </if>
+                                            
+                    <if test="password != null">
+                        password = #{password},
+                    </if>
+                                            
+                    <if test="salt != null">
+                        salt = #{salt},
+                    </if>
+                                            
+                    <if test="status != null">
+                        status = #{status},
+                    </if>
+                                            
+                    <if test="createTime != null">
+                        create_time = #{createTime},
+                    </if>
+                                            
+                    <if test="updateTime != null">
+                        update_time = #{updateTime},
+                    </if>
+                                    </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>
