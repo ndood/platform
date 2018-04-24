@@ -83,4 +83,14 @@ public class CategoryServiceImpl extends AbsCommonService<Category,Integer> impl
         }
         return categoryVO;
     }
+
+
+    @Override
+    public List<Category> findByPid(Integer pid) {
+        CategoryVO categoryVO = new CategoryVO();
+        categoryVO.setPid(pid);
+        List<Category> categoryList =categoryDao.findByParameter(categoryVO);
+        return categoryList;
+    }
+
 }

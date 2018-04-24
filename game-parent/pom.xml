@@ -27,6 +27,7 @@
         <module>../game-admin</module>
         <module>../game-schedule</module>
         <module>../code-generate</module>
+        <module>../game-play</module>
     </modules>
 
     <parent>

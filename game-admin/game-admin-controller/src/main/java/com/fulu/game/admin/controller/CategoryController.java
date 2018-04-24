@@ -35,6 +35,7 @@ public class CategoryController extends BaseController {
     private TechAttrService techAttrService;
     @Autowired
     private TagService tagService;
+
     /**
      * 内容列表
      * @param pageNum
@@ -49,7 +50,15 @@ public class CategoryController extends BaseController {
         return Result.success().data(page);
     }
 
-
+    /**
+     * 查询所有内容
+     * @return
+     */
+    @PostMapping(value = "/list/all")
+    public Result listAll(){
+        List<Category> list = categoryService.findAll();
+        return Result.success().data(list);
+    }
 
     /**
      * 查询单个内容所有信息

@@ -103,7 +103,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         userInfoAuthVO.setIdCardList(userInfoFileList);
         //查询写真信息和声音
         copyAuthFile2InfoAuthVo(userInfoAuthVO);
-        List<TagVO> allPersonTagVos = findAllUserTag(userId);
+        List<TagVO> allPersonTagVos = findAllUserTag(userId,false);
         userInfoAuthVO.setGroupTags(allPersonTagVos);
         return userInfoAuthVO;
     }
@@ -128,7 +128,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
             userInfoAuthVO.setIdCardList(userInfoFileList);
             //查询写真信息和声音
             copyAuthFile2InfoAuthVo(userInfoAuthVO);
-            List<TagVO> allPersonTagVos = findAllUserTag(user.getId());
+            List<TagVO> allPersonTagVos = findAllUserTag(user.getId(),true);
             userInfoAuthVO.setGroupTags(allPersonTagVos);
             userInfoAuthVOList.add(userInfoAuthVO);
         }
@@ -158,7 +158,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
      * @param userId
      * @return
      */
-    private List<TagVO> findAllUserTag(Integer userId){
+    private List<TagVO> findAllUserTag(Integer userId,Boolean ignoreNotUser){
         List<Tag> allPersonTags = tagService.findAllPersonTags();
         List<TagVO> tagVOList = new ArrayList<>();
         Map<Integer,TagVO> tagVOMap = new HashMap<>();
@@ -175,7 +175,14 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
                     if(isUserTag(userId,tag)){
                         sonTag.setSelected(true);
                     }
-                    tagVOMap.get(tag.getPid()).getSonTags().add(sonTag);
+                    if(ignoreNotUser){
+                        if(sonTag.isSelected()){
+                            tagVOMap.get(tag.getPid()).getSonTags().add(sonTag);
+                        }
+                    }else{
+                        tagVOMap.get(tag.getPid()).getSonTags().add(sonTag);
+                    }
+
                 }
             }
         }

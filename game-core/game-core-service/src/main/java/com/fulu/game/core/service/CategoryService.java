@@ -22,6 +22,6 @@ public interface CategoryService extends ICommonService<Category,Integer>{
 
      CategoryVO findCategoryVoById(Integer id);
 
-
+     List<Category> findByPid(Integer pid);
 
 }
