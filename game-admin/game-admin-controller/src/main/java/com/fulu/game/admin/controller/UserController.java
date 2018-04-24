@@ -125,7 +125,7 @@ public class UserController extends BaseController{
      * @param id
      * @return
      */
-    @PostMapping(value = "/tech-auth/info")
+    @PostMapping(value = "/tech-auth/query")
     public Result techAuthInfo(Integer id){
         UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(id);
         return Result.success().data(userTechAuthVO);
