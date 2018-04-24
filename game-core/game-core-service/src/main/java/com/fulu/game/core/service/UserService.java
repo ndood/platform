@@ -1,9 +1,8 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.User;
-
-import java.util.List;
-import java.util.Map;
+import com.fulu.game.core.entity.vo.UserVO;
+import com.github.pagehelper.PageInfo;
 
 /**
  * 用户表
@@ -15,6 +14,8 @@ import java.util.Map;
 public interface UserService extends ICommonService<User,Integer>{
 
 
-    public User findByMobile(String mobile);
-	
+    User findByMobile(String mobile);
+    void lock(int id);
+    void unlock(int id);
+    PageInfo<User> list(UserVO userVO, Integer pageNum, Integer pageSize);
 }

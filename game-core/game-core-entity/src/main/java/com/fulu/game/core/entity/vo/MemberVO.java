@@ -16,5 +16,5 @@ import java.util.Date;
 @Data
 public class MemberVO extends Member  {
 
-
+    private String orderBy = "create_time DESC";
 }
