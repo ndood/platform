@@ -46,23 +46,17 @@
         <include refid="Base_Column_List"/>
         FROM t_user
         <where>
+            <if test="id != null">
+                id = #{id}
+            </if>
             <if test="mobile != null">
                 and mobile = #{mobile}
             </if>
             <if test="nickname != null">
-                and nickname = #{nickname}
+                and nickname LIKE CONCAT('%', #{nickname},'%')
             </if>
             <if test="gender != null">
                 and gender = #{gender}
-            </if>
-            <if test="headPortraitsUrl != null">
-                and head_portraits_url = #{headPortraitsUrl}
-            </if>
-            <if test="password != null">
-                and password = #{password}
-            </if>
-            <if test="salt != null">
-                and salt = #{salt}
             </if>
             <if test="realname != null">
                 and realname = #{realname}
@@ -76,17 +70,14 @@
             <if test="userInfoAuth != null">
                 and user_info_auth = #{userInfoAuth}
             </if>
-            <if test="balance != null">
-                and balance = #{balance}
-            </if>
             <if test="status != null">
                 and status = #{status}
             </if>
-            <if test="createTime != null">
-                and create_time = #{createTime}
+            <if test="startTime != null">
+                and create_time &gt;= #{startTime}
             </if>
-            <if test="updateTime != null">
-                and update_time = #{updateTime}
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime}
             </if>
         </where>
     </select>

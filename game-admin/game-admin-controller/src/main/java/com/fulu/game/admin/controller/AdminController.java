@@ -37,8 +37,8 @@ public class AdminController extends BaseController{
 
     @RequestMapping("/save")
     public Result save(AdminVO adminVO){
-        adminService.save(adminVO);
-        return Result.success().data(adminVO);
+        Admin admin = adminService.save(adminVO);
+        return Result.success().data(admin);
     }
 
 }

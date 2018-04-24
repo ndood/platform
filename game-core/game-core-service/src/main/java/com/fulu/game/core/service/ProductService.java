@@ -23,7 +23,17 @@ public interface ProductService extends ICommonService<Product,Integer>{
      */
     Product create(Integer techAuthId,BigDecimal price,Integer unitId);
 
+    /**
+     * 修改接单方式
+     * @param id
+     * @param techAuthId
+     * @param price
+     * @param unitId
+     * @return
+     */
+    Product update(Integer id,Integer techAuthId,BigDecimal price,Integer unitId);
 
 
+    public Product enable(int id,boolean status);
 
 }

@@ -140,7 +140,7 @@ public class UserController extends BaseController{
      * @return
      */
     @RequestMapping("/lock")
-    public Result lock(@RequestParam("userId") Integer id){
+    public Result lock(@RequestParam("id") Integer id){
         userService.lock(id);
         log.info("user "+ id + " is locked at " + new Date());
         return Result.success().msg("用户" + id + "封禁成功！");
@@ -152,7 +152,7 @@ public class UserController extends BaseController{
      * @return
      */
     @RequestMapping("/unlock")
-    public Result unlock(@RequestParam("userId") Integer id){
+    public Result unlock(@RequestParam("id") Integer id){
         userService.unlock(id);
         log.info("unlock user "+ id + " at " + new Date());
         return Result.success().msg("用户" + id + "解封成功！");

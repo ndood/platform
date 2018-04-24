@@ -19,7 +19,13 @@ public class ProductController extends BaseController{
     @Autowired
     private ProductService productService;
 
-
+    /**
+     * 添加接单方式
+     * @param techAuthId
+     * @param price
+     * @param unitId
+     * @return
+     */
     @RequestMapping(value = "create")
     public Result create(Integer techAuthId,
                          BigDecimal price,
@@ -30,13 +36,26 @@ public class ProductController extends BaseController{
 
 
 
-    @RequestMapping(value = "用户所有的接单方式")
+
+    /**
+     * 用户所有接单方式列表
+     * @return
+     */
+    @RequestMapping(value = "list")
     public Result list(){
         List<Product> productList = productService.findAll();
         return Result.success().data(productList);
     }
 
+    /**
+     * 开始接单
+     * @return
+     */
+    @RequestMapping(value = "start")
+    public Result start(int hour){
 
+        return Result.success();
+    }
 
 
 }
