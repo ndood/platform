@@ -1,13 +1,18 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.domain.Password;
+import com.fulu.game.common.utils.EncryptUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.xiaoleilu.hutool.util.BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +65,23 @@ public class UserServiceImpl extends AbsCommonService<User,Integer> implements U
         PageHelper.startPage(pageNum, pageSize,userVO.getOrderBy());
         List<User> list = userDao.findByParameter(userVO);
         return new PageInfo(list);
+    }
+
+    @Override
+    public User save(UserVO userVO){
+        User user = new User();
+        BeanUtil.copyProperties(userVO,user);
+        Password password = EncryptUtil.PiecesEncode(userVO.getPassword());
+        user.setPassword(password.getPassword());
+        user.setSalt(password.getSalt());
+        user.setStatus(1);//默认账户解封状态
+        user.setType(0);//默认普通用户
+        user.setUserInfoAuth(0);//默认未审核
+        user.setBalance(new BigDecimal("0.00"));
+        user.setCreateTime(new Date());
+        user.setUpdateTime(new Date());
+        userDao.create(user);
+        return user;
     }
 
 }

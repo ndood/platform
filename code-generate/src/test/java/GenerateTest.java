@@ -28,7 +28,7 @@ public class GenerateTest {
                 .withAuthor("yanbiao")
                 .build();
 
-        generateFactory.generatorCode("t_admin");
+        generateFactory.generatorCode("t_cash_draws");
     }
 
 

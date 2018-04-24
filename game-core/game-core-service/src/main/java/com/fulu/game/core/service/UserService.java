@@ -13,9 +13,9 @@ import com.github.pagehelper.PageInfo;
  */
 public interface UserService extends ICommonService<User,Integer>{
 
-
     User findByMobile(String mobile);
     void lock(int id);
     void unlock(int id);
     PageInfo<User> list(UserVO userVO, Integer pageNum, Integer pageSize);
+    User save(UserVO userVO);
 }

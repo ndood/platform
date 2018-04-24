@@ -3,6 +3,8 @@ package com.fulu.game.core.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 
@@ -16,13 +18,13 @@ import lombok.Data;
 public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	//
+	//主键id
 	private Integer id;
 	//手机号
 	private String mobile;
 	//昵称
 	private String nickname;
-	//性别(1男,2女)
+	//性别(1男,2女)考虑是否可不公开
 	private Integer gender;
 	//头像URL
 	private String headPortraitsUrl;
@@ -40,11 +42,20 @@ public class User implements Serializable {
 	private Integer userInfoAuth;
 	//零钱
 	private BigDecimal balance;
-	//状态
+	//状态(0封禁,1为解封)
 	private Integer status;
 	//创建时间
 	private Date createTime;
 	//修改时间
 	private Date updateTime;
 
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	public Date getCreateTime(){
+		return createTime;
+	}
+
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	public Date getUpdateTime(){
+		return updateTime;
+	}
 }

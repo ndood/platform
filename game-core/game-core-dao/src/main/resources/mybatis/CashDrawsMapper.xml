@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.CashDrawsDao">
+    <resultMap id="CashDrawsResultMap" type="com.fulu.game.core.entity.CashDraws">
+        <id column="cash_id"  property="cashId" />
+        <result column="create_time"  property="createTime" />
+        <result column="user_id"  property="userId" />
+        <result column="nickname"  property="nickname" />
+        <result column="mobile"  property="mobile" />
+        <result column="money"  property="money" />
+        <result column="acc_no"  property="accNo" />
+        <result column="acc_user"  property="accUser" />
+        <result column="comment"  property="comment" />
+        <result column="cash_status"  property="cashStatus" />
+        <result column="operator"  property="operator" />
+        <result column="cash_no"  property="cashNo" />
+        <result column="process_time"  property="processTime" />
+    </resultMap>
+
+    <resultMap id="CashDrawsResultVOMap" type="com.fulu.game.core.entity.vo.CashDrawsVO" extends="CashDrawsResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        cash_id,create_time,user_id,nickname,mobile,money,acc_no,acc_user,comment,cash_status,operator,cash_no,process_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="CashDrawsResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_cash_draws
+        <where>
+        cash_id = #{cashId}
+        </where>
+    </select>
+
+    <select id="findAll"  resultMap="CashDrawsResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_cash_draws
+    </select>
+
+    <select id="findByParameter" resultMap="CashDrawsResultMap" parameterType="com.fulu.game.core.entity.vo.CashDrawsVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_cash_draws
+        <where>
+            <if test="createTime != null">and create_time = #{createTime}</if>
+            <if test="userId != null">and user_id = #{userId}</if>
+            <if test="accNo != null">and acc_no = #{accNo}</if>
+            <if test="accUser != null">and acc_user = #{accUser}</if>
+            <if test="cashStatus != null">and cash_status = #{cashStatus}</if>
+            <if test="operator != null">and operator = #{operator}</if>
+            <if test="cashNo != null">and cash_no = #{cashNo}</if>
+            <if test="processTime != null">and process_time = #{processTime}</if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_cash_draws
+        <where>
+            cash_id = #{cashId}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="cashId" parameterType="com.fulu.game.core.entity.CashDraws">
+        insert into
+        t_cash_draws (create_time,user_id,nickname,mobile,money,acc_no,acc_user,comment,cash_status,operator,cash_no,process_time)
+        values
+        (#{createTime},#{userId},#{nickname},#{mobile},#{money},#{accNo},#{accUser},#{comment},#{cashStatus},#{operator},#{cashNo},#{processTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.CashDraws">
+        update t_cash_draws
+        <set>
+            <if test="createTime != null"> create_time = #{createTime},</if>
+            <if test="userId != null"> user_id = #{userId},</if>
+            <if test="nickname != null"> nickname = #{nickname},</if>
+            <if test="mobile != null"> mobile = #{mobile},</if>
+            <if test="money != null">money = #{money},</if>
+            <if test="accNo != null">acc_no = #{accNo},</if>
+            <if test="accUser != null">acc_user = #{accUser},</if>
+            <if test="comment != null">comment = #{comment},</if>
+            <if test="cashStatus != null">cash_status = #{cashStatus},</if>
+            <if test="operator != null">operator = #{operator},</if>
+            <if test="cashNo != null">cash_no = #{cashNo},</if>
+            <if test="processTime != null">process_time = #{processTime},</if>
+        </set>
+        <where>
+            cash_id = #{cashId}
+        </where>
+    </update>
+</mapper>

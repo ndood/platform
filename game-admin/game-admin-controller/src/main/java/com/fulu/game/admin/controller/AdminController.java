@@ -32,13 +32,18 @@ public class AdminController extends BaseController{
                              @RequestParam("pageNum") Integer pageNum,
                              @RequestParam("pageSize") Integer pageSize){
         PageInfo<Admin> adminList = adminService.list(adminVO,pageNum,pageSize);
-        return Result.success().data(adminList);
+        return Result.success().data(adminList).msg("查询列表成功！");
     }
 
+    /**
+     * 新增-管理员
+     * @param adminVO
+     * @return
+     */
     @RequestMapping("/save")
     public Result save(AdminVO adminVO){
         Admin admin = adminService.save(adminVO);
-        return Result.success().data(admin);
+        return Result.success().data(admin).msg("新增管理员成功！");
     }
 
 }

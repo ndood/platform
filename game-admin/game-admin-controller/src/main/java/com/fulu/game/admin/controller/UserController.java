@@ -140,7 +140,7 @@ public class UserController extends BaseController{
     public Result lock(@RequestParam("id") Integer id){
         userService.lock(id);
         log.info("user "+ id + " is locked at " + new Date());
-        return Result.success().msg("用户" + id + "封禁成功！");
+        return Result.success().msg("操作成功！");
     }
 
     /**
@@ -152,7 +152,7 @@ public class UserController extends BaseController{
     public Result unlock(@RequestParam("id") Integer id){
         userService.unlock(id);
         log.info("unlock user "+ id + " at " + new Date());
-        return Result.success().msg("用户" + id + "解封成功！");
+        return Result.success().msg("操作成功！");
     }
     /**
      * 查询-用户-列表
@@ -164,7 +164,18 @@ public class UserController extends BaseController{
     @RequestMapping("/list")
     public Result list(@ModelAttribute UserVO userVO, Integer pageNum, Integer pageSize){
         PageInfo<User> userList = userService.list(userVO,pageNum,pageSize);
-        return Result.success().data(userList);
+        return Result.success().data(userList).msg("查询用户列表成功！");
+    }
+
+    /**
+     * 用户-注册
+     * @param userVO
+     * @return
+     */
+    @RequestMapping("/save")
+    public Result save(@ModelAttribute UserVO userVO){
+        User user = userService.save(userVO);
+        return Result.success().data(user).msg("恭喜您注册成功！");
     }
 
 }
