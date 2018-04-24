@@ -1,8 +1,9 @@
-package com.fulu.game.admin.config;
+package com.fulu.game.admin.shiro;
 
 import com.fulu.game.common.domain.Password;
 import com.fulu.game.common.utils.EncryptUtil;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.AdminVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -34,8 +35,7 @@ public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher
      */
     @Override
     public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
-    	boolean isMatch = match(token,info);
-        return isMatch;
+    	return match(token,info);
     }
     
     /**
@@ -58,8 +58,8 @@ public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher
         String tokenHashedCredentials = passObj.getPassword();
         String infoHashCredentials = (String)info.getCredentials();
         if(super.equals(tokenHashedCredentials, infoHashCredentials)){
-//            UserVO user = new UserVO();
-//            user.setMobile();
+//            AdminVO adminVO = new AdminVO();
+//            adminVO.setId(info.getA).setMobile();
 //            redisOpenService.hset(UUID.randomUUID(), );
             return true;
         }
