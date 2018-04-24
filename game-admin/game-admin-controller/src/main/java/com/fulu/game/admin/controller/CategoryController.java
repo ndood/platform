@@ -54,9 +54,9 @@ public class CategoryController extends BaseController {
      * 查询所有内容
      * @return
      */
-    @PostMapping(value = "/list/all")
+    @PostMapping(value = "/list-all")
     public Result listAll(){
-        List<Category> list = categoryService.findAll();
+        List<Category> list = categoryService.findByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType());
         return Result.success().data(list);
     }
 

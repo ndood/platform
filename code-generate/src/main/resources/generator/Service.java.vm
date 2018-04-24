@@ -2,8 +2,7 @@ package ${package}.service;
 
 import ${package}.entity.${className};
 
-import java.util.List;
-import java.util.Map;
+
 
 /**
  * ${comments}
