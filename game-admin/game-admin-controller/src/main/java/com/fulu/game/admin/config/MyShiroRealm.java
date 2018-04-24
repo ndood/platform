@@ -1,8 +1,8 @@
 package com.fulu.game.admin.config;
 
 
-import com.fulu.game.core.entity.Member;
-import com.fulu.game.core.service.MemberService;
+import com.fulu.game.core.entity.Admin;
+import com.fulu.game.core.service.AdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class MyShiroRealm extends AuthorizingRealm {
 
     @Autowired
-    private MemberService memberService;
+    private AdminService adminService;
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
@@ -48,7 +48,7 @@ public class MyShiroRealm extends AuthorizingRealm {
         String username = (String) token.getPrincipal();
         //通过username从数据库中查找 User对象，如果找到，没找到.
         //实际项目中，这里可以根据实际情况做缓存，如果不做，Shiro自己也是有时间间隔机制，2分钟内不会重复执行该方法
-        Member member = memberService.findByUsername(username);
+        Admin member = adminService.findByUsername(username);
         log.info("----->>userInfo=" + member);
         if (member == null) {
             return null;

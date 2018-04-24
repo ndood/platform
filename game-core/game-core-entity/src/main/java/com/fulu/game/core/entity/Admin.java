@@ -8,11 +8,11 @@ import lombok.Data;
 /**
  * 系统管理员表
  * 
- * @author wangbin
- * @date 2018-04-18 15:38:16
+ * @author yanbiao
+ * @date 2018-04-24 10:20:44
  */
 @Data
-public class Member implements Serializable {
+public class Admin implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	//
@@ -25,7 +25,7 @@ public class Member implements Serializable {
 	private String password;
 	//
 	private String salt;
-	//
+	//状态(0失效,1启用)
 	private Integer status;
 	//
 	private Date createTime;
