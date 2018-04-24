@@ -31,7 +31,12 @@
         <include refid="Base_Column_List"/>
         FROM t_member
         <where>
-            username = #{username}
+            <if test="id != null">
+                id = #{id}
+            </if>
+            <if test=" username!= null">
+                username = #{username}
+            </if>
         </where>
     </select>
     

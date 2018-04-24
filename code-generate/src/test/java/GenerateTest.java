@@ -23,12 +23,12 @@ public class GenerateTest {
                 .aGenerateFactory()
                 .withConnection(connection)
                 .withAutoRemovePre(true)
-                .withOutPath("E:\\templates")
+                .withOutPath("E:\\generate_files")
                 .withPackageName("com.fulu.game.core")
-                .withAuthor("wangbin")
+                .withAuthor("yanbiao")
                 .build();
 
-        generateFactory.generatorCode("t_person_tag");
+        generateFactory.generatorCode("t_member");
     }
 
 

@@ -18,6 +18,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface MemberDao extends ICommonDao<Member,Integer>{
 
 
-    Member findByParameter(MemberVO memberVO);
+    List<Member> findByParameter(MemberVO memberVO);
 
 }
