@@ -35,7 +35,7 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth,Integer
      * @param userId
      * @return
      */
-    List<UserTechAuth> findByUserId(Integer userId);
+    public List<UserTechAuth> findByUserId(Integer userId,Boolean status);
 
 
     PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize,String orderBy);

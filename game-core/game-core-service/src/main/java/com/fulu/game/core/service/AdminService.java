@@ -18,4 +18,5 @@ public interface AdminService extends ICommonService<Admin,Integer>{
     PageInfo<Admin> list(AdminVO adminVO, Integer pageNum, Integer pageSize);
 
     void save(AdminVO adminVO);
+
 }

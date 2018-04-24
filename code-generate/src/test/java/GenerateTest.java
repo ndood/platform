@@ -13,6 +13,14 @@ public class GenerateTest {
 
     @Test
     public void test1() {
+
+        codeGenerateForTable("wangbin","t_product");
+    }
+
+
+
+
+    public void codeGenerateForTable(String author,String ... tableName){
         String driver = "com.mysql.jdbc.Driver";
         String uri = "jdbc:mysql://10.0.3.105:3306/game_service?&characterEncoding=utf-8&useUnicode=true";
         String username = "root";
@@ -28,10 +36,8 @@ public class GenerateTest {
                 .withAuthor("yanbiao")
                 .build();
 
-        generateFactory.generatorCode("t_admin");
+        generateFactory.generatorCode(tableName);
     }
-
-
 
 
 

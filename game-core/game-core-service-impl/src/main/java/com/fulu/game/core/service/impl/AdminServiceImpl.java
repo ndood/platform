@@ -15,6 +15,7 @@ import java.util.List;
 import com.fulu.game.core.dao.AdminDao;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.service.AdminService;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service("adminService")
 public class AdminServiceImpl extends AbsCommonService<Admin,Integer> implements AdminService {
@@ -47,6 +48,8 @@ public class AdminServiceImpl extends AbsCommonService<Admin,Integer> implements
         admin.setUpdateTime(admin.getCreateTime());
         adminDao.create(admin);
     }
+
+
 
     @Override
     public PageInfo<Admin> list(AdminVO adminVO, Integer pageNum, Integer pageSize) {
