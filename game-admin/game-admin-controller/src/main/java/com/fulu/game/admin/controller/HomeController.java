@@ -1,6 +1,11 @@
 package com.fulu.game.admin.controller;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.common.utils.SubjectUtil;
+import com.fulu.game.core.entity.Admin;
+import com.fulu.game.core.entity.vo.AdminVO;
+import com.fulu.game.core.entity.vo.UserVO;
+import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -11,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.Map;
 
 @Controller
 @Slf4j
@@ -44,7 +51,10 @@ public class HomeController {
             UsernamePasswordToken token = new UsernamePasswordToken(username, password,rememberMe);
             Subject subject = SecurityUtils.getSubject();
             subject.login(token);
-            return Result.success().data(subject.getPrincipal()).msg("登录成功!");
+            Admin admin = (Admin)subject.getPrincipal();
+            Map<String, Object> map = BeanUtil.beanToMap(admin);
+            map.put("token", SubjectUtil.getToken());
+            return Result.success().data(map).msg("登录成功!");
         }
         catch (AuthenticationException e) {
             return Result.error().msg("用户名或密码错误");

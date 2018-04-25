@@ -6,6 +6,7 @@ import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.MapUtils;
 import org.apache.shiro.web.filter.AccessControlFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,7 +32,7 @@ public class AclFilter extends AccessControlFilter {
         String token = request.getParameter("token");
         Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.TOKEN.generateKey(token));
         // 没有登录授权 且没有记住我
-        if (map == null) {
+        if (MapUtils.isEmpty(map)) {
             log.info("验证登录失败token：{}", token);
             // 如果没有登录，直接进行之后的流程
             return true;

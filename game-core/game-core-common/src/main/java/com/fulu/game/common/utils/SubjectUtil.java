@@ -6,6 +6,7 @@ package com.fulu.game.common.utils;
 public class SubjectUtil {
 
     private static final ThreadLocal<Object> tl = new ThreadLocal<>();
+    private static final ThreadLocal<String> token = new ThreadLocal<>();
 
     public static Object getCurrentUser() {
         return tl.get();
@@ -13,6 +14,14 @@ public class SubjectUtil {
 
     public static void setCurrentUset(Object o) {
         tl.set(o);
+    }
+
+    public static String getToken() {
+        return token.get();
+    }
+
+    public static void setToken(String genToken) {
+        token.set(genToken);
     }
 
 }

@@ -93,7 +93,8 @@ public class ShiroConfig {
         return r;
     }
 
-    private AclFilter aclFilter() {
+    @Bean
+    public AclFilter aclFilter() {
         return new AclFilter();
     }
 }
