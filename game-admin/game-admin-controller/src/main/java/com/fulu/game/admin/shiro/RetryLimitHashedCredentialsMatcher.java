@@ -3,6 +3,7 @@ package com.fulu.game.admin.shiro;
 import com.fulu.game.common.domain.Password;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.utils.EncryptUtil;
+import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * 用于验证密码是否匹配
@@ -66,7 +66,7 @@ public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher
             Map<String, Object> adminMap = new HashMap<>();
             adminMap.put("id", admin.getId());
             adminMap.put("name", admin.getName());
-            redisOpenService.hset(RedisKeyEnum.TOKEN.generateKey(UUID.randomUUID().toString()), adminMap);
+            redisOpenService.hset(RedisKeyEnum.TOKEN.generateKey(GenIdUtil.GetGUID()), adminMap);
             return true;
         }
         return false;
