@@ -93,8 +93,7 @@ public class ShiroConfig {
         return r;
     }
 
-    public AclFilter aclFilter() {
-        AclFilter aclFilter = new AclFilter();
-        return aclFilter;
+    private AclFilter aclFilter() {
+        return new AclFilter();
     }
 }
