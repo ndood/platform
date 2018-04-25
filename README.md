@@ -5,7 +5,7 @@
 https://pro.modao.cc/app/I96UizCz6gPew57uokH4JZO6vjMnf1U
 
 ### 微信端
-https://pro.modao.cc/app/8BqAgaAb3PssEYHAsG5DnieTxyycX6x
+https://pro.modao.cc/app/CDyA1HYi4WJN81NacbiFcE2D7bMKpOU
 
 ### 后台
 https://pro.modao.cc/app/17kT7kmQIxwDMlJfha7EhCrpsEyFA7h

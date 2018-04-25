@@ -218,10 +218,10 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
             createUserInfoFile(userId,idCardHeadUrl,UserInfoFileTypeEnum.IDCARD_HEAD.getMsg(), UserInfoFileTypeEnum.IDCARD_HEAD.getType());
         }
         if(idCardEmblemUrl!=null){
-            createUserInfoFile(userId,idCardHeadUrl,UserInfoFileTypeEnum.IDCARD_EMBLEM.getMsg(), UserInfoFileTypeEnum.IDCARD_EMBLEM.getType());
+            createUserInfoFile(userId,idCardEmblemUrl,UserInfoFileTypeEnum.IDCARD_EMBLEM.getMsg(), UserInfoFileTypeEnum.IDCARD_EMBLEM.getType());
         }
         if(idCardHandUrl!=null){
-            createUserInfoFile(userId,idCardHeadUrl,UserInfoFileTypeEnum.IDCARD_HAND.getMsg(), UserInfoFileTypeEnum.IDCARD_HAND.getType());
+            createUserInfoFile(userId,idCardHandUrl,UserInfoFileTypeEnum.IDCARD_HAND.getMsg(), UserInfoFileTypeEnum.IDCARD_HAND.getType());
         }
     }
 

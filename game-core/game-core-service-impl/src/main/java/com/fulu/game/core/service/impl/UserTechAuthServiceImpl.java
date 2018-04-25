@@ -69,11 +69,11 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
     @Override
-    public List<UserTechAuth> findByUserId(Integer userId) {
+    public List<UserTechAuth> findByUserId(Integer userId,Boolean status) {
         UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
         userTechAuthVO.setUserId(userId);
-        List<UserTechAuth> userTechAuths = userTechAuthDao.findByParameter(userTechAuthVO);
-        return userTechAuths;
+        userTechAuthVO.setStatus(status);
+        return userTechAuthDao.findByParameter(userTechAuthVO);
     }
 
     @Override

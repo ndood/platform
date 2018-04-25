@@ -3,6 +3,7 @@ package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.domain.Password;
 import com.fulu.game.common.utils.EncryptUtil;
+import com.fulu.game.common.Constant;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.github.pagehelper.PageHelper;
@@ -68,9 +69,9 @@ public class UserServiceImpl extends AbsCommonService<User,Integer> implements U
     }
 
     @Override
-    public User save(UserVO userVO){
+    public User save(UserVO userVO) {
         User user = new User();
-        BeanUtil.copyProperties(userVO,user);
+        BeanUtil.copyProperties(userVO, user);
         Password password = EncryptUtil.PiecesEncode(userVO.getPassword());
         user.setPassword(password.getPassword());
         user.setSalt(password.getSalt());
@@ -82,6 +83,10 @@ public class UserServiceImpl extends AbsCommonService<User,Integer> implements U
         user.setUpdateTime(new Date());
         userDao.create(user);
         return user;
+    }
+
+    public static String generateKey(int productId){
+        return Constant.REDIS_USER_ORDER_RECEIVE_TIME+"-"+productId;
     }
 
 }

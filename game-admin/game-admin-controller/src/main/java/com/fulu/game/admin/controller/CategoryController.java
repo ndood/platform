@@ -17,6 +17,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
@@ -54,9 +55,9 @@ public class CategoryController extends BaseController {
      * 查询所有内容
      * @return
      */
-    @PostMapping(value = "/list/all")
+    @PostMapping(value = "/list-all")
     public Result listAll(){
-        List<Category> list = categoryService.findAll();
+        List<Category> list = categoryService.findByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType());
         return Result.success().data(list);
     }
 
@@ -170,7 +171,7 @@ public class CategoryController extends BaseController {
      * @return
      */
     @PostMapping(value = "/dan/list")
-    public Result danList(Integer categoryId){
+    public Result danList(@RequestParam(required=true,name = "categoryId") Integer categoryId){
         TechAttr techAttr = techAttrService.findByCategoryAndType(categoryId, TechAttrTypeEnum.DAN.getType());
         List<TechValue>  techValueList =   techValueService.findByTechAttrId(techAttr.getId());
         return Result.success().data(techValueList);

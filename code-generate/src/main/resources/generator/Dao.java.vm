@@ -4,7 +4,6 @@ import ${package}.entity.${className};
 import ${package}.entity.vo.${className}VO;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -17,6 +16,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface ${className}Dao extends ICommonDao<${className},${pk.attrType}>{
 
-    ${className} findByParameter(${className}VO ${classname}VO);
+    List<${className}> findByParameter(${className}VO ${classname}VO);
 
 }
