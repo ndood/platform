@@ -149,7 +149,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                 log.info("停止接单{}", product);
                 redisOpenService.delete(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(product.getId()));
             } catch (Exception e) {
-                log.error("开始接单设置", e);
+                log.error("停止接单设置", e);
                 throw new ServiceErrorException("开始接单操作失败!");
             }
         }

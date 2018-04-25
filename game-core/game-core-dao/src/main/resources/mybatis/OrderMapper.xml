@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.OrderDao">
+    <resultMap id="OrderResultMap" type="com.fulu.game.core.entity.Order">
+                                    <id column="id"  property="id" />
+                                            <result column="order_no"  property="orderNo" />
+                                            <result column="user_id"  property="userId" />
+                                            <result column="service_user_id"  property="serviceUserId" />
+                                            <result column="name"  property="name" />
+                                            <result column="remark"  property="remark" />
+                                            <result column="status"  property="status" />
+                                            <result column="commission_money"  property="commissionMoney" />
+                                            <result column="total_money"  property="totalMoney" />
+                                            <result column="create_time"  property="createTime" />
+                                            <result column="update_time"  property="updateTime" />
+                        </resultMap>
+
+    <resultMap id="OrderResultVOMap" type="com.fulu.game.core.entity.vo.OrderVO" extends="OrderResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,order_no,user_id,service_user_id,name,remark,status,commission_money,total_money,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="OrderResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_order
+        <where>
+        id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll"  resultMap="OrderResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_order
+    </select>
+
+    <select id="findByParameter" resultMap="OrderResultMap" parameterType="com.fulu.game.core.entity.vo.OrderVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_order
+        <where>
+                                                                            <if test="orderNo != null">
+                       and order_no = #{orderNo}
+                    </if>
+                                                                <if test="userId != null">
+                       and user_id = #{userId}
+                    </if>
+                                                                <if test="serviceUserId != null">
+                       and service_user_id = #{serviceUserId}
+                    </if>
+                                                                <if test="name != null">
+                       and name = #{name}
+                    </if>
+                                                                <if test="remark != null">
+                       and remark = #{remark}
+                    </if>
+                                                                <if test="status != null">
+                       and status = #{status}
+                    </if>
+                                                                <if test="commissionMoney != null">
+                       and commission_money = #{commissionMoney}
+                    </if>
+                                                                <if test="totalMoney != null">
+                       and total_money = #{totalMoney}
+                    </if>
+                                                                <if test="createTime != null">
+                       and create_time = #{createTime}
+                    </if>
+                                                                <if test="updateTime != null">
+                       and update_time = #{updateTime}
+                    </if>
+                                    </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_order
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Order">
+        insert into
+        t_order (order_no,user_id,service_user_id,name,remark,status,commission_money,total_money,create_time,update_time)
+        values
+        (#{orderNo},#{userId},#{serviceUserId},#{name},#{remark},#{status},#{commissionMoney},#{totalMoney},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.Order">
+        update t_order
+        <set>
+                                                        
+                    <if test="orderNo != null">
+                        order_no = #{orderNo},
+                    </if>
+                                            
+                    <if test="userId != null">
+                        user_id = #{userId},
+                    </if>
+                                            
+                    <if test="serviceUserId != null">
+                        service_user_id = #{serviceUserId},
+                    </if>
+                                            
+                    <if test="name != null">
+                        name = #{name},
+                    </if>
+                                            
+                    <if test="remark != null">
+                        remark = #{remark},
+                    </if>
+                                            
+                    <if test="status != null">
+                        status = #{status},
+                    </if>
+                                            
+                    <if test="commissionMoney != null">
+                        commission_money = #{commissionMoney},
+                    </if>
+                                            
+                    <if test="totalMoney != null">
+                        total_money = #{totalMoney},
+                    </if>
+                                            
+                    <if test="createTime != null">
+                        create_time = #{createTime},
+                    </if>
+                                            
+                    <if test="updateTime != null">
+                        update_time = #{updateTime},
+                    </if>
+                                    </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

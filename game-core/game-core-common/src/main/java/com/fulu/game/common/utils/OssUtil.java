@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
-import java.util.UUID;
 
 @Component
 public class OssUtil {
@@ -43,7 +42,7 @@ public class OssUtil {
 
     private String generateOssKey(String fileName){
         StringBuilder sb = new StringBuilder();
-        String uuid = UUID.randomUUID().toString().toLowerCase();
+        String uuid = GenIdUtil.GetGUID();
         String ext = FileUtil.extName(fileName);
         sb.append(DateUtil.thisYear())
           .append("/").append(DateUtil.thisMonth()+1)

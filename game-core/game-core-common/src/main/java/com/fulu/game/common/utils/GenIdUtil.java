@@ -1,5 +1,9 @@
 package com.fulu.game.common.utils;
 
+import com.xiaoleilu.hutool.date.DateUtil;
+import com.xiaoleilu.hutool.util.RandomUtil;
+
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -15,4 +19,19 @@ public class GenIdUtil {
     public static String GetGUID() {
         return UUID.randomUUID().toString().replace("-", "");
     }
+
+
+    /**
+     * 生成订单号
+     * @return
+     */
+    public static String GetOrderNo(){
+        String date = DateUtil.format(new Date(),"yyMMdd");
+        String randomNum = RandomUtil.randomNumbers(6);
+        return date+randomNum;
+    }
+
+
+
+
 }
