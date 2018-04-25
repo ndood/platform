@@ -4,8 +4,10 @@ import com.fulu.game.common.domain.Password;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.utils.EncryptUtil;
 import com.fulu.game.common.utils.GenIdUtil;
+import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SaltedAuthenticationInfo;
@@ -22,6 +24,7 @@ import java.util.Map;
  *
  * @author LiuPiao
  */
+@Slf4j
 public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher implements InitializingBean {
 
     @Autowired
@@ -62,11 +65,14 @@ public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher
         String infoHashCredentials = (String) info.getCredentials();
         if (super.equals(tokenHashedCredentials, infoHashCredentials)) {
             //登录成功保存token和用户信息到redis
-            Admin admin = (Admin) info.getPrincipals();
+            Admin admin = (Admin) info.getPrincipals().getPrimaryPrincipal();
             Map<String, Object> adminMap = new HashMap<>();
             adminMap.put("id", admin.getId());
             adminMap.put("name", admin.getName());
-            redisOpenService.hset(RedisKeyEnum.TOKEN.generateKey(GenIdUtil.GetGUID()), adminMap);
+            String genToken = GenIdUtil.GetGUID();
+            redisOpenService.hset(RedisKeyEnum.TOKEN.generateKey(genToken), adminMap);
+            log.info("登录成功生成token：{}", genToken);
+            SubjectUtil.setToken(genToken);
             return true;
         }
         return false;

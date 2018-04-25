@@ -20,7 +20,7 @@ public class RedisOpenServiceImpl {
     /**
      * 默认存活时间5分钟
      */
-    private static final long time = 5 * 60;
+    private static final long TIME = 5 * 60;
 
     /**
      * 获取某个key的值
@@ -39,7 +39,7 @@ public class RedisOpenServiceImpl {
      * @param value
      */
     public void set(String key, String value) {
-        set(key, value, time);
+        set(key, value, TIME);
     }
 
     /**
@@ -61,7 +61,7 @@ public class RedisOpenServiceImpl {
      * @param value
      */
     public void hset(String key, String hash, Object value) {
-        hset(key, hash, value, time);
+        hset(key, hash, value, TIME);
     }
 
     /**
@@ -84,7 +84,7 @@ public class RedisOpenServiceImpl {
      * @throws Exception
      */
     public void hset(String key, Map<String, Object> map) {
-        hset(key, map, time);
+        hset(key, map, TIME);
     }
 
     /**
