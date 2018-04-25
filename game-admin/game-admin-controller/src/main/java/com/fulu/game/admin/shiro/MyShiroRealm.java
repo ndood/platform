@@ -61,9 +61,8 @@ public class MyShiroRealm extends AuthorizingRealm {
         admin.setPassword(null);
         admin.setSalt(null);
 
-        AdminAuthenticationInfo authenticationInfo = new AdminAuthenticationInfo(
-                admin.getId(),
-                admin, //用户名
+        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
+                admin, //用户对象
                 password, //密码
                 ByteSource.Util.bytes(salt),//salt=username+salt
                 getName()  //realm name
