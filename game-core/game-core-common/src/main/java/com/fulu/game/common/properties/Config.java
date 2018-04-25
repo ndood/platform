@@ -17,11 +17,21 @@ public class Config {
 
     private Evn evn = new Evn();
 
+    private Oss oss = new Oss();
+
 
     @Data
     public static class Evn{
-
         private String prefix;
-
     }
+
+    @Data
+    public static class Oss{
+        private String endpoint;
+        private String accessKeyId;
+        private String accessKeySecret;
+        private String bucketName;
+        private String host;
+    }
+
 }

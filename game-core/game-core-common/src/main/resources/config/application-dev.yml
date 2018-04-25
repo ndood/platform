@@ -18,7 +18,12 @@ spring:
       max-wait: -1
       max-idle: 8
       min-idle: 0
-
 config:
+    oss:
+      endpoint: "http://oss-cn-hangzhou.aliyuncs.com"
+      accessKeyId: "LTAIcQRqtJrF5Arb"
+      accessKeySecret: "3jiWeZ89SoGob5TljUEU2MmgZCo7qP"
+      bucketName: "app-testing-new"
+      host: "http://app-testing-new.oss-cn-hangzhou.aliyuncs.com/"
     evn:
       prefix: DEV

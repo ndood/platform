@@ -5,18 +5,20 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.ICommonDao;
-import com.fulu.game.core.entity.*;
+import com.fulu.game.core.dao.ProductDao;
+import com.fulu.game.core.entity.Product;
+import com.fulu.game.core.entity.TechValue;
+import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.vo.ProductVO;
-import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.ProductService;
+import com.fulu.game.core.service.TechValueService;
+import com.fulu.game.core.service.UserTechAuthService;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
-import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
-import com.fulu.game.core.dao.ProductDao;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -25,10 +27,10 @@ import java.util.Map;
 
 @Service
 @Slf4j
-public class ProductServiceImpl extends AbsCommonService<Product,Integer> implements ProductService {
+public class ProductServiceImpl extends AbsCommonService<Product, Integer> implements ProductService {
 
     @Autowired
-	private ProductDao productDao;
+    private ProductDao productDao;
     @Autowired
     private UserTechAuthService userTechAuthService;
     @Autowired
@@ -61,22 +63,23 @@ public class ProductServiceImpl extends AbsCommonService<Product,Integer> implem
         return product;
     }
 
+
     @Override
     public Product update(Integer id, Integer techAuthId, BigDecimal price, Integer unitId) {
-        if(redisOpenService.hasKey(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(id))){
+        if (redisOpenService.hasKey(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(id))) {
             throw new ServiceErrorException("在线技能不允许修改!");
         }
         Product product = findById(id);
-        if(techAuthId!=null){
+        if (techAuthId != null) {
             UserTechAuth userTechAuth = userTechAuthService.findById(techAuthId);
             product.setCategoryId(userTechAuth.getCategoryId());
             product.setCategoryName(userTechAuth.getCategoryName());
             product.setTechAuthId(userTechAuth.getId());
         }
-        if(price==null){
+        if (price == null) {
             product.setPrice(price);
         }
-        if(unitId==null){
+        if (unitId == null) {
             TechValue techValue = techValueService.findById(unitId);
             product.setUnitTechValueId(techValue.getId());
             product.setUnit(techValue.getName());
@@ -88,8 +91,8 @@ public class ProductServiceImpl extends AbsCommonService<Product,Integer> implem
 
 
     @Override
-    public Product enable(int id,boolean status) {
-        if(redisOpenService.hasKey(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(id))){
+    public Product enable(int id, boolean status) {
+        if (redisOpenService.hasKey(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(id))) {
             throw new ServiceErrorException("在线技能不允许修改!");
         }
         Product product = findById(id);
@@ -100,10 +103,11 @@ public class ProductServiceImpl extends AbsCommonService<Product,Integer> implem
 
     /**
      * 查找激活的商品
+     *
      * @param userId
      * @return
      */
-    public List<Product> findEnabledProductByUser(int userId){
+    public List<Product> findEnabledProductByUser(int userId) {
         ProductVO productVO = new ProductVO();
         productVO.setStatus(true);
         return productDao.findByParameter(productVO);
@@ -112,49 +116,49 @@ public class ProductServiceImpl extends AbsCommonService<Product,Integer> implem
     /**
      * 开始接单业务
      */
-    public void startOrderReceiving(int hour){
-        List<Product>  products =  findEnabledProductByUser(Constant.DEF_USER_ID);
-        if(products.isEmpty()){
+    @Override
+    public void startOrderReceiving(int hour) {
+        Long expire = hour * 3600L;
+        List<Product> products = findEnabledProductByUser(Constant.DEF_USER_ID);
+        if (products.isEmpty()) {
             throw new ServiceErrorException("请选择技能后再点击开始接单!");
         }
-
-        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(Constant.DEF_USER_ID),"HOUR",hour+"");
-        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(Constant.DEF_USER_ID),"START_TIME", DateUtil.now());
-        for(Product product : products){
+        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(Constant.DEF_USER_ID), "HOUR", hour, expire);
+        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(Constant.DEF_USER_ID), "START_TIME", DateUtil.now(), expire);
+        for (Product product : products) {
             ProductVO productVO = new ProductVO();
-            BeanUtil.copyProperties(product,productVO);
+            BeanUtil.copyProperties(product, productVO);
             productVO.setHour(hour);
             productVO.setStartTime(new Date());
             try {
-                log.info("开始接单设置{}小时【{}】",hour,productVO);
-                redisOpenService.hset(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(product.getId()),productVO,hour*3600L);
+                log.info("开始接单设置{}小时【{}】", hour, productVO);
+                redisOpenService.hset(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(product.getId()), BeanUtil.beanToMap(productVO), expire);
             } catch (Exception e) {
-                log.error("开始接单设置",e);
-                throw  new ServiceErrorException("开始接单操作失败!");
+                log.error("开始接单设置", e);
+                throw new ServiceErrorException("开始接单操作失败!");
             }
         }
     }
 
     @Override
     public void stopOrderReceiving() {
-        List<Product>  products =  findEnabledProductByUser(Constant.DEF_USER_ID);
+        List<Product> products = findEnabledProductByUser(Constant.DEF_USER_ID);
         redisOpenService.delete(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(Constant.DEF_USER_ID));
-        for(Product product : products){
+        for (Product product : products) {
             try {
-                log.info("停止接单{}",product);
+                log.info("停止接单{}", product);
                 redisOpenService.delete(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(product.getId()));
             } catch (Exception e) {
-                log.error("开始接单设置",e);
-                throw  new ServiceErrorException("开始接单操作失败!");
+                log.error("开始接单设置", e);
+                throw new ServiceErrorException("开始接单操作失败!");
             }
         }
     }
 
 
-    public Map<String,Object> readOrderReceivingStatus(){
-       return redisOpenService.hget(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(Constant.DEF_USER_ID));
+    public Map<String, Object> readOrderReceivingStatus() {
+        return redisOpenService.hget(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(Constant.DEF_USER_ID));
     }
-
 
 
 }
