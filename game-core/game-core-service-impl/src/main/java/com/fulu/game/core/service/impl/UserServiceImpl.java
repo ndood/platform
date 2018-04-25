@@ -85,8 +85,5 @@ public class UserServiceImpl extends AbsCommonService<User,Integer> implements U
         return user;
     }
 
-    public static String generateKey(int productId){
-        return Constant.REDIS_USER_ORDER_RECEIVE_TIME+"-"+productId;
-    }
 
 }

@@ -11,3 +11,6 @@ https://pro.modao.cc/app/CDyA1HYi4WJN81NacbiFcE2D7bMKpOU
 https://pro.modao.cc/app/17kT7kmQIxwDMlJfha7EhCrpsEyFA7h
 
 
+### 启动
+
+- tomcat配置环境变量 -Dspring.profiles.active=dev
