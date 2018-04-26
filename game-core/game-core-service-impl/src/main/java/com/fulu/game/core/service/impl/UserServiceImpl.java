@@ -1,6 +1,5 @@
 package com.fulu.game.core.service.impl;
 
-
 import com.fulu.game.common.domain.Password;
 import com.fulu.game.common.utils.EncryptUtil;
 import com.fulu.game.common.Constant;
@@ -15,21 +14,16 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import com.fulu.game.core.dao.UserDao;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.UserService;
-
-
 
 @Service
 public class UserServiceImpl extends AbsCommonService<User,Integer> implements UserService {
 
     @Autowired
 	private UserDao userDao;
-
-
 
     @Override
     public ICommonDao<User, Integer> getDao() {
@@ -49,14 +43,14 @@ public class UserServiceImpl extends AbsCommonService<User,Integer> implements U
 
     @Override
     public void lock(int id){
-        User user = userDao.findById(id);
+        User user = findById(id);
         user.setStatus(0);
         userDao.update(user);
     }
 
     @Override
     public void unlock(int id){
-        User user = userDao.findById(id);
+        User user = findById(id);
         user.setStatus(1);
         userDao.update(user);
     }

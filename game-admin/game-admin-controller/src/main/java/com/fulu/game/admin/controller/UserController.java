@@ -170,17 +170,4 @@ public class UserController extends BaseController{
         return Result.success().data(userList).msg("查询用户列表成功！");
     }
 
-    /**
-     * 用户-注册
-     * @param userVO
-     * @return
-     */
-    @RequestMapping("/save")
-    public Result save(@ModelAttribute UserVO userVO){
-        User user = userService.save(userVO);
-        return Result.success().data(user).msg("恭喜您注册成功！");
-    }
-
-
-
 }

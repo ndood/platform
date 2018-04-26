@@ -1,7 +1,9 @@
 package com.fulu.game.play.controller.exception;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.common.exception.CashException;
 import com.fulu.game.common.exception.ServiceErrorException;
+import com.fulu.game.common.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
@@ -51,5 +53,17 @@ public class ExceptionHandlerAdvice {
     public Result handleException(Exception e) {
         log.error(e.getMessage(), e);
         return	Result.error().msg("服务器错误");
+    }
+
+    @ExceptionHandler(CashException.class)
+    public Result cashException(CashException e) {
+        log.error(e.getMessage(), e);
+        return	Result.error().msg(e.getMessage());
+    }
+
+    @ExceptionHandler(UserException.class)
+    public Result UserException(UserException e) {
+        log.error(e.getMessage(), e);
+        return	Result.error().msg(e.getMessage());
     }
 }
