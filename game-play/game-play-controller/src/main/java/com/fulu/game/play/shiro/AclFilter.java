@@ -44,6 +44,7 @@ public class AclFilter extends AccessControlFilter {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             httpResponse.setCharacterEncoding("UTF-8");
             httpResponse.setContentType("application/json; charset=utf-8");
+            httpResponse.setHeader("Access-Control-Allow-Origin", "*");
 
             PrintWriter out = null;
 
