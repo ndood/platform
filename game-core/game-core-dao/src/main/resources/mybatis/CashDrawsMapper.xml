@@ -44,14 +44,12 @@
         <include refid="Base_Column_List"/>
         FROM t_cash_draws
         <where>
-            <if test="createTime != null">and create_time = #{createTime}</if>
             <if test="userId != null">and user_id = #{userId}</if>
             <if test="accNo != null">and acc_no = #{accNo}</if>
             <if test="accUser != null">and acc_user = #{accUser}</if>
             <if test="cashStatus != null">and cash_status = #{cashStatus}</if>
             <if test="operator != null">and operator = #{operator}</if>
             <if test="cashNo != null">and cash_no = #{cashNo}</if>
-            <if test="processTime != null">and process_time = #{processTime}</if>
         </where>
     </select>
 

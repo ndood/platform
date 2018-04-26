@@ -2,6 +2,7 @@ package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.CashDraws;
 import com.fulu.game.core.entity.vo.CashDrawsVO;
+import com.github.pagehelper.PageInfo;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -13,4 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 public interface CashDrawsService extends ICommonService<CashDraws,Integer>{
 
     CashDraws save(CashDrawsVO cashDrawsVO);
+
+    PageInfo<CashDraws> list(CashDrawsVO cashDrawsVO,Integer pageNum, Integer pageSize);
+
+    CashDraws draw(Integer cashId, String comment);
 }

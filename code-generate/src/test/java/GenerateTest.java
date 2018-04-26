@@ -18,7 +18,7 @@ public class GenerateTest {
 
     @Test
     public void test2() {
-        codeGenerateForTable("wangbin","t_product");
+        codeGenerateForTable("yanbiao","t_money_details");
     }
 
 

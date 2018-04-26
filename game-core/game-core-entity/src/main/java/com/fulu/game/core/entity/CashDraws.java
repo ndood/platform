@@ -3,6 +3,8 @@ package com.fulu.game.core.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 /**
@@ -40,4 +42,12 @@ public class CashDraws implements Serializable {
 	//处理时间
 	private Date processTime;
 
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	public Date getCreateTime(){
+		return createTime;
+	}
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	public Date getProcessTime(){
+		return processTime;
+	}
 }

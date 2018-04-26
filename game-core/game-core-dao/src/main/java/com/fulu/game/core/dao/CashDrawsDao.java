@@ -5,6 +5,8 @@ import com.fulu.game.core.entity.vo.CashDrawsVO;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * @author yanbiao
  * @date 2018-04-24 16:45:40
@@ -12,6 +14,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface CashDrawsDao extends ICommonDao<CashDraws,Integer>{
 
-    CashDraws findByParameter(CashDrawsVO cashDrawsVO);
+    List<CashDraws> findByParameter(CashDrawsVO cashDrawsVO);
 
 }
