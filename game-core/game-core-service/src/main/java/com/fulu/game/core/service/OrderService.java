@@ -13,6 +13,9 @@ import com.fulu.game.core.entity.vo.OrderVO;
  */
 public interface OrderService extends ICommonService<Order,Integer>{
 
+
+    //todo 非自己的订单不能操作
+
     /**
      * 提交订单
      * @param productId

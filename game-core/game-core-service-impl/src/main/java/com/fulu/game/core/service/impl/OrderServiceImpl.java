@@ -176,6 +176,10 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     @Override
     public OrderVO userAppealOrder(String orderNo){
         Order order =  findByOrderNo(orderNo);
+        if(!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())){
+            throw new OrderException(order.getOrderNo(),"只有陪玩中和等待验收的订单才能申诉!");
+        }
+
         //todo 订单申诉
         return orderConvertVo(order);
     }
