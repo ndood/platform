@@ -21,9 +21,9 @@ public class GlobalController extends BaseController{
 
 
     @PostMapping(value = "upload")
-    public Result upload(@RequestParam("file") MultipartFile file)throws Exception{
+    public Result upload(@RequestParam("file") MultipartFile file,String name)throws Exception{
         String fileName =  ossUtil.uploadFile(file.getInputStream(),file.getOriginalFilename());
-        return Result.success().data(fileName);
+        return Result.success().data(fileName).msg(name);
     }
 
 

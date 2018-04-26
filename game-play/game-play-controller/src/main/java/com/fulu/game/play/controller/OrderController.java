@@ -45,6 +45,33 @@ public class OrderController {
         return Result.success().data(orderVO).msg("订单支付成功!");
     }
 
+
+
+
+    /**
+     * 用户取消订单
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/user/cancel")
+    public Result userCancelOrder(String orderNo){
+        OrderVO orderVO =orderService.userCancelOrder(orderNo);
+        return Result.success().data(orderVO).msg("取消订单成功!");
+    }
+
+    /**
+     * 用户申诉订单
+     * @param orderNo
+     * @param remark
+     * @param fileUrl
+     * @return
+     */
+    @RequestMapping(value = "/user/appeal")
+    public Result userAppealOrder(String orderNo,String remark,String[] fileUrl){
+        OrderVO orderVO =orderService.userAppealOrder(orderNo,remark,fileUrl);
+        return Result.success().data(orderVO).msg("订单申诉成功!");
+    }
+
     /**
      * 陪玩师接收订单
      * @param orderNo
@@ -53,6 +80,18 @@ public class OrderController {
     @RequestMapping(value = "/server/receive")
     public Result serverReceiveOrder(String orderNo){
         OrderVO orderVO =orderService.serverReceiveOrder(orderNo);
+        return Result.success().data(orderVO);
+    }
+
+
+    /**
+     * 用户验收订单
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/user/verify")
+    public Result userVerifyOrder(String orderNo){
+        OrderVO orderVO =orderService.userVerifyOrder(orderNo);
         return Result.success().data(orderVO);
     }
 
@@ -68,20 +107,18 @@ public class OrderController {
         return Result.success().data(orderVO).msg("取消订单成功!");
     }
 
-
     /**
-     * 用户取消订单
+     * 陪玩师提交验收订单
      * @param orderNo
+     * @param remark
+     * @param fileUrl
      * @return
      */
-    @RequestMapping(value = "/user/cancel")
-    public Result userCancelOrder(String orderNo){
-        OrderVO orderVO =orderService.userCancelOrder(orderNo);
-        return Result.success().data(orderVO).msg("取消订单成功!");
+    @RequestMapping(value = "/server/acceptance")
+    public Result serverAcceptanceOrder(String orderNo,String remark,String[] fileUrl){
+        OrderVO orderVO =orderService.serverAcceptanceOrder(orderNo,remark,fileUrl);
+        return Result.success().data(orderVO).msg("订单申诉成功!");
     }
-
-
-
 
 
 

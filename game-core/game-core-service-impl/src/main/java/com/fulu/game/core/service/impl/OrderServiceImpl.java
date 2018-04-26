@@ -3,6 +3,7 @@ package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.DetailsEnum;
+import com.fulu.game.common.enums.OrderDealTypeEnum;
 import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ServiceErrorException;
@@ -12,7 +13,6 @@ import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.*;
 import com.xiaoleilu.hutool.util.BeanUtil;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +37,10 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     private OrderProductService orderProductService;
     @Autowired
     private OrderMoneyDetailsService orderMoneyDetailsService;
+    @Autowired
+    private OrderDealService orderDealService;
+
+
 
     @Override
     public ICommonDao<Order, Integer> getDao() {
@@ -122,6 +126,9 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setStatus(OrderStatusEnum.SERVICING.getStatus());
         order.setUpdateTime(new Date());
         update(order);
+
+        //todo 缓存陪玩师接单状态
+
         return orderConvertVo(order);
     }
 
@@ -164,7 +171,6 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         update(order);
         if(order.getIsPlay()){
             //todo 全额退款用户
-
             //记录订单流水
             orderMoneyDetailsService.create(orderNo,order.getUserId(),DetailsEnum.ORDER_USER_CANCEL,"-"+order.getTotalMoney());
         }
@@ -172,15 +178,106 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     }
 
 
-
+    /**
+     * 用户申诉订单
+     * @param orderNo
+     * @param remark
+     * @param fileUrl
+     * @return
+     */
     @Override
-    public OrderVO userAppealOrder(String orderNo){
+    public OrderVO userAppealOrder(String orderNo,String remark,String ... fileUrl){
         Order order =  findByOrderNo(orderNo);
-        if(!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())){
+        if(!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())
+            ||!order.getStatus().equals(OrderStatusEnum.CHECK.getStatus())){
             throw new OrderException(order.getOrderNo(),"只有陪玩中和等待验收的订单才能申诉!");
         }
+        order.setStatus(OrderStatusEnum.APPEALING.getStatus());
+        order.setUpdateTime(new Date());
+        update(order);
+        //添加申诉文件
+        orderDealService.create(orderNo, OrderDealTypeEnum.APPEAL.getType(),remark,fileUrl);
+        return orderConvertVo(order);
+    }
 
-        //todo 订单申诉
+
+    /**
+     * 打手验收订单
+     * @param orderNo
+     * @param remark
+     * @param fileUrl
+     * @return
+     */
+    @Override
+    public OrderVO serverAcceptanceOrder(String orderNo, String remark, String ... fileUrl){
+        Order order =  findByOrderNo(orderNo);
+        if(!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())){
+            throw new OrderException(order.getOrderNo(),"只有陪玩中的订单才能验收!");
+        }
+        order.setStatus(OrderStatusEnum.CHECK.getStatus());
+        order.setUpdateTime(new Date());
+        update(order);
+        //添加验收文件
+        orderDealService.create(orderNo, OrderDealTypeEnum.CHECK.getType(),remark,fileUrl);
+        //todo 删除打手接单状态
+
+        return orderConvertVo(order);
+    }
+
+    /**
+     * 用户验收订单
+     * @param orderNo
+     * @return
+     */
+    @Override
+    public OrderVO userVerifyOrder(String orderNo){
+        Order order =  findByOrderNo(orderNo);
+        if(!order.getStatus().equals(OrderStatusEnum.CHECK.getStatus())){
+            throw new OrderException(order.getOrderNo(),"只有待验收订单才能验收!");
+        }
+        order.setStatus(OrderStatusEnum.COMPLETE.getStatus());
+        order.setUpdateTime(new Date());
+        update(order);
+
+        //todo 给打手加零钱,平台记录收入流水
+        return orderConvertVo(order);
+    }
+
+    /**
+     * 管理员强制完成订单 (大款给打手)
+     * @param orderNo
+     * @return
+     */
+    public OrderVO adminHandleCompleteOrder(String orderNo){
+        Order order =  findByOrderNo(orderNo);
+        if(!order.getStatus().equals(OrderStatusEnum.APPEALING.getStatus())){
+            throw new OrderException(order.getOrderNo(),"只有申诉中的订单才能验收!");
+        }
+        order.setStatus(OrderStatusEnum.ADMIN_COMPLETE.getStatus());
+        order.setUpdateTime(new Date());
+        update(order);
+        //todo 给打手加零钱,平台记录收入流水
+        return orderConvertVo(order);
+    }
+
+    /**
+     * 管理员退款用户
+     * @param orderNo
+     * @return
+     */
+    public OrderVO adminHandleRefundOrder(String orderNo){
+        Order order =  findByOrderNo(orderNo);
+        if(!order.getStatus().equals(OrderStatusEnum.APPEALING.getStatus())){
+            throw new OrderException(order.getOrderNo(),"只有申诉中的订单才能验收!");
+        }
+        order.setStatus(OrderStatusEnum.ADMIN_REFUND.getStatus());
+        order.setUpdateTime(new Date());
+        update(order);
+        if(order.getIsPlay()){
+            //todo 全额退款用户
+            //记录订单流水
+            orderMoneyDetailsService.create(orderNo,order.getUserId(),DetailsEnum.ORDER_USER_CANCEL,"-"+order.getTotalMoney());
+        }
         return orderConvertVo(order);
     }
 
