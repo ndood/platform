@@ -13,4 +13,5 @@ import com.fulu.game.core.entity.Order;
  */
 public class OrderVO  extends Order {
 
+
 }

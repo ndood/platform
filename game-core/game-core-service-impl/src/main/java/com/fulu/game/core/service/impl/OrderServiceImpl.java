@@ -48,10 +48,10 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
                           int num,
                           String remark) {
 
+        //todo 确认打手是否已经接单
         Product product = productService.findById(productId);
 
         Category category = categoryService.findById(productId);
-
         //计算订单总价格
         BigDecimal totalMoney = product.getPrice().multiply(new BigDecimal(num));
         //计算单笔订单佣金
@@ -63,6 +63,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setUserId(Constant.DEF_USER_ID);
         order.setServiceUserId(product.getUserId());
         order.setRemark(remark);
+        order.setIsPlay(false);
         order.setTotalMoney(totalMoney);
         order.setStatus(OrderStatusEnum.NON_PAYMENT.getStatus());
         order.setCommissionMoney(commissionMoney);
@@ -83,6 +84,9 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         BeanUtil.copyProperties(order,orderVO);
         return orderVO;
     }
+
+
+
 
     /**
      * 生成订单号

@@ -20,6 +20,7 @@
         <pagehelper.version>4.0.3</pagehelper.version>
         <xerces.version>2.9.1</xerces.version>
         <aliyun.oss.verson>2.8.2</aliyun.oss.verson>
+        <weixin-java.sdk.verson>3.0.0</weixin-java.sdk.verson>
         <main.basedir>${basedir}</main.basedir>
     </properties>
 
@@ -71,7 +72,21 @@
                 <artifactId>hutool-core</artifactId>
                 <version>${hutool.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.aliyun.oss</groupId>
+                <artifactId>aliyun-sdk-oss</artifactId>
+                <version>${aliyun.oss.verson}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.binarywang</groupId>
+                <artifactId>weixin-java-miniapp</artifactId>
+                <version>${weixin-java.sdk.verson}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.binarywang</groupId>
+                <artifactId>weixin-java-pay</artifactId>
+                <version>${weixin-java.sdk.verson}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

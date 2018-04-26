@@ -30,6 +30,8 @@ public class Order implements Serializable {
 	private String remark;
 	//订单状态
 	private Integer status;
+	//是否支付(1:已支付,2:未支付)
+	private Boolean isPlay;
 	//佣金
 	private BigDecimal commissionMoney;
 	//订单总额
