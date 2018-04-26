@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.MoneyDetailsDao">
+    <resultMap id="MoneyDetailsResultMap" type="com.fulu.game.core.entity.MoneyDetails">
+        <id column="id"  property="id" />
+        <result column="operator_id"  property="operatorId" />
+        <result column="target_id"  property="targetId" />
+        <result column="money"  property="money" />
+        <result column="action"  property="action" />
+        <result column="cash_id"  property="cashId" />
+        <result column="sum"  property="sum" />
+        <result column="remark"  property="remark" />
+        <result column="create_time"  property="createTime" />
+    </resultMap>
+
+    <resultMap id="MoneyDetailsResultVOMap" type="com.fulu.game.core.entity.vo.MoneyDetailsVO" extends="MoneyDetailsResultMap">
+        <result column="mobile"  property="mobile" />
+        <result column="nickname"  property="nickname" />
+        <result column="cash_status"  property="cashStatus" />
+    </resultMap>
+
+    <select id="findByAdmin" resultMap="MoneyDetailsResultVOMap" parameterType="com.fulu.game.core.entity.vo.MoneyDetailsVO">
+        SELECT
+        tmd.operator_id  AS operator_id,
+        tmd.target_id    AS target_id,
+        tmd.money        AS money,
+        tmd.create_time  AS create_time,
+        tmd.remark       AS remark,
+        tu.nickname      AS nickname,
+        tu.mobile        AS mobile
+        FROM t_money_details tmd LEFT JOIN t_user tu ON tmd.target_id = tu.id
+        <where>
+            <if test="operatorId != null">and tmd.operator_id = #{operatorId}</if>
+        </where>
+    </select>
+
+    <select id="findByUser" resultMap="MoneyDetailsResultVOMap" parameterType="com.fulu.game.core.entity.vo.MoneyDetailsVO">
+        SELECT
+        tmd.create_time  AS create_time,
+        tmd.money        AS money,
+        tmd.sum          AS sum,
+        tmd.action       AS action,
+        tcd.cash_status  AS cash_status
+        FROM t_money_details tmd LEFT JOIN t_cash_draws tcd ON tmd.cash_id = tcd.cash_id
+        <where>
+            <if test="targetId != null"> tmd.target_id = #{targetId}</if>
+        </where>
+    </select>
+
+    <sql id="Base_Column_List">
+        id,operator_id,target_id,money,action,cash_id,sum,remark,create_time
+    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="MoneyDetailsResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_money_details
+        <where>
+        id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll"  resultMap="MoneyDetailsResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_money_details
+    </select>
+
+    <select id="findByParameter" resultMap="MoneyDetailsResultMap" parameterType="com.fulu.game.core.entity.vo.MoneyDetailsVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_money_details
+        <where>
+            <if test="operatorId != null">and operator_id = #{operatorId}</if>
+            <if test="targetId != null">and target_id = #{targetId}</if>
+            <if test="action != null">and action = #{action}</if>
+            <if test="cashId != null">and cash_id = #{cashId}</if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_money_details
+        <where>id = #{id}</where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.MoneyDetails">
+        insert into
+        t_money_details (operator_id,target_id,money,action,cash_id,sum,remark,create_time)
+        values
+        (#{operatorId},#{targetId},#{money},#{action},#{cashId},#{sum},#{remark},#{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.MoneyDetails">
+        update t_money_details
+        <set>
+            <if test="operatorId != null">operator_id = #{operatorId},</if>
+            <if test="targetId != null">target_id = #{targetId},</if>
+            <if test="money != null">money = #{money},</if>
+            <if test="action != null">action = #{action},</if>
+            <if test="cashId != null">cash_id = #{cashId},</if>
+            <if test="sum != null">sum = #{sum},</if>
+            <if test="remark != null">sum = #{remark},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>
