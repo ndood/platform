@@ -82,6 +82,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         orderProductService.create(orderProduct);
         OrderVO orderVO = new OrderVO();
         BeanUtil.copyProperties(order,orderVO);
+
         return orderVO;
     }
 

@@ -46,7 +46,6 @@ public class WxMaConfiguration {
         payConfig.setSubAppId(StringUtils.trimToNull(playProperties.getWechat().getSubAppId()));
         payConfig.setSubMchId(StringUtils.trimToNull(playProperties.getWechat().getSubMchId()));
         payConfig.setKeyPath(playProperties.getWechat().getKeyPath());
-
         return payConfig;
     }
 
