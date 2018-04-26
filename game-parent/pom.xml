@@ -21,6 +21,7 @@
         <xerces.version>2.9.1</xerces.version>
         <aliyun.oss.verson>2.8.2</aliyun.oss.verson>
         <weixin-java.sdk.verson>3.0.0</weixin-java.sdk.verson>
+        <shiro.version>1.4.0</shiro.version>
         <main.basedir>${basedir}</main.basedir>
     </properties>
 
@@ -86,6 +87,11 @@
                 <groupId>com.github.binarywang</groupId>
                 <artifactId>weixin-java-pay</artifactId>
                 <version>${weixin-java.sdk.verson}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shiro</groupId>
+                <artifactId>shiro-spring</artifactId>
+                <version>${shiro.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
