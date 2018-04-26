@@ -2,24 +2,21 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.common.Constant;
+import com.fulu.game.common.enums.DetailsEnum;
 import com.fulu.game.common.enums.OrderStatusEnum;
+import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.dao.ICommonDao;
-import com.fulu.game.core.entity.Category;
-import com.fulu.game.core.entity.OrderProduct;
-import com.fulu.game.core.entity.Product;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OrderVO;
-import com.fulu.game.core.service.CategoryService;
-import com.fulu.game.core.service.OrderProductService;
-import com.fulu.game.core.service.ProductService;
+import com.fulu.game.core.service.*;
 import com.xiaoleilu.hutool.util.BeanUtil;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 import com.fulu.game.core.dao.OrderDao;
-import com.fulu.game.core.entity.Order;
-import com.fulu.game.core.service.OrderService;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -37,6 +34,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     private CategoryService categoryService;
     @Autowired
     private OrderProductService orderProductService;
+    @Autowired
+    private OrderMoneyDetailsService orderMoneyDetailsService;
 
     @Override
     public ICommonDao<Order, Integer> getDao() {
@@ -82,9 +81,31 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         orderProductService.create(orderProduct);
         OrderVO orderVO = new OrderVO();
         BeanUtil.copyProperties(order,orderVO);
-
+        orderVO.setProduct(product);
         return orderVO;
     }
+
+    /**
+     * 订单支付
+     * @param orderNo
+     * @return
+     */
+    @Override
+    public Order payOrder(String orderNo){
+        Order order =  findByOrderNo(orderNo);
+        if(order.getIsPlay()){
+           throw new OrderException(orderNo,"重复支付订单!");
+        }
+        order.setIsPlay(true);
+        order.setStatus(OrderStatusEnum.WAIT_SERVICE.getStatus());
+        order.setUpdateTime(new Date());
+        update(order);
+        //记录订单流水
+        orderMoneyDetailsService.create(order.getOrderNo(),order.getUserId(), DetailsEnum.ORDER_PAY,""+order.getTotalMoney());
+        //todo 发送短信通知给陪玩师
+        return order;
+    }
+
 
 
 

@@ -16,6 +16,13 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    /**
+     * 提交订单
+     * @param productId
+     * @param num
+     * @param remark
+     * @return
+     */
     @RequestMapping(value = "submit")
     public Result submit(Integer productId,
                          Integer num,

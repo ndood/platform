@@ -13,10 +13,23 @@ import com.fulu.game.core.entity.vo.OrderVO;
  */
 public interface OrderService extends ICommonService<Order,Integer>{
 
-
+    /**
+     * 提交订单
+     * @param productId
+     * @param num
+     * @param remark
+     * @return
+     */
     OrderVO submit(int productId,int num,String remark);
 
+    /**
+     * 支付订单,订单回调的时候调用
+     * @param orderNo
+     * @return
+     */
+    Order payOrder(String orderNo);
 
-     Order findByOrderNo(String orderNo);
+
+    Order findByOrderNo(String orderNo);
 
 }
