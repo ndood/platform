@@ -19,6 +19,7 @@
         <game.core.version>1.0</game.core.version>
         <pagehelper.version>4.0.3</pagehelper.version>
         <xerces.version>2.9.1</xerces.version>
+        <aliyun.oss.verson>2.8.2</aliyun.oss.verson>
         <main.basedir>${basedir}</main.basedir>
     </properties>
 

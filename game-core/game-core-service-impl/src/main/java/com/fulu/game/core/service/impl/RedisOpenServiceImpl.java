@@ -1,7 +1,6 @@
 package com.fulu.game.core.service.impl;
 
 
-import com.fulu.game.common.utils.BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -21,10 +20,11 @@ public class RedisOpenServiceImpl {
     /**
      * 默认存活时间5分钟
      */
-    private static final long time = 5 * 60;
+    private static final long TIME = 5 * 60;
 
     /**
      * 获取某个key的值
+     *
      * @param key
      * @return
      */
@@ -34,15 +34,17 @@ public class RedisOpenServiceImpl {
 
     /**
      * 设置某个key的值
+     *
      * @param key
      * @param value
      */
     public void set(String key, String value) {
-        set(key, value, time);
+        set(key, value, TIME);
     }
 
     /**
      * 设置某个key的值及保存时间
+     *
      * @param key
      * @param value
      * @param time
@@ -53,53 +55,53 @@ public class RedisOpenServiceImpl {
 
     /**
      * 根据key设置某个hash的值
+     *
      * @param key
      * @param hash
      * @param value
      */
-    public void hset(String key, String hash, String value) {
-        hset(key, hash, value, time);
+    public void hset(String key, String hash, Object value) {
+        hset(key, hash, value, TIME);
     }
 
     /**
      * 根据key设置某个hash的值及存活时间
+     *
      * @param key
      * @param hash
      * @param value
      * @param time
      */
-    public void hset(String key, String hash, String value, long time) {
+    public void hset(String key, String hash, Object value, long time) {
         redisTemplate.opsForHash().put(key, hash, value);
         redisTemplate.expire(key, time, TimeUnit.SECONDS);
     }
 
     /**
      * 根据key设置hashtable的值
+     *
      * @param key
-     * @param value
-     * @param <T>
      * @throws Exception
      */
-    public <T> void hset(String key, T value) throws Exception {
-        hset(key, value, time);
+    public void hset(String key, Map<String, Object> map) {
+        hset(key, map, TIME);
     }
 
     /**
      * 根据key设置hashtable的值
+     *
      * @param key
-     * @param value
      * @param time
-     * @param <T>
      * @throws Exception
      */
-    public <T> void hset(String key, T value, long time) throws Exception {
-        Map<String, Object> map = BeanUtil.bean2Map(value);
+    public void hset(String key, Map<String, Object> map, long time) {
         redisTemplate.opsForHash().putAll(key, map);
         redisTemplate.expire(key, time, TimeUnit.SECONDS);
     }
 
     /**
      * 根据key获取某个hash的值
+     *
      * @param key
      * @param hash
      * @return
@@ -110,6 +112,7 @@ public class RedisOpenServiceImpl {
 
     /**
      * 根据key获取整个hashtable
+     *
      * @param key
      * @return
      */
@@ -119,6 +122,7 @@ public class RedisOpenServiceImpl {
 
     /**
      * 根据key删除整个hashtable
+     *
      * @param key
      * @return
      */
@@ -128,6 +132,7 @@ public class RedisOpenServiceImpl {
 
     /**
      * 判断key是否存在
+     *
      * @param key
      * @return
      */

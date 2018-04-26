@@ -14,4 +14,6 @@ import org.springframework.stereotype.Component;
 public class MultipleDatabaseProperties {
 
     DataSourceProperties playAdminDb = new DataSourceProperties();
+
+
 }

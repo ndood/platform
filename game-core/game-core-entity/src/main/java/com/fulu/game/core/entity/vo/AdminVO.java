@@ -14,4 +14,5 @@ import lombok.Data;
 @Data
 public class AdminVO  extends Admin {
     private String orderBy = "create_time DESC";
+    private String token;
 }

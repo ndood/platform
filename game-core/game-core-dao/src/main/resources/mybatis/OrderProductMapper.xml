@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.OrderProductDao">
+    <resultMap id="OrderProductResultMap" type="com.fulu.game.core.entity.OrderProduct">
+        <id column="id" property="id"/>
+        <result column="product_name" property="productName"/>
+        <result column="product_id" property="productId"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="amount" property="amount"/>
+        <result column="price" property="price"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="OrderProductResultVOMap" type="com.fulu.game.core.entity.vo.OrderProductVO"
+               extends="OrderProductResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,product_name,product_id,order_no,amount,price,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="OrderProductResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_order_product
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="OrderProductResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_order_product
+    </select>
+
+    <select id="findByParameter" resultMap="OrderProductResultMap"
+            parameterType="com.fulu.game.core.entity.vo.OrderProductVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_order_product
+        <where>
+            <if test="productName != null">
+                and product_name = #{productName}
+            </if>
+            <if test="productId != null">
+                and product_id = #{productId}
+            </if>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="amount != null">
+                and amount = #{amount}
+            </if>
+            <if test="price != null">
+                and price = #{price}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_order_product
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.OrderProduct">
+        insert into
+        t_order_product (product_name,product_id,order_no,amount,price,create_time,update_time)
+        values
+        (#{productName},#{productId},#{orderNo},#{amount},#{price},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.OrderProduct">
+        update t_order_product
+        <set>
+
+            <if test="productName != null">
+                product_name = #{productName},
+            </if>
+
+            <if test="productId != null">
+                product_id = #{productId},
+            </if>
+
+            <if test="orderNo != null">
+                order_no = #{orderNo},
+            </if>
+
+            <if test="amount != null">
+                amount = #{amount},
+            </if>
+
+            <if test="price != null">
+                price = #{price},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

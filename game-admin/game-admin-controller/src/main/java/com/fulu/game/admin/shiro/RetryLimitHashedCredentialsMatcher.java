@@ -1,11 +1,13 @@
 package com.fulu.game.admin.shiro;
 
 import com.fulu.game.common.domain.Password;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.utils.EncryptUtil;
-import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.vo.AdminVO;
-import com.fulu.game.core.entity.vo.UserVO;
+import com.fulu.game.common.utils.GenIdUtil;
+import com.fulu.game.common.utils.SubjectUtil;
+import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SaltedAuthenticationInfo;
@@ -14,20 +16,23 @@ import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 用于验证密码是否匹配
+ *
  * @author LiuPiao
  */
+@Slf4j
 public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher implements InitializingBean {
 
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-	}
+    @Override
+    public void afterPropertiesSet() throws Exception {
+    }
 
 
     /**
@@ -35,32 +40,39 @@ public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher
      */
     @Override
     public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
-    	return match(token,info);
+        return match(token, info);
     }
-    
+
     /**
      * 自定义验证逻辑
+     *
      * @param token
      * @param info
      * @return
      */
-    private boolean match(AuthenticationToken token, AuthenticationInfo info){
-    	String salt = "";
-        if(info instanceof SaltedAuthenticationInfo){
-        	ByteSource bs = ((SaltedAuthenticationInfo)info).getCredentialsSalt();
+    private boolean match(AuthenticationToken token, AuthenticationInfo info) {
+        String salt = "";
+        if (info instanceof SaltedAuthenticationInfo) {
+            ByteSource bs = ((SaltedAuthenticationInfo) info).getCredentialsSalt();
             try {
-                salt = new String(bs.getBytes(),"utf-8");
-            }catch (Exception e){
+                salt = new String(bs.getBytes(), "utf-8");
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        Password passObj = EncryptUtil.PiecesEncode(new String((char[])token.getCredentials()), salt);
+        Password passObj = EncryptUtil.PiecesEncode(new String((char[]) token.getCredentials()), salt);
         String tokenHashedCredentials = passObj.getPassword();
-        String infoHashCredentials = (String)info.getCredentials();
-        if(super.equals(tokenHashedCredentials, infoHashCredentials)){
-//            AdminVO adminVO = new AdminVO();
-//            adminVO.setId(info.getA).setMobile();
-//            redisOpenService.hset(UUID.randomUUID(), );
+        String infoHashCredentials = (String) info.getCredentials();
+        if (super.equals(tokenHashedCredentials, infoHashCredentials)) {
+            //登录成功保存token和用户信息到redis
+            Admin admin = (Admin) info.getPrincipals().getPrimaryPrincipal();
+            Map<String, Object> adminMap = new HashMap<>();
+            adminMap.put("id", admin.getId());
+            adminMap.put("name", admin.getName());
+            String genToken = GenIdUtil.GetGUID();
+            redisOpenService.hset(RedisKeyEnum.TOKEN.generateKey(genToken), adminMap);
+            log.info("登录成功生成token：{}", genToken);
+            SubjectUtil.setToken(genToken);
             return true;
         }
         return false;
