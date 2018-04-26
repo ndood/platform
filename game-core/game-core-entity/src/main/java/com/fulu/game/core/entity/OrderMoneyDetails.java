@@ -22,7 +22,7 @@ public class OrderMoneyDetails implements Serializable {
 	//流水用户
 	private Integer userId;
 	//描述
-	private String desc;
+	private String remark;
 	//流水金额
 	private String money;
 	//

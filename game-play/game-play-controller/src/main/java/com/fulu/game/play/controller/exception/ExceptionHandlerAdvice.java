@@ -2,6 +2,7 @@ package com.fulu.game.play.controller.exception;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.exception.CashException;
+import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
@@ -43,17 +44,22 @@ public class ExceptionHandlerAdvice {
         return	Result.error().msg("必填参数空:"+e.getMessage());
     }
 
+
     @ExceptionHandler(ServiceErrorException.class)
     public Result  serviceErrorException(ServiceErrorException e){
         log.error(e.getMessage(), e);
         return	Result.error().msg(e.getMessage());
     }
 
-    @ExceptionHandler(Exception.class)
-    public Result handleException(Exception e) {
+
+    @ExceptionHandler(OrderException.class)
+    public Result  orderException(OrderException e){
         log.error(e.getMessage(), e);
-        return	Result.error().msg("服务器错误");
+        return	Result.error().msg("订单操作失败!");
     }
+
+
+
 
     @ExceptionHandler(CashException.class)
     public Result cashException(CashException e) {
@@ -61,9 +67,19 @@ public class ExceptionHandlerAdvice {
         return	Result.error().msg(e.getMessage());
     }
 
+
+
     @ExceptionHandler(UserException.class)
     public Result UserException(UserException e) {
         log.error(e.getMessage(), e);
         return	Result.error().msg(e.getMessage());
     }
+
+
+    @ExceptionHandler(Exception.class)
+    public Result handleException(Exception e) {
+        log.error(e.getMessage(), e);
+        return	Result.error().msg("服务器错误");
+    }
+
 }

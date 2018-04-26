@@ -27,7 +27,37 @@ public interface OrderService extends ICommonService<Order,Integer>{
      * @param orderNo
      * @return
      */
-    Order payOrder(String orderNo);
+    OrderVO payOrder(String orderNo);
+
+    /**
+     * 陪玩师接收订单
+     * @param orderNo
+     * @return
+     */
+    OrderVO serverReceiveOrder(String orderNo);
+
+    /**
+     * 陪玩师取消订单
+     * @param orderNo
+     * @return
+     */
+    OrderVO serverCancelOrder(String orderNo);
+
+    /**
+     * 用户取消订单
+     * @param orderNo
+     * @return
+     */
+    OrderVO userCancelOrder(String orderNo);
+
+    /**
+     * 订单申诉
+     * @param orderNo
+     * @return
+     */
+    OrderVO userAppealOrder(String orderNo);
+
+
 
 
     Order findByOrderNo(String orderNo);
