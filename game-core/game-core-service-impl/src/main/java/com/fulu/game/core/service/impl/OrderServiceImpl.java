@@ -5,6 +5,7 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.DetailsEnum;
 import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.exception.OrderException;
+import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
@@ -46,11 +47,9 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     public OrderVO submit(int productId,
                           int num,
                           String remark) {
-
-        //todo 确认打手是否已经接单
+        //todo 确认打手是否已经接单,已经接单需要提示用户等待
         Product product = productService.findById(productId);
-
-        Category category = categoryService.findById(productId);
+        Category category = categoryService.findById(product.getCategoryId());
         //计算订单总价格
         BigDecimal totalMoney = product.getPrice().multiply(new BigDecimal(num));
         //计算单笔订单佣金
@@ -59,7 +58,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         Order order = new Order();
         order.setName(product.getCategoryName()+"-"+num+"*"+product.getUnit());
         order.setOrderNo(getOrderNo());
-        order.setUserId(Constant.DEF_USER_ID);
+        order.setUserId(Constant.DEF_COMMON_USER_ID);
         order.setServiceUserId(product.getUserId());
         order.setRemark(remark);
         order.setIsPlay(false);
@@ -69,6 +68,9 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setCreateTime(new Date());
         order.setUpdateTime(new Date());
         create(order);
+        if(order.getUserId().equals(order.getServiceUserId())){
+            throw new ServiceErrorException("陪玩师和下单用户不能一样!");
+        }
         //创建订单商品
         OrderProduct orderProduct = new OrderProduct();
         orderProduct.setOrderNo(order.getOrderNo());
@@ -91,10 +93,10 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      * @return
      */
     @Override
-    public Order payOrder(String orderNo){
+    public OrderVO payOrder(String orderNo){
         Order order =  findByOrderNo(orderNo);
         if(order.getIsPlay()){
-           throw new OrderException(orderNo,"重复支付订单!");
+           throw new OrderException(orderNo,"重复支付订单!["+order.toString()+"]");
         }
         order.setIsPlay(true);
         order.setStatus(OrderStatusEnum.WAIT_SERVICE.getStatus());
@@ -103,9 +105,80 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         //记录订单流水
         orderMoneyDetailsService.create(order.getOrderNo(),order.getUserId(), DetailsEnum.ORDER_PAY,""+order.getTotalMoney());
         //todo 发送短信通知给陪玩师
-        return order;
+        return orderConvertVo(order);
     }
 
+    /**
+     * 陪玩师接单
+     * @return
+     */
+    @Override
+    public OrderVO serverReceiveOrder(String orderNo){
+        Order order =  findByOrderNo(orderNo);
+        //只有等待陪玩和已支付的订单才能开始陪玩
+        if(!order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())||!order.getIsPlay()){
+            throw new OrderException(order.getOrderNo(),"订单未支付或者状态不是等待陪玩!");
+        }
+        order.setStatus(OrderStatusEnum.SERVICING.getStatus());
+        order.setUpdateTime(new Date());
+        update(order);
+        return orderConvertVo(order);
+    }
+
+    /**
+     * 陪玩师取消订单
+     * @param orderNo
+     * @return
+     */
+    @Override
+    public OrderVO serverCancelOrder(String orderNo){
+        Order order =  findByOrderNo(orderNo);
+        if(!order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())
+            &&!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())){
+            throw new OrderException(order.getOrderNo(),"只有陪玩中和等待陪玩的订单才能取消!");
+        }
+        order.setStatus(OrderStatusEnum.SERVER_CANCEL.getStatus());
+        order.setUpdateTime(new Date());
+        update(order);
+        //todo 全额退款用户
+
+        //记录订单流水
+        orderMoneyDetailsService.create(orderNo,order.getUserId(),DetailsEnum.ORDER_SERVER_CANCEL,"-"+order.getTotalMoney());
+        return orderConvertVo(order);
+    }
+
+    /**
+     * 用户取消订单
+     * @param orderNo
+     * @return
+     */
+    @Override
+    public OrderVO userCancelOrder(String orderNo) {
+        Order order =  findByOrderNo(orderNo);
+        if(!order.getStatus().equals(OrderStatusEnum.NON_PAYMENT.getStatus())
+            &&!order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())){
+            throw new OrderException(order.getOrderNo(),"只有等待陪玩和未支付的订单才能取消!");
+        }
+        order.setStatus(OrderStatusEnum.USER_CANCEL.getStatus());
+        order.setUpdateTime(new Date());
+        update(order);
+        if(order.getIsPlay()){
+            //todo 全额退款用户
+
+            //记录订单流水
+            orderMoneyDetailsService.create(orderNo,order.getUserId(),DetailsEnum.ORDER_USER_CANCEL,"-"+order.getTotalMoney());
+        }
+        return orderConvertVo(order);
+    }
+
+
+
+    @Override
+    public OrderVO userAppealOrder(String orderNo){
+        Order order =  findByOrderNo(orderNo);
+        //todo 订单申诉
+        return orderConvertVo(order);
+    }
 
 
 
@@ -133,5 +206,11 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
             return null;
         }
         return orderList.get(0);
+    }
+
+    private OrderVO orderConvertVo(Order order){
+        OrderVO orderVO = new OrderVO();
+        BeanUtil.copyProperties(order,orderVO);
+        return orderVO;
     }
 }

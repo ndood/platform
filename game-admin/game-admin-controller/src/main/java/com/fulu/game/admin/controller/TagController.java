@@ -85,7 +85,6 @@ public class TagController extends BaseController {
         }else{
             tagService.update(tag);
             return Result.success().data(tag).msg("标签修改成功!");
-
         }
     }
 

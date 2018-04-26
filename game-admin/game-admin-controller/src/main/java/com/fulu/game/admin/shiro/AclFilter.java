@@ -36,6 +36,9 @@ public class AclFilter extends AccessControlFilter {
     protected boolean onAccessDenied(ServletRequest request,
                                      ServletResponse response) throws Exception {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+        if("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())){
+            return true;
+        }
         String token = httpRequest.getHeader("token");
         Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.TOKEN.generateKey(token));
         // 没有登录授权 且没有记住我
