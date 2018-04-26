@@ -1,5 +1,6 @@
 package com.fulu.game.play.shiro;
 
+import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Admin;
@@ -50,11 +51,7 @@ public class AclFilter extends AccessControlFilter {
 
             try{
                 out = httpResponse.getWriter();
-                JSONObject res = new JSONObject();
-                res.element("status", "500");
-                res.element("data", "");
-                res.element("msg", "您未登录，暂无权限访问");
-                out.append(res.toString());
+                out.append(JSONObject.fromObject(Result.noLogin()).toString());
             }catch(IOException e){
                 e.printStackTrace();
             }finally {
