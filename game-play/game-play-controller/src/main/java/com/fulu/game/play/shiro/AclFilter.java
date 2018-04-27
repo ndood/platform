@@ -1,9 +1,9 @@
 package com.fulu.game.play.shiro;
 
-import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Admin;
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -20,21 +20,33 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 
+/**
+ * 调用小程序服务接口时都会先进入此类的方法
+ */
 @Slf4j
 public class AclFilter extends AccessControlFilter {
 
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
 
+    /**
+     * 首先调用若返回true则继续执行filter和servlet，否则调用onAccessDenied
+     */
     @Override
     protected boolean isAccessAllowed(ServletRequest request,
                                       ServletResponse response, Object mappedValue) throws Exception {
         return false;
     }
 
+    /**
+     * 验证token的有效性
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     */
     @Override
-    protected boolean onAccessDenied(ServletRequest request,
-                                     ServletResponse response) throws Exception {
+    protected boolean onAccessDenied(ServletRequest request,ServletResponse response) throws Exception {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String token = httpRequest.getHeader("token");
         Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.TOKEN.generateKey(token));
@@ -45,13 +57,14 @@ public class AclFilter extends AccessControlFilter {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             httpResponse.setCharacterEncoding("UTF-8");
             httpResponse.setContentType("application/json; charset=utf-8");
-            httpResponse.setHeader("Access-Control-Allow-Origin", "*");
-
             PrintWriter out = null;
-
             try{
                 out = httpResponse.getWriter();
-                out.append(JSONObject.fromObject(Result.noLogin()).toString());
+                JSONObject res = new JSONObject();
+                res.element("status", "500");
+                res.element("data", "");
+                res.element("msg", "您未登录，暂无权限访问");
+                out.append(res.toString());
             }catch(IOException e){
                 e.printStackTrace();
             }finally {
@@ -65,8 +78,8 @@ public class AclFilter extends AccessControlFilter {
         redisOpenService.hset(RedisKeyEnum.TOKEN.generateKey(token), map);
 
         //已登录的，就保存该token从redis查到的用户信息
-        Admin admin = BeanUtil.mapToBean(map, Admin.class, true);
-        SubjectUtil.setCurrentUset(admin);
+        User user = BeanUtil.mapToBean(map, User.class, true);
+        SubjectUtil.setCurrentUser(user);
         return true;
     }
 

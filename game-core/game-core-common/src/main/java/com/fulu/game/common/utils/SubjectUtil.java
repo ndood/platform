@@ -12,7 +12,7 @@ public class SubjectUtil {
         return tl.get();
     }
 
-    public static void setCurrentUset(Object o) {
+    public static void setCurrentUser(Object o) {
         tl.set(o);
     }
 

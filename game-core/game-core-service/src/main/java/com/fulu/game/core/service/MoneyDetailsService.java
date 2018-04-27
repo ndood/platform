@@ -23,6 +23,13 @@ public interface MoneyDetailsService extends ICommonService<MoneyDetails,Integer
     MoneyDetails save(MoneyDetailsVO moneyDetailsVO);
 
     /**
+     * 入款-完成陪玩订单
+     * @param moneyDetailsVO
+     * @return
+     */
+    MoneyDetails orderSave(MoneyDetailsVO moneyDetailsVO);
+
+    /**
      * 提款-生成提款申请单后调用该接口
      * @return
      */
