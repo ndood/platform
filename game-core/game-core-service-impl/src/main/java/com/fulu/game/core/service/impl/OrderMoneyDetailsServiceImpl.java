@@ -29,12 +29,12 @@ public class OrderMoneyDetailsServiceImpl extends AbsCommonService<OrderMoneyDet
     @Override
     public void create(String orderNo,
                        Integer userId,
-                       DetailsEnum desc,
+                       DetailsEnum remark,
                        String money) {
         OrderMoneyDetails orderMoneyDetails = new OrderMoneyDetails();
         orderMoneyDetails.setOrderNo(orderNo);
         orderMoneyDetails.setUserId(userId);
-        orderMoneyDetails.setDesc(desc.getMsg());
+        orderMoneyDetails.setRemark(remark.getMsg());
         orderMoneyDetails.setMoney(money);
         orderMoneyDetails.setCreateTime(new Date());
         create(orderMoneyDetails);

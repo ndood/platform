@@ -6,8 +6,10 @@ import com.xiaoleilu.hutool.util.ArrayUtil;
 import com.xiaoleilu.hutool.util.RandomUtil;
 
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  *
@@ -112,5 +114,14 @@ public class EncryptUtil {
 			return null;
 		}
     }
-    
+
+
+	public static String md5Digest(String src) throws NoSuchAlgorithmException, UnsupportedEncodingException
+	{
+		MessageDigest md = MessageDigest.getInstance("MD5");
+		byte[] b = md.digest(src.getBytes("utf-8"));
+		return byte2hex(b);
+	}
+
+
 }

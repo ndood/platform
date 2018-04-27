@@ -6,25 +6,23 @@ import lombok.Data;
 
 
 /**
- * 订单流水表
+ * 
  * 
  * @author yanbiao
- * @date 2018-04-26 14:07:31
+ * @date 2018-04-26 17:51:54
  */
 @Data
-public class OrderMoneyDetails implements Serializable {
+public class OrderDeal implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	//
 	private Integer id;
 	//订单号
 	private String orderNo;
-	//流水用户
-	private Integer userId;
-	//描述
+	//订单处理类型
+	private Integer type;
+	//处理过程备注
 	private String remark;
-	//流水金额
-	private String money;
 	//
 	private Date createTime;
 

@@ -14,6 +14,6 @@ import com.fulu.game.core.entity.OrderMoneyDetails;
 public interface OrderMoneyDetailsService extends ICommonService<OrderMoneyDetails, Integer> {
 
 
-    void create(String orderNo, Integer userId, DetailsEnum desc, String money);
+    void create(String orderNo, Integer userId, DetailsEnum remark, String money);
 
 }

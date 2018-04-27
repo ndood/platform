@@ -19,6 +19,7 @@ public class Config {
 
     private Oss oss = new Oss();
 
+    private Cloopen cloopen = new Cloopen();
 
     @Data
     public static class Evn{
@@ -34,4 +35,12 @@ public class Config {
         private String host;
     }
 
+    @Data
+    public static class Cloopen{
+        private String serverIp;
+        private String serverPort;
+        private String accountSid;
+        private String accountToken;
+        private String appId;
+    }
 }

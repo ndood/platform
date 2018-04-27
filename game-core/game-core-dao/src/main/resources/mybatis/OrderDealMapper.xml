@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.OrderDealDao">
+    <resultMap id="OrderDealResultMap" type="com.fulu.game.core.entity.OrderDeal">
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="type" property="type"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="OrderDealResultVOMap" type="com.fulu.game.core.entity.vo.OrderDealVO" extends="OrderDealResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,order_no,type,remark,create_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="OrderDealResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_order_deal
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="OrderDealResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_order_deal
+    </select>
+
+    <select id="findByParameter" resultMap="OrderDealResultMap"
+            parameterType="com.fulu.game.core.entity.vo.OrderDealVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_order_deal
+        <where>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_order_deal
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.OrderDeal">
+        insert into
+        t_order_deal (order_no,type,remark,create_time)
+        values
+        (#{orderNo},#{type},#{remark},#{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.OrderDeal">
+        update t_order_deal
+        <set>
+
+            <if test="orderNo != null">
+                order_no = #{orderNo},
+            </if>
+
+            <if test="type != null">
+                type = #{type},
+            </if>
+
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>
