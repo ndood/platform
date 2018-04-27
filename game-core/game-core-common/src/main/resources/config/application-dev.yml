@@ -27,3 +27,9 @@ config:
       host: "http://app-testing-new.oss-cn-hangzhou.aliyuncs.com/"
     evn:
       prefix: DEV
+    cloopen:
+      serverIp: app.cloopen.com
+      serverPort: 8883
+      accountSid: 8a216da85f341b69015f4dbe74580a0c
+      accountToken: 6f9dc07aa412497a995451f9463b1f61
+      appId: 8a216da85f341b69015f4dbe75f30a13
