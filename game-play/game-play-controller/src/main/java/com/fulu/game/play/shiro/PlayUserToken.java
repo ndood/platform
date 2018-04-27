@@ -2,35 +2,32 @@ package com.fulu.game.play.shiro;
 
 import org.apache.shiro.authc.UsernamePasswordToken;
 
+/**
+ * 令牌
+ */
 public class PlayUserToken extends UsernamePasswordToken {
-    /**
-     *
-     */
+
     private static final long serialVersionUID = 1L;
 
-    private Boolean wechat = false;
+    private String openId;
 
-    private String validationCode;
+    private String sessionKey;
 
-    public String getValidationCode() {
-        return validationCode;
+    public void setOpenId(String openId){
+        this.openId = openId;
     }
-
-    public void setValidationCode(String validationCode) {
-        this.validationCode = validationCode;
+    public String getOpenId(){
+        return openId;
     }
-
-    public Boolean getWechat() {
-        return wechat;
+    public void setSessionKey(String sessionKey){
+        this.sessionKey = sessionKey;
     }
-
-    public void setWechat(Boolean wechat) {
-        this.wechat = wechat;
+    public String getSessionKey(){
+        return sessionKey;
     }
-
-    public PlayUserToken(String username, String password, boolean rememberMe,
-                    String host, String validationCode) {
-        super(username, password, rememberMe, host);
-        this.validationCode = validationCode;
+    public PlayUserToken(String openId, String sessionKey) {
+        super(openId, sessionKey);
+        this.openId = openId;
+        this.sessionKey = sessionKey;
     }
 }

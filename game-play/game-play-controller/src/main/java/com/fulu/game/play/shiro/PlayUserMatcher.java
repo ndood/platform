@@ -1,18 +1,14 @@
 package com.fulu.game.play.shiro;
 
-import com.fulu.game.common.domain.Password;
 import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.utils.EncryptUtil;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.common.utils.SubjectUtil;
-import com.fulu.game.core.entity.Admin;
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.SaltedAuthenticationInfo;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
-import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,49 +30,33 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
     public void afterPropertiesSet() throws Exception {
     }
 
-
     /**
-     * 验证密码是否匹配逻辑
-     */
-    @Override
-    public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
-        return match(token, info);
-    }
-
-    /**
-     * 自定义验证逻辑
-     *
+     * 自定义验证提交凭证和数据库（缓存）凭据信息是否一致,最后执行
+     * 参数由doGetAuthenticationInfo方法传过来
      * @param token
      * @param info
      * @return
      */
-    private boolean match(AuthenticationToken token, AuthenticationInfo info) {
-        String salt = "";
-        if (info instanceof SaltedAuthenticationInfo) {
-            ByteSource bs = ((SaltedAuthenticationInfo) info).getCredentialsSalt();
-            try {
-                salt = new String(bs.getBytes(), "utf-8");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        Password passObj = EncryptUtil.PiecesEncode(new String((char[]) token.getCredentials()), salt);
-        String tokenHashedCredentials = passObj.getPassword();
-        String infoHashCredentials = (String) info.getCredentials();
-        if (super.equals(tokenHashedCredentials, infoHashCredentials)) {
-            //登录成功保存token和用户信息到redis
-            Admin admin = (Admin) info.getPrincipals().getPrimaryPrincipal();
-            Map<String, Object> adminMap = new HashMap<>();
-            adminMap.put("id", admin.getId());
-            adminMap.put("name", admin.getName());
-            String genToken = GenIdUtil.GetGUID();
-            redisOpenService.hset(RedisKeyEnum.TOKEN.generateKey(genToken), adminMap);
-            log.info("登录成功生成token：{}", genToken);
-            SubjectUtil.setToken(genToken);
+    @Override
+    public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
+
+        String paramOpenId = token.getCredentials().toString();
+        User user = (User) info.getPrincipals().getPrimaryPrincipal();
+        String dBOpenId = user.getOpenId();
+        //登录成功保存token和用户信息到redis
+        if (paramOpenId.equals(dBOpenId)){
+            Map<String, Object> userMap = new HashMap<>();
+            userMap.put("id",user.getId());
+            userMap.put("nickname",user.getNickname());
+            userMap.put("openId", user.getOpenId());
+            userMap.put("sessionKey", user.getSessionKey());
+            String gToken = GenIdUtil.GetGUID();
+            redisOpenService.hset(RedisKeyEnum.TOKEN.generateKey(gToken), userMap);
+            log.info("登录成功生成token：{}", gToken);
+            SubjectUtil.setToken(gToken);
             return true;
         }
         return false;
     }
-
 
 }

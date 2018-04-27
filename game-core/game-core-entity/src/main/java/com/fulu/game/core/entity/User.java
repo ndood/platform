@@ -48,6 +48,8 @@ public class User implements Serializable {
 	private Date createTime;
 	//修改时间
 	private Date updateTime;
+	private String sessionKey;
+	private String openId;
 
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	public Date getCreateTime(){

@@ -18,13 +18,15 @@
         <result column="status" property="status"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
+        <result column="session_key" property="sessionKey"/>
+        <result column="open_id" property="openId"/>
     </resultMap>
 
     <resultMap id="UserResultVOMap" type="com.fulu.game.core.entity.vo.UserVO" extends="UserResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time    </sql>
+        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,session_key,open_id </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserResultMap">
         select
@@ -48,6 +50,9 @@
         <where>
             <if test="id != null">
                 id = #{id}
+            </if>
+            <if test="openId != null">
+                open_id = #{openId}
             </if>
             <if test="mobile != null">
                 and mobile = #{mobile}

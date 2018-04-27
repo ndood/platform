@@ -80,6 +80,36 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails,Integ
         return moneyDetails;
     }
 
+    /**
+     * 陪玩订单完成生成零钱记录
+     * @param moneyDetailsVO
+     * @return
+     */
+    @Override
+    public MoneyDetails orderSave(MoneyDetailsVO moneyDetailsVO) {
+        if (moneyDetailsVO.getMoney().compareTo(BigDecimal.ZERO)==-1){
+            throw new CashException(CashExceptionEnums.CASH_NEGATIVE_EXCEPTION);
+        }
+        User user = userService.findById(moneyDetailsVO.getTargetId());
+        if (null == user){
+            throw new UserException(UserExceptionEnums.USER_NOT_EXIST_EXCEPTION);
+        }
+        //加钱之前该用户的零钱
+        BigDecimal balance = user.getBalance();
+        BigDecimal newBalance = balance.add(moneyDetailsVO.getMoney());
+
+        MoneyDetails moneyDetails = new MoneyDetails();
+        BeanUtil.copyProperties(moneyDetailsVO,moneyDetails);
+        moneyDetails.setSum(newBalance);
+        moneyDetails.setOperatorId(moneyDetails.getTargetId());
+        moneyDetails.setAction(2);//2表示陪玩订单
+        moneyDetails.setCreateTime(new Date());
+        moneyDetailsDao.create(moneyDetails);
+        user.setBalance(newBalance);
+        userService.update(user);
+        return moneyDetails;
+    }
+
     @Override
     public MoneyDetails drawSave(MoneyDetails moneyDetails) {
         moneyDetailsDao.create(moneyDetails);

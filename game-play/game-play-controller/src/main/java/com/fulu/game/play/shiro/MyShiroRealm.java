@@ -1,22 +1,21 @@
 package com.fulu.game.play.shiro;
 
-
-import com.fulu.game.core.entity.Admin;
-import com.fulu.game.core.service.AdminService;
+import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.UserVO;
+import com.fulu.game.core.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
 public class MyShiroRealm extends AuthorizingRealm {
 
     @Autowired
-    private AdminService adminService;
+    private UserService userService;
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
@@ -36,38 +35,29 @@ public class MyShiroRealm extends AuthorizingRealm {
         return authorizationInfo;
     }
 
-    /*主要是用来进行身份认证的，也就是说验证用户输入的账号和密码是否正确。*/
+    /**
+     * 验证openId是否存在
+     * 执行时机：subject.login()方法
+     * 参数token由login()方法传过来
+     */
     @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token)
-            throws AuthenticationException {
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) {
         log.info("MyShiroRealm.doGetAuthenticationInfo()");
-        //获取用户的输入的账号.
-        String username = (String) token.getPrincipal();
-        //通过username从数据库中查找 User对象，如果找到，没找到.
-        //实际项目中，这里可以根据实际情况做缓存，如果不做，Shiro自己也是有时间间隔机制，2分钟内不会重复执行该方法
-        Admin admin = adminService.findByUsername(username);
-        log.info("----->>userInfo=" + admin);
-        if (admin == null) {
-            throw new UnknownAccountException();
+        PlayUserToken playUserToken = (PlayUserToken)token;
+        String openId = playUserToken.getOpenId();
+
+        User user = userService.findByOpenId(openId);
+        if (user != null) {
+            return new SimpleAuthenticationInfo(user,user.getOpenId(),getName());
+        }else{
+            //没有该用户则创建一个
+            String sessionKry = playUserToken.getSessionKey();
+            UserVO userVO = new UserVO();
+            userVO.setSessionKey(sessionKry);
+            userVO.setOpenId(openId);
+            user = userService.save(userVO);
+            return new SimpleAuthenticationInfo(user,user.getOpenId(),getName());
         }
-
-//        if(Boolean.TRUE.equals(admin.getLocked())){
-//            throw new LockedAccountException();
-//        }
-
-        String password = admin.getPassword();
-        String salt = admin.getSalt();
-
-        admin.setPassword(null);
-        admin.setSalt(null);
-
-        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
-                admin, //用户对象
-                password, //密码
-                ByteSource.Util.bytes(salt),//salt=username+salt
-                getName()  //realm name
-        );
-        return authenticationInfo;
     }
 
 }
