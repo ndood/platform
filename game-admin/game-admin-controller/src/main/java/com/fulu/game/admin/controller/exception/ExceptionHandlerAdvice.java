@@ -6,6 +6,7 @@ import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -24,11 +25,19 @@ public class ExceptionHandlerAdvice {
         return	Result.error().msg("数据库中已存在该记录");
     }
 
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public Result handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        log.error(e.getMessage(), e);
+        return	Result.error().msg("存在关联数据，无法删除!");
+    }
+
     @ExceptionHandler(DataAccessException.class)
     public Result handleDataAccessException(DataAccessException e) {
         log.error(e.getMessage(), e);
         return	Result.error().msg("SQL执行错误:"+e.getCause().getMessage());
     }
+
 
 
     @ExceptionHandler(org.springframework.web.servlet.NoHandlerFoundException.class)

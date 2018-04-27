@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Product;
+import com.fulu.game.core.entity.vo.ServerCardVO;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -58,4 +59,7 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * 停止接单
      */
     void stopOrderReceiving();
+
+
+    ServerCardVO findByProductId(Integer productId);
 }

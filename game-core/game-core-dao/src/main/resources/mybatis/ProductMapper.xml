@@ -3,37 +3,39 @@
 
 <mapper namespace="com.fulu.game.core.dao.ProductDao">
     <resultMap id="ProductResultMap" type="com.fulu.game.core.entity.Product">
-                                    <id column="id"  property="id" />
-                                            <result column="user_id"  property="userId" />
-                                            <result column="category_id"  property="categoryId" />
-                                            <result column="category_name"  property="categoryName" />
-                                            <result column="tech_auth_id"  property="techAuthId" />
-                                            <result column="price"  property="price" />
-                                            <result column="unit"  property="unit" />
-                                            <result column="unit_tech_value_id"  property="unitTechValueId" />
-                                            <result column="status"  property="status" />
-                                            <result column="create_time"  property="createTime" />
-                                            <result column="update_time"  property="updateTime" />
-                        </resultMap>
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="product_name" property="productName"/>
+        <result column="category_icon" property="categoryIcon"/>
+        <result column="tech_auth_id" property="techAuthId"/>
+        <result column="price" property="price"/>
+        <result column="unit" property="unit"/>
+        <result column="unit_tech_value_id" property="unitTechValueId"/>
+        <result column="unit_tech_value_rank" property="unitTechValueRank"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
 
     <resultMap id="ProductResultVOMap" type="com.fulu.game.core.entity.vo.ProductVO" extends="ProductResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,category_id,category_name,tech_auth_id,price,unit,unit_tech_value_id,status,create_time,update_time    </sql>
+        id,user_id,category_id,product_name,category_icon,tech_auth_id,price,unit,unit_tech_value_id,unit_tech_value_rank,status,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="ProductResultMap">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from t_product
         <where>
-        id = #{id}
+            id = #{id}
         </where>
     </select>
 
-    <select id="findAll"  resultMap="ProductResultMap">
+    <select id="findAll" resultMap="ProductResultMap">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from t_product
     </select>
 
@@ -42,37 +44,43 @@
         <include refid="Base_Column_List"/>
         FROM t_product
         <where>
-                                                                            <if test="userId != null">
-                       and user_id = #{userId}
-                    </if>
-                                                                <if test="categoryId != null">
-                       and category_id = #{categoryId}
-                    </if>
-                                                                <if test="categoryName != null">
-                       and category_name = #{categoryName}
-                    </if>
-                                                                <if test="techAuthId != null">
-                       and tech_auth_id = #{techAuthId}
-                    </if>
-                                                                <if test="price != null">
-                       and price = #{price}
-                    </if>
-                                                                <if test="unit != null">
-                       and unit = #{unit}
-                    </if>
-                                                                <if test="unitTechValueId != null">
-                       and unit_tech_value_id = #{unitTechValueId}
-                    </if>
-                                                                <if test="status != null">
-                       and status = #{status}
-                    </if>
-                                                                <if test="createTime != null">
-                       and create_time = #{createTime}
-                    </if>
-                                                                <if test="updateTime != null">
-                       and update_time = #{updateTime}
-                    </if>
-                                    </where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="productName != null">
+                and product_name = #{productName}
+            </if>
+            <if test="categoryIcon != null">
+                and category_icon = #{categoryIcon}
+            </if>
+            <if test="techAuthId != null">
+                and tech_auth_id = #{techAuthId}
+            </if>
+            <if test="price != null">
+                and price = #{price}
+            </if>
+            <if test="unit != null">
+                and unit = #{unit}
+            </if>
+            <if test="unitTechValueId != null">
+                and unit_tech_value_id = #{unitTechValueId}
+            </if>
+            <if test="unitTechValueRank != null">
+                and unit_tech_value_rank = #{unitTechValueRank}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">
@@ -84,55 +92,63 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Product">
         insert into
-        t_product (user_id,category_id,category_name,tech_auth_id,price,unit,unit_tech_value_id,status,create_time,update_time)
+        t_product (user_id,category_id,product_name,category_icon,tech_auth_id,price,unit,unit_tech_value_id,unit_tech_value_rank,status,create_time,update_time)
         values
-        (#{userId},#{categoryId},#{categoryName},#{techAuthId},#{price},#{unit},#{unitTechValueId},#{status},#{createTime},#{updateTime})
+        (#{userId},#{categoryId},#{productName},#{categoryIcon},#{techAuthId},#{price},#{unit},#{unitTechValueId},#{unitTechValueRank},#{status},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Product">
         update t_product
         <set>
-                                                        
-                    <if test="userId != null">
-                        user_id = #{userId},
-                    </if>
-                                            
-                    <if test="categoryId != null">
-                        category_id = #{categoryId},
-                    </if>
-                                            
-                    <if test="categoryName != null">
-                        category_name = #{categoryName},
-                    </if>
-                                            
-                    <if test="techAuthId != null">
-                        tech_auth_id = #{techAuthId},
-                    </if>
-                                            
-                    <if test="price != null">
-                        price = #{price},
-                    </if>
-                                            
-                    <if test="unit != null">
-                        unit = #{unit},
-                    </if>
-                                            
-                    <if test="unitTechValueId != null">
-                        unit_tech_value_id = #{unitTechValueId},
-                    </if>
-                                            
-                    <if test="status != null">
-                        status = #{status},
-                    </if>
-                                            
-                    <if test="createTime != null">
-                        create_time = #{createTime},
-                    </if>
-                                            
-                    <if test="updateTime != null">
-                        update_time = #{updateTime},
-                    </if>
-                                    </set>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+
+            <if test="productName != null">
+                product_name = #{productName},
+            </if>
+
+            <if test="categoryIcon != null">
+                category_icon = #{categoryIcon},
+            </if>
+
+            <if test="techAuthId != null">
+                tech_auth_id = #{techAuthId},
+            </if>
+
+            <if test="price != null">
+                price = #{price},
+            </if>
+
+            <if test="unit != null">
+                unit = #{unit},
+            </if>
+
+            <if test="unitTechValueId != null">
+                unit_tech_value_id = #{unitTechValueId},
+            </if>
+
+            <if test="unitTechValueRank != null">
+                unit_tech_value_rank = #{unitTechValueRank},
+            </if>
+
+            <if test="status != null">
+                status = #{status},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
         <where>
             id = #{id}
         </where>

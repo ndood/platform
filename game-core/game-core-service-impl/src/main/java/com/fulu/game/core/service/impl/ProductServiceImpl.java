@@ -10,6 +10,7 @@ import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.TechValue;
 import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.vo.ProductVO;
+import com.fulu.game.core.entity.vo.ServerCardVO;
 import com.fulu.game.core.service.ProductService;
 import com.fulu.game.core.service.TechValueService;
 import com.fulu.game.core.service.UserTechAuthService;
@@ -50,10 +51,11 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         TechValue techValue = techValueService.findById(unitId);
         Product product = new Product();
         product.setCategoryId(userTechAuth.getCategoryId());
-        product.setCategoryName(userTechAuth.getCategoryName());
+        product.setProductName(userTechAuth.getCategoryName());
         product.setTechAuthId(userTechAuth.getId());
         product.setUnitTechValueId(techValue.getId());
         product.setUnit(techValue.getName());
+        product.setUnitTechValueRank(techValue.getRank());
         product.setUserId(userTechAuth.getUserId());
         product.setPrice(price);
         product.setStatus(false);
@@ -73,16 +75,17 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         if (techAuthId != null) {
             UserTechAuth userTechAuth = userTechAuthService.findById(techAuthId);
             product.setCategoryId(userTechAuth.getCategoryId());
-            product.setCategoryName(userTechAuth.getCategoryName());
+            product.setProductName(userTechAuth.getCategoryName());
             product.setTechAuthId(userTechAuth.getId());
         }
-        if (price == null) {
+        if (price != null) {
             product.setPrice(price);
         }
-        if (unitId == null) {
+        if (unitId != null) {
             TechValue techValue = techValueService.findById(unitId);
             product.setUnitTechValueId(techValue.getId());
             product.setUnit(techValue.getName());
+            product.setUnitTechValueRank(techValue.getRank());
         }
         product.setUpdateTime(new Date());
         update(product);
@@ -153,6 +156,22 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                 throw new ServiceErrorException("开始接单操作失败!");
             }
         }
+    }
+
+
+    @Override
+    public ServerCardVO findByProductId(Integer productId) {
+        Product product = findById(productId);
+        ServerCardVO.builder()
+                    .categoryId(product.getCategoryId())
+                    .productId(product.getId())
+                    .productName(product.getProductName())
+                    .icon(product.getCategoryIcon())
+                    .price(product.getPrice())
+                    .unit(product.getUnit())
+                    .techAuthId(product.getTechAuthId());
+
+        return null;
     }
 
 

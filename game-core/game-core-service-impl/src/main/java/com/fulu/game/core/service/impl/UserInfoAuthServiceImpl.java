@@ -110,6 +110,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
 
 
 
+
+
     @Override
     public PageInfo<UserInfoAuthVO> list(Integer pageNum, Integer pageSize, String orderBy) {
         if(StringUtils.isNotBlank(orderBy)){
@@ -151,6 +153,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         userInfoAuthVO.setIdCard(user.getIdcard());
         userInfoAuthVO.setGender(user.getGender());
         userInfoAuthVO.setRealname(user.getRealname());
+
     }
 
     /**

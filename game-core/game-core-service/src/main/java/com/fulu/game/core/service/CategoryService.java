@@ -18,10 +18,15 @@ import java.util.Map;
 public interface CategoryService extends ICommonService<Category,Integer>{
 
 
+     PageInfo<Category> list(int pageNum, int pageSize);
+
      PageInfo<Category> list(int pageNum, int pageSize, Boolean status, String orderBy);
 
      CategoryVO findCategoryVoById(Integer id);
 
-     List<Category> findByPid(Integer pid);
+     List<Category> findByPid(Integer pid,Boolean status);
+
+     List<Category> findAllAccompanyPlayCategory();
+
 
 }

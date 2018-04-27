@@ -21,6 +21,7 @@ public class ProductController extends BaseController{
     @Autowired
     private ProductService productService;
 
+
     /**
      * 添加接单方式
      * @param techAuthId
@@ -36,8 +37,34 @@ public class ProductController extends BaseController{
         return Result.success().msg("添加接单方式成功!");
     }
 
+
+    @RequestMapping(value = "/card/query")
+    public Result findByProductId(Integer productId){
+
+
+
+        return Result.success();
+    }
+
     /**
-     * 上架商品
+     * 修改接单方式
+     * @param techAuthId
+     * @param price
+     * @param unitId
+     * @return
+     */
+    @RequestMapping(value = "/order-receive/update")
+    public Result update(@RequestParam(required = true)Integer id,
+                         @RequestParam(required = false)Integer techAuthId,
+                         @RequestParam(required = false)BigDecimal price,
+                         @RequestParam(required = false)Integer unitId){
+        productService.update(id,techAuthId,price,unitId);
+        return Result.success().msg("修改接单方式成功!");
+    }
+
+
+    /**
+     * 接单方式激活
      * @return
      */
     @RequestMapping(value = "/order-receive/enable")
@@ -61,8 +88,9 @@ public class ProductController extends BaseController{
         return Result.success().data(productList);
     }
 
+
     /**
-     * 用户所有接单方式列表
+     * 用户接单状态
      * @return
      */
     @RequestMapping(value = "/order-receive/status")

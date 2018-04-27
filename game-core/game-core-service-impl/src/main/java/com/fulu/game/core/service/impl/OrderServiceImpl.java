@@ -60,7 +60,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         BigDecimal commissionMoney = totalMoney.multiply(category.getCharges());
         //创建订单
         Order order = new Order();
-        order.setName(product.getCategoryName()+"-"+num+"*"+product.getUnit());
+        order.setName(product.getProductName()+"-"+num+"*"+product.getUnit());
         order.setOrderNo(getOrderNo());
         order.setUserId(Constant.DEF_COMMON_USER_ID);
         order.setServiceUserId(product.getUserId());

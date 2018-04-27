@@ -59,7 +59,7 @@ public class UserController extends BaseController{
      * @return
      */
     @PostMapping(value = "/info-auth/idcard/delete")
-    public Result deleteIdCard(Integer id){
+    public Result deleteIdCard(@RequestParam(required = true)Integer id){
         userInfoFileService.deleteById(id);
         return Result.success().msg("删除成功!");
     }
@@ -70,7 +70,7 @@ public class UserController extends BaseController{
      * @return
      */
     @PostMapping(value = "/info-auth/file/delete")
-    public Result deleteAuthFile(Integer id){
+    public Result deleteAuthFile(@RequestParam(required = true)Integer id){
         userInfoAuthFileService.deleteById(id);
         return Result.success().msg("删除成功!");
     }
@@ -93,7 +93,7 @@ public class UserController extends BaseController{
      * @return
      */
     @PostMapping(value = "/get")
-    public Result findByMobile(String mobile){
+    public Result findByMobile(@RequestParam(required = true)String mobile){
         User user = userService.findByMobile(mobile);
         if(user==null){
             return Result.error().msg("手机号查询错误!");
@@ -129,7 +129,7 @@ public class UserController extends BaseController{
      * @return
      */
     @PostMapping(value = "/tech-auth/query")
-    public Result techAuthInfo(Integer id){
+    public Result techAuthInfo(@RequestParam(required = true)Integer id){
         UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(id);
         return Result.success().data(userTechAuthVO);
     }

@@ -2,7 +2,9 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.entity.TechValue;
 import com.fulu.game.core.entity.vo.TechAttrVO;
+import com.fulu.game.core.service.TechValueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +22,8 @@ public class TechAttrServiceImpl extends AbsCommonService<TechAttr,Integer> impl
 
     @Autowired
 	private TechAttrDao techAttrDao;
-
-
+    @Autowired
+    private TechValueService techValueService;
 
     @Override
     public ICommonDao<TechAttr, Integer> getDao() {
@@ -46,5 +48,11 @@ public class TechAttrServiceImpl extends AbsCommonService<TechAttr,Integer> impl
         techAttrVO.setCategoryId(categoryId);
         List<TechAttr> techAttrList = techAttrDao.findByParameter(techAttrVO);
         return techAttrList;
+    }
+
+    @Override
+    public List<TechValue> findValByCategoryAndType(Integer categoryId, Integer type) {
+        TechAttr  techAttr= findByCategoryAndType(categoryId,type);
+        return techValueService.findByTechAttrId(techAttr.getId());
     }
 }

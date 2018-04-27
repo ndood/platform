@@ -45,6 +45,11 @@ public class CategoryServiceImpl extends AbsCommonService<Category,Integer> impl
     }
 
     @Override
+    public PageInfo<Category> list(int pageNum, int pageSize) {
+        return list(pageNum,pageSize,true,null);
+    }
+
+    @Override
     public PageInfo<Category> list(int pageNum, int pageSize, Boolean status,String orderBy) {
         CategoryVO categoryVO = new CategoryVO();
         categoryVO.setStatus(status);
@@ -77,18 +82,26 @@ public class CategoryServiceImpl extends AbsCommonService<Category,Integer> impl
                 categoryVO.setDanList(danList);
             }
         }
-        if(category.getPid()!=null){
-            List<Tag> tagList = tagService.findByPid(category.getPid());
+        //查询游戏标签
+        if(category.getTagId()!=null){
+            List<Tag> tagList = tagService.findByPid(category.getTagId());
             categoryVO.setTagList(tagList);
         }
         return categoryVO;
     }
 
+    @Override
+    public List<Category> findAllAccompanyPlayCategory(){
+        return findByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType(),true);
+    }
+
 
     @Override
-    public List<Category> findByPid(Integer pid) {
+    public List<Category> findByPid(Integer pid,Boolean status) {
+        PageHelper.orderBy("sort desc");
         CategoryVO categoryVO = new CategoryVO();
         categoryVO.setPid(pid);
+        categoryVO.setStatus(status);
         List<Category> categoryList =categoryDao.findByParameter(categoryVO);
         return categoryList;
     }
