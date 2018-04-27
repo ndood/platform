@@ -7,6 +7,7 @@ import com.fulu.game.common.enums.UserInfoFileTypeEnum;
 import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.vo.ServerCardVO;
 import com.fulu.game.core.entity.vo.TagVO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.service.*;
@@ -108,6 +109,40 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         return userInfoAuthVO;
     }
 
+    @Override
+    public ServerCardVO.UserInfo findUserCardByUserId(Integer userId){
+        User user = userService.findById(userId);
+        ServerCardVO.UserInfo userInfo = new ServerCardVO.UserInfo();
+        userInfo.setUserId(userId);
+        userInfo.setAge(user.getAge());
+        userInfo.setCity(user.getCity());
+        userInfo.setHeadUrl(user.getHeadPortraitsUrl());
+        userInfo.setRealName(user.getRealname());
+        userInfo.setGender(user.getGender());
+
+        List<String> photos = new ArrayList<>();
+        UserInfoAuth userInfoAuth = findByUserId(userId);
+        photos.add(userInfoAuth.getMainPicUrl());
+        //查询用户写真图
+        List<UserInfoAuthFile> portraitFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(),FileTypeEnum.PIC.getType());
+        for(UserInfoAuthFile authFile : portraitFiles){
+            photos.add(authFile.getUrl());
+        }
+        userInfo.setPhotos(photos);
+        //查询用户声音
+        List<UserInfoAuthFile> voiceFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(),FileTypeEnum.VOICE.getType());
+        for(UserInfoAuthFile authFile : voiceFiles){
+            userInfo.setVoice(authFile.getUrl());
+        }
+        //查询用户标签
+        List<PersonTag> personTagList = personTagService.findByUserId(userId);
+        List<String> tags = new ArrayList<>();
+        for(PersonTag personTag : personTagList){
+            tags.add(personTag.getName());
+        }
+        userInfo.setTags(tags);
+        return userInfo;
+    }
 
 
 
@@ -153,6 +188,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         userInfoAuthVO.setIdCard(user.getIdcard());
         userInfoAuthVO.setGender(user.getGender());
         userInfoAuthVO.setRealname(user.getRealname());
+        userInfoAuthVO.setAge(user.getAge());
 
     }
 
@@ -227,6 +263,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
             createUserInfoFile(userId,idCardHandUrl,UserInfoFileTypeEnum.IDCARD_HAND.getMsg(), UserInfoFileTypeEnum.IDCARD_HAND.getType());
         }
     }
+
 
     private void createUserInfoFile(Integer userId,String fileUrl,String name,Integer type){
         UserInfoFile userInfoFile = new UserInfoFile();

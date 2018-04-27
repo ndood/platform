@@ -7,13 +7,13 @@ import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.ProductDao;
 import com.fulu.game.core.entity.Product;
+import com.fulu.game.core.entity.TechTag;
 import com.fulu.game.core.entity.TechValue;
 import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.vo.ProductVO;
 import com.fulu.game.core.entity.vo.ServerCardVO;
-import com.fulu.game.core.service.ProductService;
-import com.fulu.game.core.service.TechValueService;
-import com.fulu.game.core.service.UserTechAuthService;
+import com.fulu.game.core.entity.vo.UserInfoAuthVO;
+import com.fulu.game.core.service.*;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,10 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     private TechValueService techValueService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
+    @Autowired
+    private TechTagService techTagService;
 
     @Override
     public ICommonDao<Product, Integer> getDao() {
@@ -106,13 +111,13 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 查找激活的商品
-     *
      * @param userId
      * @return
      */
     public List<Product> findEnabledProductByUser(int userId) {
         ProductVO productVO = new ProductVO();
         productVO.setStatus(true);
+        productVO.setUserId(userId);
         return productDao.findByParameter(productVO);
     }
 
@@ -162,17 +167,52 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Override
     public ServerCardVO findByProductId(Integer productId) {
         Product product = findById(productId);
-        ServerCardVO.builder()
-                    .categoryId(product.getCategoryId())
-                    .productId(product.getId())
-                    .productName(product.getProductName())
-                    .icon(product.getCategoryIcon())
-                    .price(product.getPrice())
-                    .unit(product.getUnit())
-                    .techAuthId(product.getTechAuthId());
-
-        return null;
+        ServerCardVO.UserInfo userInfo = userInfoAuthService.findUserCardByUserId(product.getUserId());
+        List<String> techTags = new ArrayList<>();
+        List<TechTag> techTagList = techTagService.findByTechAuthId(product.getTechAuthId());
+        for(TechTag techTag : techTagList){
+            techTags.add(techTag.getName());
+        }
+        List<ProductVO> productVOList = findOtherProductVO(product.getUserId(),productId);
+        ServerCardVO serverCardVO =ServerCardVO.builder()
+                                    .categoryId(product.getCategoryId())
+                                    .productId(product.getId())
+                                    .productName(product.getProductName())
+                                    .categoryIcon(product.getCategoryIcon())
+                                    .price(product.getPrice())
+                                    .unit(product.getUnit())
+                                    .techAuthId(product.getTechAuthId())
+                                    .userInfo(userInfo)
+                                    .techTags(techTags)
+                                    .otherProduct(productVOList)
+                                    .build();
+        return serverCardVO;
     }
+
+
+
+    public List<ProductVO> findOtherProductVO(Integer userId,Integer productId){
+        List<Product>  products =   findEnabledProductByUser(userId);
+        List<ProductVO> productVOS = new ArrayList<>();
+        for(Product product : products){
+            if(product.getId().equals(productId)){
+                continue;
+            }
+            ProductVO productVO = new ProductVO();
+            BeanUtil.copyProperties(product,productVO);
+            List<String> techTags = new ArrayList<>();
+            List<TechTag> techTagList = techTagService.findByTechAuthId(productVO.getTechAuthId());
+            for(TechTag techTag : techTagList){
+                techTags.add(techTag.getName());
+            }
+            productVO.setTechTags(techTags);
+            productVOS.add(productVO);
+        }
+        return productVOS;
+    }
+
+
+
 
 
     public Map<String, Object> readOrderReceivingStatus() {

@@ -2,6 +2,7 @@ package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Product;
+import com.fulu.game.core.entity.vo.ServerCardVO;
 import com.fulu.game.core.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +38,15 @@ public class ProductController extends BaseController{
         return Result.success().msg("添加接单方式成功!");
     }
 
-
+    /**
+     * 查询用户商品个人卡片
+     * @param productId
+     * @return
+     */
     @RequestMapping(value = "/card/query")
     public Result findByProductId(Integer productId){
-
-
-
-        return Result.success();
+        ServerCardVO serverCardVO = productService.findByProductId(productId);
+        return Result.success().data(serverCardVO);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.fulu.game.core.entity.vo;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -15,7 +16,7 @@ public class ServerCardVO {
     //商品ID
     private Integer productId;
     //商品icon
-    private String icon;
+    private String categoryIcon;
     //分类ID
     private Integer categoryId;
     //关联技能
@@ -40,14 +41,15 @@ public class ServerCardVO {
 
     private UserInfo userInfo = new UserInfo();
 
-    private List<OtherProduct> otherProduct = new ArrayList<OtherProduct>();
+    private List<ProductVO> otherProduct = new ArrayList<ProductVO>();
 
     @Data
     public static class UserInfo{
-        private String userId;
+        private Integer userId;
         private String realName;
         private String headUrl;
-        private int age;
+        private Integer age;
+        private Integer gender;
         private String city;
         private String voice;
         List<String> tags;
@@ -55,14 +57,5 @@ public class ServerCardVO {
         private List<String> photos;
     }
 
-    @Data
-    public static class OtherProduct{
-        private String icon;
-        private String productName;
-        private Integer techAuthId;
-        private List<String> techTags;
-        private BigDecimal price;
-        private String unit;
-    }
 
 }
