@@ -17,5 +17,4 @@ public interface UserService extends ICommonService<User,Integer>{
     void unlock(int id);
     PageInfo<User> list(UserVO userVO, Integer pageNum, Integer pageSize);
     User save(UserVO userVO);
-
 }

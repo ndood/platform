@@ -64,12 +64,12 @@ public class AclFilter extends AccessControlFilter {
             }
             return false;
         }
-        //在存5分钟，保证会话时长
+        //再存5分钟，保证会话时长
         redisOpenService.hset(RedisKeyEnum.TOKEN.generateKey(token), map);
 
         //已登录的，就保存该token从redis查到的用户信息
         Admin admin = BeanUtil.mapToBean(map, Admin.class, true);
-        SubjectUtil.setCurrentUset(admin);
+        SubjectUtil.setCurrentUser(admin);
         return true;
     }
 

@@ -1,7 +1,5 @@
 package com.fulu.game.core.service.impl;
 
-import com.fulu.game.common.domain.Password;
-import com.fulu.game.common.utils.EncryptUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.github.pagehelper.PageHelper;
@@ -74,7 +72,7 @@ public class UserServiceImpl extends AbsCommonService<User,Integer> implements U
         User user = new User();
         BeanUtil.copyProperties(userVO, user);
         user.setStatus(1);//默认账户解封状态
-        user.setType(0);//默认普通用户
+        user.setType(1);//默认普通用户
         user.setUserInfoAuth(0);//默认未审核
         user.setBalance(new BigDecimal("0.00"));
         user.setCreateTime(new Date());

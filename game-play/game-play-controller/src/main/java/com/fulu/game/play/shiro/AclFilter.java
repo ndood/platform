@@ -79,7 +79,7 @@ public class AclFilter extends AccessControlFilter {
 
         //已登录的，就保存该token从redis查到的用户信息
         User user = BeanUtil.mapToBean(map, User.class, true);
-        SubjectUtil.setCurrentUset(user);
+        SubjectUtil.setCurrentUser(user);
         return true;
     }
 
