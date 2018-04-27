@@ -28,7 +28,7 @@ public class ProductController extends BaseController{
      * @param unitId
      * @return
      */
-    @RequestMapping(value = "create")
+    @RequestMapping(value = "/order-receive/create")
     public Result create(@RequestParam(required = true) Integer techAuthId,
                          @RequestParam(required = true) BigDecimal price,
                          @RequestParam(required = true) Integer unitId){
@@ -40,7 +40,7 @@ public class ProductController extends BaseController{
      * 上架商品
      * @return
      */
-    @RequestMapping(value = "enable")
+    @RequestMapping(value = "/order-receive/enable")
     public Result enable(@RequestParam(required = true) Integer id,
                          @RequestParam(required = true) Boolean status){
         productService.enable(id,status);
@@ -55,7 +55,7 @@ public class ProductController extends BaseController{
      * 用户所有接单方式列表
      * @return
      */
-    @RequestMapping(value = "list")
+    @RequestMapping(value = "/order-receive/list")
     public Result list(){
         List<Product> productList = productService.findAll();
         return Result.success().data(productList);
