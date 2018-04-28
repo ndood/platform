@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @author wangbin
  * @date 2018-04-20 11:12:12
  */
-@Transactional
 public interface UserService extends ICommonService<User,Integer>{
 
     User findByMobile(String mobile);

@@ -40,7 +40,8 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
     @Override
     public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
 
-        String paramOpenId = token.getCredentials().toString();
+        PlayUserToken userToken = (PlayUserToken)token;
+        String paramOpenId = userToken.getOpenId();
         User user = (User) info.getPrincipals().getPrimaryPrincipal();
         String dBOpenId = user.getOpenId();
         //登录成功保存token和用户信息到redis
@@ -54,6 +55,7 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
             redisOpenService.hset(RedisKeyEnum.TOKEN.generateKey(gToken), userMap);
             log.info("登录成功生成token：{}", gToken);
             SubjectUtil.setToken(gToken);
+            SubjectUtil.setCurrentUser(user);
             return true;
         }
         return false;

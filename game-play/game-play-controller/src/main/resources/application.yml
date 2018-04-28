@@ -1,8 +1,6 @@
 spring:
-    thymeleaf:
-       cache: false
-       mode: LEGACYHTML5
-
+    profiles:
+       active: dev
 play:
   wechat:
     appId: wxf0bf670601a34bb5

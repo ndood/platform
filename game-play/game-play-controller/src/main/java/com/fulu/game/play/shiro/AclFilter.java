@@ -2,7 +2,6 @@ package com.fulu.game.play.shiro;
 
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.utils.SubjectUtil;
-import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.xiaoleilu.hutool.util.BeanUtil;
