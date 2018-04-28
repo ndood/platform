@@ -7,8 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum  OrderStatusEnum{
 
-    USER_CANCEL(100,"订单关闭"),//系统关闭订单
-    SYSTEM_CLOSE(101,"订单关闭"),//用户取消订单
+    SYSTEM_CLOSE(100,"订单关闭"),//系统关闭订单
+    USER_CANCEL(101,"订单关闭"),//用户取消订单
     SERVER_CANCEL(160,"订单关闭"),//陪玩师取消订单
     NON_PAYMENT(200,"待付款"),
     WAIT_SERVICE(210,"等待陪玩"),//已付款

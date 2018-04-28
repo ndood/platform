@@ -172,7 +172,7 @@ public class OrderController {
     @RequestMapping(value = "/user/verify")
     public Result userVerifyOrder(String orderNo){
         OrderVO orderVO =orderService.userVerifyOrder(orderNo);
-        return Result.success().data(orderVO);
+        return Result.success().data(orderVO).msg("订单验收成功!");
     }
 
 
@@ -197,7 +197,7 @@ public class OrderController {
     @RequestMapping(value = "/server/acceptance")
     public Result serverAcceptanceOrder(String orderNo,String remark,String[] fileUrl){
         OrderVO orderVO =orderService.serverAcceptanceOrder(orderNo,remark,fileUrl);
-        return Result.success().data(orderVO).msg("订单申诉成功!");
+        return Result.success().data(orderVO).msg("提交订单验收成功!");
     }
 
     /**
