@@ -7,9 +7,9 @@ import com.fulu.game.common.enums.UserInfoFileTypeEnum;
 import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
-import com.fulu.game.core.entity.vo.ServerCardVO;
 import com.fulu.game.core.entity.vo.TagVO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
+import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -110,29 +110,34 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
     }
 
     @Override
-    public ServerCardVO.UserInfo findUserCardByUserId(Integer userId){
+    public UserInfoVO findUserCardByUserId(Integer userId,Boolean hasPhotos,Boolean hasVoice){
         User user = userService.findById(userId);
-        ServerCardVO.UserInfo userInfo = new ServerCardVO.UserInfo();
+        UserInfoAuth userInfoAuth = findByUserId(userId);
+        UserInfoVO userInfo = new UserInfoVO();
         userInfo.setUserId(userId);
         userInfo.setAge(user.getAge());
         userInfo.setCity(user.getCity());
         userInfo.setHeadUrl(user.getHeadPortraitsUrl());
-        userInfo.setRealName(user.getRealname());
+        userInfo.setNickName(user.getNickname());
         userInfo.setGender(user.getGender());
+        userInfo.setMainPhotoUrl(userInfoAuth.getMainPicUrl());
 
-        List<String> photos = new ArrayList<>();
-        UserInfoAuth userInfoAuth = findByUserId(userId);
-        photos.add(userInfoAuth.getMainPicUrl());
-        //查询用户写真图
-        List<UserInfoAuthFile> portraitFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(),FileTypeEnum.PIC.getType());
-        for(UserInfoAuthFile authFile : portraitFiles){
-            photos.add(authFile.getUrl());
+        if(hasPhotos){
+            List<String> photos = new ArrayList<>();
+            photos.add(userInfoAuth.getMainPicUrl());
+            //查询用户写真图
+            List<UserInfoAuthFile> portraitFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(),FileTypeEnum.PIC.getType());
+            for(UserInfoAuthFile authFile : portraitFiles){
+                photos.add(authFile.getUrl());
+            }
+            userInfo.setPhotos(photos);
         }
-        userInfo.setPhotos(photos);
-        //查询用户声音
-        List<UserInfoAuthFile> voiceFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(),FileTypeEnum.VOICE.getType());
-        for(UserInfoAuthFile authFile : voiceFiles){
-            userInfo.setVoice(authFile.getUrl());
+        if(hasVoice){
+            //查询用户声音
+            List<UserInfoAuthFile> voiceFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(),FileTypeEnum.VOICE.getType());
+            for(UserInfoAuthFile authFile : voiceFiles){
+                userInfo.setVoice(authFile.getUrl());
+            }
         }
         //查询用户标签
         List<PersonTag> personTagList = personTagService.findByUserId(userId);

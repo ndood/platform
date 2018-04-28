@@ -1,11 +1,13 @@
 package com.fulu.game.core.dao;
 
 import com.fulu.game.core.entity.Product;
+import com.fulu.game.core.entity.vo.ProductShowCaseVO;
 import com.fulu.game.core.entity.vo.ProductVO;
 
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 商品表
@@ -17,5 +19,7 @@ import org.apache.ibatis.annotations.Mapper;
 public interface ProductDao extends ICommonDao<Product,Integer>{
 
     List<Product> findByParameter(ProductVO productVO);
+
+    List<ProductShowCaseVO> findProductShowCase(@Param(value = "categoryId") Integer categoryId,@Param(value = "gender") Integer gender);
 
 }

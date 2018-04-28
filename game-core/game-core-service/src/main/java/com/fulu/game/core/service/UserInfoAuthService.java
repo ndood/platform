@@ -1,12 +1,9 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.UserInfoAuth;
-import com.fulu.game.core.entity.vo.ServerCardVO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
+import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.github.pagehelper.PageInfo;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * 信息认证表
@@ -33,5 +30,5 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth,Integer
      * @param userId
      * @return
      */
-    ServerCardVO.UserInfo findUserCardByUserId(Integer userId);
+    UserInfoVO findUserCardByUserId(Integer userId,Boolean hasPhotos,Boolean hasVoice);
 }

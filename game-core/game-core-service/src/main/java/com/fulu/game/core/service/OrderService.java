@@ -2,6 +2,9 @@ package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.vo.OrderVO;
+import com.github.pagehelper.PageInfo;
+
+import java.util.List;
 
 
 /**
@@ -15,6 +18,11 @@ public interface OrderService extends ICommonService<Order,Integer>{
 
 
     //todo 非自己的订单不能操作
+
+
+    PageInfo<OrderVO> userList(int pageNum, int pageSize, Integer categoryId, Integer[] statusArr);
+
+    PageInfo<OrderVO> serverList(int pageNum, int pageSize, Integer categoryId, Integer[] statusArr);
 
     /**
      * 提交订单
@@ -90,8 +98,17 @@ public interface OrderService extends ICommonService<Order,Integer>{
      */
     OrderVO adminHandleRefundOrder(String orderNo);
 
-
-
+    /**
+     * 通过订单号查找订单
+     * @param orderNo
+     * @return
+     */
     Order findByOrderNo(String orderNo);
 
+    /**
+     * 陪玩师是否已经在服务用户
+     * @param serverId
+     * @return
+     */
+    Boolean isAlreadyService(Integer serverId);
 }

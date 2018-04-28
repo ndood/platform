@@ -2,8 +2,10 @@ package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Product;
-import com.fulu.game.core.entity.vo.ServerCardVO;
+import com.fulu.game.core.entity.vo.ProductDetailsVO;
+import com.fulu.game.core.entity.vo.ProductShowCaseVO;
 import com.fulu.game.core.service.ProductService;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,16 +40,18 @@ public class ProductController extends BaseController{
         return Result.success().msg("添加接单方式成功!");
     }
 
+
     /**
-     * 查询用户商品个人卡片
+     * 查询用户商品详情页
      * @param productId
      * @return
      */
-    @RequestMapping(value = "/card/query")
+    @RequestMapping(value = "/details")
     public Result findByProductId(Integer productId){
-        ServerCardVO serverCardVO = productService.findByProductId(productId);
+        ProductDetailsVO serverCardVO = productService.findDetailsByProductId(productId);
         return Result.success().data(serverCardVO);
     }
+
 
     /**
      * 修改接单方式
@@ -91,7 +95,6 @@ public class ProductController extends BaseController{
         return Result.success().data(productList);
     }
 
-
     /**
      * 用户接单状态
      * @return
@@ -101,7 +104,6 @@ public class ProductController extends BaseController{
         Map<String,Object> status = productService.readOrderReceivingStatus();
         return Result.success().data(status);
     }
-
 
     /**
      * 开始接单
