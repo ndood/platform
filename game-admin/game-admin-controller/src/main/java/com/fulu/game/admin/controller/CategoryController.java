@@ -52,12 +52,23 @@ public class CategoryController extends BaseController {
     }
 
     /**
+     * 内容删除
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "/del")
+    public Result delete(Integer id){
+        categoryService.deleteById(id);
+        return Result.success().msg("删除成功!");
+    }
+
+    /**
      * 查询所有内容
      * @return
      */
     @PostMapping(value = "/list-all")
     public Result listAll(){
-        List<Category> list = categoryService.findByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType());
+        List<Category> list = categoryService.findByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType(),null);
         return Result.success().data(list);
     }
 
@@ -67,7 +78,7 @@ public class CategoryController extends BaseController {
      * @return
      */
     @PostMapping(value = "/query")
-    public Result info(Integer categoryId){
+    public Result info(@RequestParam(required = true) Integer categoryId){
         CategoryVO categoryVO =categoryService.findCategoryVoById(categoryId);
         return Result.success().data(categoryVO);
     }
@@ -88,7 +99,9 @@ public class CategoryController extends BaseController {
         category.setName(name);
         category.setSort(sort);
         category.setStatus(status);
-        category.setCharges(charges);
+        if(charges!=null){
+            category.setCharges(charges.divide(new BigDecimal(100)));
+        }
         category.setIcon(icon);
         category.setId(id);
         if (category.getId() == null) {
@@ -111,9 +124,9 @@ public class CategoryController extends BaseController {
      * @return
      */
     @PostMapping(value = "/salesmode/create")
-    public Result salesModeCreate(Integer categoryId,
-                                  String name,
-                                  Integer rank) {
+    public Result salesModeCreate(@RequestParam(required = true)Integer categoryId,
+                                  @RequestParam(required = true)String name,
+                                  @RequestParam(required = true)Integer rank) {
         TechValue techValue = techValueService.createSalesMode(categoryId, name,rank);
         return Result.success().msg("销售方式创建成功!").data(techValue);
     }
@@ -123,7 +136,7 @@ public class CategoryController extends BaseController {
      * @return
      */
     @PostMapping(value = "/salesmode/delete")
-    public Result saleModeDelete(Integer id){
+    public Result saleModeDelete(@RequestParam(required = true)Integer id){
         techValueService.deleteById(id);
         return Result.success().msg("销售方式删除成功!");
     }
@@ -132,9 +145,9 @@ public class CategoryController extends BaseController {
      * 创建段位
      **/
     @PostMapping(value = "/dan/create")
-    public Result danCreate(Integer categoryId,
-                            String name,
-                            Integer rank) {
+    public Result danCreate(@RequestParam(required = true)Integer categoryId,
+                            @RequestParam(required = true)String name,
+                            @RequestParam(required = true)Integer rank) {
         TechValue techValue = techValueService.createDan(categoryId, name,rank);
         return Result.success().msg("段位创建成功!").data(techValue);
     }
@@ -145,7 +158,7 @@ public class CategoryController extends BaseController {
      * @return
      */
     @PostMapping(value = "/dan/delete")
-    public Result danDelete(Integer id){
+    public Result danDelete(@RequestParam(required = true)Integer id){
         techValueService.deleteById(id);
         return Result.success().msg("段位删除成功!");
     }
@@ -157,7 +170,7 @@ public class CategoryController extends BaseController {
      * @return
      */
     @PostMapping(value = "/tag/list")
-    public Result techTags(Integer categoryId){
+    public Result techTags(@RequestParam(required = true)Integer categoryId){
         Category category =categoryService.findById(categoryId);
         if(category.getTagId()==null){
             return Result.error().msg("该游戏没有设置标签!");

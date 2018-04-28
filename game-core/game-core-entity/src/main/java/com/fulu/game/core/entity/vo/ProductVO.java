@@ -6,6 +6,7 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -20,5 +21,7 @@ public class ProductVO  extends Product {
     private Integer hour;
 
     private Date startTime;
+
+    private List<String> techTags;
 
 }

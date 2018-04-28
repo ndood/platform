@@ -28,6 +28,8 @@ public class User implements Serializable {
 	private Integer gender;
 	//头像URL
 	private String headPortraitsUrl;
+
+	private Integer age;
 	//密码
 	private String password;
 	//密码盐

@@ -21,6 +21,10 @@ public class UserInfoAuthVO  extends UserInfoAuth {
 
     //真实姓名
     private String realname;
+
+    private Integer age;
+
+    private String city;
     //性别
     private Integer gender;
     //身份证号

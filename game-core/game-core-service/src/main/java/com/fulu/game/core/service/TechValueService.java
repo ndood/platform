@@ -32,5 +32,5 @@ public interface TechValueService extends ICommonService<TechValue,Integer>{
      TechValue createDan(Integer categoryId,String danName,Integer rank);
 
 
-     public List<TechValue> findByTechAttrId(Integer attrId);
+     List<TechValue> findByTechAttrId(Integer attrId);
 }
