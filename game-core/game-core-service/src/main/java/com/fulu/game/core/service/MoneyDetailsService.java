@@ -33,6 +33,8 @@ public interface MoneyDetailsService extends ICommonService<MoneyDetails,Integer
      */
     MoneyDetails orderSave(BigDecimal money,Integer targetId,String orderNo);
 
+    MoneyDetails orderSave(MoneyDetailsVO moneyDetailsVO);
+
     /**
      * 提款-生成提款申请单后调用该接口
      * @return
