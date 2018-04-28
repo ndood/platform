@@ -24,6 +24,9 @@ public class Order implements Serializable {
 	private Integer userId;
 	//陪玩师用户ID
 	private Integer serviceUserId;
+	//订单游戏分类
+	private Integer categoryId;
+
 	//订单名称
 	private String name;
 	//备注
@@ -31,7 +34,7 @@ public class Order implements Serializable {
 	//订单状态
 	private Integer status;
 	//是否支付(1:已支付,2:未支付)
-	private Boolean isPlay;
+	private Boolean isPay;
 	//佣金
 	private BigDecimal commissionMoney;
 	//订单总额

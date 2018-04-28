@@ -40,10 +40,8 @@ public class HomeController {
         return Result.noLogin().msg("未登录!");
     }
 
-    @RequestMapping(value = "/login")
-    public String loginIndex() {
-        return "login";
-    }
+
+
 
     /**
      * 小程序提交参数code
@@ -84,4 +82,31 @@ public class HomeController {
             return Result.error().msg("登陆异常！");
         }
     }
+
+    @RequestMapping(value = "/test/login",method = RequestMethod.POST)
+    @ResponseBody
+    public Result testLogin(String openId){
+        String sessionKey = "xxxx";
+        //1.认证和凭据的token
+        PlayUserToken playUserToken = new PlayUserToken(openId, sessionKey);
+        Subject subject = SecurityUtils.getSubject();
+        //2.提交认证和凭据给身份验证系统
+        try{
+            subject.login(playUserToken);
+            User user = (User)SubjectUtil.getCurrentUser();
+            JSONObject jo = new JSONObject();
+            jo.put("token",SubjectUtil.getToken());
+            if (StringUtils.isEmpty(user.getMobile())){
+                return Result.newUser().data(jo).msg("登录成功，请绑定手机号！");
+            }else{
+                return Result.success().data(jo).msg("登录成功!");
+            }
+        }catch (AuthenticationException e) {
+            return Result.noLogin().msg("用户验证信息错误！");
+        }catch (Exception e){
+            log.error("登录异常!",e);
+            return Result.error().msg("登陆异常！");
+        }
+    }
+
 }

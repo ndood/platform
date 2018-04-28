@@ -1,7 +1,6 @@
 package com.fulu.game.play.controller;
 
-import cn.binarywang.wx.miniapp.api.WxMaService;
-import com.fulu.game.common.Constant;
+
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.utils.SMSUtil;
@@ -35,8 +34,9 @@ public class UserController extends BaseController{
 
     @RequestMapping("tech/list")
     public Result userTechList(){
+        User user =(User) SubjectUtil.getCurrentUser();
         //查询所有用户认证的技能
-        List<UserTechAuth> techAuthList = userTechAuthService.findByUserId(Constant.DEF_USER_ID,true);
+        List<UserTechAuth> techAuthList = userTechAuthService.findByUserId(user.getId(),true);
         return Result.success().data(techAuthList);
     }
 
@@ -82,7 +82,8 @@ public class UserController extends BaseController{
     }
 
     @PostMapping("/mobile/bind")
-    public Result bind(@ModelAttribute WxUserInfo wxUserInfo, @RequestParam("verifyCode") String verifyCode){
+    public Result bind(@ModelAttribute WxUserInfo wxUserInfo,
+                       @RequestParam("verifyCode") String verifyCode){
         String token = SubjectUtil.getToken();
         log.info("获取到的token===========" + token);
         //验证手机号的验证码

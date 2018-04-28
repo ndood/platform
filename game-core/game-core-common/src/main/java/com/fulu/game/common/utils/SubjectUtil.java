@@ -1,5 +1,6 @@
 package com.fulu.game.common.utils;
 
+
 /**
  * 获取和设置当前登录用户对象数据
  */
@@ -23,5 +24,7 @@ public class SubjectUtil {
     public static void setToken(String genToken) {
         token.set(genToken);
     }
+
+
 
 }

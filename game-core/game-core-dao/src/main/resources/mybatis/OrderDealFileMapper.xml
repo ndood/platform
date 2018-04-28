@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.OrderDealFileDao">
+    <resultMap id="OrderDealFileResultMap" type="com.fulu.game.core.entity.OrderDealFile">
+        <id column="id" property="id"/>
+        <result column="order_deal_id" property="orderDealId"/>
+        <result column="file_url" property="fileUrl"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="OrderDealFileResultVOMap" type="com.fulu.game.core.entity.vo.OrderDealFileVO"
+               extends="OrderDealFileResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,order_deal_id,file_url,create_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="OrderDealFileResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_order_deal_file
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="OrderDealFileResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_order_deal_file
+    </select>
+
+    <select id="findByParameter" resultMap="OrderDealFileResultMap"
+            parameterType="com.fulu.game.core.entity.vo.OrderDealFileVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_order_deal_file
+        <where>
+            <if test="orderDealId != null">
+                and order_deal_id = #{orderDealId}
+            </if>
+            <if test="fileUrl != null">
+                and file_url = #{fileUrl}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_order_deal_file
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.OrderDealFile">
+        insert into
+        t_order_deal_file (order_deal_id,file_url,create_time)
+        values
+        (#{orderDealId},#{fileUrl},#{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.OrderDealFile">
+        update t_order_deal_file
+        <set>
+
+            <if test="orderDealId != null">
+                order_deal_id = #{orderDealId},
+            </if>
+
+            <if test="fileUrl != null">
+                file_url = #{fileUrl},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

@@ -4,19 +4,18 @@ package com.fulu.game.core.service.impl;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
+import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.ProductDao;
-import com.fulu.game.core.entity.Product;
-import com.fulu.game.core.entity.TechTag;
-import com.fulu.game.core.entity.TechValue;
-import com.fulu.game.core.entity.UserTechAuth;
-import com.fulu.game.core.entity.vo.ProductVO;
-import com.fulu.game.core.entity.vo.ServerCardVO;
-import com.fulu.game.core.entity.vo.UserInfoAuthVO;
+import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.service.*;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +42,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     private UserInfoAuthService userInfoAuthService;
     @Autowired
     private TechTagService techTagService;
+    @Autowired
+    private UserService userService;
+
 
     @Override
     public ICommonDao<Product, Integer> getDao() {
@@ -52,11 +54,14 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Override
     public Product create(Integer techAuthId, BigDecimal price, Integer unitId) {
         UserTechAuth userTechAuth = userTechAuthService.findById(techAuthId);
+        User user = userService.findById(userTechAuth.getUserId());
         //查询销售方式的单位
         TechValue techValue = techValueService.findById(unitId);
         Product product = new Product();
         product.setCategoryId(userTechAuth.getCategoryId());
+        product.setGender(user.getGender());
         product.setProductName(userTechAuth.getCategoryName());
+        product.setDescription(userTechAuth.getDescription());
         product.setTechAuthId(userTechAuth.getId());
         product.setUnitTechValueId(techValue.getId());
         product.setUnit(techValue.getName());
@@ -81,6 +86,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             UserTechAuth userTechAuth = userTechAuthService.findById(techAuthId);
             product.setCategoryId(userTechAuth.getCategoryId());
             product.setProductName(userTechAuth.getCategoryName());
+            product.setDescription(userTechAuth.getDescription());
             product.setTechAuthId(userTechAuth.getId());
         }
         if (price != null) {
@@ -108,7 +114,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         update(product);
         return product;
     }
-
     /**
      * 查找激活的商品
      * @param userId
@@ -126,13 +131,14 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      */
     @Override
     public void startOrderReceiving(int hour) {
+        User user =(User) SubjectUtil.getCurrentUser();
         Long expire = hour * 3600L;
-        List<Product> products = findEnabledProductByUser(Constant.DEF_USER_ID);
+        List<Product> products = findEnabledProductByUser(user.getId());
         if (products.isEmpty()) {
             throw new ServiceErrorException("请选择技能后再点击开始接单!");
         }
-        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(Constant.DEF_USER_ID), "HOUR", hour, expire);
-        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(Constant.DEF_USER_ID), "START_TIME", DateUtil.now(), expire);
+        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()), "HOUR", hour, expire);
+        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()), "START_TIME", DateUtil.now(), expire);
         for (Product product : products) {
             ProductVO productVO = new ProductVO();
             BeanUtil.copyProperties(product, productVO);
@@ -148,10 +154,13 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         }
     }
 
+
+
     @Override
     public void stopOrderReceiving() {
-        List<Product> products = findEnabledProductByUser(Constant.DEF_USER_ID);
-        redisOpenService.delete(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(Constant.DEF_USER_ID));
+        User user =(User) SubjectUtil.getCurrentUser();
+        List<Product> products = findEnabledProductByUser(user.getId());
+        redisOpenService.delete(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()));
         for (Product product : products) {
             try {
                 log.info("停止接单{}", product);
@@ -165,18 +174,19 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
 
     @Override
-    public ServerCardVO findByProductId(Integer productId) {
+    public ProductDetailsVO findDetailsByProductId(Integer productId) {
         Product product = findById(productId);
-        ServerCardVO.UserInfo userInfo = userInfoAuthService.findUserCardByUserId(product.getUserId());
+        UserInfoVO userInfo = userInfoAuthService.findUserCardByUserId(product.getUserId(),true,true);
         List<String> techTags = new ArrayList<>();
         List<TechTag> techTagList = techTagService.findByTechAuthId(product.getTechAuthId());
         for(TechTag techTag : techTagList){
             techTags.add(techTag.getName());
         }
         List<ProductVO> productVOList = findOtherProductVO(product.getUserId(),productId);
-        ServerCardVO serverCardVO =ServerCardVO.builder()
+        ProductDetailsVO serverCardVO = ProductDetailsVO.builder()
                                     .categoryId(product.getCategoryId())
-                                    .productId(product.getId())
+                                    .id(product.getId())
+                                    .description(product.getDescription())
                                     .productName(product.getProductName())
                                     .categoryIcon(product.getCategoryIcon())
                                     .price(product.getPrice())
@@ -189,10 +199,55 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return serverCardVO;
     }
 
+    @Override
+    public List<Product> findByUserId(Integer userId) {
+        ProductVO productVO = new ProductVO();
+        productVO.setUserId(userId);
+        return productDao.findByParameter(productVO);
+    }
 
 
+    @Override
+    public PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId,
+                                                           Integer gender,
+                                                           Integer pageNum,
+                                                           Integer pageSize,
+                                                           String orderBy) {
+        if(StringUtils.isBlank(orderBy)){
+            orderBy = "create_time desc";
+        }
+        PageHelper.startPage(pageNum,pageSize,orderBy);
+        List<ProductShowCaseVO> showCaseVOS = productDao.findProductShowCase(categoryId,gender);
+        for(ProductShowCaseVO showCaseVO : showCaseVOS){
+            UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(showCaseVO.getUserId(),false,false);
+            showCaseVO.setNickName(userInfoVO.getNickName());
+            showCaseVO.setMainPhoto(userInfoVO.getMainPhotoUrl());
+            showCaseVO.setCity(userInfoVO.getCity());
+            showCaseVO.setPersonTags(userInfoVO.getTags());
+        }
+        PageInfo page = new PageInfo(showCaseVOS);
+        return page;
+    }
+
+
+    /**
+     *  判断商品是否是开始接单状态
+      * @param productId
+     * @return
+     */
+    @Override
+    public Boolean isProductStartOrderReceiving(Integer productId){
+        return redisOpenService.hasKey(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(productId));
+    }
+
+    /**
+     * 查找用户其他的商品
+     * @param userId
+     * @param productId
+     * @return
+     */
     public List<ProductVO> findOtherProductVO(Integer userId,Integer productId){
-        List<Product>  products =   findEnabledProductByUser(userId);
+        List<Product>  products =   findByUserId(userId);
         List<ProductVO> productVOS = new ArrayList<>();
         for(Product product : products){
             if(product.getId().equals(productId)){
@@ -212,11 +267,15 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     }
 
 
-
+    @Override
+    public Boolean isUserStartOrderReceiving(Integer userId){
+        return redisOpenService.hasKey( RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(userId));
+    }
 
 
     public Map<String, Object> readOrderReceivingStatus() {
-        return redisOpenService.hget(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(Constant.DEF_USER_ID));
+        User user =(User) SubjectUtil.getCurrentUser();
+        return redisOpenService.hget(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()));
     }
 
 

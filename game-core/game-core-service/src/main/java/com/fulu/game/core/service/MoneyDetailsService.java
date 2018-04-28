@@ -39,4 +39,5 @@ public interface MoneyDetailsService extends ICommonService<MoneyDetails,Integer
      */
     MoneyDetails drawSave(MoneyDetails moneyDetails);
 
+
 }

@@ -21,11 +21,15 @@ public class Product implements Serializable {
 	//用户商品
 	private Integer userId;
 
+	private Integer gender;
+
 	private String categoryIcon;
 	//游戏ID
 	private Integer categoryId;
 	//游戏名称
 	private String productName;
+	//技能描述
+	private String description;
 	//关联技能
 	private Integer techAuthId;
 	//价格

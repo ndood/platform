@@ -15,5 +15,17 @@ import lombok.Data;
 @Data
 public class OrderVO  extends Order {
 
-    Product product ;
+    private Product product ;
+
+    private String serverHeadUrl;
+
+    private String statusStr;
+
+    private String categoryIcon;
+
+    /**
+     * 订单状态列表
+     */
+    private Integer[] statusList;
+
 }
