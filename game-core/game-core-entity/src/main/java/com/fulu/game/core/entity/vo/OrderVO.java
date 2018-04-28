@@ -5,6 +5,8 @@ import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.Product;
 import lombok.Data;
 
+import java.util.Date;
+
 
 /**
  * 订单表
@@ -22,6 +24,10 @@ public class OrderVO  extends Order {
     private String statusStr;
 
     private String categoryIcon;
+
+    private Date endDate;
+
+    private Date startDate;
 
     /**
      * 订单状态列表

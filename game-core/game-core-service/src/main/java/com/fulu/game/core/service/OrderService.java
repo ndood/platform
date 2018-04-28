@@ -4,6 +4,7 @@ import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.github.pagehelper.PageInfo;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -18,7 +19,6 @@ public interface OrderService extends ICommonService<Order,Integer>{
 
 
     //todo 非自己的订单不能操作
-
 
     PageInfo<OrderVO> userList(int pageNum, int pageSize, Integer categoryId, Integer[] statusArr);
 
@@ -111,4 +111,6 @@ public interface OrderService extends ICommonService<Order,Integer>{
      * @return
      */
     Boolean isAlreadyService(Integer serverId);
+
+    List<Order> findByStatusList(Integer[] statusList);
 }

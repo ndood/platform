@@ -361,6 +361,12 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     }
 
 
+    public List<Order> findByStatusList(Integer[] statusList){
+        OrderVO orderVO = new OrderVO();
+        orderVO.setStatusList(statusList);
+        return orderDao.findByParameter(orderVO);
+    }
+
 
     /**
      * 生成订单号
