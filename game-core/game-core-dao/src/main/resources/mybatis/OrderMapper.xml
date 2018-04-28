@@ -60,26 +60,23 @@
             <if test="name != null">
                 and name = #{name}
             </if>
-            <if test="remark != null">
-                and remark = #{remark}
-            </if>
             <if test="isPay != null">
                 and is_pay = #{isPay}
             </if>
             <if test="status != null">
                 and status = #{status}
             </if>
-            <if test="commissionMoney != null">
-                and commission_money = #{commissionMoney}
+            <if test="statusList != null">
+                and status in
+                <foreach collection="statusList" item="s" index="index" open="(" close=")" separator=",">
+                    #{s}
+                </foreach>
             </if>
-            <if test="totalMoney != null">
-                and total_money = #{totalMoney}
+            <if test="startDate != null">
+                and create_time &gt;= #{startDate}
             </if>
-            <if test="createTime != null">
-                and create_time = #{createTime}
-            </if>
-            <if test="updateTime != null">
-                and update_time = #{updateTime}
+            <if test="endDate != null">
+                and create_time &lt;= #{endDate}
             </if>
         </where>
     </select>
