@@ -2,21 +2,21 @@ package com.fulu.game.common.exception;
 
 public class UserException extends RuntimeException {
 
-    private String Code;
-    private String Message;
+    private int code;
+    private String message;
 
     public UserException(IExceptionCode iExceptionCode) {
         super();
-        this.Code = iExceptionCode.getCode();
-        this.Message = iExceptionCode.getMessage();
+        this.code = iExceptionCode.getCode();
+        this.message = iExceptionCode.getMessage();
     }
 
-    public String getCode() {
-        return Code;
+    public int getCode() {
+        return code;
     }
 
     @Override
     public String getMessage() {
-        return Message;
+        return message;
     }
 }

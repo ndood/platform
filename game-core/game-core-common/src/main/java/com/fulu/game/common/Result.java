@@ -51,6 +51,12 @@ public class Result implements Serializable {
         return result;
     }
 
+    public static Result error(int code) {
+        Result result = new Result();
+        result.setStatus(code);
+        return result;
+    }
+
     public static Result noLogin() {
         Result result = new Result();
         result.setStatus(ResultStatus.NOLOGIN);

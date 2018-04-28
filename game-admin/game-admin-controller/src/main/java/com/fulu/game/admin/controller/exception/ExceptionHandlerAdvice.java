@@ -67,12 +67,12 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(CashException.class)
     public Result cashException(CashException e) {
         log.error(e.getMessage(), e);
-        return	Result.error().msg(e.getMessage());
+        return	Result.error(e.getCode()).msg(e.getMessage());
     }
 
     @ExceptionHandler(UserException.class)
     public Result UserException(UserException e) {
         log.error(e.getMessage(), e);
-        return	Result.error().msg(e.getMessage());
+        return	Result.error(e.getCode()).msg(e.getMessage());
     }
 }

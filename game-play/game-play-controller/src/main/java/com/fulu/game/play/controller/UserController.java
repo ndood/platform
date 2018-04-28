@@ -90,12 +90,12 @@ public class UserController extends BaseController{
         log.info("前端验证码：" + verifyCode);
 
         log.info("缓存验证码：" + redisVerifyCode);
-////        if (null == redisVerifyCode){
-////            return Result.error().msg("验证码失效");
-////        }else{
-//            if (!verifyCode.equals(redisVerifyCode)){
-//                return Result.error().msg("验证码提交错误");
-//            }else{//绑定手机号
+        if (null == redisVerifyCode){
+            return Result.error().msg("验证码失效");
+        }else{
+            if (!verifyCode.equals(redisVerifyCode)){
+                return Result.error().msg("验证码提交错误");
+            }else{//绑定手机号
                 String openId = redisOpenService.hget(RedisKeyEnum.PLAY_TOKEN.generateKey(token)).get("openId").toString();
                 User user = userService.findByOpenId(openId);
                 user.setMobile(wxUserInfo.getMobile());
@@ -107,13 +107,17 @@ public class UserController extends BaseController{
                 user.setCountry(wxUserInfo.getCountry());
                 user.setUpdateTime(new Date());
                 userService.update(user);
-
+                //如果是后台添加的用户，绑定后需要删除该记录
+                User oldUser = userService.findByMobile(wxUserInfo.getMobile());
+                if (null != oldUser){
+                    userService.deleteById(oldUser.getId());
+                }
                 user.setOpenId(null);
                 user.setSessionKey(null);
                 user.setBalance(null);
                 return Result.success().data(user).msg("手机号绑定成功！");
-//            }
-//        }
+            }
+        }
     }
 
 }

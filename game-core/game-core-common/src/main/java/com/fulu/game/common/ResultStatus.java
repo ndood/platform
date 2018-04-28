@@ -19,4 +19,7 @@ public class ResultStatus {
     //新用户待绑定
     public static Integer NEWUSER = 201;
 
+    //手机号已注册
+    public static Integer MOBILE_DUPLICATE = 202;
+
 }

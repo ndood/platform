@@ -1,6 +1,9 @@
 package com.fulu.game.admin.controller;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.common.ResultStatus;
+import com.fulu.game.common.enums.exception.UserExceptionEnums;
+import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
@@ -8,6 +11,7 @@ import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -168,6 +172,23 @@ public class UserController extends BaseController{
     public Result list(@ModelAttribute UserVO userVO, Integer pageNum, Integer pageSize){
         PageInfo<User> userList = userService.list(userVO,pageNum,pageSize);
         return Result.success().data(userList).msg("查询用户列表成功！");
+    }
+
+    @RequestMapping("/save")
+    public Result save(@ModelAttribute UserVO userVO){
+        if (StringUtils.isEmpty(userVO.getMobile())){
+            throw new UserException(UserExceptionEnums.IllEGAL_MOBILE_EXCEPTION);
+        }
+        //判断手机号是否已注册成用户
+        User user = userService.findByMobile(userVO.getMobile());
+        if (null != user){
+            Result result = Result.success().msg("手机号已注册！");
+            result.setStatus(ResultStatus.MOBILE_DUPLICATE);
+            return result;
+        }else{
+            User newUser = userService.save(userVO);
+            return Result.success().data(newUser).msg("新用户添加成功！");
+        }
     }
 
 }

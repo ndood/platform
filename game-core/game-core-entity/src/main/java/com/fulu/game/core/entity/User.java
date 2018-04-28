@@ -24,7 +24,7 @@ public class User implements Serializable {
 	private String mobile;
 	//昵称
 	private String nickname;
-	//性别(1男,2女)考虑是否可不公开
+	//性别(0不公开,1男,2女)
 	private Integer gender;
 	//头像URL
 	private String headPortraitsUrl;

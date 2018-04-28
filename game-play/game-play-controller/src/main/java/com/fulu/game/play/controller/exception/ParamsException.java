@@ -3,7 +3,7 @@ package com.fulu.game.play.controller.exception;
 import com.fulu.game.common.exception.IExceptionCode;
 
 public class ParamsException extends RuntimeException{
-    private String Code;
+    private int Code;
     private String Message;
 
     public ParamsException(IExceptionCode iExceptionCode) {
@@ -12,7 +12,7 @@ public class ParamsException extends RuntimeException{
         this.Message = iExceptionCode.getMessage();
     }
 
-    public String getCode() {
+    public int getCode() {
         return Code;
     }
 
