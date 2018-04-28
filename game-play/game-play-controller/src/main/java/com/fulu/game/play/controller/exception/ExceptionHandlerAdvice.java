@@ -55,7 +55,7 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(OrderException.class)
     public Result  orderException(OrderException e){
         log.error(e.getMessage(), e);
-        return	Result.error().msg("订单操作失败!");
+        return	Result.error().msg(e.getMessage());
     }
 
 

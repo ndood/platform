@@ -5,6 +5,8 @@ import com.fulu.game.core.entity.vo.MoneyDetailsVO;
 import com.github.pagehelper.PageInfo;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
 /**
  * @author yanbiao
  * @date 2018-04-25 14:59:54
@@ -34,5 +36,6 @@ public interface MoneyDetailsService extends ICommonService<MoneyDetails,Integer
      * @return
      */
     MoneyDetails drawSave(MoneyDetails moneyDetails);
+
 
 }

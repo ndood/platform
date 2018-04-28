@@ -200,6 +200,26 @@ public class OrderController {
         return Result.success().data(orderVO).msg("订单申诉成功!");
     }
 
+    /**
+     * 管理员强制完成订单
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/admin/complete")
+    public Result adminHandleCompleteOrder(String orderNo){
+        OrderVO orderVO =orderService.adminHandleCompleteOrder(orderNo);
+        return Result.success().data(orderVO).msg("订单完成!");
+    }
 
+    /**
+     * 管理员退款给用户
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/admin/refund")
+    public Result adminHandleRefundOrder(String orderNo){
+        OrderVO orderVO =orderService.adminHandleRefundOrder(orderNo);
+        return Result.success().data(orderVO).msg("订单完成,退款给用户!");
+    }
 
 }

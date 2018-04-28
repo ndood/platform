@@ -18,6 +18,7 @@ import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +49,9 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     private RedisOpenServiceImpl redisOpenService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private MoneyDetailsService moneyDetailsService;
+
 
     @Override
     public ICommonDao<Order, Integer> getDao() {
@@ -200,7 +204,6 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setUpdateTime(new Date());
         update(order);
         //todo 全额退款用户
-
         //记录订单流水
         orderMoneyDetailsService.create(orderNo,order.getUserId(),DetailsEnum.ORDER_SERVER_CANCEL,"-"+order.getTotalMoney());
         return orderConvertVo(order);

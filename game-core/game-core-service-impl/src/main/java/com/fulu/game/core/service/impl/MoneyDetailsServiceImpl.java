@@ -116,4 +116,5 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails,Integ
         return moneyDetails;
     }
 
+
 }
