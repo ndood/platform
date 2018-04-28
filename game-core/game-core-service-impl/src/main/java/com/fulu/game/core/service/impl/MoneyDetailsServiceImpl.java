@@ -82,27 +82,29 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails,Integ
 
     /**
      * 陪玩订单完成生成零钱记录
-     * @param moneyDetailsVO
+     * @param money
+     * @param targetId
+     * @param orderNo
      * @return
      */
     @Override
-    public MoneyDetails orderSave(MoneyDetailsVO moneyDetailsVO) {
-        if (moneyDetailsVO.getMoney().compareTo(BigDecimal.ZERO)==-1){
+    public MoneyDetails orderSave(BigDecimal money,Integer targetId,String orderNo) {
+        if (money.compareTo(BigDecimal.ZERO)==-1){
             throw new CashException(CashExceptionEnums.CASH_NEGATIVE_EXCEPTION);
         }
-        User user = userService.findById(moneyDetailsVO.getTargetId());
+        User user = userService.findById(targetId);
         if (null == user){
             throw new UserException(UserExceptionEnums.USER_NOT_EXIST_EXCEPTION);
         }
         //加钱之前该用户的零钱
         BigDecimal balance = user.getBalance();
-        BigDecimal newBalance = balance.add(moneyDetailsVO.getMoney());
+        BigDecimal newBalance = balance.add(money);
 
         MoneyDetails moneyDetails = new MoneyDetails();
-        BeanUtil.copyProperties(moneyDetailsVO,moneyDetails);
-        moneyDetails.setSum(newBalance);
-        moneyDetails.setOperatorId(moneyDetails.getTargetId());
+        moneyDetails.setOperatorId(0);//默认是系统加款
+        moneyDetails.setTargetId(targetId);
         moneyDetails.setAction(2);//2表示陪玩订单
+        moneyDetails.setSum(newBalance);
         moneyDetails.setCreateTime(new Date());
         moneyDetailsDao.create(moneyDetails);
         user.setBalance(newBalance);
