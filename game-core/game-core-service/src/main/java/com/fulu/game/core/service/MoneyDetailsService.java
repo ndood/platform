@@ -5,6 +5,8 @@ import com.fulu.game.core.entity.vo.MoneyDetailsVO;
 import com.github.pagehelper.PageInfo;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
 /**
  * @author yanbiao
  * @date 2018-04-25 14:59:54
@@ -24,10 +26,12 @@ public interface MoneyDetailsService extends ICommonService<MoneyDetails,Integer
 
     /**
      * 入款-完成陪玩订单
-     * @param moneyDetailsVO
+     * @param money
+     * @param targetId
+     * @param orderNo
      * @return
      */
-    MoneyDetails orderSave(MoneyDetailsVO moneyDetailsVO);
+    MoneyDetails orderSave(BigDecimal money,Integer targetId,String orderNo);
 
     /**
      * 提款-生成提款申请单后调用该接口
