@@ -4,6 +4,7 @@ package com.fulu.game.core.service.impl;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
+import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.ProductDao;
 import com.fulu.game.core.entity.*;
@@ -130,13 +131,14 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      */
     @Override
     public void startOrderReceiving(int hour) {
+        User user =(User) SubjectUtil.getCurrentUser();
         Long expire = hour * 3600L;
-        List<Product> products = findEnabledProductByUser(Constant.DEF_USER_ID);
+        List<Product> products = findEnabledProductByUser(user.getId());
         if (products.isEmpty()) {
             throw new ServiceErrorException("请选择技能后再点击开始接单!");
         }
-        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(Constant.DEF_USER_ID), "HOUR", hour, expire);
-        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(Constant.DEF_USER_ID), "START_TIME", DateUtil.now(), expire);
+        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()), "HOUR", hour, expire);
+        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()), "START_TIME", DateUtil.now(), expire);
         for (Product product : products) {
             ProductVO productVO = new ProductVO();
             BeanUtil.copyProperties(product, productVO);
@@ -156,8 +158,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     @Override
     public void stopOrderReceiving() {
-        List<Product> products = findEnabledProductByUser(Constant.DEF_USER_ID);
-        redisOpenService.delete(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(Constant.DEF_USER_ID));
+        User user =(User) SubjectUtil.getCurrentUser();
+        List<Product> products = findEnabledProductByUser(user.getId());
+        redisOpenService.delete(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()));
         for (Product product : products) {
             try {
                 log.info("停止接单{}", product);
@@ -221,7 +224,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             showCaseVO.setMainPhoto(userInfoVO.getMainPhotoUrl());
             showCaseVO.setCity(userInfoVO.getCity());
             showCaseVO.setPersonTags(userInfoVO.getTags());
-
         }
         PageInfo page = new PageInfo(showCaseVOS);
         return page;
@@ -272,7 +274,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
 
     public Map<String, Object> readOrderReceivingStatus() {
-        return redisOpenService.hget(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(Constant.DEF_USER_ID));
+        User user =(User) SubjectUtil.getCurrentUser();
+        return redisOpenService.hget(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()));
     }
 
 

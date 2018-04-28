@@ -32,8 +32,7 @@ public class AclFilter extends AccessControlFilter {
      * 首先调用若返回true则继续执行filter和servlet，否则调用onAccessDenied
      */
     @Override
-    protected boolean isAccessAllowed(ServletRequest request,
-                                      ServletResponse response, Object mappedValue) throws Exception {
+    protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
         return false;
     }
 
@@ -48,10 +47,10 @@ public class AclFilter extends AccessControlFilter {
     protected boolean onAccessDenied(ServletRequest request,ServletResponse response) throws Exception {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String token = httpRequest.getHeader("token");
-        Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.TOKEN.generateKey(token));
+        Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.PLAY_TOKEN.generateKey(token));
         // 没有登录授权 且没有记住我
         if (MapUtils.isEmpty(map)) {
-            log.info("验证登录失败token：{}", token);
+            log.info("token验证失效=====", token);
             // 没有登录
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             httpResponse.setCharacterEncoding("UTF-8");
@@ -60,10 +59,11 @@ public class AclFilter extends AccessControlFilter {
             try{
                 out = httpResponse.getWriter();
                 JSONObject res = new JSONObject();
-                res.element("status", "500");
-                res.element("data", "");
-                res.element("msg", "您未登录，暂无权限访问");
-                out.append(res.toString());
+                res.put("status", "501");
+                res.put("data", "");
+                res.put("msg", "您未登录，暂无权限访问");
+                //out.append(res.toString());
+                out.write(res.toString());
             }catch(IOException e){
                 e.printStackTrace();
             }finally {
@@ -74,11 +74,13 @@ public class AclFilter extends AccessControlFilter {
             return false;
         }
         //在存5分钟，保证会话时长
-        redisOpenService.hset(RedisKeyEnum.TOKEN.generateKey(token), map);
+        redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token), map);
 
         //已登录的，就保存该token从redis查到的用户信息
         User user = BeanUtil.mapToBean(map, User.class, true);
         SubjectUtil.setCurrentUser(user);
+        log.info("当前用户token=====", token);
+        SubjectUtil.setToken(token);
         return true;
     }
 

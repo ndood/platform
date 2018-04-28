@@ -10,6 +10,7 @@ import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.common.utils.SMSUtil;
+import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OrderVO;
@@ -55,8 +56,9 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
 
     @Override
     public PageInfo<OrderVO> userList(int pageNum, int pageSize, Integer categoryId, Integer[] statusArr) {
+        User user =(User)SubjectUtil.getCurrentUser();
         OrderVO params = new OrderVO();
-        params.setUserId(Constant.DEF_COMMON_USER_ID);
+        params.setUserId(user.getId());
         params.setCategoryId(categoryId);
         params.setStatusList(statusArr);
         PageHelper.startPage(pageNum,pageSize,"create_time desc");
@@ -71,8 +73,9 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
 
     @Override
     public PageInfo<OrderVO> serverList(int pageNum, int pageSize, Integer categoryId, Integer[] statusArr) {
+        User user =(User)SubjectUtil.getCurrentUser();
         OrderVO params = new OrderVO();
-        params.setServiceUserId(Constant.DEF_USER_ID);
+        params.setServiceUserId(user.getId());
         params.setCategoryId(categoryId);
         params.setStatusList(statusArr);
         PageHelper.startPage(pageNum,pageSize,"create_time desc");
@@ -92,6 +95,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     public OrderVO submit(int productId,
                           int num,
                           String remark) {
+        User user =(User)SubjectUtil.getCurrentUser();
         Product product = productService.findById(productId);
         Category category = categoryService.findById(product.getCategoryId());
         //计算订单总价格
@@ -102,7 +106,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         Order order = new Order();
         order.setName(product.getProductName()+"-"+num+"*"+product.getUnit());
         order.setOrderNo(getOrderNo());
-        order.setUserId(Constant.DEF_COMMON_USER_ID);
+        order.setUserId(user.getId());
         order.setServiceUserId(product.getUserId());
         order.setCategoryId(product.getCategoryId());
         order.setRemark(remark);

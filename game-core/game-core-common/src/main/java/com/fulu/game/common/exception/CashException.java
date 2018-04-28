@@ -8,7 +8,7 @@ package com.fulu.game.common.exception;
 public class CashException extends RuntimeException {
     private IExceptionCode iExceptionCode;
 
-    private String code;
+    private int code;
     private String message;
 
     public CashException(IExceptionCode iExceptionCode) {
@@ -23,7 +23,7 @@ public class CashException extends RuntimeException {
         return message;
     }
 
-    public String getCode() {
+    public  int getCode() {
         return code;
     }
 }

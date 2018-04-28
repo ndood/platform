@@ -70,7 +70,7 @@ public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher
             adminMap.put("id", admin.getId());
             adminMap.put("name", admin.getName());
             String genToken = GenIdUtil.GetGUID();
-            redisOpenService.hset(RedisKeyEnum.TOKEN.generateKey(genToken), adminMap);
+            redisOpenService.hset(RedisKeyEnum.ADMIN_TOKEN.generateKey(genToken), adminMap);
             log.info("登录成功生成token：{}", genToken);
             SubjectUtil.setToken(genToken);
             return true;
