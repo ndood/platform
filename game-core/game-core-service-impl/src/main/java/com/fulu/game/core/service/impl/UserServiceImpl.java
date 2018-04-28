@@ -16,7 +16,7 @@ import com.fulu.game.core.dao.UserDao;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.UserService;
 
-@Service
+@Service("userService")
 public class UserServiceImpl extends AbsCommonService<User,Integer> implements UserService {
 
     @Autowired

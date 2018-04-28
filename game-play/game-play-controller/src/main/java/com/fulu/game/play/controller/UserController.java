@@ -89,10 +89,7 @@ public class UserController extends BaseController{
         //2.提交认证和凭据给身份验证系统
         try{
             subject.login(playUserToken);
-            User user = (User)subject.getPrincipal();
-            Map<String, Object> map = BeanUtil.beanToMap(user);
-            map.put("token", SubjectUtil.getToken());
-            return Result.success().data(map).msg("登录成功!");
+            return Result.success().data(SubjectUtil.getToken()).msg("登录成功!");
         }catch (AuthenticationException e) {
             return Result.error().msg("用户验证信息错误！");
         }catch (Exception e){
