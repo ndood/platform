@@ -1,6 +1,5 @@
 package com.fulu.game.common;
 
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +26,6 @@ public class Result implements Serializable {
         this.msg = msg;
         return this;
     }
-
 
     public Result data(Object data) {
         this.data = data;
@@ -59,7 +57,11 @@ public class Result implements Serializable {
         return result;
     }
 
-
+    public static Result newUser() {
+        Result result = new Result();
+        result.setStatus(ResultStatus.NEWUSER);
+        return result;
+    }
 
     public Object getData() {
         return data;

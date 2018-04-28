@@ -37,6 +37,8 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
      * @param info
      * @return
      */
+
+
     @Override
     public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
 
@@ -52,9 +54,10 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
             userMap.put("openId", user.getOpenId());
             userMap.put("sessionKey", user.getSessionKey());
             String gToken = GenIdUtil.GetGUID();
-            redisOpenService.hset(RedisKeyEnum.TOKEN.generateKey(gToken), userMap);
+            redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(gToken), userMap);
             log.info("登录成功生成token：{}", gToken);
             SubjectUtil.setToken(gToken);
+            log.info("当前token===========" + SubjectUtil.getToken());
             SubjectUtil.setCurrentUser(user);
             return true;
         }

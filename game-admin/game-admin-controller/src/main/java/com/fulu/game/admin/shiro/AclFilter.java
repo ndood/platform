@@ -40,7 +40,7 @@ public class AclFilter extends AccessControlFilter {
             return true;
         }
         String token = httpRequest.getHeader("token");
-        Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.TOKEN.generateKey(token));
+        Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.ADMIN_TOKEN.generateKey(token));
         // 没有登录授权 且没有记住我
         if (MapUtils.isEmpty(map)) {
             log.info("验证登录失败token：{}", token);
@@ -65,7 +65,7 @@ public class AclFilter extends AccessControlFilter {
             return false;
         }
         //再存5分钟，保证会话时长
-        redisOpenService.hset(RedisKeyEnum.TOKEN.generateKey(token), map);
+        redisOpenService.hset(RedisKeyEnum.ADMIN_TOKEN.generateKey(token), map);
 
         //已登录的，就保存该token从redis查到的用户信息
         Admin admin = BeanUtil.mapToBean(map, Admin.class, true);
