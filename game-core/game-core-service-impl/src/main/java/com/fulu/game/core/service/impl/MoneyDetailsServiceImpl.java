@@ -80,6 +80,11 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails,Integ
         return moneyDetails;
     }
 
+    @Override
+    public MoneyDetails orderSave(BigDecimal money, Integer targetId, String orderNo) {
+        return null;
+    }
+
     /**
      * 陪玩订单完成生成零钱记录
      * @param money

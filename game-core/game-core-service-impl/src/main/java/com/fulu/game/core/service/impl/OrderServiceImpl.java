@@ -106,6 +106,9 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         BigDecimal totalMoney = product.getPrice().multiply(new BigDecimal(num));
         //计算单笔订单佣金
         BigDecimal commissionMoney = totalMoney.multiply(category.getCharges());
+        if(commissionMoney.compareTo(totalMoney)>=0){
+            throw new OrderException(category.getName(),"订单错误,佣金比订单总价高!");
+        }
         //创建订单
         Order order = new Order();
         order.setName(product.getProductName()+"-"+num+"*"+product.getUnit());
@@ -294,8 +297,9 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setStatus(OrderStatusEnum.COMPLETE.getStatus());
         order.setUpdateTime(new Date());
         update(order);
-
-        //todo 给打手加零钱,平台记录收入流水
+        BigDecimal serverMoney = order.getTotalMoney().subtract(order.getCommissionMoney());
+        moneyDetailsService.orderSave(serverMoney,order.getServiceUserId(),orderNo);
+        //todo 平台记录收入流水
         return orderConvertVo(order);
     }
 
@@ -312,7 +316,9 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setStatus(OrderStatusEnum.ADMIN_COMPLETE.getStatus());
         order.setUpdateTime(new Date());
         update(order);
-        //todo 给打手加零钱,平台记录收入流水
+        BigDecimal serverMoney = order.getTotalMoney().subtract(order.getCommissionMoney());
+        moneyDetailsService.orderSave(serverMoney,order.getServiceUserId(),orderNo);
+        //todo 平台记录收入流水
         return orderConvertVo(order);
     }
 
