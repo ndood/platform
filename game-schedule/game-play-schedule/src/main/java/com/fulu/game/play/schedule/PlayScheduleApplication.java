@@ -12,7 +12,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class PlayScheduleApplication extends SpringBootServletInitializer {
 
-
     public static void main(String[] args) throws Exception {
         SpringApplication.run(PlayScheduleApplication.class, args);
     }
