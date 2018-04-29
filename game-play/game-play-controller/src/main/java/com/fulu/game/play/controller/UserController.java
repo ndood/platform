@@ -1,12 +1,12 @@
 package com.fulu.game.play.controller;
 
-
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserTechAuth;
+import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.WxUserInfo;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.UserTechAuthService;
@@ -46,10 +46,64 @@ public class UserController extends BaseController{
      */
     @PostMapping("/balance/get")
     public Result getBalance(){
-        String token = SubjectUtil.getToken();
-        String openId = redisOpenService.hget(RedisKeyEnum.PLAY_TOKEN.generateKey(token)).get("openId").toString();
-        User user = userService.findByOpenId(openId);
+        User user = (User)SubjectUtil.getCurrentUser();
         return Result.success().data(user.getBalance()).msg("查询成功！");
+    }
+
+    /**
+     * 用户-进入我的页面
+     * @return
+     */
+    @PostMapping("/get")
+    public Result get(@RequestParam(name = "mobile",required = false,defaultValue = "false") Boolean mobile,
+                      @RequestParam(name = "idcard",required = false,defaultValue = "false") Boolean idcard,
+                      @RequestParam(name = "gender",required = false,defaultValue = "false") Boolean gender,
+                      @RequestParam(name = "realname",required = false,defaultValue = "false") Boolean realname,
+                      @RequestParam(name = "age",required = false,defaultValue = "false") Boolean age){
+        User user = (User)SubjectUtil.getCurrentUser();
+        user.setId(null);
+        user.setBalance(null);
+        user.setOpenId(null);
+        user.setSessionKey(null);
+        user.setPassword(null);
+        user.setSalt(null);
+        if (null != idcard && !idcard)
+            user.setIdcard(null);
+        if (!realname)
+            user.setRealname(null);
+        if (!gender)
+            user.setGender(null);
+        if (!mobile)
+            user.setMobile(null);
+        if (!age)
+            user.setAge(null);
+        return Result.success().data(user).msg("认证状态查询成功！");
+    }
+
+    /**
+     * 用户-更新个人信息
+     * @param userVO
+     * @return
+     */
+    @RequestMapping("/update")
+    public Result update(@ModelAttribute UserVO userVO){
+        User user = (User)SubjectUtil.getCurrentUser();
+        user.setAge(userVO.getAge());
+        user.setGender(userVO.getGender());
+        user.setCity(userVO.getCity());
+        user.setNickname(userVO.getNickname());
+        user.setHeadPortraitsUrl(userVO.getHeadPortraitsUrl());
+        userService.update(user);
+
+        user.setId(null);
+        user.setBalance(null);
+        user.setOpenId(null);
+        user.setSessionKey(null);
+        user.setPassword(null);
+        user.setSalt(null);
+        user.setIdcard(null);
+        user.setRealname(null);
+        return Result.success().data(user).msg("个人信息设置成功！");
     }
 
     /**
@@ -119,6 +173,7 @@ public class UserController extends BaseController{
                 return Result.success().data(user).msg("手机号绑定成功！");
             }
         }
+
     }
 
 }

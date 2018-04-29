@@ -4,7 +4,9 @@ import com.fulu.game.common.enums.exception.CashExceptionEnums;
 import com.fulu.game.common.enums.exception.UserExceptionEnums;
 import com.fulu.game.common.exception.CashException;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.MoneyDetailsVO;
 import com.fulu.game.core.service.UserService;
@@ -70,7 +72,7 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails,Integ
         MoneyDetails moneyDetails = new MoneyDetails();
         BeanUtil.copyProperties(moneyDetailsVO,moneyDetails);
         moneyDetails.setSum(newBalance);
-        moneyDetails.setOperatorId(1);//查询当前管理员对象后修改掉
+        moneyDetails.setOperatorId(((Admin)SubjectUtil.getCurrentUser()).getId());//查询当前管理员对象后修改掉
         moneyDetails.setTargetId(user.getId());
         moneyDetails.setAction(1);
         moneyDetails.setCreateTime(new Date());
@@ -105,6 +107,7 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails,Integ
         moneyDetails.setTargetId(targetId);
         moneyDetails.setAction(2);//2表示陪玩订单
         moneyDetails.setSum(newBalance);
+        moneyDetails.setRemark("陪玩订单完成，系统打款,订单号_" + orderNo);
         moneyDetails.setCreateTime(new Date());
         moneyDetailsDao.create(moneyDetails);
         user.setBalance(newBalance);
