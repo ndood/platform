@@ -55,10 +55,10 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
             userMap.put("sessionKey", user.getSessionKey());
             String gToken = GenIdUtil.GetGUID();
             redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(gToken), userMap);
-            log.info("登录成功生成token：{}", gToken);
+            log.info("新创建用户生成token======", gToken);
             SubjectUtil.setToken(gToken);
-            log.info("当前token===========" + SubjectUtil.getToken());
             SubjectUtil.setCurrentUser(user);
+            log.info("执行setToken()和setCurrentUser()方法，登陆成功,token=====" + SubjectUtil.getToken());
             return true;
         }
         return false;

@@ -3,21 +3,21 @@ package com.fulu.game.play.controller.exception;
 import com.fulu.game.common.exception.IExceptionCode;
 
 public class ParamsException extends RuntimeException{
-    private int Code;
-    private String Message;
+    private int code;
+    private String message;
 
     public ParamsException(IExceptionCode iExceptionCode) {
         super();
-        this.Code = iExceptionCode.getCode();
-        this.Message = iExceptionCode.getMessage();
+        this.code = iExceptionCode.getCode();
+        this.message = iExceptionCode.getMessage();
     }
 
     public int getCode() {
-        return Code;
+        return code;
     }
 
     @Override
     public String getMessage() {
-        return Message;
+        return message;
     }
 }

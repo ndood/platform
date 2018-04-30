@@ -139,12 +139,10 @@ public class UserController extends BaseController{
     public Result bind(@ModelAttribute WxUserInfo wxUserInfo,
                        @RequestParam("verifyCode") String verifyCode){
         String token = SubjectUtil.getToken();
-        log.info("获取到的token===========" + token);
+        log.info("执行bind方法，SubjectUtil获得token===========" + token);
         //验证手机号的验证码
         String redisVerifyCode = redisOpenService.get(RedisKeyEnum.SMS.generateKey(token+SPLIT+wxUserInfo.getMobile()));
-        log.info("前端验证码：" + verifyCode);
-
-        log.info("缓存验证码：" + redisVerifyCode);
+        log.info("前端验证码====" + verifyCode + "Redis缓存验证码=====" + redisVerifyCode);
         if (null == redisVerifyCode){
             return Result.error().msg("验证码失效");
         }else{

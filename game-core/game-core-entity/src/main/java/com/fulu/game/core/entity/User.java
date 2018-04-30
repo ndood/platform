@@ -55,6 +55,8 @@ public class User implements Serializable {
 	private String city;
 	private String province;
 	private String country;
+	//综合得星评分数
+	private BigDecimal scoreAvg;
 
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	public Date getCreateTime(){

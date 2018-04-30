@@ -47,6 +47,7 @@ public class AclFilter extends AccessControlFilter {
     protected boolean onAccessDenied(ServletRequest request,ServletResponse response) throws Exception {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String token = httpRequest.getHeader("token");
+        log.info("请求header中的token=====", token);
         Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.PLAY_TOKEN.generateKey(token));
         // 没有登录授权 且没有记住我
         if (MapUtils.isEmpty(map)) {
@@ -79,7 +80,7 @@ public class AclFilter extends AccessControlFilter {
         //已登录的，就保存该token从redis查到的用户信息
         User user = BeanUtil.mapToBean(map, User.class, true);
         SubjectUtil.setCurrentUser(user);
-        log.info("当前用户token=====", token);
+        log.info("filter验证成功续存token=====", token);
         SubjectUtil.setToken(token);
         return true;
     }

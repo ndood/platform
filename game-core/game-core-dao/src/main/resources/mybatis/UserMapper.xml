@@ -20,13 +20,17 @@
         <result column="update_time" property="updateTime"/>
         <result column="session_key" property="sessionKey"/>
         <result column="open_id" property="openId"/>
+        <result column="city" property="city"/>
+        <result column="province" property="province"/>
+        <result column="country" property="country"/>
+        <result column="score_avg" property="scoreAvg"/>
     </resultMap>
 
     <resultMap id="UserResultVOMap" type="com.fulu.game.core.entity.vo.UserVO" extends="UserResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,session_key,open_id </sql>
+        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,session_key,open_id,city,province,country,score_avg </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserResultMap">
         select
@@ -60,12 +64,6 @@
             <if test="nickname != null">
                 and nickname LIKE CONCAT('%', #{nickname},'%')
             </if>
-            <if test="gender != null">
-                and gender = #{gender}
-            </if>
-            <if test="realname != null">
-                and realname = #{realname}
-            </if>
             <if test="idcard != null">
                 and idcard = #{idcard}
             </if>
@@ -96,9 +94,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.User">
         insert into
-        t_user (mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,session_key,city,province,country)
+        t_user (mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,session_key,city,province,country,score_avg)
         values
-        (#{mobile},#{nickname},#{gender},#{headPortraitsUrl},#{password},#{salt},#{realname},#{idcard},#{type},#{userInfoAuth},#{balance},#{status},#{createTime},#{updateTime},#{openId},#{sessionKey},#{city},#{province},#{country})
+        (#{mobile},#{nickname},#{gender},#{headPortraitsUrl},#{password},#{salt},#{realname},#{idcard},#{type},#{userInfoAuth},#{balance},#{status},#{createTime},#{updateTime},#{openId},#{sessionKey},#{city},#{province},#{country},#{scoreAvg})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.User">
@@ -151,6 +149,25 @@
 
             <if test="status != null">
                 status = #{status},
+            </if>
+
+            <if test="city != null">
+                city = #{city},
+            </if>
+            <if test="province != null">
+                province = #{province},
+            </if>
+            <if test="country != null">
+                country = #{country},
+            </if>
+            <if test="sessionkKey != null">
+                session_key = #{sessionkKey},
+            </if>
+            <if test="openId != null">
+                open_id = #{openId},
+            </if>
+            <if test="scoreAvg != null">
+                score_avg = #{scoreAvg},
             </if>
 
             <if test="createTime != null">

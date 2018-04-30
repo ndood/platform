@@ -18,7 +18,7 @@ public class GenerateTest {
 
     @Test
     public void test2() {
-        codeGenerateForTable("yanbiao","t_money_details");
+        codeGenerateForTable("yanbiao","t_user_comment");
     }
 
 
@@ -36,7 +36,7 @@ public class GenerateTest {
                 .withAutoRemovePre(true)
                 .withOutPath("E:\\generate_files")
                 .withPackageName("com.fulu.game.core")
-                .withAuthor("yanbiao")
+                .withAuthor(author)
                 .build();
         generateFactory.generatorCode(tableName);
     }
