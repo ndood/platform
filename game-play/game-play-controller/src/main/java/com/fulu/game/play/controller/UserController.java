@@ -2,6 +2,8 @@ package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.exception.UserExceptionEnums;
+import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
@@ -12,6 +14,7 @@ import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.UserTechAuthService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,9 +24,9 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/user")
-public class UserController extends BaseController{
+public class UserController extends BaseController {
 
-    private static final String SPLIT = "-";
+    private static final String SPLIT = "_";
 
     @Autowired
     private UserTechAuthService userTechAuthService;
@@ -33,34 +36,36 @@ public class UserController extends BaseController{
     private RedisOpenServiceImpl redisOpenService;
 
     @RequestMapping("tech/list")
-    public Result userTechList(){
-        User user =(User) SubjectUtil.getCurrentUser();
+    public Result userTechList() {
+        User user = (User) SubjectUtil.getCurrentUser();
         //查询所有用户认证的技能
-        List<UserTechAuth> techAuthList = userTechAuthService.findByUserId(user.getId(),true);
+        List<UserTechAuth> techAuthList = userTechAuthService.findByUserId(user.getId(), true);
         return Result.success().data(techAuthList);
     }
 
     /**
      * 用户-查询余额
+     *
      * @return
      */
     @PostMapping("/balance/get")
-    public Result getBalance(){
-        User user = (User)SubjectUtil.getCurrentUser();
+    public Result getBalance() {
+        User user = (User) SubjectUtil.getCurrentUser();
         return Result.success().data(user.getBalance()).msg("查询成功！");
     }
 
     /**
      * 用户-进入我的页面
+     *
      * @return
      */
     @PostMapping("/get")
-    public Result get(@RequestParam(name = "mobile",required = false,defaultValue = "false") Boolean mobile,
-                      @RequestParam(name = "idcard",required = false,defaultValue = "false") Boolean idcard,
-                      @RequestParam(name = "gender",required = false,defaultValue = "false") Boolean gender,
-                      @RequestParam(name = "realname",required = false,defaultValue = "false") Boolean realname,
-                      @RequestParam(name = "age",required = false,defaultValue = "false") Boolean age){
-        User user = (User)SubjectUtil.getCurrentUser();
+    public Result get(@RequestParam(name = "mobile", required = false, defaultValue = "false") Boolean mobile,
+                      @RequestParam(name = "idcard", required = false, defaultValue = "false") Boolean idcard,
+                      @RequestParam(name = "gender", required = false, defaultValue = "false") Boolean gender,
+                      @RequestParam(name = "realname", required = false, defaultValue = "false") Boolean realname,
+                      @RequestParam(name = "age", required = false, defaultValue = "false") Boolean age) {
+        User user = (User) SubjectUtil.getCurrentUser();
         user.setId(null);
         user.setBalance(null);
         user.setOpenId(null);
@@ -82,12 +87,13 @@ public class UserController extends BaseController{
 
     /**
      * 用户-更新个人信息
+     *
      * @param userVO
      * @return
      */
     @RequestMapping("/update")
-    public Result update(@ModelAttribute UserVO userVO){
-        User user = (User)SubjectUtil.getCurrentUser();
+    public Result update(@ModelAttribute UserVO userVO) {
+        User user = (User) SubjectUtil.getCurrentUser();
         user.setAge(userVO.getAge());
         user.setGender(userVO.getGender());
         user.setCity(userVO.getCity());
@@ -108,47 +114,47 @@ public class UserController extends BaseController{
 
     /**
      * 点击发送验证码接口
+     *
      * @param mobile
      * @return
      */
     @PostMapping("/mobile/sms")
-    public Result sms(@RequestParam("mobile") String mobile){
+    public Result sms(@RequestParam("mobile") String mobile) {
         String token = SubjectUtil.getToken();
         //缓存中查找该手机是否有验证码
-        if (redisOpenService.hasKey(RedisKeyEnum.SMS.generateKey(mobile))){
+        if (redisOpenService.hasKey(RedisKeyEnum.SMS.generateKey(mobile))) {
             String times = redisOpenService.get(RedisKeyEnum.SMS.generateKey(mobile));
-            if (Integer.parseInt(times) > 2){
+            if (Integer.parseInt(times) > 200) {
                 return Result.error().msg("半小时内发送次数不能超过3次，请等待！");
-            }else{
+            } else {
                 String verifyCode = SMSUtil.sendVerificationCode(mobile);
-                redisOpenService.set(RedisKeyEnum.SMS.generateKey(token+SPLIT+mobile),verifyCode,60);
-                times = String.valueOf(Integer.parseInt(times)+1);
-                redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile),times,30*60);
+                log.info("发送验证码：" + verifyCode);
+                redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode, 5* 60);
+                times = String.valueOf(Integer.parseInt(times) + 1);
+                redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), times, 30 * 60);
                 return Result.success().msg("验证码发送成功！");
             }
-        }else{
+        } else {
             String verifyCode = SMSUtil.sendVerificationCode(mobile);
-            log.info("验证码：" + verifyCode);
-            redisOpenService.set(RedisKeyEnum.SMS.generateKey(token+SPLIT+mobile),verifyCode,60);
-            redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile),"1",30*60);
+            log.info("发送验证码：" + verifyCode);
+            redisOpenService.set(RedisKeyEnum.SMS.generateKey(token + SPLIT + mobile), verifyCode, 5*60);
+            redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), "1", 30 * 60);
             return Result.success().msg("验证码发送成功！");
         }
     }
 
     @PostMapping("/mobile/bind")
     public Result bind(@ModelAttribute WxUserInfo wxUserInfo,
-                       @RequestParam("verifyCode") String verifyCode){
+                       @RequestParam("verifyCode") String verifyCode) {
         String token = SubjectUtil.getToken();
-        log.info("执行bind方法，SubjectUtil获得token===========" + token);
         //验证手机号的验证码
-        String redisVerifyCode = redisOpenService.get(RedisKeyEnum.SMS.generateKey(token+SPLIT+wxUserInfo.getMobile()));
-        log.info("前端验证码====" + verifyCode + "Redis缓存验证码=====" + redisVerifyCode);
-        if (null == redisVerifyCode){
+        String redisVerifyCode = redisOpenService.hget(RedisKeyEnum.SMS.generateKey(token), wxUserInfo.getMobile());
+        if (null == redisVerifyCode) {
             return Result.error().msg("验证码失效");
-        }else{
-            if (!verifyCode.equals(redisVerifyCode)){
+        } else {
+            if (verifyCode != null && !verifyCode.equals(redisVerifyCode)) {
                 return Result.error().msg("验证码提交错误");
-            }else{//绑定手机号
+            } else {//绑定手机号
                 String openId = redisOpenService.hget(RedisKeyEnum.PLAY_TOKEN.generateKey(token)).get("openId").toString();
                 User user = userService.findByOpenId(openId);
                 user.setMobile(wxUserInfo.getMobile());
@@ -162,7 +168,7 @@ public class UserController extends BaseController{
                 userService.update(user);
                 //如果是后台添加的用户，绑定后需要删除该记录
                 User oldUser = userService.findByMobile(wxUserInfo.getMobile());
-                if (null != oldUser){
+                if (null != oldUser) {
                     userService.deleteById(oldUser.getId());
                 }
                 user.setOpenId(null);

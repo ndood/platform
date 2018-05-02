@@ -29,7 +29,8 @@ public class RedisOpenServiceImpl {
      * @return
      */
     public String get(String key) {
-        return redisTemplate.opsForValue().get(key).toString();
+        Object value = redisTemplate.opsForValue().get(key);
+        return (value != null) ? value.toString() : null;
     }
 
     /**
@@ -107,7 +108,8 @@ public class RedisOpenServiceImpl {
      * @return
      */
     public String hget(String key, String hash) {
-        return redisTemplate.opsForHash().get(key, hash).toString();
+        Object value = redisTemplate.opsForHash().get(key, hash);
+        return (value != null) ? value.toString() : null;
     }
 
     /**

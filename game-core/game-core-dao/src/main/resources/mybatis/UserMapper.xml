@@ -160,8 +160,8 @@
             <if test="country != null">
                 country = #{country},
             </if>
-            <if test="sessionkKey != null">
-                session_key = #{sessionkKey},
+            <if test="sessionKey != null">
+                session_key = #{sessionKey},
             </if>
             <if test="openId != null">
                 open_id = #{openId},

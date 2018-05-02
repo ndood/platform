@@ -20,8 +20,10 @@ public class UserComment implements Serializable {
 	private Integer id;
 	//订单关联id
 	private String orderNo;
-	//玩家id(为NULL表示匿名)
+	//玩家id
 	private Integer userId;
+	//是否匿名
+	private Boolean recordUser;
 	//打手id
 	private Integer serverUserId;
 	//评分(几颗星1-5分)
