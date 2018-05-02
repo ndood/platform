@@ -9,7 +9,6 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.WxUserInfo;
-import com.fulu.game.core.service.MoneyDetailsService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.UserTechAuthService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
@@ -35,8 +34,6 @@ public class UserController extends BaseController {
     private UserService userService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
-    @Autowired
-    private MoneyDetailsService moneyDetailsService;
 
     @RequestMapping("tech/list")
     public Result userTechList() {
@@ -48,6 +45,7 @@ public class UserController extends BaseController {
 
     /**
      * 用户-查询余额
+     *
      * @return
      */
     @PostMapping("/balance/get")
@@ -137,7 +135,7 @@ public class UserController extends BaseController {
         } else {
             String verifyCode = SMSUtil.sendVerificationCode(mobile);
             log.info("发送验证码：" + verifyCode);
-            redisOpenService.set(RedisKeyEnum.SMS.generateKey(token + SPLIT + mobile), verifyCode, 5*60);
+            redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode,Constant.VERIFYCODE_CACHE_TIME_DEV);
             redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), "1",Constant.MOBILE_CACHE_TIME_DEV);
             return Result.success().msg("验证码发送成功！");
         }
@@ -156,29 +154,30 @@ public class UserController extends BaseController {
                 return Result.error().msg("验证码提交错误");
             } else {//绑定手机号
                 String openId = redisOpenService.hget(RedisKeyEnum.PLAY_TOKEN.generateKey(token)).get("openId").toString();
-                User user = userService.findByOpenId(openId);
-                user.setMobile(wxUserInfo.getMobile());
-                user.setGender(Integer.parseInt(wxUserInfo.getGender()));
-                user.setNickname(wxUserInfo.getNickName());
-                user.setHeadPortraitsUrl(wxUserInfo.getAvatarUrl());
-                user.setCity(wxUserInfo.getCity());
-                user.setProvince(wxUserInfo.getProvince());
-                user.setCountry(wxUserInfo.getCountry());
-                user.setUpdateTime(new Date());
-                userService.update(user);
-                //后台添加的记录只有mobile没有openId的需要删除
-                User oldUser = userService.findByMobile(wxUserInfo.getMobile());
-                BigDecimal balance = null;
-                if (StringUtils.isEmpty(oldUser.getOpenId())) {
-                    balance = oldUser.getBalance();
-                    userService.deleteById(oldUser.getId());
+                User newUser = null;
+                User openIdUser = userService.findByOpenId(openId);
+                User mobileUser = userService.findByMobile(wxUserInfo.getMobile());
+                if (null != mobileUser){
+                    newUser = mobileUser;
+                }else{
+                    newUser = openIdUser;
                 }
-                user.setBalance(balance);
-                userService.update(user);
-                user.setBalance(null);
-                user.setOpenId(null);
-                user.setBalance(null);
-                return Result.success().data(user).msg("手机号绑定成功！");
+                newUser.setMobile(wxUserInfo.getMobile());
+                newUser.setGender(Integer.parseInt(wxUserInfo.getGender()));
+                newUser.setNickname(wxUserInfo.getNickName());
+                newUser.setHeadPortraitsUrl(wxUserInfo.getAvatarUrl());
+                newUser.setCity(wxUserInfo.getCity());
+                newUser.setProvince(wxUserInfo.getProvince());
+                newUser.setCountry(wxUserInfo.getCountry());
+                newUser.setUpdateTime(new Date());
+                userService.update(newUser);
+                //后台添加的记录只有mobile没有openId的需要删除
+                if (null != mobileUser){
+                    userService.deleteById(openIdUser.getId());
+                }
+                newUser.setOpenId(null);
+                newUser.setBalance(null);
+                return Result.success().data(newUser).msg("手机号绑定成功！");
             }
         }
 

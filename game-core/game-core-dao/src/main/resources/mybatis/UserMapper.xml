@@ -29,7 +29,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,session_key,open_id,city,province,country,score_avg </sql>
+        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,city,province,country,score_avg </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserResultMap">
         select

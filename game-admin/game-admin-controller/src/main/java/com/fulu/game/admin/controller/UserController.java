@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -99,7 +100,7 @@ public class UserController extends BaseController{
     @PostMapping(value = "/get")
     public Result findByMobile(@RequestParam(required = true)String mobile){
         User user = userService.findByMobile(mobile);
-        if(user==null){
+        if(user!=null){
             return Result.error().msg("手机号查询错误!");
         }
         return Result.success().data(user);
@@ -181,7 +182,7 @@ public class UserController extends BaseController{
         }
         //判断手机号是否已注册成用户
         User user = userService.findByMobile(userVO.getMobile());
-        if (null != user){
+        if (user != null){
             Result result = Result.success().msg("手机号已注册！");
             result.setStatus(ResultStatus.MOBILE_DUPLICATE);
             return result;
