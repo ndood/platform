@@ -13,7 +13,7 @@ import java.util.Date;
  */
 @Data
 public class MoneyDetailsVO  extends MoneyDetails {
-    private String orderBy = "create_time DESC";
+
     private String mobile;
     private String nickname;
     private Integer cashStatus;

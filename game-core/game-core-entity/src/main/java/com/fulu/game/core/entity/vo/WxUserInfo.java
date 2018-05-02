@@ -14,4 +14,5 @@ public class WxUserInfo implements Serializable {
     private String province;
     private String country;
     private String language;
+    private String verifyCode;
 }

@@ -6,6 +6,7 @@ import com.fulu.game.core.entity.vo.MoneyDetailsVO;
 import com.fulu.game.core.service.MoneyDetailsService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +31,9 @@ public class MoneyDetailsController {
     public Result list(@ModelAttribute MoneyDetailsVO moneyDetailsVO,
                        @RequestParam("pageSize") Integer pageSize,
                        @RequestParam("pageNum") Integer pageNum){
+        if (StringUtils.isEmpty(moneyDetailsVO.getOrderBy())){
+            moneyDetailsVO.setOrderBy("tmd.create_time DESC");
+        }
         PageInfo<MoneyDetailsVO> list = moneyDetailsService.listByAdmin(moneyDetailsVO,pageSize,pageNum);
         return Result.success().data(list).msg("查询列表成功！");
     }

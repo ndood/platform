@@ -1,9 +1,8 @@
 package com.fulu.game.play.controller;
 
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.enums.exception.UserExceptionEnums;
-import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
@@ -19,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -71,7 +71,6 @@ public class UserController extends BaseController {
         user.setId(null);
         user.setBalance(null);
         user.setOpenId(null);
-        user.setSessionKey(null);
         user.setPassword(null);
         user.setSalt(null);
         if (null != idcard && !idcard)
@@ -106,7 +105,6 @@ public class UserController extends BaseController {
         user.setId(null);
         user.setBalance(null);
         user.setOpenId(null);
-        user.setSessionKey(null);
         user.setPassword(null);
         user.setSalt(null);
         user.setIdcard(null);
@@ -126,34 +124,34 @@ public class UserController extends BaseController {
         //缓存中查找该手机是否有验证码
         if (redisOpenService.hasKey(RedisKeyEnum.SMS.generateKey(mobile))) {
             String times = redisOpenService.get(RedisKeyEnum.SMS.generateKey(mobile));
-            if (Integer.parseInt(times) > 200) {
-                return Result.error().msg("半小时内发送次数不能超过3次，请等待！");
+            if (Integer.parseInt(times) > Constant.MOBILE_CODE_SEND_TIMES_DEV) {
+                return Result.error().msg("半小时内发送次数不能超过" + Constant.MOBILE_CODE_SEND_TIMES_DEV + "次，请等待！");
             } else {
                 String verifyCode = SMSUtil.sendVerificationCode(mobile);
                 log.info("发送验证码：" + verifyCode);
-                redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode, 5* 60);
+                redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode,Constant.VERIFYCODE_CACHE_TIME_DEV);
                 times = String.valueOf(Integer.parseInt(times) + 1);
-                redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), times, 30 * 60);
+                redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), times,Constant.MOBILE_CACHE_TIME_DEV);
                 return Result.success().msg("验证码发送成功！");
             }
         } else {
             String verifyCode = SMSUtil.sendVerificationCode(mobile);
             log.info("发送验证码：" + verifyCode);
             redisOpenService.set(RedisKeyEnum.SMS.generateKey(token + SPLIT + mobile), verifyCode, 5*60);
-            redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), "1", 30 * 60);
+            redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), "1",Constant.MOBILE_CACHE_TIME_DEV);
             return Result.success().msg("验证码发送成功！");
         }
     }
 
     @PostMapping("/mobile/bind")
-    public Result bind(@ModelAttribute WxUserInfo wxUserInfo,
-                       @RequestParam("verifyCode") String verifyCode) {
+    public Result bind(@ModelAttribute WxUserInfo wxUserInfo) {
         String token = SubjectUtil.getToken();
         //验证手机号的验证码
         String redisVerifyCode = redisOpenService.hget(RedisKeyEnum.SMS.generateKey(token), wxUserInfo.getMobile());
         if (null == redisVerifyCode) {
             return Result.error().msg("验证码失效");
         } else {
+            String verifyCode = wxUserInfo.getVerifyCode();
             if (verifyCode != null && !verifyCode.equals(redisVerifyCode)) {
                 return Result.error().msg("验证码提交错误");
             } else {//绑定手机号
@@ -168,13 +166,19 @@ public class UserController extends BaseController {
                 user.setCountry(wxUserInfo.getCountry());
                 user.setUpdateTime(new Date());
                 userService.update(user);
-                //如果是后台添加的用户，绑定后需要删除该记录
-                User oldUser = userService.findByMobile(wxUserInfo.getMobile());
-                if (null != oldUser) {
-                    userService.deleteById(oldUser.getId());
+                //后台添加的记录只有mobile没有openId的需要删除
+                List<User> userList = userService.findByMobile(wxUserInfo.getMobile());
+                BigDecimal balance = null;
+                for (User oldUser :userList) {
+                    if (StringUtils.isEmpty(oldUser.getOpenId())) {
+                        balance = oldUser.getBalance();
+                        userService.deleteById(oldUser.getId());
+                    }
                 }
+                user.setBalance(balance);
+                userService.update(user);
+                user.setBalance(null);
                 user.setOpenId(null);
-                user.setSessionKey(null);
                 user.setBalance(null);
                 return Result.success().data(user).msg("手机号绑定成功！");
             }

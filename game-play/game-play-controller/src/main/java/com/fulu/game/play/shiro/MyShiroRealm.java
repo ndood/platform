@@ -45,7 +45,6 @@ public class MyShiroRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) {
 
         PlayUserToken playUserToken = (PlayUserToken) token;
-        String sessionKey = playUserToken.getSessionKey();
         String openId = playUserToken.getOpenId();
         log.info("realm验证" + openId + "=======用户是否存在");
         User user = userService.findByOpenId(openId);
@@ -55,7 +54,6 @@ public class MyShiroRealm extends AuthorizingRealm {
             //没有该用户则创建一个
             UserVO userVO = new UserVO();
             userVO.setOpenId(openId);
-            userVO.setSessionKey(sessionKey);
             user = userService.save(userVO);
             log.info(openId + "======用户不存在，创建成功");
             return new SimpleAuthenticationInfo(user,user.getOpenId(),getName());

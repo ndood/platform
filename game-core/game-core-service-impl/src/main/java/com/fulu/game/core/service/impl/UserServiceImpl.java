@@ -29,14 +29,10 @@ public class UserServiceImpl extends AbsCommonService<User,Integer> implements U
     }
 
     @Override
-    public User findByMobile(String mobile) {
+    public List<User> findByMobile(String mobile) {
         UserVO userVO = new UserVO();
         userVO.setMobile(mobile);
-        List<User> users =userDao.findByParameter(userVO);
-        if(users!=null&&users.size()>0){
-           return users.get(0);
-        }
-        return null;
+        return userDao.findByParameter(userVO);
     }
 
     @Override
