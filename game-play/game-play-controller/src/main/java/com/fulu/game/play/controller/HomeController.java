@@ -28,21 +28,6 @@ public class HomeController {
     @Autowired
     private WxMaService wxService;
 
-    @RequestMapping(value = "/",method = RequestMethod.GET)
-    public String index(){
-        return "index";
-    }
-
-
-    @RequestMapping(value = "/nologin")
-    @ResponseBody
-    public Result noLogin() {
-        return Result.noLogin().msg("未登录!");
-    }
-
-
-
-
     /**
      * 小程序提交参数code
      * @return

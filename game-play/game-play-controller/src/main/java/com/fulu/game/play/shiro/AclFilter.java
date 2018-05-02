@@ -47,11 +47,11 @@ public class AclFilter extends AccessControlFilter {
     protected boolean onAccessDenied(ServletRequest request,ServletResponse response) throws Exception {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String token = httpRequest.getHeader("token");
-        log.info("请求header中的token=====", token);
+        log.info("请求header中的token====="+token);
         Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.PLAY_TOKEN.generateKey(token));
         // 没有登录授权 且没有记住我
         if (MapUtils.isEmpty(map)) {
-            log.info("token验证失效=====", token);
+            log.info("token验证失效====="+token);
             // 没有登录
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             httpResponse.setCharacterEncoding("UTF-8");
