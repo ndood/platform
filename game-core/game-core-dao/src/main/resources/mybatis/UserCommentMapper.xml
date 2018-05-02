@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.UserCommentDao">
+    <resultMap id="UserCommentResultMap" type="com.fulu.game.core.entity.UserComment">
+        <id column="id"  property="id" />
+        <result column="order_no"  property="orderNo" />
+        <result column="user_id"  property="userId" />
+        <result column="server_user_id"  property="serverUserId" />
+        <result column="score"  property="score" />
+        <result column="score_avg"  property="scoreAvg" />
+        <result column="content"  property="content" />
+        <result column="create_time"  property="createTime" />
+        <result column="update_time"  property="updateTime" />
+    </resultMap>
+
+    <resultMap id="UserCommentResultVOMap" type="com.fulu.game.core.entity.vo.UserCommentVO" extends="UserCommentResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,order_no,user_id,server_user_id,score,score_avg,content,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="UserCommentResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_user_comment
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll"  resultMap="UserCommentResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_user_comment
+    </select>
+    <select id="callScoreAvgProc" parameterType="java.lang.Integer" statementType="CALLABLE">
+         <![CDATA[
+        {call star_score_avg_update_procedure(
+                 #{id,jdbcType=INTEGER,mode=IN}
+             )}
+         ]]>
+    </select>
+    <select id="findByParameter" resultMap="UserCommentResultMap" parameterType="com.fulu.game.core.entity.vo.UserCommentVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_user_comment
+        <where>
+            <if test="orderNo!= null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="serverUserId != null">
+                and server_user_id = #{serverUserId}
+            </if>
+            <if test="score != null">
+                and score = #{score}
+            </if>
+            <if test="scoreAvg != null">
+                and score_avg = #{scoreAvg}
+            </if>
+            <if test="content != null">
+                and content = #{content}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_user_comment
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserComment">
+        insert into
+        t_user_comment (order_no,user_id,server_user_id,score,score_avg,content,create_time,update_time)
+        values
+        (#{orderNo},#{userId},#{serverUserId},#{score},#{scoreAvg},#{content},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.UserComment">
+        update t_user_comment
+        <set>
+
+            <if test="orderNo != null">
+                order_no = #{orderNo},
+            </if>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="serverUserId != null">
+                server_user_id = #{serverUserId},
+            </if>
+
+            <if test="score != null">
+                score = #{score},
+            </if>
+
+            <if test="scoreAvg != null">
+                score_avg = #{scoreAvg},
+            </if>
+
+            <if test="content != null">
+                content = #{content},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>
