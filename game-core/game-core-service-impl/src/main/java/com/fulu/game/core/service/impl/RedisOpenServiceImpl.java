@@ -20,7 +20,7 @@ public class RedisOpenServiceImpl {
     /**
      * 默认存活时间5分钟
      */
-    private static final long TIME = 5 * 60;
+    private static final long TIME = 30 * 60;
 
     /**
      * 获取某个key的值
