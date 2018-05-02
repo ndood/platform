@@ -119,7 +119,8 @@ public class ProductController extends BaseController{
      */
     @RequestMapping(value = "/order-receive/list")
     public Result list(){
-        List<Product> productList = productService.findAll();
+        User user =(User) SubjectUtil.getCurrentUser();
+        List<Product> productList = productService.findByUserId(user.getId());
         return Result.success().data(productList);
     }
 

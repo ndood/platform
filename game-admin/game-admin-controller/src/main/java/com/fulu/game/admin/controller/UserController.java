@@ -100,7 +100,7 @@ public class UserController extends BaseController{
     @PostMapping(value = "/get")
     public Result findByMobile(@RequestParam(required = true)String mobile){
         User user = userService.findByMobile(mobile);
-        if(user!=null){
+        if(user==null){
             return Result.error().msg("手机号查询错误!");
         }
         return Result.success().data(user);

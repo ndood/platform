@@ -120,6 +120,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         update(product);
         return product;
     }
+
     /**
      * 查找激活的商品
      * @param userId
