@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface UserService extends ICommonService<User,Integer>{
 
-    List<User> findByMobile(String mobile);
+    User findByMobile(String mobile);
     User findByOpenId(String openId);
     void lock(int id);
     void unlock(int id);

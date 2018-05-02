@@ -40,14 +40,16 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails,Integ
 
     @Override
     public PageInfo<MoneyDetailsVO> listByAdmin(MoneyDetailsVO moneyDetailsVO, Integer pageSize, Integer pageNum){
-        PageHelper.startPage(pageNum, pageSize,moneyDetailsVO.getOrderBy());
+        String orderBy = "tmd.create_time desc";
+        PageHelper.startPage(pageNum, pageSize,orderBy);
         List<MoneyDetailsVO> list = moneyDetailsDao.findByAdmin(moneyDetailsVO);
         return new PageInfo(list);
     }
 
     @Override
     public PageInfo<MoneyDetailsVO> listByUser(MoneyDetailsVO moneyDetailsVO, Integer pageSize, Integer pageNum){
-        PageHelper.startPage(pageNum, pageSize,moneyDetailsVO.getOrderBy());
+        String orderBy = "tmd.create_time desc";
+        PageHelper.startPage(pageNum, pageSize,orderBy);
         List<MoneyDetailsVO> list = moneyDetailsDao.findByUser(moneyDetailsVO);
         return new PageInfo(list);
     }
@@ -62,11 +64,10 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails,Integ
         if (moneyDetailsVO.getMoney().compareTo(BigDecimal.ZERO)==-1){
             throw new CashException(CashExceptionEnums.CASH_NEGATIVE_EXCEPTION);
         }
-        List<User> userList = userService.findByMobile(moneyDetailsVO.getMobile());
-        if (userList.size()<1){
+        User user = userService.findByMobile(moneyDetailsVO.getMobile());
+        if (user==null){
             throw new UserException(UserExceptionEnums.USER_NOT_EXIST_EXCEPTION);
         }
-        User user = userList.get(0);
         //加钱之前该用户的零钱
         BigDecimal balance = user.getBalance();
         BigDecimal newBalance = balance.add(moneyDetailsVO.getMoney());

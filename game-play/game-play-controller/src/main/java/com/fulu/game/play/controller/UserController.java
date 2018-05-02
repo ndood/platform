@@ -167,13 +167,11 @@ public class UserController extends BaseController {
                 user.setUpdateTime(new Date());
                 userService.update(user);
                 //后台添加的记录只有mobile没有openId的需要删除
-                List<User> userList = userService.findByMobile(wxUserInfo.getMobile());
+                User oldUser = userService.findByMobile(wxUserInfo.getMobile());
                 BigDecimal balance = null;
-                for (User oldUser :userList) {
-                    if (StringUtils.isEmpty(oldUser.getOpenId())) {
-                        balance = oldUser.getBalance();
-                        userService.deleteById(oldUser.getId());
-                    }
+                if (StringUtils.isEmpty(oldUser.getOpenId())) {
+                    balance = oldUser.getBalance();
+                    userService.deleteById(oldUser.getId());
                 }
                 user.setBalance(balance);
                 userService.update(user);
