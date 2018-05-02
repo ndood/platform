@@ -16,6 +16,9 @@ import org.apache.ibatis.annotations.Mapper;
 public interface UserCommentDao extends ICommonDao<UserComment,Integer>{
 
     List<UserComment> findByParameter(UserCommentVO userCommentVO);
+
+    List<UserCommentVO> findVOByParameter(UserCommentVO userCommentVO);
+
     void callScoreAvgProc(Integer id);
 
 }

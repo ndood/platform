@@ -16,10 +16,25 @@ public interface OrderService extends ICommonService<Order,Integer>{
 
     //todo 非自己的订单不能操作
 
+    /**
+     * 用户订单列表
+     * @param pageNum
+     * @param pageSize
+     * @param categoryId
+     * @param statusArr
+     * @return
+     */
     PageInfo<OrderVO> userList(int pageNum, int pageSize, Integer categoryId, Integer[] statusArr);
 
+    /**
+     * 陪玩师订单列表
+     * @param pageNum
+     * @param pageSize
+     * @param categoryId
+     * @param statusArr
+     * @return
+     */
     PageInfo<OrderVO> serverList(int pageNum, int pageSize, Integer categoryId, Integer[] statusArr);
-
     /**
      * 提交订单
      * @param productId

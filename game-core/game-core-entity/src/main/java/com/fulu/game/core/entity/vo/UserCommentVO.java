@@ -11,4 +11,8 @@ import lombok.Data;
 @Data
 public class UserCommentVO  extends UserComment {
 
+    private String nickName;
+
+    private String headUrl;
+
 }

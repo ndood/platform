@@ -4,7 +4,9 @@ import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.vo.ProductDetailsVO;
 import com.fulu.game.core.entity.vo.ProductShowCaseVO;
+import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.service.ProductService;
+import com.fulu.game.core.service.UserCommentService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +52,17 @@ public class ProductController extends BaseController{
     public Result findByProductId(Integer productId){
         ProductDetailsVO serverCardVO = productService.findDetailsByProductId(productId);
         return Result.success().data(serverCardVO);
+    }
+
+
+    /**
+     * 用户本周订单和本周收入
+     * @return
+     */
+    @RequestMapping(value = "/order-receive/userinfo")
+    public Result orderReceiveUserInfo(){
+
+        return Result.success();
     }
 
 

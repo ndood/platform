@@ -48,8 +48,6 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     private UserService userService;
     @Autowired
     private MoneyDetailsService moneyDetailsService;
-
-
     @Override
     public ICommonDao<Order, Integer> getDao() {
         return orderDao;

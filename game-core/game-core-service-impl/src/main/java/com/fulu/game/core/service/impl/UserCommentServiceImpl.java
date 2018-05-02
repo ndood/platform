@@ -7,6 +7,8 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.UserService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import com.fulu.game.core.dao.UserCommentDao;
 import com.fulu.game.core.entity.UserComment;
 import com.fulu.game.core.service.UserCommentService;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -27,6 +30,8 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment,Integer
     private OrderService orderService;
     @Autowired
     private UserService userService;
+
+
 
     @Override
     public ICommonDao<UserComment, Integer> getDao() {
@@ -74,20 +79,21 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment,Integer
     }
 
     @Override
-    public List<UserCommentVO> findByServerId(Integer serverUserId) {
+    public PageInfo<UserCommentVO> findByServerId(int pageNum, int pageSize, Integer serverUserId) {
         UserCommentVO param = new UserCommentVO();
         param.setServerUserId(serverUserId);
-        List<UserComment> comments = commentDao.findByParameter(param);
-        for(UserComment userComment :comments){
-            UserCommentVO userCommentVO = new UserCommentVO();
-            BeanUtil.copyProperties(userComment,userCommentVO);
-
-
-
+        PageHelper.startPage(pageNum,pageSize,"create_time desc");
+        List<UserCommentVO> commentVOList = commentDao.findVOByParameter(param);
+        for(UserCommentVO userComment :commentVOList){
+            if(userComment.getRecordUser()){
+                userComment.setNickName("匿名用户");
+            }else{
+                User user = userService.findById(userComment.getUserId());
+                userComment.setNickName(user.getNickname());
+                userComment.setHeadUrl(user.getHeadPortraitsUrl());
+            }
         }
-
-
-        return null;
+        return new PageInfo<>(commentVOList);
     }
 
     @Override
