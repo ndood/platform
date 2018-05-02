@@ -80,7 +80,7 @@ public class AclFilter extends AccessControlFilter {
         //已登录的，就保存该token从redis查到的用户信息
         User user = BeanUtil.mapToBean(map, User.class, true);
         SubjectUtil.setCurrentUser(user);
-        log.info("filter验证成功续存token=====", token);
+        log.info("filter验证成功续存token====="+token);
         SubjectUtil.setToken(token);
         return true;
     }
