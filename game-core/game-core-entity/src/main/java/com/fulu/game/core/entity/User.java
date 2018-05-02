@@ -50,7 +50,6 @@ public class User implements Serializable {
 	private Date createTime;
 	//修改时间
 	private Date updateTime;
-	private String sessionKey;
 	private String openId;
 	private String city;
 	private String province;

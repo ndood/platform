@@ -5,6 +5,8 @@ import com.fulu.game.core.entity.vo.UserVO;
 import com.github.pagehelper.PageInfo;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * 用户表
  * @author wangbin
@@ -12,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public interface UserService extends ICommonService<User,Integer>{
 
-    User findByMobile(String mobile);
+    List<User> findByMobile(String mobile);
     User findByOpenId(String openId);
     void lock(int id);
     void unlock(int id);
