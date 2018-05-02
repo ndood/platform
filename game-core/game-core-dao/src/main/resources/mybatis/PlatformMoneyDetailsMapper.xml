@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.PlatformMoneyDetailsDao">
+    <resultMap id="PlatformMoneyDetailsResultMap" type="com.fulu.game.core.entity.PlatformMoneyDetails">
+        <id column="id" property="id"/>
+        <result column="remark" property="remark"/>
+        <result column="money" property="money"/>
+        <result column="sum" property="sum"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="PlatformMoneyDetailsResultVOMap" type="com.fulu.game.core.entity.vo.PlatformMoneyDetailsVO"
+               extends="PlatformMoneyDetailsResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,remark,money,sum,create_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="PlatformMoneyDetailsResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_platform_money_details
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="PlatformMoneyDetailsResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_platform_money_details
+    </select>
+
+    <select id="findByParameter" resultMap="PlatformMoneyDetailsResultMap"
+            parameterType="com.fulu.game.core.entity.vo.PlatformMoneyDetailsVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_platform_money_details
+        <where>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <if test="money != null">
+                and money = #{money}
+            </if>
+            <if test="sum != null">
+                and sum = #{sum}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_platform_money_details
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.PlatformMoneyDetails">
+        insert into
+        t_platform_money_details (remark,money,sum,create_time)
+        values
+        (#{remark},#{money},#{sum},#{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.PlatformMoneyDetails">
+        update t_platform_money_details
+        <set>
+
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+
+            <if test="money != null">
+                money = #{money},
+            </if>
+
+            <if test="sum != null">
+                sum = #{sum},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

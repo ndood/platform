@@ -21,9 +21,13 @@ public class OrderStatusTask {
     @Autowired
     private OrderService orderService;
 
+
+    /**
+     * 取消超时订单
+     */
     @Scheduled(cron = "0/1 0/10 * * * ? ")  //cron接受cron表达式，根据cron表达式确定定时规则
-//    @Scheduled(cron = "0/5 * * * * ? ")  //cron接受cron表达式，根据cron表达式确定定时规则
-    public void testCron() {
+    public void cancelTimeOutOrder() {
+        //todo 处理已付款的订单
         Integer[] statusList = new Integer[]{OrderStatusEnum.NON_PAYMENT.getStatus()};
         List<Order> orderList = orderService.findByStatusList(statusList);
         for(Order order : orderList){
@@ -36,6 +40,29 @@ public class OrderStatusTask {
             }
         }
     }
+
+
+    /**
+     * 自动完成订单
+     */
+    @Scheduled(cron = "0/1 0/15 * * * ? ")  //cron接受cron表达式，根据cron表达式确定定时规则
+    public void autoCompleteOrder() {
+        Integer[] statusList = new Integer[]{OrderStatusEnum.CHECK.getStatus()};
+        List<Order> orderList = orderService.findByStatusList(statusList);
+        for(Order order : orderList){
+            long hour = DateUtil.between(order.getCreateTime(),new Date(),DateUnit.HOUR);
+            if(hour>=12){
+                log.info(order.getOrderNo()+"-------订单完成!");
+                order.setStatus(OrderStatusEnum.SYSTEM_COMPLETE.getStatus());
+                order.setUpdateTime(new Date());
+                order.setCompleteTime(new Date());
+                orderService.update(order);
+                orderService.shareProfit(order);
+            }
+        }
+    }
+
+
 
 
 }

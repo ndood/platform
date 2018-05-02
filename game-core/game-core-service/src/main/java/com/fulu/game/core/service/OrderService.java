@@ -111,6 +111,13 @@ public interface OrderService extends ICommonService<Order,Integer>{
     OrderVO adminHandleRefundOrder(String orderNo);
 
     /**
+     * 管理员协商处理订单(订单金额全部记录平台流水)
+     * @param orderNo
+     * @return
+     */
+    OrderVO adminHandleNegotiateOrder(String orderNo);
+
+    /**
      * 通过订单号查找订单
      * @param orderNo
      * @return
@@ -140,6 +147,17 @@ public interface OrderService extends ICommonService<Order,Integer>{
      */
     int count(Integer serverId,Integer[] statusList,Date startTime,Date endTime);
 
+    /**
+     * 一周完成订单数
+     * @param serverId
+     * @return
+     */
     int weekOrderCount(Integer serverId);
+
+    /**
+     * 订单分润
+     * @param order
+     */
+    void shareProfit(Order order);
 
 }

@@ -90,11 +90,11 @@ public class CategoryServiceImpl extends AbsCommonService<Category,Integer> impl
         return categoryVO;
     }
 
+
     @Override
     public List<Category> findAllAccompanyPlayCategory(){
         return findByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType(),true);
     }
-
 
     @Override
     public List<Category> findByPid(Integer pid,Boolean status) {
@@ -105,5 +105,6 @@ public class CategoryServiceImpl extends AbsCommonService<Category,Integer> impl
         List<Category> categoryList =categoryDao.findByParameter(categoryVO);
         return categoryList;
     }
+
 
 }
