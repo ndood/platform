@@ -310,6 +310,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         if(voiceUrl==null){
             return;
         }
+        userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuthId,FileTypeEnum.VOICE.getType());
         UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
         userInfoAuthFile.setUrl(voiceUrl);
         userInfoAuthFile.setInfoAuthId(userInfoAuthId);

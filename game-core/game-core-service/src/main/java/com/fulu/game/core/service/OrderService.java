@@ -4,6 +4,7 @@ import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.github.pagehelper.PageInfo;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -123,6 +124,22 @@ public interface OrderService extends ICommonService<Order,Integer>{
      */
     Boolean isAlreadyService(Integer serverId);
 
+    /**
+     * 查找状态
+     * @param statusList
+     * @return
+     */
     List<Order> findByStatusList(Integer[] statusList);
+
+    /**
+     * 查找指定日期区间和状态的订单数
+     * @param statusList
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    int count(Integer serverId,Integer[] statusList,Date startTime,Date endTime);
+
+    int weekOrderCount(Integer serverId);
 
 }

@@ -12,6 +12,7 @@ import com.fulu.game.core.entity.vo.MoneyDetailsVO;
 import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,14 +40,16 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails,Integ
 
     @Override
     public PageInfo<MoneyDetailsVO> listByAdmin(MoneyDetailsVO moneyDetailsVO, Integer pageSize, Integer pageNum){
-        PageHelper.startPage(pageNum, pageSize,moneyDetailsVO.getOrderBy());
+        String orderBy = "tmd.create_time desc";
+        PageHelper.startPage(pageNum, pageSize,orderBy);
         List<MoneyDetailsVO> list = moneyDetailsDao.findByAdmin(moneyDetailsVO);
         return new PageInfo(list);
     }
 
     @Override
     public PageInfo<MoneyDetailsVO> listByUser(MoneyDetailsVO moneyDetailsVO, Integer pageSize, Integer pageNum){
-        PageHelper.startPage(pageNum, pageSize,moneyDetailsVO.getOrderBy());
+        String orderBy = "tmd.create_time desc";
+        PageHelper.startPage(pageNum, pageSize,orderBy);
         List<MoneyDetailsVO> list = moneyDetailsDao.findByUser(moneyDetailsVO);
         return new PageInfo(list);
     }
@@ -61,11 +64,10 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails,Integ
         if (moneyDetailsVO.getMoney().compareTo(BigDecimal.ZERO)==-1){
             throw new CashException(CashExceptionEnums.CASH_NEGATIVE_EXCEPTION);
         }
-        List<User> userList = userService.findByMobile(moneyDetailsVO.getMobile());
-        if (userList.size()<1){
+        User user = userService.findByMobile(moneyDetailsVO.getMobile());
+        if (user==null){
             throw new UserException(UserExceptionEnums.USER_NOT_EXIST_EXCEPTION);
         }
-        User user = userList.get(0);
         //加钱之前该用户的零钱
         BigDecimal balance = user.getBalance();
         BigDecimal newBalance = balance.add(moneyDetailsVO.getMoney());
@@ -120,6 +122,27 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails,Integ
     public MoneyDetails drawSave(MoneyDetails moneyDetails) {
         moneyDetailsDao.create(moneyDetails);
         return moneyDetails;
+    }
+
+    @Override
+    public List<MoneyDetails> list(Integer targetId, Date startTime, Date endTime) {
+        MoneyDetailsVO moneyDetailsVO = new MoneyDetailsVO();
+        moneyDetailsVO.setTargetId(targetId);
+        moneyDetailsVO.setStartTime(startTime);
+        moneyDetailsVO.setEndTime(endTime);
+        return moneyDetailsDao.findByParameter(moneyDetailsVO);
+    }
+
+    @Override
+    public BigDecimal weekIncome(Integer targetId) {
+        Date startTime =  DateUtil.beginOfWeek(new Date());
+        Date endTime = DateUtil.endOfWeek(new Date());
+        List<MoneyDetails>  moneyDetailsList =  list(targetId,startTime,endTime);
+        BigDecimal sum = new BigDecimal(0);
+        for(MoneyDetails moneyDetails :moneyDetailsList){
+            sum =sum.add(moneyDetails.getMoney());
+        }
+        return sum;
     }
 
 

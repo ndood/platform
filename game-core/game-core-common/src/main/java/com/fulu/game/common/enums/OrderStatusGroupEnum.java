@@ -3,6 +3,7 @@ package com.fulu.game.common.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+
 @AllArgsConstructor
 @Getter
 public enum  OrderStatusGroupEnum {
@@ -22,7 +23,9 @@ public enum  OrderStatusGroupEnum {
     SERVER_APPEALING("申诉中","SERVER",14,new Integer[]{400}),
     SERVER_CHECK("等待验收","SERVER",15,new Integer[]{300}),
     SERVER_COMPLETE("订单完成","SERVER",16,new Integer[]{500,410,420,501,600}),
-    SERVER_CLOSE("订单关闭","SERVER",11,new Integer[]{160});
+    SERVER_CLOSE("订单关闭","SERVER",11,new Integer[]{160}),
+
+    ALL_NORMAL_COMPLETE("陪玩师成功完成订单","ALL",100,new Integer[]{500,501,600});
 
 
     private String name;

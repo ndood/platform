@@ -72,8 +72,19 @@
         </where>
     </delete>
 
-    <insert id="create" useGeneratedKeys="true" keyProperty="id"
-            parameterType="com.fulu.game.core.entity.UserInfoAuthFile">
+    <delete id="deleteByUserAuthIdAndType" >
+        delete from t_user_info_auth_file
+        <where>
+            <if test="infoAuthId != null">
+                and info_auth_id = #{infoAuthId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserInfoAuthFile">
         insert into
         t_user_info_auth_file (name,info_auth_id,type,url,ext,create_time,update_time)
         values

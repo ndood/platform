@@ -99,11 +99,11 @@ public class UserController extends BaseController{
      */
     @PostMapping(value = "/get")
     public Result findByMobile(@RequestParam(required = true)String mobile){
-        List<User> userList = userService.findByMobile(mobile);
-        if(userList.size()==0){
+        User user = userService.findByMobile(mobile);
+        if(user!=null){
             return Result.error().msg("手机号查询错误!");
         }
-        return Result.success().data(userList.get(0));
+        return Result.success().data(user);
     }
 
     /**
@@ -181,8 +181,8 @@ public class UserController extends BaseController{
             throw new UserException(UserExceptionEnums.IllEGAL_MOBILE_EXCEPTION);
         }
         //判断手机号是否已注册成用户
-        List<User> userList = userService.findByMobile(userVO.getMobile());
-        if (userList.size()>0){
+        User user = userService.findByMobile(userVO.getMobile());
+        if (user != null){
             Result result = Result.success().msg("手机号已注册！");
             result.setStatus(ResultStatus.MOBILE_DUPLICATE);
             return result;

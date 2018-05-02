@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 信息认证文件表（图片、声音）
@@ -19,4 +20,5 @@ public interface UserInfoAuthFileDao extends ICommonDao<UserInfoAuthFile,Integer
 
     List<UserInfoAuthFile> findByParameter(UserInfoAuthFileVO userInfoAuthFileVO);
 
+    int deleteByUserAuthIdAndType(@Param(value = "infoAuthId") Integer userAuthId,@Param(value = "type")  Integer fileType);
 }

@@ -31,9 +31,6 @@ public class MoneyDetailsController {
     public Result list(@ModelAttribute MoneyDetailsVO moneyDetailsVO,
                        @RequestParam("pageSize") Integer pageSize,
                        @RequestParam("pageNum") Integer pageNum){
-        if (StringUtils.isEmpty(moneyDetailsVO.getOrderBy())){
-            moneyDetailsVO.setOrderBy("tmd.create_time DESC");
-        }
         PageInfo<MoneyDetailsVO> list = moneyDetailsService.listByAdmin(moneyDetailsVO,pageSize,pageNum);
         return Result.success().data(list).msg("查询列表成功！");
     }
