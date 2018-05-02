@@ -11,6 +11,5 @@ import lombok.Data;
 @Data
 public class UserCommentVO  extends UserComment {
 
-    //是否匿名评价，默认为否
-    private Boolean recordUser = true;
+
 }

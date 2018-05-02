@@ -10,6 +10,7 @@
         <result column="score"  property="score" />
         <result column="score_avg"  property="scoreAvg" />
         <result column="content"  property="content" />
+        <result column="record_user"  property="recordUser" />
         <result column="create_time"  property="createTime" />
         <result column="update_time"  property="updateTime" />
     </resultMap>
@@ -18,7 +19,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,order_no,user_id,server_user_id,score,score_avg,content,create_time,update_time    </sql>
+        id,order_no,user_id,server_user_id,score,score_avg,content,record_user,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserCommentResultMap">
         select
@@ -64,6 +65,9 @@
             <if test="content != null">
                 and content = #{content}
             </if>
+            <if test="recordUser != null">
+                and record_user = #{recordUser}
+            </if>
             <if test="createTime != null">
                 and create_time = #{createTime}
             </if>
@@ -82,9 +86,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserComment">
         insert into
-        t_user_comment (order_no,user_id,server_user_id,score,score_avg,content,create_time,update_time)
+        t_user_comment (order_no,user_id,server_user_id,score,score_avg,content,record_user,create_time,update_time)
         values
-        (#{orderNo},#{userId},#{serverUserId},#{score},#{scoreAvg},#{content},#{createTime},#{updateTime})
+        (#{orderNo},#{userId},#{serverUserId},#{score},#{scoreAvg},#{content},#{recordUser},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.UserComment">
@@ -113,6 +117,10 @@
 
             <if test="content != null">
                 content = #{content},
+            </if>
+
+            <if test="recordUser != null">
+                record_user = #{recordUser},
             </if>
 
             <if test="createTime != null">

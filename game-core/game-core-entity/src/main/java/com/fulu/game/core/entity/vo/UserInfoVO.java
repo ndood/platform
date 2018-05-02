@@ -2,6 +2,7 @@ package com.fulu.game.core.entity.vo;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -15,7 +16,8 @@ public class UserInfoVO {
 
     private String mainPhotoUrl;
 
-
+    //评分
+    private BigDecimal scoreAvg;
 
     private Integer age;
 
