@@ -2,6 +2,7 @@ package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.enums.exception.CashExceptionEnums;
 import com.fulu.game.common.exception.CashException;
+import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.MoneyDetails;
 import com.fulu.game.core.entity.User;
@@ -52,7 +53,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws,Integer> im
         if(money.compareTo(BigDecimal.ZERO)==-1){
             throw new CashException(CashExceptionEnums.CASH_NEGATIVE_EXCEPTION);
         }
-        User user = userService.findById(cashDrawsVO.getUserId());
+        User user = userService.findById(((User)SubjectUtil.getCurrentUser()).getId());
         BigDecimal balance = user.getBalance();
         if (money.compareTo(balance)==1){
             throw new CashException(CashExceptionEnums.CASH_EXCEED_EXCEPTION);

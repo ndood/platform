@@ -135,7 +135,7 @@ public class UserController extends BaseController {
         } else {
             String verifyCode = SMSUtil.sendVerificationCode(mobile);
             log.info("发送验证码：" + verifyCode);
-            redisOpenService.set(RedisKeyEnum.SMS.generateKey(token + SPLIT + mobile), verifyCode, 5*60);
+            redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode,Constant.VERIFYCODE_CACHE_TIME_DEV);
             redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), "1",Constant.MOBILE_CACHE_TIME_DEV);
             return Result.success().msg("验证码发送成功！");
         }
@@ -166,16 +166,11 @@ public class UserController extends BaseController {
                 userService.update(user);
                 //后台添加的记录只有mobile没有openId的需要删除
                 List<User> userList = userService.findByMobile(wxUserInfo.getMobile());
-                BigDecimal balance = null;
                 for (User oldUser :userList) {
                     if (StringUtils.isEmpty(oldUser.getOpenId())) {
-                        balance = oldUser.getBalance();
                         userService.deleteById(oldUser.getId());
                     }
                 }
-                user.setBalance(balance);
-                userService.update(user);
-                user.setBalance(null);
                 user.setOpenId(null);
                 user.setBalance(null);
                 return Result.success().data(user).msg("手机号绑定成功！");

@@ -1,7 +1,9 @@
 package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.MoneyDetails;
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.MoneyDetailsVO;
 import com.fulu.game.core.service.MoneyDetailsService;
 import com.github.pagehelper.PageInfo;
@@ -24,6 +26,7 @@ public class MoneyDetailsController {
     public Result list(@ModelAttribute MoneyDetailsVO moneyDetailsVO,
                        @RequestParam("pageSize") Integer pageSize,
                        @RequestParam("pageNum") Integer pageNum){
+        moneyDetailsVO.setTargetId(((User)SubjectUtil.getCurrentUser()).getId());
         PageInfo<MoneyDetailsVO> list = moneyDetailsService.listByUser(moneyDetailsVO,pageSize,pageNum);
         return Result.success().data(list).msg("查询列表成功！");
     }

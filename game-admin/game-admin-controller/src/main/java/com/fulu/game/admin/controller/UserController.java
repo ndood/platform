@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -98,11 +99,11 @@ public class UserController extends BaseController{
      */
     @PostMapping(value = "/get")
     public Result findByMobile(@RequestParam(required = true)String mobile){
-        User user = userService.findByMobile(mobile);
-        if(user==null){
+        List<User> userList = userService.findByMobile(mobile);
+        if(userList.size()==0){
             return Result.error().msg("手机号查询错误!");
         }
-        return Result.success().data(user);
+        return Result.success().data(userList.get(0));
     }
 
     /**
@@ -180,8 +181,8 @@ public class UserController extends BaseController{
             throw new UserException(UserExceptionEnums.IllEGAL_MOBILE_EXCEPTION);
         }
         //判断手机号是否已注册成用户
-        User user = userService.findByMobile(userVO.getMobile());
-        if (null != user){
+        List<User> userList = userService.findByMobile(userVO.getMobile());
+        if (userList.size()>0){
             Result result = Result.success().msg("手机号已注册！");
             result.setStatus(ResultStatus.MOBILE_DUPLICATE);
             return result;
