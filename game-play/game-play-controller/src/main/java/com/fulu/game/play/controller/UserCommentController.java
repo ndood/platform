@@ -4,6 +4,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.UserComment;
 import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.service.UserCommentService;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,6 +55,23 @@ public class UserCommentController {
         comment.setServerUserId(null);
         comment.setScoreAvg(null);
         return Result.success().data(comment).msg("查询成功！");
+    }
+
+
+
+    /**
+     * 查询陪玩师的所有评论
+     * @param pageNum
+     * @param pageSize
+     * @param serverId
+     * @return
+     */
+    @RequestMapping(value = "/byserver")
+    public Result findDetailsComments(Integer pageNum,
+                                      Integer pageSize,
+                                      Integer serverId){
+        PageInfo<UserCommentVO> page = commentService.findByServerId(pageNum,pageSize,serverId);
+        return Result.success().data(page);
     }
 
 

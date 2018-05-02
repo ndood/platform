@@ -2,6 +2,7 @@ package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.UserComment;
 import com.fulu.game.core.entity.vo.UserCommentVO;
+import com.github.pagehelper.PageInfo;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -28,5 +29,5 @@ public interface UserCommentService extends ICommonService<UserComment,Integer>{
      * 查询陪玩师的所有评论
      * @return
      */
-    List<UserCommentVO> findByServerId(Integer serverUserId);
+    PageInfo<UserCommentVO> findByServerId(int pageNum, int pageSize, Integer serverUserId);
 }

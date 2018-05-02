@@ -77,6 +77,41 @@
         </where>
     </select>
 
+    <select id="findVOByParameter" resultMap="UserCommentResultVOMap" parameterType="com.fulu.game.core.entity.vo.UserCommentVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_user_comment
+        <where>
+            <if test="orderNo!= null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="serverUserId != null">
+                and server_user_id = #{serverUserId}
+            </if>
+            <if test="score != null">
+                and score = #{score}
+            </if>
+            <if test="scoreAvg != null">
+                and score_avg = #{scoreAvg}
+            </if>
+            <if test="content != null">
+                and content = #{content}
+            </if>
+            <if test="recordUser != null">
+                and record_user = #{recordUser}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_user_comment
         <where>
