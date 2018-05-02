@@ -11,7 +11,7 @@ import lombok.Data;
  */
 @Data
 public class MoneyDetailsVO  extends MoneyDetails {
-    private String orderBy = "tmd.create_time DESC";
+    private String orderBy;
     private String mobile;
     private String nickname;
     private Integer cashStatus;
