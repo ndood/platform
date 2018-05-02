@@ -16,16 +16,4 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/v1/orderProduct")
 public class OrderProductController {
 
-    @Autowired
-    private OrderProductService orderProductService;
-    /**
-     * 管理员-订单列表
-     * @param orderReqVO
-     * @return
-     */
-    @RequestMapping("/list")
-    public Result list(@ModelAttribute OrderReqVO orderReqVO){
-        PageInfo<OrderResVO> orderList = orderProductService.list(orderReqVO);
-        return Result.success().data(orderList).msg("查询列表成功！");
-    }
 }
