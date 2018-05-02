@@ -4,6 +4,8 @@ import com.fulu.game.core.entity.UserComment;
 import com.fulu.game.core.entity.vo.UserCommentVO;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * 用户(打手)星级评论表
  * @author yanbiao
@@ -21,4 +23,10 @@ public interface UserCommentService extends ICommonService<UserComment,Integer>{
     UserComment findByOrderNo(String orderNo);
 
     void put(UserCommentVO commentVO);
+
+    /**
+     * 查询陪玩师的所有评论
+     * @return
+     */
+    List<UserCommentVO> findByServerId(Integer serverUserId);
 }

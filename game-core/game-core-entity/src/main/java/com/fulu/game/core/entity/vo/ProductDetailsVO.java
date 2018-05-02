@@ -28,8 +28,8 @@ public class ProductDetailsVO {
     private String unit;
     //技能描述
     private String description;
-    //评分
-    private int star;
+
+
     //订单数
     private int orderCount;
     //技能标签

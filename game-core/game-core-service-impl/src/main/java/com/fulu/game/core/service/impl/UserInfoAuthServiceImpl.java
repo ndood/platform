@@ -121,7 +121,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         userInfo.setNickName(user.getNickname());
         userInfo.setGender(user.getGender());
         userInfo.setMainPhotoUrl(userInfoAuth.getMainPicUrl());
-
+        userInfo.setScoreAvg(user.getScoreAvg());
         if(hasPhotos){
             List<String> photos = new ArrayList<>();
             photos.add(userInfoAuth.getMainPicUrl());

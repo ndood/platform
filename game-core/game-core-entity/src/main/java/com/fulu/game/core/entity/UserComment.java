@@ -32,10 +32,13 @@ public class UserComment implements Serializable {
 	private BigDecimal scoreAvg;
 	//评价具体内容
 	private String content;
+	//是否匿名评价，默认为否
+	private Boolean recordUser;
 	//记录生成时间
 	private Date createTime;
 	//修改时间
 	private Date updateTime;
+
 
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	public Date getCreateTime(){

@@ -6,6 +6,8 @@ import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.service.OrderService;
+import com.fulu.game.core.service.UserService;
+import com.xiaoleilu.hutool.util.BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +23,10 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment,Integer
 
     @Autowired
 	private UserCommentDao commentDao;
-
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private UserService userService;
 
     @Override
     public ICommonDao<UserComment, Integer> getDao() {
@@ -69,6 +72,24 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment,Integer
         commentDao.update(comment);
         commentDao.callScoreAvgProc(comment.getId());
     }
+
+    @Override
+    public List<UserCommentVO> findByServerId(Integer serverUserId) {
+        UserCommentVO param = new UserCommentVO();
+        param.setServerUserId(serverUserId);
+        List<UserComment> comments = commentDao.findByParameter(param);
+        for(UserComment userComment :comments){
+            UserCommentVO userCommentVO = new UserCommentVO();
+            BeanUtil.copyProperties(userComment,userCommentVO);
+
+
+
+        }
+
+
+        return null;
+    }
+
     @Override
     public UserComment findByOrderNo(String orderNo){
         UserCommentVO commentVO = new UserCommentVO();
