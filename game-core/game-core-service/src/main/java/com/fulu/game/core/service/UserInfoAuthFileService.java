@@ -15,5 +15,9 @@ import java.util.Map;
 public interface UserInfoAuthFileService extends ICommonService<UserInfoAuthFile,Integer>{
 
 
-    public List<UserInfoAuthFile> findByUserAuthIdAndType(Integer userAuthId, Integer fileType);
+     List<UserInfoAuthFile> findByUserAuthIdAndType(Integer userAuthId, Integer fileType);
+
+     void deleteByUserAuthIdAndType(Integer userAuthId, Integer fileType);
+
+
 }

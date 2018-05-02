@@ -1,12 +1,13 @@
 package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Product;
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.ProductDetailsVO;
 import com.fulu.game.core.entity.vo.ProductShowCaseVO;
 import com.fulu.game.core.entity.vo.UserCommentVO;
-import com.fulu.game.core.service.ProductService;
-import com.fulu.game.core.service.UserCommentService;
+import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +27,12 @@ public class ProductController extends BaseController{
 
     @Autowired
     private ProductService productService;
-
+    @Autowired
+    private MoneyDetailsService moneyDetailsService;
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private UserService userService;
 
     /**
      * 添加接单方式
@@ -59,10 +66,18 @@ public class ProductController extends BaseController{
      * 用户本周订单和本周收入
      * @return
      */
-    @RequestMapping(value = "/order-receive/userinfo")
+    @RequestMapping(value = "/order-receive/info")
     public Result orderReceiveUserInfo(){
-
-        return Result.success();
+        User user =(User) SubjectUtil.getCurrentUser();
+        BigDecimal weekIncome = moneyDetailsService.weekIncome(user.getId());
+        int orderCount = orderService.weekOrderCount(user.getId());
+        User serverUser = userService.findById(user.getId());
+        BigDecimal scoreAvg = serverUser.getScoreAvg();
+        Map<String,Object> result = new HashMap<>();
+        result.put("weekIncome",weekIncome);
+        result.put("weekOrderCount",orderCount);
+        result.put("scoreAvg",scoreAvg);
+        return Result.success().data(result);
     }
 
 

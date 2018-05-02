@@ -36,4 +36,9 @@ public class UserInfoAuthFileServiceImpl extends AbsCommonService<UserInfoAuthFi
         List<UserInfoAuthFile> userInfoAuthFiles =userInfoAuthFileDao.findByParameter(userInfoAuthFileVO);
         return userInfoAuthFiles;
     }
+
+    @Override
+    public void deleteByUserAuthIdAndType(Integer userAuthId, Integer fileType) {
+        userInfoAuthFileDao.deleteByUserAuthIdAndType(userAuthId,fileType);
+    }
 }

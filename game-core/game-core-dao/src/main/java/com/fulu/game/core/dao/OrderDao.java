@@ -18,6 +18,8 @@ public interface OrderDao extends ICommonDao<Order,Integer>{
 
     List<Order> findByParameter(OrderVO orderVO);
 
+    int countByParameter(OrderVO orderVO);
+
     List<OrderVO> findVOByParameter(OrderVO orderVO);
 
 }

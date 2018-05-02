@@ -12,6 +12,7 @@ import com.fulu.game.core.entity.vo.MoneyDetailsVO;
 import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -119,6 +120,27 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails,Integ
     public MoneyDetails drawSave(MoneyDetails moneyDetails) {
         moneyDetailsDao.create(moneyDetails);
         return moneyDetails;
+    }
+
+    @Override
+    public List<MoneyDetails> list(Integer targetId, Date startTime, Date endTime) {
+        MoneyDetailsVO moneyDetailsVO = new MoneyDetailsVO();
+        moneyDetailsVO.setTargetId(targetId);
+        moneyDetailsVO.setStartTime(startTime);
+        moneyDetailsVO.setEndTime(endTime);
+        return moneyDetailsDao.findByParameter(moneyDetailsVO);
+    }
+
+    @Override
+    public BigDecimal weekIncome(Integer targetId) {
+        Date startTime =  DateUtil.beginOfWeek(new Date());
+        Date endTime = DateUtil.endOfWeek(new Date());
+        List<MoneyDetails>  moneyDetailsList =  list(targetId,startTime,endTime);
+        BigDecimal sum = new BigDecimal(0);
+        for(MoneyDetails moneyDetails :moneyDetailsList){
+            sum =sum.add(moneyDetails.getMoney());
+        }
+        return sum;
     }
 
 

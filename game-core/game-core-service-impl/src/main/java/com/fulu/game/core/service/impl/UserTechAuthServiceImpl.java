@@ -78,7 +78,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
     @Override
     public PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize,String orderBy) {
-        if(StringUtils.isNotBlank(orderBy)){
+        if(StringUtils.isBlank(orderBy)){
             orderBy = "sort desc";
         }
         PageHelper.startPage(pageNum,pageSize,orderBy);

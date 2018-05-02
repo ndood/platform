@@ -25,9 +25,9 @@ public class OrderVO  extends Order {
 
     private String categoryIcon;
 
-    private Date endDate;
+    private Date endTime;
 
-    private Date startDate;
+    private Date startTime;
 
     /**
      * 订单状态列表

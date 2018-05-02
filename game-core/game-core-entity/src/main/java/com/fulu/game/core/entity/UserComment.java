@@ -22,8 +22,6 @@ public class UserComment implements Serializable {
 	private String orderNo;
 	//玩家id
 	private Integer userId;
-	//是否匿名
-	private Boolean recordUser;
 	//打手id
 	private Integer serverUserId;
 	//评分(几颗星1-5分)

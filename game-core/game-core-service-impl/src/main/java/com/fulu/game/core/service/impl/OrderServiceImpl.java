@@ -1,9 +1,6 @@
 package com.fulu.game.core.service.impl;
 
-import com.fulu.game.common.enums.DetailsEnum;
-import com.fulu.game.common.enums.OrderDealTypeEnum;
-import com.fulu.game.common.enums.OrderStatusEnum;
-import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.utils.GenIdUtil;
@@ -16,6 +13,7 @@ import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,6 +46,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     private UserService userService;
     @Autowired
     private MoneyDetailsService moneyDetailsService;
+
+
     @Override
     public ICommonDao<Order, Integer> getDao() {
         return orderDao;
@@ -86,6 +86,27 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         }
         return new PageInfo<>(orderVOList);
     }
+
+
+    @Override
+    public int count(Integer serverId,Integer[] statusList, Date startTime, Date endTime) {
+        OrderVO params = new OrderVO();
+        params.setServiceUserId(serverId);
+        params.setStatusList(statusList);
+        params.setStartTime(startTime);
+        params.setEndTime(endTime);
+        int count = orderDao.countByParameter(params);
+        return count;
+    }
+
+    @Override
+    public int weekOrderCount(Integer serverId) {
+        Date startTime =  DateUtil.beginOfWeek(new Date());
+        Date endTime = DateUtil.endOfWeek(new Date());
+        Integer[] statusList = OrderStatusGroupEnum.ALL_NORMAL_COMPLETE.getStatusList();
+        return  count(serverId,statusList,startTime,endTime);
+    }
+
 
     @Override
     public OrderVO submit(int productId,
@@ -358,6 +379,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         orderVO.setStatusList(statusList);
         return orderDao.findByParameter(orderVO);
     }
+
 
 
     /**

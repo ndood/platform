@@ -72,10 +72,24 @@
         <include refid="Base_Column_List"/>
         FROM t_money_details
         <where>
-            <if test="operatorId != null">and operator_id = #{operatorId}</if>
-            <if test="targetId != null">and target_id = #{targetId}</if>
-            <if test="action != null">and action = #{action}</if>
-            <if test="cashId != null">and cash_id = #{cashId}</if>
+            <if test="operatorId != null">
+                and operator_id = #{operatorId}
+            </if>
+            <if test="targetId != null">
+                and target_id = #{targetId}
+            </if>
+            <if test="action != null">
+                and action = #{action}
+            </if>
+            <if test="cashId != null">
+                and cash_id = #{cashId}
+            </if>
+            <if test="startTime!=null">
+                and create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime!=null">
+                and create_time &lt;= #{endTime}
+            </if>
         </where>
     </select>
 

@@ -6,6 +6,8 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author yanbiao
@@ -40,4 +42,7 @@ public interface MoneyDetailsService extends ICommonService<MoneyDetails,Integer
     MoneyDetails drawSave(MoneyDetails moneyDetails);
 
 
+    List<MoneyDetails> list(Integer targetId, Date startTime,Date endTime);
+
+    BigDecimal weekIncome(Integer targetId);
 }

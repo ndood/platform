@@ -10,6 +10,7 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.WxUserInfo;
+import com.fulu.game.core.service.MoneyDetailsService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.UserTechAuthService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
@@ -34,6 +35,8 @@ public class UserController extends BaseController {
     private UserService userService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private MoneyDetailsService moneyDetailsService;
 
     @RequestMapping("tech/list")
     public Result userTechList() {
@@ -45,7 +48,6 @@ public class UserController extends BaseController {
 
     /**
      * 用户-查询余额
-     *
      * @return
      */
     @PostMapping("/balance/get")
