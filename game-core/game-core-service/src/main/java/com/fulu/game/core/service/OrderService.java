@@ -17,6 +17,8 @@ public interface OrderService extends ICommonService<Order,Integer>{
 
     //todo 非自己的订单不能操作
 
+
+
     /**
      * 用户订单列表
      * @param pageNum
@@ -155,9 +157,22 @@ public interface OrderService extends ICommonService<Order,Integer>{
     int weekOrderCount(Integer serverId);
 
     /**
+     * 用户所有完成订单数
+     * @param serverId
+     * @return
+     */
+    int allOrderCount(Integer serverId);
+
+    /**
      * 订单分润
      * @param order
      */
     void shareProfit(Order order);
 
+    /**
+     * 订单详情页
+     * @param orderNo
+     * @return
+     */
+    OrderVO findOrderDetails(String orderNo);
 }

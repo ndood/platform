@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
-@Component
+@Component(value = "configProperties")
 @Accessors(chain = true)
 @ConfigurationProperties(prefix = "config")
 @Data
@@ -20,6 +20,8 @@ public class Config {
     private Oss oss = new Oss();
 
     private Cloopen cloopen = new Cloopen();
+
+    private Wechat wechat = new Wechat();
 
     @Data
     public static class Evn{
@@ -42,5 +44,23 @@ public class Config {
         private String accountSid;
         private String accountToken;
         private String appId;
+    }
+
+
+    @Data
+    public static class Wechat{
+        private String appId;
+        private String secret;
+        private String token;
+        private String aesKey;
+        private String msgDataFormat;
+        private String mchId;
+        private String mchKey;
+        private String subAppId;
+        private String subMchId;
+        private String keyPath;
+        private String tradeType;
+        private String notifyUrl;
+
     }
 }

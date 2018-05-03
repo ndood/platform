@@ -5,6 +5,7 @@
     <resultMap id="OrderDealResultMap" type="com.fulu.game.core.entity.OrderDeal">
         <id column="id" property="id"/>
         <result column="order_no" property="orderNo"/>
+        <result column="user_id" property="userId"/>
         <result column="type" property="type"/>
         <result column="remark" property="remark"/>
         <result column="create_time" property="createTime"/>
@@ -14,7 +15,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,order_no,type,remark,create_time    </sql>
+        id,order_no,user_id,type,remark,create_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="OrderDealResultMap">
         select
@@ -40,6 +41,9 @@
             <if test="orderNo != null">
                 and order_no = #{orderNo}
             </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
             <if test="type != null">
                 and type = #{type}
             </if>
@@ -61,9 +65,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.OrderDeal">
         insert into
-        t_order_deal (order_no,type,remark,create_time)
+        t_order_deal (order_no,user_id,type,remark,create_time)
         values
-        (#{orderNo},#{type},#{remark},#{createTime})
+        (#{orderNo},#{userId},#{type},#{remark},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.OrderDeal">
@@ -72,6 +76,10 @@
 
             <if test="orderNo != null">
                 order_no = #{orderNo},
+            </if>
+
+            <if test="userId != null">
+                user_id = #{userId},
             </if>
 
             <if test="type != null">

@@ -17,6 +17,8 @@ public class OrderDeal implements Serializable {
 	
 	//
 	private Integer id;
+
+	private Integer userId;
 	//订单号
 	private String orderNo;
 	//订单处理类型

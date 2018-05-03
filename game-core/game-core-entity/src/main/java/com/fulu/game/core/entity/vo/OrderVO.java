@@ -2,9 +2,11 @@ package com.fulu.game.core.entity.vo;
 
 
 import com.fulu.game.core.entity.Order;
+import com.fulu.game.core.entity.OrderProduct;
 import com.fulu.game.core.entity.Product;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 
@@ -17,9 +19,22 @@ import java.util.Date;
 @Data
 public class OrderVO  extends Order {
 
-    private Product product ;
+    private OrderProduct orderProduct;
 
     private String serverHeadUrl;
+
+    private String serverNickName;
+
+    private BigDecimal serverScoreAvg;
+
+    private Integer serverAge;
+
+    private Integer serverGender;
+
+
+    private String userHeadUrl;
+
+    private String userNickName;
 
     private String statusStr;
 

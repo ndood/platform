@@ -3,7 +3,9 @@ package com.fulu.game.core.service.impl;
 
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.OrderDealFile;
+import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.service.OrderDealFileService;
+import com.xiaoleilu.hutool.util.BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,7 @@ import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.service.OrderDealService;
 
 import java.util.Date;
+import java.util.List;
 
 
 @Service
@@ -30,7 +33,7 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal,Integer> im
     }
 
     @Override
-    public void create(String orderNo, Integer type, String remark, String... fileUrls) {
+    public void create(String orderNo, Integer userId,Integer type, String remark, String... fileUrls) {
         OrderDeal orderDeal = new OrderDeal();
         orderDeal.setOrderNo(orderNo);
         orderDeal.setType(type);
@@ -44,5 +47,21 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal,Integer> im
             orderDealFile.setCreateTime(new Date());
             orderDealFileService.create(orderDealFile);
         }
+    }
+
+    @Override
+    public OrderDealVO findByUserAndOrderNo(Integer userId, String orderNo){
+        OrderDealVO param = new OrderDealVO();
+        param.setUserId(userId);
+        param.setOrderNo(orderNo);
+        List<OrderDeal> orderDealList = orderDealDao.findByParameter(param);
+        if(orderDealList.isEmpty()){
+            return null;
+        }
+        OrderDealVO orderDealVO = new OrderDealVO();
+        BeanUtil.copyProperties(orderDealList.get(0),orderDealVO);
+        List<OrderDealFile> orderDealFiles =  orderDealFileService.findByOrderDeal(orderDealVO.getId());
+        orderDealVO.setOrderDealFileList(orderDealFiles);
+        return orderDealVO;
     }
 }

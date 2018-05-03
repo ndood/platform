@@ -2,9 +2,9 @@ package com.fulu.game.play.config;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.api.impl.WxMaServiceImpl;
-import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import cn.binarywang.wx.miniapp.config.WxMaConfig;
 import cn.binarywang.wx.miniapp.config.WxMaInMemoryConfig;
+import com.fulu.game.common.properties.Config;
 import com.github.binarywang.wxpay.config.WxPayConfig;
 import com.github.binarywang.wxpay.service.WxPayService;
 import com.github.binarywang.wxpay.service.impl.WxPayServiceImpl;
@@ -16,23 +16,22 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@EnableConfigurationProperties(PlayProperties.class)
+@EnableConfigurationProperties(Config.class)
 public class WxMaConfiguration {
 
 
     @Autowired
-    private PlayProperties playProperties;
+    private Config configProperties;
 
     @Bean
     @ConditionalOnMissingBean
     public WxMaConfig maConfig() {
         WxMaInMemoryConfig config = new WxMaInMemoryConfig();
-        config.setAppid(playProperties.getWechat().getAppId());
-        config.setSecret(playProperties.getWechat().getSecret());
-        config.setToken(playProperties.getWechat().getToken());
-        config.setAesKey(playProperties.getWechat().getAesKey());
-        config.setMsgDataFormat(playProperties.getWechat().getMsgDataFormat());
-
+        config.setAppid(configProperties.getWechat().getAppId());
+        config.setSecret(configProperties.getWechat().getSecret());
+        config.setToken(configProperties.getWechat().getToken());
+        config.setAesKey(configProperties.getWechat().getAesKey());
+        config.setMsgDataFormat(configProperties.getWechat().getMsgDataFormat());
         return config;
     }
 
@@ -41,12 +40,14 @@ public class WxMaConfiguration {
     @ConditionalOnMissingBean
     public WxPayConfig payConfig() {
         WxPayConfig payConfig = new WxPayConfig();
-        payConfig.setAppId(playProperties.getWechat().getAppId());
-        payConfig.setMchId(playProperties.getWechat().getMchId());
-        payConfig.setMchKey(playProperties.getWechat().getMchKey());
-        payConfig.setSubAppId(StringUtils.trimToNull(playProperties.getWechat().getSubAppId()));
-        payConfig.setSubMchId(StringUtils.trimToNull(playProperties.getWechat().getSubMchId()));
-        payConfig.setKeyPath(playProperties.getWechat().getKeyPath());
+        payConfig.setAppId(configProperties.getWechat().getAppId());
+        payConfig.setMchId(configProperties.getWechat().getMchId());
+        payConfig.setMchKey(configProperties.getWechat().getMchKey());
+        payConfig.setSubAppId(StringUtils.trimToNull(configProperties.getWechat().getSubAppId()));
+        payConfig.setSubMchId(StringUtils.trimToNull(configProperties.getWechat().getSubMchId()));
+        payConfig.setKeyPath(configProperties.getWechat().getKeyPath());
+        payConfig.setNotifyUrl(configProperties.getWechat().getNotifyUrl());
+        payConfig.setTradeType(configProperties.getWechat().getTradeType());
         return payConfig;
     }
 

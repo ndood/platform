@@ -3,6 +3,8 @@ package com.fulu.game.core.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 
@@ -26,16 +28,18 @@ public class Order implements Serializable {
 	private Integer serviceUserId;
 	//订单游戏分类
 	private Integer categoryId;
-
 	//订单名称
 	private String name;
 	//备注
 	private String remark;
 	//订单状态
 	private Integer status;
+
 	//是否支付(1:已支付,2:未支付)
+	@JsonIgnore
 	private Boolean isPay;
 	//佣金
+	@JsonIgnore
 	private BigDecimal commissionMoney;
 	//订单总额
 	private BigDecimal totalMoney;

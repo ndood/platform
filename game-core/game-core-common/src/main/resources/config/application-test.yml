@@ -1,30 +1,48 @@
 datasource:
     playAdminDb:
-        url: jdbc:mysql://10.0.3.105:3306/game_service?autoReconnect=true&failOverReadOnly=false&characterEncoding=utf-8&useUnicode=true&zeroDateTimeBehavior=convertToNull
+        url: rm-bp1l599cg390lml8w.mysql.rds.aliyuncs.com
         username: root
-        password: 123456
+        password: 20180502game!@#
         driverClassName: com.mysql.jdbc.Driver
 # REDIS (RedisProperties)
 # Redis数据库索引（默认为0）
 spring:
   redis:
     database: 0
-    host: 10.0.3.105
+    host: r-bp18d6ebd1e5cdd4.redis.rds.aliyuncs.com
     port: 6379
-    password:
+    password: 20180502gameREDIS
     timeout: 0
     pool:
       max-active: 8
       max-wait: -1
       max-idle: 8
       min-idle: 0
-
 config:
     oss:
       endpoint: "http://oss-cn-hangzhou.aliyuncs.com"
-      accessKeyId: "LTAIcQRqtJrF5Arb"
-      accessKeySecret: "3jiWeZ89SoGob5TljUEU2MmgZCo7qP"
-      bucketName: "app-testing-new"
+      accessKeyId: "LTAIuddbH7bqB9kz"
+      accessKeySecret: "zXdKJlSFZ51k8G8q0uUzranXwbS1kh"
+      bucketName: "test-game-play"
       host: "http://app-testing-new.oss-cn-hangzhou.aliyuncs.com/"
     evn:
       prefix: TEST
+    cloopen:
+      serverIp: app.cloopen.com
+      serverPort: 8883
+      accountSid: 8a216da85f341b69015f4dbe74580a0c
+      accountToken: 6f9dc07aa412497a995451f9463b1f61
+      appId: 8aaf070862fae1b50163050c11f00460
+    wechat:
+      appId: wxf0bf670601a34bb5
+      secret: d8aeb8dc6265394a3789aff6b2792a23
+      token: 111
+      aesKey: 111
+      msgDataFormat: JSON
+      mchId: 1502601051
+      mchKey: 24d1b993f21046a296b0846f62d3e431
+      subAppId:
+      subMchId:
+      keyPath:
+      tradeType: JSAPI
+      notifyUrl: http://binf.com/xxx

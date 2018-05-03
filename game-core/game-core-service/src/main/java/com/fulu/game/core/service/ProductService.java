@@ -56,7 +56,7 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * 开始接单
      * @param hour
      */
-    void startOrderReceiving(int hour);
+    void startOrderReceiving(Float hour);
 
     /**
      * 停止接单

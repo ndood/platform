@@ -22,16 +22,18 @@ public class ProductDetailsVO {
     private Integer techAuthId;
     //商品名称
     private String productName;
+
+    private Boolean onLine;
+
     //价格
     private BigDecimal price;
     //单位
     private String unit;
     //技能描述
     private String description;
-
-
     //订单数
     private int orderCount;
+
     //技能标签
     private List<String> techTags;
 

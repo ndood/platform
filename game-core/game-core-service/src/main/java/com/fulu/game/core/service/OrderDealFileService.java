@@ -2,6 +2,7 @@ package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.OrderDealFile;
 
+import java.util.List;
 
 
 /**
@@ -12,5 +13,6 @@ import com.fulu.game.core.entity.OrderDealFile;
  * @date 2018-04-26 17:51:54
  */
 public interface OrderDealFileService extends ICommonService<OrderDealFile,Integer>{
-	
+
+     List<OrderDealFile> findByOrderDeal(Integer orderDealId);
 }

@@ -2,12 +2,10 @@ package com.fulu.game.play.controller;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
-import cn.binarywang.wx.miniapp.config.WxMaInMemoryConfig;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.exception.ParamsExceptionEnums;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.play.config.PlayProperties;
 import com.fulu.game.play.controller.exception.ParamsException;
 import com.fulu.game.play.shiro.PlayUserToken;
 import lombok.extern.slf4j.Slf4j;
@@ -38,10 +36,6 @@ public class HomeController {
         if (StringUtils.isBlank(code)) {
             throw new ParamsException(ParamsExceptionEnums.PARAM_NULL_EXCEPTION);
         }
-        WxMaInMemoryConfig wxconfig = new WxMaInMemoryConfig();
-        PlayProperties p = new PlayProperties();
-        wxconfig.setAppid(p.getWechat().getAppId());
-        wxconfig.setSecret(p.getWechat().getSecret());
         WxMaJscode2SessionResult session = wxService.getUserService().getSessionInfo(code);
         String sessionKey = session.getSessionKey();
         String openId = session.getOpenid();

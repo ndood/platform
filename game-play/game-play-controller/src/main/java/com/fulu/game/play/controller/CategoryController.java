@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -45,13 +46,14 @@ public class CategoryController extends BaseController{
       * @return
      */
     @PostMapping(value = "list")
-    public Result page(Integer pageNum,Integer pageSize){
+    public Result page(@RequestParam(required = true) Integer pageNum,
+                       @RequestParam(required = true) Integer pageSize){
         PageInfo<Category> categoryList = categoryService.list(pageNum,pageSize);
         return Result.success().data(categoryList);
     }
 
     /**
-     *
+     * 分页查询所有商品
      * @param categoryId
      * @param gender
      * @param pageNum
@@ -60,10 +62,10 @@ public class CategoryController extends BaseController{
      * @return
      */
     @RequestMapping(value = "/product/list")
-    public Result findPageByProductId(Integer categoryId,
+    public Result findPageByProductId(@RequestParam(required = true)Integer categoryId,
                                       Integer gender,
-                                      Integer pageNum,
-                                      Integer pageSize,
+                                      @RequestParam(required = true)Integer pageNum,
+                                      @RequestParam(required = true)Integer pageSize,
                                       String orderBy){
         PageInfo<ProductShowCaseVO> pageInfo = productService.findProductShowCase(categoryId,gender,pageNum,pageSize,orderBy);
         return Result.success().data(pageInfo);
@@ -75,7 +77,7 @@ public class CategoryController extends BaseController{
      * @return
      */
     @PostMapping(value = "salesmode/list")
-    public Result saleModel(Integer categoryId){
+    public Result saleModel(@RequestParam(required = true)Integer categoryId){
         List<TechValue> techValueList = techAttrService.findValByCategoryAndType(categoryId, TechAttrTypeEnum.SALES_MODE.getType());
         return Result.success().data(techValueList);
     }

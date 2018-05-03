@@ -46,6 +46,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     private UserService userService;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private OrderService orderService;
 
 
     @Override
@@ -137,15 +139,16 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * 开始接单业务
      */
     @Override
-    public void startOrderReceiving(int hour) {
+    public void startOrderReceiving(Float hour) {
         User user =(User) SubjectUtil.getCurrentUser();
-        Long expire = hour * 3600L;
+        Long expire = (long)(hour * 3600) ;
         List<Product> products = findEnabledProductByUser(user.getId());
         if (products.isEmpty()) {
             throw new ServiceErrorException("请选择技能后再点击开始接单!");
         }
+
         redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()), "HOUR", hour, expire);
-        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()), "START_TIME", DateUtil.now(), expire);
+        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()), "START_TIME",  new Date().getTime(), expire);
         for (Product product : products) {
             ProductVO productVO = new ProductVO();
             BeanUtil.copyProperties(product, productVO);
@@ -190,9 +193,13 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             techTags.add(techTag.getName());
         }
         List<ProductVO> productVOList = findOtherProductVO(product.getUserId(),productId);
+        //查询完成订单数
+        int orderCount =  orderService.allOrderCount(userInfo.getUserId());
+
         ProductDetailsVO serverCardVO = ProductDetailsVO.builder()
                                     .categoryId(product.getCategoryId())
                                     .id(product.getId())
+                                    .onLine(isProductStartOrderReceiving(product.getId()))
                                     .description(product.getDescription())
                                     .productName(product.getProductName())
                                     .categoryIcon(product.getCategoryIcon())
@@ -200,6 +207,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                                     .unit(product.getUnit())
                                     .techAuthId(product.getTechAuthId())
                                     .userInfo(userInfo)
+                                    .orderCount(orderCount)
                                     .techTags(techTags)
                                     .otherProduct(productVOList)
                                     .build();
@@ -228,24 +236,16 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         for(ProductShowCaseVO showCaseVO : showCaseVOS){
             UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(showCaseVO.getUserId(),false,false);
             showCaseVO.setNickName(userInfoVO.getNickName());
+            showCaseVO.setGender(userInfoVO.getGender());
             showCaseVO.setMainPhoto(userInfoVO.getMainPhotoUrl());
             showCaseVO.setCity(userInfoVO.getCity());
             showCaseVO.setPersonTags(userInfoVO.getTags());
+            showCaseVO.setOnLine(isProductStartOrderReceiving(showCaseVO.getId()));
         }
         PageInfo page = new PageInfo(showCaseVOS);
         return page;
     }
 
-
-    /**
-     *  判断商品是否是开始接单状态
-      * @param productId
-     * @return
-     */
-    @Override
-    public Boolean isProductStartOrderReceiving(Integer productId){
-        return redisOpenService.hasKey(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(productId));
-    }
 
     /**
      * 查找用户其他的商品
@@ -267,10 +267,21 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             for(TechTag techTag : techTagList){
                 techTags.add(techTag.getName());
             }
+            productVO.setOnLine(isProductStartOrderReceiving(productVO.getId()));
             productVO.setTechTags(techTags);
             productVOS.add(productVO);
         }
         return productVOS;
+    }
+
+    /**
+     *  判断商品是否是开始接单状态
+     * @param productId
+     * @return
+     */
+    @Override
+    public Boolean isProductStartOrderReceiving(Integer productId){
+        return redisOpenService.hasKey(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(productId));
     }
 
 

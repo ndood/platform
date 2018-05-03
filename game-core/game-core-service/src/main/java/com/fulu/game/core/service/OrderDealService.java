@@ -1,7 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.OrderDeal;
-
+import com.fulu.game.core.entity.vo.OrderDealVO;
 
 
 /**
@@ -14,6 +14,7 @@ import com.fulu.game.core.entity.OrderDeal;
 public interface OrderDealService extends ICommonService<OrderDeal,Integer>{
 
 
-     void create(String orderNo,Integer type,String remark,String ...fileUrls);
+     void create(String orderNo,Integer userId,Integer type,String remark,String ...fileUrls);
 
+     OrderDealVO findByUserAndOrderNo(Integer userId, String orderNo);
 }

@@ -89,6 +89,33 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         return new PageInfo<>(orderVOList);
     }
 
+    @Override
+    public OrderVO findOrderDetails(String orderNo){
+        Order order = findByOrderNo(orderNo);
+        OrderVO orderVO = new OrderVO();
+        BeanUtil.copyProperties(order,orderVO);
+        Category category = categoryService.findById(orderVO.getCategoryId());
+        orderVO.setCategoryIcon(category.getIcon());
+        orderVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderVO.getStatus()));
+
+        //添加陪玩师信息
+        User server= userService.findById(order.getServiceUserId());
+        orderVO.setServerHeadUrl(server.getHeadPortraitsUrl());
+        orderVO.setServerAge(server.getAge());
+        orderVO.setServerGender(server.getGender());
+        orderVO.setServerNickName(server.getNickname());
+        orderVO.setServerScoreAvg(server.getScoreAvg());
+
+        //添加用户信息
+        User user= userService.findById(order.getUserId());
+        orderVO.setUserHeadUrl(user.getHeadPortraitsUrl());
+        orderVO.setUserNickName(user.getNickname());
+        //添加订单商品信息
+        OrderProduct orderProduct = orderProductService.findByOrderNo(orderNo);
+        orderVO.setOrderProduct(orderProduct);
+
+        return orderVO;
+    }
 
     @Override
     public int count(Integer serverId,Integer[] statusList, Date startTime, Date endTime) {
@@ -109,6 +136,12 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         return  count(serverId,statusList,startTime,endTime);
     }
 
+    @Override
+    public int allOrderCount(Integer serverId) {
+        Integer[] statusList = OrderStatusGroupEnum.ALL_NORMAL_COMPLETE.getStatusList();
+        return  count(serverId,statusList,null,null);
+    }
+
 
     @Override
     public OrderVO submit(int productId,
@@ -126,7 +159,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         }
         //创建订单
         Order order = new Order();
-        order.setName(product.getProductName()+"-"+num+"*"+product.getUnit());
+        order.setName(product.getProductName()+" "+num+"*"+product.getUnit());
         order.setOrderNo(getOrderNo());
         order.setUserId(user.getId());
         order.setServiceUserId(product.getUserId());
@@ -154,7 +187,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         orderProductService.create(orderProduct);
         OrderVO orderVO = new OrderVO();
         BeanUtil.copyProperties(order,orderVO);
-        orderVO.setProduct(product);
+        orderVO.setOrderProduct(orderProduct);
         return orderVO;
     }
 
@@ -274,7 +307,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         //删除打手服务状态
         deleteAlreadyService(order.getServiceUserId());
         //添加申诉文件
-        orderDealService.create(orderNo, OrderDealTypeEnum.APPEAL.getType(),remark,fileUrl);
+        orderDealService.create(orderNo, order.getUserId(),OrderDealTypeEnum.APPEAL.getType(),remark,fileUrl);
         return orderConvertVo(order);
     }
 
@@ -296,7 +329,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setUpdateTime(new Date());
         update(order);
         //添加验收文件
-        orderDealService.create(orderNo, OrderDealTypeEnum.CHECK.getType(),remark,fileUrl);
+        orderDealService.create(orderNo, order.getServiceUserId(),OrderDealTypeEnum.CHECK.getType(),remark,fileUrl);
         deleteAlreadyService(order.getServiceUserId());
         return orderConvertVo(order);
     }

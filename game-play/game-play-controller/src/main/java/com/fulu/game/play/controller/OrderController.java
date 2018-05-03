@@ -2,14 +2,20 @@ package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
+import com.fulu.game.common.utils.SubjectUtil;
+import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.entity.Product;
+import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderVO;
+import com.fulu.game.core.service.OrderDealService;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.ProductService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.LinkedHashMap;
@@ -24,6 +30,8 @@ public class OrderController {
     private OrderService orderService;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private OrderDealService orderDealService;
 
     /**
      * 查询陪玩是否是服务状态
@@ -31,7 +39,7 @@ public class OrderController {
      * @return
      */
     @RequestMapping(value = "canservice")
-    public Result canService(Integer productId){
+    public Result canService(@RequestParam(required = true)Integer productId){
         Product product = productService.findById(productId);
         Boolean status = orderService.isAlreadyService(product.getUserId());
         if(status){
@@ -48,8 +56,8 @@ public class OrderController {
      * @return
      */
     @RequestMapping(value = "submit")
-    public Result submit(Integer productId,
-                         Integer num,
+    public Result submit(@RequestParam(required = true)Integer productId,
+                         @RequestParam(required = true)Integer num,
                          String remark){
         OrderVO orderVO = orderService.submit(productId,num,remark);
         return Result.success().data(orderVO.getOrderNo()).msg("创建订单成功!");
@@ -57,15 +65,15 @@ public class OrderController {
 
 
     /**
-     * 模拟订单支付
+     * 订单支付接口
      * @param orderNo
      * @return
      */
-    @RequestMapping(value = "/test/pay")
+    @RequestMapping(value = "/pay")
     @Deprecated
     public Result payTest(String orderNo){
-        OrderVO orderVO =orderService.payOrder(orderNo);
-        return Result.success().data(orderVO).msg("订单支付成功!");
+
+        return Result.success();
     }
 
     /**
@@ -74,10 +82,10 @@ public class OrderController {
      */
     @RequestMapping(value = "/user/status")
     public Result userOrderStatus(){
-        Map<String,Integer> map = new LinkedHashMap<>();
+        Map<Integer,String> map = new LinkedHashMap<>();
         for(OrderStatusGroupEnum groupEnum : OrderStatusGroupEnum.values()){
             if(groupEnum.getType().equals("USER")){
-                map.put(groupEnum.getName(),groupEnum.getValue());
+                map.put(groupEnum.getValue(),groupEnum.getName());
             }
         }
         return Result.success().data(map);
@@ -88,10 +96,10 @@ public class OrderController {
      * @return
      */
     @RequestMapping(value = "/user/list")
-    public Result userOrderList(Integer pageNum,
-                                Integer pageSize,
+    public Result userOrderList(@RequestParam(required = true)Integer pageNum,
+                                @RequestParam(required = true)Integer pageSize,
                                 Integer categoryId,
-                                Integer status){
+                                @RequestParam(required = true)Integer status){
         Integer[] statusArr = OrderStatusGroupEnum.getByValue(status);
         PageInfo<OrderVO> pageInfo = orderService.userList(pageNum,pageSize,categoryId,statusArr);
         return Result.success().data(pageInfo);
@@ -103,10 +111,10 @@ public class OrderController {
      */
     @RequestMapping(value = "/server/status")
     public Result serverOrderStatus(){
-        Map<String,Integer> map = new LinkedHashMap<>();
+        Map<Integer,String> map = new LinkedHashMap<>();
         for(OrderStatusGroupEnum groupEnum : OrderStatusGroupEnum.values()){
             if(groupEnum.getType().equals("SERVER")){
-                map.put(groupEnum.getName(),groupEnum.getValue());
+                map.put(groupEnum.getValue(),groupEnum.getName());
             }
         }
         return Result.success().data(map);
@@ -117,10 +125,10 @@ public class OrderController {
      * @return
      */
     @RequestMapping(value = "/server/list")
-    public Result serverOrderList(Integer pageNum,
-                                Integer pageSize,
-                                Integer categoryId,
-                                Integer status){
+    public Result serverOrderList(@RequestParam(required = true)Integer pageNum,
+                                  @RequestParam(required = true)Integer pageSize,
+                                  Integer categoryId,
+                                  @RequestParam(required = true)Integer status){
         Integer[] statusArr = OrderStatusGroupEnum.getByValue(status);
         PageInfo<OrderVO> pageInfo = orderService.serverList(pageNum,pageSize,categoryId,statusArr);
         return Result.success().data(pageInfo);
@@ -132,7 +140,7 @@ public class OrderController {
      * @return
      */
     @RequestMapping(value = "/user/cancel")
-    public Result userCancelOrder(String orderNo){
+    public Result userCancelOrder(@RequestParam(required = true)String orderNo){
         OrderVO orderVO =orderService.userCancelOrder(orderNo);
         return Result.success().data(orderVO).msg("取消订单成功!");
     }
@@ -145,7 +153,9 @@ public class OrderController {
      * @return
      */
     @RequestMapping(value = "/user/appeal")
-    public Result userAppealOrder(String orderNo,String remark,String[] fileUrl){
+    public Result userAppealOrder(@RequestParam(required = true)String orderNo,
+                                  String remark,
+                                  @RequestParam(required = true)String[] fileUrl){
         OrderVO orderVO =orderService.userAppealOrder(orderNo,remark,fileUrl);
         return Result.success().data(orderVO).msg("订单申诉成功!");
     }
@@ -156,7 +166,7 @@ public class OrderController {
      * @return
      */
     @RequestMapping(value = "/server/receive")
-    public Result serverReceiveOrder(String orderNo){
+    public Result serverReceiveOrder(@RequestParam(required = true)String orderNo){
         OrderVO orderVO =orderService.serverReceiveOrder(orderNo);
         return Result.success().data(orderVO).msg("接单成功!");
     }
@@ -168,7 +178,7 @@ public class OrderController {
      * @return
      */
     @RequestMapping(value = "/user/verify")
-    public Result userVerifyOrder(String orderNo){
+    public Result userVerifyOrder(@RequestParam(required = true)String orderNo){
         OrderVO orderVO =orderService.userVerifyOrder(orderNo);
         return Result.success().data(orderVO).msg("订单验收成功!");
     }
@@ -180,7 +190,7 @@ public class OrderController {
      * @return
      */
     @RequestMapping(value = "/server/cancel")
-    public Result serverCancelOrder(String orderNo){
+    public Result serverCancelOrder(@RequestParam(required = true)String orderNo){
         OrderVO orderVO =orderService.serverCancelOrder(orderNo);
         return Result.success().data(orderVO).msg("取消订单成功!");
     }
@@ -193,11 +203,34 @@ public class OrderController {
      * @return
      */
     @RequestMapping(value = "/server/acceptance")
-    public Result serverAcceptanceOrder(String orderNo,String remark,String[] fileUrl){
+    public Result serverAcceptanceOrder(@RequestParam(required = true)String orderNo,
+                                        String remark,
+                                        @RequestParam(required = true)String[] fileUrl){
         OrderVO orderVO =orderService.serverAcceptanceOrder(orderNo,remark,fileUrl);
         return Result.success().data(orderVO).msg("提交订单验收成功!");
     }
 
 
+    /**
+     * 查看申诉或者验收截图
+     * @return
+     */
+    @RequestMapping(value = "/deals")
+    public Result orderDealList(@RequestParam(required = true)String orderNo){
+        User user = (User) SubjectUtil.getCurrentUser();
+        OrderDealVO orderDealVO = orderDealService.findByUserAndOrderNo(user.getId(),orderNo);
+        return Result.success().data(orderDealVO);
+    }
+
+    /**
+     * 订单详情页
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/details")
+    public Result userOrderDetails(@RequestParam(required = true)String orderNo){
+        OrderVO orderVO =  orderService.findOrderDetails(orderNo);
+        return Result.success().data(orderVO);
+    }
 
 }

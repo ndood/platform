@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,6 +132,7 @@ public class ProductController extends BaseController{
     @RequestMapping(value = "/order-receive/status")
     public Result orderReceiveStatus(){
         Map<String,Object> status = productService.readOrderReceivingStatus();
+        status.put("CURRENT_TIME",new Date());
         return Result.success().data(status);
     }
 
@@ -139,7 +141,7 @@ public class ProductController extends BaseController{
      * @return
      */
     @RequestMapping(value = "/order-receive/start")
-    public Result orderReceiveStart(int hour){
+    public Result orderReceiveStart(Float hour){
         productService.startOrderReceiving(hour);
         return Result.success().data("已经开始自动接单!");
     }

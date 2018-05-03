@@ -1,17 +1,17 @@
 datasource:
     playAdminDb:
-        url: jdbc:mysql://10.0.3.105:3306/game_service?autoReconnect=true&failOverReadOnly=false&characterEncoding=utf-8&useUnicode=true&zeroDateTimeBehavior=convertToNull
-        username: root
-        password: 123456
+        url: rm-bp182s2y347o90s30.mysql.rds.aliyuncs.com
+        username: game
+        password: game123$%^
         driverClassName: com.mysql.jdbc.Driver
 # REDIS (RedisProperties)
 # Redis数据库索引（默认为0）
 spring:
   redis:
     database: 0
-    host: 10.0.3.105
+    host: r-bp18d6ebd1e5cdd4.redis.rds.aliyuncs.com
     port: 6379
-    password:
+    password: 20180502gameREDIS
     timeout: 0
     pool:
       max-active: 8
@@ -21,12 +21,12 @@ spring:
 config:
     oss:
       endpoint: "http://oss-cn-hangzhou.aliyuncs.com"
-      accessKeyId: "LTAIcQRqtJrF5Arb"
-      accessKeySecret: "3jiWeZ89SoGob5TljUEU2MmgZCo7qP"
-      bucketName: "app-testing-new"
+      accessKeyId: "LTAIuddbH7bqB9kz"
+      accessKeySecret: "zXdKJlSFZ51k8G8q0uUzranXwbS1kh"
+      bucketName: "game-play"
       host: "http://app-testing-new.oss-cn-hangzhou.aliyuncs.com/"
     evn:
-      prefix: DEV
+      prefix: PROD
     cloopen:
       serverIp: app.cloopen.com
       serverPort: 8883

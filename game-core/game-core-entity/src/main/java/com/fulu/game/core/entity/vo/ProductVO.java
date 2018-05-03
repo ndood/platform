@@ -18,7 +18,9 @@ import java.util.List;
 @Data
 public class ProductVO  extends Product {
 
-    private Integer hour;
+    private Boolean onLine;
+
+    private Float hour;
 
     private Date startTime;
 
