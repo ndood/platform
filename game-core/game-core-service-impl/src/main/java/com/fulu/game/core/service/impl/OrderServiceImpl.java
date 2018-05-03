@@ -15,6 +15,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,7 @@ import java.util.List;
 
 
 @Service
+@Slf4j
 public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements OrderService {
 
     @Autowired
@@ -48,6 +50,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     private MoneyDetailsService moneyDetailsService;
     @Autowired
     private PlatformMoneyDetailsService platformMoneyDetailsService;
+    @Autowired
+    private PayService payService;
 
 
     @Override
@@ -256,9 +260,10 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setUpdateTime(new Date());
         order.setCompleteTime(new Date());
         update(order);
-        //todo 全额退款用户
-        //记录订单流水
-        orderMoneyDetailsService.create(orderNo,order.getUserId(),DetailsEnum.ORDER_SERVER_CANCEL,"-"+order.getTotalMoney());
+        if(order.getIsPay()){
+            // 全额退款用户
+            orderRefund(order.getOrderNo(),order.getUserId(),order.getTotalMoney());
+        }
         return orderConvertVo(order);
     }
 
@@ -279,9 +284,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setCompleteTime(new Date());
         update(order);
         if(order.getIsPay()){
-            //todo 全额退款用户
-            //记录订单流水
-            orderMoneyDetailsService.create(orderNo,order.getUserId(),DetailsEnum.ORDER_USER_CANCEL,"-"+order.getTotalMoney());
+            // 全额退款用户
+            orderRefund(order.getOrderNo(),order.getUserId(),order.getTotalMoney());
         }
         return orderConvertVo(order);
     }
@@ -403,9 +407,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setCompleteTime(new Date());
         update(order);
         if(order.getIsPay()){
-            //todo 全额退款用户
-            //记录订单流水
-            orderMoneyDetailsService.create(orderNo,order.getUserId(),DetailsEnum.ORDER_USER_CANCEL,"-"+order.getTotalMoney());
+            orderRefund(order.getOrderNo(),order.getUserId(),order.getTotalMoney());
         }
         return orderConvertVo(order);
     }
@@ -425,6 +427,18 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         //订单全部金额记录平台流水
         platformMoneyDetailsService.createOrderDetails(order.getOrderNo(),order.getCommissionMoney());
         return orderConvertVo(order);
+    }
+
+
+    public void orderRefund(String orderNo,Integer userId,BigDecimal totalMoney){
+        try {
+            payService.refund(orderNo,totalMoney);
+        }catch (Exception e){
+            log.error("退款失败",e);
+            throw new OrderException(orderNo,"订单退款失败!");
+        }
+        //记录订单流水
+        orderMoneyDetailsService.create(orderNo,userId,DetailsEnum.ORDER_USER_CANCEL,"-"+totalMoney.toPlainString());
     }
 
     /**

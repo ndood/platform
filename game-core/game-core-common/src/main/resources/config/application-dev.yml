@@ -43,6 +43,6 @@ config:
       mchKey: 24d1b993f21046a296b0846f62d3e431
       subAppId:
       subMchId:
-      keyPath:
+      keyPath: E:\cert\apiclient_cert.p12
       tradeType: JSAPI
       notifyUrl: http://z3tfsd.natappfree.cc/wechat/pay/callback

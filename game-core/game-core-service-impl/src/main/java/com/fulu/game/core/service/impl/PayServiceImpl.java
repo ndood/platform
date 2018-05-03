@@ -74,17 +74,25 @@ public class PayServiceImpl implements PayService {
         }
     }
 
+    @Override
+    public Boolean refund(String orderNo,BigDecimal totalMoney,BigDecimal refundMoney) throws WxPayException {
+        Integer totalFee = (totalMoney.multiply(new BigDecimal(100))).intValue();
+        Integer refunFee = totalFee;
+        if(refundMoney!=null){
+            refunFee = (refundMoney.multiply(new BigDecimal(100))).intValue();
+        }
+        WxPayRefundRequest request = new WxPayRefundRequest();
+        request.setOutTradeNo(orderNo);
+        request.setOutRefundNo(orderNo+"E");
+        request.setTotalFee(totalFee);
+        request.setRefundFee(refunFee);
+        WxPayRefundResult wxPayRefundResult = wxPayService.refund(request);
+        return true;
+    }
 
     @Override
-    public WxPayRefundResult refund(String orderNo) throws WxPayException {
-        Order order = orderService.findByOrderNo(orderNo);
-        Integer totalFee = (order.getTotalMoney().multiply(new BigDecimal(100))).intValue();
-        WxPayRefundRequest request = new WxPayRefundRequest();
-        request.setOutTradeNo(order.getOrderNo());
-        request.setOutRefundNo(order.getOrderNo()+"E");
-        request.setTotalFee(totalFee);
-        request.setRefundFee(totalFee);
-        return wxPayService.refund(request);
+    public Boolean refund(String orderNo, BigDecimal totalMoney) throws WxPayException{
+        return refund(orderNo,totalMoney,null);
     }
 
 }

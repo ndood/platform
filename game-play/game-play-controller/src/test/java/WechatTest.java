@@ -1,5 +1,7 @@
+import com.fulu.game.core.service.PayService;
 import com.fulu.game.play.PlayApplication;
 import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderRequest;
+import com.github.binarywang.wxpay.bean.result.WxPayRefundResult;
 import com.github.binarywang.wxpay.bean.result.WxPayUnifiedOrderResult;
 import com.github.binarywang.wxpay.service.WxPayService;
 import com.xiaoleilu.hutool.date.DateUtil;
@@ -19,6 +21,8 @@ public class WechatTest {
 
     @Autowired
     private  WxPayService wxPayService;
+    @Autowired
+    private PayService payService;
 
     @Test
     public void test1(){
@@ -35,7 +39,16 @@ public class WechatTest {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
 
+    @Test
+    public void test2(){
+
+//        try {
+//            WxPayRefundResult wxPayRefundResult = payService.refund("180503095476");
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
     }
 
 }

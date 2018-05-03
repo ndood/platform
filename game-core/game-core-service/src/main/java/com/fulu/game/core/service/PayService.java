@@ -1,8 +1,9 @@
 package com.fulu.game.core.service;
 
 
-import com.github.binarywang.wxpay.bean.result.WxPayRefundResult;
 import com.github.binarywang.wxpay.exception.WxPayException;
+
+import java.math.BigDecimal;
 
 public interface PayService {
 
@@ -15,5 +16,8 @@ public interface PayService {
 
      String payResult(String xmlResult);
 
-     WxPayRefundResult refund(String orderNo) throws WxPayException;
+     Boolean refund(String orderNo, BigDecimal totalMoney, BigDecimal RefundMoney) throws WxPayException;
+
+
+     Boolean refund(String orderNo,BigDecimal totalMoney)throws WxPayException;
 }
