@@ -39,9 +39,13 @@ public class Order implements Serializable {
 	private BigDecimal commissionMoney;
 	//订单总额
 	private BigDecimal totalMoney;
-	//订单价格
+	//订单创建时间
 	private Date createTime;
 	//
 	private Date updateTime;
+	//订单支付时间
+	private Date payTime;
+	//订单完成时间
+	private Date completeTime;
 
 }

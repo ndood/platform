@@ -44,6 +44,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     private TechTagService techTagService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CategoryService categoryService;
 
 
     @Override
@@ -57,9 +59,11 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         User user = userService.findById(userTechAuth.getUserId());
         //查询销售方式的单位
         TechValue techValue = techValueService.findById(unitId);
+        Category category = categoryService.findById(userTechAuth.getCategoryId());
         Product product = new Product();
         product.setCategoryId(userTechAuth.getCategoryId());
         product.setGender(user.getGender());
+        product.setCategoryIcon(category.getIcon());
         product.setProductName(userTechAuth.getCategoryName());
         product.setDescription(userTechAuth.getDescription());
         product.setTechAuthId(userTechAuth.getId());
@@ -84,10 +88,12 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         Product product = findById(id);
         if (techAuthId != null) {
             UserTechAuth userTechAuth = userTechAuthService.findById(techAuthId);
+            Category category = categoryService.findById(userTechAuth.getCategoryId());
             product.setCategoryId(userTechAuth.getCategoryId());
             product.setProductName(userTechAuth.getCategoryName());
             product.setDescription(userTechAuth.getDescription());
             product.setTechAuthId(userTechAuth.getId());
+            product.setCategoryIcon(category.getIcon());
         }
         if (price != null) {
             product.setPrice(price);
@@ -114,6 +120,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         update(product);
         return product;
     }
+
     /**
      * 查找激活的商品
      * @param userId

@@ -18,7 +18,8 @@ public enum  OrderStatusEnum{
     ADMIN_REFUND(410,"申诉：全额退款"),//管理员退款用户
     ADMIN_NEGOTIATE(420,"申诉：协商处理"),//管理员处理订单部分退款
     COMPLETE(500,"待评价"),//用户验收订单
-    ADMIN_COMPLETE(501,"申诉：订单完成"),//管理员强制完成订单
+    SYSTEM_COMPLETE(501,"待评价"),//系统自动完成订单
+    ADMIN_COMPLETE(502,"申诉：订单完成"),//管理员强制完成订单
     ALREADY_APPRAISE(600,"已评价");//已评价
 
 

@@ -46,6 +46,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     private UserService userService;
     @Autowired
     private MoneyDetailsService moneyDetailsService;
+    @Autowired
+    private PlatformMoneyDetailsService platformMoneyDetailsService;
 
 
     @Override
@@ -170,6 +172,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setIsPay(true);
         order.setStatus(OrderStatusEnum.WAIT_SERVICE.getStatus());
         order.setUpdateTime(new Date());
+        order.setPayTime(new Date());
         update(order);
         //记录订单流水
         orderMoneyDetailsService.create(order.getOrderNo(),order.getUserId(), DetailsEnum.ORDER_PAY,""+order.getTotalMoney());
@@ -218,6 +221,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         }
         order.setStatus(OrderStatusEnum.SERVER_CANCEL.getStatus());
         order.setUpdateTime(new Date());
+        order.setCompleteTime(new Date());
         update(order);
         //todo 全额退款用户
         //记录订单流水
@@ -239,6 +243,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         }
         order.setStatus(OrderStatusEnum.USER_CANCEL.getStatus());
         order.setUpdateTime(new Date());
+        order.setCompleteTime(new Date());
         update(order);
         if(order.getIsPay()){
             //todo 全额退款用户
@@ -309,12 +314,27 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         }
         order.setStatus(OrderStatusEnum.COMPLETE.getStatus());
         order.setUpdateTime(new Date());
+        order.setCompleteTime(new Date());
         update(order);
-        BigDecimal serverMoney = order.getTotalMoney().subtract(order.getCommissionMoney());
-        moneyDetailsService.orderSave(serverMoney,order.getServiceUserId(),orderNo);
-        //todo 平台记录收入流水
+        //订单分润
+        shareProfit(order);
         return orderConvertVo(order);
     }
+
+
+    /**
+     * 订单分润
+     * @param order
+     */
+    public void shareProfit(Order order){
+        BigDecimal serverMoney = order.getTotalMoney().subtract(order.getCommissionMoney());
+        //记录用户流水
+        moneyDetailsService.orderSave(serverMoney,order.getServiceUserId(),order.getOrderNo());
+        //平台记录收入流水
+        platformMoneyDetailsService.createOrderDetails(order.getOrderNo(),order.getCommissionMoney());
+    }
+
+
 
     /**
      * 管理员强制完成订单 (大款给打手)
@@ -324,14 +344,14 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     public OrderVO adminHandleCompleteOrder(String orderNo){
         Order order =  findByOrderNo(orderNo);
         if(!order.getStatus().equals(OrderStatusEnum.APPEALING.getStatus())){
-            throw new OrderException(order.getOrderNo(),"只有申诉中的订单才能验收!");
+            throw new OrderException(order.getOrderNo(),"只有申诉中的订单才能操作!");
         }
         order.setStatus(OrderStatusEnum.ADMIN_COMPLETE.getStatus());
         order.setUpdateTime(new Date());
+        order.setCompleteTime(new Date());
         update(order);
-        BigDecimal serverMoney = order.getTotalMoney().subtract(order.getCommissionMoney());
-        moneyDetailsService.orderSave(serverMoney,order.getServiceUserId(),orderNo);
-        //todo 平台记录收入流水
+        //订单分润
+        shareProfit(order);
         return orderConvertVo(order);
     }
 
@@ -343,16 +363,34 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     public OrderVO adminHandleRefundOrder(String orderNo){
         Order order =  findByOrderNo(orderNo);
         if(!order.getStatus().equals(OrderStatusEnum.APPEALING.getStatus())){
-            throw new OrderException(order.getOrderNo(),"只有申诉中的订单才能验收!");
+            throw new OrderException(order.getOrderNo(),"只有申诉中的订单才能操作!");
         }
         order.setStatus(OrderStatusEnum.ADMIN_REFUND.getStatus());
         order.setUpdateTime(new Date());
+        order.setCompleteTime(new Date());
         update(order);
         if(order.getIsPay()){
             //todo 全额退款用户
             //记录订单流水
             orderMoneyDetailsService.create(orderNo,order.getUserId(),DetailsEnum.ORDER_USER_CANCEL,"-"+order.getTotalMoney());
         }
+        return orderConvertVo(order);
+    }
+
+
+    @Override
+    public OrderVO adminHandleNegotiateOrder(String orderNo) {
+        Order order =  findByOrderNo(orderNo);
+        if(!order.getStatus().equals(OrderStatusEnum.APPEALING.getStatus())){
+            throw new OrderException(order.getOrderNo(),"只有申诉中的订单才能验收!");
+        }
+        order.setStatus(OrderStatusEnum.ADMIN_NEGOTIATE.getStatus());
+        order.setUpdateTime(new Date());
+        order.setCompleteTime(new Date());
+        order.setCommissionMoney(order.getTotalMoney());
+        update(order);
+        //订单全部金额记录平台流水
+        platformMoneyDetailsService.createOrderDetails(order.getOrderNo(),order.getCommissionMoney());
         return orderConvertVo(order);
     }
 
