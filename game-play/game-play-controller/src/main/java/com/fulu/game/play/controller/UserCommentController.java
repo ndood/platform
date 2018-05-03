@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/user/comment")
 @Slf4j
-public class UserCommentController {
+public class UserCommentController extends BaseController{
 
     @Autowired
     private UserCommentService commentService;

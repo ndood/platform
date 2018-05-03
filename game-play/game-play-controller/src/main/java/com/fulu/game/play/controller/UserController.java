@@ -13,11 +13,9 @@ import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.UserTechAuthService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -25,8 +23,6 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/api/v1/user")
 public class UserController extends BaseController {
-
-    private static final String SPLIT = "_";
 
     @Autowired
     private UserTechAuthService userTechAuthService;

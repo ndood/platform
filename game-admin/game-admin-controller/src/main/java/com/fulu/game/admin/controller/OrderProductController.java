@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 @RequestMapping("api/v1/orderProduct")
-public class OrderProductController {
+public class OrderProductController extends BaseController{
 
     @Autowired
     private OrderProductService orderProductService;
