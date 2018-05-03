@@ -2,7 +2,6 @@ package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.utils.SubjectUtil;
-import com.fulu.game.core.entity.MoneyDetails;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.MoneyDetailsVO;
 import com.fulu.game.core.service.MoneyDetailsService;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/moneyDetails")
-public class MoneyDetailsController {
+public class MoneyDetailsController extends BaseController{
 
     @Autowired
     private MoneyDetailsService moneyDetailsService;

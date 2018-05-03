@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/cashDraws")
-public class CashDrawsController {
+public class CashDrawsController extends BaseController{
     @Autowired
     private CashDrawsService cashDrawsService;
 
