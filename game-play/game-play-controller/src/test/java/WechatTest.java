@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -44,11 +45,11 @@ public class WechatTest {
     @Test
     public void test2(){
 
-//        try {
-//            WxPayRefundResult wxPayRefundResult = payService.refund("180503095476");
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
+        try {
+             payService.refund("180503844282",new BigDecimal(2),new BigDecimal(1));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 }

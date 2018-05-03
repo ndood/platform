@@ -60,7 +60,7 @@ public class OrderController  extends BaseController{
     @RequestMapping(value = "/admin/negotiate")
     public Result adminHandleNegotiateOrder(String orderNo){
         OrderVO orderVO =orderService.adminHandleNegotiateOrder(orderNo);
-        return Result.success().data(orderVO).msg("订单完成,协商处理!");
+        return Result.success().data(orderVO.getOrderNo()).msg("订单完成,协商处理!");
     }
 
     /**
@@ -71,7 +71,7 @@ public class OrderController  extends BaseController{
     @RequestMapping(value = "/admin/complete")
     public Result adminHandleCompleteOrder(String orderNo){
         OrderVO orderVO =orderService.adminHandleCompleteOrder(orderNo);
-        return Result.success().data(orderVO).msg("订单完成!");
+        return Result.success().data(orderVO.getOrderNo()).msg("订单完成!");
     }
 
     /**
@@ -82,6 +82,6 @@ public class OrderController  extends BaseController{
     @RequestMapping(value = "/admin/refund")
     public Result adminHandleRefundOrder(String orderNo){
         OrderVO orderVO =orderService.adminHandleRefundOrder(orderNo);
-        return Result.success().data(orderVO).msg("订单完成,退款给用户!");
+        return Result.success().data(orderVO.getOrderNo()).msg("订单完成,退款给用户!");
     }
 }
