@@ -1,6 +1,6 @@
 datasource:
     playAdminDb:
-        url: rm-bp1l599cg390lml8w.mysql.rds.aliyuncs.com
+        url: jdbc:mysql://rm-bp1l599cg390lml8w.mysql.rds.aliyuncs.com
         username: root
         password: 20180502game!@#
         driverClassName: com.mysql.jdbc.Driver

@@ -1,17 +1,3 @@
 spring:
     profiles:
        active: dev
-play:
-  wechat:
-    appId: wxf0bf670601a34bb5
-    secret: d8aeb8dc6265394a3789aff6b2792a23
-    token: 111
-    aesKey: 111
-    msgDataFormat: JSON
-    mchId: 1502601051
-    mchKey: 24d1b993f21046a296b0846f62d3e431
-    subAppId:
-    subMchId:
-    keyPath:
-    tradeType: JSAPI
-    notifyUrl: http://binf.com/xxx
