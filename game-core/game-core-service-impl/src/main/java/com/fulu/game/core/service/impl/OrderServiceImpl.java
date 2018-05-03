@@ -197,7 +197,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      * @return
      */
     @Override
-    public OrderVO payOrder(String orderNo){
+    public OrderVO payOrder(String orderNo,String orderMoney){
         Order order =  findByOrderNo(orderNo);
         if(order.getIsPay()){
            throw new OrderException(orderNo,"重复支付订单!["+order.toString()+"]");
@@ -208,7 +208,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setPayTime(new Date());
         update(order);
         //记录订单流水
-        orderMoneyDetailsService.create(order.getOrderNo(),order.getUserId(), DetailsEnum.ORDER_PAY,""+order.getTotalMoney());
+        orderMoneyDetailsService.create(order.getOrderNo(),order.getUserId(), DetailsEnum.ORDER_PAY,orderMoney);
         //发送短信通知给陪玩师
         User server = userService.findById(order.getServiceUserId());
         SMSUtil.sendOrderReceivingRemind(order.getName(),server.getMobile());

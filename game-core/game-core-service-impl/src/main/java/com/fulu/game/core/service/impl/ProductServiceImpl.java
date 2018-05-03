@@ -254,7 +254,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * @return
      */
     public List<ProductVO> findOtherProductVO(Integer userId,Integer productId){
-        List<Product>  products =   findByUserId(userId);
+        List<Product>  products = findByUserId(userId);
         List<ProductVO> productVOS = new ArrayList<>();
         for(Product product : products){
             if(product.getId().equals(productId)){

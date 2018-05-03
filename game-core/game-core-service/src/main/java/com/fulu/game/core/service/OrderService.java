@@ -52,7 +52,7 @@ public interface OrderService extends ICommonService<Order,Integer>{
      * @param orderNo
      * @return
      */
-    OrderVO payOrder(String orderNo);
+     OrderVO payOrder(String orderNo,String orderMoney);
 
     /**
      * 陪玩师接收订单

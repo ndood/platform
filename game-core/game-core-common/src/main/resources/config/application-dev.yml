@@ -45,4 +45,4 @@ config:
       subMchId:
       keyPath:
       tradeType: JSAPI
-      notifyUrl: http://binf.com/xxx
+      notifyUrl: http://z3tfsd.natappfree.cc/wechat/pay/callback
