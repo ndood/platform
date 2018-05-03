@@ -1,7 +1,7 @@
 datasource:
     playAdminDb:
         url: jdbc:mysql://rm-bp1l599cg390lml8w.mysql.rds.aliyuncs.com
-        username: root
+        username: game
         password: 20180502game!@#
         driverClassName: com.mysql.jdbc.Driver
 # REDIS (RedisProperties)
