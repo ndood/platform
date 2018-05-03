@@ -38,6 +38,10 @@ public class ApplicationContextRegister implements ApplicationContextAware {
      * @param <T>
      * @return
      */
+    public static <T> T getBean(String beanName,Class<T> type) {
+        return APPLICATION_CONTEXT.getBean(beanName,type);
+    }
+
     public static <T> T getBean(Class<T> type) {
         return APPLICATION_CONTEXT.getBean(type);
     }

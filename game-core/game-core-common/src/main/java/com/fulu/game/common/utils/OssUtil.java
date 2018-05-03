@@ -15,7 +15,7 @@ import java.io.InputStream;
 public class OssUtil {
 
     @Autowired
-    private Config config;
+    private Config configProperties;
 
     /**
      * 上传文件
@@ -24,16 +24,16 @@ public class OssUtil {
      * @return
      */
     public String uploadFile(InputStream inputStream,String fileName){
-        String endpoint =  config.getOss().getEndpoint();
-        String bucketName =  config.getOss().getBucketName();
-        OSSClient ossClient = new OSSClient(endpoint,config.getOss().getAccessKeyId(),config.getOss().getAccessKeySecret());
+        String endpoint =  configProperties.getOss().getEndpoint();
+        String bucketName =  configProperties.getOss().getBucketName();
+        OSSClient ossClient = new OSSClient(endpoint,configProperties.getOss().getAccessKeyId(),configProperties.getOss().getAccessKeySecret());
         String key = generateOssKey(fileName);
         PutObjectRequest request = new PutObjectRequest(bucketName, key, inputStream);
         ossClient.putObject(request);
         boolean exists = ossClient.doesObjectExist(bucketName, key);
         if(exists){
             ossClient.setObjectAcl(bucketName, key, CannedAccessControlList.PublicRead);
-            return  config.getOss().getHost()+key;
+            return  configProperties.getOss().getHost()+key;
         }
         return null;
     }

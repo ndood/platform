@@ -77,16 +77,16 @@ public class CloopenSmsComponent {
         Accounts, SubAccounts;
     }
 
-    private final Config config;
+    private final Config configProperties;
 
     @Autowired
-    public CloopenSmsComponent(Config config){
-        this.config =config;
-        SERVER_IP = config.getCloopen().getServerIp();
-        SERVER_PORT =  config.getCloopen().getServerPort();
-        ACCOUNT_SID = config.getCloopen().getAccountSid();
-        ACCOUNT_TOKEN = config.getCloopen().getAccountToken();
-        App_ID = config.getCloopen().getAppId();
+    public CloopenSmsComponent(Config configProperties){
+        this.configProperties =configProperties;
+        SERVER_IP = configProperties.getCloopen().getServerIp();
+        SERVER_PORT =  configProperties.getCloopen().getServerPort();
+        ACCOUNT_SID = configProperties.getCloopen().getAccountSid();
+        ACCOUNT_TOKEN = configProperties.getCloopen().getAccountToken();
+        App_ID = configProperties.getCloopen().getAppId();
     }
 
 

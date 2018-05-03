@@ -35,7 +35,7 @@ public enum RedisKeyEnum {
      * @return
      */
     private String getEvnPrefix() {
-        Config config = ApplicationContextRegister.getBean(Config.class);
+        Config config = ApplicationContextRegister.getBean("configProperties",Config.class);
         return config.getEvn().getPrefix();
     }
 
