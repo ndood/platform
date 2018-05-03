@@ -77,7 +77,7 @@ public class UserController extends BaseController {
             user.setMobile(null);
         if (!age)
             user.setAge(null);
-        return Result.success().data(user).msg("认证状态查询成功！");
+        return Result.success().data(user).msg("查询信息成功！");
     }
 
     /**
@@ -88,10 +88,14 @@ public class UserController extends BaseController {
      */
     @RequestMapping("/update")
     public Result update(@ModelAttribute UserVO userVO) {
-        User user = (User) SubjectUtil.getCurrentUser();
+        User user = userService.findById(((User) SubjectUtil.getCurrentUser()).getId());
         user.setAge(userVO.getAge());
         user.setGender(userVO.getGender());
         user.setCity(userVO.getCity());
+        user.setProvince(userVO.getProvince());
+        user.setCountry(userVO.getCountry());
+        user.setBirth(userVO.getBirth());
+        user.setConstellation(userVO.getConstellation());
         user.setNickname(userVO.getNickname());
         user.setHeadPortraitsUrl(userVO.getHeadPortraitsUrl());
         userService.update(user);

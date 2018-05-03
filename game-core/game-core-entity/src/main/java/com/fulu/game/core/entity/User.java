@@ -56,6 +56,10 @@ public class User implements Serializable {
 	private String country;
 	//综合得星评分数
 	private BigDecimal scoreAvg;
+	//星座
+	private String constellation;
+	//生日
+	private String birth;
 
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	public Date getCreateTime(){
