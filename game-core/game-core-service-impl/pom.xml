@@ -17,6 +17,10 @@
             <artifactId>game-core-service</artifactId>
             <version>${game.core.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-pay</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

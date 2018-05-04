@@ -23,8 +23,6 @@ public interface UserCommentService extends ICommonService<UserComment,Integer>{
 
     UserComment findByOrderNo(String orderNo);
 
-    void put(UserCommentVO commentVO);
-
     /**
      * 查询陪玩师的所有评论
      * @return

@@ -35,6 +35,9 @@
         <include refid="Base_Column_List" />
         from t_user_comment
     </select>
+    <select id="findScoreAvgByServerUserId" parameterType="java.lang.Integer" resultType="java.math.BigDecimal">
+        SELECT AVG(score) FROM t_user_comment WHERE server_user_id = #{serverUserId};
+    </select>
     <select id="callScoreAvgProc" parameterType="java.lang.Integer" statementType="CALLABLE">
          <![CDATA[
         {call star_score_avg_update_procedure(

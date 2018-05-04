@@ -9,7 +9,6 @@ import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.xiaoleilu.hutool.util.BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +16,7 @@ import com.fulu.game.core.dao.UserCommentDao;
 import com.fulu.game.core.entity.UserComment;
 import com.fulu.game.core.service.UserCommentService;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -49,10 +48,8 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment,Integer
         int serverUserId = order.getServiceUserId();
 
         UserComment comment = new UserComment();
-        if (commentVO.getRecordUser()){
-            comment.setUserId(user.getId());
-            //comment.setUserId(commentVO.getUserId());
-        }
+        comment.setRecordUser(commentVO.getRecordUser());
+        comment.setUserId(user.getId());
         comment.setServerUserId(serverUserId);
         comment.setScore(commentVO.getScore());
         comment.setOrderNo(commentVO.getOrderNo());
@@ -60,23 +57,17 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment,Integer
         comment.setCreateTime(new Date());
         comment.setUpdateTime(comment.getCreateTime());
         commentDao.create(comment);
-        commentDao.callScoreAvgProc(comment.getId());
+        //commentDao.callScoreAvgProc(comment.getId());
+        //查询陪玩师的评分平均值后更新score_avg字段
+        BigDecimal scoreAvg = commentDao.findScoreAvgByServerUserId(serverUserId);
+        comment.setScoreAvg(scoreAvg);
+        commentDao.update(comment);
+        User serverUser = userService.findById(serverUserId);
+        serverUser.setScoreAvg(scoreAvg);
+        userService.update(serverUser);
+
     }
 
-    @Override
-    public void put(UserCommentVO commentVO){
-        User user = (User)SubjectUtil.getCurrentUser();
-        UserComment comment = commentDao.findById(commentVO.getId());
-        if (commentVO.getRecordUser()){
-            comment.setUserId(user.getId());
-            //comment.setUserId(commentVO.getUserId());
-        }
-        comment.setScore(commentVO.getScore());
-        comment.setContent(commentVO.getContent());
-        comment.setUpdateTime(new Date());
-        commentDao.update(comment);
-        commentDao.callScoreAvgProc(comment.getId());
-    }
 
     @Override
     public PageInfo<UserCommentVO> findByServerId(int pageNum, int pageSize, Integer serverUserId) {

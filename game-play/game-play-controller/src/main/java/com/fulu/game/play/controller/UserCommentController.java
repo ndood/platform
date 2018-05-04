@@ -36,16 +36,6 @@ public class UserCommentController extends BaseController{
     }
 
     /**
-     * 用户-修改评价
-     * @return
-     */
-    @RequestMapping("/put")
-    public Result put(UserCommentVO commentVO){
-        commentService.put(commentVO);
-        return Result.success().msg("修改成功！");
-    }
-
-    /**
      * 用户-查询评论
      * @return
      */

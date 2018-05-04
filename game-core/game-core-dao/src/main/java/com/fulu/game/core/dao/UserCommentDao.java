@@ -3,6 +3,7 @@ package com.fulu.game.core.dao;
 import com.fulu.game.core.entity.UserComment;
 import com.fulu.game.core.entity.vo.UserCommentVO;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -21,4 +22,5 @@ public interface UserCommentDao extends ICommonDao<UserComment,Integer>{
 
     void callScoreAvgProc(Integer id);
 
+    BigDecimal findScoreAvgByServerUserId(int serverUserId);
 }
