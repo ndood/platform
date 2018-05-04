@@ -6,6 +6,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.exception.ParamsExceptionEnums;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.service.UserService;
 import com.fulu.game.play.controller.exception.ParamsException;
 import com.fulu.game.play.shiro.PlayUserToken;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,8 @@ public class HomeController {
 
     @Autowired
     private WxMaService wxService;
+    @Autowired
+    private UserService userService;
 
     /**
      * 小程序提交参数code
@@ -46,9 +49,11 @@ public class HomeController {
         //2.提交认证和凭据给身份验证系统
         try{
             subject.login(playUserToken);
-            User user = (User)SubjectUtil.getCurrentUser();
+            User cachedUser = (User)SubjectUtil.getCurrentUser();
+            User user = userService.findById(cachedUser.getId());
             JSONObject jo = new JSONObject();
             jo.put("token",SubjectUtil.getToken());
+            jo.put("type",user.getType());
             if (StringUtils.isEmpty(user.getMobile())){
                 return Result.newUser().data(jo).msg("登录成功，请绑定手机号！");
             }else{
@@ -72,9 +77,11 @@ public class HomeController {
         //2.提交认证和凭据给身份验证系统
         try{
             subject.login(playUserToken);
-            User user = (User)SubjectUtil.getCurrentUser();
+            User cachedUser = (User)SubjectUtil.getCurrentUser();
+            User user = userService.findById(cachedUser.getId());
             JSONObject jo = new JSONObject();
             jo.put("token",SubjectUtil.getToken());
+            jo.put("type",user.getType());
             if (StringUtils.isEmpty(user.getMobile())){
                 return Result.newUser().data(jo).msg("登录成功，请绑定手机号！");
             }else{
