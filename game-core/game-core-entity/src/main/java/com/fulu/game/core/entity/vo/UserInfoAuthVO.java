@@ -1,14 +1,12 @@
 package com.fulu.game.core.entity.vo;
 
 
-import com.fulu.game.core.entity.Tag;
 import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.UserInfoAuthFile;
 import com.fulu.game.core.entity.UserInfoFile;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -21,6 +19,10 @@ public class UserInfoAuthVO  extends UserInfoAuth {
 
     //真实姓名
     private String realname;
+
+    private String nickname;
+
+    private String realMobile;
 
     private Integer age;
 

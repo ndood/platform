@@ -313,7 +313,9 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      * @return
      */
     @Override
-    public OrderVO userAppealOrder(String orderNo,String remark,String ... fileUrl){
+    public OrderVO userAppealOrder(String orderNo,
+                                   String remark,
+                                   String ... fileUrl){
         Order order =  findByOrderNo(orderNo);
         if(!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())
             &&!order.getStatus().equals(OrderStatusEnum.CHECK.getStatus())){
