@@ -48,7 +48,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     private CategoryService categoryService;
     @Autowired
     private OrderService orderService;
-
+    @Autowired
+    private SalesModeService salesModeService;
 
     @Override
     public ICommonDao<Product, Integer> getDao() {
@@ -60,7 +61,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         UserTechAuth userTechAuth = userTechAuthService.findById(techAuthId);
         User user = userService.findById(userTechAuth.getUserId());
         //查询销售方式的单位
-        TechValue techValue = techValueService.findById(unitId);
+        SalesMode salesMode = salesModeService.findById(unitId);
         Category category = categoryService.findById(userTechAuth.getCategoryId());
         Product product = new Product();
         product.setCategoryId(userTechAuth.getCategoryId());
@@ -69,9 +70,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         product.setProductName(userTechAuth.getCategoryName());
         product.setDescription(userTechAuth.getDescription());
         product.setTechAuthId(userTechAuth.getId());
-        product.setUnitTechValueId(techValue.getId());
-        product.setUnit(techValue.getName());
-        product.setUnitTechValueRank(techValue.getRank());
+        product.setSalesModeId(salesMode.getId());
+        product.setUnit(salesMode.getName());
+        product.setSalesModeRank(salesMode.getRank());
         product.setUserId(userTechAuth.getUserId());
         product.setPrice(price);
         product.setStatus(false);
@@ -101,10 +102,10 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             product.setPrice(price);
         }
         if (unitId != null) {
-            TechValue techValue = techValueService.findById(unitId);
-            product.setUnitTechValueId(techValue.getId());
-            product.setUnit(techValue.getName());
-            product.setUnitTechValueRank(techValue.getRank());
+            SalesMode salesMode = salesModeService.findById(unitId);
+            product.setSalesModeId(salesMode.getId());
+            product.setUnit(salesMode.getName());
+            product.setSalesModeRank(salesMode.getRank());
         }
         product.setUpdateTime(new Date());
         update(product);

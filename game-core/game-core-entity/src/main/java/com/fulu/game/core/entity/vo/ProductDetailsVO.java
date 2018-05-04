@@ -22,7 +22,7 @@ public class ProductDetailsVO {
     private Integer techAuthId;
     //商品名称
     private String productName;
-
+    //是否在线
     private Boolean onLine;
 
     //价格

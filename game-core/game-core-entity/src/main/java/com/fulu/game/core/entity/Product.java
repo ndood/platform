@@ -37,9 +37,9 @@ public class Product implements Serializable {
 	//单位类型
 	private String unit;
 	//关联的销售单位tech_value_id
-	private Integer unitTechValueId;
+	private Integer salesModeId;
 	//销售单位权重
-	private Integer unitTechValueRank;
+	private Integer salesModeRank;
 	//状态
 	private Boolean status;
 	//创建时间

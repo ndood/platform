@@ -36,36 +36,6 @@ public class TechValueServiceImpl extends AbsCommonService<TechValue,Integer> im
 
 
 
-    /**
-     * 创建销售方式
-     * @param categoryId
-     * @param salesmodeName
-     * @return
-     */
-    @Override
-    public TechValue createSalesMode(Integer categoryId, String salesmodeName,Integer rank) {
-        Category category = categoryService.findById(categoryId);
-        TechAttr techAttr = techAttrService.findByCategoryAndType(categoryId, TechAttrTypeEnum.SALES_MODE.getType());
-        if(techAttr==null){
-            techAttr = new TechAttr();
-            techAttr.setCategoryId(category.getId());
-            techAttr.setName(category.getName()+"销售方式");
-            techAttr.setType(TechAttrTypeEnum.SALES_MODE.getType());
-            techAttr.setStatus(true);
-            techAttr.setCreateTime(new Date());
-            techAttr.setUpdateTime(new Date());
-            techAttrService.create(techAttr);
-        }
-        TechValue techValue = new TechValue();
-        techValue.setTechAttrId(techAttr.getId());
-        techValue.setName(salesmodeName);
-        techValue.setStatus(true);
-        techValue.setRank(rank);
-        techValue.setCreateTime(new Date());
-        techValue.setUpdateTime(new Date());
-        create(techValue);
-        return techValue;
-    }
 
     /**
      * 创建段位

@@ -1,6 +1,7 @@
 package com.fulu.game.core.entity.vo;
 
 import com.fulu.game.core.entity.Category;
+import com.fulu.game.core.entity.SalesMode;
 import com.fulu.game.core.entity.Tag;
 import com.fulu.game.core.entity.TechValue;
 import lombok.Data;
@@ -20,7 +21,7 @@ import java.util.List;
 @Data
 public class CategoryVO extends Category {
 
-    private List<TechValue>  salesModeList;
+    private List<SalesMode>  salesModeList;
 
     private List<TechValue> danList;
 

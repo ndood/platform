@@ -7,7 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum TechAttrTypeEnum implements TypeEnum<Integer>{
 
-    SALES_MODE(1,"销售方式"),
     DAN(2,"段位");
 
     private Integer type;

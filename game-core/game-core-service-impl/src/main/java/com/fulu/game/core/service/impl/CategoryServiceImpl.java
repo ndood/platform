@@ -4,13 +4,9 @@ package com.fulu.game.core.service.impl;
 import com.fulu.game.common.enums.CategoryParentEnum;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.core.dao.ICommonDao;
-import com.fulu.game.core.entity.Tag;
-import com.fulu.game.core.entity.TechAttr;
-import com.fulu.game.core.entity.TechValue;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.CategoryVO;
-import com.fulu.game.core.service.TagService;
-import com.fulu.game.core.service.TechAttrService;
-import com.fulu.game.core.service.TechValueService;
+import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
@@ -23,9 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.fulu.game.core.dao.CategoryDao;
-import com.fulu.game.core.entity.Category;
-import com.fulu.game.core.service.CategoryService;
-
 
 
 @Service
@@ -39,6 +32,8 @@ public class CategoryServiceImpl extends AbsCommonService<Category,Integer> impl
     private TechValueService techValueService;
     @Autowired
     private TagService tagService;
+    @Autowired
+    private SalesModeService salesModeService;
 
     @Override
     public ICommonDao<Category, Integer> getDao() {
@@ -71,13 +66,12 @@ public class CategoryServiceImpl extends AbsCommonService<Category,Integer> impl
         category.setCharges(category.getCharges().multiply(new BigDecimal(100)));
         CategoryVO categoryVO = new CategoryVO();
         BeanUtil.copyProperties(category,categoryVO);
-        //查询销售方式和段位
+        //查询游戏销售方式
+        List<SalesMode> salesModes = salesModeService.findByCategory(category.getId());
+        categoryVO.setSalesModeList(salesModes);
+        //查询游戏段位
         List<TechAttr> techAttrList = techAttrService.findByCategory(category.getId());
         for (TechAttr techAttr : techAttrList) {
-            if (TechAttrTypeEnum.SALES_MODE.getType().equals(techAttr.getType())) {
-                List<TechValue> salesModeList = techValueService.findByTechAttrId(techAttr.getId());
-                categoryVO.setSalesModeList(salesModeList);
-            }
             if (TechAttrTypeEnum.DAN.getType().equals(techAttr.getType())) {
                 List<TechValue> danList = techValueService.findByTechAttrId(techAttr.getId());
                 categoryVO.setDanList(danList);

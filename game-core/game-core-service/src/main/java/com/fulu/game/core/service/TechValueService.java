@@ -14,13 +14,7 @@ import java.util.Map;
  */
 public interface TechValueService extends ICommonService<TechValue,Integer>{
 
-     /**
-      * 创建销售方式
-      * @param categoryId
-      * @param salesmodeName
-      * @return
-      */
-     TechValue createSalesMode(Integer categoryId,String salesmodeName,Integer rank);
+
 
      /**
       * 创建段位

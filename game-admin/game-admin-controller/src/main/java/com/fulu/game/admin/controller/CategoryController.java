@@ -3,15 +3,9 @@ package com.fulu.game.admin.controller;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.CategoryParentEnum;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
-import com.fulu.game.core.entity.Category;
-import com.fulu.game.core.entity.Tag;
-import com.fulu.game.core.entity.TechAttr;
-import com.fulu.game.core.entity.TechValue;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.CategoryVO;
-import com.fulu.game.core.service.CategoryService;
-import com.fulu.game.core.service.TagService;
-import com.fulu.game.core.service.TechAttrService;
-import com.fulu.game.core.service.TechValueService;
+import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +30,8 @@ public class CategoryController extends BaseController {
     private TechAttrService techAttrService;
     @Autowired
     private TagService tagService;
+    @Autowired
+    private SalesModeService salesModeService;
 
     /**
      * 内容列表
@@ -136,9 +132,18 @@ public class CategoryController extends BaseController {
     @PostMapping(value = "/salesmode/create")
     public Result salesModeCreate(@RequestParam(required = true)Integer categoryId,
                                   @RequestParam(required = true)String name,
+                                  @RequestParam(required = false)BigDecimal price,
                                   @RequestParam(required = true)Integer rank) {
-        TechValue techValue = techValueService.createSalesMode(categoryId, name,rank);
-        return Result.success().msg("销售方式创建成功!").data(techValue);
+
+        SalesMode salesMode = new SalesMode();
+        salesMode.setCategoryId(categoryId);
+        salesMode.setName(name);
+        salesMode.setPrice(price);
+        salesMode.setRank(rank);
+        salesMode.setCreateTime(new Date());
+        salesMode.setUpdateTime(new Date());
+        salesModeService.create(salesMode);
+        return Result.success().msg("销售方式创建成功!").data(salesMode);
     }
 
     /**
@@ -147,7 +152,7 @@ public class CategoryController extends BaseController {
      */
     @PostMapping(value = "/salesmode/delete")
     public Result saleModeDelete(@RequestParam(required = true)Integer id){
-        techValueService.deleteById(id);
+        salesModeService.deleteById(id);
         return Result.success().msg("销售方式删除成功!");
     }
 

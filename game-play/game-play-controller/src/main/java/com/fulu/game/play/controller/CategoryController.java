@@ -4,10 +4,12 @@ package com.fulu.game.play.controller;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.core.entity.Category;
+import com.fulu.game.core.entity.SalesMode;
 import com.fulu.game.core.entity.TechValue;
 import com.fulu.game.core.entity.vo.ProductShowCaseVO;
 import com.fulu.game.core.service.CategoryService;
 import com.fulu.game.core.service.ProductService;
+import com.fulu.game.core.service.SalesModeService;
 import com.fulu.game.core.service.TechAttrService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,8 @@ public class CategoryController extends BaseController{
     private CategoryService categoryService;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private SalesModeService salesModeService;
 
     /**
      * 查询所有陪玩业务
@@ -78,8 +82,8 @@ public class CategoryController extends BaseController{
      */
     @PostMapping(value = "salesmode/list")
     public Result saleModel(@RequestParam(required = true)Integer categoryId){
-        List<TechValue> techValueList = techAttrService.findValByCategoryAndType(categoryId, TechAttrTypeEnum.SALES_MODE.getType());
-        return Result.success().data(techValueList);
+        List<SalesMode> salesModeList =  salesModeService.findByCategory(categoryId);
+        return Result.success().data(salesModeList);
     }
 
 
