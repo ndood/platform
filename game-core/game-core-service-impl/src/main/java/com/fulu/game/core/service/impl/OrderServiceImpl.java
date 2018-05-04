@@ -9,7 +9,6 @@ import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OrderVO;
-import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -18,13 +17,10 @@ import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.fulu.game.core.dao.OrderDao;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-
 
 @Service
 @Slf4j
@@ -101,15 +97,15 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         Category category = categoryService.findById(orderVO.getCategoryId());
         orderVO.setCategoryIcon(category.getIcon());
         orderVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderVO.getStatus()));
-
         //添加陪玩师信息
         User server= userService.findById(order.getServiceUserId());
         orderVO.setServerHeadUrl(server.getHeadPortraitsUrl());
+        orderVO.setCategoryName(category.getName());
         orderVO.setServerAge(server.getAge());
         orderVO.setServerGender(server.getGender());
         orderVO.setServerNickName(server.getNickname());
         orderVO.setServerScoreAvg(server.getScoreAvg());
-
+        orderVO.setServerCity(server.getCity());
         //添加订单商品信息
         OrderProduct orderProduct = orderProductService.findByOrderNo(orderNo);
         orderVO.setOrderProduct(orderProduct);
@@ -125,7 +121,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         Category category = categoryService.findById(orderVO.getCategoryId());
         orderVO.setCategoryIcon(category.getIcon());
         orderVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderVO.getStatus()));
-
+        orderVO.setCategoryName(category.getName());
 
         //添加用户信息
         User user= userService.findById(order.getUserId());

@@ -21,6 +21,8 @@ public class OrderVO  extends Order {
 
     private OrderProduct orderProduct;
 
+    private String categoryName;
+
     private String serverHeadUrl;
 
     private String serverNickName;
@@ -31,8 +33,8 @@ public class OrderVO  extends Order {
 
     private Integer serverGender;
 
+    private String serverCity;
 
-    
 
     private String userHeadUrl;
 
