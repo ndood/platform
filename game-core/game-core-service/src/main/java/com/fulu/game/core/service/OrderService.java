@@ -174,5 +174,8 @@ public interface OrderService extends ICommonService<Order,Integer>{
      * @param orderNo
      * @return
      */
-    OrderVO findOrderDetails(String orderNo);
+    OrderVO findUserOrderDetails(String orderNo);
+
+    OrderVO findServerOrderDetails(String orderNo);
+
 }

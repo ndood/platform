@@ -18,6 +18,7 @@ public class OssUtil {
     private Config configProperties;
 
     /**
+     *  todo 需要做一个m4a到mp3的转换
      * 上传文件
      * @param inputStream
      * @param fileName
@@ -27,13 +28,18 @@ public class OssUtil {
         String endpoint =  configProperties.getOss().getEndpoint();
         String bucketName =  configProperties.getOss().getBucketName();
         OSSClient ossClient = new OSSClient(endpoint,configProperties.getOss().getAccessKeyId(),configProperties.getOss().getAccessKeySecret());
-        String key = generateOssKey(fileName);
-        PutObjectRequest request = new PutObjectRequest(bucketName, key, inputStream);
-        ossClient.putObject(request);
-        boolean exists = ossClient.doesObjectExist(bucketName, key);
-        if(exists){
-            ossClient.setObjectAcl(bucketName, key, CannedAccessControlList.PublicRead);
-            return  configProperties.getOss().getHost()+key;
+        try {
+            String key = generateOssKey(fileName);
+            PutObjectRequest request = new PutObjectRequest(bucketName, key, inputStream);
+            ossClient.putObject(request);
+            boolean exists = ossClient.doesObjectExist(bucketName, key);
+            if(exists){
+                ossClient.setObjectAcl(bucketName, key, CannedAccessControlList.PublicRead);
+                return  configProperties.getOss().getHost()+key;
+            }
+        }
+        finally {
+             ossClient.shutdown();
         }
         return null;
     }

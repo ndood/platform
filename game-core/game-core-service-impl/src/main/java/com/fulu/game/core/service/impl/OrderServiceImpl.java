@@ -94,7 +94,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     }
 
     @Override
-    public OrderVO findOrderDetails(String orderNo){
+    public OrderVO findUserOrderDetails(String orderNo){
         Order order = findByOrderNo(orderNo);
         OrderVO orderVO = new OrderVO();
         BeanUtil.copyProperties(order,orderVO);
@@ -109,6 +109,23 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         orderVO.setServerGender(server.getGender());
         orderVO.setServerNickName(server.getNickname());
         orderVO.setServerScoreAvg(server.getScoreAvg());
+
+        //添加订单商品信息
+        OrderProduct orderProduct = orderProductService.findByOrderNo(orderNo);
+        orderVO.setOrderProduct(orderProduct);
+
+        return orderVO;
+    }
+
+    @Override
+    public OrderVO findServerOrderDetails(String orderNo) {
+        Order order = findByOrderNo(orderNo);
+        OrderVO orderVO = new OrderVO();
+        BeanUtil.copyProperties(order,orderVO);
+        Category category = categoryService.findById(orderVO.getCategoryId());
+        orderVO.setCategoryIcon(category.getIcon());
+        orderVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderVO.getStatus()));
+
 
         //添加用户信息
         User user= userService.findById(order.getUserId());
@@ -183,6 +200,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         OrderProduct orderProduct = new OrderProduct();
         orderProduct.setOrderNo(order.getOrderNo());
         orderProduct.setAmount(num);
+        orderProduct.setUnit(product.getUnit());
         orderProduct.setPrice(product.getPrice());
         orderProduct.setProductId(product.getId());
         orderProduct.setProductName(order.getName());

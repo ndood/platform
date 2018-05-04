@@ -32,6 +32,8 @@ public class OrderVO  extends Order {
     private Integer serverGender;
 
 
+    
+
     private String userHeadUrl;
 
     private String userNickName;

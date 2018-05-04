@@ -26,6 +26,9 @@ public class OrderProduct implements Serializable {
 	private String orderNo;
 	//数量
 	private Integer amount;
+
+	private String unit;
+
 	//
 	private BigDecimal price;
 	//
