@@ -1,6 +1,6 @@
 datasource:
     playAdminDb:
-        url: jdbc:mysql://rm-bp182s2y347o90s30.mysql.rds.aliyuncs.com
+        url: jdbc:mysql://rm-bp182s2y347o90s30.mysql.rds.aliyuncs.com/game_service?autoReconnect=true&failOverReadOnly=false&characterEncoding=utf-8&useUnicode=true&zeroDateTimeBehavior=convertToNull
         username: game
         password: game123$%^
         driverClassName: com.mysql.jdbc.Driver

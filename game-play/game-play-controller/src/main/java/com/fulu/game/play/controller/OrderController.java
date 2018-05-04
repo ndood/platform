@@ -1,12 +1,8 @@
 package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
-import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
-import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.utils.SubjectUtil;
-import com.fulu.game.core.entity.Order;
-import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.OrderDealVO;
@@ -16,10 +12,7 @@ import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.PayService;
 import com.fulu.game.core.service.ProductService;
 import com.fulu.game.play.utils.RequestUtil;
-import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderRequest;
-import com.github.binarywang.wxpay.service.WxPayService;
 import com.github.pagehelper.PageInfo;
-import com.xiaoleilu.hutool.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -237,13 +229,24 @@ public class OrderController {
     }
 
     /**
-     * 订单详情页
+     * 用户订单详情页
      * @param orderNo
      * @return
      */
-    @RequestMapping(value = "/details")
+    @RequestMapping(value = "/user/details")
     public Result userOrderDetails(@RequestParam(required = true)String orderNo){
-        OrderVO orderVO =  orderService.findOrderDetails(orderNo);
+        OrderVO orderVO =  orderService.findUserOrderDetails(orderNo);
+        return Result.success().data(orderVO);
+    }
+
+    /**
+     * 陪玩师订单详情页
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/server/details")
+    public Result serverOrderDetails(@RequestParam(required = true)String orderNo){
+        OrderVO orderVO =  orderService.findServerOrderDetails(orderNo);
         return Result.success().data(orderVO);
     }
 

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
@@ -43,9 +44,12 @@ public class Order implements Serializable {
 	private BigDecimal commissionMoney;
 	//订单总额
 	private BigDecimal totalMoney;
+
 	//订单创建时间
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date createTime;
 	//
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date updateTime;
 	//订单支付时间
 	private Date payTime;

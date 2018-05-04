@@ -170,9 +170,17 @@ public interface OrderService extends ICommonService<Order,Integer>{
     void shareProfit(Order order);
 
     /**
-     * 订单详情页
+     * 用户订单详情页
      * @param orderNo
      * @return
      */
-    OrderVO findOrderDetails(String orderNo);
+    OrderVO findUserOrderDetails(String orderNo);
+
+    /**
+     * 陪玩师
+     * @param orderNo
+     * @return
+     */
+    OrderVO findServerOrderDetails(String orderNo);
+
 }

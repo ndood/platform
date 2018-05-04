@@ -9,6 +9,7 @@
         <result column="order_no" property="orderNo"/>
         <result column="amount" property="amount"/>
         <result column="price" property="price"/>
+        <result column="unit" property="unit"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
     </resultMap>
@@ -36,7 +37,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,product_name,product_id,order_no,amount,price,create_time,update_time    </sql>
+        id,product_name,product_id,order_no,amount,unit,price,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="OrderProductResultMap">
         select
@@ -123,9 +124,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.OrderProduct">
         insert into
-        t_order_product (product_name,product_id,order_no,amount,price,create_time,update_time)
+        t_order_product (product_name,product_id,order_no,amount,unit,price,create_time,update_time)
         values
-        (#{productName},#{productId},#{orderNo},#{amount},#{price},#{createTime},#{updateTime})
+        (#{productName},#{productId},#{orderNo},#{amount},#{price},#{unit},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.OrderProduct">
@@ -146,6 +147,9 @@
 
             <if test="amount != null">
                 amount = #{amount},
+            </if>
+            <if test="unit != null">
+                unit = #{unit},
             </if>
 
             <if test="price != null">
