@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -67,22 +68,21 @@ public class CategoryServiceImpl extends AbsCommonService<Category,Integer> impl
     @Override
     public CategoryVO findCategoryVoById(Integer id) {
         Category category = categoryDao.findById(id);
+        category.setCharges(category.getCharges().multiply(new BigDecimal(100)));
         CategoryVO categoryVO = new CategoryVO();
         BeanUtil.copyProperties(category,categoryVO);
         //查询销售方式和段位
         List<TechAttr> techAttrList = techAttrService.findByCategory(category.getId());
-        for(TechAttr techAttr : techAttrList){
-            if(TechAttrTypeEnum.SALES_MODE.getType().equals(techAttr.getType())){
-                List<TechValue>  salesModeList =techValueService.findByTechAttrId(techAttr.getId());
+        for (TechAttr techAttr : techAttrList) {
+            if (TechAttrTypeEnum.SALES_MODE.getType().equals(techAttr.getType())) {
+                List<TechValue> salesModeList = techValueService.findByTechAttrId(techAttr.getId());
                 categoryVO.setSalesModeList(salesModeList);
             }
-            if(TechAttrTypeEnum.DAN.getType().equals(techAttr.getType())){
+            if (TechAttrTypeEnum.DAN.getType().equals(techAttr.getType())) {
                 List<TechValue> danList = techValueService.findByTechAttrId(techAttr.getId());
                 categoryVO.setDanList(danList);
             }
         }
-
-
         //查询游戏标签
         if(category.getTagId()!=null){
             Tag parentTag = tagService.findById(category.getTagId());
