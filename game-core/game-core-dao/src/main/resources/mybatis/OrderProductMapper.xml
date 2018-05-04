@@ -126,7 +126,7 @@
         insert into
         t_order_product (product_name,product_id,order_no,amount,unit,price,create_time,update_time)
         values
-        (#{productName},#{productId},#{orderNo},#{amount},#{price},#{unit},#{createTime},#{updateTime})
+        (#{productName},#{productId},#{orderNo},#{amount},#{unit},#{price},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.OrderProduct">

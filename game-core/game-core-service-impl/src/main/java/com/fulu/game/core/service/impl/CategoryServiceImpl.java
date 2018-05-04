@@ -54,7 +54,7 @@ public class CategoryServiceImpl extends AbsCommonService<Category,Integer> impl
         CategoryVO categoryVO = new CategoryVO();
         categoryVO.setStatus(status);
         categoryVO.setPid(CategoryParentEnum.ACCOMPANY_PLAY.getType());
-        if(StringUtils.isNotBlank(orderBy)){
+        if(StringUtils.isBlank(orderBy)){
             orderBy = "sort desc";
         }
         PageHelper.startPage(pageNum,pageSize,orderBy);
@@ -69,7 +69,6 @@ public class CategoryServiceImpl extends AbsCommonService<Category,Integer> impl
         Category category = categoryDao.findById(id);
         CategoryVO categoryVO = new CategoryVO();
         BeanUtil.copyProperties(category,categoryVO);
-
         //查询销售方式和段位
         List<TechAttr> techAttrList = techAttrService.findByCategory(category.getId());
         for(TechAttr techAttr : techAttrList){
@@ -82,8 +81,12 @@ public class CategoryServiceImpl extends AbsCommonService<Category,Integer> impl
                 categoryVO.setDanList(danList);
             }
         }
+
+
         //查询游戏标签
         if(category.getTagId()!=null){
+            Tag parentTag = tagService.findById(category.getTagId());
+            categoryVO.setMost(parentTag.getMost());
             List<Tag> tagList = tagService.findByPid(category.getTagId());
             categoryVO.setTagList(tagList);
         }

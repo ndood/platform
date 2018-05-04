@@ -94,7 +94,8 @@ public class CategoryController extends BaseController {
                        Boolean status,
                        BigDecimal charges,
                        String icon,
-                       Integer id) {
+                       Integer id,
+                       Integer most) {
         Category category = new Category();
         category.setName(name);
         category.setSort(sort);
@@ -111,6 +112,15 @@ public class CategoryController extends BaseController {
             categoryService.create(category);
             return Result.success().data(category).msg("内容创建成功!");
         } else {
+            if(most!=null){
+               Category origCategory = categoryService.findById(id);
+               if(origCategory.getTagId()!=null){
+                   Tag tag = new Tag();
+                   tag.setId(origCategory.getTagId());
+                   tag.setMost(most);
+                   tagService.update(tag);
+               }
+            }
             category.setUpdateTime(new Date());
             categoryService.update(category);
         }

@@ -99,6 +99,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         UserInfoAuthVO userInfoAuthVO = new UserInfoAuthVO();
         BeanUtil.copyProperties(userInfoAuth,userInfoAuthVO);
         copyUserInfo2InfoAuthVo(user,userInfoAuthVO);
+        userInfoAuthVO.setRealMobile(user.getMobile());
         //查询身份证信息
         List<UserInfoFile> userInfoFileList=  userInfoFileService.findByUserId(userId);
         userInfoAuthVO.setIdCardList(userInfoFileList);
@@ -194,7 +195,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         userInfoAuthVO.setGender(user.getGender());
         userInfoAuthVO.setRealname(user.getRealname());
         userInfoAuthVO.setAge(user.getAge());
-
+        userInfoAuthVO.setNickname(user.getNickname());
     }
 
     /**
@@ -247,8 +248,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         }
         return false;
     }
-
-
 
     /**
      * 添加用户身份文件

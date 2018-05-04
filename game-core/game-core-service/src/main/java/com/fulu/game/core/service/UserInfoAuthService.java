@@ -23,6 +23,13 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth,Integer
      */
     UserInfoAuthVO findUserAuthInfoByUserId(Integer userId);
 
+    /**
+     * 个人信息认证列表
+     * @param pageNum
+     * @param pageSize
+     * @param orderBy
+     * @return
+     */
     PageInfo<UserInfoAuthVO> list(Integer pageNum, Integer pageSize, String orderBy);
 
     /**
