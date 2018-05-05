@@ -1,5 +1,6 @@
 package com.fulu.game.core.service.impl;
 
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.enums.exception.UserExceptionEnums;
 import com.fulu.game.common.exception.UserException;
@@ -17,13 +18,18 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service("userService")
 public class UserServiceImpl extends AbsCommonService<User, Integer> implements UserService {
 
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
+
 
     @Override
     public ICommonDao<User, Integer> getDao() {
@@ -97,6 +103,14 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         }else{
             return null;
         }
+    }
+
+
+    public void updateRedisUser(User user){
+        String token = SubjectUtil.getToken();
+        Map<String, Object> userMap = new HashMap<>();
+        userMap = BeanUtil.beanToMap(user);
+        redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token),userMap);
     }
 
 }

@@ -4,8 +4,6 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.ResultStatus;
 import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.enums.exception.UserExceptionEnums;
-import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
@@ -17,15 +15,12 @@ import com.fulu.game.core.service.UserInfoAuthService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.UserTechAuthService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Slf4j
@@ -37,9 +32,9 @@ public class UserController extends BaseController {
     @Autowired
     private UserService userService;
     @Autowired
-    private RedisOpenServiceImpl redisOpenService;
-    @Autowired
     private UserInfoAuthService userInfoAuthService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
 
     @RequestMapping("tech/list")
     public Result userTechList() {
@@ -109,7 +104,7 @@ public class UserController extends BaseController {
         user.setNickname(userVO.getNickname());
         user.setHeadPortraitsUrl(userVO.getHeadPortraitsUrl());
         userService.update(user);
-        updateRedisUser(user);
+        userService.updateRedisUser(user);
 
         user.setId(null);
         user.setBalance(null);
@@ -165,6 +160,9 @@ public class UserController extends BaseController {
                 return Result.error().msg("验证码提交错误");
             } else {//绑定手机号
                 String openId = redisOpenService.hget(RedisKeyEnum.PLAY_TOKEN.generateKey(token)).get("openId").toString();
+                if(openId == null){
+                    return Result.error().msg("微信用户绑定失败！");
+                }
                 User newUser = null;
                 User openIdUser = userService.findByOpenId(openId);
                 if (openIdUser.getMobile() != null) {
@@ -174,7 +172,7 @@ public class UserController extends BaseController {
                 if (mobileUser != null) {
                     if (!mobileUser.getId().equals(openIdUser.getId())) {
                         mobileUser.setOpenId(openId);
-                        mobileUser.setGender(Integer.parseInt(wxUserInfo.getGender()));
+                        mobileUser.setGender(wxUserInfo.getGender() != null ? Integer.parseInt(wxUserInfo.getGender()) : 1);
                         mobileUser.setNickname(wxUserInfo.getNickName());
                         mobileUser.setHeadPortraitsUrl(wxUserInfo.getAvatarUrl());
                         mobileUser.setCity(wxUserInfo.getCity());
@@ -197,10 +195,9 @@ public class UserController extends BaseController {
                     userService.update(openIdUser);
                     newUser = openIdUser;
                 }
+                userService.updateRedisUser(newUser);
                 newUser.setOpenId(null);
                 newUser.setBalance(null);
-
-
                 return Result.success().data(newUser).msg("手机号绑定成功！");
             }
         }
@@ -229,11 +226,5 @@ public class UserController extends BaseController {
         return Result.success().data(userInfoVO).msg("查询聊天对象信息成功！");
     }
 
-    public void updateRedisUser(User user){
-        String token = SubjectUtil.getToken();
-        Map<String, Object> userMap = new HashMap<>();
-        userMap = BeanUtil.beanToMap(user);
-        redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token),userMap);
-    }
 
 }
