@@ -172,7 +172,7 @@ public class UserController extends BaseController {
                 if (mobileUser != null) {
                     if (!mobileUser.getId().equals(openIdUser.getId())) {
                         mobileUser.setOpenId(openId);
-                        mobileUser.setGender(wxUserInfo.getGender() != null ? Integer.parseInt(wxUserInfo.getGender()) : 1);
+                        mobileUser.setGender(wxUserInfo.getGender() != null ? Integer.parseInt(wxUserInfo.getGender()) : 0);
                         mobileUser.setNickname(wxUserInfo.getNickName());
                         mobileUser.setHeadPortraitsUrl(wxUserInfo.getAvatarUrl());
                         mobileUser.setCity(wxUserInfo.getCity());
@@ -185,7 +185,7 @@ public class UserController extends BaseController {
                     newUser = mobileUser;
                 }else{
                     openIdUser.setMobile(wxUserInfo.getMobile());
-                    openIdUser.setGender(Integer.parseInt(wxUserInfo.getGender()));
+                    openIdUser.setGender(wxUserInfo.getGender() != null ? Integer.parseInt(wxUserInfo.getGender()) : 0);
                     openIdUser.setNickname(wxUserInfo.getNickName());
                     openIdUser.setHeadPortraitsUrl(wxUserInfo.getAvatarUrl());
                     openIdUser.setCity(wxUserInfo.getCity());

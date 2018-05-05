@@ -62,6 +62,9 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails,Integ
     @Override
     public MoneyDetails save(MoneyDetailsVO moneyDetailsVO) {
         User user = userService.findByMobile(moneyDetailsVO.getMobile());
+        if (null == user){
+            throw new UserException(UserExceptionEnums.USER_NOT_EXIST_EXCEPTION);
+        }
         //加钱之前该用户的零钱
         BigDecimal balance = user.getBalance();
         BigDecimal newBalance = balance.add(moneyDetailsVO.getMoney());

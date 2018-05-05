@@ -44,6 +44,9 @@ public class CashDrawsController extends BaseController{
     public Result draw(@RequestParam("cashId") Integer cashId,
             @RequestParam(name="comment",required = false) String comment){
         CashDraws cashDraws = cashDrawsService.draw(cashId,comment);
+        if (null == cashDraws){
+            return Result.error().msg("申请单不存在！");
+        }
         return Result.success().data(cashDraws).msg("打款成功！");
     }
 }

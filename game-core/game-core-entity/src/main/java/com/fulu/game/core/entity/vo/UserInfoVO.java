@@ -10,6 +10,8 @@ public class UserInfoVO {
 
     private Integer userId;
 
+    private String imId;
+    private String imPsw;
     private String nickName;
 
     private String headUrl;

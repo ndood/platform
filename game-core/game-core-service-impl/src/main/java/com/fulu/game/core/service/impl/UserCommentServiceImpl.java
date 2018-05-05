@@ -1,5 +1,9 @@
 package com.fulu.game.core.service.impl;
 
+import com.fulu.game.common.enums.exception.OrderExceptionEnums;
+import com.fulu.game.common.enums.exception.UserExceptionEnums;
+import com.fulu.game.common.exception.OrderException;
+import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
@@ -44,6 +48,9 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
     public void save(UserCommentVO commentVO) {
         User user = userService.getCurrentUser();
         Order order = orderService.findByOrderNo(commentVO.getOrderNo());
+        if (null == order){
+            throw new OrderException(OrderExceptionEnums.ORDER_NOT_EXIST_EXCEPTION);
+        }
         int serverUserId = order.getServiceUserId();
 
         UserComment comment = new UserComment();
@@ -62,6 +69,9 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
         comment.setScoreAvg(scoreAvg);
         commentDao.update(comment);
         User serverUser = userService.findById(serverUserId);
+        if (null == serverUser){
+            throw new UserException(UserExceptionEnums.USER_NOT_EXIST_EXCEPTION);
+        }
         serverUser.setScoreAvg(scoreAvg);
         userService.update(serverUser);
 

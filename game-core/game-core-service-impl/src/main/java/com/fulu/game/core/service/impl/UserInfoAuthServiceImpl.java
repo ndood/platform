@@ -5,6 +5,8 @@ import com.fulu.game.common.enums.AuthStatusEnum;
 import com.fulu.game.common.enums.FileTypeEnum;
 import com.fulu.game.common.enums.UserInfoFileTypeEnum;
 import com.fulu.game.common.enums.UserTypeEnum;
+import com.fulu.game.common.enums.exception.UserExceptionEnums;
+import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.TagVO;
@@ -117,7 +119,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
     @Override
     public UserInfoVO findUserCardByUserId(Integer userId,Boolean hasPhotos,Boolean hasVoice,Boolean hasTags,Boolean hasTechs){
         User user = userService.findById(userId);
-        UserInfoAuth userInfoAuth = findByUserId(userId);
+        if(null == user){
+            throw new UserException(UserExceptionEnums.USER_NOT_EXIST_EXCEPTION);
+        }
         UserInfoVO userInfo = new UserInfoVO();
         userInfo.setUserId(userId);
         userInfo.setAge(user.getAge());
@@ -125,10 +129,17 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         userInfo.setHeadUrl(user.getHeadPortraitsUrl());
         userInfo.setNickName(user.getNickname());
         userInfo.setGender(user.getGender());
-        userInfo.setMainPhotoUrl(userInfoAuth.getMainPicUrl());
         userInfo.setScoreAvg(user.getScoreAvg());
+        userInfo.setImId(user.getImId());
+        userInfo.setImPsw(user.getImPsw());
         int orderCount = orderService.allOrderCount(userId);//接单数
         userInfo.setOrderCount(orderCount);
+
+        UserInfoAuth userInfoAuth = findByUserId(userId);
+        if (null == userInfoAuth){
+            userInfo.setMainPhotoUrl(userInfoAuth.getMainPicUrl());
+        }
+
         //查询用户写真图
         if(hasPhotos){
             List<String> photos = new ArrayList<>();

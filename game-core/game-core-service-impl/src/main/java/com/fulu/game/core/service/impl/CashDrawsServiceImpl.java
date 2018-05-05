@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.enums.exception.CashExceptionEnums;
+import com.fulu.game.common.enums.exception.ParamsExceptionEnums;
 import com.fulu.game.common.exception.CashException;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
@@ -100,6 +101,9 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws,Integer> im
     @Override
     public CashDraws draw(Integer cashId, String comment){
         CashDraws cashDraws = findById(cashId);
+        if (null == cashDraws){
+            return null;
+        }
         cashDraws.setOperator("admin");
         cashDraws.setComment(comment);
         cashDraws.setCashStatus(1);//修改为已处理状态

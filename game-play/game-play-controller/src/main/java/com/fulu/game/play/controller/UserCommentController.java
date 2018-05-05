@@ -42,6 +42,9 @@ public class UserCommentController extends BaseController{
     @RequestMapping("/get")
     public Result get(@RequestParam("orderNo") String orderNo){
         UserComment comment = commentService.findByOrderNo(orderNo);
+        if (null == comment){
+            return Result.error().msg("该评论不存在！");
+        }
         comment.setServerUserId(null);
         comment.setScoreAvg(null);
         return Result.success().data(comment).msg("查询成功！");

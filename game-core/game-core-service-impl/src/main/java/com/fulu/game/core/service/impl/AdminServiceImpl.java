@@ -1,7 +1,10 @@
 package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.domain.Password;
+import com.fulu.game.common.enums.exception.UserExceptionEnums;
+import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.EncryptUtil;
+import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.vo.AdminVO;
 import com.github.pagehelper.PageHelper;
@@ -15,13 +18,12 @@ import java.util.List;
 import com.fulu.game.core.dao.AdminDao;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.service.AdminService;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service("adminService")
-public class AdminServiceImpl extends AbsCommonService<Admin,Integer> implements AdminService {
+public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implements AdminService {
 
     @Autowired
-	private AdminDao adminDao;
+    private AdminDao adminDao;
 
     @Override
     public ICommonDao<Admin, Integer> getDao() {
@@ -36,7 +38,7 @@ public class AdminServiceImpl extends AbsCommonService<Admin,Integer> implements
     }
 
     @Override
-    public Admin save(AdminVO adminVO){
+    public Admin save(AdminVO adminVO) {
         Admin admin = new Admin();
         admin.setName(adminVO.getName());
         admin.setUsername(adminVO.getUsername());
@@ -51,13 +53,25 @@ public class AdminServiceImpl extends AbsCommonService<Admin,Integer> implements
     }
 
 
-
     @Override
     public PageInfo<Admin> list(AdminVO adminVO, Integer pageNum, Integer pageSize) {
 
-        PageHelper.startPage(pageNum, pageSize,adminVO.getOrderBy());
+        PageHelper.startPage(pageNum, pageSize, adminVO.getOrderBy());
         List<Admin> list = adminDao.findByParameter(adminVO);
         return new PageInfo(list);
+    }
+
+    @Override
+    public Admin getCurrentUser(){
+        Object userObj = SubjectUtil.getCurrentUser();
+        if (null == userObj){
+            throw new UserException(UserExceptionEnums.USER_NOT_EXIST_EXCEPTION);
+        }
+        if(userObj instanceof Admin){
+            return (Admin) userObj;
+        }else{
+            return null;
+        }
     }
 
 }

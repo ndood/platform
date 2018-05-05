@@ -93,24 +93,24 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public User getCurrentUser(){
+    public User getCurrentUser() {
         Object userObj = SubjectUtil.getCurrentUser();
-        if (null == userObj){
+        if (null == userObj) {
             throw new UserException(UserExceptionEnums.USER_NOT_EXIST_EXCEPTION);
         }
-        if(userObj instanceof User){
+        if (userObj instanceof User) {
             return (User) userObj;
-        }else{
+        } else {
             return null;
         }
     }
 
 
-    public void updateRedisUser(User user){
+    public void updateRedisUser(User user) {
         String token = SubjectUtil.getToken();
-        Map<String, Object> userMap = new HashMap<>();
+        Map<String, Object> userMap = new HashMap<String, Object>();
         userMap = BeanUtil.beanToMap(user);
-        redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token),userMap);
+        redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token), userMap);
     }
 
 }
