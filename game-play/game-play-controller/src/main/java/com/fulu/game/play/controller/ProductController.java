@@ -98,7 +98,6 @@ public class ProductController extends BaseController{
         return Result.success().msg("修改接单方式成功!");
     }
 
-
     /**
      * 接单方式激活
      * @return

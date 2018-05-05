@@ -24,7 +24,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,category_id,gender,product_name,category_icon,description,tech_auth_id,price,unit,unit_tech_value_id,unit_tech_value_rank,status,create_time,update_time    </sql>
+        id,user_id,category_id,gender,product_name,category_icon,description,tech_auth_id,price,unit,sales_mode_id,sales_mode_rank,status,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="ProductResultMap">
         select
