@@ -1,7 +1,6 @@
 package com.fulu.game.core.service.impl;
 
 
-import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.utils.SubjectUtil;
@@ -12,7 +11,6 @@ import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -34,8 +32,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     private ProductDao productDao;
     @Autowired
     private UserTechAuthService userTechAuthService;
-    @Autowired
-    private TechValueService techValueService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
     @Autowired

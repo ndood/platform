@@ -24,7 +24,7 @@ config:
       accessKeyId: "LTAIuddbH7bqB9kz"
       accessKeySecret: "zXdKJlSFZ51k8G8q0uUzranXwbS1kh"
       bucketName: "game-play"
-      host: "http://app-testing-new.oss-cn-hangzhou.aliyuncs.com/"
+      host: "http://game-play.oss-cn-hangzhou.aliyuncs.com/"
     evn:
       prefix: PROD
     cloopen:
@@ -45,4 +45,4 @@ config:
       subMchId:
       keyPath: /data/cert/apiclient_cert.p12
       tradeType: JSAPI
-      notifyUrl: http://binf.com/xxx
+      notifyUrl: http://api-play.wzpeilian.com/wechat/pay/callback

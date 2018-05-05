@@ -156,27 +156,40 @@ public class UserController extends BaseController {
                 String openId = redisOpenService.hget(RedisKeyEnum.PLAY_TOKEN.generateKey(token)).get("openId").toString();
                 User newUser = null;
                 User openIdUser = userService.findByOpenId(openId);
+                if (openIdUser.getMobile() != null) {
+                    return Result.error().msg("已经绑定过手机号！");
+                }
                 User mobileUser = userService.findByMobile(wxUserInfo.getMobile());
-                if (null != mobileUser){
+                if (mobileUser != null) {
+                    if (!mobileUser.getId().equals(openIdUser.getId())) {
+                        mobileUser.setOpenId(openId);
+                        mobileUser.setGender(Integer.parseInt(wxUserInfo.getGender()));
+                        mobileUser.setNickname(wxUserInfo.getNickName());
+                        mobileUser.setHeadPortraitsUrl(wxUserInfo.getAvatarUrl());
+                        mobileUser.setCity(wxUserInfo.getCity());
+                        mobileUser.setProvince(wxUserInfo.getProvince());
+                        mobileUser.setCountry(wxUserInfo.getCountry());
+                        mobileUser.setUpdateTime(new Date());
+                        userService.update(mobileUser);
+                        userService.deleteById(openIdUser.getId());
+                    }
                     newUser = mobileUser;
                 }else{
+                    openIdUser.setMobile(wxUserInfo.getMobile());
+                    openIdUser.setGender(Integer.parseInt(wxUserInfo.getGender()));
+                    openIdUser.setNickname(wxUserInfo.getNickName());
+                    openIdUser.setHeadPortraitsUrl(wxUserInfo.getAvatarUrl());
+                    openIdUser.setCity(wxUserInfo.getCity());
+                    openIdUser.setProvince(wxUserInfo.getProvince());
+                    openIdUser.setCountry(wxUserInfo.getCountry());
+                    openIdUser.setUpdateTime(new Date());
+                    userService.update(openIdUser);
                     newUser = openIdUser;
-                }
-                newUser.setMobile(wxUserInfo.getMobile());
-                newUser.setGender(Integer.parseInt(wxUserInfo.getGender()));
-                newUser.setNickname(wxUserInfo.getNickName());
-                newUser.setHeadPortraitsUrl(wxUserInfo.getAvatarUrl());
-                newUser.setCity(wxUserInfo.getCity());
-                newUser.setProvince(wxUserInfo.getProvince());
-                newUser.setCountry(wxUserInfo.getCountry());
-                newUser.setUpdateTime(new Date());
-                userService.update(newUser);
-                //后台添加的记录只有mobile没有openId的需要删除
-                if (null != mobileUser){
-                    userService.deleteById(openIdUser.getId());
                 }
                 newUser.setOpenId(null);
                 newUser.setBalance(null);
+
+
                 return Result.success().data(newUser).msg("手机号绑定成功！");
             }
         }
