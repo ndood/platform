@@ -26,13 +26,15 @@
         <result column="score_avg" property="scoreAvg"/>
         <result column="constellation" property="constellation"/>
         <result column="birth" property="birth"/>
+        <result column="im_id" property="imId"/>
+        <result column="im_psw" property="imPsw"/>
     </resultMap>
 
     <resultMap id="UserResultVOMap" type="com.fulu.game.core.entity.vo.UserVO" extends="UserResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,city,province,country,score_avg,constellation,birth,age </sql>
+        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,city,province,country,score_avg,constellation,birth,age,im_id,im_psw </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserResultMap">
         select
@@ -78,6 +80,9 @@
             <if test="status != null">
                 and status = #{status}
             </if>
+            <if test="imId != null">
+                and im_id = #{imId}
+            </if>
             <if test="startTime != null">
                 and create_time &gt;= #{startTime}
             </if>
@@ -96,9 +101,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.User">
         insert into
-        t_user (mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,city,province,country,score_avg,constellation,birth)
+        t_user (mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,city,province,country,score_avg,constellation,birth,im_id,im_psw)
         values
-        (#{mobile},#{nickname},#{gender},#{headPortraitsUrl},#{password},#{salt},#{realname},#{idcard},#{type},#{userInfoAuth},#{balance},#{status},#{createTime},#{updateTime},#{openId},#{city},#{province},#{country},#{scoreAvg},#{constellation},#{birth})
+        (#{mobile},#{nickname},#{gender},#{headPortraitsUrl},#{password},#{salt},#{realname},#{idcard},#{type},#{userInfoAuth},#{balance},#{status},#{createTime},#{updateTime},#{openId},#{city},#{province},#{country},#{scoreAvg},#{constellation},#{birth},#{imId},#{imPsw})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.User">
@@ -176,6 +181,12 @@
             </if>
             <if test="age != null">
                 age = #{age},
+            </if>
+            <if test="imId != null">
+                im_id = #{imId},
+            </if>
+            <if test="imPsw != null">
+                im_psw = #{imPsw},
             </if>
 
             <if test="createTime != null">

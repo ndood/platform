@@ -27,10 +27,13 @@ public class UserInfoVO {
 
     private String voice;
 
-    List<String> tags;
+    private Integer orderCount;
+
+    private List<String> tags;
 
     //陪玩师照片集
     private List<String> photos;
+    private List<String> techs;
 
 
 }
