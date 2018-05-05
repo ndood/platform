@@ -53,7 +53,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws,Integer> im
         if(money.compareTo(BigDecimal.ZERO)==-1){
             throw new CashException(CashExceptionEnums.CASH_NEGATIVE_EXCEPTION);
         }
-        User user = userService.findById(((User)SubjectUtil.getCurrentUser()).getId());
+        User user = userService.getCurrentUser();
         BigDecimal balance = user.getBalance();
         if (money.compareTo(balance)==1){
             throw new CashException(CashExceptionEnums.CASH_EXCEED_EXCEPTION);

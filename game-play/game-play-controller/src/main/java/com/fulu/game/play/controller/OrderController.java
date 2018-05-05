@@ -7,10 +7,7 @@ import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderVO;
-import com.fulu.game.core.service.OrderDealService;
-import com.fulu.game.core.service.OrderService;
-import com.fulu.game.core.service.PayService;
-import com.fulu.game.core.service.ProductService;
+import com.fulu.game.core.service.*;
 import com.fulu.game.play.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +33,8 @@ public class OrderController {
     private OrderDealService orderDealService;
     @Autowired
     private PayService payService;
+    @Autowired
+    private UserService userService;
 
     /**
      * 查询陪玩是否是服务状态
@@ -223,7 +222,7 @@ public class OrderController {
      */
     @RequestMapping(value = "/deals")
     public Result orderDealList(@RequestParam(required = true)String orderNo){
-        User user = (User) SubjectUtil.getCurrentUser();
+        User user = userService.getCurrentUser();
         OrderDealVO orderDealVO = orderDealService.findByUserAndOrderNo(user.getId(),orderNo);
         return Result.success().data(orderDealVO);
     }
