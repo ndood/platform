@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.rmi.ServerError;
+import java.rmi.ServerException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -55,10 +57,22 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Override
     public Product create(Integer techAuthId, BigDecimal price, Integer unitId) {
         UserTechAuth userTechAuth = userTechAuthService.findById(techAuthId);
+        if(userTechAuth==null){
+            throw new ServiceErrorException("不能设置该技能接单!");
+        }
         User user = userService.findById(userTechAuth.getUserId());
+        userService.isCurrentUser(user.getId());
+
         //查询销售方式的单位
         SalesMode salesMode = salesModeService.findById(unitId);
         Category category = categoryService.findById(userTechAuth.getCategoryId());
+        if(!salesMode.getCategoryId().equals(category.getId())){
+            throw new ServiceErrorException("接单方式单位不匹配!");
+        }
+        List<Product> products = findProductByUserAndSalesMode(user.getId(),userTechAuth.getId(),unitId);
+        if(products.size()>0){
+            throw new ServiceErrorException("不能设置同样单位的技能!");
+        }
         Product product = new Product();
         product.setCategoryId(userTechAuth.getCategoryId());
         product.setGender(user.getGender());
@@ -68,7 +82,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         product.setTechAuthId(userTechAuth.getId());
         product.setSalesModeId(salesMode.getId());
         product.setUnit(salesMode.getName());
-        product.setSalesModeRank(salesMode.getRank());
+        product.setSalesModeRank(salesMode.getRank()==null?0:salesMode.getRank());
         product.setUserId(userTechAuth.getUserId());
         product.setPrice(price);
         product.setStatus(false);
@@ -85,8 +99,16 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             throw new ServiceErrorException("在线技能不允许修改!");
         }
         Product product = findById(id);
+        userService.isCurrentUser(product.getUserId());
         if (techAuthId != null) {
+            if(!product.getTechAuthId().equals(techAuthId)){
+                List<Product> products = findProductByUserAndSalesMode(product.getUserId(),techAuthId,unitId);
+                if(products.size()>0){
+                    throw new ServiceErrorException("不能设置同样单位的技能!");
+                }
+            }
             UserTechAuth userTechAuth = userTechAuthService.findById(techAuthId);
+            userService.isCurrentUser(userTechAuth.getUserId());
             Category category = categoryService.findById(userTechAuth.getCategoryId());
             product.setCategoryId(userTechAuth.getCategoryId());
             product.setProductName(userTechAuth.getCategoryName());
@@ -98,6 +120,12 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             product.setPrice(price);
         }
         if (unitId != null) {
+            if(!product.getSalesModeId().equals(unitId)){
+                List<Product> products = findProductByUserAndSalesMode(product.getUserId(),techAuthId,unitId);
+                if(products.size()>0){
+                    throw new ServiceErrorException("不能设置同样单位的技能!");
+                }
+            }
             SalesMode salesMode = salesModeService.findById(unitId);
             product.setSalesModeId(salesMode.getId());
             product.setUnit(salesMode.getName());
@@ -133,6 +161,21 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     }
 
     /**
+     * 查询用户是否设置了同样单位的商品
+     * @param userId
+     * @param salesModeId
+     * @return
+     */
+    public List<Product> findProductByUserAndSalesMode(int userId,int techAuthId,int salesModeId) {
+        ProductVO productVO = new ProductVO();
+        productVO.setTechAuthId(techAuthId);
+        productVO.setUserId(userId);
+        productVO.setSalesModeId(salesModeId);
+        return productDao.findByParameter(productVO);
+    }
+
+
+    /**
      * 开始接单业务
      */
     @Override
@@ -143,7 +186,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         if (products.isEmpty()) {
             throw new ServiceErrorException("请选择技能后再点击开始接单!");
         }
-
         redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()), "HOUR", hour, expire);
         redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()), "START_TIME",  new Date().getTime(), expire);
         for (Product product : products) {
@@ -179,7 +221,11 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         }
     }
 
-
+    /**
+     * 查询用户详情页
+     * @param productId
+     * @return
+     */
     @Override
     public ProductDetailsVO findDetailsByProductId(Integer productId) {
         Product product = findById(productId);
@@ -192,11 +238,10 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         List<ProductVO> productVOList = findOtherProductVO(product.getUserId(),productId);
         //查询完成订单数
         int orderCount =  orderService.allOrderCount(userInfo.getUserId());
-
         ProductDetailsVO serverCardVO = ProductDetailsVO.builder()
                                     .categoryId(product.getCategoryId())
                                     .id(product.getId())
-                                    .onLine(isProductStartOrderReceiving(product.getId()))
+                                    .onLine(isProductStartOrderReceivingStatus(product.getId()))
                                     .description(product.getDescription())
                                     .productName(product.getProductName())
                                     .categoryIcon(product.getCategoryIcon())
@@ -211,6 +256,11 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return serverCardVO;
     }
 
+    /**
+     * 查询用户全部的商品
+     * @param userId
+     * @return
+     */
     @Override
     public List<Product> findByUserId(Integer userId) {
         ProductVO productVO = new ProductVO();
@@ -218,7 +268,15 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return productDao.findByParameter(productVO);
     }
 
-
+    /**
+     * 商品首页和列表页
+     * @param categoryId
+     * @param gender
+     * @param pageNum
+     * @param pageSize
+     * @param orderBy
+     * @return
+     */
     @Override
     public PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId,
                                                            Integer gender,
@@ -237,7 +295,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             showCaseVO.setMainPhoto(userInfoVO.getMainPhotoUrl());
             showCaseVO.setCity(userInfoVO.getCity());
             showCaseVO.setPersonTags(userInfoVO.getTags());
-            showCaseVO.setOnLine(isProductStartOrderReceiving(showCaseVO.getId()));
+            showCaseVO.setOnLine(isProductStartOrderReceivingStatus(showCaseVO.getId()));
         }
         PageInfo page = new PageInfo(showCaseVOS);
         return page;
@@ -264,9 +322,17 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             for(TechTag techTag : techTagList){
                 techTags.add(techTag.getName());
             }
-            productVO.setOnLine(isProductStartOrderReceiving(productVO.getId()));
-            productVO.setTechTags(techTags);
-            productVOS.add(productVO);
+            if(isUserStartOrderReceivingStatus(userId)){
+                if(isProductStartOrderReceivingStatus(productVO.getId())){
+                    productVO.setOnLine(true);
+                    productVO.setTechTags(techTags);
+                    productVOS.add(productVO);
+                }
+            }else{
+                productVO.setOnLine(isProductStartOrderReceivingStatus(productVO.getId()));
+                productVO.setTechTags(techTags);
+                productVOS.add(productVO);
+            }
         }
         return productVOS;
     }
@@ -277,13 +343,13 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * @return
      */
     @Override
-    public Boolean isProductStartOrderReceiving(Integer productId){
+    public Boolean isProductStartOrderReceivingStatus(Integer productId){
         return redisOpenService.hasKey(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(productId));
     }
 
 
     @Override
-    public Boolean isUserStartOrderReceiving(Integer userId){
+    public Boolean isUserStartOrderReceivingStatus(Integer userId){
         return redisOpenService.hasKey( RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(userId));
     }
 

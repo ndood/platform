@@ -28,4 +28,5 @@ public interface UserService extends ICommonService<User, Integer> {
 
     void updateRedisUser(User user);
 
+    Boolean isCurrentUser(Integer userId);
 }

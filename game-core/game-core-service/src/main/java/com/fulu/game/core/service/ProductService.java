@@ -68,7 +68,7 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * @param productId
      * @return
      */
-    Boolean isProductStartOrderReceiving(Integer productId);
+    Boolean isProductStartOrderReceivingStatus(Integer productId);
 
 
     /**
@@ -76,7 +76,7 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * @param userId
      * @return
      */
-    Boolean isUserStartOrderReceiving(Integer userId);
+    Boolean isUserStartOrderReceivingStatus(Integer userId);
 
 
     /**
