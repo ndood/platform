@@ -3,6 +3,7 @@ package com.fulu.game.core.service.impl;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.enums.exception.UserExceptionEnums;
+import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
@@ -111,6 +112,15 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         Map<String, Object> userMap = new HashMap<String, Object>();
         userMap = BeanUtil.beanToMap(user);
         redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token), userMap);
+    }
+
+    @Override
+    public Boolean isCurrentUser(Integer userId) {
+        User currentUser = getCurrentUser();
+        if(currentUser.getId().equals(userId)){
+            return true;
+        }
+        throw new ServiceErrorException("用户不匹配!");
     }
 
 }

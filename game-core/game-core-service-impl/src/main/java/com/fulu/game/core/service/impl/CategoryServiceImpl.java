@@ -93,6 +93,7 @@ public class CategoryServiceImpl extends AbsCommonService<Category,Integer> impl
         return findByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType(),true);
     }
 
+
     @Override
     public List<Category> findByPid(Integer pid,Boolean status) {
         PageHelper.orderBy("sort desc");
