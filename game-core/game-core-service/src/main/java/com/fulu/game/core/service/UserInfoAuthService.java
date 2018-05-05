@@ -37,5 +37,5 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth,Integer
      * @param userId
      * @return
      */
-    UserInfoVO findUserCardByUserId(Integer userId,Boolean hasPhotos,Boolean hasVoice);
+    UserInfoVO findUserCardByUserId(Integer userId,Boolean hasPhotos,Boolean hasVoice,Boolean hasTags,Boolean hasTechs);
 }

@@ -183,7 +183,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Override
     public ProductDetailsVO findDetailsByProductId(Integer productId) {
         Product product = findById(productId);
-        UserInfoVO userInfo = userInfoAuthService.findUserCardByUserId(product.getUserId(),true,true);
+        UserInfoVO userInfo = userInfoAuthService.findUserCardByUserId(product.getUserId(),true,true,false,false);
         List<String> techTags = new ArrayList<>();
         List<TechTag> techTagList = techTagService.findByTechAuthId(product.getTechAuthId());
         for(TechTag techTag : techTagList){
@@ -231,7 +231,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         PageHelper.startPage(pageNum,pageSize,orderBy);
         List<ProductShowCaseVO> showCaseVOS = productDao.findProductShowCase(categoryId,gender);
         for(ProductShowCaseVO showCaseVO : showCaseVOS){
-            UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(showCaseVO.getUserId(),false,false);
+            UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(showCaseVO.getUserId(),false,false,false,false);
             showCaseVO.setNickName(userInfoVO.getNickName());
             showCaseVO.setGender(userInfoVO.getGender());
             showCaseVO.setMainPhoto(userInfoVO.getMainPhotoUrl());

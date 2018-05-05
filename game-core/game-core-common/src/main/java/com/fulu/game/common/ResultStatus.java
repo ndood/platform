@@ -22,4 +22,7 @@ public class ResultStatus {
     //手机号已注册
     public static Integer MOBILE_DUPLICATE = 202;
 
+    //IM用户注册失败
+    public static Integer IM_REGIST_FAIL= 203;
+
 }

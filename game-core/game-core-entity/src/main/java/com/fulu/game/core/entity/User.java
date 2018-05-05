@@ -60,6 +60,8 @@ public class User implements Serializable {
 	private String constellation;
 	//生日
 	private String birth;
+	private String imId;
+	private String imPsw;
 
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	public Date getCreateTime(){

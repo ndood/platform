@@ -2,22 +2,30 @@ package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.ResultStatus;
 import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.exception.UserExceptionEnums;
+import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserTechAuth;
+import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.WxUserInfo;
+import com.fulu.game.core.service.UserInfoAuthService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.UserTechAuthService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -30,10 +38,12 @@ public class UserController extends BaseController {
     private UserService userService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
 
     @RequestMapping("tech/list")
     public Result userTechList() {
-        User user = (User) SubjectUtil.getCurrentUser();
+        User user = userService.getCurrentUser();
         //查询所有用户认证的技能
         List<UserTechAuth> techAuthList = userTechAuthService.findByUserId(user.getId(), true);
         return Result.success().data(techAuthList);
@@ -46,7 +56,7 @@ public class UserController extends BaseController {
      */
     @PostMapping("/balance/get")
     public Result getBalance() {
-        User user = (User) SubjectUtil.getCurrentUser();
+        User user = userService.getCurrentUser();
         return Result.success().data(user.getBalance()).msg("查询成功！");
     }
 
@@ -61,7 +71,7 @@ public class UserController extends BaseController {
                       @RequestParam(name = "gender", required = false, defaultValue = "false") Boolean gender,
                       @RequestParam(name = "realname", required = false, defaultValue = "false") Boolean realname,
                       @RequestParam(name = "age", required = false, defaultValue = "false") Boolean age) {
-        User user = userService.findById(((User) SubjectUtil.getCurrentUser()).getId());
+        User user = userService.getCurrentUser();
         user.setId(null);
         user.setBalance(null);
         user.setOpenId(null);
@@ -88,7 +98,7 @@ public class UserController extends BaseController {
      */
     @RequestMapping("/update")
     public Result update(@ModelAttribute UserVO userVO) {
-        User user = userService.findById(((User) SubjectUtil.getCurrentUser()).getId());
+        User user = userService.getCurrentUser();
         user.setAge(userVO.getAge());
         user.setGender(userVO.getGender());
         user.setCity(userVO.getCity());
@@ -99,6 +109,7 @@ public class UserController extends BaseController {
         user.setNickname(userVO.getNickname());
         user.setHeadPortraitsUrl(userVO.getHeadPortraitsUrl());
         userService.update(user);
+        updateRedisUser(user);
 
         user.setId(null);
         user.setBalance(null);
@@ -127,16 +138,16 @@ public class UserController extends BaseController {
             } else {
                 String verifyCode = SMSUtil.sendVerificationCode(mobile);
                 log.info("发送验证码：" + verifyCode);
-                redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode,Constant.VERIFYCODE_CACHE_TIME_DEV);
+                redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode, Constant.VERIFYCODE_CACHE_TIME_DEV);
                 times = String.valueOf(Integer.parseInt(times) + 1);
-                redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), times,Constant.MOBILE_CACHE_TIME_DEV);
+                redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), times, Constant.MOBILE_CACHE_TIME_DEV);
                 return Result.success().msg("验证码发送成功！");
             }
         } else {
             String verifyCode = SMSUtil.sendVerificationCode(mobile);
             log.info("发送验证码：" + verifyCode);
-            redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode,Constant.VERIFYCODE_CACHE_TIME_DEV);
-            redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), "1",Constant.MOBILE_CACHE_TIME_DEV);
+            redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode, Constant.VERIFYCODE_CACHE_TIME_DEV);
+            redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), "1", Constant.MOBILE_CACHE_TIME_DEV);
             return Result.success().msg("验证码发送成功！");
         }
     }
@@ -194,6 +205,35 @@ public class UserController extends BaseController {
             }
         }
 
+    }
+
+    @PostMapping("/im/save")
+    public Result imSave(@RequestParam("status") Integer status,
+                         @RequestParam("imId") String imId,
+                         @RequestParam("imPsw") String imPsw) {
+        User user = userService.getCurrentUser();
+        if (status == 200) {
+            user.setImId(imId);
+            user.setImPsw(imPsw);
+            userService.update(user);
+        }else if(status == 500){
+            log.info("id===" + user.getId() + "注册IM用户失败！");
+            return Result.error(ResultStatus.IM_REGIST_FAIL).msg("IM用户注册失败！");
+        }
+        return Result.success().msg("IM用户信息保存成功！");
+    }
+
+    @PostMapping("chatwith/get")
+    public Result chatWithGet(@RequestParam("id") Integer id) {
+        UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(id, false, true, true, true);
+        return Result.success().data(userInfoVO).msg("查询聊天对象信息成功！");
+    }
+
+    public void updateRedisUser(User user){
+        String token = SubjectUtil.getToken();
+        Map<String, Object> userMap = new HashMap<>();
+        userMap = BeanUtil.beanToMap(user);
+        redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token),userMap);
     }
 
 }

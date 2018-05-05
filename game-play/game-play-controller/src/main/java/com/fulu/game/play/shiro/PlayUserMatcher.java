@@ -5,6 +5,7 @@ import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -47,9 +48,7 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
         //登录成功保存token和用户信息到redis
         if (paramOpenId.equals(dBOpenId)){
             Map<String, Object> userMap = new HashMap<>();
-            userMap.put("id",user.getId());
-            userMap.put("nickname",user.getNickname());
-            userMap.put("openId", user.getOpenId());
+            userMap = BeanUtil.beanToMap(user);
             String gToken = GenIdUtil.GetGUID();
             redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(gToken), userMap);
             SubjectUtil.setToken(gToken);

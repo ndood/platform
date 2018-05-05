@@ -39,6 +39,10 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
     private PersonTagService personTagService;
     @Autowired
     private TagService tagService;
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private UserTechAuthService utaService;
 
     @Override
     public ICommonDao<UserInfoAuth, Integer> getDao() {
@@ -111,7 +115,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
     }
 
     @Override
-    public UserInfoVO findUserCardByUserId(Integer userId,Boolean hasPhotos,Boolean hasVoice){
+    public UserInfoVO findUserCardByUserId(Integer userId,Boolean hasPhotos,Boolean hasVoice,Boolean hasTags,Boolean hasTechs){
         User user = userService.findById(userId);
         UserInfoAuth userInfoAuth = findByUserId(userId);
         UserInfoVO userInfo = new UserInfoVO();
@@ -123,30 +127,43 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         userInfo.setGender(user.getGender());
         userInfo.setMainPhotoUrl(userInfoAuth.getMainPicUrl());
         userInfo.setScoreAvg(user.getScoreAvg());
+        int orderCount = orderService.allOrderCount(userId);//接单数
+        userInfo.setOrderCount(orderCount);
+        //查询用户写真图
         if(hasPhotos){
             List<String> photos = new ArrayList<>();
             photos.add(userInfoAuth.getMainPicUrl());
-            //查询用户写真图
             List<UserInfoAuthFile> portraitFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(),FileTypeEnum.PIC.getType());
             for(UserInfoAuthFile authFile : portraitFiles){
                 photos.add(authFile.getUrl());
             }
             userInfo.setPhotos(photos);
         }
+        //查询用户声音
         if(hasVoice){
-            //查询用户声音
             List<UserInfoAuthFile> voiceFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(),FileTypeEnum.VOICE.getType());
             for(UserInfoAuthFile authFile : voiceFiles){
                 userInfo.setVoice(authFile.getUrl());
             }
         }
         //查询用户标签
-        List<PersonTag> personTagList = personTagService.findByUserId(userId);
-        List<String> tags = new ArrayList<>();
-        for(PersonTag personTag : personTagList){
-            tags.add(personTag.getName());
+        if (hasTags){
+            List<PersonTag> personTagList = personTagService.findByUserId(userId);
+            List<String> tags = new ArrayList<>();
+            for(PersonTag personTag : personTagList){
+                tags.add(personTag.getName());
+            }
+            userInfo.setTags(tags);
         }
-        userInfo.setTags(tags);
+        //查询用户技能
+        if (hasTechs){
+            List<UserTechAuth> userTechAuthList = utaService.findByUserId(userId,true);
+            List<String> techList = new ArrayList<String>();
+            for (UserTechAuth userTechAuth:userTechAuthList) {
+                techList.add(userTechAuth.getCategoryName());
+            }
+            userInfo.setTechs(techList);
+        }
         return userInfo;
     }
 
