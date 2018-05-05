@@ -80,6 +80,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws,Integer> im
 
         user.setBalance(newBalance);
         userService.update(user);
+        userService.updateRedisUser(user);
         return cashDraws;
     }
 
