@@ -1,6 +1,5 @@
 package com.fulu.game.core.service.impl;
 
-import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
@@ -43,7 +42,7 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
      */
     @Override
     public void save(UserCommentVO commentVO) {
-        User user = (User) SubjectUtil.getCurrentUser();
+        User user = userService.getCurrentUser();
         Order order = orderService.findByOrderNo(commentVO.getOrderNo());
         int serverUserId = order.getServiceUserId();
 
