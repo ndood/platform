@@ -6,6 +6,7 @@ import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.CategoryVO;
+import com.fulu.game.core.entity.vo.TagVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -92,6 +93,8 @@ public class CategoryServiceImpl extends AbsCommonService<Category,Integer> impl
     public List<Category> findAllAccompanyPlayCategory(){
         return findByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType(),true);
     }
+
+
 
 
     @Override

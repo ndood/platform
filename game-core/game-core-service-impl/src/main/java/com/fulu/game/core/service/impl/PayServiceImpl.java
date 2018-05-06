@@ -86,7 +86,7 @@ public class PayServiceImpl implements PayService {
         request.setOutRefundNo(orderNo+"E");
         request.setTotalFee(totalFee);
         request.setRefundFee(refunFee);
-        WxPayRefundResult wxPayRefundResult = wxPayService.refund(request);
+        wxPayService.refund(request);
         return true;
     }
 

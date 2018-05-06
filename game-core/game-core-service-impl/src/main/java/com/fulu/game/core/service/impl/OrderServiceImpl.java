@@ -57,7 +57,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
 
     @Override
     public PageInfo<OrderVO> userList(int pageNum, int pageSize, Integer categoryId, Integer[] statusArr) {
-        User user =(User)SubjectUtil.getCurrentUser();
+        User user = userService.getCurrentUser();
         OrderVO params = new OrderVO();
         params.setUserId(user.getId());
         params.setCategoryId(categoryId);
@@ -74,7 +74,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
 
     @Override
     public PageInfo<OrderVO> serverList(int pageNum, int pageSize, Integer categoryId, Integer[] statusArr) {
-        User user =(User)SubjectUtil.getCurrentUser();
+        User user = userService.getCurrentUser();
         OrderVO params = new OrderVO();
         params.setServiceUserId(user.getId());
         params.setCategoryId(categoryId);
@@ -92,6 +92,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     @Override
     public OrderVO findUserOrderDetails(String orderNo){
         Order order = findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getUserId());
         OrderVO orderVO = new OrderVO();
         BeanUtil.copyProperties(order,orderVO);
         Category category = categoryService.findById(orderVO.getCategoryId());
@@ -116,6 +117,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     @Override
     public OrderVO findServerOrderDetails(String orderNo) {
         Order order = findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getServiceUserId());
         OrderVO orderVO = new OrderVO();
         BeanUtil.copyProperties(order,orderVO);
         Category category = categoryService.findById(orderVO.getCategoryId());
@@ -164,7 +166,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     public OrderVO submit(int productId,
                           int num,
                           String remark) {
-        User user =(User)SubjectUtil.getCurrentUser();
+        User user = userService.getCurrentUser();
         Product product = productService.findById(productId);
         Category category = categoryService.findById(product.getCategoryId());
         //计算订单总价格
@@ -177,7 +179,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         //创建订单
         Order order = new Order();
         order.setName(product.getProductName()+" "+num+"*"+product.getUnit());
-        order.setOrderNo(getOrderNo());
+        order.setOrderNo(generateOrderNo());
         order.setUserId(user.getId());
         order.setServiceUserId(product.getUserId());
         order.setCategoryId(product.getCategoryId());
@@ -241,6 +243,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     @Override
     public OrderVO serverReceiveOrder(String orderNo){
         Order order =  findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getServiceUserId());
         //只有等待陪玩和已支付的订单才能开始陪玩
         if(!order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())||!order.getIsPay()){
             throw new OrderException(order.getOrderNo(),"订单未支付或者状态不是等待陪玩!");
@@ -266,6 +269,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     @Override
     public OrderVO serverCancelOrder(String orderNo){
         Order order =  findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getServiceUserId());
         if(!order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())
             &&!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())){
             throw new OrderException(order.getOrderNo(),"只有陪玩中和等待陪玩的订单才能取消!");
@@ -289,6 +293,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     @Override
     public OrderVO userCancelOrder(String orderNo) {
         Order order =  findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getUserId());
         if(!order.getStatus().equals(OrderStatusEnum.NON_PAYMENT.getStatus())
             &&!order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())){
             throw new OrderException(order.getOrderNo(),"只有等待陪玩和未支付的订单才能取消!");
@@ -317,6 +322,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
                                    String remark,
                                    String ... fileUrl){
         Order order =  findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getUserId());
         if(!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())
             &&!order.getStatus().equals(OrderStatusEnum.CHECK.getStatus())){
             throw new OrderException(order.getOrderNo(),"只有陪玩中和等待验收的订单才能申诉!");
@@ -342,6 +348,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     @Override
     public OrderVO serverAcceptanceOrder(String orderNo, String remark, String ... fileUrl){
         Order order =  findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getServiceUserId());
         if(!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())){
             throw new OrderException(order.getOrderNo(),"只有陪玩中的订单才能验收!");
         }
@@ -362,6 +369,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     @Override
     public OrderVO userVerifyOrder(String orderNo){
         Order order =  findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getUserId());
         if(!order.getStatus().equals(OrderStatusEnum.CHECK.getStatus())){
             throw new OrderException(order.getOrderNo(),"只有待验收订单才能验收!");
         }
@@ -450,7 +458,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         try {
             payService.refund(orderNo,totalMoney);
         }catch (Exception e){
-            log.error("退款失败",e);
+            log.error("退款失败{}",orderNo,e.getMessage());
             throw new OrderException(orderNo,"订单退款失败!");
         }
         //记录订单流水
@@ -487,13 +495,13 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      * 生成订单号
      * @return
      */
-    private String getOrderNo(){
+    private String generateOrderNo(){
         String orderNo = GenIdUtil.GetOrderNo();
         if(findByOrderNo(orderNo)==null){
             return orderNo;
         }
         else{
-            return getOrderNo();
+            return generateOrderNo();
         }
     }
 

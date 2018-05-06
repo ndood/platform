@@ -3,6 +3,7 @@ package com.fulu.game.play.schedule.task;
 import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.service.OrderService;
+import com.fulu.game.core.service.PayService;
 import com.xiaoleilu.hutool.date.DateUnit;
 import com.xiaoleilu.hutool.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -17,18 +18,17 @@ import java.util.List;
 @Slf4j
 public class OrderStatusTask {
 
-
     @Autowired
     private OrderService orderService;
-
-
+    @Autowired
+    private PayService payService;
     /**
      * 取消超时订单
      */
     @Scheduled(cron = "0/1 0/10 * * * ? ")  //cron接受cron表达式，根据cron表达式确定定时规则
     public void cancelTimeOutOrder() {
         //todo 处理已付款的订单
-        Integer[] statusList = new Integer[]{OrderStatusEnum.NON_PAYMENT.getStatus()};
+        Integer[] statusList = new Integer[]{OrderStatusEnum.NON_PAYMENT.getStatus(),OrderStatusEnum.WAIT_SERVICE.getStatus()};
         List<Order> orderList = orderService.findByStatusList(statusList);
         for(Order order : orderList){
             long hour = DateUtil.between(order.getCreateTime(),new Date(),DateUnit.HOUR);
@@ -37,6 +37,14 @@ public class OrderStatusTask {
                 order.setStatus(OrderStatusEnum.SYSTEM_CLOSE.getStatus());
                 order.setUpdateTime(new Date());
                 orderService.update(order);
+                if(order.getIsPay()){
+                    try {
+                        payService.refund(order.getOrderNo(),order.getTotalMoney());
+                    }catch (Exception e){
+                        log.error("退款失败{}",order.getOrderNo(),e.getMessage());
+                    }
+
+                }
             }
         }
     }

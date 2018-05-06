@@ -5,6 +5,7 @@ import com.fulu.game.common.enums.CategoryParentEnum;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.CategoryVO;
+import com.fulu.game.core.entity.vo.TagVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
 import lombok.AllArgsConstructor;
@@ -190,8 +191,8 @@ public class CategoryController extends BaseController {
         if(category.getTagId()==null){
             return Result.error().msg("该游戏没有设置标签!");
         }
-        List<Tag> tagList = tagService.findByPid(category.getTagId());
-        return Result.success().data(tagList);
+        TagVO tagVO = tagService.findTagsByTagPid(category.getTagId());
+        return Result.success().data(tagVO);
     }
 
     /**

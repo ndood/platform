@@ -35,9 +35,9 @@ config:
       appId: 8aaf070862fae1b50163050c11f00460
     wechat:
 #      appId: wxf0bf670601a34bb5
-      appId: wx9bc5854093f28ceb  #雄军测试appid
+      appId: wx27fc4b9385ffde13  #雄军测试appid
 #      secret: d8aeb8dc6265394a3789aff6b2792a23
-      secret: ff302d561c2a9af13cef82f3d75029df #雄军测试secret
+      secret: 40ef671d910e97b55d4370031af1d9c2 #雄军测试secret
       token: 111
       aesKey: 111
       msgDataFormat: JSON

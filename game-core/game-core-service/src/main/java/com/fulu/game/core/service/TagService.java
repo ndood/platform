@@ -24,6 +24,7 @@ public interface TagService extends ICommonService<Tag,Integer>{
     List<Tag> findByPid(Integer tagPid);
 
 
+
     /**
      * 查询所有个人标签
      * @return
