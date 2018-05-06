@@ -136,27 +136,28 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         userInfo.setOrderCount(orderCount);
 
         UserInfoAuth userInfoAuth = findByUserId(userId);
-        if (null == userInfoAuth){
+        if (null != userInfoAuth){
             userInfo.setMainPhotoUrl(userInfoAuth.getMainPicUrl());
+            //查询用户写真图
+            if(hasPhotos){
+                List<String> photos = new ArrayList<>();
+                photos.add(userInfoAuth.getMainPicUrl());
+                List<UserInfoAuthFile> portraitFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(),FileTypeEnum.PIC.getType());
+                for(UserInfoAuthFile authFile : portraitFiles){
+                    photos.add(authFile.getUrl());
+                }
+                userInfo.setPhotos(photos);
+            }
+            //查询用户声音
+            if(hasVoice){
+                List<UserInfoAuthFile> voiceFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(),FileTypeEnum.VOICE.getType());
+                for(UserInfoAuthFile authFile : voiceFiles){
+                    userInfo.setVoice(authFile.getUrl());
+                }
+            }
         }
 
-        //查询用户写真图
-        if(hasPhotos){
-            List<String> photos = new ArrayList<>();
-            photos.add(userInfoAuth.getMainPicUrl());
-            List<UserInfoAuthFile> portraitFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(),FileTypeEnum.PIC.getType());
-            for(UserInfoAuthFile authFile : portraitFiles){
-                photos.add(authFile.getUrl());
-            }
-            userInfo.setPhotos(photos);
-        }
-        //查询用户声音
-        if(hasVoice){
-            List<UserInfoAuthFile> voiceFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(),FileTypeEnum.VOICE.getType());
-            for(UserInfoAuthFile authFile : voiceFiles){
-                userInfo.setVoice(authFile.getUrl());
-            }
-        }
+
         //查询用户标签
         if (hasTags){
             List<PersonTag> personTagList = personTagService.findByUserId(userId);
