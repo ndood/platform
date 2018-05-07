@@ -1,5 +1,7 @@
 package com.fulu.game.common;
 
+import java.math.BigDecimal;
+
 public interface Constant {
 
     Integer DEF_PID = 0;  //默认的父类ID
@@ -12,5 +14,11 @@ public interface Constant {
     Integer MOBILE_CODE_SEND_TIMES_DEV = 20;
     Integer MOBILE_CODE_SEND_TIMES_DEP = 3;
     Long MOBILE_CACHE_TIME_DEV = 30 * 60L;
+
+
+    //默认评价分
+    BigDecimal DEFAULT_SCORE_AVG = new BigDecimal(4);
+    //默认余额
+    BigDecimal DEFAULT_BALANCE = new BigDecimal(0.00);
 
 }

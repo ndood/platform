@@ -45,7 +45,7 @@ public class User implements Serializable {
 	//零钱
 	private BigDecimal balance;
 	//状态(0封禁,1为解封)
-	private Integer status;
+	private Boolean status;
 	//创建时间
 	private Date createTime;
 	//修改时间

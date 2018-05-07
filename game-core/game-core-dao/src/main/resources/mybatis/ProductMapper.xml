@@ -108,7 +108,8 @@
         JOIN (
             SELECT
                 user_id,
-                max(sales_mode_rank) AS sales_mode_rank
+                max(sales_mode_rank) AS sales_mode_rank,
+                `category_id`
             FROM
                 t_product
             WHERE
@@ -120,7 +121,7 @@
             GROUP BY
                 user_id
         ) t2 ON t1.user_id = t2.user_id
-        AND t1.sales_mode_rank = t2.sales_mode_rank
+        AND t1.sales_mode_rank = t2.sales_mode_rank  and t1.`category_id` = t2.category_id
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">

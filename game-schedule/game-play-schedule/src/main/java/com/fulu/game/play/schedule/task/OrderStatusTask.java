@@ -32,7 +32,7 @@ public class OrderStatusTask {
         List<Order> orderList = orderService.findByStatusList(statusList);
         for(Order order : orderList){
             long hour = DateUtil.between(order.getCreateTime(),new Date(),DateUnit.HOUR);
-            if(hour>=12){
+            if(hour>=1){
                 log.info(order.getOrderNo()+"-------取消订单!");
                 order.setStatus(OrderStatusEnum.SYSTEM_CLOSE.getStatus());
                 order.setUpdateTime(new Date());
@@ -59,7 +59,7 @@ public class OrderStatusTask {
         List<Order> orderList = orderService.findByStatusList(statusList);
         for(Order order : orderList){
             long hour = DateUtil.between(order.getCreateTime(),new Date(),DateUnit.HOUR);
-            if(hour>=12){
+            if(hour>=1){
                 log.info(order.getOrderNo()+"-------订单完成!");
                 order.setStatus(OrderStatusEnum.SYSTEM_COMPLETE.getStatus());
                 order.setUpdateTime(new Date());

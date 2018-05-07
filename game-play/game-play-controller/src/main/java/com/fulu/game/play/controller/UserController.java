@@ -58,7 +58,6 @@ public class UserController extends BaseController {
 
     /**
      * 用户-进入我的页面
-     *
      * @return
      */
     @PostMapping("/get")
@@ -162,13 +161,16 @@ public class UserController extends BaseController {
             } else {//绑定手机号
                 User user = userService.getCurrentUser();
                 String openId = user.getOpenId();
-                if (openId == null) {
+                if (user == null) {
                     return Result.error().msg("微信用户绑定失败！");
                 }
                 User newUser = null;
                 User openIdUser = userService.findByOpenId(openId);
-                if (openIdUser.getMobile() != null) {
-                    return Result.error().msg("已经绑定过手机号！");
+                //如果openId已经绑定手机号且手机号和绑定的手机号不一致,则返回错误
+                if(openIdUser!=null&&openIdUser.getMobile()!=null){
+                    if(!wxUserInfo.getMobile().equals(openIdUser.getMobile())){
+                        return Result.error().msg("已经绑定过手机号！");
+                    }
                 }
                 User mobileUser = userService.findByMobile(wxUserInfo.getMobile());
                 if (mobileUser != null) {
@@ -185,7 +187,7 @@ public class UserController extends BaseController {
                         userService.deleteById(openIdUser.getId());
                     }
                     newUser = mobileUser;
-                } else {
+                }else{
                     openIdUser.setMobile(wxUserInfo.getMobile());
                     openIdUser.setGender(wxUserInfo.getGender() != null ? Integer.parseInt(wxUserInfo.getGender()) : 0);
                     openIdUser.setNickname(wxUserInfo.getNickName());

@@ -1,5 +1,6 @@
 package com.fulu.game.core.service.impl;
 
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ServiceErrorException;
@@ -68,6 +69,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
            User server = userService.findById(orderVO.getServiceUserId());
            orderVO.setServerHeadUrl(server.getHeadPortraitsUrl());
            orderVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderVO.getStatus()));
+           orderVO.setServerScoreAvg(server.getScoreAvg()==null? Constant.DEFAULT_SCORE_AVG:server.getScoreAvg());
         }
         return new PageInfo<>(orderVOList);
     }
@@ -105,7 +107,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         orderVO.setServerAge(server.getAge());
         orderVO.setServerGender(server.getGender());
         orderVO.setServerNickName(server.getNickname());
-        orderVO.setServerScoreAvg(server.getScoreAvg());
+        orderVO.setServerScoreAvg(server.getScoreAvg()==null? Constant.DEFAULT_SCORE_AVG:server.getScoreAvg());
         orderVO.setServerCity(server.getCity());
         //添加订单商品信息
         OrderProduct orderProduct = orderProductService.findByOrderNo(orderNo);
