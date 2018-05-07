@@ -34,8 +34,8 @@ config:
       accountToken: 6f9dc07aa412497a995451f9463b1f61
       appId: 8aaf070862fae1b50163050c11f00460
     wechat:
-      appId: wxf0bf670601a34bb5
-      secret: d8aeb8dc6265394a3789aff6b2792a23
+      appId: wx27fc4b9385ffde13
+      secret: 40ef671d910e97b55d4370031af1d9c2
       token: 111
       aesKey: 111
       msgDataFormat: JSON
