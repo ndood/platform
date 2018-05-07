@@ -168,8 +168,12 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     public OrderVO submit(int productId,
                           int num,
                           String remark) {
+        log.info("用户提交订单productId:{},num:{},remark:{}",productId,num,remark);
         User user = userService.getCurrentUser();
         Product product = productService.findById(productId);
+
+
+
         Category category = categoryService.findById(product.getCategoryId());
         //计算订单总价格
         BigDecimal totalMoney = product.getPrice().multiply(new BigDecimal(num));
@@ -220,6 +224,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      */
     @Override
     public OrderVO payOrder(String orderNo,String orderMoney){
+        log.info("用户支付订单orderNo:{},orderMoney:{}",orderNo,orderMoney);
         Order order =  findByOrderNo(orderNo);
         if(order.getIsPay()){
            throw new OrderException(orderNo,"重复支付订单!["+order.toString()+"]");
@@ -244,6 +249,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      */
     @Override
     public OrderVO serverReceiveOrder(String orderNo){
+        log.info("陪玩师接单orderNo:{}",orderNo);
         Order order =  findByOrderNo(orderNo);
         userService.isCurrentUser(order.getServiceUserId());
         //只有等待陪玩和已支付的订单才能开始陪玩
@@ -270,6 +276,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      */
     @Override
     public OrderVO serverCancelOrder(String orderNo){
+        log.info("陪玩师取消订单orderNo:{}",orderNo);
         Order order =  findByOrderNo(orderNo);
         userService.isCurrentUser(order.getServiceUserId());
         if(!order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())
@@ -294,6 +301,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      */
     @Override
     public OrderVO userCancelOrder(String orderNo) {
+        log.info("用户取消订单orderNo:{}",orderNo);
         Order order =  findByOrderNo(orderNo);
         userService.isCurrentUser(order.getUserId());
         if(!order.getStatus().equals(OrderStatusEnum.NON_PAYMENT.getStatus())
@@ -323,6 +331,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     public OrderVO userAppealOrder(String orderNo,
                                    String remark,
                                    String ... fileUrl){
+        log.info("用户申诉订单orderNo:{}",orderNo);
         Order order =  findByOrderNo(orderNo);
         userService.isCurrentUser(order.getUserId());
         if(!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())
@@ -349,6 +358,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      */
     @Override
     public OrderVO serverAcceptanceOrder(String orderNo, String remark, String ... fileUrl){
+        log.info("打手提交验收订单orderNo:{}",orderNo);
         Order order =  findByOrderNo(orderNo);
         userService.isCurrentUser(order.getServiceUserId());
         if(!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())){
@@ -370,6 +380,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      */
     @Override
     public OrderVO userVerifyOrder(String orderNo){
+        log.info("用户验收订单orderNo:{}",orderNo);
         Order order =  findByOrderNo(orderNo);
         userService.isCurrentUser(order.getUserId());
         if(!order.getStatus().equals(OrderStatusEnum.CHECK.getStatus())){
@@ -405,6 +416,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      * @return
      */
     public OrderVO adminHandleCompleteOrder(String orderNo){
+        log.info("管理员强制完成订单 (大款给打手)orderNo:{}",orderNo);
         Order order =  findByOrderNo(orderNo);
         if(!order.getStatus().equals(OrderStatusEnum.APPEALING.getStatus())){
             throw new OrderException(order.getOrderNo(),"只有申诉中的订单才能操作!");
@@ -424,6 +436,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      * @return
      */
     public OrderVO adminHandleRefundOrder(String orderNo){
+        log.info("管理员退款用户orderNo:{}",orderNo);
         Order order =  findByOrderNo(orderNo);
         if(!order.getStatus().equals(OrderStatusEnum.APPEALING.getStatus())){
             throw new OrderException(order.getOrderNo(),"只有申诉中的订单才能操作!");
