@@ -55,7 +55,7 @@ public class PayServiceImpl implements PayService {
             return result;
         } catch (Exception e) {
             log.error("订单支付错误", e);
-            throw new OrderException(order.getOrderNo(), "订单无法支付!");
+            throw new OrderException(orderNo, "订单无法支付!");
         }
     }
 

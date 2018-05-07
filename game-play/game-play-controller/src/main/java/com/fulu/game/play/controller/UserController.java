@@ -86,7 +86,6 @@ public class UserController extends BaseController {
 
     /**
      * 用户-更新个人信息
-     *
      * @param userVO
      * @return
      */
@@ -164,8 +163,11 @@ public class UserController extends BaseController {
                 }
                 User newUser = null;
                 User openIdUser = userService.findByOpenId(openId);
-                if (openIdUser.getMobile() != null) {
-                    return Result.error().msg("已经绑定过手机号！");
+                //如果openId已经绑定手机号且手机号和绑定的手机号不一致,则返回错误
+                if(openIdUser!=null&&openIdUser.getMobile()!=null){
+                    if(!wxUserInfo.getMobile().equals(openIdUser.getMobile())){
+                        return Result.error().msg("已经绑定过手机号！");
+                    }
                 }
                 User mobileUser = userService.findByMobile(wxUserInfo.getMobile());
                 if (mobileUser != null) {
@@ -207,13 +209,14 @@ public class UserController extends BaseController {
     public Result imSave(@RequestParam("status") Integer status,
                          @RequestParam("imId") String imId,
                          @RequestParam("imPsw") String imPsw) {
+        log.info("开始注册IM用户,imId={},status={}", imId, status);
         User user = userService.getCurrentUser();
         if (status == 200) {
             user.setImId(imId);
             user.setImPsw(imPsw);
             userService.update(user);
-        }else if(status == 500){
-            log.info("id===" + user.getId() + "注册IM用户失败！");
+        } else {
+            log.error("注册IM用户失败！id={},status={}", user.getId(), status);
             return Result.error(ResultStatus.IM_REGIST_FAIL).msg("IM用户注册失败！");
         }
         return Result.success().msg("IM用户信息保存成功！");
