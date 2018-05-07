@@ -44,19 +44,20 @@ public class MyShiroRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) {
 
+        log.info("开始MyShiroRealm验证");
         PlayUserToken playUserToken = (PlayUserToken) token;
         String openId = playUserToken.getOpenId();
-        log.info("realm验证" + openId + "=======用户是否存在");
         User user = userService.findByOpenId(openId);
         if (user != null) {
-            return new SimpleAuthenticationInfo(user,user.getOpenId(),getName());
-        }else{
-            //没有该用户则创建一个
+            log.info("openId为 {} 的用户已存在", openId);
+            return new SimpleAuthenticationInfo(user, user.getOpenId(), getName());
+        } else {
+            log.info("openId为 {} 的用户不存在，开始创建该用户", openId);
             UserVO userVO = new UserVO();
             userVO.setOpenId(openId);
             user = userService.save(userVO);
-            log.info(openId + "======用户不存在，创建成功");
-            return new SimpleAuthenticationInfo(user,user.getOpenId(),getName());
+            log.info("openId为 {} 的用户创建成功，MyShiroRealm验证结束");
+            return new SimpleAuthenticationInfo(user, user.getOpenId(), getName());
         }
     }
 

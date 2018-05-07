@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -86,6 +87,7 @@ public class UserController extends BaseController {
 
     /**
      * 用户-更新个人信息
+     *
      * @param userVO
      * @return
      */
@@ -130,7 +132,7 @@ public class UserController extends BaseController {
                 return Result.error().msg("半小时内发送次数不能超过" + Constant.MOBILE_CODE_SEND_TIMES_DEV + "次，请等待！");
             } else {
                 String verifyCode = SMSUtil.sendVerificationCode(mobile);
-                log.info("发送验证码：" + verifyCode);
+                log.info("手机号 {} 发送验证码为 {}", mobile, verifyCode);
                 redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode, Constant.VERIFYCODE_CACHE_TIME_DEV);
                 times = String.valueOf(Integer.parseInt(times) + 1);
                 redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), times, Constant.MOBILE_CACHE_TIME_DEV);
@@ -138,7 +140,7 @@ public class UserController extends BaseController {
             }
         } else {
             String verifyCode = SMSUtil.sendVerificationCode(mobile);
-            log.info("发送验证码：" + verifyCode);
+            log.info("重新计数，手机号 {} 发送验证码为 {}", mobile, verifyCode);
             redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode, Constant.VERIFYCODE_CACHE_TIME_DEV);
             redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), "1", Constant.MOBILE_CACHE_TIME_DEV);
             return Result.success().msg("验证码发送成功！");
@@ -209,14 +211,15 @@ public class UserController extends BaseController {
     public Result imSave(@RequestParam("status") Integer status,
                          @RequestParam("imId") String imId,
                          @RequestParam("imPsw") String imPsw) {
-        log.info("开始注册IM用户,imId={},status={}", imId, status);
+        log.info("IM注册请求开始,请求参数 status=={},imId=={}", status, imId);
         User user = userService.getCurrentUser();
         if (status == 200) {
             user.setImId(imId);
             user.setImPsw(imPsw);
             userService.update(user);
-        } else {
-            log.error("注册IM用户失败！id={},status={}", user.getId(), status);
+            log.info("用户{}绑定IM信息成功", user.getId());
+        } else if (status == 500) {
+            log.info("用户{}绑定IM失败", user.getId());
             return Result.error(ResultStatus.IM_REGIST_FAIL).msg("IM用户注册失败！");
         }
         return Result.success().msg("IM用户信息保存成功！");
