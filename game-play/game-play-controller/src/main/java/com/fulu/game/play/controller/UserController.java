@@ -160,11 +160,8 @@ public class UserController extends BaseController {
             if (verifyCode != null && !verifyCode.equals(redisVerifyCode)) {
                 return Result.error().msg("验证码提交错误");
             } else {//绑定手机号
-                Map<String, Object> cachedUserMap = redisOpenService.hget(RedisKeyEnum.PLAY_TOKEN.generateKey(token));
-                String openId = null;
-                if (cachedUserMap.containsKey("openId")) {
-                    openId = cachedUserMap.get("openId").toString();
-                }
+                User user = userService.getCurrentUser();
+                String openId = user.getOpenId();
                 if (openId == null) {
                     return Result.error().msg("微信用户绑定失败！");
                 }
