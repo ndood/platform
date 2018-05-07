@@ -224,6 +224,23 @@ public class UserController extends BaseController {
         return Result.success().msg("IM用户信息保存成功！");
     }
 
+    /**
+     * 用户-根据imId查询聊天对象User
+     *
+     * @return
+     */
+    @PostMapping("/im/get")
+    public Result getImUser(@RequestParam("imId") String imId) {
+        User user = userService.findByImId(imId);
+        if (null != user){
+            user.setBalance(null);
+            user.setOpenId(null);
+            user.setIdcard(null);
+            user.setImPsw(null);
+        }
+        return Result.success().data(user).msg("查询IM用户成功！");
+    }
+
     @PostMapping("chatwith/get")
     public Result chatWithGet(@RequestParam("id") Integer id) {
         UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(id, false, true, true, true);

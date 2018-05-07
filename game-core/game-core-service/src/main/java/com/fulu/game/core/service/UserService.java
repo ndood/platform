@@ -16,6 +16,8 @@ public interface UserService extends ICommonService<User, Integer> {
 
     User findByOpenId(String openId);
 
+    User findByImId(String imId);
+
     void lock(int id);
 
     void unlock(int id);
@@ -29,4 +31,5 @@ public interface UserService extends ICommonService<User, Integer> {
     void updateRedisUser(User user);
 
     Boolean isCurrentUser(Integer userId);
+
 }
