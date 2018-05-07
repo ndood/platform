@@ -161,7 +161,7 @@ public class UserController extends BaseController {
             } else {//绑定手机号
                 User user = userService.getCurrentUser();
                 String openId = user.getOpenId();
-                if (openId == null) {
+                if (user == null) {
                     return Result.error().msg("微信用户绑定失败！");
                 }
                 User newUser = null;

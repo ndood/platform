@@ -229,7 +229,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Override
     public ProductDetailsVO findDetailsByProductId(Integer productId) {
         Product product = findById(productId);
-        UserInfoVO userInfo = userInfoAuthService.findUserCardByUserId(product.getUserId(),true,true,false,false);
+        UserInfoVO userInfo = userInfoAuthService.findUserCardByUserId(product.getUserId(),true,true,true,false);
         List<String> techTags = new ArrayList<>();
         List<TechTag> techTagList = techTagService.findByTechAuthId(product.getTechAuthId());
         for(TechTag techTag : techTagList){
