@@ -159,8 +159,9 @@ public class UserController extends BaseController {
             if (verifyCode != null && !verifyCode.equals(redisVerifyCode)) {
                 return Result.error().msg("验证码提交错误");
             } else {//绑定手机号
-                String openId = redisOpenService.hget(RedisKeyEnum.PLAY_TOKEN.generateKey(token)).get("openId").toString();
-                if(openId == null){
+                User user = userService.getCurrentUser();
+                String openId = user.getOpenId();
+                if (openId == null) {
                     return Result.error().msg("微信用户绑定失败！");
                 }
                 User newUser = null;
