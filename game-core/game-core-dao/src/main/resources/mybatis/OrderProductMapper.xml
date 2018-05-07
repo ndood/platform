@@ -25,6 +25,7 @@
         <result column="user_nickname" property="userNickname"/>
         <result column="user_mobile" property="userMobile"/>
         <result column="remark" property="remark"/>
+        <result column="product_name" property="productName"/>
         <result column="price" property="price"/>
         <result column="unit" property="unit"/>
         <result column="amount" property="amount"/>
@@ -79,6 +80,7 @@
         u.nickname AS user_nickname,
         u.mobile AS user_mobile,
         o.remark AS remark,
+        p.product_name AS product_name,
         p.price AS price,
         p.unit AS unit,
         op.amount AS amount,

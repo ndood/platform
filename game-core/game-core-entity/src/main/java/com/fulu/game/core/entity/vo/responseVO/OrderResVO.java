@@ -20,6 +20,7 @@ public class OrderResVO {
     private String userNickname;//玩家昵称
     private String userMobile;//玩家手机号
     private String remark;//陪玩要求
+    private String productName;//技能名称
     private BigDecimal price;//单价
     private String unit;//单位
     private Integer amount;//商品个数
