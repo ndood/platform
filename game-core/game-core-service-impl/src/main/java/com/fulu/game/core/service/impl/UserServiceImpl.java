@@ -86,6 +86,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         user.setType(UserTypeEnum.GENERAL_USER.getType());//默认普通用户
         user.setUserInfoAuth(0);//默认未审核
         user.setBalance(new BigDecimal("0.00"));
+        user.setScoreAvg(new BigDecimal(4));
         user.setCreateTime(new Date());
         user.setUpdateTime(new Date());
         userDao.create(user);

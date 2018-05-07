@@ -31,66 +31,71 @@ public class HomeController {
 
     /**
      * 小程序提交参数code
+     *
      * @return
      */
-    @RequestMapping(value = "/login",method = RequestMethod.POST)
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
     public Result login(@RequestParam("code") String code) throws WxErrorException {
+        log.info("==调用/login方法==");
         if (StringUtils.isBlank(code)) {
             throw new ParamsException(ParamsExceptionEnums.PARAM_NULL_EXCEPTION);
         }
         WxMaJscode2SessionResult session = wxService.getUserService().getSessionInfo(code);
         String sessionKey = session.getSessionKey();
         String openId = session.getOpenid();
-
+        log.info("==获取到openId== {}", openId);
         //1.认证和凭据的token
         PlayUserToken playUserToken = new PlayUserToken(openId, sessionKey);
         Subject subject = SecurityUtils.getSubject();
         //2.提交认证和凭据给身份验证系统
-        try{
+        try {
+            log.info("==开始shiro验证==");
             subject.login(playUserToken);
-            User cachedUser = (User)SubjectUtil.getCurrentUser();
+            User cachedUser = userService.getCurrentUser();
             User user = userService.findById(cachedUser.getId());
             JSONObject jo = new JSONObject();
-            jo.put("token",SubjectUtil.getToken());
-            jo.put("type",user.getType());
-            if (StringUtils.isEmpty(user.getMobile())){
+            jo.put("token", SubjectUtil.getToken());
+            jo.put("type", user.getType());
+            if (StringUtils.isEmpty(user.getMobile())) {
+                log.info("id {} 为无手机号新用户,type {}", cachedUser.getId(), user.getType());
                 return Result.newUser().data(jo).msg("登录成功，请绑定手机号！");
-            }else{
+            } else {
+                log.info("id {} 用户已有手机号", cachedUser.getId());
                 return Result.success().data(jo).msg("登录成功!");
             }
-        }catch (AuthenticationException e) {
+        } catch (AuthenticationException e) {
             return Result.noLogin().msg("用户验证信息错误！");
-        }catch (Exception e){
-            log.error("登录异常!",e);
+        } catch (Exception e) {
+            log.error("登录异常!", e);
             return Result.error().msg("登陆异常！");
         }
     }
 
-    @RequestMapping(value = "/test/login",method = RequestMethod.POST)
+    @RequestMapping(value = "/test/login", method = RequestMethod.POST)
     @ResponseBody
-    public Result testLogin(String openId){
+    public Result testLogin(String openId) {
         String sessionKey = "xxxx";
         //1.认证和凭据的token
         PlayUserToken playUserToken = new PlayUserToken(openId, sessionKey);
         Subject subject = SecurityUtils.getSubject();
         //2.提交认证和凭据给身份验证系统
-        try{
+        try {
             subject.login(playUserToken);
-            User cachedUser = (User)SubjectUtil.getCurrentUser();
+            User cachedUser = (User) SubjectUtil.getCurrentUser();
             User user = userService.findById(cachedUser.getId());
             JSONObject jo = new JSONObject();
-            jo.put("token",SubjectUtil.getToken());
-            jo.put("type",user.getType());
-            if (StringUtils.isEmpty(user.getMobile())){
+            jo.put("token", SubjectUtil.getToken());
+            jo.put("type", user.getType());
+            if (StringUtils.isEmpty(user.getMobile())) {
                 return Result.newUser().data(jo).msg("登录成功，请绑定手机号！");
-            }else{
+            } else {
                 return Result.success().data(jo).msg("登录成功!");
             }
-        }catch (AuthenticationException e) {
+        } catch (AuthenticationException e) {
             return Result.noLogin().msg("用户验证信息错误！");
-        }catch (Exception e){
-            log.error("登录异常!",e);
+        } catch (Exception e) {
+            log.error("登录异常!", e);
             return Result.error().msg("登陆异常！");
         }
     }

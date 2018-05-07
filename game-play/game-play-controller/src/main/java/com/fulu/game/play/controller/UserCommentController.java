@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 用户(打手)星级评价表
+ *
  * @author yanbiao
  * @date 2018-04-29 13:26:30
  */
@@ -20,29 +21,31 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/user/comment")
 @Slf4j
-public class UserCommentController extends BaseController{
+public class UserCommentController extends BaseController {
 
     @Autowired
     private UserCommentService commentService;
 
     /**
      * 用户-添加评价
+     *
      * @return
      */
     @RequestMapping("/save")
-    public Result save(UserCommentVO commentVO){
+    public Result save(UserCommentVO commentVO) {
         commentService.save(commentVO);
         return Result.success().msg("添加成功！");
     }
 
     /**
      * 用户-查询评论
+     *
      * @return
      */
     @RequestMapping("/get")
-    public Result get(@RequestParam("orderNo") String orderNo){
+    public Result get(@RequestParam("orderNo") String orderNo) {
         UserComment comment = commentService.findByOrderNo(orderNo);
-        if (null == comment){
+        if (null == comment) {
             return Result.error().msg("该评论不存在！");
         }
         comment.setServerUserId(null);
@@ -51,9 +54,9 @@ public class UserCommentController extends BaseController{
     }
 
 
-
     /**
      * 查询陪玩师的所有评论
+     *
      * @param pageNum
      * @param pageSize
      * @param serverId
@@ -62,11 +65,10 @@ public class UserCommentController extends BaseController{
     @RequestMapping(value = "/byserver")
     public Result findDetailsComments(Integer pageNum,
                                       Integer pageSize,
-                                      Integer serverId){
-        PageInfo<UserCommentVO> page = commentService.findByServerId(pageNum,pageSize,serverId);
+                                      Integer serverId) {
+        PageInfo<UserCommentVO> page = commentService.findByServerId(pageNum, pageSize, serverId);
         return Result.success().data(page);
     }
-
 
 
 }

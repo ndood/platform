@@ -38,36 +38,36 @@ public class AclFilter extends AccessControlFilter {
 
     /**
      * 验证token的有效性
+     *
      * @param request
      * @param response
      * @return
      * @throws Exception
      */
     @Override
-    protected boolean onAccessDenied(ServletRequest request,ServletResponse response) throws Exception {
+    protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String token = httpRequest.getHeader("token");
-        log.info("请求header中的token====="+token);
+        log.info("请求header中的token {}", token);
         Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.PLAY_TOKEN.generateKey(token));
         // 没有登录授权 且没有记住我
         if (MapUtils.isEmpty(map)) {
-            log.info("token验证失效====="+token);
+            log.info("token {} 验证失效=====", token);
             // 没有登录
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             httpResponse.setCharacterEncoding("UTF-8");
             httpResponse.setContentType("application/json; charset=utf-8");
             PrintWriter out = null;
-            try{
+            try {
                 out = httpResponse.getWriter();
                 JSONObject res = new JSONObject();
                 res.put("status", "501");
                 res.put("data", "");
-                res.put("msg", "您未登录，暂无权限访问");
-                //out.append(res.toString());
+                res.put("msg", "您未登录，暂无访问权限！");
                 out.write(res.toString());
-            }catch(IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
-            }finally {
+            } finally {
                 if (out != null) {
                     out.close();
                 }
@@ -80,7 +80,7 @@ public class AclFilter extends AccessControlFilter {
         //已登录的，就保存该token从redis查到的用户信息
         User user = BeanUtil.mapToBean(map, User.class, true);
         SubjectUtil.setCurrentUser(user);
-        log.info("filter验证成功续存token====="+token);
+        log.info("AclFilter验证通过，续存token {}", token);
         SubjectUtil.setToken(token);
         return true;
     }
