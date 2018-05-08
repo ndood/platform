@@ -49,7 +49,7 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
         User user = userService.getCurrentUser();
         Order order = orderService.findByOrderNo(commentVO.getOrderNo());
         if (null == order){
-            throw new OrderException(OrderExceptionEnums.ORDER_NOT_EXIST_EXCEPTION);
+            throw new OrderException(order.getOrderNo(),"订单不存在!");
         }
         int serverUserId = order.getServiceUserId();
 

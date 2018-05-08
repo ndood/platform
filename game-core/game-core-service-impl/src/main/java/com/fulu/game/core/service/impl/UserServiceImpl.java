@@ -89,14 +89,14 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Override
     public void lock(int id) {
         User user = findById(id);
-        user.setStatus(false);
+        user.setStatus(0);
         userDao.update(user);
     }
 
     @Override
     public void unlock(int id) {
         User user = findById(id);
-        user.setStatus(true);
+        user.setStatus(1);
         userDao.update(user);
         SubjectUtil.setCurrentUser(user);
     }
@@ -112,7 +112,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     public User save(UserVO userVO) {
         User user = new User();
         BeanUtil.copyProperties(userVO, user);
-        user.setStatus(true);//默认账户解封状态
+        user.setStatus(1);//默认账户解封状态
         user.setType(UserTypeEnum.GENERAL_USER.getType());//默认普通用户
         user.setUserInfoAuth(AuthStatusEnum.NOT_PERFECT.getType());//默认未审核
         user.setBalance(Constant.DEFAULT_BALANCE);

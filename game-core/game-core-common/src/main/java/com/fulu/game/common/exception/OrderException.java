@@ -8,11 +8,6 @@ public class OrderException extends RuntimeException{
     private int code;
     private String message;
 
-    public OrderException(IExceptionCode iExceptionCode) {
-        super();
-        this.code = iExceptionCode.getCode();
-        this.message = iExceptionCode.getMessage();
-    }
 
     public int getCode() {
         return code;
@@ -24,6 +19,7 @@ public class OrderException extends RuntimeException{
     }
 
     public OrderException(String orderNo,String message) {
-        super("["+orderNo+"]"+message);
+        String msg = "["+orderNo+"]"+message;
+        this.message = msg;
     }
 }
