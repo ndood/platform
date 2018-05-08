@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.domain.Password;
+import com.fulu.game.common.enums.AdminStatus;
 import com.fulu.game.common.enums.exception.UserExceptionEnums;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.EncryptUtil;
@@ -42,7 +43,7 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
         Admin admin = new Admin();
         admin.setName(adminVO.getName());
         admin.setUsername(adminVO.getUsername());
-        admin.setStatus(1);
+        admin.setStatus(AdminStatus.ENABLE.getType());
         Password password = EncryptUtil.PiecesEncode(adminVO.getPassword());
         admin.setPassword(password.getPassword());
         admin.setSalt(password.getSalt());
