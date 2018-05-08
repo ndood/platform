@@ -1,5 +1,6 @@
 package com.fulu.game.core.service.impl;
 
+import com.fulu.game.common.enums.MoneyOperateTypeEnum;
 import com.fulu.game.common.enums.exception.CashExceptionEnums;
 import com.fulu.game.common.enums.exception.UserExceptionEnums;
 import com.fulu.game.common.exception.CashException;
@@ -9,6 +10,7 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.MoneyDetailsVO;
+import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -32,6 +34,8 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails,Integ
 	private MoneyDetailsDao moneyDetailsDao;
     @Autowired
     private UserService userService;
+    @Autowired
+    private AdminService adminService;
 
     @Override
     public ICommonDao<MoneyDetails, Integer> getDao() {
@@ -72,9 +76,9 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails,Integ
         MoneyDetails moneyDetails = new MoneyDetails();
         BeanUtil.copyProperties(moneyDetailsVO,moneyDetails);
         moneyDetails.setSum(newBalance);
-        moneyDetails.setOperatorId(((Admin)SubjectUtil.getCurrentUser()).getId());//查询当前管理员对象后修改掉
+        moneyDetails.setOperatorId(adminService.getCurrentUser().getId());//查询当前管理员对象后修改掉
         moneyDetails.setTargetId(user.getId());
-        moneyDetails.setAction(1);
+        moneyDetails.setAction(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType());
         moneyDetails.setCreateTime(new Date());
         moneyDetailsDao.create(moneyDetails);
         user.setBalance(newBalance);
@@ -103,9 +107,10 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails,Integ
         BigDecimal newBalance = balance.add(money);
 
         MoneyDetails moneyDetails = new MoneyDetails();
-        moneyDetails.setOperatorId(0);//默认是系统加款
+        moneyDetails.setMoney(money);
+        moneyDetails.setOperatorId(targetId);//默认是系统加款
         moneyDetails.setTargetId(targetId);
-        moneyDetails.setAction(2);//2表示陪玩订单
+        moneyDetails.setAction(MoneyOperateTypeEnum.ORDER_COMPLETE.getType());//2表示陪玩订单
         moneyDetails.setSum(newBalance);
         moneyDetails.setRemark("陪玩订单完成，系统打款,订单号_" + orderNo);
         moneyDetails.setCreateTime(new Date());

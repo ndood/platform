@@ -4,6 +4,8 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.github.pagehelper.PageInfo;
 
+import java.util.List;
+
 /**
  * 用户表
  *
@@ -17,6 +19,8 @@ public interface UserService extends ICommonService<User, Integer> {
     User findByOpenId(String openId);
 
     User findByImId(String imId);
+
+    List<User> findByImIds(String imIds);
 
     void lock(int id);
 

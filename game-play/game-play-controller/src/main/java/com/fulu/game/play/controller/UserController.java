@@ -23,6 +23,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.shiro.web.filter.mgt.DefaultFilter.user;
+
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/user")
@@ -241,6 +243,17 @@ public class UserController extends BaseController {
             user.setImPsw(null);
         }
         return Result.success().data(user).msg("查询IM用户成功！");
+    }
+
+    /**
+     * 用户-根据imIds批量查询聊天对象UserList
+     *
+     * @return
+     */
+    @PostMapping("/im/list")
+    public Result getImUserList(@RequestParam("imIds") String imIds) {
+        List<User> userList = userService.findByImIds(imIds);
+        return Result.success().data(userList).msg("查询IM用户成功！");
     }
 
     @PostMapping("chatwith/get")

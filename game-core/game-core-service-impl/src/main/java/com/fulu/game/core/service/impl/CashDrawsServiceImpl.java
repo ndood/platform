@@ -1,5 +1,7 @@
 package com.fulu.game.core.service.impl;
 
+import com.fulu.game.common.enums.CashProcessStatusEnum;
+import com.fulu.game.common.enums.MoneyOperateTypeEnum;
 import com.fulu.game.common.enums.exception.CashExceptionEnums;
 import com.fulu.game.common.enums.exception.ParamsExceptionEnums;
 import com.fulu.game.common.exception.CashException;
@@ -65,14 +67,14 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws,Integer> im
         BeanUtil.copyProperties(cashDrawsVO,cashDraws);
         cashDraws.setNickname(user.getNickname());
         cashDraws.setMobile(user.getMobile());
-        cashDraws.setCashStatus(0);
+        cashDraws.setCashStatus(CashProcessStatusEnum.WAITING.getType());
         cashDraws.setCreateTime(new Date());
         cashDrawsDao.create(cashDraws);
 
         MoneyDetails moneyDetails = new MoneyDetails();
         moneyDetails.setOperatorId(user.getId());
         moneyDetails.setTargetId(user.getId());
-        moneyDetails.setAction(-1);
+        moneyDetails.setAction(MoneyOperateTypeEnum.USER_DRAW_CASH.getType());
         moneyDetails.setMoney(money);
         moneyDetails.setSum(newBalance);
         moneyDetails.setCashId(cashDraws.getCashId());
@@ -106,7 +108,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws,Integer> im
         }
         cashDraws.setOperator("admin");
         cashDraws.setComment(comment);
-        cashDraws.setCashStatus(1);//修改为已处理状态
+        cashDraws.setCashStatus(CashProcessStatusEnum.DONE.getType());//修改为已处理状态
         cashDraws.setCashNo("");//订单处理号暂做保留
         cashDraws.setProcessTime(new Date());
         cashDrawsDao.update(cashDraws);

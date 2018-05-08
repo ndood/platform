@@ -20,10 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service("userService")
 public class UserServiceImpl extends AbsCommonService<User, Integer> implements UserService {
@@ -65,6 +62,29 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         List<User> users = userDao.findByParameter(userVO);
         return users.size() > 0 ? users.get(0) : null;
     }
+
+    @Override
+    public List<User> findByImIds(String imIds) {
+        String[] imIdArr = imIds.split(Constant.DEFAULT_SPLIT_SEPARATOR);
+        List<User> userList = new ArrayList<User>();
+        UserVO userVO = new UserVO();
+        if (imIdArr.length>0){
+            for (int i=0; i< imIdArr.length;i++) {
+                userVO.setImId(imIdArr[i]);
+                List<User> users = userDao.findByParameter(userVO);
+                if (users.size()>0){
+                    User user = users.get(0);
+                    user.setBalance(null);
+                    user.setOpenId(null);
+                    user.setIdcard(null);
+                    user.setImPsw(null);
+                    userList.add(user);
+                }
+            }
+        }
+        return userList;
+    }
+
 
     @Override
     public void lock(int id) {
