@@ -30,19 +30,7 @@ public class HomeController {
     }
 
 
-    @RequestMapping(value = "/nologin")
-    @ResponseBody
-    public Result noLogin() {
-        return Result.noLogin().msg("未登录!");
-    }
-
-    @RequestMapping(value = "/login")
-    public String loginIndex() {
-        return "login";
-    }
-
-
-    @RequestMapping(value = "/login")
+    @RequestMapping(value = "/login",method = RequestMethod.POST)
     @ResponseBody
     public Result login(String username,
                         String password,

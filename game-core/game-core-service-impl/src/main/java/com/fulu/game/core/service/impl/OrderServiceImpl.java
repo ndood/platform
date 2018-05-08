@@ -67,10 +67,12 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         List<OrderVO>  orderVOList = orderDao.findVOByParameter(params);
         for(OrderVO orderVO : orderVOList){
            User server = userService.findById(orderVO.getServiceUserId());
+           OrderProduct orderProduct =  orderProductService.findByOrderNo(orderVO.getOrderNo());
            orderVO.setServerHeadUrl(server.getHeadPortraitsUrl());
            orderVO.setServerNickName(server.getNickname());
            orderVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderVO.getStatus()));
            orderVO.setServerScoreAvg(server.getScoreAvg()==null? Constant.DEFAULT_SCORE_AVG:server.getScoreAvg());
+           orderVO.setOrderProduct(orderProduct);
         }
         return new PageInfo<>(orderVOList);
     }
@@ -452,12 +454,16 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         return orderConvertVo(order);
     }
 
-
+    /**
+     * 管理员协商处理订单管理员协商处理订单
+     * @param orderNo
+     * @return
+     */
     @Override
     public OrderVO adminHandleNegotiateOrder(String orderNo) {
         Order order =  findByOrderNo(orderNo);
         if(!order.getStatus().equals(OrderStatusEnum.APPEALING.getStatus())){
-            throw new OrderException(order.getOrderNo(),"只有申诉中的订单才能验收!");
+            throw new OrderException(order.getOrderNo(),"只有申诉中的订单才能操作!");
         }
         order.setStatus(OrderStatusEnum.ADMIN_NEGOTIATE.getStatus());
         order.setUpdateTime(new Date());
