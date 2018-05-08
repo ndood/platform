@@ -4,6 +4,7 @@ import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.github.pagehelper.PageInfo;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public interface OrderService extends ICommonService<Order,Integer>{
      * @param orderNo
      * @return
      */
-     OrderVO payOrder(String orderNo,String orderMoney);
+     OrderVO payOrder(String orderNo,BigDecimal orderMoney);
 
     /**
      * 陪玩师接收订单

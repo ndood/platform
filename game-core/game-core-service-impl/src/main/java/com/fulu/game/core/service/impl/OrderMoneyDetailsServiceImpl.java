@@ -11,6 +11,7 @@ import com.fulu.game.core.dao.OrderMoneyDetailsDao;
 import com.fulu.game.core.entity.OrderMoneyDetails;
 import com.fulu.game.core.service.OrderMoneyDetailsService;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 
@@ -30,7 +31,7 @@ public class OrderMoneyDetailsServiceImpl extends AbsCommonService<OrderMoneyDet
     public void create(String orderNo,
                        Integer userId,
                        DetailsEnum remark,
-                       String money) {
+                       BigDecimal money) {
         OrderMoneyDetails orderMoneyDetails = new OrderMoneyDetails();
         orderMoneyDetails.setOrderNo(orderNo);
         orderMoneyDetails.setUserId(userId);

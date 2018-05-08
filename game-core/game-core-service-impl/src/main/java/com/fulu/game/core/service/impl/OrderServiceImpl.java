@@ -226,7 +226,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      * @return
      */
     @Override
-    public OrderVO payOrder(String orderNo,String orderMoney){
+    public OrderVO payOrder(String orderNo,BigDecimal orderMoney){
         log.info("用户支付订单orderNo:{},orderMoney:{}",orderNo,orderMoney);
         Order order =  findByOrderNo(orderNo);
         if(order.getIsPay()){
@@ -489,7 +489,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
             throw new OrderException(orderNo,"订单退款失败!");
         }
         //记录订单流水
-        orderMoneyDetailsService.create(orderNo,userId,DetailsEnum.ORDER_USER_CANCEL,"-"+totalMoney.toPlainString());
+        orderMoneyDetailsService.create(orderNo,userId,DetailsEnum.ORDER_USER_CANCEL,totalMoney.negate());
     }
 
     /**

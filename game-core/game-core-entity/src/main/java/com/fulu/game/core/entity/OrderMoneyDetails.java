@@ -1,6 +1,7 @@
 package com.fulu.game.core.entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
 
@@ -24,7 +25,7 @@ public class OrderMoneyDetails implements Serializable {
 	//描述
 	private String remark;
 	//流水金额
-	private String money;
+	private BigDecimal money;
 	//
 	private Date createTime;
 

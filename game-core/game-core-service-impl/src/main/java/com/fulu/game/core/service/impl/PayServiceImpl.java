@@ -66,7 +66,7 @@ public class PayServiceImpl implements PayService {
             // 结果正确
             String orderNo = result.getOutTradeNo();
             String totalYuan = BaseWxPayResult.feeToYuan(result.getTotalFee());
-            orderService.payOrder(orderNo, totalYuan);
+            orderService.payOrder(orderNo, new BigDecimal(totalYuan));
             return WxPayNotifyResponse.success("处理成功!");
         } catch (Exception e) {
             log.error("微信回调结果异常,异常原因{}", e.getMessage());
