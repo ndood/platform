@@ -38,6 +38,7 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal,Integer> im
         orderDeal.setOrderNo(orderNo);
         orderDeal.setType(type);
         orderDeal.setRemark(remark);
+        orderDeal.setUserId(userId);
         orderDeal.setCreateTime(new Date());
         create(orderDeal);
         for(String url : fileUrls){

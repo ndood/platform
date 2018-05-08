@@ -169,8 +169,11 @@ public class CloopenSmsComponent {
             }
         }
         try {
-            if (BODY_TYPE == BodyType.Type_JSON) {
-                log.debug(jsonToMap(result).toString());
+            String resultMsg = jsonToMap(result).toString();
+            if(!flag){
+                log.error("短信请求错误{}",resultMsg);
+            }else{
+                log.debug(resultMsg);
             }
         } catch (Exception e) {
             log.error(getMyError("172003", "返回包体错误"),e);

@@ -42,7 +42,7 @@ public class HomeController {
     }
 
 
-    @RequestMapping(value = "/login",method = RequestMethod.POST)
+    @RequestMapping(value = "/login")
     @ResponseBody
     public Result login(String username,
                         String password,

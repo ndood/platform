@@ -68,6 +68,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         for(OrderVO orderVO : orderVOList){
            User server = userService.findById(orderVO.getServiceUserId());
            orderVO.setServerHeadUrl(server.getHeadPortraitsUrl());
+           orderVO.setServerNickName(server.getNickname());
            orderVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderVO.getStatus()));
            orderVO.setServerScoreAvg(server.getScoreAvg()==null? Constant.DEFAULT_SCORE_AVG:server.getScoreAvg());
         }
@@ -238,7 +239,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         orderMoneyDetailsService.create(order.getOrderNo(),order.getUserId(), DetailsEnum.ORDER_PAY,orderMoney);
         //发送短信通知给陪玩师
         User server = userService.findById(order.getServiceUserId());
-        SMSUtil.sendOrderReceivingRemind(order.getName(),server.getMobile());
+        SMSUtil.sendOrderReceivingRemind(server.getMobile(),order.getName());
         return orderConvertVo(order);
     }
 
