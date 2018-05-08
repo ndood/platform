@@ -49,13 +49,14 @@ public class UserController extends BaseController {
 
     /**
      * 用户-查询余额
-     *
+     * 账户金额不能从缓存取，因为存在管理员给用户加零钱缓存并未更新
      * @return
      */
     @PostMapping("/balance/get")
     public Result getBalance() {
         User user = userService.getCurrentUser();
-        return Result.success().data(user.getBalance()).msg("查询成功！");
+        User dbUser = userService.findById(user.getId());
+        return Result.success().data(dbUser.getBalance()).msg("查询成功！");
     }
 
     /**
@@ -222,7 +223,7 @@ public class UserController extends BaseController {
             userService.update(user);
             log.info("用户{}绑定IM信息成功", user.getId());
         } else if (status == 500) {
-            log.info("用户{}绑定IM失败", user.getId());
+            log.error("用户{}绑定IM失败", user.getId());
             return Result.error(ResultStatus.IM_REGIST_FAIL).msg("IM用户注册失败！");
         }
         return Result.success().msg("IM用户信息保存成功！");

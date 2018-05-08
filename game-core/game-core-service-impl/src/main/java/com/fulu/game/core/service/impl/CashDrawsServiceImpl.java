@@ -65,6 +65,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws,Integer> im
         BigDecimal newBalance = balance.subtract(money);
         CashDraws cashDraws = new CashDraws();
         BeanUtil.copyProperties(cashDrawsVO,cashDraws);
+        cashDraws.setUserId(user.getId());
         cashDraws.setNickname(user.getNickname());
         cashDraws.setMobile(user.getMobile());
         cashDraws.setCashStatus(CashProcessStatusEnum.WAITING.getType());
