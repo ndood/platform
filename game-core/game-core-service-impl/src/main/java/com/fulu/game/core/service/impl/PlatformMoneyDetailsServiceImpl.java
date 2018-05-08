@@ -48,4 +48,28 @@ public class PlatformMoneyDetailsServiceImpl extends AbsCommonService<PlatformMo
         create(platformMoneyDetails);
         return platformMoneyDetails;
     }
+
+
+    @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public PlatformMoneyDetails createSmallChangeDetails(String remark,BigDecimal money){
+        PageHelper.startPage(1,1,"create_time desc");
+        List<PlatformMoneyDetails> list = platformMoneyDetailsDao.findAll();
+        BigDecimal sum = new BigDecimal(0);
+        if(!list.isEmpty()){
+            sum = list.get(0).getSum();
+        }
+        BigDecimal newSum = sum.add(money);
+        PlatformMoneyDetails platformMoneyDetails = new PlatformMoneyDetails();
+        platformMoneyDetails.setMoney(money);
+        platformMoneyDetails.setSum(newSum);
+        platformMoneyDetails.setRemark(remark);
+        platformMoneyDetails.setCreateTime(new Date());
+        create(platformMoneyDetails);
+        return platformMoneyDetails;
+    }
+
+
+
+
 }

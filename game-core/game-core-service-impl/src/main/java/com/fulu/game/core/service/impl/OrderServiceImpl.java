@@ -475,7 +475,12 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         return orderConvertVo(order);
     }
 
-
+    /**
+     * 订单退款
+     * @param orderNo
+     * @param userId
+     * @param totalMoney
+     */
     public void orderRefund(String orderNo,Integer userId,BigDecimal totalMoney){
         try {
             payService.refund(orderNo,totalMoney);
