@@ -21,4 +21,6 @@ public interface Constant {
     //默认余额
     BigDecimal DEFAULT_BALANCE = new BigDecimal(0.00);
 
+    String DEFAULT_SPLIT_SEPARATOR = ",";
+
 }

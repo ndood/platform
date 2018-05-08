@@ -15,8 +15,8 @@ public class PlayUserToken extends UsernamePasswordToken {
     public String getOpenId(){
         return openId;
     }
-    public PlayUserToken(String openId, String sessionKey) {
-        super(openId, sessionKey);
+    public PlayUserToken(String openId) {
+        super(openId, "");
         this.openId = openId;
     }
 }
