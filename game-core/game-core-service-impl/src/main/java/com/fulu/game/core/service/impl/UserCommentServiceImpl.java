@@ -1,5 +1,6 @@
 package com.fulu.game.core.service.impl;
 
+import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.enums.exception.OrderExceptionEnums;
 import com.fulu.game.common.enums.exception.UserExceptionEnums;
 import com.fulu.game.common.exception.OrderException;
@@ -51,8 +52,12 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
         if (null == order){
             throw new OrderException(order.getOrderNo(),"订单不存在!");
         }
+        //只有待评价的订单才能评价
+        if(!order.getStatus().equals(OrderStatusEnum.SYSTEM_COMPLETE.getStatus())&&!order.getStatus().equals(OrderStatusEnum.COMPLETE.getStatus())){
+            throw new OrderException(order.getOrderNo(),"只有待评价的订单才能评价!");
+        }
+        userService.isCurrentUser(order.getUserId());
         int serverUserId = order.getServiceUserId();
-
         UserComment comment = new UserComment();
         comment.setRecordUser(commentVO.getRecordUser());
         comment.setUserId(user.getId());
@@ -63,6 +68,12 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
         comment.setCreateTime(new Date());
         comment.setUpdateTime(comment.getCreateTime());
         commentDao.create(comment);
+
+        //更改订单状态
+        order.setStatus(OrderStatusEnum.ALREADY_APPRAISE.getStatus());
+        order.setUpdateTime(new Date());
+        orderService.update(order);
+
         //commentDao.callScoreAvgProc(comment.getId());
         //查询陪玩师的评分平均值后更新score_avg字段
         BigDecimal scoreAvg = commentDao.findScoreAvgByServerUserId(serverUserId);
@@ -74,7 +85,6 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
         }
         serverUser.setScoreAvg(scoreAvg);
         userService.update(serverUser);
-
     }
 
 
