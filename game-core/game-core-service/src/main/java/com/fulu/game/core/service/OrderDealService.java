@@ -17,4 +17,11 @@ public interface OrderDealService extends ICommonService<OrderDeal,Integer>{
      void create(String orderNo,Integer userId,Integer type,String remark,String ...fileUrls);
 
      OrderDealVO findByUserAndOrderNo(Integer userId, String orderNo);
+
+     /**
+      * 查看陪玩师提交的验收结果
+      * @param orderNo
+      * @return
+      */
+     OrderDealVO findOrderAcceptanceResult(String orderNo);
 }

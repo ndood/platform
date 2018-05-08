@@ -6,6 +6,7 @@ import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.ProductDetailsVO;
 import com.fulu.game.core.entity.vo.ProductShowCaseVO;
+import com.fulu.game.core.entity.vo.SimpleProductVO;
 import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
@@ -35,6 +36,9 @@ public class ProductController extends BaseController{
     @Autowired
     private UserService userService;
 
+
+
+
     /**
      * 添加接单方式
      * @param techAuthId
@@ -60,6 +64,18 @@ public class ProductController extends BaseController{
     public Result findByProductId(Integer productId){
         ProductDetailsVO serverCardVO = productService.findDetailsByProductId(productId);
         return Result.success().data(serverCardVO);
+    }
+
+
+    /**
+     * 查询简单的商品信息
+     * @param productId
+     * @return
+     */
+    @RequestMapping(value = "/simple/details")
+    public Result findSimpleProductByProductId(Integer productId){
+        SimpleProductVO simpleProductVO =  productService.findSimpleProductByProductId(productId);
+        return Result.success().data(simpleProductVO);
     }
 
 

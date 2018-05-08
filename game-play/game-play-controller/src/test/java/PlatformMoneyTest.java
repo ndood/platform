@@ -19,7 +19,16 @@ public class PlatformMoneyTest {
 
     @Test
     public void test1(){
-        platformMoneyDetailsService.createOrderDetails("123456",new BigDecimal("10"));
+
+        for(int i =0;i<100;i++){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    platformMoneyDetailsService.createOrderDetails("123456",new BigDecimal(1));
+                }
+            }).start();
+        }
+
     }
 
 }

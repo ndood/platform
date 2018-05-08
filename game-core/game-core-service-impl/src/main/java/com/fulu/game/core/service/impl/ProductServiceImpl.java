@@ -256,6 +256,16 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return serverCardVO;
     }
 
+    @Override
+    public SimpleProductVO findSimpleProductByProductId(Integer productId) {
+        Product product = findById(productId);
+        UserInfoVO userInfo = userInfoAuthService.findUserCardByUserId(product.getUserId(),false,false,false,false);
+        SimpleProductVO simpleProductVO = new SimpleProductVO();
+        BeanUtil.copyProperties(product,simpleProductVO);
+        simpleProductVO.setUserInfo(userInfo);
+        return simpleProductVO;
+    }
+
     /**
      * 查询用户全部的商品
      * @param userId

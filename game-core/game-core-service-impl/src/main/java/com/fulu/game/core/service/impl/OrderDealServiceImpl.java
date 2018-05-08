@@ -2,9 +2,11 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderDealFile;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.service.OrderDealFileService;
+import com.fulu.game.core.service.OrderService;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,8 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal,Integer> im
 	private OrderDealDao orderDealDao;
     @Autowired
     private OrderDealFileService orderDealFileService;
-
+    @Autowired
+    private OrderService orderService;
 
     @Override
     public ICommonDao<OrderDeal, Integer> getDao() {
@@ -64,5 +67,16 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal,Integer> im
         List<OrderDealFile> orderDealFiles =  orderDealFileService.findByOrderDeal(orderDealVO.getId());
         orderDealVO.setOrderDealFileList(orderDealFiles);
         return orderDealVO;
+    }
+
+    /**
+     * 查看陪玩师提交的验收结果
+     * @param orderNo
+     * @return
+     */
+    @Override
+    public OrderDealVO findOrderAcceptanceResult(String orderNo){
+        Order order = orderService.findByOrderNo(orderNo);
+        return findByUserAndOrderNo(order.getServiceUserId(),orderNo);
     }
 }

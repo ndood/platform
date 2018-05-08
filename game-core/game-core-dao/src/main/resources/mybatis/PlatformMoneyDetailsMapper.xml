@@ -32,6 +32,12 @@
         from t_platform_money_details
     </select>
 
+    <select id="findLastMoneyDetails" resultMap="PlatformMoneyDetailsResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_platform_money_details ORDER BY id DESC  LIMIT 1
+    </select>
+
     <select id="findByParameter" resultMap="PlatformMoneyDetailsResultMap"
             parameterType="com.fulu.game.core.entity.vo.PlatformMoneyDetailsVO">
         SELECT
