@@ -5,8 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * @author
- * 2018.4.29
+ * @author 2018.4.29
  * 管理员订单列表查询参数VO
  */
 @Data
@@ -20,4 +19,5 @@ public class OrderReqVO {
     private String startTime;
     private String endTime;
     private String orderBy = "id DESC";
+    private Integer[] statusList;
 }
