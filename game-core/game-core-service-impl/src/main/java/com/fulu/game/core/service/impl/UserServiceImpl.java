@@ -59,8 +59,16 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     public User findByImId(String imId) {
         UserVO userVO = new UserVO();
         userVO.setImId(imId);
-        List<User> users = userDao.findByParameter(userVO);
-        return users.size() > 0 ? users.get(0) : null;
+        List<User> userList = userDao.findByParameter(userVO);
+        User user = null;
+        if (userList.size()>0){
+            user = userList.get(0);
+            user.setBalance(null);
+            user.setOpenId(null);
+            user.setIdcard(null);
+            user.setImPsw(null);
+        }
+        return user;
     }
 
     @Override
