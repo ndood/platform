@@ -4,11 +4,12 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authc.*;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
-
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 

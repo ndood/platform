@@ -86,7 +86,7 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         userService.update(user);
 
         //计入平台支出流水
-
+        platformMoneyDetailsService.createSmallChangeDetails(moneyDetails.getRemark(), moneyDetails.getMoney().negate());
         return moneyDetails;
     }
 
