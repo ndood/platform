@@ -99,14 +99,17 @@
             <if test="categoryId != null">
                 and o.category_id = #{categoryId}
             </if>
-            <if test="status != null">
-                and o.status = #{status}
-            </if>
             <if test="orderNo != null">
                 and op.order_no = #{orderNo}
             </if>
             <if test="userMobile != null">
                 and u.mobile = #{userMobile}
+            </if>
+            <if test="statusList != null">
+                and o.status in
+                <foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
             </if>
             <if test="startTime != null">
                 and o.create_time &gt;= #{startTime}
