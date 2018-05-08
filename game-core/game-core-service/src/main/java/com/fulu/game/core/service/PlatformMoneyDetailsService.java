@@ -14,7 +14,20 @@ import java.math.BigDecimal;
  */
 public interface PlatformMoneyDetailsService extends ICommonService<PlatformMoneyDetails,Integer>{
 
-
+    /**
+     * 订单流水操作
+     * @param orderNo
+     * @param money
+     * @return
+     */
     PlatformMoneyDetails createOrderDetails(String orderNo,  BigDecimal money);
 
+
+    /**
+     * 零钱流水操作
+     * @param remark
+     * @param money
+     * @return
+     */
+    PlatformMoneyDetails createSmallChangeDetails(String remark,BigDecimal money);
 }
