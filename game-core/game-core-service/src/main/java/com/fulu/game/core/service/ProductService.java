@@ -3,6 +3,7 @@ package com.fulu.game.core.service;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.vo.ProductShowCaseVO;
 import com.fulu.game.core.entity.vo.ProductDetailsVO;
+import com.fulu.game.core.entity.vo.SimpleProductVO;
 import com.github.pagehelper.PageInfo;
 
 import java.math.BigDecimal;
@@ -85,6 +86,9 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * @return
      */
     ProductDetailsVO findDetailsByProductId(Integer productId);
+
+
+    SimpleProductVO findSimpleProductByProductId(Integer productId);
 
     /**
      * 查询用户所有商品

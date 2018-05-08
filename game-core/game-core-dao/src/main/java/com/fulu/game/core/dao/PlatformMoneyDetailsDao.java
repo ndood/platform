@@ -18,4 +18,6 @@ public interface PlatformMoneyDetailsDao extends ICommonDao<PlatformMoneyDetails
 
     List<PlatformMoneyDetails> findByParameter(PlatformMoneyDetailsVO platformMoneyDetailsVO);
 
+
+    PlatformMoneyDetails findLastMoneyDetails();
 }

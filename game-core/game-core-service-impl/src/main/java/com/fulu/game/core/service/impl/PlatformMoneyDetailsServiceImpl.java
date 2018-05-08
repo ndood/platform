@@ -31,13 +31,12 @@ public class PlatformMoneyDetailsServiceImpl extends AbsCommonService<PlatformMo
 
 
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE)
-    public PlatformMoneyDetails createOrderDetails(String orderNo,  BigDecimal money) {
-        PageHelper.startPage(1,1,"create_time desc");
-        List<PlatformMoneyDetails> list = platformMoneyDetailsDao.findAll();
+    @Transactional
+    public  synchronized PlatformMoneyDetails  createOrderDetails(String orderNo,  BigDecimal money) {
+        PlatformMoneyDetails lastMoneyDetails = platformMoneyDetailsDao.findLastMoneyDetails();
         BigDecimal sum = new BigDecimal(0);
-        if(!list.isEmpty()){
-            sum = list.get(0).getSum();
+        if(lastMoneyDetails!=null){
+            sum = lastMoneyDetails.getSum();
         }
         BigDecimal newSum = sum.add(money);
         PlatformMoneyDetails platformMoneyDetails = new PlatformMoneyDetails();
@@ -51,13 +50,12 @@ public class PlatformMoneyDetailsServiceImpl extends AbsCommonService<PlatformMo
 
 
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE)
-    public PlatformMoneyDetails createSmallChangeDetails(String remark,BigDecimal money){
-        PageHelper.startPage(1,1,"create_time desc");
-        List<PlatformMoneyDetails> list = platformMoneyDetailsDao.findAll();
+    @Transactional
+    public synchronized PlatformMoneyDetails  createSmallChangeDetails(String remark,BigDecimal money){
+        PlatformMoneyDetails lastMoneyDetails = platformMoneyDetailsDao.findLastMoneyDetails();
         BigDecimal sum = new BigDecimal(0);
-        if(!list.isEmpty()){
-            sum = list.get(0).getSum();
+        if(lastMoneyDetails!=null){
+            sum = lastMoneyDetails.getSum();
         }
         BigDecimal newSum = sum.add(money);
         PlatformMoneyDetails platformMoneyDetails = new PlatformMoneyDetails();

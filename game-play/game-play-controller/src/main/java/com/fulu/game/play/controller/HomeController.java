@@ -6,6 +6,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.exception.ParamsExceptionEnums;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.service.PlatformMoneyDetailsService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.play.controller.exception.ParamsException;
 import com.fulu.game.play.shiro.PlayUserToken;
@@ -20,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @Controller
 @Slf4j
 public class HomeController {
@@ -28,7 +31,8 @@ public class HomeController {
     private WxMaService wxService;
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private PlatformMoneyDetailsService platformMoneyDetailsService;
     /**
      * 小程序提交参数code
      *
@@ -95,6 +99,29 @@ public class HomeController {
             log.error("测试登录异常!", e);
             return Result.error().msg("测试登陆异常！");
         }
+    }
+
+    @RequestMapping(value = "/test/platform", method = RequestMethod.GET)
+    @ResponseBody
+    public Result testPlatformMoney(){
+
+        try {
+            for(int i=0;i<10;i++){
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for(int j=0;j<10;j++){
+                            platformMoneyDetailsService.createOrderDetails("123456",new BigDecimal(1));
+                        }
+                    }
+                }).start();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+        return Result.success().msg("测试完成!");
     }
 
 }

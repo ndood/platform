@@ -174,9 +174,6 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         log.info("用户提交订单productId:{},num:{},remark:{}",productId,num,remark);
         User user = userService.getCurrentUser();
         Product product = productService.findById(productId);
-
-
-
         Category category = categoryService.findById(product.getCategoryId());
         //计算订单总价格
         BigDecimal totalMoney = product.getPrice().multiply(new BigDecimal(num));

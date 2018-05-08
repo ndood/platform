@@ -228,6 +228,17 @@ public class OrderController {
     }
 
     /**
+     * 查看陪玩师的验收截图
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/user/acceptance/result")
+    public Result userCheckServerAcceptanceResult(@RequestParam(required = true)String orderNo){
+        OrderDealVO orderDealVO = orderDealService.findOrderAcceptanceResult(orderNo);
+        return Result.success().data(orderDealVO);
+    }
+
+    /**
      * 用户订单详情页
      * @param orderNo
      * @return
