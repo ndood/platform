@@ -25,7 +25,7 @@ public class OrderStatusTask {
     /**
      * 取消超时订单
      */
-    @Scheduled(cron = "0/1 0/10 * * * ? ")  //cron接受cron表达式，根据cron表达式确定定时规则
+    @Scheduled(cron = "0 0/10 * * * ? ")  //cron接受cron表达式，根据cron表达式确定定时规则
     public void cancelTimeOutOrder() {
         //todo 处理已付款的订单
         Integer[] statusList = new Integer[]{OrderStatusEnum.NON_PAYMENT.getStatus(),OrderStatusEnum.WAIT_SERVICE.getStatus()};
@@ -52,7 +52,7 @@ public class OrderStatusTask {
     /**
      * 自动完成订单
      */
-    @Scheduled(cron = "0/1 0/15 * * * ? ")  //cron接受cron表达式，根据cron表达式确定定时规则
+    @Scheduled(cron = "0 0/15 * * * ? ")  //cron接受cron表达式，根据cron表达式确定定时规则
     public void autoCompleteOrder() {
         Integer[] statusList = new Integer[]{OrderStatusEnum.CHECK.getStatus()};
         List<Order> orderList = orderService.findByStatusList(statusList);
