@@ -52,9 +52,8 @@ public class UserController extends BaseController {
      */
     @PostMapping("/balance/get")
     public Result getBalance() {
-        User user = userService.getCurrentUser();
-        User dbUser = userService.findById(user.getId());
-        return Result.success().data(dbUser.getBalance()).msg("查询成功！");
+        User user = userService.findById(userService.getCurrentUser().getId());
+        return Result.success().data(user.getBalance()).msg("查询成功！");
     }
 
     /**
@@ -94,7 +93,7 @@ public class UserController extends BaseController {
      */
     @RequestMapping("/update")
     public Result update(@ModelAttribute UserVO userVO) {
-        User user = userService.getCurrentUser();
+        User user = userService.findById(userService.getCurrentUser().getId());
         user.setAge(userVO.getAge());
         user.setGender(userVO.getGender());
         user.setCity(userVO.getCity());
@@ -213,7 +212,7 @@ public class UserController extends BaseController {
                          @RequestParam("imId") String imId,
                          @RequestParam("imPsw") String imPsw) {
         log.info("IM注册请求开始,请求参数 status=={},imId=={}", status, imId);
-        User user = userService.getCurrentUser();
+        User user = userService.findById(userService.getCurrentUser().getId());
         if (status == 200) {
             user.setImId(imId);
             user.setImPsw(imPsw);

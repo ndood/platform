@@ -101,27 +101,6 @@ public class HomeController {
         }
     }
 
-    @RequestMapping(value = "/test/platform", method = RequestMethod.GET)
-    @ResponseBody
-    public Result testPlatformMoney(){
 
-        try {
-            for(int i=0;i<10;i++){
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        for(int j=0;j<10;j++){
-                            platformMoneyDetailsService.createOrderDetails("123456",new BigDecimal(1));
-                        }
-                    }
-                }).start();
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-
-        return Result.success().msg("测试完成!");
-    }
 
 }
