@@ -221,6 +221,7 @@ public class UserController extends BaseController {
             user.setImId(imId);
             user.setImPsw(imPsw);
             userService.update(user);
+            userService.updateRedisUser(user);
             log.info("用户{}绑定IM信息成功", user.getId());
         } else if (status == 500) {
             log.error("用户{}绑定IM失败", user.getId());
