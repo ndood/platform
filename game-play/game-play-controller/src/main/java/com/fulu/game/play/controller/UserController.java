@@ -4,6 +4,8 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.ResultStatus;
 import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.exception.UserExceptionEnums;
+import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
@@ -16,6 +18,7 @@ import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.UserTechAuthService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -149,6 +152,7 @@ public class UserController extends BaseController {
 
     @PostMapping("/mobile/bind")
     public Result bind(@ModelAttribute WxUserInfo wxUserInfo) {
+
         String token = SubjectUtil.getToken();
         //验证手机号的验证码
         String redisVerifyCode = redisOpenService.hget(RedisKeyEnum.SMS.generateKey(token), wxUserInfo.getMobile());
@@ -233,8 +237,14 @@ public class UserController extends BaseController {
      */
     @PostMapping("/im/get")
     public Result getImUser(@RequestParam("imId") String imId) {
+        if(StringUtils.isEmpty(imId)){
+            throw new UserException(UserExceptionEnums.IllEGAL_IMID_EXCEPTION);
+        }
         User user = userService.findByImId(imId);
-        return Result.success().data(user).msg("查询IM用户成功！");
+        if (null == user){
+            return Result.error().msg("未查询到该用户或尚未注册IM");
+        }
+        return Result.success().data(user).msg("查询IM用户成功");
     }
 
     /**

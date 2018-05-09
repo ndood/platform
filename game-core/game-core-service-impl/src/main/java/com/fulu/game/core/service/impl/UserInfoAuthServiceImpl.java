@@ -124,6 +124,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         }
         UserInfoVO userInfo = new UserInfoVO();
         userInfo.setUserId(userId);
+        userInfo.setType(user.getType());
         userInfo.setAge(user.getAge());
         userInfo.setCity(user.getCity());
         userInfo.setHeadUrl(user.getHeadPortraitsUrl());
