@@ -69,7 +69,6 @@ public class UserController extends BaseController {
                       @RequestParam(name = "realname", required = false, defaultValue = "false") Boolean realname,
                       @RequestParam(name = "age", required = false, defaultValue = "false") Boolean age) {
         User user = userService.getCurrentUser();
-        user.setId(null);
         user.setBalance(null);
         user.setOpenId(null);
         user.setPassword(null);
@@ -108,7 +107,6 @@ public class UserController extends BaseController {
         userService.update(user);
         userService.updateRedisUser(user);
 
-        user.setId(null);
         user.setBalance(null);
         user.setOpenId(null);
         user.setPassword(null);
@@ -236,12 +234,6 @@ public class UserController extends BaseController {
     @PostMapping("/im/get")
     public Result getImUser(@RequestParam("imId") String imId) {
         User user = userService.findByImId(imId);
-        if (null != user) {
-            user.setBalance(null);
-            user.setOpenId(null);
-            user.setIdcard(null);
-            user.setImPsw(null);
-        }
         return Result.success().data(user).msg("查询IM用户成功！");
     }
 
