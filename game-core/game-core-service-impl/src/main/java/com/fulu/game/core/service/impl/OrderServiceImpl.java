@@ -198,7 +198,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setUpdateTime(new Date());
         create(order);
         if(order.getUserId().equals(order.getServiceUserId())){
-            throw new ServiceErrorException("陪玩师和下单用户不能一样!");
+            throw new ServiceErrorException("不能给自己下单哦!");
         }
         //创建订单商品
         OrderProduct orderProduct = new OrderProduct();
