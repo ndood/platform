@@ -44,7 +44,6 @@ public class MyShiroRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) {
-
         log.info("开始MyShiroRealm验证");
         PlayUserToken playUserToken = (PlayUserToken) token;
         String openId = playUserToken.getOpenId();

@@ -11,8 +11,19 @@ import java.util.UUID;
  */
 public class GenIdUtil {
 
+    private static final String SALT = "";
+
     /**
      * 生成token
+     *
+     * @return
+     */
+    public static String GetToken() {
+        return UUID.randomUUID().toString().replace("-", "");
+    }
+
+    /**
+     * 生成uuid
      *
      * @return
      */
