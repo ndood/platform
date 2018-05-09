@@ -4,8 +4,9 @@ import com.fulu.game.common.exception.IExceptionCode;
 
 public enum UserExceptionEnums implements IExceptionCode {
 
-    USER_NOT_EXIST_EXCEPTION (50001,"用户不存在"),
-    IllEGAL_MOBILE_EXCEPTION (50002,"手机号为空或不合法");
+    USER_NOT_EXIST_EXCEPTION(50001, "用户不存在"),
+    IllEGAL_MOBILE_EXCEPTION(50002, "手机号为空或不合法"),
+    IllEGAL_IMID_EXCEPTION(50003, "imId参数为空");
     private int code;
     private String message;
 
@@ -13,6 +14,7 @@ public enum UserExceptionEnums implements IExceptionCode {
         this.code = code;
         this.message = message;
     }
+
     public int getCode() {
         return code;
     }

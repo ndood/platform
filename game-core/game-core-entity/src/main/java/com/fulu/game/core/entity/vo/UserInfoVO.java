@@ -9,6 +9,7 @@ import java.util.List;
 public class UserInfoVO {
 
     private Integer userId;
+    private Integer type;
 
     private String imId;
     private String imPsw;
