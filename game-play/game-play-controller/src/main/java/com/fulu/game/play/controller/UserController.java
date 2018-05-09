@@ -208,7 +208,6 @@ public class UserController extends BaseController {
                 return Result.success().data(newUser).msg("手机号绑定成功！");
             }
         }
-
     }
 
     @PostMapping("/im/save")
