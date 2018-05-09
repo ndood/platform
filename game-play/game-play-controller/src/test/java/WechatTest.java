@@ -1,3 +1,5 @@
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import com.fulu.game.core.service.PayService;
 import com.fulu.game.play.PlayApplication;
 import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderRequest;
@@ -13,7 +15,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = PlayApplication.class)
@@ -22,6 +26,8 @@ public class WechatTest {
 
     @Autowired
     private  WxPayService wxPayService;
+    @Autowired
+    private WxMaService wxMaService;
     @Autowired
     private PayService payService;
 
@@ -43,13 +49,22 @@ public class WechatTest {
     }
 
     @Test
-    public void test2(){
-
+    public void test2() {
         try {
-             payService.refund("180503844282",new BigDecimal(2),new BigDecimal(1));
-        }catch (Exception e){
+            WxMaTemplateMessage wxMaTemplateMessage = new WxMaTemplateMessage();
+            wxMaTemplateMessage.setTemplateId("yD7JulFzNv7ZNInswmn6_hdgwlf68qRL0fwLUNq98Vc");
+            wxMaTemplateMessage.setToUser("oZKvq4hk9VKOi4-khODa1FSfA7GA");
+            WxMaTemplateMessage.Data d1 = new WxMaTemplateMessage.Data("keyword1", "LAL");
+            WxMaTemplateMessage.Data d2 = new WxMaTemplateMessage.Data("keyword2", "HEEL");
+            List<WxMaTemplateMessage.Data> dataList = new ArrayList<>();
+            dataList.add(d1);
+            dataList.add(d2);
+            wxMaTemplateMessage.setData(dataList);
+            wxMaTemplateMessage.setFormId("form1");
+            wxMaService.getMsgService().sendTemplateMsg(wxMaTemplateMessage);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-    }
 
+    }
 }

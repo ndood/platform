@@ -70,7 +70,7 @@ public class UserController extends BaseController {
                       @RequestParam(name = "gender", required = false, defaultValue = "false") Boolean gender,
                       @RequestParam(name = "realname", required = false, defaultValue = "false") Boolean realname,
                       @RequestParam(name = "age", required = false, defaultValue = "false") Boolean age) {
-        User user = userService.getCurrentUser();
+        User user = userService.findById(userService.getCurrentUser().getId());
         user.setBalance(null);
         user.setOpenId(null);
         user.setPassword(null);
