@@ -1,5 +1,6 @@
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
+import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.service.PayService;
 import com.fulu.game.play.PlayApplication;
 import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderRequest;
@@ -33,19 +34,7 @@ public class WechatTest {
 
     @Test
     public void test1(){
-        WxPayUnifiedOrderRequest orderRequest = new WxPayUnifiedOrderRequest();
-        orderRequest.setBody("主题");
-        orderRequest.setOutTradeNo("123457474741");
-        orderRequest.setTotalFee(1);//元转成分
-        orderRequest.setOpenid("oZKvq4g36ualRRgTOpDq6RXJ8oig");
-        orderRequest.setSpbillCreateIp("10.25.14.1");
-        orderRequest.setTimeStart(DateUtil.format(new Date(),"yyyyMMddHHmmss"));
-        try {
-            WxPayUnifiedOrderResult wxPayUnifiedOrderResult = wxPayService.unifiedOrder(orderRequest);
-            System.out.println(wxPayUnifiedOrderResult);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        SMSUtil.sendOrderReceivingRemind("18801285391","王者荣耀 1*2小时");
     }
 
     @Test

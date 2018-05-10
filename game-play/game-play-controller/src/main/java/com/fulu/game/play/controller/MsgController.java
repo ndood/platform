@@ -16,7 +16,8 @@ public class MsgController {
     public Result sendWechatMsg(String formId,
                                 String imId){
 
-
+        System.out.println(formId);
+        System.out.println(imId);
         return Result.success();
     }
 
