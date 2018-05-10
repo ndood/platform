@@ -205,7 +205,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
             userInfoAuthVO.setGroupTags(allPersonTagVos);
             userInfoAuthVOList.add(userInfoAuthVO);
         }
-        PageInfo page = new PageInfo(userInfoAuthVOList);
+        PageInfo page = new PageInfo(userInfoAuths);
+        page.setList(userInfoAuthVOList);
         return page;
     }
 
