@@ -79,7 +79,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     @Override
     public PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize,String orderBy) {
         if(StringUtils.isBlank(orderBy)){
-            orderBy = "create_time desc";
+            orderBy = "update_time desc";
         }
         PageHelper.startPage(pageNum,pageSize,orderBy);
         List<UserTechAuth> userTechAuths = userTechAuthDao.findAll();
