@@ -60,11 +60,10 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         UserVO userVO = new UserVO();
         userVO.setImId(imId);
         List<User> userList = userDao.findByParameter(userVO);
-        User user = null;
         if (CollectionUtils.isEmpty(userList)) {
-            user = userList.get(0);
+            return null;
         }
-        return user;
+        return userList.get(0);
     }
 
     @Override
