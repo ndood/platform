@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 
@@ -50,7 +51,10 @@ public class User implements Serializable {
 	private Date createTime;
 	//修改时间
 	private Date updateTime;
+
+	@JsonIgnore
 	private String openId;
+
 	private String city;
 	private String province;
 	private String country;

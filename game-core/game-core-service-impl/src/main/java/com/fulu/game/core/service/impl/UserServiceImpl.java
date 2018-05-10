@@ -16,10 +16,10 @@ import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 @Service("userService")
@@ -61,12 +61,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         userVO.setImId(imId);
         List<User> userList = userDao.findByParameter(userVO);
         User user = null;
-        if (userList.size()>0){
+        if (CollectionUtils.isEmpty(userList)) {
             user = userList.get(0);
-            user.setBalance(null);
-            user.setOpenId(null);
-            user.setIdcard(null);
-            user.setImPsw(null);
         }
         return user;
     }
@@ -82,10 +78,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
                 List<User> users = userDao.findByParameter(userVO);
                 if (users.size()>0){
                     User user = users.get(0);
-                    user.setBalance(null);
-                    user.setOpenId(null);
-                    user.setIdcard(null);
-                    user.setImPsw(null);
                     userList.add(user);
                 }
             }
