@@ -296,6 +296,22 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         return orderConvertVo(order);
     }
 
+
+    @Override
+    public OrderVO systemCancelOrder(String orderNo) {
+        log.info("系统取消订单orderNo:{}",orderNo);
+        Order order =  findByOrderNo(orderNo);
+        order.setStatus(OrderStatusEnum.SYSTEM_CLOSE.getStatus());
+        order.setUpdateTime(new Date());
+        order.setCompleteTime(new Date());
+        update(order);
+        if(order.getIsPay()){
+            // 全额退款用户
+            orderRefund(order.getOrderNo(),order.getUserId(),order.getTotalMoney());
+        }
+        return orderConvertVo(order);
+    }
+
     /**
      * 用户取消订单
      * @param orderNo
@@ -389,6 +405,28 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
             throw new OrderException(order.getOrderNo(),"只有待验收订单才能验收!");
         }
         order.setStatus(OrderStatusEnum.COMPLETE.getStatus());
+        order.setUpdateTime(new Date());
+        order.setCompleteTime(new Date());
+        update(order);
+        //订单分润
+        shareProfit(order);
+        return orderConvertVo(order);
+    }
+
+
+    /**
+     * 用户验收订单
+     * @param orderNo
+     * @return
+     */
+    @Override
+    public OrderVO systemCompleteOrder(String orderNo){
+        log.info("系统完成订单orderNo:{}",orderNo);
+        Order order =  findByOrderNo(orderNo);
+        if(!order.getStatus().equals(OrderStatusEnum.CHECK.getStatus())){
+            throw new OrderException(order.getOrderNo(),"只有待验收订单才能验收!");
+        }
+        order.setStatus(OrderStatusEnum.SYSTEM_COMPLETE.getStatus());
         order.setUpdateTime(new Date());
         order.setCompleteTime(new Date());
         update(order);

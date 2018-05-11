@@ -20,8 +20,7 @@ public class OrderStatusTask {
 
     @Autowired
     private OrderService orderService;
-    @Autowired
-    private PayService payService;
+
     /**
      * 取消超时订单
      */
@@ -34,16 +33,7 @@ public class OrderStatusTask {
             long hour = DateUtil.between(order.getCreateTime(),new Date(),DateUnit.HOUR);
             if(hour>=12){
                 log.info(order.getOrderNo()+"-------取消订单!");
-                order.setStatus(OrderStatusEnum.SYSTEM_CLOSE.getStatus());
-                order.setUpdateTime(new Date());
-                orderService.update(order);
-                if(order.getIsPay()){
-                    try {
-                        payService.refund(order.getOrderNo(),order.getTotalMoney());
-                    }catch (Exception e){
-                        log.error("退款失败{}",order.getOrderNo(),e.getMessage());
-                    }
-                }
+                orderService.systemCancelOrder(order.getOrderNo());
             }
         }
     }
@@ -60,11 +50,7 @@ public class OrderStatusTask {
             long hour = DateUtil.between(order.getCreateTime(),new Date(),DateUnit.HOUR);
             if(hour>=12){
                 log.info(order.getOrderNo()+"-------订单完成!");
-                order.setStatus(OrderStatusEnum.SYSTEM_COMPLETE.getStatus());
-                order.setUpdateTime(new Date());
-                order.setCompleteTime(new Date());
-                orderService.update(order);
-                orderService.shareProfit(order);
+                orderService.systemCompleteOrder(order.getOrderNo());
             }
         }
     }
