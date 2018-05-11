@@ -20,7 +20,7 @@ public class WechatFormid implements Serializable {
 	//
 	private Integer userId;
 	//
-	private Integer formId;
+	private String formId;
 	//
 	private Date createTime;
 
