@@ -58,7 +58,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService{
         WxMaTemplateMessage wxMaTemplateMessage = new WxMaTemplateMessage();
         wxMaTemplateMessage.setTemplateId(WechatTemplateEnum.PUSH_MSG.getType());
         wxMaTemplateMessage.setToUser(user.getOpenId());
-        wxMaTemplateMessage.setPage("/pages/index/index");
+        wxMaTemplateMessage.setPage("/pages/index/index?stay=true");
         wxMaTemplateMessage.setFormId(formId);
         List<WxMaTemplateMessage.Data> dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", user.getNickname()+":"+content),new WxMaTemplateMessage.Data("keyword2", date));
         wxMaTemplateMessage.setData(dataList);
