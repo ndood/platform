@@ -1,5 +1,6 @@
 package com.fulu.game.core.service;
 
+import com.fulu.game.common.enums.PlatFormMoneyTypeEnum;
 import com.fulu.game.core.entity.PlatformMoneyDetails;
 
 import java.math.BigDecimal;
@@ -20,7 +21,7 @@ public interface PlatformMoneyDetailsService extends ICommonService<PlatformMone
      * @param money
      * @return
      */
-    PlatformMoneyDetails createOrderDetails(String orderNo,  BigDecimal money);
+    PlatformMoneyDetails createOrderDetails(PlatFormMoneyTypeEnum platFormMoneyTypeEnum, String orderNo, BigDecimal money);
 
 
     /**

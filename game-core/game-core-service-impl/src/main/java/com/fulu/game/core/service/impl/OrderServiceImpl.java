@@ -236,6 +236,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         update(order);
         //记录订单流水
         orderMoneyDetailsService.create(order.getOrderNo(),order.getUserId(), DetailsEnum.ORDER_PAY,orderMoney);
+        //记录平台流水
+        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_PAY,order.getOrderNo(),order.getTotalMoney());
         //发送短信通知给陪玩师
         User server = userService.findById(order.getServiceUserId());
         SMSUtil.sendOrderReceivingRemind(server.getMobile(),order.getName());
@@ -404,8 +406,10 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         BigDecimal serverMoney = order.getTotalMoney().subtract(order.getCommissionMoney());
         //记录用户流水
         moneyDetailsService.orderSave(serverMoney,order.getServiceUserId(),order.getOrderNo());
+        //平台记录支付打手流水
+        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.SHARE_PROFIT,order.getOrderNo(),serverMoney.negate());
         //平台记录收入流水
-        platformMoneyDetailsService.createOrderDetails(order.getOrderNo(),order.getCommissionMoney());
+        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.SHARE_PROFIT,order.getOrderNo(),order.getCommissionMoney());
     }
 
 
@@ -467,8 +471,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setCompleteTime(new Date());
         order.setCommissionMoney(order.getTotalMoney());
         update(order);
-        //订单全部金额记录平台流水
-        platformMoneyDetailsService.createOrderDetails(order.getOrderNo(),order.getCommissionMoney());
+        //订单协商,全部金额记录平台流水
+        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_NEGOTIATE,order.getOrderNo(),order.getCommissionMoney());
         return orderConvertVo(order);
     }
 
@@ -479,6 +483,10 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      * @param totalMoney
      */
     public void orderRefund(String orderNo,Integer userId,BigDecimal totalMoney){
+        Order order = findByOrderNo(orderNo);
+        if(!order.getIsPay()){
+            throw new OrderException(orderNo,"未支付订单不允许退款!");
+        }
         try {
             payService.refund(orderNo,totalMoney);
         }catch (Exception e){
@@ -487,6 +495,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         }
         //记录订单流水
         orderMoneyDetailsService.create(orderNo,userId,DetailsEnum.ORDER_USER_CANCEL,totalMoney.negate());
+        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_REFUND,orderNo,totalMoney.negate());
+
     }
 
     /**

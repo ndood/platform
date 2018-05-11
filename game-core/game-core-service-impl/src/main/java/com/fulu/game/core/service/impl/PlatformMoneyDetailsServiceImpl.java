@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.enums.PlatFormMoneyTypeEnum;
 import com.fulu.game.core.dao.ICommonDao;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class PlatformMoneyDetailsServiceImpl extends AbsCommonService<PlatformMo
 
     @Override
     @Transactional
-    public  synchronized PlatformMoneyDetails  createOrderDetails(String orderNo,  BigDecimal money) {
+    public  synchronized PlatformMoneyDetails  createOrderDetails(PlatFormMoneyTypeEnum platFormMoneyTypeEnum, String orderNo, BigDecimal money) {
         PlatformMoneyDetails lastMoneyDetails = platformMoneyDetailsDao.findLastMoneyDetails();
         BigDecimal sum = new BigDecimal(0);
         if(lastMoneyDetails!=null){
@@ -42,7 +43,7 @@ public class PlatformMoneyDetailsServiceImpl extends AbsCommonService<PlatformMo
         PlatformMoneyDetails platformMoneyDetails = new PlatformMoneyDetails();
         platformMoneyDetails.setMoney(money);
         platformMoneyDetails.setSum(newSum);
-        platformMoneyDetails.setRemark(orderNo+":分润");
+        platformMoneyDetails.setRemark(platFormMoneyTypeEnum.getType()+"["+orderNo+"]");
         platformMoneyDetails.setCreateTime(new Date());
         create(platformMoneyDetails);
         return platformMoneyDetails;
