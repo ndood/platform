@@ -404,12 +404,12 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      */
     public void shareProfit(Order order){
         BigDecimal serverMoney = order.getTotalMoney().subtract(order.getCommissionMoney());
-        //记录用户流水
+        //记录用户加零钱
         moneyDetailsService.orderSave(serverMoney,order.getServiceUserId(),order.getOrderNo());
         //平台记录支付打手流水
-        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.SHARE_PROFIT,order.getOrderNo(),serverMoney.negate());
+        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_SHARE_PROFIT,order.getOrderNo(),serverMoney.negate());
         //平台记录收入流水
-        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.SHARE_PROFIT,order.getOrderNo(),order.getCommissionMoney());
+        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_SHARE_PROFIT,order.getOrderNo(),order.getCommissionMoney());
     }
 
 

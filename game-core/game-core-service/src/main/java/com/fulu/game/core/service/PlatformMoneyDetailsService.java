@@ -13,7 +13,7 @@ import java.math.BigDecimal;
  * @email ${email}
  * @date 2018-05-02 17:10:26
  */
-public interface PlatformMoneyDetailsService extends ICommonService<PlatformMoneyDetails,Integer>{
+public interface PlatformMoneyDetailsService{
 
     /**
      * 订单流水操作
@@ -30,5 +30,5 @@ public interface PlatformMoneyDetailsService extends ICommonService<PlatformMone
      * @param money
      * @return
      */
-    PlatformMoneyDetails createSmallChangeDetails(String remark,BigDecimal money);
+    PlatformMoneyDetails createSmallChangeDetails(String remark,Integer userId,BigDecimal money);
 }
