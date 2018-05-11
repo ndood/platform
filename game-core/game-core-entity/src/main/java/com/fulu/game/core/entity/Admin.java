@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 /**
@@ -22,8 +23,10 @@ public class Admin implements Serializable {
 	//用户名
 	private String username;
 	//密码
+	@JsonIgnore
 	private String password;
 	//密码盐
+	@JsonIgnore
 	private String salt;
 	//状态(0失效,1启用)
 	private Integer status;

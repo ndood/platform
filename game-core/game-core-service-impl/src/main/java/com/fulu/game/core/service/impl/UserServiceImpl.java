@@ -16,10 +16,10 @@ import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
+import com.xiaoleilu.hutool.util.CollectionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 @Service("userService")
@@ -41,7 +41,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         UserVO userVO = new UserVO();
         userVO.setMobile(mobile);
         List<User> users = userDao.findByParameter(userVO);
-        if (users.isEmpty()) {
+        if (CollectionUtil.isEmpty(users)) {
             return null;
         }
         return users.get(0);
@@ -52,7 +52,10 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         UserVO userVO = new UserVO();
         userVO.setOpenId(openId);
         List<User> users = userDao.findByParameter(userVO);
-        return users.size() > 0 ? users.get(0) : null;
+        if (CollectionUtil.isEmpty(users)) {
+            return null;
+        }
+        return users.get(0);
     }
 
     @Override
@@ -60,15 +63,10 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         UserVO userVO = new UserVO();
         userVO.setImId(imId);
         List<User> userList = userDao.findByParameter(userVO);
-        User user = null;
-        if (userList.size()>0){
-            user = userList.get(0);
-            user.setBalance(null);
-            user.setOpenId(null);
-            user.setIdcard(null);
-            user.setImPsw(null);
+        if (CollectionUtil.isEmpty(userList)) {
+            return null;
         }
-        return user;
+        return userList.get(0);
     }
 
     @Override
@@ -76,16 +74,12 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         String[] imIdArr = imIds.split(Constant.DEFAULT_SPLIT_SEPARATOR);
         List<User> userList = new ArrayList<User>();
         UserVO userVO = new UserVO();
-        if (imIdArr.length>0){
-            for (int i=0; i< imIdArr.length;i++) {
+        if (imIdArr.length > 0) {
+            for (int i = 0; i < imIdArr.length; i++) {
                 userVO.setImId(imIdArr[i]);
                 List<User> users = userDao.findByParameter(userVO);
-                if (users.size()>0){
+                if (users.size() > 0) {
                     User user = users.get(0);
-                    user.setBalance(null);
-                    user.setOpenId(null);
-                    user.setIdcard(null);
-                    user.setImPsw(null);
                     userList.add(user);
                 }
             }
@@ -156,7 +150,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Override
     public Boolean isCurrentUser(Integer userId) {
         User currentUser = getCurrentUser();
-        if(currentUser.getId().equals(userId)){
+        if (currentUser.getId().equals(userId)) {
             return true;
         }
         throw new ServiceErrorException("用户不匹配!");

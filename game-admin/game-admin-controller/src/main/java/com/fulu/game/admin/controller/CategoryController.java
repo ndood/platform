@@ -8,7 +8,6 @@ import com.fulu.game.core.entity.vo.CategoryVO;
 import com.fulu.game.core.entity.vo.TagVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +35,7 @@ public class CategoryController extends BaseController {
 
     /**
      * 内容列表
+     *
      * @param pageNum
      * @param pageSize
      * @return
@@ -44,39 +44,42 @@ public class CategoryController extends BaseController {
     public Result list(Integer pageNum,
                        Integer pageSize,
                        Boolean status) {
-        PageInfo<Category> page = categoryService.list(pageNum, pageSize,status,null);
+        PageInfo<Category> page = categoryService.list(pageNum, pageSize, status, null);
         return Result.success().data(page);
     }
 
     /**
      * 内容删除
+     *
      * @param id
      * @return
      */
     @PostMapping(value = "/del")
-    public Result delete(Integer id){
+    public Result delete(Integer id) {
         categoryService.deleteById(id);
         return Result.success().msg("删除成功!");
     }
 
     /**
      * 查询所有内容
+     *
      * @return
      */
     @PostMapping(value = "/list-all")
-    public Result listAll(){
-        List<Category> list = categoryService.findByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType(),null);
+    public Result listAll() {
+        List<Category> list = categoryService.findByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType(), null);
         return Result.success().data(list);
     }
 
     /**
      * 查询单个内容所有信息
+     *
      * @param categoryId
      * @return
      */
     @PostMapping(value = "/query")
-    public Result info(@RequestParam(required = true) Integer categoryId){
-        CategoryVO categoryVO =categoryService.findCategoryVoById(categoryId);
+    public Result info(@RequestParam(required = true) Integer categoryId) {
+        CategoryVO categoryVO = categoryService.findCategoryVoById(categoryId);
         return Result.success().data(categoryVO);
     }
 
@@ -97,7 +100,7 @@ public class CategoryController extends BaseController {
         category.setName(name);
         category.setSort(sort);
         category.setStatus(status);
-        if(charges!=null){
+        if (charges != null) {
             category.setCharges(charges.divide(new BigDecimal(100)));
         }
         category.setIcon(icon);
@@ -109,14 +112,14 @@ public class CategoryController extends BaseController {
             categoryService.create(category);
             return Result.success().data(category).msg("内容创建成功!");
         } else {
-            if(most!=null){
-               Category origCategory = categoryService.findById(id);
-               if(origCategory.getTagId()!=null){
-                   Tag tag = new Tag();
-                   tag.setId(origCategory.getTagId());
-                   tag.setMost(most);
-                   tagService.update(tag);
-               }
+            if (most != null) {
+                Category origCategory = categoryService.findById(id);
+                if (origCategory.getTagId() != null) {
+                    Tag tag = new Tag();
+                    tag.setId(origCategory.getTagId());
+                    tag.setMost(most);
+                    tagService.update(tag);
+                }
             }
             category.setUpdateTime(new Date());
             categoryService.update(category);
@@ -131,10 +134,10 @@ public class CategoryController extends BaseController {
      * @return
      */
     @PostMapping(value = "/salesmode/create")
-    public Result salesModeCreate(@RequestParam(required = true)Integer categoryId,
-                                  @RequestParam(required = true)String name,
-                                  @RequestParam(required = false)BigDecimal price,
-                                  @RequestParam(required = true)Integer rank) {
+    public Result salesModeCreate(@RequestParam(required = true) Integer categoryId,
+                                  @RequestParam(required = true) String name,
+                                  @RequestParam(required = false) BigDecimal price,
+                                  @RequestParam(required = true) Integer rank) {
 
         SalesMode salesMode = new SalesMode();
         salesMode.setCategoryId(categoryId);
@@ -149,10 +152,11 @@ public class CategoryController extends BaseController {
 
     /**
      * 删除销售方式
+     *
      * @return
      */
     @PostMapping(value = "/salesmode/delete")
-    public Result saleModeDelete(@RequestParam(required = true)Integer id){
+    public Result saleModeDelete(@RequestParam(required = true) Integer id) {
         salesModeService.deleteById(id);
         return Result.success().msg("销售方式删除成功!");
     }
@@ -161,20 +165,21 @@ public class CategoryController extends BaseController {
      * 创建段位
      **/
     @PostMapping(value = "/dan/create")
-    public Result danCreate(@RequestParam(required = true)Integer categoryId,
-                            @RequestParam(required = true)String name,
-                            @RequestParam(required = true)Integer rank) {
-        TechValue techValue = techValueService.createDan(categoryId, name,rank);
+    public Result danCreate(@RequestParam(required = true) Integer categoryId,
+                            @RequestParam(required = true) String name,
+                            @RequestParam(required = true) Integer rank) {
+        TechValue techValue = techValueService.createDan(categoryId, name, rank);
         return Result.success().msg("段位创建成功!").data(techValue);
     }
 
     /**
      * 删除段位
+     *
      * @param id
      * @return
      */
     @PostMapping(value = "/dan/delete")
-    public Result danDelete(@RequestParam(required = true)Integer id){
+    public Result danDelete(@RequestParam(required = true) Integer id) {
         techValueService.deleteById(id);
         return Result.success().msg("段位删除成功!");
     }
@@ -182,13 +187,14 @@ public class CategoryController extends BaseController {
 
     /**
      * 查询游戏所有标签
+     *
      * @param categoryId
      * @return
      */
     @PostMapping(value = "/tag/list")
-    public Result techTags(@RequestParam(required = true)Integer categoryId){
-        Category category =categoryService.findById(categoryId);
-        if(category.getTagId()==null){
+    public Result techTags(@RequestParam(required = true) Integer categoryId) {
+        Category category = categoryService.findById(categoryId);
+        if (category.getTagId() == null) {
             return Result.error().msg("该游戏没有设置标签!");
         }
         TagVO tagVO = tagService.findTagsByTagPid(category.getTagId());
@@ -197,15 +203,15 @@ public class CategoryController extends BaseController {
 
     /**
      * 查询游戏所有段位
+     *
      * @return
      */
     @PostMapping(value = "/dan/list")
-    public Result danList(@RequestParam(required=true,name = "categoryId") Integer categoryId){
+    public Result danList(@RequestParam(required = true, name = "categoryId") Integer categoryId) {
         TechAttr techAttr = techAttrService.findByCategoryAndType(categoryId, TechAttrTypeEnum.DAN.getType());
-        List<TechValue>  techValueList =   techValueService.findByTechAttrId(techAttr.getId());
+        List<TechValue> techValueList = techValueService.findByTechAttrId(techAttr.getId());
         return Result.success().data(techValueList);
     }
-
 
 
 }

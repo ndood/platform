@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 
@@ -31,8 +32,10 @@ public class User implements Serializable {
 
 	private Integer age;
 	//密码
+	@JsonIgnore
 	private String password;
 	//密码盐
+	@JsonIgnore
 	private String salt;
 	//真实姓名
 	private String realname;
@@ -43,6 +46,7 @@ public class User implements Serializable {
 	//信息认证(0未完善,1已完善,2审核通过)
 	private Integer userInfoAuth;
 	//零钱
+	@JsonIgnore
 	private BigDecimal balance;
 	//状态(0封禁,1为解封)
 	private Integer status;

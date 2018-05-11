@@ -416,7 +416,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      * @return
      */
     public OrderVO adminHandleCompleteOrder(String orderNo){
-        log.info("管理员强制完成订单 (大款给打手)orderNo:{}",orderNo);
+        log.info("管理员强制完成订单 (打款给打手)orderNo:{}",orderNo);
         Order order =  findByOrderNo(orderNo);
         if(!order.getStatus().equals(OrderStatusEnum.APPEALING.getStatus())){
             throw new OrderException(order.getOrderNo(),"只有申诉中的订单才能操作!");
