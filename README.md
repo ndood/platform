@@ -11,5 +11,6 @@
 
 
 ### 陪玩第二期
-- 后台：https://pro.modao.cc/app/31f90f2014820fc6e1d847463e56d3423064e956#screen=s677a75cbedf5eba6bf0bab
-- 前端：https://pro.modao.cc/app/8133c6ae4e0257ac2bfe55b17b19dc0256881c4b#screen=s15e86795df357fd0db0bff
+- 后台：https://pro.modao.cc/app/qQJAohdBe9kmFzOtcfTwThWvpXM2ruh#screen=s055B5AFEA01525858381373
+- 前端：https://pro.modao.cc/app/UlxnBqRFdRL3BHfRXrEGgvjVQpqtH84#screen=s868D2631F41525857657981
+

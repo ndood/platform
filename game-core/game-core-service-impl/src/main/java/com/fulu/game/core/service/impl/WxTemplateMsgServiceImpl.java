@@ -79,11 +79,11 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService{
             return null;
         }
         synchronized (objects.get(userId % LOCK_NUM)) {
-            WechatFormid formid = formidList.get(0);
+            WechatFormid formidObj = formidList.get(0);
             try {
-                return formid.getFormId();
+                return formidObj.getFormId();
             } finally {
-                wechatFormidService.deleteNotAvailableFormIds(formid);
+                wechatFormidService.deleteNotAvailableFormIds(formidObj);
             }
         }
     }
