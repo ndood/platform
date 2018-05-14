@@ -10,6 +10,8 @@ public interface Constant {
     Long VERIFYCODE_CACHE_TIME_DEV = 5 * 60L;
     Long VERIFYCODE_CACHE_TIME_DEP = 1 * 60L;
 
+    Long TIME_HOUR_TOW = 2*3600L;
+
     //手机验证码限定次数和限定时间
     Integer MOBILE_CODE_SEND_TIMES_DEV = 20;
     Integer MOBILE_CODE_SEND_TIMES_DEP = 3;

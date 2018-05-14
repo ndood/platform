@@ -263,7 +263,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
                 }
             }
         }
-
         return tagVOList;
     }
 
