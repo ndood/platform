@@ -53,14 +53,10 @@ public class WechatFormidServiceImpl extends AbsCommonService<WechatFormid,Integ
 
     public void deleteNotAvailableFormIds(WechatFormid ... wechatFormid){
         if(wechatFormid.length>0){
-           new Thread(new Runnable() {
-               @Override
-               public void run() {
-                   for(WechatFormid w:wechatFormid){
-                       deleteById(w.getId());
-                   }
-               }
-           }).start();
+            for (WechatFormid w : wechatFormid) {
+                deleteById(w.getId());
+            }
+
         }
     }
 
