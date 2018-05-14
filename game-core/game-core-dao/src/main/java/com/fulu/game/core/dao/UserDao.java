@@ -2,11 +2,9 @@ package com.fulu.game.core.dao;
 
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserVO;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
-import java.util.Map;
-
-import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 用户表

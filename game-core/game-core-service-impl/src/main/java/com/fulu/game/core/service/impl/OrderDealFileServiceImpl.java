@@ -15,11 +15,10 @@ import java.util.List;
 
 
 @Service
-public class OrderDealFileServiceImpl extends AbsCommonService<OrderDealFile,Integer> implements OrderDealFileService {
+public class OrderDealFileServiceImpl extends AbsCommonService<OrderDealFile, Integer> implements OrderDealFileService {
 
     @Autowired
-	private OrderDealFileDao orderDealFileDao;
-
+    private OrderDealFileDao orderDealFileDao;
 
 
     @Override
@@ -28,7 +27,7 @@ public class OrderDealFileServiceImpl extends AbsCommonService<OrderDealFile,Int
     }
 
 
-    public List<OrderDealFile> findByOrderDeal(Integer orderDealId){
+    public List<OrderDealFile> findByOrderDeal(Integer orderDealId) {
         OrderDealFileVO orderDealFileVO = new OrderDealFileVO();
         orderDealFileVO.setOrderDealId(orderDealId);
         return orderDealFileDao.findByParameter(orderDealFileVO);

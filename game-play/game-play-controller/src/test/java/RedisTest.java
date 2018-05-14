@@ -1,4 +1,3 @@
-import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.play.PlayApplication;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -7,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.HashMap;
@@ -16,18 +18,43 @@ import java.util.Map;
 @SpringBootTest(classes = PlayApplication.class)
 @Slf4j
 public class RedisTest {
-    @Autowired
-    private RedisOpenServiceImpl redisOpenService;
+
     @Autowired
     private RedisTemplate redisTemplate;
 
+    /**
+     * 测试key-String
+     */
     @Test
-    public void  test1(){
-        HashOperations<String, Object, Object> hashOperations = redisTemplate.opsForHash();
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("map1", "fiala1");
-        map.put("map2", "fiala2");
-        hashOperations.putAll("hash", map);
+    public void testValue() {
+        //default JdkSerializationRedisSerializer
+        //StringRedisSerializer
+        //Jackson2JsonRedisSerializer
 
+        RedisSerializer<String> redisSerializer = new StringRedisSerializer();
+        redisTemplate.setKeySerializer(redisSerializer);
+        redisTemplate.setValueSerializer(redisSerializer);
+
+        String key = "a";
+        String value = "123";
+        ValueOperations<String, Object> valueOps = redisTemplate.opsForValue();
+        valueOps.set(key, value);
+    }
+
+    /**
+     * 测试key-hash
+     */
+    @Test
+    public void testHash() {
+
+        RedisSerializer<String> redisSerializer = new StringRedisSerializer();
+        redisTemplate.setHashKeySerializer(redisSerializer);
+        redisTemplate.setHashValueSerializer(redisSerializer);
+
+        HashOperations<String, String, Object> opsForHash = redisTemplate.opsForHash();
+        Map<String, String> map = new HashMap<>();
+        map.put("a", "1");
+        map.put("b", "2");
+        opsForHash.putAll("hh", map);
     }
 }

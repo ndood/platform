@@ -23,13 +23,16 @@ public class Config {
 
     private Wechat wechat = new Wechat();
 
+    //环信账户配置信息
+    private Im im = new Im();
+
     @Data
-    public static class Evn{
+    public static class Evn {
         private String prefix;
     }
 
     @Data
-    public static class Oss{
+    public static class Oss {
         private String endpoint;
         private String accessKeyId;
         private String accessKeySecret;
@@ -38,7 +41,7 @@ public class Config {
     }
 
     @Data
-    public static class Cloopen{
+    public static class Cloopen {
         private String serverIp;
         private String serverPort;
         private String accountSid;
@@ -48,7 +51,7 @@ public class Config {
 
 
     @Data
-    public static class Wechat{
+    public static class Wechat {
         private String appId;
         private String secret;
         private String token;
@@ -62,5 +65,16 @@ public class Config {
         private String tradeType;
         private String notifyUrl;
 
+    }
+
+    @Data
+    public static class Im {
+        private String urlPrefix;
+        private String appKey;
+        private String orgName;
+        private String appName;
+        private String grantType;
+        private String clientId;
+        private String clientSecret;
     }
 }

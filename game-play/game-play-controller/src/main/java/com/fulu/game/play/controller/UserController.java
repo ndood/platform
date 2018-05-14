@@ -71,20 +71,21 @@ public class UserController extends BaseController {
                       @RequestParam(name = "realname", required = false, defaultValue = "false") Boolean realname,
                       @RequestParam(name = "age", required = false, defaultValue = "false") Boolean age) {
         User user = userService.findById(userService.getCurrentUser().getId());
-        user.setBalance(null);
-        user.setOpenId(null);
-        user.setPassword(null);
-        user.setSalt(null);
-        if (null != idcard && !idcard)
+        if (null != idcard && !idcard){
             user.setIdcard(null);
-        if (!realname)
+        }
+        if (!realname){
             user.setRealname(null);
-        if (!gender)
+        }
+        if (!gender){
             user.setGender(null);
-        if (!mobile)
+        }
+        if (!mobile){
             user.setMobile(null);
-        if (!age)
+        }
+        if (!age){
             user.setAge(null);
+        }
         return Result.success().data(user).msg("查询信息成功！");
     }
 
