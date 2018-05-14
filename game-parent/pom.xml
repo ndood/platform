@@ -23,6 +23,7 @@
         <aliyun.oss.verson>2.8.2</aliyun.oss.verson>
         <weixin-java.sdk.verson>3.0.0</weixin-java.sdk.verson>
         <shiro.version>1.4.0</shiro.version>
+        <springboot.version>1.5.4.RELEASE</springboot.version>
         <main.basedir>${basedir}</main.basedir>
     </properties>
 

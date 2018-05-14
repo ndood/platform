@@ -15,4 +15,6 @@ import java.util.List;
 public interface SysConfigService {
 
      List<SysConfig> findAll();
+
+
 }

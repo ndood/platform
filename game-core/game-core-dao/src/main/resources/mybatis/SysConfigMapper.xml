@@ -4,7 +4,6 @@
 <mapper namespace="com.fulu.game.core.dao.SysConfigDao">
     <resultMap id="SysConfigResultMap" type="com.fulu.game.core.entity.SysConfig">
         <id column="id" property="id"/>
-        <result column="type" property="type"/>
         <result column="name" property="name"/>
         <result column="value" property="value"/>
         <result column="note" property="note"/>
@@ -16,7 +15,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,type,name,value,note,create_time,update_time    </sql>
+        id,name,value,note,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="SysConfigResultMap">
         select
@@ -33,15 +32,12 @@
         from t_sys_config
     </select>
 
-    <select id="findByParameter" resultMap="SysConfigResultMap"
-            parameterType="com.fulu.game.core.entity.vo.SysConfigVO">
+    <select id="findByParameter" resultMap="SysConfigResultMap" parameterType="com.fulu.game.core.entity.vo.SysConfigVO">
         SELECT
         <include refid="Base_Column_List"/>
         FROM t_sys_config
         <where>
-            <if test="type != null">
-                and type = #{type}
-            </if>
+
             <if test="name != null">
                 and name = #{name}
             </if>
@@ -69,18 +65,14 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.SysConfig">
         insert into
-        t_sys_config (type,name,value,note,create_time,update_time)
+        t_sys_config (name,value,note,create_time,update_time)
         values
-        (#{type},#{name},#{value},#{note},#{createTime},#{updateTime})
+        (#{name},#{value},#{note},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.SysConfig">
         update t_sys_config
         <set>
-
-            <if test="type != null">
-                type = #{type},
-            </if>
 
             <if test="name != null">
                 name = #{name},

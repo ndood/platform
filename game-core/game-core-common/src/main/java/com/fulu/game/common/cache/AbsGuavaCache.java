@@ -35,7 +35,7 @@ public abstract class AbsGuavaCache<K, V> {
     protected int cacheMaximumSize;
 
     private LoadingCache<K, V> cache;
-    private ListeningExecutorService backgroundRefreshPools = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(20));
+    private ListeningExecutorService backgroundRefreshPools = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(5));
 
     /**
      * @description: 初始化所有protected字段：

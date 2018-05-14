@@ -2,14 +2,12 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.common.cache.AbsGuavaCache;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-
 import com.fulu.game.core.dao.SysConfigDao;
 import com.fulu.game.core.entity.SysConfig;
 import com.fulu.game.core.service.SysConfigService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -27,12 +25,12 @@ public class SysConfigServiceImpl extends AbsGuavaCache<String,List<SysConfig>> 
 	private SysConfigDao sysConfigDao;
 
 
-
     @Override
     protected void initCacheFields() {
+        log.info("初始化guavaCache缓存--系统配置");
         this.refreshDuration = 30;
         this.refreshTimeUnitType = TimeUnit.SECONDS;
-        this.cacheMaximumSize=1;
+        this.cacheMaximumSize = 10;
     }
 
     @Override
@@ -48,10 +46,11 @@ public class SysConfigServiceImpl extends AbsGuavaCache<String,List<SysConfig>> 
         try {
             return fetchDataFromCache(key);
         }catch (Exception e){
-            log.error("缓存失效:",e);
+            log.error("缓存异常:", e);
             return sysConfigDao.findAll();
         }
     }
+
 
     @Autowired
     public List<SysConfig> findAll(){
