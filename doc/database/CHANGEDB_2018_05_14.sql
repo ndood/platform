@@ -32,3 +32,18 @@ CREATE TABLE `t_coupon` (
   `create_time` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) COMMENT='优惠券表';
+
+-- ----------------------------
+-- 分享文案表(未执行)
+-- ----------------------------
+DROP TABLE IF EXISTS `t_sharing`;
+CREATE TABLE `t_sharing`  (
+  `id` int(3) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+  `share_type` int(3) DEFAULT NULL COMMENT '分享类型',
+  `gender` tinyint(2) DEFAULT NULL COMMENT '性别',
+  `content` varchar(1000) DEFAULT NULL COMMENT '文案内容',
+  `status` tinyint(1) DEFAULT NULL COMMENT '是否启用(默认1启用，0不启用)',
+  `create_time` datetime(0) DEFAULT NULL COMMENT '记录生成时间',
+  `update_time` datetime(0) DEFAULT NULL COMMENT '记录修改时间',
+  PRIMARY KEY (`id`)
+) COMMENT = '分享文案表';
