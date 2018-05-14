@@ -1,6 +1,7 @@
 package com.fulu.game.admin.controller;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.common.utils.TimeUtil;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.Sharing;
 import com.fulu.game.core.entity.vo.SharingVO;
@@ -53,7 +54,7 @@ public class SharingController {
         sharing.setUpdateTime(new Date());
         sharingService.create(sharing);
         Admin admin = adminService.getCurrentUser();
-        log.info("文案操作==save== userId={},time={},id=", admin.getId(), sharing.getCreateTime(), sharing.getId());
+        log.info("==文案操作save== userId={},time={},id={}", admin.getId(), TimeUtil.defaultFormat(sharing.getCreateTime()), sharing.getId());
         return Result.success().data(sharing).msg("保存成功！");
     }
 
@@ -88,7 +89,7 @@ public class SharingController {
         sharing.setUpdateTime(new Date());
         sharingService.update(sharing);
         Admin admin = adminService.getCurrentUser();
-        log.info("文案操作==update== userId={},time={},id=", admin.getId(), sharing.getUpdateTime(), id);
+        log.info("==文案操作update== userId={},time={},id={}", admin.getId(), TimeUtil.defaultFormat(sharing.getUpdateTime()), id);
         return Result.success().data(sharing).msg("修改成功！");
     }
 
@@ -102,7 +103,7 @@ public class SharingController {
     public Result delete(@RequestParam("id") Integer id) {
         sharingService.deleteById(id);
         Admin admin = adminService.getCurrentUser();
-        log.info("文案操作==delete== userId={},time={},id=", admin.getId(), new Date(), id);
+        log.info("==文案操作delete== userId={},time={},id={}", admin.getId(), TimeUtil.defaultFormat(new Date()), id);
         return Result.success().msg("删除成功！");
     }
 
