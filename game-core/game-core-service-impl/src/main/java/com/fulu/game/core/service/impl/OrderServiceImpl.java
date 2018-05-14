@@ -236,6 +236,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         update(order);
         //记录订单流水
         orderMoneyDetailsService.create(order.getOrderNo(),order.getUserId(), DetailsEnum.ORDER_PAY,orderMoney);
+        //记录平台流水
+        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_PAY,order.getOrderNo(),order.getTotalMoney());
         //发送短信通知给陪玩师
         User server = userService.findById(order.getServiceUserId());
         SMSUtil.sendOrderReceivingRemind(server.getMobile(),order.getName());
@@ -284,6 +286,22 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
             throw new OrderException(order.getOrderNo(),"只有陪玩中和等待陪玩的订单才能取消!");
         }
         order.setStatus(OrderStatusEnum.SERVER_CANCEL.getStatus());
+        order.setUpdateTime(new Date());
+        order.setCompleteTime(new Date());
+        update(order);
+        if(order.getIsPay()){
+            // 全额退款用户
+            orderRefund(order.getOrderNo(),order.getUserId(),order.getTotalMoney());
+        }
+        return orderConvertVo(order);
+    }
+
+
+    @Override
+    public OrderVO systemCancelOrder(String orderNo) {
+        log.info("系统取消订单orderNo:{}",orderNo);
+        Order order =  findByOrderNo(orderNo);
+        order.setStatus(OrderStatusEnum.SYSTEM_CLOSE.getStatus());
         order.setUpdateTime(new Date());
         order.setCompleteTime(new Date());
         update(order);
@@ -397,15 +415,39 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
 
 
     /**
+     * 用户验收订单
+     * @param orderNo
+     * @return
+     */
+    @Override
+    public OrderVO systemCompleteOrder(String orderNo){
+        log.info("系统完成订单orderNo:{}",orderNo);
+        Order order =  findByOrderNo(orderNo);
+        if(!order.getStatus().equals(OrderStatusEnum.CHECK.getStatus())){
+            throw new OrderException(order.getOrderNo(),"只有待验收订单才能验收!");
+        }
+        order.setStatus(OrderStatusEnum.SYSTEM_COMPLETE.getStatus());
+        order.setUpdateTime(new Date());
+        order.setCompleteTime(new Date());
+        update(order);
+        //订单分润
+        shareProfit(order);
+        return orderConvertVo(order);
+    }
+
+
+    /**
      * 订单分润
      * @param order
      */
     public void shareProfit(Order order){
         BigDecimal serverMoney = order.getTotalMoney().subtract(order.getCommissionMoney());
-        //记录用户流水
+        //记录用户加零钱
         moneyDetailsService.orderSave(serverMoney,order.getServiceUserId(),order.getOrderNo());
+        //平台记录支付打手流水
+        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_SHARE_PROFIT,order.getOrderNo(),serverMoney.negate());
         //平台记录收入流水
-        platformMoneyDetailsService.createOrderDetails(order.getOrderNo(),order.getCommissionMoney());
+        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_SHARE_PROFIT,order.getOrderNo(),order.getCommissionMoney());
     }
 
 
@@ -467,8 +509,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setCompleteTime(new Date());
         order.setCommissionMoney(order.getTotalMoney());
         update(order);
-        //订单全部金额记录平台流水
-        platformMoneyDetailsService.createOrderDetails(order.getOrderNo(),order.getCommissionMoney());
+        //订单协商,全部金额记录平台流水
+        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_NEGOTIATE,order.getOrderNo(),order.getCommissionMoney());
         return orderConvertVo(order);
     }
 
@@ -479,6 +521,10 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      * @param totalMoney
      */
     public void orderRefund(String orderNo,Integer userId,BigDecimal totalMoney){
+        Order order = findByOrderNo(orderNo);
+        if(!order.getIsPay()){
+            throw new OrderException(orderNo,"未支付订单不允许退款!");
+        }
         try {
             payService.refund(orderNo,totalMoney);
         }catch (Exception e){
@@ -487,6 +533,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         }
         //记录订单流水
         orderMoneyDetailsService.create(orderNo,userId,DetailsEnum.ORDER_USER_CANCEL,totalMoney.negate());
+        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_REFUND,orderNo,totalMoney.negate());
+
     }
 
     /**

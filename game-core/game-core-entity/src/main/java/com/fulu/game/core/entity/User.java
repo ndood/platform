@@ -54,7 +54,10 @@ public class User implements Serializable {
 	private Date createTime;
 	//修改时间
 	private Date updateTime;
+
+	@JsonIgnore
 	private String openId;
+
 	private String city;
 	private String province;
 	private String country;

@@ -3,6 +3,8 @@ package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.utils.OssUtil;
+import com.fulu.game.core.entity.User;
+import com.fulu.game.core.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +20,8 @@ public class GlobalController extends BaseController{
 
     @Autowired
     private OssUtil ossUtil;
-
+    @Autowired
+    private UserService userService;
 
     @PostMapping(value = "upload")
     public Result upload(@RequestParam("file") MultipartFile file,String name)throws Exception{
@@ -27,5 +30,11 @@ public class GlobalController extends BaseController{
     }
 
 
+
+    @PostMapping(value = "form/collect")
+    public Result collectFormId(String formId){
+        User user = userService.getCurrentUser();
+        return Result.success();
+    }
 
 }

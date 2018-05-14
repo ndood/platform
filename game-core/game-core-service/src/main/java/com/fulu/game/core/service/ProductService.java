@@ -30,6 +30,15 @@ public interface ProductService extends ICommonService<Product,Integer>{
     Product create(Integer techAuthId,BigDecimal price,Integer unitId);
 
     /**
+     * 添加临时导商品的接口
+     * @param techAuthId
+     * @param price
+     * @param unitId
+     * @return
+     */
+    Product tempCreate(Integer techAuthId, BigDecimal price, Integer unitId);
+
+    /**
      * 修改接单方式
      * @param id
      * @param techAuthId

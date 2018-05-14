@@ -66,6 +66,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         user.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
         user.setIdcard(userInfoAuthVO.getIdCard());
         user.setRealname(userInfoAuthVO.getRealname());
+        user.setGender(userInfoAuthVO.getGender());
         user.setUserInfoAuth(AuthStatusEnum.VERIFIED.getType());
         userService.update(user);
         //忽略为null的属性
@@ -185,8 +186,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
 
     @Override
     public PageInfo<UserInfoAuthVO> list(Integer pageNum, Integer pageSize, String orderBy) {
-        if(StringUtils.isNotBlank(orderBy)){
-            orderBy = "create_time desc";
+        if(StringUtils.isBlank(orderBy)){
+            orderBy = "update_time desc";
         }
         List<UserInfoAuthVO> userInfoAuthVOList = new ArrayList<>();
         PageHelper.startPage(pageNum,pageSize,orderBy);
@@ -205,7 +206,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
             userInfoAuthVO.setGroupTags(allPersonTagVos);
             userInfoAuthVOList.add(userInfoAuthVO);
         }
-        PageInfo page = new PageInfo(userInfoAuthVOList);
+        PageInfo page = new PageInfo(userInfoAuths);
+        page.setList(userInfoAuthVOList);
         return page;
     }
 
@@ -261,7 +263,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
                 }
             }
         }
-
         return tagVOList;
     }
 

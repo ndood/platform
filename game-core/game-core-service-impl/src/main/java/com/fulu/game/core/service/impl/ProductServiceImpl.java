@@ -62,7 +62,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         }
         User user = userService.findById(userTechAuth.getUserId());
         userService.isCurrentUser(user.getId());
-
         //查询销售方式的单位
         SalesMode salesMode = salesModeService.findById(unitId);
         Category category = categoryService.findById(userTechAuth.getCategoryId());
@@ -91,6 +90,45 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         create(product);
         return product;
     }
+
+
+
+    public Product tempCreate(Integer techAuthId, BigDecimal price, Integer unitId){
+        UserTechAuth userTechAuth = userTechAuthService.findById(techAuthId);
+        if(userTechAuth==null){
+            throw new ServiceErrorException("不能设置该技能接单!");
+        }
+        User user = userService.findById(userTechAuth.getUserId());
+        //查询销售方式的单位
+        SalesMode salesMode = salesModeService.findById(unitId);
+        Category category = categoryService.findById(userTechAuth.getCategoryId());
+        if(!salesMode.getCategoryId().equals(category.getId())){
+            throw new ServiceErrorException("接单方式单位不匹配!");
+        }
+        List<Product> products = findProductByUserAndSalesMode(user.getId(),userTechAuth.getId(),unitId);
+        if(products.size()>0){
+            throw new ServiceErrorException("不能设置同样单位的技能!");
+        }
+        Product product = new Product();
+        product.setCategoryId(userTechAuth.getCategoryId());
+        product.setGender(user.getGender());
+        product.setCategoryIcon(category.getIcon());
+        product.setProductName(userTechAuth.getCategoryName());
+        product.setDescription(userTechAuth.getDescription());
+        product.setTechAuthId(userTechAuth.getId());
+        product.setSalesModeId(salesMode.getId());
+        product.setUnit(salesMode.getName());
+        product.setSalesModeRank(salesMode.getRank()==null?0:salesMode.getRank());
+        product.setUserId(userTechAuth.getUserId());
+        product.setPrice(price);
+        product.setStatus(true);
+        product.setCreateTime(new Date());
+        product.setUpdateTime(new Date());
+        create(product);
+        return product;
+    }
+
+
 
 
     @Override

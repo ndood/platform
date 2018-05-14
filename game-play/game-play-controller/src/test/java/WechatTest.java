@@ -1,5 +1,6 @@
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
+import com.fulu.game.common.enums.WechatTemplateEnum;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.service.PayService;
 import com.fulu.game.play.PlayApplication;
@@ -34,7 +35,8 @@ public class WechatTest {
 
     @Test
     public void test1(){
-        SMSUtil.sendOrderReceivingRemind("18801285391","王者荣耀 1*2小时");
+        String id =WechatTemplateEnum.PUSH_MSG.getType();
+        System.out.println(id);
     }
 
     @Test

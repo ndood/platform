@@ -20,12 +20,11 @@ public class OrderStatusTask {
 
     @Autowired
     private OrderService orderService;
-    @Autowired
-    private PayService payService;
+
     /**
      * 取消超时订单
      */
-    @Scheduled(cron = "0/1 0/10 * * * ? ")  //cron接受cron表达式，根据cron表达式确定定时规则
+    @Scheduled(cron = "0 0/10 * * * ? ")  //cron接受cron表达式，根据cron表达式确定定时规则
     public void cancelTimeOutOrder() {
         //todo 处理已付款的订单
         Integer[] statusList = new Integer[]{OrderStatusEnum.NON_PAYMENT.getStatus(),OrderStatusEnum.WAIT_SERVICE.getStatus()};
@@ -34,16 +33,7 @@ public class OrderStatusTask {
             long hour = DateUtil.between(order.getCreateTime(),new Date(),DateUnit.HOUR);
             if(hour>=12){
                 log.info(order.getOrderNo()+"-------取消订单!");
-                order.setStatus(OrderStatusEnum.SYSTEM_CLOSE.getStatus());
-                order.setUpdateTime(new Date());
-                orderService.update(order);
-                if(order.getIsPay()){
-                    try {
-                        payService.refund(order.getOrderNo(),order.getTotalMoney());
-                    }catch (Exception e){
-                        log.error("退款失败{}",order.getOrderNo(),e.getMessage());
-                    }
-                }
+                orderService.systemCancelOrder(order.getOrderNo());
             }
         }
     }
@@ -52,7 +42,7 @@ public class OrderStatusTask {
     /**
      * 自动完成订单
      */
-    @Scheduled(cron = "0/1 0/15 * * * ? ")  //cron接受cron表达式，根据cron表达式确定定时规则
+    @Scheduled(cron = "0 0/15 * * * ? ")  //cron接受cron表达式，根据cron表达式确定定时规则
     public void autoCompleteOrder() {
         Integer[] statusList = new Integer[]{OrderStatusEnum.CHECK.getStatus()};
         List<Order> orderList = orderService.findByStatusList(statusList);
@@ -60,11 +50,7 @@ public class OrderStatusTask {
             long hour = DateUtil.between(order.getCreateTime(),new Date(),DateUnit.HOUR);
             if(hour>=12){
                 log.info(order.getOrderNo()+"-------订单完成!");
-                order.setStatus(OrderStatusEnum.SYSTEM_COMPLETE.getStatus());
-                order.setUpdateTime(new Date());
-                order.setCompleteTime(new Date());
-                orderService.update(order);
-                orderService.shareProfit(order);
+                orderService.systemCompleteOrder(order.getOrderNo());
             }
         }
     }

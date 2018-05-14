@@ -16,10 +16,6 @@ import java.util.List;
 public interface OrderService extends ICommonService<Order,Integer>{
 
 
-    //todo 非自己的订单不能操作
-
-
-
     /**
      * 用户订单列表
      * @param pageNum
@@ -69,6 +65,8 @@ public interface OrderService extends ICommonService<Order,Integer>{
      */
     OrderVO serverCancelOrder(String orderNo);
 
+    OrderVO systemCancelOrder(String orderNo);
+
     /**
      * 用户取消订单
      * @param orderNo
@@ -92,6 +90,12 @@ public interface OrderService extends ICommonService<Order,Integer>{
      */
     OrderVO serverAcceptanceOrder(String orderNo, String remark, String ... fileUrl);
 
+    /**
+     * 系统完成订单
+     * @param orderNo
+     * @return
+     */
+    OrderVO systemCompleteOrder(String orderNo);
     /**
      * 用户验收订单
      * @param orderNo
