@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.SysConfigDao">
+    <resultMap id="SysConfigResultMap" type="com.fulu.game.core.entity.SysConfig">
+        <id column="id" property="id"/>
+        <result column="type" property="type"/>
+        <result column="name" property="name"/>
+        <result column="value" property="value"/>
+        <result column="note" property="note"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="SysConfigResultVOMap" type="com.fulu.game.core.entity.vo.SysConfigVO" extends="SysConfigResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,type,name,value,note,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="SysConfigResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_sys_config
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="SysConfigResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_sys_config
+    </select>
+
+    <select id="findByParameter" resultMap="SysConfigResultMap"
+            parameterType="com.fulu.game.core.entity.vo.SysConfigVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_sys_config
+        <where>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="value != null">
+                and value = #{value}
+            </if>
+            <if test="note != null">
+                and note = #{note}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_sys_config
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.SysConfig">
+        insert into
+        t_sys_config (type,name,value,note,create_time,update_time)
+        values
+        (#{type},#{name},#{value},#{note},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.SysConfig">
+        update t_sys_config
+        <set>
+
+            <if test="type != null">
+                type = #{type},
+            </if>
+
+            <if test="name != null">
+                name = #{name},
+            </if>
+
+            <if test="value != null">
+                value = #{value},
+            </if>
+
+            <if test="note != null">
+                note = #{note},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

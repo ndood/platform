@@ -5,8 +5,10 @@ import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.exception.ParamsExceptionEnums;
 import com.fulu.game.common.utils.SubjectUtil;
+import com.fulu.game.core.entity.SysConfig;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.PlatformMoneyDetailsService;
+import com.fulu.game.core.service.SysConfigService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.play.controller.exception.ParamsException;
 import com.fulu.game.play.shiro.PlayUserToken;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Controller
 @Slf4j
@@ -32,7 +35,17 @@ public class HomeController {
     @Autowired
     private UserService userService;
     @Autowired
-    private PlatformMoneyDetailsService platformMoneyDetailsService;
+    private SysConfigService sysConfigService;
+
+
+
+    @RequestMapping(value = "/sys/config", method = RequestMethod.POST)
+    @ResponseBody
+    public Result sysConfig(){
+        List<SysConfig> result = sysConfigService.findAll();
+        return Result.success().data(result);
+    }
+
     /**
      * 小程序提交参数code
      *

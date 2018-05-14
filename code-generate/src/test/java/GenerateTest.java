@@ -13,7 +13,7 @@ public class GenerateTest {
 
     @Test
     public void test1() {
-        codeGenerateForTable("wangbin","t_wechat_formid");
+        codeGenerateForTable("wangbin","t_sys_config");
     }
 
     @Test
