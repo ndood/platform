@@ -14,10 +14,7 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
@@ -38,7 +35,7 @@ public class MoneyDetailsController {
      * @param pageNum
      * @return
      */
-    @RequestMapping("/list")
+    @PostMapping("/list")
     public Result list(@ModelAttribute MoneyDetailsVO moneyDetailsVO,
                        @RequestParam("pageSize") Integer pageSize,
                        @RequestParam("pageNum") Integer pageNum){
@@ -51,7 +48,7 @@ public class MoneyDetailsController {
      * @param moneyDetailsVO
      * @return
      */
-    @RequestMapping("/save")
+    @PostMapping("/save")
     public Result save(@ModelAttribute MoneyDetailsVO moneyDetailsVO){
         if (moneyDetailsVO.getMoney().compareTo(BigDecimal.ZERO)==-1){
             throw new CashException(CashExceptionEnums.CASH_NEGATIVE_EXCEPTION);

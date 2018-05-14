@@ -6,6 +6,7 @@ import com.fulu.game.core.entity.vo.CashDrawsVO;
 import com.fulu.game.core.service.CashDrawsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,7 +27,7 @@ public class CashDrawsController extends BaseController{
      * @param cashDrawsVO
      * @return
      */
-    @RequestMapping("/save")
+    @PostMapping("/save")
     public Result save(CashDrawsVO cashDrawsVO){
         CashDraws cashDraws = cashDrawsService.save(cashDrawsVO);
         return Result.success().data(cashDraws).msg("提现申请成功！");

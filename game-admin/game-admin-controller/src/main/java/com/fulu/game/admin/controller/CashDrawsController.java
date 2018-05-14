@@ -7,10 +7,7 @@ import com.fulu.game.core.service.CashDrawsService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * yanbiao
@@ -28,7 +25,7 @@ public class CashDrawsController extends BaseController{
      * 管理员-查看提现申请列表
      * @return
      */
-    @RequestMapping("/list")
+    @PostMapping("/list")
     public Result list(@ModelAttribute CashDrawsVO cashDrawsVO,
                        @RequestParam("pageNum") Integer pageNum,
                        @RequestParam("pageSize") Integer pageSize){
@@ -40,7 +37,7 @@ public class CashDrawsController extends BaseController{
      * 管理员-打款动作
      * @return
      */
-    @RequestMapping("/draw")
+    @PostMapping("/draw")
     public Result draw(@RequestParam("cashId") Integer cashId,
             @RequestParam(name="comment",required = false) String comment){
         CashDraws cashDraws = cashDrawsService.draw(cashId,comment);

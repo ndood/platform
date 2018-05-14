@@ -18,7 +18,7 @@ public class GenerateTest {
 
     @Test
     public void test2() {
-        codeGenerateForTable("yanbiao","t_user_comment");
+        codeGenerateForTable("yanbiao","t_sharing");
     }
 
 
