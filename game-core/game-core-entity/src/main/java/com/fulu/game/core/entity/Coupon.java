@@ -23,11 +23,11 @@ public class Coupon implements Serializable {
 	//面额
 	private BigDecimal deduction;
 	//是否是新用户专享
-	private Integer isNewUser;
+	private Boolean isNewUser;
 	//绑定了那个用户
 	private Integer userId;
 	//是否被使用(0:否,1:是)
-	private Integer isUse;
+	private Boolean isUse;
 	//订单号
 	private String orderNo;
 	//有效期开始时间

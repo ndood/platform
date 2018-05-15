@@ -3,8 +3,10 @@ package com.fulu.game.core.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 
 /**
  * 优惠券组表
@@ -19,9 +21,10 @@ public class CouponGroup implements Serializable {
 	//
 	private Integer id;
 	//减额
+	@NotNull(message = "减额字段不能为空")
 	private BigDecimal deduction;
 	//是否是新用户专享
-	private Integer isNewUser;
+	private Boolean isNewUser;
 	//生成数量
 	private Integer amount;
 	//兑换码

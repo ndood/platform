@@ -20,6 +20,8 @@ public class SharingControllerTest {
     private SharingController sharingController;
     @Autowired
     private SharingService sharingService;
+
+
     @Test
     public void save() throws Exception {
         SharingVO sharingVO = new SharingVO();
@@ -41,9 +43,6 @@ public class SharingControllerTest {
         Assert.assertNull(sharingService.findById(1));
     }
 
-    //@Test
-    public void list() throws Exception {
 
-    }
 
 }
