@@ -11,9 +11,8 @@ import com.fulu.game.core.entity.CouponGroup;
  * @email ${email}
  * @date 2018-05-15 10:41:12
  */
-public interface CouponGroupService extends ICommonService<CouponGroup,Integer>{
+public interface CouponGroupService{
 
 
-    @Override
     int create(CouponGroup couponGroup);
 }
