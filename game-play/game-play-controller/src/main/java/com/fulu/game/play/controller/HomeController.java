@@ -5,7 +5,10 @@ import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.exception.ParamsExceptionEnums;
 import com.fulu.game.common.utils.SubjectUtil;
+import com.fulu.game.core.entity.SysConfig;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.service.PlatformMoneyDetailsService;
+import com.fulu.game.core.service.SysConfigService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.play.controller.exception.ParamsException;
 import com.fulu.game.play.shiro.PlayUserToken;
@@ -18,10 +21,10 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Controller
 @Slf4j
@@ -31,6 +34,18 @@ public class HomeController {
     private WxMaService wxService;
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private SysConfigService sysConfigService;
+
+
+
+    @RequestMapping(value = "/sys/config", method = RequestMethod.POST)
+    @ResponseBody
+    public Result sysConfig(){
+        List<SysConfig> result = sysConfigService.findAll();
+        return Result.success().data(result);
+    }
 
     /**
      * 小程序提交参数code
@@ -99,5 +114,7 @@ public class HomeController {
             return Result.error().msg("测试登陆异常！");
         }
     }
+
+
 
 }
