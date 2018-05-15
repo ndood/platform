@@ -21,9 +21,6 @@ public class CouponController extends BaseController{
 
     @PostMapping(value = "generate")
     public Result generate(@Valid CouponGroup couponGroup){
-
-        System.out.println(couponGroup);
-
         return Result.success();
     }
 
