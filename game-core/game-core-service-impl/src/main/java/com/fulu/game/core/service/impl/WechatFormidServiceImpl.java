@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.WechatFormidDao;
 import com.fulu.game.core.entity.WechatFormid;
@@ -22,7 +23,8 @@ public class WechatFormidServiceImpl extends AbsCommonService<WechatFormid,Integ
 
     @Autowired
 	private WechatFormidDao wechatFormidDao;
-
+    @Autowired
+    private SpringThreadPoolExecutor springThreadPoolExecutor;
 
     @Override
     public ICommonDao<WechatFormid, Integer> getDao() {
@@ -46,13 +48,18 @@ public class WechatFormidServiceImpl extends AbsCommonService<WechatFormid,Integ
             }
         }
         if(notAvailableFormIds.size()>0){
-            deleteNotAvailableFormIds(notAvailableFormIds.toArray(new WechatFormid[]{}));
+            springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
+                @Override
+                public void run() {
+                    deleteNotAvailableFormIds(notAvailableFormIds.toArray(new WechatFormid[]{}));
+
+                }
+            });
         }
         return availableFormIds;
     }
 
 
-    @Async
     public void deleteNotAvailableFormIds(WechatFormid ... wechatFormid){
         if(wechatFormid.length>0){
             for (WechatFormid w : wechatFormid) {

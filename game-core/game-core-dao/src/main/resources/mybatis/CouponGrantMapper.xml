@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.CouponGrantDao">
+    <resultMap id="CouponGrantResultMap" type="com.fulu.game.core.entity.CouponGrant">
+        <id column="id" property="id"/>
+        <result column="coupon_group_id" property="couponGroupId"/>
+        <result column="remark" property="remark"/>
+        <result column="redeem_code" property="redeemCode"/>
+        <result column="deduction" property="deduction"/>
+        <result column="is_new_user" property="isNewUser"/>
+        <result column="start_useful_time" property="startUsefulTime"/>
+        <result column="end_useful_time" property="endUsefulTime"/>
+        <result column="admin_id" property="adminId"/>
+        <result column="admin_name" property="adminName"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="CouponGrantResultVOMap" type="com.fulu.game.core.entity.vo.CouponGrantVO"
+               extends="CouponGrantResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,coupon_group_id,remark,redeem_code,deduction,is_new_user,start_useful_time,end_useful_time,admin_id,admin_name,create_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="CouponGrantResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_coupon_grant
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="CouponGrantResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_coupon_grant
+    </select>
+
+    <select id="findByParameter" resultMap="CouponGrantResultMap"
+            parameterType="com.fulu.game.core.entity.vo.CouponGrantVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_coupon_grant
+        <where>
+            <if test="couponGroupId != null">
+                and coupon_group_id = #{couponGroupId}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <if test="redeemCode != null">
+                and redeem_code = #{redeemCode}
+            </if>
+            <if test="deduction != null">
+                and deduction = #{deduction}
+            </if>
+            <if test="isNewUser != null">
+                and is_new_user = #{isNewUser}
+            </if>
+            <if test="startUsefulTime != null">
+                and start_useful_time = #{startUsefulTime}
+            </if>
+            <if test="endUsefulTime != null">
+                and end_useful_time = #{endUsefulTime}
+            </if>
+            <if test="adminId != null">
+                and admin_id = #{adminId}
+            </if>
+            <if test="adminName != null">
+                and admin_name = #{adminName}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_coupon_grant
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.CouponGrant">
+        insert into
+        t_coupon_grant (coupon_group_id,remark,redeem_code,deduction,is_new_user,start_useful_time,end_useful_time,admin_id,admin_name,create_time)
+        values
+        (#{couponGroupId},#{remark},#{redeemCode},#{deduction},#{isNewUser},#{startUsefulTime},#{endUsefulTime},#{adminId},#{adminName},#{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.CouponGrant">
+        update t_coupon_grant
+        <set>
+
+            <if test="couponGroupId != null">
+                coupon_group_id = #{couponGroupId},
+            </if>
+
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+
+            <if test="redeemCode != null">
+                redeem_code = #{redeemCode},
+            </if>
+
+            <if test="deduction != null">
+                deduction = #{deduction},
+            </if>
+
+            <if test="isNewUser != null">
+                is_new_user = #{isNewUser},
+            </if>
+
+            <if test="startUsefulTime != null">
+                start_useful_time = #{startUsefulTime},
+            </if>
+
+            <if test="endUsefulTime != null">
+                end_useful_time = #{endUsefulTime},
+            </if>
+
+            <if test="adminId != null">
+                admin_id = #{adminId},
+            </if>
+
+            <if test="adminName != null">
+                admin_name = #{adminName},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

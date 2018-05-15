@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -36,11 +37,14 @@ public class CouponGroup implements Serializable {
 	private String remark;
 	//有效期开始时间
 	@NotNull(message = "[有效期开始时间]字段不能为空")
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date startUsefulTime;
 	//有效期结束时间
 	@NotNull(message = "[有效期结束时间]字段不能为空")
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date endUsefulTime;
 	//创建时间
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date createTime;
 
 }

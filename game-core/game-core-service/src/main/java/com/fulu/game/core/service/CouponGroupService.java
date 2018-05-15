@@ -1,7 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.CouponGroup;
-
+import com.github.pagehelper.PageInfo;
 
 
 /**
@@ -15,4 +15,10 @@ public interface CouponGroupService{
 
 
     int create(CouponGroup couponGroup);
+
+    CouponGroup findById(Integer id);
+
+    PageInfo<CouponGroup> list(Integer pageNum, Integer pageSize, String orderBy);
+
+
 }
