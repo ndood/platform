@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.CouponDao">
+    <resultMap id="CouponResultMap" type="com.fulu.game.core.entity.Coupon">
+        <id column="id" property="id"/>
+        <result column="coupon_group_id" property="couponGroupId"/>
+        <result column="deduction" property="deduction"/>
+        <result column="is_new_user" property="isNewUser"/>
+        <result column="user_id" property="userId"/>
+        <result column="is_use" property="isUse"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="start_useful_time" property="startUsefulTime"/>
+        <result column="end_useful_time" property="endUsefulTime"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="CouponResultVOMap" type="com.fulu.game.core.entity.vo.CouponVO" extends="CouponResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,coupon_group_id,deduction,is_new_user,user_id,is_use,order_no,start_useful_time,end_useful_time,create_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="CouponResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_coupon
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="CouponResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_coupon
+    </select>
+
+    <select id="findByParameter" resultMap="CouponResultMap" parameterType="com.fulu.game.core.entity.vo.CouponVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_coupon
+        <where>
+            <if test="couponGroupId != null">
+                and coupon_group_id = #{couponGroupId}
+            </if>
+            <if test="deduction != null">
+                and deduction = #{deduction}
+            </if>
+            <if test="isNewUser != null">
+                and is_new_user = #{isNewUser}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="isUse != null">
+                and is_use = #{isUse}
+            </if>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="startUsefulTime != null">
+                and start_useful_time = #{startUsefulTime}
+            </if>
+            <if test="endUsefulTime != null">
+                and end_useful_time = #{endUsefulTime}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_coupon
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Coupon">
+        insert into
+        t_coupon (coupon_group_id,deduction,is_new_user,user_id,is_use,order_no,start_useful_time,end_useful_time,create_time)
+        values
+        (#{couponGroupId},#{deduction},#{isNewUser},#{userId},#{isUse},#{orderNo},#{startUsefulTime},#{endUsefulTime},#{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.Coupon">
+        update t_coupon
+        <set>
+
+            <if test="couponGroupId != null">
+                coupon_group_id = #{couponGroupId},
+            </if>
+
+            <if test="deduction != null">
+                deduction = #{deduction},
+            </if>
+
+            <if test="isNewUser != null">
+                is_new_user = #{isNewUser},
+            </if>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="isUse != null">
+                is_use = #{isUse},
+            </if>
+
+            <if test="orderNo != null">
+                order_no = #{orderNo},
+            </if>
+
+            <if test="startUsefulTime != null">
+                start_useful_time = #{startUsefulTime},
+            </if>
+
+            <if test="endUsefulTime != null">
+                end_useful_time = #{endUsefulTime},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>
