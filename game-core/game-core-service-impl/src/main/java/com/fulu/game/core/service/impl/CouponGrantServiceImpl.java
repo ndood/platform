@@ -41,11 +41,11 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant,Integer
     }
 
     @Override
-    public void create(Integer couponGroupId, List<String> mobile, String remark) {
+    public void create(String redeemCode, List<String> mobile, String remark) {
         Admin admin =  adminService.getCurrentUser();
-        CouponGroup couponGroup =couponGroupService.findById(couponGroupId);
+        CouponGroup couponGroup =couponGroupService.findByRedeemCode(redeemCode);
         if(couponGroup==null){
-            throw new ServiceErrorException("优惠券ID错误！");
+            throw new ServiceErrorException("优惠券兑换码错误！");
         }
         CouponGrant couponGrant = new CouponGrant();
         couponGrant.setCouponGroupId(couponGroup.getId());
@@ -63,10 +63,8 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant,Integer
     }
 
 
-
     //优惠券发放用户
     public void grantCoupon2User(CouponGrant couponGrant,List<String> mobile){
-
 
     }
 

@@ -15,6 +15,6 @@ import java.util.List;
 public interface CouponGrantService extends ICommonService<CouponGrant,Integer>{
 
 
-    public void create(Integer couponGroupId,List<String> mobile,String remark);
+    public void create(String redeemCode,List<String> mobile,String remark);
 
 }

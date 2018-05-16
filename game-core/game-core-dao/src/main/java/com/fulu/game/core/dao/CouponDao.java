@@ -23,6 +23,6 @@ public interface CouponDao extends ICommonDao<Coupon,Integer>{
 
     List<Coupon> findByUserReceive(@Param(value = "couponGroupId") Integer couponGroupId,@Param(value = "userId")Integer userId);
 
-    Integer countByNotReceive(@Param(value = "couponGroupId") Integer couponGroupId);
+
 
 }

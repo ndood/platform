@@ -18,6 +18,8 @@ public interface CouponGroupService{
 
     CouponGroup findById(Integer id);
 
+    CouponGroup findByRedeemCode(String redeemCode);
+
     PageInfo<CouponGroup> list(Integer pageNum, Integer pageSize, String orderBy);
 
 

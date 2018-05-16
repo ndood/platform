@@ -2,6 +2,7 @@ package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.core.entity.Coupon;
+import com.fulu.game.core.entity.vo.CouponGroupVO;
 import com.fulu.game.core.service.CouponService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -34,13 +35,24 @@ public class CouponGroupServiceImpl implements CouponGroupService {
     public int create(CouponGroup couponGroup){
         couponGroup.setCreateTime(new Date());
         int result =  couponGroupDao.create(couponGroup);
-        batchGenerateCoupon(couponGroup);
         return result;
     }
 
     @Override
     public CouponGroup findById(Integer id) {
         return couponGroupDao.findById(id);
+    }
+
+
+    @Override
+    public CouponGroup findByRedeemCode(String redeemCode) {
+        CouponGroupVO param = new CouponGroupVO();
+        param.setRedeemCode(redeemCode);
+        List<CouponGroup> couponGroupList = couponGroupDao.findByParameter(param);
+        if(couponGroupList.isEmpty()){
+            return null;
+        }
+        return couponGroupList.get(0);
     }
 
     @Override
@@ -54,27 +66,7 @@ public class CouponGroupServiceImpl implements CouponGroupService {
         return page;
     }
 
-    //批量生产优惠券
-    public void batchGenerateCoupon(CouponGroup couponGroup){
-         for(int i=0;i<couponGroup.getAmount();i++){
-             //异步批量生产优惠券
-             springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
-                 @Override
-                 public void run() {
-                     Coupon coupon = new Coupon();
-                     coupon.setCouponGroupId(couponGroup.getId());
-                     coupon.setDeduction(couponGroup.getDeduction());
-                     coupon.setIsNewUser(couponGroup.getIsNewUser());
-                     coupon.setIsUse(false);
-                     coupon.setStartUsefulTime(couponGroup.getStartUsefulTime());
-                     coupon.setEndUsefulTime(couponGroup.getEndUsefulTime());
-                     coupon.setCreateTime(new Date());
-                     couponService.create(coupon);
-                 }
-             });
 
 
-         }
-    }
 	
 }

@@ -20,7 +20,6 @@ public interface CouponService extends ICommonService<Coupon,Integer>{
     PageInfo<Coupon> listByGroup(Integer couponGroupId, Integer pageNum, Integer pageSize, String orderBy);
 
 
-    Integer countByNotReceive(Integer couponGroupId);
 
     List<Coupon> findByUserReceive(Integer couponGroupId, Integer userId);
 

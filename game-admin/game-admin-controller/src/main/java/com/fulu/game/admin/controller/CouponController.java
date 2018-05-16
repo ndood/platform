@@ -11,6 +11,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -68,15 +69,15 @@ public class CouponController extends BaseController{
 
     /**
      * 优惠券发放
-     * @param id
+     * @param redeemCode
      * @param mobiles
      * @param remark
      * @return
      */
     @PostMapping(value = "grant")
-    public Result couponGrant(Integer id,
-                              String mobiles,
-                              String remark){
+    public Result couponGrant(@RequestParam(required = true)String redeemCode,
+                              @RequestParam(required = true)String mobiles,
+                              @RequestParam(required = true)String remark){
 
         return Result.success();
     }
