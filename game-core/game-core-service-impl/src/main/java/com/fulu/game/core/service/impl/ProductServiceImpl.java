@@ -64,6 +64,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         userService.isCurrentUser(user.getId());
         //查询销售方式的单位
         SalesMode salesMode = salesModeService.findById(unitId);
+        if(salesMode==null){
+            throw new ServiceErrorException("单位不能为空!");
+        }
         Category category = categoryService.findById(userTechAuth.getCategoryId());
         if(!salesMode.getCategoryId().equals(category.getId())){
             throw new ServiceErrorException("接单方式单位不匹配!");

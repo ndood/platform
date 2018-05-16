@@ -27,49 +27,77 @@ import java.util.Set;
 @Slf4j
 public class ExceptionHandlerAdvice {
 
-
+    /**
+     * 判断唯一索引
+     * @param e
+     * @return
+     */
     @ExceptionHandler(DuplicateKeyException.class)
     public Result handleDuplicateKeyException(DuplicateKeyException e) {
         log.error(e.getMessage(), e);
         return	Result.error().msg("数据库中已存在该记录");
     }
 
+    /**
+     * SQL执行错误
+     * @param e
+     * @return
+     */
     @ExceptionHandler(DataAccessException.class)
     public Result handleDataAccessException(DataAccessException e) {
-        log.error(e.getMessage(), e);
-        return	Result.error().msg("SQL执行错误:"+e.getCause().getMessage());
+        log.error("SQL执行错误:", e);
+        return	Result.error().msg("服务器错误!");
     }
 
-
+    /**
+     * 404错误
+     * @param e
+     * @return
+     */
     @ExceptionHandler(org.springframework.web.servlet.NoHandlerFoundException.class)
     public Result noHandlerFoundException(org.springframework.web.servlet.NoHandlerFoundException e) {
         log.error(e.getMessage(), e);
         return	Result.error().msg("没找找到页面");
     }
 
+    /**
+     * 必填参数为空
+     * @param e
+     * @return
+     */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public Result missingServletRequestParameterException(MissingServletRequestParameterException e) {
         log.error(e.getMessage(), e);
-        return	Result.error().msg("必填参数空:"+e.getMessage());
+        return	Result.error().msg("必填参数空:"+e.getParameterName());
     }
 
-
+    /**
+     * 业务错误,直接提示给用户
+     * @param e
+     * @return
+     */
     @ExceptionHandler(ServiceErrorException.class)
     public Result  serviceErrorException(ServiceErrorException e){
         log.error(e.getMessage(), e);
         return	Result.error().msg(e.getMessage());
     }
 
-
+    /**
+     * 订单业务错误
+     * @param e
+     * @return
+     */
     @ExceptionHandler(OrderException.class)
     public Result  orderException(OrderException e){
         log.error(e.getMessage(), e);
         return	Result.error().msg(e.getMessage());
     }
 
-
-
-
+    /**
+     * 金额错误
+     * @param e
+     * @return
+     */
     @ExceptionHandler(CashException.class)
     public Result cashException(CashException e) {
         log.error(e.getMessage(), e);
@@ -77,18 +105,26 @@ public class ExceptionHandlerAdvice {
     }
 
 
-
+    /**
+     * 用户异常
+     * @param e
+     * @return
+     */
     @ExceptionHandler(UserException.class)
     public Result UserException(UserException e) {
         log.error(e.getMessage(), e);
         return	Result.error().msg(e.getMessage());
     }
 
-
+    /**
+     * 统一异常
+     * @param e
+     * @return
+     */
     @ExceptionHandler(Exception.class)
     public Result handleException(Exception e) {
         log.error(e.getMessage(), e);
-        return	Result.error().msg("服务器错误");
+        return	Result.error().msg("服务器错误!");
     }
 
 }

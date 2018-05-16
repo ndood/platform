@@ -8,9 +8,8 @@ import java.beans.PropertyEditorSupport;
 public class CustomIntegerEditor extends PropertyEditorSupport {
 
 	@Override
-	public void setAsText(String text)
-			throws IllegalArgumentException {
-		if (StringUtils.isNotBlank(text)) {
+	public void setAsText(String text) throws IllegalArgumentException {
+		if (StringUtils.isNotBlank(text) && !"null".equalsIgnoreCase(text)) {
 			text=text.replaceAll(",", "");
 			super.setValue(Integer.valueOf(text));
 		} else {
