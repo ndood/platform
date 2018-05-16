@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
@@ -113,6 +115,7 @@ public class ProductController extends BaseController{
         productService.update(id,techAuthId,price,unitId);
         return Result.success().msg("修改接单方式成功!");
     }
+
 
     /**
      * 接单方式激活

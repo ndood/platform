@@ -95,7 +95,8 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
             userTechAuthVO.setTagList(techTagList);
             userTechAuthVOList.add(userTechAuthVO);
         }
-        PageInfo page = new PageInfo(userTechAuthVOList);
+        PageInfo page = new PageInfo(userTechAuths);
+        page.setList(userTechAuthVOList);
         return page;
     }
 
