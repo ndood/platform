@@ -8,6 +8,7 @@ import com.fulu.game.core.service.CouponGroupService;
 import com.fulu.game.core.service.CouponService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/coupon")
@@ -59,9 +63,9 @@ public class CouponController extends BaseController{
      * @return
      */
     @PostMapping(value = "details")
-    public Result details(Integer id,
-                          Integer pageNum,
-                          Integer pageSize){
+    public Result details(@RequestParam(required = true)Integer id,
+                          @RequestParam(required = true)Integer pageNum,
+                          @RequestParam(required = true)Integer pageSize){
         PageInfo<Coupon> pageInfo =  couponService.listByGroup(id,pageNum,pageSize,null);
         return Result.success().data(pageInfo);
     }
@@ -78,8 +82,12 @@ public class CouponController extends BaseController{
     public Result couponGrant(@RequestParam(required = true)String redeemCode,
                               @RequestParam(required = true)String mobiles,
                               @RequestParam(required = true)String remark){
-
-        return Result.success();
+        if(StringUtils.isBlank(mobiles)){
+            return Result.error().msg("手机号不能为空");
+        }
+        List<String> mobileList = Arrays.asList(mobiles.split(","));
+        couponGrantService.create(redeemCode,mobileList,remark);
+        return Result.success().msg("优惠券发放完成，发放失败用户请查看明显!");
     }
 
 

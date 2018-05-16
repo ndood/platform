@@ -1,10 +1,7 @@
 package com.fulu.game.admin.controller.exception;
 
 import com.fulu.game.common.Result;
-import com.fulu.game.common.exception.CashException;
-import com.fulu.game.common.exception.OrderException;
-import com.fulu.game.common.exception.ServiceErrorException;
-import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -69,6 +66,19 @@ public class ExceptionHandlerAdvice {
     }
 
     /**
+     * 业务异常
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(BizException.class)
+    public Result BizException(BizException e) {
+        log.error(e.getMessage(), e);
+
+        return	Result.error().msg(e.getMessage());
+    }
+
+
+    /**
      * 处理订单异常
      * @param e
      * @return
@@ -93,11 +103,6 @@ public class ExceptionHandlerAdvice {
     }
 
 
-    @ExceptionHandler(Exception.class)
-    public Result handleException(Exception e) {
-        log.error(e.getMessage(), e);
-        return	Result.error().msg("服务器错误");
-    }
 
     @ExceptionHandler(CashException.class)
     public Result cashException(CashException e) {
@@ -109,5 +114,12 @@ public class ExceptionHandlerAdvice {
     public Result UserException(UserException e) {
         log.error(e.getMessage(), e);
         return	Result.error(e.getCode()).msg(e.getMessage());
+    }
+
+
+    @ExceptionHandler(Exception.class)
+    public Result handleException(Exception e) {
+        log.error(e.getMessage(), e);
+        return	Result.error().msg("服务器错误");
     }
 }

@@ -24,7 +24,7 @@ public class CouponGrantUser implements Serializable {
 	//发放手机号
 	private String mobile;
 	//是否发放成功
-	private Integer isSuccess;
+	private Boolean isSuccess;
 	//发放错误原因
 	private String errorCause;
 	//发放时间

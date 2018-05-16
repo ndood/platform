@@ -107,7 +107,7 @@
 
     <select id="countByParameter" resultType="java.lang.Integer" parameterType="com.fulu.game.core.entity.vo.CouponVO">
         SELECT
-        <include refid="Base_Column_List"/>
+          count(1)
         FROM t_coupon
         <where>
             <if test="couponGroupId != null">
