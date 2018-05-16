@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.CouponGrantUserDao">
+    <resultMap id="CouponGrantUserResultMap" type="com.fulu.game.core.entity.CouponGrantUser">
+        <id column="id" property="id"/>
+        <result column="coupon_grant_id" property="couponGrantId"/>
+        <result column="user_id" property="userId"/>
+        <result column="mobile" property="mobile"/>
+        <result column="is_success" property="isSuccess"/>
+        <result column="error_cause" property="errorCause"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="CouponGrantUserResultVOMap" type="com.fulu.game.core.entity.vo.CouponGrantUserVO"
+               extends="CouponGrantUserResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,coupon_grant_id,user_id,mobile,is_success,error_cause,create_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="CouponGrantUserResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_coupon_grant_user
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="CouponGrantUserResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_coupon_grant_user
+    </select>
+
+    <select id="findByParameter" resultMap="CouponGrantUserResultMap"
+            parameterType="com.fulu.game.core.entity.vo.CouponGrantUserVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_coupon_grant_user
+        <where>
+            <if test="couponGrantId != null">
+                and coupon_grant_id = #{couponGrantId}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="mobile != null">
+                and mobile = #{mobile}
+            </if>
+            <if test="isSuccess != null">
+                and is_success = #{isSuccess}
+            </if>
+            <if test="errorCause != null">
+                and error_cause = #{errorCause}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_coupon_grant_user
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.CouponGrantUser">
+        insert into
+        t_coupon_grant_user (coupon_grant_id,user_id,mobile,is_success,error_cause,create_time)
+        values
+        (#{couponGrantId},#{userId},#{mobile},#{isSuccess},#{errorCause},#{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.CouponGrantUser">
+        update t_coupon_grant_user
+        <set>
+
+            <if test="couponGrantId != null">
+                coupon_grant_id = #{couponGrantId},
+            </if>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="mobile != null">
+                mobile = #{mobile},
+            </if>
+
+            <if test="isSuccess != null">
+                is_success = #{isSuccess},
+            </if>
+
+            <if test="errorCause != null">
+                error_cause = #{errorCause},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

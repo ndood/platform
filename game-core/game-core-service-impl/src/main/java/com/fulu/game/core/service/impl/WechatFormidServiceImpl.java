@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.WechatFormidDao;
 import com.fulu.game.core.entity.WechatFormid;
@@ -9,6 +10,7 @@ import com.fulu.game.core.service.WechatFormidService;
 import com.xiaoleilu.hutool.date.DateUnit;
 import com.xiaoleilu.hutool.date.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,7 +23,8 @@ public class WechatFormidServiceImpl extends AbsCommonService<WechatFormid,Integ
 
     @Autowired
 	private WechatFormidDao wechatFormidDao;
-
+    @Autowired
+    private SpringThreadPoolExecutor springThreadPoolExecutor;
 
     @Override
     public ICommonDao<WechatFormid, Integer> getDao() {
@@ -45,7 +48,13 @@ public class WechatFormidServiceImpl extends AbsCommonService<WechatFormid,Integ
             }
         }
         if(notAvailableFormIds.size()>0){
-            deleteNotAvailableFormIds(notAvailableFormIds.toArray(new WechatFormid[]{}));
+            springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
+                @Override
+                public void run() {
+                    deleteNotAvailableFormIds(notAvailableFormIds.toArray(new WechatFormid[]{}));
+
+                }
+            });
         }
         return availableFormIds;
     }
@@ -56,7 +65,6 @@ public class WechatFormidServiceImpl extends AbsCommonService<WechatFormid,Integ
             for (WechatFormid w : wechatFormid) {
                 deleteById(w.getId());
             }
-
         }
     }
 
