@@ -92,6 +92,65 @@
         </where>
     </select>
 
+
+    <select id="countByNotReceive" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT
+          count(1)
+        FROM t_coupon
+        <where>
+            coupon_group_id = #{couponGroupId}  and user_id IS NULL
+        </where>
+    </select>
+
+
+    <select id="findByUserReceive"  resultMap="CouponResultMap">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM t_coupon
+        <where>
+            coupon_group_id = #{couponGroupId}  and user_id = #{userId}
+        </where>
+    </select>
+
+
+    <select id="countByParameter" resultType="java.lang.Integer" parameterType="com.fulu.game.core.entity.vo.CouponVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_coupon
+        <where>
+            <if test="couponGroupId != null">
+                and coupon_group_id = #{couponGroupId}
+            </if>
+            <if test="deduction != null">
+                and deduction = #{deduction}
+            </if>
+            <if test="isNewUser != null">
+                and is_new_user = #{isNewUser}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="mobile != null">
+                and mobile = #{mobile}
+            </if>
+            <if test="isUse != null">
+                and is_use = #{isUse}
+            </if>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+
+            <if test="receiveIp != null">
+                and receive_ip = #{receiveIp}
+            </if>
+            <if test="useIp != null">
+                and use_ip = #{useIp}
+            </if>
+        </where>
+    </select>
+
+
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_coupon
         <where>

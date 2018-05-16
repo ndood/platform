@@ -7,6 +7,8 @@ import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.CouponGroup;
 import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.CouponGroupService;
+import com.fulu.game.core.service.CouponService;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +32,8 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant,Integer
     private CouponGroupService couponGroupService;
     @Autowired
     private AdminService adminService;
+    @Autowired
+    private CouponService couponService;
 
     @Override
     public ICommonDao<CouponGrant, Integer> getDao() {
@@ -55,12 +59,14 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant,Integer
         couponGrant.setAdminId(admin.getId());
         couponGrant.setAdminName(admin.getName());
         couponGrantService.create(couponGrant);
-
         //todo 优惠券发放用户
     }
 
+
+
     //优惠券发放用户
     public void grantCoupon2User(CouponGrant couponGrant,List<String> mobile){
+
 
     }
 

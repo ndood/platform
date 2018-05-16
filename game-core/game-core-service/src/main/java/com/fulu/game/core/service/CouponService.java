@@ -2,6 +2,9 @@ package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Coupon;
 import com.github.pagehelper.PageInfo;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 
 /**
@@ -15,5 +18,11 @@ public interface CouponService extends ICommonService<Coupon,Integer>{
 
 
     PageInfo<Coupon> listByGroup(Integer couponGroupId, Integer pageNum, Integer pageSize, String orderBy);
-	
+
+
+    Integer countByNotReceive(Integer couponGroupId);
+
+    List<Coupon> findByUserReceive(Integer couponGroupId, Integer userId);
+
+
 }
