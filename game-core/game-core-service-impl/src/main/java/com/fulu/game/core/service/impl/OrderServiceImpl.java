@@ -588,6 +588,13 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         return orderList.get(0);
     }
 
+    @Override
+    public Boolean isOldUser(){
+        User user = userService.getCurrentUser();
+        OrderVO orderVO = new OrderVO();
+        orderVO.setUserId(user.getId());
+        return orderDao.countByParameter(orderVO)>0;
+    }
     private OrderVO orderConvertVo(Order order){
         OrderVO orderVO = new OrderVO();
         BeanUtil.copyProperties(order,orderVO);

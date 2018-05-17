@@ -188,4 +188,9 @@ public interface OrderService extends ICommonService<Order,Integer>{
      */
     OrderVO findServerOrderDetails(String orderNo);
 
+    /**
+     * 是否是老用户（下单过的）
+     */
+    Boolean isOldUser();
+
 }
