@@ -89,12 +89,12 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant,Integer
         for(String mobile :mobiles){
            User user = userService.findByMobile(mobile);
            if(user==null){
-               couponGrantUserService.create(couponGrant.getCouponGroupId(),null,mobile,false,"用户不存在!");
+               couponGrantUserService.create(couponGrant.getId(),null,mobile,false,"用户不存在!");
                continue;
            }
            try {
                couponService.generateCoupon(redeemCode,user.getId());
-               couponGrantUserService.create(couponGrant.getCouponGroupId(),user.getId(),mobile,true,null);
+               couponGrantUserService.create(couponGrant.getId(),user.getId(),mobile,true,null);
            }catch (CouponException e){
                String errorCause = "没有可用优惠券!";
                switch (e.getExceptionCode()){
@@ -113,7 +113,7 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant,Integer
                    default:
                        break;
                }
-               couponGrantUserService.create(couponGrant.getCouponGroupId(),user.getId(),mobile,false,errorCause);
+               couponGrantUserService.create(couponGrant.getId(),user.getId(),mobile,false,errorCause);
            }
         }
     }

@@ -18,6 +18,8 @@ public class Coupon implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Integer id;
+
+    private String couponNo;
     //优惠券组ID
     private Integer couponGroupId;
     //面额
