@@ -24,5 +24,6 @@ public interface CouponDao extends ICommonDao<Coupon,Integer>{
     List<Coupon> findByUserReceive(@Param(value = "couponGroupId") Integer couponGroupId,@Param(value = "userId")Integer userId);
 
 
+    List<Coupon> findByAvailable(@Param(value = "userId") Integer userId);
 
 }

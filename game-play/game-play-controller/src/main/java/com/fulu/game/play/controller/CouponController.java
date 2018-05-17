@@ -38,7 +38,6 @@ public class CouponController extends BaseController {
 
     /**
      * 兑换优惠券
-     *
      * @return
      */
     @PostMapping("/exchange")
@@ -47,6 +46,7 @@ public class CouponController extends BaseController {
         Coupon coupon = couponService.generateCoupon(redeemCode, user.getId());
         return Result.success().data(coupon).msg("优惠券兑换成功！");
     }
+
 
     @PostMapping("/list")
     public Result list(@RequestParam("pageNum") Integer pageNum,
@@ -62,5 +62,10 @@ public class CouponController extends BaseController {
         resultMap.put("pageInfo", pageInfo);
         return Result.success().data(resultMap).msg("查询成功！");
     }
+
+
+
+
+
 
 }

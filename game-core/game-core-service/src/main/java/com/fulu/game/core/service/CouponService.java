@@ -31,4 +31,9 @@ public interface CouponService extends ICommonService<Coupon, Integer> {
      */
     Coupon findByCouponNo(String couponNo);
 
+    /**
+     * 查询用户所有可用的优惠券
+     * @return
+     */
+    List<Coupon> availableCouponList(Integer userId);
 }

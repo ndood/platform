@@ -58,6 +58,16 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         return new PageInfo<>(couponList);
     }
 
+
+    @Override
+    public List<Coupon> availableCouponList(Integer userId) {
+        List<Coupon> couponList =couponDao.findByAvailable(userId);
+        for(Coupon coupon :couponList){
+            coupon.getUserId();
+        }
+        return null;
+    }
+
     @Override
     public PageInfo<Coupon> listByUseStatus(Integer pageNum, Integer pageSize, Boolean isUse, Boolean overdue) {
         User user = userService.getCurrentUser();
@@ -159,6 +169,8 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         }
         return list.get(0);
     }
+
+
 
     /**
      * 生成优惠券编码
