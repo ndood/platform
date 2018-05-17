@@ -40,7 +40,7 @@ public class CouponController extends BaseController{
      * @param couponGroup
      * @return
      */
-    @PostMapping(value = "generate")
+    @PostMapping(value = "/generate")
     public Result generate(@Valid CouponGroup couponGroup){
         couponGroupService.create(couponGroup);
         return Result.success().msg("批量生产优惠券成功!");
@@ -53,7 +53,7 @@ public class CouponController extends BaseController{
      * @param pageSize
      * @return
      */
-    @PostMapping(value = "list")
+    @PostMapping(value = "/list")
     public Result list(Integer pageNum,
                        Integer pageSize){
         PageInfo<CouponGroup> pageInfo = couponGroupService.list(pageNum,pageSize,null);
@@ -66,7 +66,7 @@ public class CouponController extends BaseController{
      * @param id
      * @return
      */
-    @PostMapping(value = "details")
+    @PostMapping(value = "/details")
     public Result details(@RequestParam(required = true)Integer id,
                           @RequestParam(required = true)Integer pageNum,
                           @RequestParam(required = true)Integer pageSize){
@@ -82,7 +82,7 @@ public class CouponController extends BaseController{
      * @param remark
      * @return
      */
-    @PostMapping(value = "grant")
+    @PostMapping(value = "/grant")
     public Result couponGrant(@RequestParam(required = true)String redeemCode,
                               @RequestParam(required = true)String mobiles,
                               @RequestParam(required = true)String remark){
@@ -99,7 +99,7 @@ public class CouponController extends BaseController{
      * 优惠券发放记录
      * @return
      */
-    @PostMapping(value = "grant/list")
+    @PostMapping(value = "/grant/list")
     public Result couponGrantList(Integer pageNum,
                                   Integer pageSize){
         PageInfo page =couponGrantService.list(pageNum,pageSize,null);
@@ -112,7 +112,7 @@ public class CouponController extends BaseController{
      * @param id
      * @return
      */
-    @PostMapping(value = "grant/details")
+    @PostMapping(value = "/grant/details")
     public Result couponGrantDetails(@RequestParam(required = true)Integer id,
                                      @RequestParam(required = true)Integer pageNum,
                                      @RequestParam(required = true)Integer pageSize){
