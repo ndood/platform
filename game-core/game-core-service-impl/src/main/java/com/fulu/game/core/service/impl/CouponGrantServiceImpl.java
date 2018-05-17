@@ -1,19 +1,19 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.exception.CouponException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.ICommonDao;
-import com.fulu.game.core.entity.Admin;
-import com.fulu.game.core.entity.CouponGroup;
-import com.fulu.game.core.service.AdminService;
-import com.fulu.game.core.service.CouponGroupService;
+import com.fulu.game.core.entity.*;
+import com.fulu.game.core.service.*;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 import com.fulu.game.core.dao.CouponGrantDao;
-import com.fulu.game.core.entity.CouponGrant;
-import com.fulu.game.core.service.CouponGrantService;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -27,9 +27,15 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant,Integer
     @Autowired
     private CouponGrantService couponGrantService;
     @Autowired
+    private CouponGrantUserService couponGrantUserService;
+    @Autowired
     private CouponGroupService couponGroupService;
     @Autowired
     private AdminService adminService;
+    @Autowired
+    private CouponService couponService;
+    @Autowired
+    private UserService userService;
 
     @Override
     public ICommonDao<CouponGrant, Integer> getDao() {
@@ -37,11 +43,15 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant,Integer
     }
 
     @Override
-    public void create(Integer couponGroupId, List<String> mobile, String remark) {
+    public void create(String redeemCode, List<String> mobiles, String remark) {
         Admin admin =  adminService.getCurrentUser();
-        CouponGroup couponGroup =couponGroupService.findById(couponGroupId);
+        CouponGroup couponGroup =couponGroupService.findByRedeemCode(redeemCode);
         if(couponGroup==null){
-            throw new ServiceErrorException("优惠券ID错误！");
+            throw new CouponException(CouponException.ExceptionCode.REDEEMCODE_ERROR);
+        }
+        Integer couponCount = couponService.countByCouponGroup(couponGroup.getId());
+        if(couponCount>=couponGroup.getAmount()){
+            throw new CouponException(CouponException.ExceptionCode.BROUGHT_OUT);
         }
         CouponGrant couponGrant = new CouponGrant();
         couponGrant.setCouponGroupId(couponGroup.getId());
@@ -55,13 +65,41 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant,Integer
         couponGrant.setAdminId(admin.getId());
         couponGrant.setAdminName(admin.getName());
         couponGrantService.create(couponGrant);
-
-        //todo 优惠券发放用户
+        //优惠券发放用户
+        grantCoupon2User(couponGrant,mobiles);
     }
 
-    //优惠券发放用户
-    public void grantCoupon2User(CouponGrant couponGrant,List<String> mobile){
 
+    //优惠券发放用户
+    public void grantCoupon2User(CouponGrant couponGrant,List<String> mobiles){
+        String redeemCode = couponGrant.getRedeemCode();
+        for(String mobile :mobiles){
+           User user = userService.findByMobile(mobile);
+           if(user==null){
+               couponGrantUserService.create(couponGrant.getCouponGroupId(),null,mobile,false,"用户不存在!");
+               continue;
+           }
+           try {
+               couponService.generateCoupon(redeemCode,user.getId());
+               couponGrantUserService.create(couponGrant.getCouponGroupId(),user.getId(),mobile,true,null);
+           }catch (CouponException e){
+               String errorCause = "没有可用优惠券!";
+               switch (e.getExceptionCode()){
+                   case BROUGHT_OUT:
+                       errorCause="没有可用优惠券!";
+                       break;
+                   case ALREADY_RECEIVE:
+                       errorCause="用户已领用该优惠券!";
+                       break;
+                   case REDEEMCODE_ERROR:
+                       errorCause="优惠券兑换码错误!";
+                       break;
+                   default:
+                       break;
+               }
+               couponGrantUserService.create(couponGrant.getCouponGroupId(),user.getId(),mobile,false,errorCause);
+           }
+        }
     }
 
 

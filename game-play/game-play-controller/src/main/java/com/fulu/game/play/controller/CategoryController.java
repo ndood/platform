@@ -80,7 +80,7 @@ public class CategoryController extends BaseController{
      * @param categoryId
      * @return
      */
-    @PostMapping(value = "salesmode/list")
+    @PostMapping(value = "/salesmode/list")
     public Result saleModel(@RequestParam(required = true)Integer categoryId){
         List<SalesMode> salesModeList =  salesModeService.findByCategory(categoryId);
         return Result.success().data(salesModeList);

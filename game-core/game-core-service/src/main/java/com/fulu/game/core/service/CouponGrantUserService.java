@@ -12,5 +12,8 @@ import com.fulu.game.core.entity.CouponGrantUser;
  * @date 2018-05-15 18:15:28
  */
 public interface CouponGrantUserService extends ICommonService<CouponGrantUser,Integer>{
+
+
+    int create(Integer couponGrantId,Integer userId,String mobile,Boolean isSuccess,String errorCause);
 	
 }

@@ -6,6 +6,7 @@ import com.fulu.game.core.entity.vo.CouponVO;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 优惠券表
@@ -17,5 +18,11 @@ import org.apache.ibatis.annotations.Mapper;
 public interface CouponDao extends ICommonDao<Coupon,Integer>{
 
     List<Coupon> findByParameter(CouponVO couponVO);
+
+    Integer countByParameter(CouponVO couponVO);
+
+    List<Coupon> findByUserReceive(@Param(value = "couponGroupId") Integer couponGroupId,@Param(value = "userId")Integer userId);
+
+
 
 }
