@@ -16,7 +16,7 @@ import java.util.List;
 public interface CouponGrantUserService extends ICommonService<CouponGrantUser,Integer>{
 
 
-    int create(Integer couponGrantId,Integer userId,String mobile,Boolean isSuccess,String errorCause);
+    int create(String couponNo,Integer couponGrantId,Integer userId,String mobile,Boolean isSuccess,String errorCause);
 
     List<CouponGrantUser> findByGrantId(Integer grantId);
 

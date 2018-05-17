@@ -4,6 +4,8 @@ import com.fulu.game.admin.AdminApplication;
 import com.fulu.game.admin.Task;
 import com.fulu.game.core.entity.CouponGroup;
 import com.fulu.game.core.service.CouponGroupService;
+import com.xiaoleilu.hutool.date.DateUnit;
+import com.xiaoleilu.hutool.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,17 +30,9 @@ public class AsyncTest {
 
     @Test
     public void test1()throws Exception{
-        CouponGroup couponGroup = new CouponGroup();
-        couponGroup.setDeduction(new BigDecimal(10));
-        couponGroup.setAmount(10);
-        couponGroup.setCreateTime(new Date());
-        couponGroup.setIsNewUser(true);
-        couponGroup.setRedeemCode("x");
-        couponGroup.setRemark("s");
-        couponGroup.setStartUsefulTime(new Date());
-        couponGroup.setEndUsefulTime(new Date());
-        couponGroupService.create(couponGroup);
-//        couponGroupService.batchGenerateCoupon(couponGroup);
-        System.out.println("拉拉");
+        String dateStr = "2018-04-07 00:00:00";
+        Date date = DateUtil.parse(dateStr);
+        Long  result = DateUtil.between(new Date(),date, DateUnit.DAY);
+        System.out.println(result);
     }
 }

@@ -91,7 +91,7 @@ public class CouponController extends BaseController{
         }
         List<String> mobileList = Arrays.asList(mobiles.split(","));
         couponGrantService.create(redeemCode,mobileList,remark);
-        return Result.success().msg("优惠券发放完成，发放失败用户请查看明显!");
+        return Result.success().msg("优惠券发放完成，发放失败用户请查看明细!");
     }
 
 

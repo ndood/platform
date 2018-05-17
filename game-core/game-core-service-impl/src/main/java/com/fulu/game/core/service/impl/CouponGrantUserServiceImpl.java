@@ -35,9 +35,10 @@ public class CouponGrantUserServiceImpl extends AbsCommonService<CouponGrantUser
     }
 
     @Override
-    public int create(Integer couponGrantId, Integer userId, String mobile, Boolean isSuccess, String errorCause) {
+    public int create(String couponNo,Integer couponGrantId, Integer userId, String mobile, Boolean isSuccess, String errorCause) {
         CouponGrantUser couponGrantUser = new CouponGrantUser();
         couponGrantUser.setCouponGrantId(couponGrantId);
+        couponGrantUser.setCouponNo(couponNo);
         couponGrantUser.setErrorCause(errorCause);
         couponGrantUser.setUserId(userId);
         couponGrantUser.setMobile(mobile);

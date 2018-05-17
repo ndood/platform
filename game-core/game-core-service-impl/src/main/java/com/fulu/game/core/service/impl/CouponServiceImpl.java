@@ -1,7 +1,7 @@
 package com.fulu.game.core.service.impl;
 
-import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.exception.CouponException;
+import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.dao.CouponDao;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Coupon;
@@ -14,9 +14,9 @@ import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.xiaoleilu.hutool.date.DateUnit;
+import com.xiaoleilu.hutool.date.DateUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.cms.PasswordRecipientId;
-import org.omg.CORBA.PRIVATE_MEMBER;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -94,7 +94,6 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
 
     /**
      * 通过兑换码发放优惠券给用户
-     *
      * @param redeemCode
      * @param userId
      * @return
@@ -110,9 +109,9 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         return generateCoupon(couponGroup, userId);
     }
 
+
     /**
      * 给用户发放优惠券
-     *
      * @param couponGroup
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -129,10 +128,15 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         if(orderService.isOldUser(userId)&&couponGroup.getIsNewUser()){
             throw new CouponException(CouponException.ExceptionCode.NEWUSER_RECEIVE);
         }
-
+        //过期的优惠券不能兑换
+        if (new Date().after(DateUtil.endOfDay(couponGroup.getEndUsefulTime()))){
+            throw new CouponException(CouponException.ExceptionCode.OVERDUE);
+        }
+        String couponNo = generateCouponNo();
         User user = userService.findById(userId);
         Coupon coupon = new Coupon();
         coupon.setCouponGroupId(couponGroup.getId());
+        coupon.setCouponNo(couponNo);
         coupon.setDeduction(couponGroup.getDeduction());
         coupon.setIsNewUser(couponGroup.getIsNewUser());
         coupon.setUserId(userId);
@@ -144,4 +148,31 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         create(coupon);
         return coupon;
     }
+
+
+    @Override
+    public Coupon findByCouponNo(String couponNo){
+        CouponVO param = new CouponVO();
+        param.setCouponNo(couponNo);
+        List<Coupon> list = couponDao.findByParameter(param);
+        if(list.isEmpty()){
+            return null;
+        }
+        return list.get(0);
+    }
+
+    /**
+     * 生成优惠券编码
+     * @return
+     */
+    private String generateCouponNo(){
+        String couponNo = GenIdUtil.GetCouponNo();
+        if(findByCouponNo(couponNo)==null){
+            return couponNo;
+        }
+        else{
+            return generateCouponNo();
+        }
+    }
+
 }
