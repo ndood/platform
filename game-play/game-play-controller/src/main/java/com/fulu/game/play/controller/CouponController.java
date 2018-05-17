@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -65,7 +66,16 @@ public class CouponController extends BaseController {
 
 
 
-
+    /**
+     * 查询用户所有可用的优惠券
+     * @return
+     */
+    @PostMapping(value = "user")
+    public Result userCoupons(){
+        User user = userService.getCurrentUser();
+        List<Coupon> list =couponService.availableCouponList(user.getId());
+        return Result.success().data(list);
+    }
 
 
 }

@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -62,10 +63,14 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
     @Override
     public List<Coupon> availableCouponList(Integer userId) {
         List<Coupon> couponList =couponDao.findByAvailable(userId);
+        List<Coupon>  availableCouponList = new ArrayList<>();
+        availableCouponList.addAll(couponList);
         for(Coupon coupon :couponList){
-            coupon.getUserId();
+            if(orderService.isOldUser(userId)&&coupon.getIsNewUser()){
+                availableCouponList.remove(coupon);
+            }
         }
-        return null;
+        return availableCouponList;
     }
 
     @Override
