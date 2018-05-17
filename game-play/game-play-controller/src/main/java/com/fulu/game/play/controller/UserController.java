@@ -71,19 +71,19 @@ public class UserController extends BaseController {
                       @RequestParam(name = "realname", required = false, defaultValue = "false") Boolean realname,
                       @RequestParam(name = "age", required = false, defaultValue = "false") Boolean age) {
         User user = userService.findById(userService.getCurrentUser().getId());
-        if (null != idcard && !idcard){
+        if (null != idcard && !idcard) {
             user.setIdcard(null);
         }
-        if (!realname){
+        if (!realname) {
             user.setRealname(null);
         }
-        if (!gender){
+        if (!gender) {
             user.setGender(null);
         }
-        if (!mobile){
+        if (!mobile) {
             user.setMobile(null);
         }
-        if (!age){
+        if (!age) {
             user.setAge(null);
         }
         return Result.success().data(user).msg("查询信息成功！");
@@ -236,11 +236,11 @@ public class UserController extends BaseController {
      */
     @PostMapping("/im/get")
     public Result getImUser(@RequestParam("imId") String imId) {
-        if(StringUtils.isEmpty(imId)){
+        if (StringUtils.isEmpty(imId)) {
             throw new UserException(UserExceptionEnums.IllEGAL_IMID_EXCEPTION);
         }
         User user = userService.findByImId(imId);
-        if (null == user){
+        if (null == user) {
             return Result.error().msg("未查询到该用户或尚未注册IM");
         }
         return Result.success().data(user).msg("查询IM用户成功");

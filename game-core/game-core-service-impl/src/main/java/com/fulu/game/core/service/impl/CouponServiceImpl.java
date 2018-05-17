@@ -1,8 +1,6 @@
 package com.fulu.game.core.service.impl;
 
-
 import com.fulu.game.common.exception.CouponException;
-import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.CouponDao;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Coupon;
@@ -14,7 +12,6 @@ import com.fulu.game.core.service.CouponService;
 import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,12 +21,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 
-
 @Service
-public class CouponServiceImpl extends AbsCommonService<Coupon,Integer> implements CouponService {
+public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> implements CouponService {
 
     @Autowired
-	private CouponDao couponDao;
+    private CouponDao couponDao;
     @Autowired
     private CouponGroupService couponGroupService;
     @Autowired
@@ -49,15 +45,38 @@ public class CouponServiceImpl extends AbsCommonService<Coupon,Integer> implemen
                                         String orderBy) {
         CouponVO param = new CouponVO();
         param.setCouponGroupId(couponGroupId);
-        if(StringUtils.isBlank(orderBy)){
+        if (StringUtils.isBlank(orderBy)) {
             orderBy = "receive_time desc";
         }
-        PageHelper.startPage(pageNum,pageSize,orderBy);
+        PageHelper.startPage(pageNum, pageSize, orderBy);
         List<Coupon> couponList = couponDao.findByParameter(param);
         return new PageInfo<>(couponList);
     }
 
     @Override
+    public PageInfo<Coupon> listByUseStatus(Integer pageNum, Integer pageSize, Boolean isUse, Boolean overdue) {
+        User user = userService.getCurrentUser();
+        CouponVO couponVO = new CouponVO();
+        couponVO.setIsUse(isUse);
+        couponVO.setUserId(user.getId());
+        String orderBy = null;
+        if (isUse) {
+            orderBy = "use_time desc";
+        } else {
+            orderBy = "receive_time desc";
+        }
+        //已過期的必須是未使用的
+        if (overdue) {
+            orderBy = "end_useful_time desc";
+            couponVO.setOverdue(overdue);
+            couponVO.setIsUse(false);
+        }
+
+        PageHelper.startPage(pageNum, pageSize, orderBy);
+        List<Coupon> couponList = couponDao.findByParameter(couponVO);
+        return new PageInfo<>(couponList);
+    }
+
     public List<Coupon> findByUserReceive(Integer couponGroupId, Integer userId) {
         return couponDao.findByUserReceive(couponGroupId, userId);
     }
@@ -71,33 +90,35 @@ public class CouponServiceImpl extends AbsCommonService<Coupon,Integer> implemen
 
     /**
      * 通过兑换码发放优惠券给用户
+     *
      * @param redeemCode
      * @param userId
      * @return
      * @throws CouponException
      */
     @Override
-    @Transactional(propagation= Propagation.REQUIRES_NEW)
-    public Coupon generateCoupon(String redeemCode,Integer userId){
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Coupon generateCoupon(String redeemCode, Integer userId) {
         CouponGroup couponGroup = couponGroupService.findByRedeemCode(redeemCode);
-        if(couponGroup==null){
+        if (couponGroup == null) {
             throw new CouponException(CouponException.ExceptionCode.REDEEMCODE_ERROR);
         }
-        return generateCoupon(couponGroup,userId);
+        return generateCoupon(couponGroup, userId);
     }
 
     /**
      * 给用户发放优惠券
+     *
      * @param couponGroup
      */
-    @Transactional(propagation= Propagation.REQUIRES_NEW)
-    Coupon generateCoupon(CouponGroup couponGroup,Integer userId)throws CouponException{
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    Coupon generateCoupon(CouponGroup couponGroup, Integer userId) throws CouponException {
         Integer couponCount = countByCouponGroup(couponGroup.getId());
-        if(couponCount>=couponGroup.getAmount()){
+        if (couponCount >= couponGroup.getAmount()) {
             throw new CouponException(CouponException.ExceptionCode.BROUGHT_OUT);
         }
-        List<Coupon> coupons = findByUserReceive(couponGroup.getId(),userId);
-        if(coupons.size()>0){
+        List<Coupon> coupons = findByUserReceive(couponGroup.getId(), userId);
+        if (coupons.size() > 0) {
             throw new CouponException(CouponException.ExceptionCode.ALREADY_RECEIVE);
         }
         //todo 新用户专享卷只能新用户领
@@ -116,6 +137,4 @@ public class CouponServiceImpl extends AbsCommonService<Coupon,Integer> implemen
         create(coupon);
         return coupon;
     }
-
-
 }

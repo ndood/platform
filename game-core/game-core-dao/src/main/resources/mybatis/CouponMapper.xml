@@ -68,23 +68,14 @@
             <if test="orderNo != null">
                 and order_no = #{orderNo}
             </if>
-            <if test="startUsefulTime != null">
-                and start_useful_time = #{startUsefulTime}
-            </if>
-            <if test="endUsefulTime != null">
-                and end_useful_time = #{endUsefulTime}
+            <if test="overdue != null">
+                and end_useful_time &lt;= now()
             </if>
             <if test="receiveTime != null">
                 and receive_time = #{receiveTime}
             </if>
             <if test="useTime != null">
                 and use_time = #{useTime}
-            </if>
-            <if test="receiveIp != null">
-                and receive_ip = #{receiveIp}
-            </if>
-            <if test="useIp != null">
-                and use_ip = #{useIp}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime}
