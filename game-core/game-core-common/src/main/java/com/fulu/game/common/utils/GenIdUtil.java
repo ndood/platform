@@ -42,6 +42,15 @@ public class GenIdUtil {
         return date+randomNum;
     }
 
+    /**
+     * 生成优惠券编码
+     * @return
+     */
+    public static String GetCouponNo(){
+        String date = DateUtil.format(new Date(),"yyMMdd");
+        String randomStr = RandomUtil.randomNumbers(7);
+        return date+randomStr;
+    }
 
 
 

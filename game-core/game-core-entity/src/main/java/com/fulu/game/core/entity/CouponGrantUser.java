@@ -19,6 +19,8 @@ public class CouponGrantUser implements Serializable {
 	
 	//
 	private Integer id;
+	//优惠券编码
+	private String couponNo;
 	//发放记录ID
 	private Integer couponGrantId;
 	//发放用户ID

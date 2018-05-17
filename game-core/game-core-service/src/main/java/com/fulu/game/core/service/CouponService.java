@@ -24,4 +24,11 @@ public interface CouponService extends ICommonService<Coupon, Integer> {
 
     Coupon generateCoupon(String redeemCode, Integer userId);
 
+    /**
+     * 通过优惠券编码查询优惠券
+     * @param couponNo
+     * @return
+     */
+    Coupon findByCouponNo(String couponNo);
+
 }
