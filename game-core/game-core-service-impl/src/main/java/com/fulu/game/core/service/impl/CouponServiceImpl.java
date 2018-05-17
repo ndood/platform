@@ -38,7 +38,6 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
     private OrderService orderService;
 
 
-
     @Override
     public ICommonDao<Coupon, Integer> getDao() {
         return couponDao;
@@ -125,7 +124,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
             throw new CouponException(CouponException.ExceptionCode.ALREADY_RECEIVE);
         }
         //新用户专享卷只能新用户领
-        if(orderService.isOldUser(userId)&&couponGroup.getIsNewUser()){
+        if (orderService.isOldUser(userId) && couponGroup.getIsNewUser()) {
             throw new CouponException(CouponException.ExceptionCode.NEWUSER_RECEIVE);
         }
         //过期的优惠券不能兑换

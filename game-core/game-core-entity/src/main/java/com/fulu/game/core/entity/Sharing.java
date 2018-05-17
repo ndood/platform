@@ -27,18 +27,10 @@ public class Sharing implements Serializable {
     //是否启用(默认1启用，0不启用)
     private Boolean status;
     //记录生成时间
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
     //记录修改时间
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    public Date getUpdateTime() {
-        return updateTime;
-    }
 
 }
