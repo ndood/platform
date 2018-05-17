@@ -2,6 +2,8 @@ package com.fulu.game.core.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 
@@ -28,6 +30,7 @@ public class CouponGrantUser implements Serializable {
 	//发放错误原因
 	private String errorCause;
 	//发放时间
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date createTime;
 
 }

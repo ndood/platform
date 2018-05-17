@@ -65,6 +65,11 @@ public interface OrderService extends ICommonService<Order,Integer>{
      */
     OrderVO serverCancelOrder(String orderNo);
 
+    /**
+     * 系统取消订单
+     * @param orderNo
+     * @return
+     */
     OrderVO systemCancelOrder(String orderNo);
 
     /**

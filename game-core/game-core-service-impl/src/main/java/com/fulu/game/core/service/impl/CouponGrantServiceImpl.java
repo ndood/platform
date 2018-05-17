@@ -7,6 +7,8 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -67,6 +69,17 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant,Integer
         couponGrantService.create(couponGrant);
         //优惠券发放用户
         grantCoupon2User(couponGrant,mobiles);
+    }
+
+
+    @Override
+    public PageInfo<CouponGrant> list(Integer pageNum, Integer pageSize, String orderBy) {
+        if(StringUtils.isBlank(orderBy)){
+            orderBy = "id desc";
+        }
+        PageHelper.startPage(pageNum,pageSize,orderBy);
+        List<CouponGrant> list =findAll();
+        return new PageInfo<>(list);
     }
 
 
