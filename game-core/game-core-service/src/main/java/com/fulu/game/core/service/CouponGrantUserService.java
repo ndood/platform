@@ -1,7 +1,9 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.CouponGrantUser;
+import com.github.pagehelper.PageInfo;
 
+import java.util.List;
 
 
 /**
@@ -15,5 +17,9 @@ public interface CouponGrantUserService extends ICommonService<CouponGrantUser,I
 
 
     int create(Integer couponGrantId,Integer userId,String mobile,Boolean isSuccess,String errorCause);
-	
+
+    List<CouponGrantUser> findByGrantId(Integer grantId);
+
+
+    PageInfo<CouponGrantUser> list(Integer grantId, Integer pageNum, Integer pageSize, String orderBy);
 }

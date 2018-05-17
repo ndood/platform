@@ -65,6 +65,11 @@ public interface OrderService extends ICommonService<Order,Integer>{
      */
     OrderVO serverCancelOrder(String orderNo);
 
+    /**
+     * 系统取消订单
+     * @param orderNo
+     * @return
+     */
     OrderVO systemCancelOrder(String orderNo);
 
     /**
@@ -191,6 +196,6 @@ public interface OrderService extends ICommonService<Order,Integer>{
     /**
      * 是否是老用户（下单过的）
      */
-    Boolean isOldUser();
+    Boolean isOldUser(Integer userId);
 
 }

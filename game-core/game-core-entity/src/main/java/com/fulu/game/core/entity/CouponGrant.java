@@ -3,6 +3,8 @@ package com.fulu.game.core.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 
@@ -29,14 +31,17 @@ public class CouponGrant implements Serializable {
 	//是否是新用户专享
 	private Boolean isNewUser;
 	//有效期开始时间
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date startUsefulTime;
 	//有效期结束时间
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date endUsefulTime;
 	//发放人ID
 	private Integer adminId;
 	//发放人名称
 	private String adminName;
 	//发放时间
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date createTime;
 
 }

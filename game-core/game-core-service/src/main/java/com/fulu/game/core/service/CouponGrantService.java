@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.CouponGrant;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
 public interface CouponGrantService extends ICommonService<CouponGrant,Integer>{
 
 
-    public void create(String redeemCode,List<String> mobiles,String remark);
+     void create(String redeemCode,List<String> mobiles,String remark);
 
+     PageInfo<CouponGrant> list(Integer pageNum,Integer pageSize, String orderBy);
 }

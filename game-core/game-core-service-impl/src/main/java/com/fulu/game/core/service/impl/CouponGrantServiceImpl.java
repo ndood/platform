@@ -7,6 +7,8 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -70,6 +72,17 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant,Integer
     }
 
 
+    @Override
+    public PageInfo<CouponGrant> list(Integer pageNum, Integer pageSize, String orderBy) {
+        if(StringUtils.isBlank(orderBy)){
+            orderBy = "id desc";
+        }
+        PageHelper.startPage(pageNum,pageSize,orderBy);
+        List<CouponGrant> list =findAll();
+        return new PageInfo<>(list);
+    }
+
+
     //优惠券发放用户
     public void grantCoupon2User(CouponGrant couponGrant,List<String> mobiles){
         String redeemCode = couponGrant.getRedeemCode();
@@ -93,6 +106,9 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant,Integer
                        break;
                    case REDEEMCODE_ERROR:
                        errorCause="优惠券兑换码错误!";
+                       break;
+                   case NEWUSER_RECEIVE:
+                       errorCause="老用户不能发放新人优惠券!";
                        break;
                    default:
                        break;

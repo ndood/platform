@@ -2,8 +2,10 @@ package com.fulu.game.admin.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Coupon;
+import com.fulu.game.core.entity.CouponGrantUser;
 import com.fulu.game.core.entity.CouponGroup;
 import com.fulu.game.core.service.CouponGrantService;
+import com.fulu.game.core.service.CouponGrantUserService;
 import com.fulu.game.core.service.CouponGroupService;
 import com.fulu.game.core.service.CouponService;
 import com.github.pagehelper.Page;
@@ -30,6 +32,8 @@ public class CouponController extends BaseController{
     private CouponService couponService;
     @Autowired
     private CouponGrantService couponGrantService;
+    @Autowired
+    private CouponGrantUserService couponGrantUserService;
 
     /**
      * 批量生产优惠券
@@ -88,6 +92,32 @@ public class CouponController extends BaseController{
         List<String> mobileList = Arrays.asList(mobiles.split(","));
         couponGrantService.create(redeemCode,mobileList,remark);
         return Result.success().msg("优惠券发放完成，发放失败用户请查看明显!");
+    }
+
+
+    /**
+     * 优惠券发放记录
+     * @return
+     */
+    @PostMapping(value = "grant/list")
+    public Result couponGrantList(Integer pageNum,
+                                  Integer pageSize){
+        PageInfo page =couponGrantService.list(pageNum,pageSize,null);
+        return Result.success().data(page);
+    }
+
+
+    /**
+     * 优惠券发放明细
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "grant/details")
+    public Result couponGrantDetails(@RequestParam(required = true)Integer id,
+                                     @RequestParam(required = true)Integer pageNum,
+                                     @RequestParam(required = true)Integer pageSize){
+        PageInfo<CouponGrantUser> pageInfo = couponGrantUserService.list(id,pageNum,pageSize,null);
+        return Result.success().data(pageInfo);
     }
 
 
