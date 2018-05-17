@@ -31,17 +31,9 @@ public class Admin implements Serializable {
 	//状态(0失效,1启用)
 	private Integer status;
 	//生成时间
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date createTime;
 	//修改时间
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date updateTime;
-
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-	public Date getCreateTime(){
-		return createTime;
-	}
-
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-	public Date getUpdateTime(){
-		return updateTime;
-	}
 }

@@ -33,19 +33,10 @@ public class UserComment implements Serializable {
 	//是否匿名评价，默认为否
 	private Boolean recordUser;
 	//记录生成时间
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date createTime;
 	//修改时间
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date updateTime;
-
-
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-	public Date getCreateTime(){
-		return createTime;
-	}
-
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-	public Date getUpdateTime(){
-		return updateTime;
-	}
 
 }

@@ -38,18 +38,14 @@ public class CouponController extends BaseController {
 
     /**
      * 兑换优惠券
-     * 考虑使用队列进行兑换
      *
      * @return
      */
     @PostMapping("/exchange")
-    public Result exchange() {
-        //判断用户身份（新还是旧，通过是否下过单）
-        //判断优惠券是否是新用户专享
-        //判断是否已领取（重复领取）
-        //判断是否已过期
-        //
-        return null;
+    public Result exchange(@RequestParam("redeemCode") String redeemCode) {
+        User user = userService.getCurrentUser();
+        Coupon coupon = couponService.generateCoupon(redeemCode, user.getId());
+        return Result.success().data(coupon).msg("优惠券兑换成功！");
     }
 
     @PostMapping("/list")
@@ -66,4 +62,5 @@ public class CouponController extends BaseController {
         resultMap.put("pageInfo", pageInfo);
         return Result.success().data(resultMap).msg("查询成功！");
     }
+
 }

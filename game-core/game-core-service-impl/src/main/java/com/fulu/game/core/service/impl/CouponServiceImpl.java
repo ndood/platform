@@ -1,6 +1,5 @@
 package com.fulu.game.core.service.impl;
 
-import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.exception.CouponException;
 import com.fulu.game.core.dao.CouponDao;
 import com.fulu.game.core.dao.ICommonDao;
@@ -15,8 +14,6 @@ import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.cms.PasswordRecipientId;
-import org.omg.CORBA.PRIVATE_MEMBER;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -36,7 +33,6 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
     private UserService userService;
     @Autowired
     private OrderService orderService;
-
 
 
     @Override
@@ -126,7 +122,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
             throw new CouponException(CouponException.ExceptionCode.ALREADY_RECEIVE);
         }
         //新用户专享卷只能新用户领
-        if(orderService.isOldUser(userId)&&couponGroup.getIsNewUser()){
+        if (orderService.isOldUser(userId) && couponGroup.getIsNewUser()) {
             throw new CouponException(CouponException.ExceptionCode.NEWUSER_RECEIVE);
         }
 
