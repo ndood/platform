@@ -20,6 +20,7 @@ import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -151,7 +152,7 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("/mobile/bind")
-    public Result bind(@ModelAttribute WxUserInfo wxUserInfo) {
+    public Result bind(@Validated @ModelAttribute WxUserInfo wxUserInfo) {
 
         String token = SubjectUtil.getToken();
         //验证手机号的验证码
@@ -180,7 +181,7 @@ public class UserController extends BaseController {
                 if (mobileUser != null) {
                     if (!mobileUser.getId().equals(openIdUser.getId())) {
                         mobileUser.setOpenId(openId);
-                        mobileUser.setGender(wxUserInfo.getGender() != null ? Integer.parseInt(wxUserInfo.getGender()) : 0);
+                        mobileUser.setGender(wxUserInfo.getGender());
                         mobileUser.setNickname(wxUserInfo.getNickName());
                         mobileUser.setHeadPortraitsUrl(wxUserInfo.getAvatarUrl());
                         mobileUser.setCity(wxUserInfo.getCity());
@@ -193,7 +194,7 @@ public class UserController extends BaseController {
                     newUser = mobileUser;
                 } else {
                     openIdUser.setMobile(wxUserInfo.getMobile());
-                    openIdUser.setGender(wxUserInfo.getGender() != null ? Integer.parseInt(wxUserInfo.getGender()) : 0);
+                    openIdUser.setGender(wxUserInfo.getGender());
                     openIdUser.setNickname(wxUserInfo.getNickName());
                     openIdUser.setHeadPortraitsUrl(wxUserInfo.getAvatarUrl());
                     openIdUser.setCity(wxUserInfo.getCity());
