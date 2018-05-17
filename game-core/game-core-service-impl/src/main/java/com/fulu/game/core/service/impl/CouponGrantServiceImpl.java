@@ -107,6 +107,9 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant,Integer
                    case REDEEMCODE_ERROR:
                        errorCause="优惠券兑换码错误!";
                        break;
+                   case NEWUSER_RECEIVE:
+                       errorCause="老用户不能发放新人优惠券!";
+                       break;
                    default:
                        break;
                }

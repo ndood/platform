@@ -3,8 +3,10 @@ package com.fulu.game.play.controller;
 import cn.hutool.json.JSONObject;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Coupon;
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.CouponService;
 import com.fulu.game.core.service.OrderService;
+import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,8 @@ public class CouponController extends BaseController {
     private CouponService couponService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private UserService userService;
 
     /**
      * 兑换优惠券
@@ -51,8 +55,9 @@ public class CouponController extends BaseController {
                        @RequestParam("pageSize") Integer pageSize,
                        @RequestParam("isUse") Boolean isUse,
                        @RequestParam("overdue") Boolean overdue) {
+        User user=userService.getCurrentUser();
         //判断新老用戶
-        Boolean isOldUser = orderService.isOldUser();
+        Boolean isOldUser = orderService.isOldUser(user.getId());
         PageInfo<Coupon> pageInfo = couponService.listByUseStatus(pageNum, pageSize, isUse, overdue);
         JSONObject jo = new JSONObject();
         jo.put("isOldUser", isOldUser);

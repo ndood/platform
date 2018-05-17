@@ -196,6 +196,6 @@ public interface OrderService extends ICommonService<Order,Integer>{
     /**
      * 是否是老用户（下单过的）
      */
-    Boolean isOldUser();
+    Boolean isOldUser(Integer userId);
 
 }
