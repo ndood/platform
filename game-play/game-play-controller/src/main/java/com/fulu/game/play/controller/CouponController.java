@@ -1,6 +1,5 @@
 package com.fulu.game.play.controller;
 
-import cn.hutool.json.JSONObject;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Coupon;
 import com.fulu.game.core.entity.User;
@@ -14,6 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 优惠券操作接口
@@ -55,13 +57,13 @@ public class CouponController extends BaseController {
                        @RequestParam("pageSize") Integer pageSize,
                        @RequestParam("isUse") Boolean isUse,
                        @RequestParam("overdue") Boolean overdue) {
-        User user=userService.getCurrentUser();
+        User user = userService.getCurrentUser();
         //判断新老用戶
         Boolean isOldUser = orderService.isOldUser(user.getId());
         PageInfo<Coupon> pageInfo = couponService.listByUseStatus(pageNum, pageSize, isUse, overdue);
-        JSONObject jo = new JSONObject();
-        jo.put("isOldUser", isOldUser);
-        jo.put("pageInfo", pageInfo);
-        return Result.success().data(jo).msg("查询成功！");
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("isOldUser", isOldUser);
+        resultMap.put("pageInfo", pageInfo);
+        return Result.success().data(resultMap).msg("查询成功！");
     }
 }
