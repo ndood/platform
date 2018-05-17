@@ -69,7 +69,7 @@
                 and order_no = #{orderNo}
             </if>
             <if test="overdue != null">
-                and end_useful_time &lt;= now()
+                and DATEDIFF(end_useful_time,SYSDATE()) &lt;0
             </if>
             <if test="receiveTime != null">
                 and receive_time = #{receiveTime}
@@ -83,22 +83,18 @@
         </where>
     </select>
 
-
-
-
-    <select id="findByUserReceive"  resultMap="CouponResultMap">
+    <select id="findByUserReceive" resultMap="CouponResultMap">
         SELECT
-          <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List"/>
         FROM t_coupon
         <where>
-            coupon_group_id = #{couponGroupId}  and user_id = #{userId}
+            coupon_group_id = #{couponGroupId} and user_id = #{userId}
         </where>
     </select>
 
-
     <select id="countByParameter" resultType="java.lang.Integer" parameterType="com.fulu.game.core.entity.vo.CouponVO">
         SELECT
-          count(1)
+        count(1)
         FROM t_coupon
         <where>
             <if test="couponGroupId != null">
@@ -130,7 +126,6 @@
             </if>
         </where>
     </select>
-
 
 
     <delete id="deleteById" parameterType="java.lang.Integer">

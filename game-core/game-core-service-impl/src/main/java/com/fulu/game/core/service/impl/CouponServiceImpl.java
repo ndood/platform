@@ -1,5 +1,6 @@
 package com.fulu.game.core.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.exception.CouponException;
 import com.fulu.game.core.dao.CouponDao;
 import com.fulu.game.core.dao.ICommonDao;
@@ -31,12 +32,10 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
     @Autowired
     private UserService userService;
 
-
     @Override
     public ICommonDao<Coupon, Integer> getDao() {
         return couponDao;
     }
-
 
     @Override
     public PageInfo<Coupon> listByGroup(Integer couponGroupId,
@@ -69,9 +68,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         if (overdue) {
             orderBy = "end_useful_time desc";
             couponVO.setOverdue(overdue);
-            couponVO.setIsUse(false);
         }
-
         PageHelper.startPage(pageNum, pageSize, orderBy);
         List<Coupon> couponList = couponDao.findByParameter(couponVO);
         return new PageInfo<>(couponList);
