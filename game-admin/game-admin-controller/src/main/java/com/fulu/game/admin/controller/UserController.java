@@ -12,11 +12,12 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @RestController
@@ -155,10 +156,10 @@ public class UserController {
      * @param id
      * @return
      */
-    @RequestMapping("/lock")
+    @PostMapping("/lock")
     public Result lock(@RequestParam("id") Integer id) {
         userService.lock(id);
-        log.info("user " + id + " is locked at " + new Date());
+        log.info("用户id {} 于 {} 被封禁", id, new Date());
         return Result.success().msg("操作成功！");
     }
 
@@ -168,10 +169,10 @@ public class UserController {
      * @param id
      * @return
      */
-    @RequestMapping("/unlock")
+    @PostMapping("/unlock")
     public Result unlock(@RequestParam("id") Integer id) {
         userService.unlock(id);
-        log.info("unlock user " + id + " at " + new Date());
+        log.info("用户id {} 于 {} 被解封", id, new Date());
         return Result.success().msg("操作成功！");
     }
 
@@ -183,24 +184,29 @@ public class UserController {
      * @param pageSize
      * @return
      */
-    @RequestMapping("/list")
-    public Result list(@Valid UserVO userVO, @RequestParam("pageNum") Integer pageNum, @RequestParam("pageSize")Integer pageSize) {
+    @PostMapping("/list")
+    public Result list(@Valid UserVO userVO, BindingResult bindingResult,
+                       @RequestParam("pageNum") Integer pageNum,
+                       @RequestParam("pageSize") Integer pageSize) throws BindException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
+        }
         PageInfo<User> userList = userService.list(userVO, pageNum, pageSize);
         return Result.success().data(userList).msg("查询用户列表成功！");
     }
 
-
-    @RequestMapping("/save")
-    public Result save(@ModelAttribute UserVO userVO) {
+    @PostMapping("/save")
+    public Result save(@ModelAttribute @Valid UserVO userVO, BindingResult bindingResult) throws BindException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
+        }
         if (StringUtils.isEmpty(userVO.getMobile())) {
             throw new UserException(UserException.ExceptionCode.IllEGAL_MOBILE_EXCEPTION);
         }
         //判断手机号是否已注册成用户
         User user = userService.findByMobile(userVO.getMobile());
         if (user != null) {
-            Result result = Result.success().msg("手机号已注册！");
-            result.setStatus(ResultStatus.MOBILE_DUPLICATE);
-            return result;
+            return Result.error(ResultStatus.MOBILE_DUPLICATE).msg("手机号已注册");
         } else {
             User newUser = userService.save(userVO);
             return Result.success().data(newUser).msg("新用户添加成功！");
