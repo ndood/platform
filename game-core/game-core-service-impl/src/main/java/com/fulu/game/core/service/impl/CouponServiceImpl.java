@@ -100,11 +100,35 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
     }
 
 
+    public Integer countByUser(Integer userId) {
+        CouponVO param = new CouponVO();
+        param.setUserId(userId);
+        return couponDao.countByParameter(param);
+    }
+
+    /**
+     * 查看优惠券领取数量
+     * @param couponGroupId
+     * @return
+     */
     public Integer countByCouponGroup(Integer couponGroupId) {
         CouponVO param = new CouponVO();
         param.setCouponGroupId(couponGroupId);
         return couponDao.countByParameter(param);
     }
+
+    /**
+     * 查看优惠券首次领取数量
+     * @param couponGroupId
+     * @return
+     */
+    public Integer countByCouponGroupAndIsFirst(Integer couponGroupId) {
+        CouponVO param = new CouponVO();
+        param.setCouponGroupId(couponGroupId);
+        param.setIsFirstReceive(true);
+        return couponDao.countByParameter(param);
+    }
+
 
     /**
      * 通过兑换码发放优惠券给用户
@@ -170,6 +194,12 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         coupon.setStartUsefulTime(couponGroup.getStartUsefulTime());
         coupon.setEndUsefulTime(couponGroup.getEndUsefulTime());
         coupon.setCreateTime(new Date());
+        coupon.setIsFirstReceive(true);
+        //判断是否是首次领取
+        Integer countUser = countByUser(userId);
+        if(countUser>0){
+            coupon.setIsFirstReceive(false);
+        }
         create(coupon);
         return coupon;
     }
@@ -185,6 +215,8 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         }
         return list.get(0);
     }
+
+
 
 
 

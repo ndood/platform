@@ -16,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/coupon")
@@ -42,7 +40,7 @@ public class CouponController extends BaseController{
     @PostMapping(value = "/generate")
     public Result generate(@Valid CouponGroup couponGroup){
         couponGroupService.create(couponGroup);
-        return Result.success().msg("批量生产优惠券成功!");
+        return Result.success().msg("生成优惠券成功!");
     }
 
 
@@ -59,6 +57,20 @@ public class CouponController extends BaseController{
         return Result.success().data(pageInfo);
     }
 
+    /**
+     * 优惠券统计
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "/statistics")
+    public Result statistics(Integer id){
+        Integer receiveCount =   couponService.countByCouponGroup(id);
+        Integer firstReceiveCount = couponService.countByCouponGroupAndIsFirst(id);
+        Map<String,Integer> result = new HashMap<>();
+        result.put("receiveCount",receiveCount);
+        result.put("firstReceiveCount",firstReceiveCount);
+        return Result.success().data(result);
+    }
 
     /**
      * 优惠券详情

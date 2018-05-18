@@ -34,6 +34,8 @@ public class Coupon implements Serializable {
     private Boolean isUse;
     //订单号
     private String orderNo;
+    //是否是首次领取
+    private Boolean isFirstReceive ;
     //有效期开始时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date startUsefulTime;

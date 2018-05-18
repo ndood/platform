@@ -15,6 +15,7 @@
         <result column="start_useful_time" property="startUsefulTime"/>
         <result column="end_useful_time" property="endUsefulTime"/>
         <result column="receive_time" property="receiveTime"/>
+        <result column="is_first_receive" property="isFirstReceive"/>
         <result column="use_time" property="useTime"/>
         <result column="receive_ip" property="receiveIp"/>
         <result column="use_ip" property="useIp"/>
@@ -25,7 +26,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,coupon_no,coupon_group_id,deduction,is_new_user,user_id,mobile,is_use,order_no,start_useful_time,end_useful_time,receive_time,use_time,receive_ip,use_ip,create_time
+        id,coupon_no,coupon_group_id,deduction,is_new_user,user_id,mobile,is_use,order_no,start_useful_time,end_useful_time,receive_time,is_first_receive,use_time,receive_ip,use_ip,create_time
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="CouponResultMap">
@@ -78,6 +79,9 @@
             <if test="receiveTime != null">
                 and receive_time = #{receiveTime}
             </if>
+            <if test="isFirstReceive != null">
+                and is_first_receive = #{isFirstReceive}
+            </if>
             <if test="useTime != null">
                 and use_time = #{useTime}
             </if>
@@ -128,6 +132,9 @@
             <if test="userId != null">
                 and user_id = #{userId}
             </if>
+            <if test="isFirstReceive != null">
+                and is_first_receive = #{isFirstReceive}
+            </if>
             <if test="mobile != null">
                 and mobile = #{mobile}
             </if>
@@ -156,9 +163,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Coupon">
         insert into
-        t_coupon (coupon_no,coupon_group_id,deduction,is_new_user,user_id,mobile,is_use,order_no,start_useful_time,end_useful_time,receive_time,use_time,receive_ip,use_ip,create_time)
+        t_coupon (coupon_no,coupon_group_id,deduction,is_new_user,user_id,mobile,is_use,order_no,start_useful_time,end_useful_time,receive_time,#{is_first_receive},use_time,receive_ip,use_ip,create_time)
         values
-        (#{couponNo},#{couponGroupId},#{deduction},#{isNewUser},#{userId},#{mobile},#{isUse},#{orderNo},#{startUsefulTime},#{endUsefulTime},#{receiveTime},#{useTime},#{receiveIp},#{useIp},#{createTime})
+        (#{couponNo},#{couponGroupId},#{deduction},#{isNewUser},#{userId},#{mobile},#{isUse},#{orderNo},#{startUsefulTime},#{endUsefulTime},#{receiveTime},#{isFirstReceive},#{useTime},#{receiveIp},#{useIp},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Coupon">
@@ -206,7 +213,9 @@
             <if test="receiveTime != null">
                 receive_time = #{receiveTime},
             </if>
-
+            <if test="isFirstReceive != null">
+                is_first_receive = #{isFirstReceive},
+            </if>
             <if test="useTime != null">
                 use_time = #{useTime},
             </if>
