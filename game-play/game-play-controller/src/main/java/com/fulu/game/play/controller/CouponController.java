@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,7 +39,6 @@ public class CouponController extends BaseController {
 
     /**
      * 兑换优惠券
-     *
      * @return
      */
     @PostMapping("/exchange")
@@ -47,6 +47,7 @@ public class CouponController extends BaseController {
         Coupon coupon = couponService.generateCoupon(redeemCode, user.getId());
         return Result.success().data(coupon).msg("优惠券兑换成功！");
     }
+
 
     @PostMapping("/list")
     public Result list(@RequestParam("pageNum") Integer pageNum,
@@ -62,5 +63,19 @@ public class CouponController extends BaseController {
         resultMap.put("pageInfo", pageInfo);
         return Result.success().data(resultMap).msg("查询成功！");
     }
+
+
+
+    /**
+     * 查询用户所有可用的优惠券
+     * @return
+     */
+    @PostMapping(value = "user")
+    public Result userCoupons(){
+        User user = userService.getCurrentUser();
+        List<Coupon> list =couponService.availableCouponList(user.getId());
+        return Result.success().data(list);
+    }
+
 
 }

@@ -45,7 +45,7 @@ public class PayServiceImpl implements PayService {
         WxPayUnifiedOrderRequest orderRequest = new WxPayUnifiedOrderRequest();
         orderRequest.setBody(order.getName());
         orderRequest.setOutTradeNo(order.getOrderNo());
-        Integer totalFee = (order.getTotalMoney().multiply(new BigDecimal(100))).intValue();
+        Integer totalFee = (order.getActualMoney().multiply(new BigDecimal(100))).intValue();
         orderRequest.setTotalFee(totalFee);//元转成分
         orderRequest.setOpenid(user.getOpenId());
         orderRequest.setSpbillCreateIp(requestIp);
@@ -69,7 +69,7 @@ public class PayServiceImpl implements PayService {
             orderService.payOrder(orderNo, new BigDecimal(totalYuan));
             return WxPayNotifyResponse.success("处理成功!");
         } catch (Exception e) {
-            log.error("微信回调结果异常,异常原因{}", e.getMessage());
+            log.error("微信回调结果异常,异常原因", e);
             return WxPayNotifyResponse.fail(e.getMessage());
         }
     }

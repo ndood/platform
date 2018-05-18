@@ -8,14 +8,18 @@ import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.UserComment;
 import com.fulu.game.core.entity.UserTechAuth;
+import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.WxUserInfo;
+import com.fulu.game.core.service.UserCommentService;
 import com.fulu.game.core.service.UserInfoAuthService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.UserTechAuthService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +41,8 @@ public class UserController extends BaseController {
     private UserInfoAuthService userInfoAuthService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private UserCommentService commentService;
 
     @RequestMapping("tech/list")
     public Result userTechList() {
@@ -261,5 +267,53 @@ public class UserController extends BaseController {
         UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(id, false, true, true, true);
         return Result.success().data(userInfoVO).msg("查询聊天对象信息成功！");
     }
+
+
+
+    /**
+     * 用户-添加评价
+     *
+     * @return
+     */
+    @RequestMapping("/comment/save")
+    public Result save(UserCommentVO commentVO) {
+        commentService.save(commentVO);
+        return Result.success().msg("添加成功！");
+    }
+
+    /**
+     * 用户-查询评论
+     *
+     * @return
+     */
+    @RequestMapping("/comment/get")
+    public Result get(@RequestParam("orderNo") String orderNo) {
+        UserComment comment = commentService.findByOrderNo(orderNo);
+        if (null == comment) {
+            return Result.error().msg("该评论不存在！");
+        }
+        comment.setServerUserId(null);
+        comment.setScoreAvg(null);
+        return Result.success().data(comment).msg("查询成功！");
+    }
+
+
+    /**
+     * 查询陪玩师的所有评论
+     *
+     * @param pageNum
+     * @param pageSize
+     * @param serverId
+     * @return
+     */
+    @RequestMapping(value = "/comment/byserver")
+    public Result findDetailsComments(Integer pageNum,
+                                      Integer pageSize,
+                                      Integer serverId) {
+        PageInfo<UserCommentVO> page = commentService.findByServerId(pageNum, pageSize, serverId);
+        return Result.success().data(page);
+    }
+
+
 
 }

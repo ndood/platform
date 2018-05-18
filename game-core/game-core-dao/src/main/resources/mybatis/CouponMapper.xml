@@ -87,6 +87,18 @@
         </where>
     </select>
 
+    <select id="findByAvailable" parameterType="java.lang.Integer" resultMap="CouponResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        t_coupon
+        WHERE
+        is_use = FALSE
+        AND date_format(now(), '%Y-%m-%d')  &gt;= date_format(start_useful_time,'%Y-%m-%d')
+        AND date_format(now(), '%Y-%m-%d')  &lt;= date_format(end_useful_time, '%Y-%m-%d')
+        AND user_id = #{userId}
+    </select>
+
     <select id="findByUserReceive" resultMap="CouponResultMap">
         SELECT
         <include refid="Base_Column_List"/>

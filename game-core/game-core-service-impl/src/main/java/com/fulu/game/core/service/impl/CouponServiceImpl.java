@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -56,6 +57,20 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         PageHelper.startPage(pageNum, pageSize, orderBy);
         List<Coupon> couponList = couponDao.findByParameter(param);
         return new PageInfo<>(couponList);
+    }
+
+
+    @Override
+    public List<Coupon> availableCouponList(Integer userId) {
+        List<Coupon> couponList =couponDao.findByAvailable(userId);
+        List<Coupon>  availableCouponList = new ArrayList<>();
+        availableCouponList.addAll(couponList);
+        for(Coupon coupon :couponList){
+            if(orderService.isOldUser(userId)&&coupon.getIsNewUser()){
+                availableCouponList.remove(coupon);
+            }
+        }
+        return availableCouponList;
     }
 
     @Override
@@ -105,7 +120,16 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         if (couponGroup == null) {
             throw new CouponException(CouponException.ExceptionCode.REDEEMCODE_ERROR);
         }
-        return generateCoupon(couponGroup, userId);
+        return generateCoupon(couponGroup, userId,null,null);
+    }
+
+    @Override
+    public Coupon generateCoupon(String redeemCode, Integer userId, Date receiveTime, String receiveIp) {
+        CouponGroup couponGroup = couponGroupService.findByRedeemCode(redeemCode);
+        if (couponGroup == null) {
+            throw new CouponException(CouponException.ExceptionCode.REDEEMCODE_ERROR);
+        }
+        return generateCoupon(couponGroup, userId,receiveTime,receiveIp);
     }
 
 
@@ -114,7 +138,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
      * @param couponGroup
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    Coupon generateCoupon(CouponGroup couponGroup, Integer userId) throws CouponException {
+    Coupon generateCoupon(CouponGroup couponGroup, Integer userId,Date receiveTime,String receiveIp) throws CouponException {
         Integer couponCount = countByCouponGroup(couponGroup.getId());
         if (couponCount >= couponGroup.getAmount()) {
             throw new CouponException(CouponException.ExceptionCode.BROUGHT_OUT);
@@ -136,6 +160,8 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         Coupon coupon = new Coupon();
         coupon.setCouponGroupId(couponGroup.getId());
         coupon.setCouponNo(couponNo);
+        coupon.setReceiveTime(receiveTime);
+        coupon.setReceiveIp(receiveIp);
         coupon.setDeduction(couponGroup.getDeduction());
         coupon.setIsNewUser(couponGroup.getIsNewUser());
         coupon.setUserId(userId);
@@ -159,6 +185,8 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         }
         return list.get(0);
     }
+
+
 
     /**
      * 生成优惠券编码

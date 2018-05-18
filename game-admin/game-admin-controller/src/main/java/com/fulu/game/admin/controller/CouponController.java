@@ -4,10 +4,8 @@ import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Coupon;
 import com.fulu.game.core.entity.CouponGrantUser;
 import com.fulu.game.core.entity.CouponGroup;
-import com.fulu.game.core.service.CouponGrantService;
-import com.fulu.game.core.service.CouponGrantUserService;
-import com.fulu.game.core.service.CouponGroupService;
-import com.fulu.game.core.service.CouponService;
+import com.fulu.game.core.entity.User;
+import com.fulu.game.core.service.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +32,7 @@ public class CouponController extends BaseController{
     private CouponGrantService couponGrantService;
     @Autowired
     private CouponGrantUserService couponGrantUserService;
+
 
     /**
      * 批量生产优惠券
@@ -73,6 +72,7 @@ public class CouponController extends BaseController{
         PageInfo<Coupon> pageInfo =  couponService.listByGroup(id,pageNum,pageSize,null);
         return Result.success().data(pageInfo);
     }
+
 
 
     /**
