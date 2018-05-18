@@ -40,12 +40,13 @@ public class HomeController {
 
     /**
      * 初始化加载系统配置
+     *
      * @return
      */
     @RequestMapping(value = "/sys/config", method = RequestMethod.POST)
     @ResponseBody
-    public Result sysConfig() {
-        List<SysConfig> result = sysConfigService.findAll();
+    public Result sysConfig(@RequestParam(value = "version", required = false, defaultValue = "1.0.2") String version) {
+        List<SysConfig> result = sysConfigService.findByVersion(version);
         return Result.success().data(result);
     }
 

@@ -12,14 +12,17 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Date;
 
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/user")
-public class UserController extends BaseController {
+public class UserController {
 
     @Autowired
     private UserInfoAuthService userInfoAuthService;
@@ -181,7 +184,7 @@ public class UserController extends BaseController {
      * @return
      */
     @RequestMapping("/list")
-    public Result list(@ModelAttribute UserVO userVO, Integer pageNum, Integer pageSize) {
+    public Result list(@Valid UserVO userVO, @RequestParam("pageNum") Integer pageNum, @RequestParam("pageSize")Integer pageSize) {
         PageInfo<User> userList = userService.list(userVO, pageNum, pageSize);
         return Result.success().data(userList).msg("查询用户列表成功！");
     }

@@ -2,10 +2,7 @@ package com.fulu.game.play.controller.exception;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.ResultStatus;
-import com.fulu.game.common.exception.CashException;
-import com.fulu.game.common.exception.OrderException;
-import com.fulu.game.common.exception.ServiceErrorException;
-import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.dao.DataAccessException;
@@ -112,6 +109,17 @@ public class ExceptionHandlerAdvice {
      */
     @ExceptionHandler(UserException.class)
     public Result UserException(UserException e) {
+        log.error(e.getMessage(), e);
+        return	Result.error().msg(e.getMessage());
+    }
+
+    /**
+     * 用户异常
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(CouponException.class)
+    public Result CouponException(CouponException e) {
         log.error(e.getMessage(), e);
         return	Result.error().msg(e.getMessage());
     }
