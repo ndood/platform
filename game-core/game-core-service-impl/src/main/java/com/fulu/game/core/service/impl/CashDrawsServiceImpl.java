@@ -2,8 +2,6 @@ package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.enums.CashProcessStatusEnum;
 import com.fulu.game.common.enums.MoneyOperateTypeEnum;
-import com.fulu.game.common.enums.exception.CashExceptionEnums;
-import com.fulu.game.common.enums.exception.UserExceptionEnums;
 import com.fulu.game.common.exception.CashException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.CashDrawsDao;
@@ -54,16 +52,16 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
     public CashDraws save(CashDrawsVO cashDrawsVO) {
         BigDecimal money = cashDrawsVO.getMoney();
         if (money.compareTo(BigDecimal.ZERO) == -1) {
-            throw new CashException(CashExceptionEnums.CASH_NEGATIVE_EXCEPTION);
+            throw new CashException(CashException.ExceptionCode.CASH_NEGATIVE_EXCEPTION);
         }
         User user = userService.getCurrentUser();
         if (null == user) {
-            throw new UserException(UserExceptionEnums.USER_NOT_EXIST_EXCEPTION);
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
         user = userService.findById(user.getId());
         BigDecimal balance = user.getBalance();
         if (money.compareTo(balance) == 1) {
-            throw new CashException(CashExceptionEnums.CASH_EXCEED_EXCEPTION);
+            throw new CashException(CashException.ExceptionCode.CASH_EXCEED_EXCEPTION);
         }
         //提现后的余额
         BigDecimal newBalance = balance.subtract(money);

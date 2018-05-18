@@ -3,27 +3,21 @@ package com.fulu.game.common.exception;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-/**
- * 提款打款业务自定义异常
- * yanbiao
- * 2018.4.25
- */
 @Getter
-public class CashException extends BizException {
+public class ParamsException extends BizException{
     private int code;
     private String message;
     private ExceptionCode exceptionCode;
 
     @AllArgsConstructor
     @Getter
-    public enum ExceptionCode {
-        CASH_NEGATIVE_EXCEPTION(30001, "金额小于0"),
-        CASH_EXCEED_EXCEPTION(30002, "提款金额超出余额");
+    public enum ExceptionCode{
+        PARAM_NULL_EXCEPTION (10001,"必要参数为空");
         private int code;
         private String msg;
     }
 
-    public CashException(ExceptionCode exceptionCode) {
+    public ParamsException(ExceptionCode exceptionCode) {
         super();
         this.code = exceptionCode.getCode();
         this.message = exceptionCode.getMsg();

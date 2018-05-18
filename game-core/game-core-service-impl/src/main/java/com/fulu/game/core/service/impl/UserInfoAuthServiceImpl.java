@@ -5,7 +5,6 @@ import com.fulu.game.common.enums.AuthStatusEnum;
 import com.fulu.game.common.enums.FileTypeEnum;
 import com.fulu.game.common.enums.UserInfoFileTypeEnum;
 import com.fulu.game.common.enums.UserTypeEnum;
-import com.fulu.game.common.enums.exception.UserExceptionEnums;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
@@ -121,7 +120,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
     public UserInfoVO findUserCardByUserId(Integer userId,Boolean hasPhotos,Boolean hasVoice,Boolean hasTags,Boolean hasTechs){
         User user = userService.findById(userId);
         if(null == user){
-            throw new UserException(UserExceptionEnums.USER_NOT_EXIST_EXCEPTION);
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
         UserInfoVO userInfo = new UserInfoVO();
         userInfo.setUserId(userId);

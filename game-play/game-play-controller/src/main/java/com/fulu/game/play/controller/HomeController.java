@@ -3,13 +3,12 @@ package com.fulu.game.play.controller;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.fulu.game.common.Result;
-import com.fulu.game.common.enums.exception.ParamsExceptionEnums;
+import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.SysConfig;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.SysConfigService;
 import com.fulu.game.core.service.UserService;
-import com.fulu.game.play.controller.exception.ParamsException;
 import com.fulu.game.play.shiro.PlayUserToken;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
@@ -60,7 +59,7 @@ public class HomeController {
     public Result login(@RequestParam("code") String code) throws WxErrorException {
         log.info("==调用/login方法==");
         if (StringUtils.isBlank(code)) {
-            throw new ParamsException(ParamsExceptionEnums.PARAM_NULL_EXCEPTION);
+            throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
         WxMaJscode2SessionResult session = wxService.getUserService().getSessionInfo(code);
         String openId = session.getOpenid();

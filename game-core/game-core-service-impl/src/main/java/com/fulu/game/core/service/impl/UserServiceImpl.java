@@ -4,7 +4,6 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.AuthStatusEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.UserTypeEnum;
-import com.fulu.game.common.enums.exception.UserExceptionEnums;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SubjectUtil;
@@ -130,7 +129,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     public User getCurrentUser() {
         Object userObj = SubjectUtil.getCurrentUser();
         if (null == userObj) {
-            throw new UserException(UserExceptionEnums.USER_NOT_EXIST_EXCEPTION);
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
         if (userObj instanceof User) {
             return (User) userObj;

@@ -2,7 +2,6 @@ package com.fulu.game.admin.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.ResultStatus;
-import com.fulu.game.common.enums.exception.UserExceptionEnums;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
@@ -191,7 +190,7 @@ public class UserController extends BaseController {
     @RequestMapping("/save")
     public Result save(@ModelAttribute UserVO userVO) {
         if (StringUtils.isEmpty(userVO.getMobile())) {
-            throw new UserException(UserExceptionEnums.IllEGAL_MOBILE_EXCEPTION);
+            throw new UserException(UserException.ExceptionCode.IllEGAL_MOBILE_EXCEPTION);
         }
         //判断手机号是否已注册成用户
         User user = userService.findByMobile(userVO.getMobile());

@@ -2,7 +2,6 @@ package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.domain.Password;
 import com.fulu.game.common.enums.AdminStatus;
-import com.fulu.game.common.enums.exception.UserExceptionEnums;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.EncryptUtil;
 import com.fulu.game.common.utils.SubjectUtil;
@@ -66,7 +65,7 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
     public Admin getCurrentUser(){
         Object userObj = SubjectUtil.getCurrentUser();
         if (null == userObj){
-            throw new UserException(UserExceptionEnums.USER_NOT_EXIST_EXCEPTION);
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
         if(userObj instanceof Admin){
             return (Admin) userObj;

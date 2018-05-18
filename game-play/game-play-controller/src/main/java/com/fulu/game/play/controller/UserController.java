@@ -4,7 +4,6 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.ResultStatus;
 import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.enums.exception.UserExceptionEnums;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
@@ -243,7 +242,7 @@ public class UserController extends BaseController {
     @PostMapping("/im/get")
     public Result getImUser(@RequestParam("imId") String imId) {
         if (StringUtils.isEmpty(imId)) {
-            throw new UserException(UserExceptionEnums.IllEGAL_IMID_EXCEPTION);
+            throw new UserException(UserException.ExceptionCode.IllEGAL_IMID_EXCEPTION);
         }
         User user = userService.findByImId(imId);
         if (null == user) {

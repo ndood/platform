@@ -1,8 +1,6 @@
 package com.fulu.game.admin.controller;
 
 import com.fulu.game.common.Result;
-import com.fulu.game.common.enums.exception.CashExceptionEnums;
-import com.fulu.game.common.enums.exception.UserExceptionEnums;
 import com.fulu.game.common.exception.CashException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.entity.MoneyDetails;
@@ -51,11 +49,11 @@ public class MoneyDetailsController {
     @PostMapping("/save")
     public Result save(@ModelAttribute MoneyDetailsVO moneyDetailsVO){
         if (moneyDetailsVO.getMoney().compareTo(BigDecimal.ZERO)==-1){
-            throw new CashException(CashExceptionEnums.CASH_NEGATIVE_EXCEPTION);
+            throw new CashException(CashException.ExceptionCode.CASH_NEGATIVE_EXCEPTION);
         }
         User user = userService.findByMobile(moneyDetailsVO.getMobile());
         if (user==null){
-            throw new UserException(UserExceptionEnums.USER_NOT_EXIST_EXCEPTION);
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
         if (StringUtils.isEmpty(user.getOpenId())){
             return Result.error().msg("该用户尚未绑定微信！");
