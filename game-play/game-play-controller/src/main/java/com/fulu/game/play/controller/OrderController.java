@@ -73,7 +73,6 @@ public class OrderController {
 
     /**
      * 订单支付接口
-     *
      * @param orderNo
      * @return
      */
@@ -112,6 +111,9 @@ public class OrderController {
                                 @RequestParam(required = true) Integer pageSize,
                                 Integer categoryId,
                                 @RequestParam(required = true) Integer status) {
+        if(status==null){
+            status = OrderStatusGroupEnum.USER_ALL.getValue();
+        }
         Integer[] statusArr = OrderStatusGroupEnum.getByValue(status);
         PageInfo<OrderVO> pageInfo = orderService.userList(pageNum, pageSize, categoryId, statusArr);
         return Result.success().data(pageInfo);
@@ -143,6 +145,9 @@ public class OrderController {
                                   @RequestParam(required = true) Integer pageSize,
                                   Integer categoryId,
                                   @RequestParam(required = true) Integer status) {
+        if(status==null){
+            status = OrderStatusGroupEnum.SERVER_ALL.getValue();
+        }
         Integer[] statusArr = OrderStatusGroupEnum.getByValue(status);
         PageInfo<OrderVO> pageInfo = orderService.serverList(pageNum, pageSize, categoryId, statusArr);
         return Result.success().data(pageInfo);

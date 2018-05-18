@@ -197,6 +197,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setRemark(remark);
         order.setIsPay(false);
         order.setTotalMoney(totalMoney);
+        order.setActualMoney(totalMoney);
         order.setStatus(OrderStatusEnum.NON_PAYMENT.getStatus());
         order.setCommissionMoney(commissionMoney);
         order.setCreateTime(new Date());
@@ -211,8 +212,9 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
             order.setCouponNo(coupon.getCouponNo());
             order.setCouponMoney(coupon.getDeduction());
             //判断优惠券金额是否大于订单总额
-            if(coupon.getDeduction().compareTo(totalMoney)>=0){
+            if(coupon.getDeduction().compareTo(order.getTotalMoney())>=0){
                 order.setActualMoney(new BigDecimal(0));
+                order.setCouponMoney(order.getTotalMoney());
             }else{
                 BigDecimal actualMoney = order.getTotalMoney().subtract(coupon.getDeduction());
                 order.setActualMoney(actualMoney);
@@ -248,6 +250,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         return orderVO;
     }
 
+
     /**
      * 使用优惠券
      * @return
@@ -256,8 +259,10 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         Coupon coupon =couponService.findByCouponNo(couponCode);
         //判断是否是自己的优惠券
         userService.isCurrentUser(coupon.getUserId());
-        //todo 判断该优惠券是否可用
-
+        //判断该优惠券是否可用
+        if(!couponService.couponIsAvailable(coupon)){
+            return null;
+        }
         return coupon;
     }
 
@@ -282,7 +287,10 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         //记录订单流水
         orderMoneyDetailsService.create(order.getOrderNo(),order.getUserId(), DetailsEnum.ORDER_PAY,orderMoney);
         //记录平台流水
-        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_PAY,order.getOrderNo(),orderMoney);
+        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_PAY,order.getOrderNo(),order.getTotalMoney());
+        if(order.getCouponNo()!=null){
+            platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.COUPON_DEDUCTION,order.getOrderNo(),order.getCouponMoney().negate());
+        }
         //发送短信通知给陪玩师
         User server = userService.findById(order.getServiceUserId());
         SMSUtil.sendOrderReceivingRemind(server.getMobile(),order.getName());
@@ -460,7 +468,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
 
 
     /**
-     * 用户验收订单
+     * 系统完成订单
      * @param orderNo
      * @return
      */
@@ -491,10 +499,6 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         moneyDetailsService.orderSave(serverMoney,order.getServiceUserId(),order.getOrderNo());
         //平台记录支付打手流水
         platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_SHARE_PROFIT,order.getOrderNo(),serverMoney.negate());
-        //平台记录收入流水
-        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_SHARE_PROFIT,order.getOrderNo(),order.getCommissionMoney());
-        //订单分润记录优惠券流水
-        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_SHARE_PROFIT,order.getOrderNo(),order.getCouponMoney().negate());
     }
 
 
@@ -557,7 +561,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setCommissionMoney(order.getTotalMoney());
         update(order);
         //订单协商,全部金额记录平台流水
-        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_NEGOTIATE,order.getOrderNo(),order.getCommissionMoney());
+        //platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_NEGOTIATE,order.getOrderNo(),order.getCommissionMoney());
         return orderConvertVo(order);
     }
 
@@ -580,6 +584,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         }
         //记录订单流水
         orderMoneyDetailsService.create(orderNo,userId,DetailsEnum.ORDER_USER_CANCEL,orderMoney.negate());
+        //记录平台流水
         platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_REFUND,orderNo,orderMoney.negate());
 
     }

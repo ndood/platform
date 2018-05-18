@@ -84,6 +84,7 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant,Integer
 
 
     //优惠券发放用户
+    @Transactional
     public void grantCoupon2User(CouponGrant couponGrant,List<String> mobiles){
         String redeemCode = couponGrant.getRedeemCode();
         for(String mobile :mobiles){

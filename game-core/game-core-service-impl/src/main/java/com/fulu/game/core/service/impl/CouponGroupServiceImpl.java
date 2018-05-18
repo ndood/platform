@@ -6,6 +6,8 @@ import com.fulu.game.core.entity.vo.CouponGroupVO;
 import com.fulu.game.core.service.CouponGroupService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.xiaoleilu.hutool.date.DatePattern;
+import com.xiaoleilu.hutool.date.DateUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,9 @@ public class CouponGroupServiceImpl implements CouponGroupService {
     @Override
     public int create(CouponGroup couponGroup){
         couponGroup.setCreateTime(new Date());
+        String endDate = DateUtil.format(couponGroup.getEndUsefulTime(), DatePattern.NORM_DATE_FORMAT)+" 23:59:59";
+        couponGroup.setStartUsefulTime(DateUtil.beginOfDay(couponGroup.getStartUsefulTime()));
+        couponGroup.setEndUsefulTime(DateUtil.parse(endDate));
         int result =  couponGroupDao.create(couponGroup);
         return result;
     }

@@ -19,7 +19,6 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 判断唯一索引
-     *
      * @param e
      * @return
      */
@@ -31,7 +30,6 @@ public class ExceptionHandlerAdvice {
 
     /**
      * SQL执行错误
-     *
      * @param e
      * @return
      */
@@ -43,7 +41,6 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 404错误
-     *
      * @param e
      * @return
      */
@@ -55,7 +52,6 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 必填参数为空
-     *
      * @param e
      * @return
      */
@@ -67,7 +63,6 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 业务错误,直接提示给用户
-     *
      * @param e
      * @return
      */
@@ -97,20 +92,20 @@ public class ExceptionHandlerAdvice {
      */
     @ExceptionHandler(BizException.class)
     public Result BizException(BizException e) {
+        log.error("业务异常:", e);
         log.error(e.getMessage(), e);
         return Result.error().msg(e.getMessage()).data("errcode", e.getCode());
     }
 
     /**
      * 统一异常
-     *
      * @param e
      * @return
      */
     @ExceptionHandler(Exception.class)
     public Result handleException(Exception e) {
         log.error(e.getMessage(), e);
-        return Result.error().msg("服务器错误!");
+        return	Result.error().msg("服务器错误!");
     }
 
 }

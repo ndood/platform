@@ -42,10 +42,16 @@ public class PayServiceImpl implements PayService {
         if (!order.getIsPay() && !order.getStatus().equals(OrderStatusEnum.NON_PAYMENT.getStatus())) {
             throw new OrderException(orderNo, "已支付的订单不能支付!");
         }
+
         WxPayUnifiedOrderRequest orderRequest = new WxPayUnifiedOrderRequest();
         orderRequest.setBody(order.getName());
         orderRequest.setOutTradeNo(order.getOrderNo());
         Integer totalFee = (order.getActualMoney().multiply(new BigDecimal(100))).intValue();
+        //如果订单金额为0,则直接调用支付成功接口
+        if(totalFee.equals(0)){
+            orderService.payOrder(orderNo,order.getActualMoney());
+            return null;
+        }
         orderRequest.setTotalFee(totalFee);//元转成分
         orderRequest.setOpenid(user.getOpenId());
         orderRequest.setSpbillCreateIp(requestIp);
@@ -80,6 +86,10 @@ public class PayServiceImpl implements PayService {
         Integer refunFee = totalFee;
         if(refundMoney!=null){
             refunFee = (refundMoney.multiply(new BigDecimal(100))).intValue();
+        }
+        log.info("退款:退款金额为:{}",refunFee);
+        if(refunFee.equals(0)){
+            return true;
         }
         WxPayRefundRequest request = new WxPayRefundRequest();
         request.setOutTradeNo(orderNo);

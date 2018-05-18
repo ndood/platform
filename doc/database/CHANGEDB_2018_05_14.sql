@@ -51,22 +51,35 @@ CREATE TABLE `t_coupon_group` (
 )  COMMENT='优惠券组表';
 
 -- ----------------------------
--- Table structure for t_coupon_grant_user
+-- Table structure for t_coupon
 -- ----------------------------
-DROP TABLE IF EXISTS `t_coupon_grant_user`;
-CREATE TABLE `t_coupon_grant_user` (
+DROP TABLE IF EXISTS `t_coupon`;
+CREATE TABLE `t_coupon` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `coupon_no` varchar(128) DEFAULT NULL,
-  `coupon_grant_id` int(11) NOT NULL COMMENT '发放记录ID',
-  `user_id` int(11) DEFAULT NULL COMMENT '发放用户ID',
-  `mobile` varchar(255) NOT NULL COMMENT '发放手机号',
-  `is_success` tinyint(4) DEFAULT NULL COMMENT '是否发放成功',
-  `error_cause` varchar(255) DEFAULT NULL COMMENT '发放错误原因',
-  `create_time` datetime NOT NULL COMMENT '发放时间',
+  `coupon_no` varchar(128) DEFAULT NULL COMMENT '优惠券编码(优惠券唯一标识)',
+  `coupon_group_id` int(11) NOT NULL COMMENT '优惠券组ID',
+  `deduction` decimal(11,2) NOT NULL COMMENT '面额',
+  `is_new_user` tinyint(1) NOT NULL COMMENT '是否是新用户专享',
+  `user_id` int(11) DEFAULT NULL COMMENT '绑定了那个用户',
+  `mobile` varchar(128) DEFAULT NULL COMMENT '领取手机号',
+  `is_use` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否被使用(0:否,1:是)',
+  `order_no` varchar(128) DEFAULT NULL COMMENT '订单号',
+  `start_useful_time` datetime NOT NULL COMMENT '有效期开始时间',
+  `end_useful_time` datetime NOT NULL COMMENT '有效期结束时间',
+  `receive_time` datetime DEFAULT NULL COMMENT '领取时间',
+  `is_first_receive` tinyint(1) DEFAULT '1' COMMENT '是否是首次领取',
+  `use_time` datetime DEFAULT NULL COMMENT '使用时间',
+  `receive_ip` varchar(128) DEFAULT NULL COMMENT '领取IP',
+  `use_ip` varchar(128) DEFAULT NULL COMMENT '使用IP',
+  `create_time` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `coupon_grant_id` (`coupon_grant_id`),
-  CONSTRAINT `t_coupon_grant_user_ibfk_1` FOREIGN KEY (`coupon_grant_id`) REFERENCES `t_coupon_grant` (`id`)
-)  COMMENT='优惠券发放用户';
+  UNIQUE KEY `coupon_no` (`coupon_no`),
+  KEY `coupon_group_id` (`coupon_group_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `t_coupon_ibfk_1` FOREIGN KEY (`coupon_group_id`) REFERENCES `t_coupon_group` (`id`),
+  CONSTRAINT `t_coupon_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `t_user` (`id`)
+)  COMMENT='优惠券表';
+
 
 -- ----------------------------
 -- Table structure for t_coupon_grant
@@ -90,43 +103,35 @@ CREATE TABLE `t_coupon_grant` (
 )  COMMENT='优惠券发放记录';
 
 -- ----------------------------
--- Table structure for t_coupon
+-- Table structure for t_coupon_grant_user
 -- ----------------------------
-DROP TABLE IF EXISTS `t_coupon`;
-CREATE TABLE `t_coupon` (
+DROP TABLE IF EXISTS `t_coupon_grant_user`;
+CREATE TABLE `t_coupon_grant_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `coupon_no` varchar(128) DEFAULT NULL COMMENT '优惠券编码(优惠券唯一标识)',
-  `coupon_group_id` int(11) NOT NULL COMMENT '优惠券组ID',
-  `deduction` decimal(11,2) NOT NULL COMMENT '面额',
-  `is_new_user` tinyint(1) NOT NULL COMMENT '是否是新用户专享',
-  `user_id` int(11) DEFAULT NULL COMMENT '绑定了那个用户',
-  `mobile` varchar(128) DEFAULT NULL COMMENT '领取手机号',
-  `is_use` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否被使用(0:否,1:是)',
-  `order_no` varchar(128) DEFAULT NULL COMMENT '订单号',
-  `start_useful_time` datetime NOT NULL COMMENT '有效期开始时间',
-  `end_useful_time` datetime NOT NULL COMMENT '有效期结束时间',
-  `receive_time` datetime DEFAULT NULL COMMENT '领取时间',
-  `use_time` datetime DEFAULT NULL COMMENT '使用时间',
-  `receive_ip` varchar(128) DEFAULT NULL COMMENT '领取IP',
-  `use_ip` varchar(128) DEFAULT NULL COMMENT '使用IP',
-  `create_time` datetime NOT NULL,
+  `coupon_no` varchar(128) DEFAULT NULL,
+  `coupon_grant_id` int(11) NOT NULL COMMENT '发放记录ID',
+  `user_id` int(11) DEFAULT NULL COMMENT '发放用户ID',
+  `mobile` varchar(255) NOT NULL COMMENT '发放手机号',
+  `is_success` tinyint(4) DEFAULT NULL COMMENT '是否发放成功',
+  `error_cause` varchar(255) DEFAULT NULL COMMENT '发放错误原因',
+  `create_time` datetime NOT NULL COMMENT '发放时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `coupon_no` (`coupon_no`),
-  KEY `coupon_group_id` (`coupon_group_id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `t_coupon_ibfk_1` FOREIGN KEY (`coupon_group_id`) REFERENCES `t_coupon_group` (`id`),
-  CONSTRAINT `t_coupon_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `t_user` (`id`)
-)  COMMENT='优惠券表';
+  KEY `coupon_grant_id` (`coupon_grant_id`),
+  CONSTRAINT `t_coupon_grant_user_ibfk_1` FOREIGN KEY (`coupon_grant_id`) REFERENCES `t_coupon_grant` (`id`)
+)  COMMENT='优惠券发放用户';
 
----使用优惠券需求
-ALTER TABLE `t_order`
-ADD COLUMN `actual_money`  decimal(11,2) NULL DEFAULT NULL AFTER `coupon_money`  COMMENT '实付金额';
 
+
+
+---更新订单字段需求
 ALTER TABLE `t_order`
-ADD COLUMN `coupon_money`  decimal(11,2) NULL DEFAULT NULL AFTER `coupon_money`  COMMENT '优惠券金额';
+ADD COLUMN `actual_money`  decimal(11,2) NULL DEFAULT NULL  COMMENT '实付金额' AFTER `total_money` ;
 
 ALTER TABLE `t_order`
-ADD COLUMN `coupon_no` varchar(128) NULL DEFAULT NULL AFTER `order_no`  COMMENT '优惠券编号';
+ADD COLUMN `coupon_money`  decimal(11,2) NULL DEFAULT NULL COMMENT '优惠券金额' AFTER `total_money` ;
+
+ALTER TABLE `t_order`
+ADD COLUMN `coupon_no` varchar(128) NULL DEFAULT NULL COMMENT '优惠券编号' AFTER `order_no`;
 ---批量更新之前actual_money为空的字段
 UPDATE t_order SET actual_money = total_money WHERE actual_money is null;
 

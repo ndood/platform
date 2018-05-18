@@ -16,6 +16,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.date.DateUnit;
 import com.xiaoleilu.hutool.date.DateUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@Slf4j
 public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> implements CouponService {
 
     @Autowired
@@ -74,6 +76,27 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
     }
 
     @Override
+    public Boolean couponIsAvailable(Coupon coupon) {
+        if(coupon.getIsUse()){
+            log.error("优惠券使用错误:已经使用:{}",coupon.getCouponNo());
+            return false;
+        }
+        if(new Date().before(coupon.getStartUsefulTime())){
+            log.error("优惠券使用错误:使用时间未到:{}",coupon.getCouponNo());
+            return false;
+        }
+        if(new Date().after(coupon.getEndUsefulTime())){
+            log.error("优惠券使用错误:过期:{}",coupon.getCouponNo());
+            return false;
+        }
+        if(orderService.isOldUser(coupon.getUserId())&&coupon.getIsNewUser()){
+            log.error("优惠券使用错误:不能使用新用户专享券:{}",coupon.getCouponNo());
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     public PageInfo<Coupon> listByUseStatus(Integer pageNum, Integer pageSize, Boolean isUse, Boolean overdue) {
         User user = userService.getCurrentUser();
         CouponVO couponVO = new CouponVO();
@@ -100,11 +123,35 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
     }
 
 
+    public Integer countByUser(Integer userId) {
+        CouponVO param = new CouponVO();
+        param.setUserId(userId);
+        return couponDao.countByParameter(param);
+    }
+
+    /**
+     * 查看优惠券领取数量
+     * @param couponGroupId
+     * @return
+     */
     public Integer countByCouponGroup(Integer couponGroupId) {
         CouponVO param = new CouponVO();
         param.setCouponGroupId(couponGroupId);
         return couponDao.countByParameter(param);
     }
+
+    /**
+     * 查看优惠券首次领取数量
+     * @param couponGroupId
+     * @return
+     */
+    public Integer countByCouponGroupAndIsFirst(Integer couponGroupId) {
+        CouponVO param = new CouponVO();
+        param.setCouponGroupId(couponGroupId);
+        param.setIsFirstReceive(true);
+        return couponDao.countByParameter(param);
+    }
+
 
     /**
      * 通过兑换码发放优惠券给用户
@@ -152,7 +199,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
             throw new CouponException(CouponException.ExceptionCode.NEWUSER_RECEIVE);
         }
         //过期的优惠券不能兑换
-        if (new Date().after(DateUtil.endOfDay(couponGroup.getEndUsefulTime()))){
+        if (new Date().after(couponGroup.getEndUsefulTime())){
             throw new CouponException(CouponException.ExceptionCode.OVERDUE);
         }
         String couponNo = generateCouponNo();
@@ -170,6 +217,12 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         coupon.setStartUsefulTime(couponGroup.getStartUsefulTime());
         coupon.setEndUsefulTime(couponGroup.getEndUsefulTime());
         coupon.setCreateTime(new Date());
+        coupon.setIsFirstReceive(true);
+        //判断是否是首次领取
+        Integer countUser = countByUser(userId);
+        if(countUser>0){
+            coupon.setIsFirstReceive(false);
+        }
         create(coupon);
         return coupon;
     }
@@ -185,7 +238,6 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         }
         return list.get(0);
     }
-
 
 
     /**
