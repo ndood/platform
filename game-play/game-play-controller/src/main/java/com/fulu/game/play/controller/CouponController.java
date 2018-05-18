@@ -49,7 +49,7 @@ public class CouponController extends BaseController {
         User user = userService.getCurrentUser();
         String ipStr = RequestUtil.getIpAdrress(request);
         Coupon coupon = couponService.generateCoupon(redeemCode, user.getId(),new Date(),ipStr);
-        return Result.success().data(coupon).msg("优惠券兑换成功！");
+        return Result.success().data(coupon).msg("恭喜你，兑换成功");
     }
 
 
