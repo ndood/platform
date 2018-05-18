@@ -42,7 +42,7 @@ public interface OrderService extends ICommonService<Order,Integer>{
      * @param remark
      * @return
      */
-    OrderVO submit(int productId,int num,String remark);
+    OrderVO submit(int productId,int num,String remark,String couponNo,String userIp);
 
     /**
      * 支付订单,订单回调的时候调用

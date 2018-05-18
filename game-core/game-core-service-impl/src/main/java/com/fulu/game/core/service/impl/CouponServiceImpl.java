@@ -120,7 +120,16 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         if (couponGroup == null) {
             throw new CouponException(CouponException.ExceptionCode.REDEEMCODE_ERROR);
         }
-        return generateCoupon(couponGroup, userId);
+        return generateCoupon(couponGroup, userId,null,null);
+    }
+
+    @Override
+    public Coupon generateCoupon(String redeemCode, Integer userId, Date receiveTime, String receiveIp) {
+        CouponGroup couponGroup = couponGroupService.findByRedeemCode(redeemCode);
+        if (couponGroup == null) {
+            throw new CouponException(CouponException.ExceptionCode.REDEEMCODE_ERROR);
+        }
+        return generateCoupon(couponGroup, userId,receiveTime,receiveIp);
     }
 
 
@@ -129,7 +138,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
      * @param couponGroup
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    Coupon generateCoupon(CouponGroup couponGroup, Integer userId) throws CouponException {
+    Coupon generateCoupon(CouponGroup couponGroup, Integer userId,Date receiveTime,String receiveIp) throws CouponException {
         Integer couponCount = countByCouponGroup(couponGroup.getId());
         if (couponCount >= couponGroup.getAmount()) {
             throw new CouponException(CouponException.ExceptionCode.BROUGHT_OUT);
@@ -151,6 +160,8 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         Coupon coupon = new Coupon();
         coupon.setCouponGroupId(couponGroup.getId());
         coupon.setCouponNo(couponNo);
+        coupon.setReceiveTime(receiveTime);
+        coupon.setReceiveIp(receiveIp);
         coupon.setDeduction(couponGroup.getDeduction());
         coupon.setIsNewUser(couponGroup.getIsNewUser());
         coupon.setUserId(userId);

@@ -45,7 +45,7 @@ public class PayServiceImpl implements PayService {
         WxPayUnifiedOrderRequest orderRequest = new WxPayUnifiedOrderRequest();
         orderRequest.setBody(order.getName());
         orderRequest.setOutTradeNo(order.getOrderNo());
-        Integer totalFee = (order.getTotalMoney().multiply(new BigDecimal(100))).intValue();
+        Integer totalFee = (order.getActualMoney().multiply(new BigDecimal(100))).intValue();
         orderRequest.setTotalFee(totalFee);//元转成分
         orderRequest.setOpenid(user.getOpenId());
         orderRequest.setSpbillCreateIp(requestIp);

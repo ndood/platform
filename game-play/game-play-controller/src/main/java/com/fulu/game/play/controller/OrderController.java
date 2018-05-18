@@ -61,9 +61,12 @@ public class OrderController {
      */
     @RequestMapping(value = "submit")
     public Result submit(@RequestParam(required = true) Integer productId,
+                         HttpServletRequest request,
                          @RequestParam(required = true) Integer num,
+                         String couponNo,
                          String remark) {
-        OrderVO orderVO = orderService.submit(productId, num, remark);
+        String ip = RequestUtil.getIpAdrress(request);
+        OrderVO orderVO = orderService.submit(productId, num, remark,couponNo,ip);
         return Result.success().data(orderVO.getOrderNo()).msg("创建订单成功!");
     }
 

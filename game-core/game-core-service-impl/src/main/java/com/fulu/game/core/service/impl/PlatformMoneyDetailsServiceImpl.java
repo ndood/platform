@@ -54,9 +54,9 @@ public class PlatformMoneyDetailsServiceImpl implements PlatformMoneyDetailsServ
     @Transactional
     protected synchronized PlatformMoneyDetails createPlatformMoneyDetails(String remark,BigDecimal money){
         PlatformMoneyDetails lastMoneyDetails = platformMoneyDetailsDao.findLastMoneyDetails();
-        BigDecimal sum = lastMoneyDetails.getSum();
-        if(sum==null){
-            sum = new BigDecimal(0);
+        BigDecimal sum = new BigDecimal(0);
+        if(lastMoneyDetails!=null){
+            sum = lastMoneyDetails.getSum();
         }
         BigDecimal newSum = sum.add(money);
         PlatformMoneyDetails platformMoneyDetails = new PlatformMoneyDetails();

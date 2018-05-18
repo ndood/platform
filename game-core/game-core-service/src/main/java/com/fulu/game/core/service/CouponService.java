@@ -3,6 +3,7 @@ package com.fulu.game.core.service;
 import com.fulu.game.core.entity.Coupon;
 import com.github.pagehelper.PageInfo;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,6 +24,8 @@ public interface CouponService extends ICommonService<Coupon, Integer> {
     List<Coupon> findByUserReceive(Integer couponGroupId, Integer userId);
 
     Coupon generateCoupon(String redeemCode, Integer userId);
+
+    Coupon generateCoupon(String redeemCode, Integer userId, Date receiveTime, String receiveIp);
 
     /**
      * 通过优惠券编码查询优惠券
