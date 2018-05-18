@@ -91,35 +91,13 @@ public class ExceptionHandlerAdvice {
     }
 
     /**
-     * 金额错误
+     * 业务异常的父类
+     * e.getCode()要传回前端需要在Result中增加code字段
      * @param e
      * @return
      */
-    @ExceptionHandler(CashException.class)
-    public Result cashException(CashException e) {
-        log.error(e.getMessage(), e);
-        return	Result.error().msg(e.getMessage());
-    }
-
-
-    /**
-     * 用户异常
-     * @param e
-     * @return
-     */
-    @ExceptionHandler(UserException.class)
-    public Result UserException(UserException e) {
-        log.error(e.getMessage(), e);
-        return	Result.error().msg(e.getMessage());
-    }
-
-    /**
-     * 用户异常
-     * @param e
-     * @return
-     */
-    @ExceptionHandler(CouponException.class)
-    public Result CouponException(CouponException e) {
+    @ExceptionHandler(BizException.class)
+    public Result BizException(BizException e) {
         log.error(e.getMessage(), e);
         return	Result.error().msg(e.getMessage());
     }
