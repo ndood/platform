@@ -43,8 +43,13 @@ public class CouponGroup implements Serializable {
 	@NotNull(message = "[有效期结束时间]字段不能为空")
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date endUsefulTime;
+
+	private Integer adminId;
+
+	private String adminName;
 	//创建时间
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date createTime;
+
 
 }
