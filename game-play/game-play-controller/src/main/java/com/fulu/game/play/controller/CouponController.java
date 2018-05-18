@@ -6,6 +6,7 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.CouponService;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.UserService;
+import com.fulu.game.play.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,9 +45,10 @@ public class CouponController extends BaseController {
      * @return
      */
     @PostMapping("/exchange")
-    public Result exchange(@RequestParam("redeemCode") String redeemCode) {
+    public Result exchange(@RequestParam("redeemCode") String redeemCode, HttpServletRequest request) {
         User user = userService.getCurrentUser();
-        Coupon coupon = couponService.generateCoupon(redeemCode, user.getId());
+        String ipStr = RequestUtil.getIpAdrress(request);
+        Coupon coupon = couponService.generateCoupon(redeemCode, user.getId(),new Date(),ipStr);
         return Result.success().data(coupon).msg("优惠券兑换成功！");
     }
 
