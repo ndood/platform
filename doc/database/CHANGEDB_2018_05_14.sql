@@ -134,3 +134,8 @@ ALTER TABLE `t_order`
 ADD COLUMN `coupon_no` varchar(128) NULL DEFAULT NULL COMMENT '优惠券编号' AFTER `order_no`;
 ---批量更新之前actual_money为空的字段
 UPDATE t_order SET actual_money = total_money WHERE actual_money is null;
+
+ALTER TABLE `t_sys_config`
+ADD COLUMN `version` varchar(50) NULL DEFAULT NULL COMMENT '版本号';
+INSERT INTO `t_sys_config` VALUES (3, 'MMCON', 'CLOSE', 'IM开启关闭(CLOSE:全关,ALL:全打开,ANDROID:安卓打开,IOS:IOS打开)', '2018-05-17 19:28:34', '2018-05-17 19:28:36', '1.0.4');
+INSERT INTO `t_sys_config` VALUES (4, 'PAYCON', 'CLOSE', '支付开启关闭(CLOSE:全关,ALL:全打开,ANDROID:安卓打开,IOS:IOS打开)', '2018-05-17 19:29:28', '2018-05-17 19:29:31', '1.0.4');

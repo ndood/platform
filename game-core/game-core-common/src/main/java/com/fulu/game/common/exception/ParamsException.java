@@ -5,8 +5,6 @@ import lombok.Getter;
 
 @Getter
 public class ParamsException extends BizException{
-    private int code;
-    private String message;
     private ExceptionCode exceptionCode;
 
     @AllArgsConstructor

@@ -6,8 +6,8 @@ import lombok.Getter;
 @Getter
 public class CouponException extends BizException {
 
-    private int code;
-    private String message;
+    //private int code;
+    //private String message;
     private ExceptionCode exceptionCode;
 
     @AllArgsConstructor
