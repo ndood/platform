@@ -77,5 +77,11 @@ public interface CouponService extends ICommonService<Coupon, Integer> {
      */
     List<Coupon> availableCouponList(Integer userId);
 
+    /**
+     * 判断优惠券是否可用
+     * @param coupon
+     * @return
+     */
+    Boolean couponIsAvailable(Coupon coupon);
 
 }

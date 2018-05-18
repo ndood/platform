@@ -197,6 +197,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setRemark(remark);
         order.setIsPay(false);
         order.setTotalMoney(totalMoney);
+        order.setActualMoney(totalMoney);
         order.setStatus(OrderStatusEnum.NON_PAYMENT.getStatus());
         order.setCommissionMoney(commissionMoney);
         order.setCreateTime(new Date());
@@ -211,7 +212,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
             order.setCouponNo(coupon.getCouponNo());
             order.setCouponMoney(coupon.getDeduction());
             //判断优惠券金额是否大于订单总额
-            if(coupon.getDeduction().compareTo(totalMoney)>=0){
+            if(coupon.getDeduction().compareTo(order.getTotalMoney())>=0){
                 order.setActualMoney(new BigDecimal(0));
             }else{
                 BigDecimal actualMoney = order.getTotalMoney().subtract(coupon.getDeduction());
@@ -248,6 +249,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         return orderVO;
     }
 
+
     /**
      * 使用优惠券
      * @return
@@ -256,8 +258,10 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         Coupon coupon =couponService.findByCouponNo(couponCode);
         //判断是否是自己的优惠券
         userService.isCurrentUser(coupon.getUserId());
-        //todo 判断该优惠券是否可用
-
+        //判断该优惠券是否可用
+        if(!couponService.couponIsAvailable(coupon)){
+            return null;
+        }
         return coupon;
     }
 
@@ -460,7 +464,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
 
 
     /**
-     * 用户验收订单
+     * 系统完成订单
      * @param orderNo
      * @return
      */

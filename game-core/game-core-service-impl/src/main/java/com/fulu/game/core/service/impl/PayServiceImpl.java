@@ -42,6 +42,11 @@ public class PayServiceImpl implements PayService {
         if (!order.getIsPay() && !order.getStatus().equals(OrderStatusEnum.NON_PAYMENT.getStatus())) {
             throw new OrderException(orderNo, "已支付的订单不能支付!");
         }
+        //如果订单金额为0,则直接调用支付成功接口
+        if(order.getActualMoney().compareTo(new BigDecimal(0))<=0){
+            orderService.payOrder(orderNo,order.getActualMoney());
+            return null;
+        }
         WxPayUnifiedOrderRequest orderRequest = new WxPayUnifiedOrderRequest();
         orderRequest.setBody(order.getName());
         orderRequest.setOutTradeNo(order.getOrderNo());

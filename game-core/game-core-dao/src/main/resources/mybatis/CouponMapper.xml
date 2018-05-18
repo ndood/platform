@@ -98,8 +98,8 @@
         t_coupon
         WHERE
         is_use = FALSE
-        AND date_format(now(), '%Y-%m-%d')  &gt;= date_format(start_useful_time,'%Y-%m-%d')
-        AND date_format(now(), '%Y-%m-%d')  &lt;= date_format(end_useful_time, '%Y-%m-%d')
+        AND now()  &gt;= start_useful_time
+        AND now()  &lt;= end_useful_time
         AND user_id = #{userId}
     </select>
 
@@ -163,7 +163,7 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Coupon">
         insert into
-        t_coupon (coupon_no,coupon_group_id,deduction,is_new_user,user_id,mobile,is_use,order_no,start_useful_time,end_useful_time,receive_time,#{is_first_receive},use_time,receive_ip,use_ip,create_time)
+        t_coupon (coupon_no,coupon_group_id,deduction,is_new_user,user_id,mobile,is_use,order_no,start_useful_time,end_useful_time,receive_time,is_first_receive,use_time,receive_ip,use_ip,create_time)
         values
         (#{couponNo},#{couponGroupId},#{deduction},#{isNewUser},#{userId},#{mobile},#{isUse},#{orderNo},#{startUsefulTime},#{endUsefulTime},#{receiveTime},#{isFirstReceive},#{useTime},#{receiveIp},#{useIp},#{createTime})
     </insert>

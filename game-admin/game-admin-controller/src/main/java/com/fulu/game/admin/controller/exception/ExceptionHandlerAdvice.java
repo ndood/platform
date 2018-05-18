@@ -73,7 +73,6 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(BizException.class)
     public Result BizException(BizException e) {
         log.error(e.getMessage(), e);
-
         return	Result.error().msg(e.getMessage());
     }
 

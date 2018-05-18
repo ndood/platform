@@ -33,7 +33,7 @@ public class CouponController extends BaseController{
 
 
     /**
-     * 批量生产优惠券
+     * 生成优惠券
      * @param couponGroup
      * @return
      */
