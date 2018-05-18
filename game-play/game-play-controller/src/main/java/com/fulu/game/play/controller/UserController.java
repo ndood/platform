@@ -115,10 +115,6 @@ public class UserController extends BaseController {
         userService.update(user);
         userService.updateRedisUser(user);
 
-        user.setBalance(null);
-        user.setOpenId(null);
-        user.setPassword(null);
-        user.setSalt(null);
         user.setIdcard(null);
         user.setRealname(null);
         return Result.success().data(user).msg("个人信息设置成功！");
@@ -208,8 +204,6 @@ public class UserController extends BaseController {
                     newUser = openIdUser;
                 }
                 userService.updateRedisUser(newUser);
-                newUser.setOpenId(null);
-                newUser.setBalance(null);
                 return Result.success().data(newUser).msg("手机号绑定成功！");
             }
         }
@@ -268,8 +262,6 @@ public class UserController extends BaseController {
         return Result.success().data(userInfoVO).msg("查询聊天对象信息成功！");
     }
 
-
-
     /**
      * 用户-添加评价
      *
@@ -313,7 +305,4 @@ public class UserController extends BaseController {
         PageInfo<UserCommentVO> page = commentService.findByServerId(pageNum, pageSize, serverId);
         return Result.success().data(page);
     }
-
-
-
 }
