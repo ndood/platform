@@ -34,7 +34,7 @@ public class MoneyDetailsController {
      * @return
      */
     @PostMapping("/list")
-    public Result list(@ModelAttribute MoneyDetailsVO moneyDetailsVO,
+    public Result list( MoneyDetailsVO moneyDetailsVO,
                        @RequestParam("pageSize") Integer pageSize,
                        @RequestParam("pageNum") Integer pageNum){
         PageInfo<MoneyDetailsVO> list = moneyDetailsService.listByAdmin(moneyDetailsVO,pageSize,pageNum);
@@ -47,7 +47,7 @@ public class MoneyDetailsController {
      * @return
      */
     @PostMapping("/save")
-    public Result save(@ModelAttribute MoneyDetailsVO moneyDetailsVO){
+    public Result save( MoneyDetailsVO moneyDetailsVO){
         if (moneyDetailsVO.getMoney().compareTo(BigDecimal.ZERO)==-1){
             throw new CashException(CashException.ExceptionCode.CASH_NEGATIVE_EXCEPTION);
         }

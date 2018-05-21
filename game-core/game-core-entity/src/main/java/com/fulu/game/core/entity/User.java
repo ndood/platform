@@ -3,8 +3,6 @@ package com.fulu.game.core.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.Range;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -21,10 +19,8 @@ public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //主键id
-    @Range(min = 1, max = 2147483647, message = "id参数超过范围")
     private Integer id;
     //手机号
-    @Length(min = 11, max = 11, message = "手机号必须是11位")
     private String mobile;
     //昵称
     private String nickname;
@@ -32,7 +28,6 @@ public class User implements Serializable {
     private Integer gender;
     //头像URL
     private String headPortraitsUrl;
-    @Range(min = 0, max = 100, message = "年龄范围为0-100")
     private Integer age;
     //密码
     @JsonIgnore

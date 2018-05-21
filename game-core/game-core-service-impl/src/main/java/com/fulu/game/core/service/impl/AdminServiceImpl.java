@@ -56,7 +56,7 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
     @Override
     public PageInfo<Admin> list(AdminVO adminVO, Integer pageNum, Integer pageSize) {
 
-        PageHelper.startPage(pageNum, pageSize, adminVO.getOrderBy());
+        PageHelper.startPage(pageNum, pageSize, "create_time DESC");
         List<Admin> list = adminDao.findByParameter(adminVO);
         return new PageInfo(list);
     }

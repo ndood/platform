@@ -92,7 +92,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
 
     @Override
     public PageInfo<CashDraws> list(CashDrawsVO cashDrawsVO, Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize, cashDrawsVO.getOrderBy());
+        PageHelper.startPage(pageNum, pageSize, "create_time DESC");
         List<CashDraws> list = cashDrawsDao.findByParameter(cashDrawsVO);
         return new PageInfo(list);
     }
