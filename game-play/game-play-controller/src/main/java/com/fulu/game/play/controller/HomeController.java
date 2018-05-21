@@ -10,6 +10,7 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.SysConfigService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.play.shiro.PlayUserToken;
+import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import net.sf.json.JSONObject;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -47,6 +49,17 @@ public class HomeController {
     @ResponseBody
     public Result sysConfig(@RequestParam(value = "version", required = false, defaultValue = "1.0.2") String version) {
         List<SysConfig> result = sysConfigService.findByVersion(version);
+        if (CollectionUtil.isEmpty(result)){
+            result = new ArrayList<SysConfig>();
+            SysConfig sysConfig1 = new SysConfig();
+            sysConfig1.setName("MMCON");
+            sysConfig1.setValue("CLOSE");
+            SysConfig sysConfig2 = new SysConfig();
+            sysConfig2.setName("PAYCON");
+            sysConfig2.setValue("CLOSE");
+            result.add(sysConfig1);
+            result.add(sysConfig2);
+        }
         return Result.success().data(result);
     }
 
