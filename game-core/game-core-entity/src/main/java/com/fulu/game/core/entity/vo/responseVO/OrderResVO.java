@@ -2,10 +2,12 @@ package com.fulu.game.core.entity.vo.responseVO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fulu.game.common.enums.OrderStatusEnum;
+import com.fulu.game.core.entity.vo.OrderDealVO;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author
@@ -37,8 +39,10 @@ public class OrderResVO {
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createTime;
-
+    private List<String> userOrderDealFileList;//订单存在异议截图
+    private List<String> serverOrderDealFileList;//订单提交验收截图
     public String getStatusName(){
         return OrderStatusEnum.getMsgByStatus(status);
     }
+
 }
