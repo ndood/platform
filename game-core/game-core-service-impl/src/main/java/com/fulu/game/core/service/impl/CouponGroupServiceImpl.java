@@ -1,8 +1,10 @@
 package com.fulu.game.core.service.impl;
 
 import com.fulu.game.core.dao.CouponGroupDao;
+import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.CouponGroup;
 import com.fulu.game.core.entity.vo.CouponGroupVO;
+import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.CouponGroupService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -21,10 +23,15 @@ public class CouponGroupServiceImpl implements CouponGroupService {
 
     @Autowired
 	private CouponGroupDao couponGroupDao;
+    @Autowired
+    private AdminService adminService;
 
     @Override
     public int create(CouponGroup couponGroup){
+        Admin admin =adminService.getCurrentUser();
         couponGroup.setCreateTime(new Date());
+        couponGroup.setAdminId(admin.getId());
+        couponGroup.setAdminName(admin.getName());
         String endDate = DateUtil.format(couponGroup.getEndUsefulTime(), DatePattern.NORM_DATE_FORMAT)+" 23:59:59";
         couponGroup.setStartUsefulTime(DateUtil.beginOfDay(couponGroup.getStartUsefulTime()));
         couponGroup.setEndUsefulTime(DateUtil.parse(endDate));

@@ -139,3 +139,11 @@ ALTER TABLE `t_sys_config`
 ADD COLUMN `version` varchar(50) NULL DEFAULT NULL COMMENT '版本号';
 INSERT INTO `t_sys_config` VALUES (3, 'MMCON', 'CLOSE', 'IM开启关闭(CLOSE:全关,ALL:全打开,ANDROID:安卓打开,IOS:IOS打开)', '2018-05-17 19:28:34', '2018-05-17 19:28:36', '1.0.4');
 INSERT INTO `t_sys_config` VALUES (4, 'PAYCON', 'CLOSE', '支付开启关闭(CLOSE:全关,ALL:全打开,ANDROID:安卓打开,IOS:IOS打开)', '2018-05-17 19:29:28', '2018-05-17 19:29:31', '1.0.4');
+
+
+---更新订单字段需求
+ALTER TABLE `t_coupon_group`
+ADD COLUMN `admin_id`  int(11) NULL DEFAULT NULL  COMMENT '管理员ID' AFTER `end_useful_time` ;
+
+ALTER TABLE `t_coupon_group`
+ADD COLUMN `admin_name`  varchar(255) NULL DEFAULT NULL  COMMENT '管理员名称' AFTER `admin_id` ;
