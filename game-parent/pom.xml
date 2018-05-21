@@ -25,6 +25,7 @@
         <weixin-java.sdk.verson>3.0.0</weixin-java.sdk.verson>
         <shiro.version>1.4.0</shiro.version>
         <springboot.version>1.5.4.RELEASE</springboot.version>
+        <easypoi.version>3.0.3</easypoi.version>
         <main.basedir>${basedir}</main.basedir>
     </properties>
 
@@ -95,6 +96,21 @@
                 <groupId>com.github.binarywang</groupId>
                 <artifactId>weixin-java-pay</artifactId>
                 <version>${weixin-java.sdk.verson}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.afterturn</groupId>
+                <artifactId>easypoi-base</artifactId>
+                <version>${easypoi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.afterturn</groupId>
+                <artifactId>easypoi-web</artifactId>
+                <version>${easypoi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.afterturn</groupId>
+                <artifactId>easypoi-annotation</artifactId>
+                <version>${easypoi.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shiro</groupId>

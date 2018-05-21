@@ -18,7 +18,7 @@ public interface CouponGrantUserService extends ICommonService<CouponGrantUser,I
 
     int create(String couponNo,Integer couponGrantId,Integer userId,String mobile,Boolean isSuccess,String errorCause);
 
-    List<CouponGrantUser> findByGrantId(Integer grantId);
+    List<CouponGrantUser> findByGrantId(int grantId);
 
 
     PageInfo<CouponGrantUser> list(Integer grantId, Integer pageNum, Integer pageSize, String orderBy);

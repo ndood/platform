@@ -51,13 +51,11 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
                                         Integer pageNum,
                                         Integer pageSize,
                                         String orderBy) {
-        CouponVO param = new CouponVO();
-        param.setCouponGroupId(couponGroupId);
         if (StringUtils.isBlank(orderBy)) {
             orderBy = "receive_time desc";
         }
         PageHelper.startPage(pageNum, pageSize, orderBy);
-        List<Coupon> couponList = couponDao.findByParameter(param);
+        List<Coupon> couponList = findByCouponGroup(couponGroupId);
         return new PageInfo<>(couponList);
     }
 
@@ -225,6 +223,14 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         }
         create(coupon);
         return coupon;
+    }
+
+    @Override
+    public List<Coupon> findByCouponGroup(int couponGroupId){
+        CouponVO param = new CouponVO();
+        param.setCouponGroupId(couponGroupId);
+        List<Coupon> list = couponDao.findByParameter(param);
+        return list;
     }
 
 

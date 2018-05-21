@@ -1,5 +1,8 @@
 package com.fulu.game.admin.controller;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Coupon;
 import com.fulu.game.core.entity.CouponGrantUser;
@@ -10,13 +13,13 @@ import com.fulu.game.core.service.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.net.URLEncoder;
 import java.util.*;
 
 @RestController
@@ -48,6 +51,24 @@ public class CouponController extends BaseController{
         return Result.success().msg("生成优惠券成功!");
     }
 
+    /**
+     * 优惠券导出
+     * @param response
+     * @param couponGroupId
+     * @throws Exception
+     */
+    @RequestMapping("export/{couponGroupId}")
+    public void export(HttpServletResponse response,
+                       @PathVariable(name = "couponGroupId",required = true)Integer couponGroupId)throws Exception{
+        //模拟从数据库获取需要导出的数据
+        List<Coupon> couponList = couponService.findByCouponGroup(couponGroupId);
+        ExportParams exportParams = new ExportParams("优惠券使用明细", "sheet1", ExcelType.XSSF);
+        Workbook workbook =ExcelExportUtil.exportExcel(exportParams,Coupon.class,couponList);
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("content-Type", "application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("优惠券使用明细", "UTF-8"));
+        workbook.write(response.getOutputStream());
+    }
 
     /**
      * 优惠券列表
@@ -123,6 +144,23 @@ public class CouponController extends BaseController{
         return Result.success().data(page);
     }
 
+    /**
+     * 优惠券发放记录导出
+     * @param response
+     * @param grantId
+     * @throws Exception
+     */
+    @RequestMapping("/grant/export/{grantId}")
+    public void grantExport(HttpServletResponse response,
+                            @PathVariable(name = "grantId",required = true) Integer grantId)throws Exception{
+        List<CouponGrantUser>   couponGrantUsers =  couponGrantUserService.findByGrantId(grantId);
+        ExportParams exportParams = new ExportParams("优惠券发放明细", "sheet1", ExcelType.XSSF);
+        Workbook workbook =ExcelExportUtil.exportExcel(exportParams,CouponGrantUser.class,couponGrantUsers);
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("content-Type", "application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("优惠券发放明细", "UTF-8"));
+        workbook.write(response.getOutputStream());
+    }
 
     /**
      * 优惠券发放明细

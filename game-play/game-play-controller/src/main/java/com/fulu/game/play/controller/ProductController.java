@@ -143,14 +143,13 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "/order-receive/list")
     public Result list() {
-        User user = (User) SubjectUtil.getCurrentUser();
+        User user = userService.getCurrentUser();
         List<Product> productList = productService.findByUserId(user.getId());
         return Result.success().data(productList);
     }
 
     /**
      * 用户接单状态
-     *
      * @return
      */
     @RequestMapping(value = "/order-receive/status")

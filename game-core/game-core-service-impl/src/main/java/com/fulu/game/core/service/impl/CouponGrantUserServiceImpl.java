@@ -49,7 +49,7 @@ public class CouponGrantUserServiceImpl extends AbsCommonService<CouponGrantUser
     }
 
 
-    public List<CouponGrantUser> findByGrantId(Integer grantId){
+    public List<CouponGrantUser> findByGrantId(int grantId){
         CouponGrantUserVO param = new CouponGrantUserVO();
         param.setCouponGrantId(grantId);
         return couponGrantUserDao.findByParameter(param);

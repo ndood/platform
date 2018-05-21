@@ -219,6 +219,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     /**
      * 开始接单业务
      */
+    //todo 开始接单的时候要去校验商品字段有没有更新
     @Override
     public void startOrderReceiving(Float hour) {
         User user =(User) SubjectUtil.getCurrentUser();

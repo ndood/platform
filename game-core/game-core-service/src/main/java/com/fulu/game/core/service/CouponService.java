@@ -20,6 +20,13 @@ public interface CouponService extends ICommonService<Coupon, Integer> {
     PageInfo<Coupon> listByUseStatus(Integer pageNum, Integer pageSize, Boolean isUse, Boolean overdue);
 
     /**
+     * 根据优惠券组ID查询所有优惠券
+     * @param couponGroupId
+     * @return
+     */
+    List<Coupon> findByCouponGroup(int couponGroupId);
+
+    /**
      * 查询优惠券领取数量
      * @param couponGroupId
      * @return
