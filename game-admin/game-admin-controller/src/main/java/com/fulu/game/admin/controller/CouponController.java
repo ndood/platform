@@ -40,6 +40,10 @@ public class CouponController extends BaseController{
      */
     @PostMapping(value = "/generate")
     public Result generate(@Valid CouponGroupVO couponGroup){
+        CouponGroup oldCouponGroup = couponGroupService.findByRedeemCode(couponGroup.getRedeemCode());
+        if(oldCouponGroup!=null){
+            return Result.error().msg("该优惠劵兑换码已存在!");
+        }
         couponGroupService.create(couponGroup);
         return Result.success().msg("生成优惠券成功!");
     }
