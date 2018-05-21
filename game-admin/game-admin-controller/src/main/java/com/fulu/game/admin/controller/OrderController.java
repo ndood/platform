@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,8 +33,11 @@ public class OrderController extends BaseController {
      * @return
      */
     @RequestMapping("/list")
-    public Result list(@ModelAttribute OrderReqVO orderReqVO) {
-        PageInfo<OrderResVO> orderList = orderProductService.list(orderReqVO);
+    public Result list(Integer pageNum,
+                       Integer pageSize,
+                       String orderBy,
+                       OrderReqVO orderReqVO) {
+        PageInfo<OrderResVO> orderList = orderProductService.list(orderReqVO,pageNum,pageSize,orderBy);
         return Result.success().data(orderList).msg("查询列表成功！");
     }
 

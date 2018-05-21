@@ -10,6 +10,7 @@ import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.service.OrderProductService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,8 +39,11 @@ public class OrderProductServiceImpl extends AbsCommonService<OrderProduct, Inte
     }
 
     @Override
-    public PageInfo<OrderResVO> list(OrderReqVO orderReqVO) {
-        PageHelper.startPage(orderReqVO.getPageNum(), orderReqVO.getPageSize(), orderReqVO.getOrderBy());
+    public PageInfo<OrderResVO> list(OrderReqVO orderReqVO,Integer pageNum,Integer pageSize,String orderBy) {
+        if(StringUtils.isBlank(orderBy)){
+            orderBy = "id DESC";
+        }
+        PageHelper.startPage(pageNum,pageSize, orderBy);
         Integer status = orderReqVO.getStatus();
         Integer[] statusList = OrderStatusGroupEnum.getByValue(status);
         if (null != statusList && statusList.length > 0) {

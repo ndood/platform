@@ -5,6 +5,7 @@ import com.fulu.game.core.entity.Coupon;
 import com.fulu.game.core.entity.CouponGrantUser;
 import com.fulu.game.core.entity.CouponGroup;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.CouponGroupVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
@@ -38,7 +39,7 @@ public class CouponController extends BaseController{
      * @return
      */
     @PostMapping(value = "/generate")
-    public Result generate(@Valid CouponGroup couponGroup){
+    public Result generate(@Valid CouponGroupVO couponGroup){
         couponGroupService.create(couponGroup);
         return Result.success().msg("生成优惠券成功!");
     }

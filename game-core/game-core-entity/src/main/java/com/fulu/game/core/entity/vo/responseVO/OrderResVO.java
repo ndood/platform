@@ -31,6 +31,10 @@ public class OrderResVO {
     private Integer serverUserId;//打手id
     private String serverNickname;//打手昵称
     private String serverMobile;//打手手机号
+    private String actualMoney;
+    private String couponMoney;
+
+
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createTime;
 
