@@ -33,8 +33,11 @@ public class OrderController extends BaseController {
      * @return
      */
     @RequestMapping("/list")
-    public Result list(OrderReqVO orderReqVO) {
-        PageInfo<OrderResVO> orderList = orderProductService.list(orderReqVO);
+    public Result list(Integer pageNum,
+                       Integer pageSize,
+                       String orderBy,
+                       OrderReqVO orderReqVO) {
+        PageInfo<OrderResVO> orderList = orderProductService.list(orderReqVO,pageNum,pageSize,orderBy);
         return Result.success().data(orderList).msg("查询列表成功！");
     }
 

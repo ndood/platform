@@ -1,5 +1,6 @@
 package com.fulu.game.core.service.impl;
 
+import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.CouponGroupDao;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.CouponGroup;
@@ -14,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.rmi.ServerError;
 import java.util.Date;
 import java.util.List;
 
@@ -35,6 +37,13 @@ public class CouponGroupServiceImpl implements CouponGroupService {
         String endDate = DateUtil.format(couponGroup.getEndUsefulTime(), DatePattern.NORM_DATE_FORMAT)+" 23:59:59";
         couponGroup.setStartUsefulTime(DateUtil.beginOfDay(couponGroup.getStartUsefulTime()));
         couponGroup.setEndUsefulTime(DateUtil.parse(endDate));
+
+        if(couponGroup.getEndUsefulTime().before(new Date())){
+            throw new ServiceErrorException("优惠券截至日期不能早于当前日期!");
+        }
+        if(couponGroup.getEndUsefulTime().before(couponGroup.getStartUsefulTime())){
+            throw new ServiceErrorException("优惠券结束时间不能早于开始时间!");
+        }
         int result =  couponGroupDao.create(couponGroup);
         return result;
     }

@@ -29,6 +29,8 @@
         <result column="price" property="price"/>
         <result column="unit" property="unit"/>
         <result column="amount" property="amount"/>
+        <result column="coupon_money" property="couponMoney"/>
+        <result column="actual_money" property="actualMoney"/>
         <result column="total_money" property="totalMoney"/>
         <result column="commission_money" property="commissionMoney"/>
         <result column="server_user_id" property="serverUserId"/>
@@ -70,8 +72,7 @@
         </where>
     </select>
 
-    <select id="findByUnionParam" resultMap="OrderResVOMap"
-            parameterType="com.fulu.game.core.entity.vo.requestVO.OrderReqVO">
+    <select id="findByUnionParam" resultMap="OrderResVOMap" parameterType="com.fulu.game.core.entity.vo.requestVO.OrderReqVO">
         SELECT
         op.id AS id,
         op.order_no AS order_no,
@@ -84,6 +85,8 @@
         p.price AS price,
         p.unit AS unit,
         op.amount AS amount,
+        o.coupon_money AS coupon_money,
+        o.actual_money AS actual_money,
         o.total_money AS total_money,
         o.commission_money AS commission_money,
         o.create_time AS create_time,
