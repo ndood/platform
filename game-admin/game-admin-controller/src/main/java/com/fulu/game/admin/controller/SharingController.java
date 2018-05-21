@@ -34,7 +34,7 @@ public class SharingController {
      * @return
      */
     @PostMapping("/save")
-    public Result save(@ModelAttribute SharingVO sharingVO) {
+    public Result save(SharingVO sharingVO) {
         if (sharingVO.getGender() == 0) {
             return Result.error().msg("参数gender不能为0");
         }

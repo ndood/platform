@@ -25,7 +25,7 @@ public class MoneyDetailsController extends BaseController {
     private UserService userService;
 
     @RequestMapping("/list")
-    public Result list(@ModelAttribute MoneyDetailsVO moneyDetailsVO,
+    public Result list( MoneyDetailsVO moneyDetailsVO,
                        @RequestParam("pageSize") Integer pageSize,
                        @RequestParam("pageNum") Integer pageNum) {
         User user = userService.getCurrentUser();

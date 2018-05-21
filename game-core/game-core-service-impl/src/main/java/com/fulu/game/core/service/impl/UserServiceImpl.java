@@ -104,7 +104,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public PageInfo<User> list(UserVO userVO, Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize, userVO.getOrderBy());
+        PageHelper.startPage(pageNum, pageSize, "create_time DESC");
         List<User> list = userDao.findByParameter(userVO);
         return new PageInfo(list);
     }

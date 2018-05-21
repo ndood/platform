@@ -28,7 +28,7 @@ public class AdminController extends BaseController{
      * @return
      */
     @RequestMapping("/list")
-    public Result list(@ModelAttribute AdminVO adminVO,
+    public Result list( AdminVO adminVO,
                              @RequestParam("pageNum") Integer pageNum,
                              @RequestParam("pageSize") Integer pageSize){
         PageInfo<Admin> adminList = adminService.list(adminVO,pageNum,pageSize);

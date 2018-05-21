@@ -23,7 +23,10 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.List;
@@ -101,7 +104,7 @@ public class UserController extends BaseController {
      * @return
      */
     @RequestMapping("/update")
-    public Result update(@ModelAttribute UserVO userVO) {
+    public Result update(UserVO userVO) {
         User user = userService.findById(userService.getCurrentUser().getId());
         user.setAge(userVO.getAge());
         user.setGender(userVO.getGender());
@@ -152,7 +155,7 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("/mobile/bind")
-    public Result bind(@ModelAttribute WxUserInfo wxUserInfo) {
+    public Result bind(WxUserInfo wxUserInfo) {
         String token = SubjectUtil.getToken();
         //验证手机号的验证码
         String redisVerifyCode = redisOpenService.hget(RedisKeyEnum.SMS.generateKey(token), wxUserInfo.getMobile());

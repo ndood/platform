@@ -26,7 +26,7 @@ public class CashDrawsController extends BaseController{
      * @return
      */
     @PostMapping("/list")
-    public Result list(@ModelAttribute CashDrawsVO cashDrawsVO,
+    public Result list(CashDrawsVO cashDrawsVO,
                        @RequestParam("pageNum") Integer pageNum,
                        @RequestParam("pageSize") Integer pageSize){
         PageInfo<CashDraws> cashDrawsList = cashDrawsService.list(cashDrawsVO,pageNum,pageSize);
