@@ -19,7 +19,7 @@ INSERT INTO `t_sys_config` VALUES ('1', '1', 'MMCON', 'CLOSE', 'IM开启关闭(C
 INSERT INTO `t_sys_config` VALUES ('2', '1', 'PAYCON', 'CLOSE', '支付开启关闭(CLOSE:全关,ALL:全打开,ANDROID:安卓打开,IOS:IOS打开)', '2018-05-14 15:08:16', '2018-05-14 15:08:19');
 ALTER TABLE `t_sys_config` DROP COLUMN `type`;
 
--- 2018/05/14 添加优惠券和分享需求(未执行)
+-- 2018/05/14 添加优惠券和分享需求(已执行)
 DROP TABLE IF EXISTS `t_sharing`;
 CREATE TABLE `t_sharing` (
   `id` int(3) NOT NULL AUTO_INCREMENT COMMENT '主键id',
@@ -33,7 +33,7 @@ CREATE TABLE `t_sharing` (
 )  COMMENT='分享文案表';
 
 -- ----------------------------
--- Table structure for t_coupon_group
+-- Table structure for t_coupon_group(已执行)
 -- ----------------------------
 DROP TABLE IF EXISTS `t_coupon_group`;
 CREATE TABLE `t_coupon_group` (
@@ -51,7 +51,7 @@ CREATE TABLE `t_coupon_group` (
 )  COMMENT='优惠券组表';
 
 -- ----------------------------
--- Table structure for t_coupon
+-- Table structure for t_coupon(已执行)
 -- ----------------------------
 DROP TABLE IF EXISTS `t_coupon`;
 CREATE TABLE `t_coupon` (
@@ -82,7 +82,7 @@ CREATE TABLE `t_coupon` (
 
 
 -- ----------------------------
--- Table structure for t_coupon_grant
+-- Table structure for t_coupon_grant(已执行)
 -- ----------------------------
 DROP TABLE IF EXISTS `t_coupon_grant`;
 CREATE TABLE `t_coupon_grant` (
@@ -103,7 +103,7 @@ CREATE TABLE `t_coupon_grant` (
 )  COMMENT='优惠券发放记录';
 
 -- ----------------------------
--- Table structure for t_coupon_grant_user
+-- Table structure for t_coupon_grant_user(已执行)
 -- ----------------------------
 DROP TABLE IF EXISTS `t_coupon_grant_user`;
 CREATE TABLE `t_coupon_grant_user` (
@@ -121,8 +121,6 @@ CREATE TABLE `t_coupon_grant_user` (
 )  COMMENT='优惠券发放用户';
 
 
-
-
 ---更新订单字段需求
 ALTER TABLE `t_order`
 ADD COLUMN `actual_money`  decimal(11,2) NULL DEFAULT NULL  COMMENT '实付金额' AFTER `total_money` ;
@@ -132,14 +130,10 @@ ADD COLUMN `coupon_money`  decimal(11,2) NULL DEFAULT NULL COMMENT '优惠券金
 
 ALTER TABLE `t_order`
 ADD COLUMN `coupon_no` varchar(128) NULL DEFAULT NULL COMMENT '优惠券编号' AFTER `order_no`;
----批量更新之前actual_money为空的字段
-UPDATE t_order SET actual_money = total_money WHERE actual_money is null;
+
 
 ALTER TABLE `t_sys_config`
 ADD COLUMN `version` varchar(50) NULL DEFAULT NULL COMMENT '版本号';
-INSERT INTO `t_sys_config` VALUES (3, 'MMCON', 'CLOSE', 'IM开启关闭(CLOSE:全关,ALL:全打开,ANDROID:安卓打开,IOS:IOS打开)', '2018-05-17 19:28:34', '2018-05-17 19:28:36', '1.0.4');
-INSERT INTO `t_sys_config` VALUES (4, 'PAYCON', 'CLOSE', '支付开启关闭(CLOSE:全关,ALL:全打开,ANDROID:安卓打开,IOS:IOS打开)', '2018-05-17 19:29:28', '2018-05-17 19:29:31', '1.0.4');
-
 
 ---更新订单字段需求
 ALTER TABLE `t_coupon_group`
@@ -147,3 +141,9 @@ ADD COLUMN `admin_id`  int(11) NULL DEFAULT NULL  COMMENT '管理员ID' AFTER `e
 
 ALTER TABLE `t_coupon_group`
 ADD COLUMN `admin_name`  varchar(255) NULL DEFAULT NULL  COMMENT '管理员名称' AFTER `admin_id` ;
+
+-- 修改版本号
+UPDATE t_sys_config SET version = '1.0.2';
+
+---批量更新之前actual_money为空的字段
+UPDATE t_order SET actual_money = total_money WHERE actual_money is null;
