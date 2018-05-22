@@ -29,7 +29,7 @@ public class CouponGroupVO  extends CouponGroup {
     private Boolean isNewUser;
     //生成数量
     @NotNull(message = "[生成数量]字段不能为空")
-    @Max(value = 1000000,message = "发放数量不能超过一百万")
+    @Max(value = 100000,message = "发放数量不能超过十万")
     private Integer amount;
     //兑换码
     @NotNull(message = "[兑换码]字段不能为空")

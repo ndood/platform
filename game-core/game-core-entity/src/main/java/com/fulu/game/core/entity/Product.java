@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
+import lombok.ToString;
 
 
 /**
@@ -13,6 +14,7 @@ import lombok.Data;
  * @date 2018-04-27 16:27:58
  */
 @Data
+@ToString
 public class Product implements Serializable {
 	private static final long serialVersionUID = 1L;
 	

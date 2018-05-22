@@ -9,14 +9,16 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>game-core-service-impl</artifactId>
-
+    <artifactId>game-core-search</artifactId>
     <dependencies>
         <dependency>
             <groupId>com.fulu.game</groupId>
-            <artifactId>game-core-service</artifactId>
+            <artifactId>game-core-service-impl</artifactId>
             <version>${game.core.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
     </dependencies>
-
 </project>

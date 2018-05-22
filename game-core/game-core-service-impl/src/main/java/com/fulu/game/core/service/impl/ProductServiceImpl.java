@@ -18,8 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.rmi.ServerError;
-import java.rmi.ServerException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -236,10 +234,10 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             productVO.setHour(hour);
             productVO.setStartTime(new Date());
             try {
-                log.info("开始接单设置{}小时【{}】", hour, productVO);
+                log.info("开始接单设置:userId:{};product:{};beginOrderDate:{};orderHour:{};", product.getUserId(), product, System.currentTimeMillis(), hour);
                 redisOpenService.hset(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(product.getId()), BeanUtil.beanToMap(productVO), expire);
             } catch (Exception e) {
-                log.error("开始接单设置", e);
+                log.error("开始接单设置失败", e);
                 throw new ServiceErrorException("开始接单操作失败!");
             }
         }
@@ -254,10 +252,10 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         redisOpenService.delete(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()));
         for (Product product : products) {
             try {
-                log.info("停止接单{}", product);
+                log.info("停止接单设置:userId:{};product:{};endOrderDate:{};", product.getUserId(), product, System.currentTimeMillis());
                 redisOpenService.delete(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(product.getId()));
             } catch (Exception e) {
-                log.error("停止接单设置", e);
+                log.error("停止接单设置失败", e);
                 throw new ServiceErrorException("开始接单操作失败!");
             }
         }
