@@ -19,17 +19,17 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductDoc>{
 
 
     @Override
-    public String getIndexType() {
+    protected String getIndexType() {
         return INDEX_TYPE;
     }
 
     @Override
-    public String getIndexDB() {
+    protected String getIndexDB() {
         return configProperties.getElasticsearch().getIndexDB();
     }
 
     @Override
-    public JestClient getJestClient() {
+    protected JestClient getJestClient() {
         return jestClient;
     }
 
