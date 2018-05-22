@@ -13,12 +13,12 @@
     <dependencies>
         <dependency>
             <groupId>com.fulu.game</groupId>
-            <artifactId>game-core-service-impl</artifactId>
+            <artifactId>game-core-common</artifactId>
             <version>${game.core.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+            <groupId>io.searchbox</groupId>
+            <artifactId>jest</artifactId>
         </dependency>
     </dependencies>
 </project>

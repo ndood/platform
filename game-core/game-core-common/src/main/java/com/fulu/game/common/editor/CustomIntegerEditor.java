@@ -11,6 +11,7 @@ public class CustomIntegerEditor extends PropertyEditorSupport {
 	public void setAsText(String text) throws IllegalArgumentException {
 		if (StringUtils.isNotBlank(text) && !"null".equalsIgnoreCase(text)) {
 			text=text.replaceAll(",", "");
+			//todo 假如request参数不能转换成int是否要在这里处理
 			super.setValue(Integer.valueOf(text));
 		} else {
 			super.setValue(null);

@@ -56,4 +56,7 @@ config:
       grantType: client_credentials
       clientId: YXA6551G4EUpEei2mrPeTNnjmw
       clientSecret: YXA6kyYNbvkZ7zVGFR9cMq-w9Hs1hyI
-
+    elasticsearch:
+      host: http://10.0.3.105:9200
+      readTimeout: 10000
+      indexDB: dev-gameplay

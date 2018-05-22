@@ -3,6 +3,7 @@ package com.fulu.game.admin.controller.exception;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.exception.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
@@ -25,6 +26,12 @@ public class ExceptionHandlerAdvice {
     public Result handleDuplicateKeyException(DuplicateKeyException e) {
         log.error(e.getMessage(), e);
         return	Result.error().msg("数据库中已存在该记录");
+    }
+
+    @ExceptionHandler(TypeMismatchException.class)
+    public Result handleTypeMismatchException(TypeMismatchException e){
+        log.error(e.getMessage(), e);
+        return	Result.error().msg("参数类型不匹配!");
     }
 
 

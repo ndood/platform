@@ -12,7 +12,6 @@
 
     <artifactId>game-core-dao</artifactId>
     <dependencies>
-
         <dependency>
             <groupId>com.fulu.game</groupId>
             <artifactId>game-core-entity</artifactId>
