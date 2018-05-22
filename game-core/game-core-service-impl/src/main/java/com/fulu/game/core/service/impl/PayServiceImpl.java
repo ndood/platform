@@ -57,6 +57,7 @@ public class PayServiceImpl implements PayService {
         orderRequest.setSpbillCreateIp(requestIp);
         orderRequest.setTimeStart(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
         try {
+            log.info("订单支付:orderNo:{};order:{};requestIp:{};",orderNo,order,requestIp);
             WxPayMpOrderResult result = wxPayService.createOrder(orderRequest);
             return result;
         } catch (Exception e) {
@@ -88,7 +89,7 @@ public class PayServiceImpl implements PayService {
         if(refundMoney!=null){
             refunFee = (refundMoney.multiply(new BigDecimal(100))).intValue();
         }
-        log.info("退款:退款金额为:{}",refunFee);
+        log.info("退款:orderNo:{};refunFee:{};",orderNo,refunFee);
         if(refunFee.equals(0)){
             return true;
         }
