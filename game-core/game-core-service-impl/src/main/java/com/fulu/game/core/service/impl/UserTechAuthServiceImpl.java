@@ -2,6 +2,7 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.common.enums.TechAttrTypeEnum;
+import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.TagVO;
@@ -55,10 +56,24 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuthVO.setMobile(user.getMobile());
         userTechAuthVO.setCategoryName(category.getName());
         userTechAuthVO.setUpdateTime(new Date());
+
         if (userTechAuthVO.getId() == null) {
+            //查询是否有重复技能
+            List<UserTechAuth> userTechAuths =findByCategoryAndUser(userTechAuthVO.getCategoryId(),userTechAuthVO.getUserId());
+            if(userTechAuths.size()>0){
+                throw new ServiceErrorException("不能添加重复的技能!");
+            }
             userTechAuthVO.setCreateTime(new Date());
             userTechAuthDao.create(userTechAuthVO);
         } else {
+            UserTechAuth oldUserTechAuth= findById(userTechAuthVO.getId());
+            if(!oldUserTechAuth.getId().equals(userTechAuthVO.getId())){
+                //查询是否有重复技能
+                List<UserTechAuth> userTechAuths =findByCategoryAndUser(userTechAuthVO.getCategoryId(),userTechAuthVO.getUserId());
+                if(userTechAuths.size()>0){
+                    throw new ServiceErrorException("不能添加重复的技能!");
+                }
+            }
             userTechAuthDao.update(userTechAuthVO);
         }
         //创建技能标签关联
@@ -98,6 +113,14 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         PageInfo page = new PageInfo(userTechAuths);
         page.setList(userTechAuthVOList);
         return page;
+    }
+
+
+    public List<UserTechAuth> findByCategoryAndUser(Integer categoryId,Integer userId){
+        UserTechAuthVO param = new UserTechAuthVO();
+        param.setCategoryId(categoryId);
+        param.setUserId(userId);
+        return userTechAuthDao.findByParameter(param);
     }
 
 

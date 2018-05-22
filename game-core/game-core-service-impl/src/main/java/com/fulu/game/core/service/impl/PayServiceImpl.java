@@ -75,7 +75,8 @@ public class PayServiceImpl implements PayService {
             orderService.payOrder(orderNo, new BigDecimal(totalYuan));
             return WxPayNotifyResponse.success("处理成功!");
         } catch (Exception e) {
-            log.error("微信回调结果异常,异常原因", e);
+            log.error("回调报文:{}", xmlResult);
+            log.error("微信回调结果异常,异常原因:", e);
             return WxPayNotifyResponse.fail(e.getMessage());
         }
     }
