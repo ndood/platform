@@ -42,6 +42,7 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
 
     @Override
     public PageInfo<MoneyDetailsVO> listByAdmin(MoneyDetailsVO moneyDetailsVO, Integer pageSize, Integer pageNum) {
+        moneyDetailsVO.setAction(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType());
         String orderBy = "tmd.create_time desc";
         PageHelper.startPage(pageNum, pageSize, orderBy);
         List<MoneyDetailsVO> list = moneyDetailsDao.findByAdmin(moneyDetailsVO);
