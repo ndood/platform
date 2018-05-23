@@ -3,6 +3,7 @@ package com.fulu.game.core.search.component;
 import com.fulu.game.core.search.domain.Criteria;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.*;
+import io.searchbox.core.search.sort.Sort;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -38,11 +39,12 @@ public abstract class AbsSearchComponent<T,K> {
      * @param t
      * @return
      */
-    public boolean updateIndex(T t){
+    public boolean updateIndex(T t,K id){
         try {
             Update update = new Update.Builder(t)
                     .index(getIndexDB())
                     .type(getIndexType())
+                    .id(id.toString())
                     .refresh(true)
                     .build();
             DocumentResult result = getJestClient().execute(update);
