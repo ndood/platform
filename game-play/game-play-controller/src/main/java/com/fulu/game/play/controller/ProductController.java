@@ -10,14 +10,13 @@ import com.fulu.game.core.service.MoneyDetailsService;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.ProductService;
 import com.fulu.game.core.service.UserService;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,9 +38,18 @@ public class ProductController extends BaseController {
     private UserService userService;
 
 
+    @RequestMapping(value = "/search")
+    public Result search(@RequestParam(required = true)Integer pageNum,
+                         @RequestParam(required = true)Integer pageSize,
+                         @RequestParam(required = true) String content){
+        PageInfo pageInfo = productService.searchContent(pageNum,pageSize,content);
+        return Result.success().data(pageInfo);
+    }
+
+
+
     /**
      * 添加接单方式
-     *
      * @param techAuthId
      * @param price
      * @param unitId

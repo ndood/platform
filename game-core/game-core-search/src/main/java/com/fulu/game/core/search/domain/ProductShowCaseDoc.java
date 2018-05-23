@@ -44,5 +44,7 @@ public class ProductShowCaseDoc {
     //用户所在地
     private String city;
 
+    private Integer salesVolume;
+
 
 }

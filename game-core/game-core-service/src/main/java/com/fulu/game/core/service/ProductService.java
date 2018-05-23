@@ -93,6 +93,15 @@ public interface ProductService extends ICommonService<Product,Integer>{
     PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId,Integer gender,Integer pageNum,Integer pageSize,String orderBy);
 
     /**
+     * 通过昵称查找商品
+     * @param pageNum
+     * @param pageSize
+     * @param nickName
+     * @return
+     */
+    PageInfo searchContent(int pageNum, int pageSize, String nickName);
+
+    /**
      * 判断商品是否是开始接单状态
      * @param productId
      * @return

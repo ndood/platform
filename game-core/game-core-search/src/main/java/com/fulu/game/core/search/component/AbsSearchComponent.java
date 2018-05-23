@@ -3,6 +3,7 @@ package com.fulu.game.core.search.component;
 import com.fulu.game.core.search.domain.Criteria;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.*;
+import io.searchbox.core.search.sort.Sort;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;

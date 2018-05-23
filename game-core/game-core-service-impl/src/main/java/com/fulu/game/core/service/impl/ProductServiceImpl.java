@@ -11,12 +11,12 @@ import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.search.component.ProductSearchComponent;
 import com.fulu.game.core.search.domain.ProductShowCaseDoc;
 import com.fulu.game.core.service.*;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.list.PredicatedList;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -142,7 +142,12 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return product;
     }
 
-
+    /**
+     * 激活或者取消激活商品
+     * @param id
+     * @param status
+     * @return
+     */
     @Override
     public Product enable(int id, boolean status) {
         if (redisOpenService.hasKey(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(id))) {
@@ -213,7 +218,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     }
 
 
-
+    /**
+     * 停止接单
+     */
     @Override
     public void stopOrderReceiving() {
         User user =(User) SubjectUtil.getCurrentUser();
@@ -231,6 +238,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         //修改首页商品的状态
         batchCreateUserProduct(user.getId());
     }
+
+
+
 
     /**
      * 查询用户详情页
@@ -267,6 +277,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return serverCardVO;
     }
 
+
+
     @Override
     public SimpleProductVO findSimpleProductByProductId(Integer productId) {
         Product product = findById(productId);
@@ -277,17 +289,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return simpleProductVO;
     }
 
-    /**
-     * 查询用户全部的商品
-     * @param userId
-     * @return
-     */
-    @Override
-    public List<Product> findByUserId(Integer userId) {
-        ProductVO productVO = new ProductVO();
-        productVO.setUserId(userId);
-        return productDao.findByParameter(productVO);
-    }
+
 
     /**
      * 商品首页和列表页
@@ -299,30 +301,45 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * @return
      */
     @Override
-    public PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId,
-                                                           Integer gender,
-                                                           Integer pageNum,
-                                                           Integer pageSize,
-                                                           String orderBy) {
-        if(StringUtils.isBlank(orderBy)){
-            orderBy = "create_time desc";
+    public PageInfo findProductShowCase(Integer categoryId,
+                                        Integer gender,
+                                        Integer pageNum,
+                                        Integer pageSize,
+                                        String orderBy) {
+
+        PageInfo page = null;
+        try {
+            Page  searchResult = productSearchComponent.searchShowCaseDoc(categoryId, gender, pageNum, pageSize,orderBy);
+            page = new PageInfo(searchResult);
+        } catch (Exception e) {
+            log.error("ProductShowCase查询异常",e);
+            PageHelper.startPage(pageNum,pageSize,"create_time desc");
+            List<ProductShowCaseVO> showCaseVOS = productDao.findProductShowCase(categoryId,gender);
+            for(ProductShowCaseVO showCaseVO : showCaseVOS){
+                UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(showCaseVO.getUserId(),false,false,true,false);
+                showCaseVO.setNickName(userInfoVO.getNickName());
+                showCaseVO.setGender(userInfoVO.getGender());
+                showCaseVO.setMainPhoto(userInfoVO.getMainPhotoUrl());
+                showCaseVO.setCity(userInfoVO.getCity());
+                showCaseVO.setPersonTags(userInfoVO.getTags());
+                showCaseVO.setOnLine(isProductStartOrderReceivingStatus(showCaseVO.getId()));
+            }
+            page = new PageInfo(showCaseVOS);
         }
-        PageHelper.startPage(pageNum,pageSize,orderBy);
-        List<ProductShowCaseVO> showCaseVOS = productDao.findProductShowCase(categoryId,gender);
-        for(ProductShowCaseVO showCaseVO : showCaseVOS){
-            UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(showCaseVO.getUserId(),false,false,true,false);
-            showCaseVO.setNickName(userInfoVO.getNickName());
-            showCaseVO.setGender(userInfoVO.getGender());
-            showCaseVO.setMainPhoto(userInfoVO.getMainPhotoUrl());
-            showCaseVO.setCity(userInfoVO.getCity());
-            showCaseVO.setPersonTags(userInfoVO.getTags());
-            showCaseVO.setOnLine(isProductStartOrderReceivingStatus(showCaseVO.getId()));
-        }
-        PageInfo page = new PageInfo(showCaseVOS);
         return page;
     }
 
 
+    public PageInfo searchContent(int pageNum, int pageSize, String nickName){
+        PageInfo page = null;
+        try {
+            Page  searchResult = productSearchComponent.findByNickName(pageNum,pageSize,nickName);
+            page = new PageInfo(searchResult);
+        }catch (Exception e){
+            page = new PageInfo();
+        }
+        return page;
+    }
 
     /**
      * 查找用户其他的商品
@@ -367,6 +384,17 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     public void batchCreateUserProduct(Integer userId){
         List<Product> products = findByUserId(userId);
         batchCreateProductIndex(products);
+        List<Integer> rightfulProductIds = new ArrayList<>();
+        for (Product product : products) {
+            rightfulProductIds.add(product.getId());
+        }
+        //删除掉之前用户的垃圾商品数据
+        List<ProductShowCaseDoc> productShowCaseDocList = productSearchComponent.findByUser(userId);
+        for (ProductShowCaseDoc pdoc : productShowCaseDocList) {
+            if (!rightfulProductIds.contains(pdoc.getId())) {
+                productSearchComponent.deleteIndex(pdoc.getId());
+            }
+        }
     }
 
 
@@ -409,7 +437,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                }
            });
            if(!waitProducts.isEmpty()){
-               waitProducts.sort((Product p1, Product p2) -> p1.getSalesModeRank().compareTo(p2.getSalesModeRank()));
+               waitProducts.sort((Product p1, Product p2) -> p2.getSalesModeRank().compareTo(p1.getSalesModeRank()));
                showIndexProducts.add(waitProducts.get(0));
            }
         });
@@ -434,10 +462,26 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         productShowCaseDoc.setIsIndexShow(isIndexShow);
         productShowCaseDoc.setPersonTags(userInfoVO.getTags());
         productShowCaseDoc.setOnLine(isProductStartOrderReceivingStatus(productShowCaseDoc.getId()));
-        productSearchComponent.saveProductIndex(productShowCaseDoc);
+        Boolean result = productSearchComponent.saveProductIndex(productShowCaseDoc);
+        if (!result) {
+            log.error("插入索引失败:{}", productShowCaseDoc);
+            //todo 如果插入索引结果失败如何做处理
+        }
         return productShowCaseDoc;
     }
 
+
+    /**
+     * 查询用户全部的商品
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<Product> findByUserId(Integer userId) {
+        ProductVO productVO = new ProductVO();
+        productVO.setUserId(userId);
+        return productDao.findByParameter(productVO);
+    }
 
     /**
      *  判断商品是否是开始接单状态
