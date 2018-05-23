@@ -99,6 +99,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         User user = userService.getCurrentUser();
         CouponVO couponVO = new CouponVO();
         couponVO.setIsUse(isUse);
+        couponVO.setOverdue(overdue);
         couponVO.setUserId(user.getId());
         String orderBy = null;
         if (isUse) {
@@ -109,7 +110,6 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         //已過期的必須是未使用的
         if (overdue) {
             orderBy = "end_useful_time desc";
-            couponVO.setOverdue(overdue);
         }
         PageHelper.startPage(pageNum, pageSize, orderBy);
         List<Coupon> couponList = couponDao.findByParameter(couponVO);

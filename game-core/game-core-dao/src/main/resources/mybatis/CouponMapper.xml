@@ -73,8 +73,11 @@
             <if test="orderNo != null">
                 and order_no = #{orderNo}
             </if>
-            <if test="overdue != null">
+            <if test="overdue == true">
                 and DATEDIFF(end_useful_time,SYSDATE()) &lt;0
+            </if>
+            <if test="overdue == false">
+                and DATEDIFF(end_useful_time,SYSDATE()) &gt;=0
             </if>
             <if test="receiveTime != null">
                 and receive_time = #{receiveTime}
