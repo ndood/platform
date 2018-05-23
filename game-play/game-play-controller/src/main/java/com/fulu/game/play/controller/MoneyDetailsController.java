@@ -1,7 +1,6 @@
 package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
-import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.MoneyDetailsVO;
 import com.fulu.game.core.service.MoneyDetailsService;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/moneyDetails")
-public class MoneyDetailsController extends BaseController{
+public class MoneyDetailsController extends BaseController {
 
     @Autowired
     private MoneyDetailsService moneyDetailsService;
@@ -26,12 +25,12 @@ public class MoneyDetailsController extends BaseController{
     private UserService userService;
 
     @RequestMapping("/list")
-    public Result list(@ModelAttribute MoneyDetailsVO moneyDetailsVO,
+    public Result list( MoneyDetailsVO moneyDetailsVO,
                        @RequestParam("pageSize") Integer pageSize,
-                       @RequestParam("pageNum") Integer pageNum){
+                       @RequestParam("pageNum") Integer pageNum) {
         User user = userService.getCurrentUser();
         moneyDetailsVO.setTargetId(user.getId());
-        PageInfo<MoneyDetailsVO> list = moneyDetailsService.listByUser(moneyDetailsVO,pageSize,pageNum);
+        PageInfo<MoneyDetailsVO> list = moneyDetailsService.listByUser(moneyDetailsVO, pageSize, pageNum);
         return Result.success().data(list).msg("查询列表成功！");
     }
 }

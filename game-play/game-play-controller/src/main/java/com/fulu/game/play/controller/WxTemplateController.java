@@ -46,9 +46,10 @@ public class WxTemplateController {
 
     @RequestMapping("/push")
     public Result pushWechatMsg(String content,
+                                String acceptImId,
                                 String imId)throws Exception{
-        log.info("推送模板消息imId:{},content:{}",imId,content);
-        String result = wxTemplateMsgService.pushWechatTemplateMsg(content,imId);
+        log.info("推送模板消息imId:{},acceptImId:{},content:{}",imId,acceptImId,content);
+        String result = wxTemplateMsgService.pushWechatTemplateMsg(content,acceptImId,imId);
         return Result.success().msg(result);
     }
 

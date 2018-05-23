@@ -23,6 +23,8 @@ public class Order implements Serializable {
 	private Integer id;
 	//订单号
 	private String orderNo;
+	//优惠券编码
+	private String couponNo;
 	//下单用户ID
 	private Integer userId;
 	//陪玩师用户ID
@@ -35,7 +37,10 @@ public class Order implements Serializable {
 	private String remark;
 	//订单状态
 	private Integer status;
-
+	//实付金额
+	private BigDecimal actualMoney;
+	//优惠券金额
+	private BigDecimal couponMoney;
 	//是否支付(1:已支付,2:未支付)
 	@JsonIgnore
 	private Boolean isPay;

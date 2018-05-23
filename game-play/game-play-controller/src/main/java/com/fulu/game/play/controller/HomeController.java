@@ -3,15 +3,14 @@ package com.fulu.game.play.controller;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.fulu.game.common.Result;
-import com.fulu.game.common.enums.exception.ParamsExceptionEnums;
+import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.SysConfig;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.service.PlatformMoneyDetailsService;
 import com.fulu.game.core.service.SysConfigService;
 import com.fulu.game.core.service.UserService;
-import com.fulu.game.play.controller.exception.ParamsException;
 import com.fulu.game.play.shiro.PlayUserToken;
+import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import net.sf.json.JSONObject;
@@ -21,9 +20,12 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -34,15 +36,30 @@ public class HomeController {
     private WxMaService wxService;
     @Autowired
     private UserService userService;
+
     @Autowired
     private SysConfigService sysConfigService;
 
-
-
+    /**
+     * 初始化加载系统配置
+     *
+     * @return
+     */
     @RequestMapping(value = "/sys/config", method = RequestMethod.POST)
     @ResponseBody
-    public Result sysConfig(){
-        List<SysConfig> result = sysConfigService.findAll();
+    public Result sysConfig(@RequestParam(value = "version", required = false, defaultValue = "1.0.2") String version) {
+        List<SysConfig> result = sysConfigService.findByVersion(version);
+        if (CollectionUtil.isEmpty(result)){
+            result = new ArrayList<SysConfig>();
+            SysConfig sysConfig1 = new SysConfig();
+            sysConfig1.setName("MMCON");
+            sysConfig1.setValue("CLOSE");
+            SysConfig sysConfig2 = new SysConfig();
+            sysConfig2.setName("PAYCON");
+            sysConfig2.setValue("CLOSE");
+            result.add(sysConfig1);
+            result.add(sysConfig2);
+        }
         return Result.success().data(result);
     }
 
@@ -56,7 +73,7 @@ public class HomeController {
     public Result login(@RequestParam("code") String code) throws WxErrorException {
         log.info("==调用/login方法==");
         if (StringUtils.isBlank(code)) {
-            throw new ParamsException(ParamsExceptionEnums.PARAM_NULL_EXCEPTION);
+            throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
         WxMaJscode2SessionResult session = wxService.getUserService().getSessionInfo(code);
         String openId = session.getOpenid();
@@ -113,7 +130,6 @@ public class HomeController {
             return Result.error().msg("测试登陆异常！");
         }
     }
-
 
 
 }

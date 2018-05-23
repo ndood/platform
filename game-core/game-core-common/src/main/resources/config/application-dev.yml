@@ -48,3 +48,12 @@ config:
       keyPath: E:\cert\apiclient_cert.p12
       tradeType: JSAPI
       notifyUrl: http://z3tfsd.natappfree.cc/wechat/pay/callback
+    im:
+      urlPrefix: http://a1.easemob.com
+      appKey: 1183180421228734#game-play
+      orgName: 1183180421228734
+      appName: game-play
+      grantType: client_credentials
+      clientId: YXA6551G4EUpEei2mrPeTNnjmw
+      clientSecret: YXA6kyYNbvkZ7zVGFR9cMq-w9Hs1hyI
+

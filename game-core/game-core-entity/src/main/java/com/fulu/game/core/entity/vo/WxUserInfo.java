@@ -9,7 +9,7 @@ public class WxUserInfo implements Serializable {
     private String nickName;
     private String mobile;
     private String avatarUrl;
-    private String gender;
+    private Integer gender;
     private String city;
     private String province;
     private String country;

@@ -2,7 +2,6 @@ package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
-import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.OrderDealVO;
@@ -38,14 +37,15 @@ public class OrderController {
 
     /**
      * 查询陪玩是否是服务状态
+     *
      * @param productId
      * @return
      */
     @RequestMapping(value = "canservice")
-    public Result canService(@RequestParam(required = true)Integer productId){
+    public Result canService(@RequestParam(required = true) Integer productId) {
         Product product = productService.findById(productId);
         Boolean status = orderService.isAlreadyService(product.getUserId());
-        if(status){
+        if (status) {
             return Result.error().msg("当前陪玩师正在服务中,需要等待后才能为您提供服务!");
         }
         return Result.success().msg("陪玩师空闲状态!");
@@ -53,16 +53,20 @@ public class OrderController {
 
     /**
      * 提交订单
+     *
      * @param productId
      * @param num
      * @param remark
      * @return
      */
     @RequestMapping(value = "submit")
-    public Result submit(@RequestParam(required = true)Integer productId,
-                         @RequestParam(required = true)Integer num,
-                         String remark){
-        OrderVO orderVO = orderService.submit(productId,num,remark);
+    public Result submit(@RequestParam(required = true) Integer productId,
+                         HttpServletRequest request,
+                         @RequestParam(required = true) Integer num,
+                         String couponNo,
+                         String remark) {
+        String ip = RequestUtil.getIpAdrress(request);
+        OrderVO orderVO = orderService.submit(productId, num, remark,couponNo,ip);
         return Result.success().data(orderVO.getOrderNo()).msg("创建订单成功!");
     }
 
@@ -74,23 +78,24 @@ public class OrderController {
      */
     @RequestMapping(value = "/pay")
     @Deprecated
-    public Result pay(@RequestParam(required = true)String orderNo,
-                      HttpServletRequest request){
+    public Result pay(@RequestParam(required = true) String orderNo,
+                      HttpServletRequest request) {
         String ip = RequestUtil.getIpAdrress(request);
-        Object  result = payService.wechatUnifyOrder(orderNo,ip);
+        Object result = payService.wechatUnifyOrder(orderNo, ip);
         return Result.success().data(result);
     }
 
     /**
      * 用户订单状态列表
+     *
      * @return
      */
     @RequestMapping(value = "/user/status")
-    public Result userOrderStatus(){
-        Map<Integer,String> map = new LinkedHashMap<>();
-        for(OrderStatusGroupEnum groupEnum : OrderStatusGroupEnum.values()){
-            if(groupEnum.getType().equals("USER")){
-                map.put(groupEnum.getValue(),groupEnum.getName());
+    public Result userOrderStatus() {
+        Map<Integer, String> map = new LinkedHashMap<>();
+        for (OrderStatusGroupEnum groupEnum : OrderStatusGroupEnum.values()) {
+            if (groupEnum.getType().equals("USER")) {
+                map.put(groupEnum.getValue(), groupEnum.getName());
             }
         }
         return Result.success().data(map);
@@ -98,28 +103,33 @@ public class OrderController {
 
     /**
      * 用户订单列表
+     *
      * @return
      */
     @RequestMapping(value = "/user/list")
-    public Result userOrderList(@RequestParam(required = true)Integer pageNum,
-                                @RequestParam(required = true)Integer pageSize,
+    public Result userOrderList(@RequestParam(required = true) Integer pageNum,
+                                @RequestParam(required = true) Integer pageSize,
                                 Integer categoryId,
-                                @RequestParam(required = true)Integer status){
+                                @RequestParam(required = true) Integer status) {
+        if(status==null){
+            status = OrderStatusGroupEnum.USER_ALL.getValue();
+        }
         Integer[] statusArr = OrderStatusGroupEnum.getByValue(status);
-        PageInfo<OrderVO> pageInfo = orderService.userList(pageNum,pageSize,categoryId,statusArr);
+        PageInfo<OrderVO> pageInfo = orderService.userList(pageNum, pageSize, categoryId, statusArr);
         return Result.success().data(pageInfo);
     }
 
     /**
      * 打手订单状态列表
+     *
      * @return
      */
     @RequestMapping(value = "/server/status")
-    public Result serverOrderStatus(){
-        Map<Integer,String> map = new LinkedHashMap<>();
-        for(OrderStatusGroupEnum groupEnum : OrderStatusGroupEnum.values()){
-            if(groupEnum.getType().equals("SERVER")){
-                map.put(groupEnum.getValue(),groupEnum.getName());
+    public Result serverOrderStatus() {
+        Map<Integer, String> map = new LinkedHashMap<>();
+        for (OrderStatusGroupEnum groupEnum : OrderStatusGroupEnum.values()) {
+            if (groupEnum.getType().equals("SERVER")) {
+                map.put(groupEnum.getValue(), groupEnum.getName());
             }
         }
         return Result.success().data(map);
@@ -127,136 +137,150 @@ public class OrderController {
 
     /**
      * 打手订单列表
+     *
      * @return
      */
     @RequestMapping(value = "/server/list")
-    public Result serverOrderList(@RequestParam(required = true)Integer pageNum,
-                                  @RequestParam(required = true)Integer pageSize,
+    public Result serverOrderList(@RequestParam(required = true) Integer pageNum,
+                                  @RequestParam(required = true) Integer pageSize,
                                   Integer categoryId,
-                                  @RequestParam(required = true)Integer status){
+                                  @RequestParam(required = true) Integer status) {
+        if(status==null){
+            status = OrderStatusGroupEnum.SERVER_ALL.getValue();
+        }
         Integer[] statusArr = OrderStatusGroupEnum.getByValue(status);
-        PageInfo<OrderVO> pageInfo = orderService.serverList(pageNum,pageSize,categoryId,statusArr);
+        PageInfo<OrderVO> pageInfo = orderService.serverList(pageNum, pageSize, categoryId, statusArr);
         return Result.success().data(pageInfo);
     }
 
     /**
      * 用户取消订单
+     *
      * @param orderNo
      * @return
      */
     @RequestMapping(value = "/user/cancel")
-    public Result userCancelOrder(@RequestParam(required = true)String orderNo){
-        OrderVO orderVO =orderService.userCancelOrder(orderNo);
+    public Result userCancelOrder(@RequestParam(required = true) String orderNo) {
+        OrderVO orderVO = orderService.userCancelOrder(orderNo);
         return Result.success().data(orderVO).msg("取消订单成功!");
     }
 
     /**
      * 用户申诉订单
+     *
      * @param orderNo
      * @param remark
      * @param fileUrl
      * @return
      */
     @RequestMapping(value = "/user/appeal")
-    public Result userAppealOrder(@RequestParam(required = true)String orderNo,
+    public Result userAppealOrder(@RequestParam(required = true) String orderNo,
                                   String remark,
-                                  @RequestParam(required = true)String[] fileUrl){
-        OrderVO orderVO =orderService.userAppealOrder(orderNo,remark,fileUrl);
+                                  @RequestParam(required = true) String[] fileUrl) {
+        OrderVO orderVO = orderService.userAppealOrder(orderNo, remark, fileUrl);
         return Result.success().data(orderVO).msg("订单申诉成功!");
     }
 
     /**
      * 陪玩师接收订单
+     *
      * @param orderNo
      * @return
      */
     @RequestMapping(value = "/server/receive")
-    public Result serverReceiveOrder(@RequestParam(required = true)String orderNo){
-        OrderVO orderVO =orderService.serverReceiveOrder(orderNo);
+    public Result serverReceiveOrder(@RequestParam(required = true) String orderNo) {
+        OrderVO orderVO = orderService.serverReceiveOrder(orderNo);
         return Result.success().data(orderVO).msg("接单成功!");
     }
 
 
     /**
      * 用户验收订单
+     *
      * @param orderNo
      * @return
      */
     @RequestMapping(value = "/user/verify")
-    public Result userVerifyOrder(@RequestParam(required = true)String orderNo){
-        OrderVO orderVO =orderService.userVerifyOrder(orderNo);
+    public Result userVerifyOrder(@RequestParam(required = true) String orderNo) {
+        OrderVO orderVO = orderService.userVerifyOrder(orderNo);
         return Result.success().data(orderVO).msg("订单验收成功!");
     }
 
 
     /**
      * 陪玩师取消订单
+     *
      * @param orderNo
      * @return
      */
     @RequestMapping(value = "/server/cancel")
-    public Result serverCancelOrder(@RequestParam(required = true)String orderNo){
-        OrderVO orderVO =orderService.serverCancelOrder(orderNo);
+    public Result serverCancelOrder(@RequestParam(required = true) String orderNo) {
+        OrderVO orderVO = orderService.serverCancelOrder(orderNo);
         return Result.success().data(orderVO).msg("取消订单成功!");
     }
 
     /**
      * 陪玩师提交验收订单
+     *
      * @param orderNo
      * @param remark
      * @param fileUrl
      * @return
      */
     @RequestMapping(value = "/server/acceptance")
-    public Result serverAcceptanceOrder(@RequestParam(required = true)String orderNo,
+    public Result serverAcceptanceOrder(@RequestParam(required = true) String orderNo,
                                         String remark,
-                                        @RequestParam(required = true)String[] fileUrl){
-        OrderVO orderVO =orderService.serverAcceptanceOrder(orderNo,remark,fileUrl);
+                                        @RequestParam(required = true) String[] fileUrl) {
+        OrderVO orderVO = orderService.serverAcceptanceOrder(orderNo, remark, fileUrl);
         return Result.success().data(orderVO).msg("提交订单验收成功!");
     }
 
 
     /**
      * 查看申诉或者验收截图
+     *
      * @return
      */
     @RequestMapping(value = "/deals")
-    public Result orderDealList(@RequestParam(required = true)String orderNo){
+    public Result orderDealList(@RequestParam(required = true) String orderNo) {
         User user = userService.getCurrentUser();
-        OrderDealVO orderDealVO = orderDealService.findByUserAndOrderNo(user.getId(),orderNo);
+        OrderDealVO orderDealVO = orderDealService.findByUserAndOrderNo(user.getId(), orderNo);
         return Result.success().data(orderDealVO);
     }
 
     /**
      * 查看陪玩师的验收截图
+     *
      * @param orderNo
      * @return
      */
     @RequestMapping(value = "/user/acceptance/result")
-    public Result userCheckServerAcceptanceResult(@RequestParam(required = true)String orderNo){
+    public Result userCheckServerAcceptanceResult(@RequestParam(required = true) String orderNo) {
         OrderDealVO orderDealVO = orderDealService.findOrderAcceptanceResult(orderNo);
         return Result.success().data(orderDealVO);
     }
 
     /**
      * 用户订单详情页
+     *
      * @param orderNo
      * @return
      */
     @RequestMapping(value = "/user/details")
-    public Result userOrderDetails(@RequestParam(required = true)String orderNo){
-        OrderVO orderVO =  orderService.findUserOrderDetails(orderNo);
+    public Result userOrderDetails(@RequestParam(required = true) String orderNo) {
+        OrderVO orderVO = orderService.findUserOrderDetails(orderNo);
         return Result.success().data(orderVO);
     }
 
     /**
      * 陪玩师订单详情页
+     *
      * @param orderNo
      * @return
      */
     @RequestMapping(value = "/server/details")
-    public Result serverOrderDetails(@RequestParam(required = true)String orderNo){
-        OrderVO orderVO =  orderService.findServerOrderDetails(orderNo);
+    public Result serverOrderDetails(@RequestParam(required = true) String orderNo) {
+        OrderVO orderVO = orderService.findServerOrderDetails(orderNo);
         return Result.success().data(orderVO);
     }
 

@@ -14,6 +14,7 @@ import com.fulu.game.core.service.WxTemplateMsgService;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.CollectionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -42,25 +43,30 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService{
 
     @Override
     public String pushWechatTemplateMsg(String content,
+                                        String acceptImId,
                                         String imId){
-        if(redisOpenService.hasKey(RedisKeyEnum.WX_TEMPLATE_MSG.generateKey(imId))){
+        if(redisOpenService.hasKey(RedisKeyEnum.WX_TEMPLATE_MSG.generateKey(imId+"|"+acceptImId))){
             return "消息已经推送过了!";
         }
-        User user = userService.findByImId(imId);
-        if(user==null||user.getOpenId()==null){
+        User acceptUser = userService.findByImId(acceptImId);
+        if(acceptUser==null||acceptUser.getOpenId()==null){
+            throw new ServiceErrorException("AcceptIM不存在!");
+        }
+        User sendUser = userService.findByImId(imId);
+        if(sendUser==null||sendUser.getOpenId()==null){
             throw new ServiceErrorException("IM不存在!");
         }
-        String formId = getWechatUserFormId(user.getId());
+        String formId = getWechatUserFormId(acceptUser.getId());
         if(formId==null){
             throw new ServiceErrorException("无法给该用户推送消息!");
         }
         String date = DateUtil.format(new Date(),"yyyy年MM月dd日 HH:mm");
         WxMaTemplateMessage wxMaTemplateMessage = new WxMaTemplateMessage();
         wxMaTemplateMessage.setTemplateId(WechatTemplateEnum.PUSH_MSG.getType());
-        wxMaTemplateMessage.setToUser(user.getOpenId());
-        wxMaTemplateMessage.setPage("/pages/index/index?stay=true");
+        wxMaTemplateMessage.setToUser(acceptUser.getOpenId());
+        wxMaTemplateMessage.setPage("pages/index/index");
         wxMaTemplateMessage.setFormId(formId);
-        List<WxMaTemplateMessage.Data> dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", user.getNickname()+":"+content),new WxMaTemplateMessage.Data("keyword2", date));
+        List<WxMaTemplateMessage.Data> dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", sendUser.getNickname()+":"+content),new WxMaTemplateMessage.Data("keyword2", date));
         wxMaTemplateMessage.setData(dataList);
         try {
             wxMaService.getMsgService().sendTemplateMsg(wxMaTemplateMessage);
@@ -68,7 +74,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService{
             throw new ServiceErrorException("推送消息出错!");
         }
         //推送状态缓存两个小时
-        redisOpenService.set(RedisKeyEnum.WX_TEMPLATE_MSG.generateKey(imId),imId, Constant.TIME_HOUR_TOW);
+        redisOpenService.set(RedisKeyEnum.WX_TEMPLATE_MSG.generateKey(imId+"|"+acceptImId),imId+"|"+acceptImId, Constant.TIME_HOUR_TOW);
         return "消息推送成功!";
     }
 

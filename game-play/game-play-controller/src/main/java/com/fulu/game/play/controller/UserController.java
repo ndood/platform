@@ -4,23 +4,29 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.ResultStatus;
 import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.enums.exception.UserExceptionEnums;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.UserComment;
 import com.fulu.game.core.entity.UserTechAuth;
+import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.WxUserInfo;
+import com.fulu.game.core.service.UserCommentService;
 import com.fulu.game.core.service.UserInfoAuthService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.UserTechAuthService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.List;
@@ -38,6 +44,8 @@ public class UserController extends BaseController {
     private UserInfoAuthService userInfoAuthService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private UserCommentService commentService;
 
     @RequestMapping("tech/list")
     public Result userTechList() {
@@ -71,20 +79,21 @@ public class UserController extends BaseController {
                       @RequestParam(name = "realname", required = false, defaultValue = "false") Boolean realname,
                       @RequestParam(name = "age", required = false, defaultValue = "false") Boolean age) {
         User user = userService.findById(userService.getCurrentUser().getId());
-        user.setBalance(null);
-        user.setOpenId(null);
-        user.setPassword(null);
-        user.setSalt(null);
-        if (null != idcard && !idcard)
+        if (null != idcard && !idcard) {
             user.setIdcard(null);
-        if (!realname)
+        }
+        if (!realname) {
             user.setRealname(null);
-        if (!gender)
+        }
+        if (!gender) {
             user.setGender(null);
-        if (!mobile)
+        }
+        if (!mobile) {
             user.setMobile(null);
-        if (!age)
+        }
+        if (!age) {
             user.setAge(null);
+        }
         return Result.success().data(user).msg("查询信息成功！");
     }
 
@@ -95,7 +104,7 @@ public class UserController extends BaseController {
      * @return
      */
     @RequestMapping("/update")
-    public Result update(@ModelAttribute UserVO userVO) {
+    public Result update(UserVO userVO) {
         User user = userService.findById(userService.getCurrentUser().getId());
         user.setAge(userVO.getAge());
         user.setGender(userVO.getGender());
@@ -109,10 +118,6 @@ public class UserController extends BaseController {
         userService.update(user);
         userService.updateRedisUser(user);
 
-        user.setBalance(null);
-        user.setOpenId(null);
-        user.setPassword(null);
-        user.setSalt(null);
         user.setIdcard(null);
         user.setRealname(null);
         return Result.success().data(user).msg("个人信息设置成功！");
@@ -150,8 +155,7 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("/mobile/bind")
-    public Result bind(@ModelAttribute WxUserInfo wxUserInfo) {
-
+    public Result bind(WxUserInfo wxUserInfo) {
         String token = SubjectUtil.getToken();
         //验证手机号的验证码
         String redisVerifyCode = redisOpenService.hget(RedisKeyEnum.SMS.generateKey(token), wxUserInfo.getMobile());
@@ -179,7 +183,7 @@ public class UserController extends BaseController {
                 if (mobileUser != null) {
                     if (!mobileUser.getId().equals(openIdUser.getId())) {
                         mobileUser.setOpenId(openId);
-                        mobileUser.setGender(wxUserInfo.getGender() != null ? Integer.parseInt(wxUserInfo.getGender()) : 0);
+                        mobileUser.setGender(wxUserInfo.getGender());
                         mobileUser.setNickname(wxUserInfo.getNickName());
                         mobileUser.setHeadPortraitsUrl(wxUserInfo.getAvatarUrl());
                         mobileUser.setCity(wxUserInfo.getCity());
@@ -192,7 +196,7 @@ public class UserController extends BaseController {
                     newUser = mobileUser;
                 } else {
                     openIdUser.setMobile(wxUserInfo.getMobile());
-                    openIdUser.setGender(wxUserInfo.getGender() != null ? Integer.parseInt(wxUserInfo.getGender()) : 0);
+                    openIdUser.setGender(wxUserInfo.getGender());
                     openIdUser.setNickname(wxUserInfo.getNickName());
                     openIdUser.setHeadPortraitsUrl(wxUserInfo.getAvatarUrl());
                     openIdUser.setCity(wxUserInfo.getCity());
@@ -203,8 +207,6 @@ public class UserController extends BaseController {
                     newUser = openIdUser;
                 }
                 userService.updateRedisUser(newUser);
-                newUser.setOpenId(null);
-                newUser.setBalance(null);
                 return Result.success().data(newUser).msg("手机号绑定成功！");
             }
         }
@@ -236,11 +238,11 @@ public class UserController extends BaseController {
      */
     @PostMapping("/im/get")
     public Result getImUser(@RequestParam("imId") String imId) {
-        if(StringUtils.isEmpty(imId)){
-            throw new UserException(UserExceptionEnums.IllEGAL_IMID_EXCEPTION);
+        if (StringUtils.isEmpty(imId)) {
+            throw new UserException(UserException.ExceptionCode.IllEGAL_IMID_EXCEPTION);
         }
         User user = userService.findByImId(imId);
-        if (null == user){
+        if (null == user) {
             return Result.error().msg("未查询到该用户或尚未注册IM");
         }
         return Result.success().data(user).msg("查询IM用户成功");
@@ -263,5 +265,47 @@ public class UserController extends BaseController {
         return Result.success().data(userInfoVO).msg("查询聊天对象信息成功！");
     }
 
+    /**
+     * 用户-添加评价
+     *
+     * @return
+     */
+    @RequestMapping("/comment/save")
+    public Result save(UserCommentVO commentVO) {
+        commentService.save(commentVO);
+        return Result.success().msg("添加成功！");
+    }
 
+    /**
+     * 用户-查询评论
+     *
+     * @return
+     */
+    @RequestMapping("/comment/get")
+    public Result get(@RequestParam("orderNo") String orderNo) {
+        UserComment comment = commentService.findByOrderNo(orderNo);
+        if (null == comment) {
+            return Result.error().msg("该评论不存在！");
+        }
+        comment.setServerUserId(null);
+        comment.setScoreAvg(null);
+        return Result.success().data(comment).msg("查询成功！");
+    }
+
+
+    /**
+     * 查询陪玩师的所有评论
+     *
+     * @param pageNum
+     * @param pageSize
+     * @param serverId
+     * @return
+     */
+    @RequestMapping(value = "/comment/byserver")
+    public Result findDetailsComments(Integer pageNum,
+                                      Integer pageSize,
+                                      Integer serverId) {
+        PageInfo<UserCommentVO> page = commentService.findByServerId(pageNum, pageSize, serverId);
+        return Result.success().data(page);
+    }
 }

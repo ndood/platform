@@ -16,6 +16,7 @@ import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.fulu.game.core.dao.OrderDao;
@@ -49,6 +50,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     private PlatformMoneyDetailsService platformMoneyDetailsService;
     @Autowired
     private PayService payService;
+    @Autowired
+    private CouponService couponService;
 
 
     @Override
@@ -170,7 +173,9 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     @Override
     public OrderVO submit(int productId,
                           int num,
-                          String remark) {
+                          String remark,
+                          String couponNo,
+                          String userIp) {
         log.info("用户提交订单productId:{},num:{},remark:{}",productId,num,remark);
         User user = userService.getCurrentUser();
         Product product = productService.findById(productId);
@@ -179,7 +184,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         BigDecimal totalMoney = product.getPrice().multiply(new BigDecimal(num));
         //计算单笔订单佣金
         BigDecimal commissionMoney = totalMoney.multiply(category.getCharges());
-        if(commissionMoney.compareTo(totalMoney)>=0){
+        if(commissionMoney.compareTo(totalMoney)>0){
             throw new OrderException(category.getName(),"订单错误,佣金比订单总价高!");
         }
         //创建订单
@@ -192,13 +197,41 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setRemark(remark);
         order.setIsPay(false);
         order.setTotalMoney(totalMoney);
+        order.setActualMoney(totalMoney);
         order.setStatus(OrderStatusEnum.NON_PAYMENT.getStatus());
         order.setCommissionMoney(commissionMoney);
         order.setCreateTime(new Date());
         order.setUpdateTime(new Date());
-        create(order);
+        //使用优惠券
+        Coupon coupon = null;
+        if(StringUtils.isNotBlank(couponNo)){
+            coupon = getCoupon(couponNo);
+            if(coupon==null){
+                throw new ServiceErrorException("该优惠券不能使用!");
+            }
+            order.setCouponNo(coupon.getCouponNo());
+            order.setCouponMoney(coupon.getDeduction());
+            //判断优惠券金额是否大于订单总额
+            if(coupon.getDeduction().compareTo(order.getTotalMoney())>=0){
+                order.setActualMoney(new BigDecimal(0));
+                order.setCouponMoney(order.getTotalMoney());
+            }else{
+                BigDecimal actualMoney = order.getTotalMoney().subtract(coupon.getDeduction());
+                order.setActualMoney(actualMoney);
+            }
+        }
         if(order.getUserId().equals(order.getServiceUserId())){
             throw new ServiceErrorException("不能给自己下单哦!");
+        }
+        //创建订单
+        create(order);
+        //更新优惠券使用状态
+        if(coupon!=null){
+            coupon.setOrderNo(order.getOrderNo());
+            coupon.setIsUse(true);
+            coupon.setUseTime(new Date());
+            coupon.setUseIp(userIp);
+            couponService.update(coupon);
         }
         //创建订单商品
         OrderProduct orderProduct = new OrderProduct();
@@ -216,6 +249,23 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         orderVO.setOrderProduct(orderProduct);
         return orderVO;
     }
+
+
+    /**
+     * 使用优惠券
+     * @return
+     */
+    public Coupon getCoupon(String couponCode){
+        Coupon coupon =couponService.findByCouponNo(couponCode);
+        //判断是否是自己的优惠券
+        userService.isCurrentUser(coupon.getUserId());
+        //判断该优惠券是否可用
+        if(!couponService.couponIsAvailable(coupon)){
+            return null;
+        }
+        return coupon;
+    }
+
 
     /**
      * 订单支付
@@ -238,6 +288,9 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         orderMoneyDetailsService.create(order.getOrderNo(),order.getUserId(), DetailsEnum.ORDER_PAY,orderMoney);
         //记录平台流水
         platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_PAY,order.getOrderNo(),order.getTotalMoney());
+        if(order.getCouponNo()!=null){
+            platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.COUPON_DEDUCTION,order.getOrderNo(),order.getCouponMoney().negate());
+        }
         //发送短信通知给陪玩师
         User server = userService.findById(order.getServiceUserId());
         SMSUtil.sendOrderReceivingRemind(server.getMobile(),order.getName());
@@ -291,7 +344,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         update(order);
         if(order.getIsPay()){
             // 全额退款用户
-            orderRefund(order.getOrderNo(),order.getUserId(),order.getTotalMoney());
+            orderRefund(order.getOrderNo(),order.getUserId(),order.getActualMoney());
         }
         return orderConvertVo(order);
     }
@@ -307,7 +360,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         update(order);
         if(order.getIsPay()){
             // 全额退款用户
-            orderRefund(order.getOrderNo(),order.getUserId(),order.getTotalMoney());
+            orderRefund(order.getOrderNo(),order.getUserId(),order.getActualMoney());
         }
         return orderConvertVo(order);
     }
@@ -332,7 +385,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         update(order);
         if(order.getIsPay()){
             // 全额退款用户
-            orderRefund(order.getOrderNo(),order.getUserId(),order.getTotalMoney());
+            orderRefund(order.getOrderNo(),order.getUserId(),order.getActualMoney());
         }
         return orderConvertVo(order);
     }
@@ -415,7 +468,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
 
 
     /**
-     * 用户验收订单
+     * 系统完成订单
      * @param orderNo
      * @return
      */
@@ -446,8 +499,6 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         moneyDetailsService.orderSave(serverMoney,order.getServiceUserId(),order.getOrderNo());
         //平台记录支付打手流水
         platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_SHARE_PROFIT,order.getOrderNo(),serverMoney.negate());
-        //平台记录收入流水
-        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_SHARE_PROFIT,order.getOrderNo(),order.getCommissionMoney());
     }
 
 
@@ -458,7 +509,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      * @return
      */
     public OrderVO adminHandleCompleteOrder(String orderNo){
-        log.info("管理员强制完成订单 (大款给打手)orderNo:{}",orderNo);
+        log.info("管理员强制完成订单 (打款给打手)orderNo:{}",orderNo);
         Order order =  findByOrderNo(orderNo);
         if(!order.getStatus().equals(OrderStatusEnum.APPEALING.getStatus())){
             throw new OrderException(order.getOrderNo(),"只有申诉中的订单才能操作!");
@@ -488,13 +539,13 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setCompleteTime(new Date());
         update(order);
         if(order.getIsPay()){
-            orderRefund(order.getOrderNo(),order.getUserId(),order.getTotalMoney());
+            orderRefund(order.getOrderNo(),order.getUserId(),order.getActualMoney());
         }
         return orderConvertVo(order);
     }
 
     /**
-     * 管理员协商处理订单管理员协商处理订单
+     * 管理员协商处理订单
      * @param orderNo
      * @return
      */
@@ -510,7 +561,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setCommissionMoney(order.getTotalMoney());
         update(order);
         //订单协商,全部金额记录平台流水
-        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_NEGOTIATE,order.getOrderNo(),order.getCommissionMoney());
+        //platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_NEGOTIATE,order.getOrderNo(),order.getCommissionMoney());
         return orderConvertVo(order);
     }
 
@@ -518,22 +569,23 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      * 订单退款
      * @param orderNo
      * @param userId
-     * @param totalMoney
+     * @param orderMoney
      */
-    public void orderRefund(String orderNo,Integer userId,BigDecimal totalMoney){
+    public void orderRefund(String orderNo,Integer userId,BigDecimal orderMoney){
         Order order = findByOrderNo(orderNo);
         if(!order.getIsPay()){
             throw new OrderException(orderNo,"未支付订单不允许退款!");
         }
         try {
-            payService.refund(orderNo,totalMoney);
+            payService.refund(orderNo,orderMoney);
         }catch (Exception e){
             log.error("退款失败{}",orderNo,e.getMessage());
             throw new OrderException(orderNo,"订单退款失败!");
         }
         //记录订单流水
-        orderMoneyDetailsService.create(orderNo,userId,DetailsEnum.ORDER_USER_CANCEL,totalMoney.negate());
-        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_REFUND,orderNo,totalMoney.negate());
+        orderMoneyDetailsService.create(orderNo,userId,DetailsEnum.ORDER_USER_CANCEL,orderMoney.negate());
+        //记录平台流水
+        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_REFUND,orderNo,orderMoney.negate());
 
     }
 
@@ -587,6 +639,15 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         }
         return orderList.get(0);
     }
+
+
+    @Override
+    public Boolean isOldUser(Integer userId){
+        OrderVO orderVO = new OrderVO();
+        orderVO.setUserId(userId);
+        return orderDao.countByParameter(orderVO)>0;
+    }
+
 
     private OrderVO orderConvertVo(Order order){
         OrderVO orderVO = new OrderVO();

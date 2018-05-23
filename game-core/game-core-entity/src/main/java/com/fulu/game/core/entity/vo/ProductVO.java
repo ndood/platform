@@ -3,6 +3,7 @@ package com.fulu.game.core.entity.vo;
 
 import com.fulu.game.core.entity.Product;
 import lombok.Data;
+import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
@@ -16,6 +17,7 @@ import java.util.List;
  * @date 2018-04-24 15:23:43
  */
 @Data
+@ToString
 public class ProductVO  extends Product {
 
     private Boolean onLine;
@@ -25,5 +27,6 @@ public class ProductVO  extends Product {
     private Date startTime;
 
     private List<String> techTags;
+
 
 }

@@ -1,8 +1,6 @@
 package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.enums.OrderStatusEnum;
-import com.fulu.game.common.enums.exception.OrderExceptionEnums;
-import com.fulu.game.common.enums.exception.UserExceptionEnums;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
@@ -81,7 +79,7 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
         commentDao.update(comment);
         User serverUser = userService.findById(serverUserId);
         if (null == serverUser){
-            throw new UserException(UserExceptionEnums.USER_NOT_EXIST_EXCEPTION);
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
         serverUser.setScoreAvg(scoreAvg);
         userService.update(serverUser);

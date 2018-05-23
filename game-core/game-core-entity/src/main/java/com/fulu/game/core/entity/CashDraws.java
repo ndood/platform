@@ -38,16 +38,10 @@ public class CashDraws implements Serializable {
 	//申请单操作人
 	private String operator;
 	//提现单号（处理成功后生成）
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private String cashNo;
 	//处理时间
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date processTime;
 
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-	public Date getCreateTime(){
-		return createTime;
-	}
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-	public Date getProcessTime(){
-		return processTime;
-	}
 }

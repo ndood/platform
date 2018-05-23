@@ -1,8 +1,6 @@
 package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.enums.MoneyOperateTypeEnum;
-import com.fulu.game.common.enums.exception.CashExceptionEnums;
-import com.fulu.game.common.enums.exception.UserExceptionEnums;
 import com.fulu.game.common.exception.CashException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
@@ -69,7 +67,7 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
     public MoneyDetails save(MoneyDetailsVO moneyDetailsVO) {
         User user = userService.findByMobile(moneyDetailsVO.getMobile());
         if (null == user) {
-            throw new UserException(UserExceptionEnums.USER_NOT_EXIST_EXCEPTION);
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
         //加钱之前该用户的零钱
         BigDecimal balance = user.getBalance();
@@ -102,11 +100,11 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
     @Override
     public MoneyDetails orderSave(BigDecimal money, Integer targetId, String orderNo) {
         if (money.compareTo(BigDecimal.ZERO) == -1) {
-            throw new CashException(CashExceptionEnums.CASH_NEGATIVE_EXCEPTION);
+            throw new CashException(CashException.ExceptionCode.CASH_NEGATIVE_EXCEPTION);
         }
         User user = userService.findById(targetId);
         if (null == user) {
-            throw new UserException(UserExceptionEnums.USER_NOT_EXIST_EXCEPTION);
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
         //加钱之前该用户的零钱
         BigDecimal balance = user.getBalance();

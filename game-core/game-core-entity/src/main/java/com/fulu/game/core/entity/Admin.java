@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 /**
@@ -22,23 +23,17 @@ public class Admin implements Serializable {
 	//用户名
 	private String username;
 	//密码
+	@JsonIgnore
 	private String password;
 	//密码盐
+	@JsonIgnore
 	private String salt;
 	//状态(0失效,1启用)
 	private Integer status;
 	//生成时间
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date createTime;
 	//修改时间
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date updateTime;
-
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-	public Date getCreateTime(){
-		return createTime;
-	}
-
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-	public Date getUpdateTime(){
-		return updateTime;
-	}
 }

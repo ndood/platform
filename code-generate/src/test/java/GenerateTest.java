@@ -13,12 +13,12 @@ public class GenerateTest {
 
     @Test
     public void test1() {
-        codeGenerateForTable("wangbin","t_sys_config");
+        codeGenerateForTable("wangbin","t_coupon_grant_user");
     }
 
     @Test
     public void test2() {
-        codeGenerateForTable("yanbiao","t_user_comment");
+        codeGenerateForTable("yanbiao","t_sharing");
     }
 
 

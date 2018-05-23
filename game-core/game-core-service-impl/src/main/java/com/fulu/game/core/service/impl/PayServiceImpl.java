@@ -42,15 +42,22 @@ public class PayServiceImpl implements PayService {
         if (!order.getIsPay() && !order.getStatus().equals(OrderStatusEnum.NON_PAYMENT.getStatus())) {
             throw new OrderException(orderNo, "已支付的订单不能支付!");
         }
+
         WxPayUnifiedOrderRequest orderRequest = new WxPayUnifiedOrderRequest();
         orderRequest.setBody(order.getName());
         orderRequest.setOutTradeNo(order.getOrderNo());
-        Integer totalFee = (order.getTotalMoney().multiply(new BigDecimal(100))).intValue();
+        Integer totalFee = (order.getActualMoney().multiply(new BigDecimal(100))).intValue();
+        //如果订单金额为0,则直接调用支付成功接口
+        if(totalFee.equals(0)){
+            orderService.payOrder(orderNo,order.getActualMoney());
+            return null;
+        }
         orderRequest.setTotalFee(totalFee);//元转成分
         orderRequest.setOpenid(user.getOpenId());
         orderRequest.setSpbillCreateIp(requestIp);
         orderRequest.setTimeStart(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
         try {
+            log.info("订单支付:orderNo:{};order:{};requestIp:{};",orderNo,order,requestIp);
             WxPayMpOrderResult result = wxPayService.createOrder(orderRequest);
             return result;
         } catch (Exception e) {
@@ -69,7 +76,8 @@ public class PayServiceImpl implements PayService {
             orderService.payOrder(orderNo, new BigDecimal(totalYuan));
             return WxPayNotifyResponse.success("处理成功!");
         } catch (Exception e) {
-            log.error("微信回调结果异常,异常原因{}", e.getMessage());
+            log.error("回调报文:{}", xmlResult);
+            log.error("微信回调结果异常,异常原因:", e);
             return WxPayNotifyResponse.fail(e.getMessage());
         }
     }
@@ -80,6 +88,10 @@ public class PayServiceImpl implements PayService {
         Integer refunFee = totalFee;
         if(refundMoney!=null){
             refunFee = (refundMoney.multiply(new BigDecimal(100))).intValue();
+        }
+        log.info("退款:orderNo:{};refunFee:{};",orderNo,refunFee);
+        if(refunFee.equals(0)){
+            return true;
         }
         WxPayRefundRequest request = new WxPayRefundRequest();
         request.setOutTradeNo(orderNo);

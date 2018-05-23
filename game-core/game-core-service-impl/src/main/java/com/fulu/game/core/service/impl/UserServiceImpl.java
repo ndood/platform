@@ -4,7 +4,6 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.AuthStatusEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.UserTypeEnum;
-import com.fulu.game.common.enums.exception.UserExceptionEnums;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SubjectUtil;
@@ -16,7 +15,7 @@ import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
-import org.apache.commons.collections.CollectionUtils;
+import com.xiaoleilu.hutool.util.CollectionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +40,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         UserVO userVO = new UserVO();
         userVO.setMobile(mobile);
         List<User> users = userDao.findByParameter(userVO);
-        if (users.isEmpty()) {
+        if (CollectionUtil.isEmpty(users)) {
             return null;
         }
         return users.get(0);
@@ -52,7 +51,10 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         UserVO userVO = new UserVO();
         userVO.setOpenId(openId);
         List<User> users = userDao.findByParameter(userVO);
-        return users.size() > 0 ? users.get(0) : null;
+        if (CollectionUtil.isEmpty(users)) {
+            return null;
+        }
+        return users.get(0);
     }
 
     @Override
@@ -60,7 +62,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         UserVO userVO = new UserVO();
         userVO.setImId(imId);
         List<User> userList = userDao.findByParameter(userVO);
-        if (CollectionUtils.isEmpty(userList)) {
+        if (CollectionUtil.isEmpty(userList)) {
             return null;
         }
         return userList.get(0);
@@ -71,11 +73,11 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         String[] imIdArr = imIds.split(Constant.DEFAULT_SPLIT_SEPARATOR);
         List<User> userList = new ArrayList<User>();
         UserVO userVO = new UserVO();
-        if (imIdArr.length>0){
-            for (int i=0; i< imIdArr.length;i++) {
+        if (imIdArr.length > 0) {
+            for (int i = 0; i < imIdArr.length; i++) {
                 userVO.setImId(imIdArr[i]);
                 List<User> users = userDao.findByParameter(userVO);
-                if (users.size()>0){
+                if (users.size() > 0) {
                     User user = users.get(0);
                     userList.add(user);
                 }
@@ -102,7 +104,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public PageInfo<User> list(UserVO userVO, Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize, userVO.getOrderBy());
+        PageHelper.startPage(pageNum, pageSize, "create_time DESC");
         List<User> list = userDao.findByParameter(userVO);
         return new PageInfo(list);
     }
@@ -127,7 +129,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     public User getCurrentUser() {
         Object userObj = SubjectUtil.getCurrentUser();
         if (null == userObj) {
-            throw new UserException(UserExceptionEnums.USER_NOT_EXIST_EXCEPTION);
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
         if (userObj instanceof User) {
             return (User) userObj;
@@ -147,7 +149,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Override
     public Boolean isCurrentUser(Integer userId) {
         User currentUser = getCurrentUser();
-        if(currentUser.getId().equals(userId)){
+        if (currentUser.getId().equals(userId)) {
             return true;
         }
         throw new ServiceErrorException("用户不匹配!");

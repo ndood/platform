@@ -18,6 +18,7 @@
         <module>game-core-entity</module>
         <module>game-core-service</module>
         <module>game-core-service-impl</module>
+        <module>game-core-search</module>
     </modules>
 
 
