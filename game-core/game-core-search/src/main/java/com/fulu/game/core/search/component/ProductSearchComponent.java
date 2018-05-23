@@ -1,13 +1,13 @@
 package com.fulu.game.core.search.component;
 
 import com.fulu.game.common.properties.Config;
-import com.fulu.game.core.search.domain.ProductDoc;
+import com.fulu.game.core.search.domain.ProductShowCaseDoc;
 import io.searchbox.client.JestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProductSearchComponent extends AbsSearchComponent<ProductDoc>{
+public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDoc,Integer>{
 
 
     public final static String INDEX_TYPE = "product";
@@ -16,6 +16,18 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductDoc>{
     private JestClient jestClient;
     @Autowired
     private Config configProperties;
+
+
+    public boolean saveProductIndex(ProductShowCaseDoc productShowCaseDoc){
+        ProductShowCaseDoc sourceProductDoc = searchById(productShowCaseDoc.getId(),ProductShowCaseDoc.class);
+        if(sourceProductDoc==null){
+            return createIndex(productShowCaseDoc);
+        }else{
+            return updateIndex(productShowCaseDoc);
+        }
+    }
+
+
 
 
     @Override

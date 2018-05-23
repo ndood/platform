@@ -1,5 +1,5 @@
 
-import com.fulu.game.core.search.domain.ProductDoc;
+import com.fulu.game.core.search.domain.ProductShowCaseDoc;
 import com.google.gson.GsonBuilder;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
@@ -26,16 +26,6 @@ public class SearchTest {
     }
 
 
-    @Test
-    public void createIndex() throws Exception {
-        JestClient jestClient = SearchTest.getJestClient();
-        ProductDoc productDoc1 = new ProductDoc();
-        productDoc1.setName("王者荣耀");
-        productDoc1.setId(1);
-        Index index1 = new Index.Builder(productDoc1).index("product-store").type("product").build();
-        JestResult jestResult1 = jestClient.execute(index1);
-        System.out.println(jestResult1.getJsonString());
-    }
 
 
 }

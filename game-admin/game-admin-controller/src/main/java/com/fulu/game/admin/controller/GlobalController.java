@@ -33,14 +33,6 @@ public class GlobalController extends BaseController{
     }
 
 
-    @PostMapping(value = "temp/add/data")
-    public Result addProdcutData(Integer techAuthId,
-                                 BigDecimal price,
-                                 Integer unitId){
-        Product product = productService.tempCreate(techAuthId, price, unitId);
-        return Result.success().data(product);
-    }
-
 
 
 }

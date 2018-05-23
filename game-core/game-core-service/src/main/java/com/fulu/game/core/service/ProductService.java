@@ -29,14 +29,6 @@ public interface ProductService extends ICommonService<Product,Integer>{
      */
     Product create(Integer techAuthId,BigDecimal price,Integer unitId);
 
-    /**
-     * 添加临时导商品的接口
-     * @param techAuthId
-     * @param price
-     * @param unitId
-     * @return
-     */
-    Product tempCreate(Integer techAuthId, BigDecimal price, Integer unitId);
 
     /**
      * 修改接单方式
@@ -73,21 +65,6 @@ public interface ProductService extends ICommonService<Product,Integer>{
      */
     void stopOrderReceiving();
 
-    /**
-     * 判断商品是否是开始接单状态
-     * @param productId
-     * @return
-     */
-    Boolean isProductStartOrderReceivingStatus(Integer productId);
-
-
-    /**
-     * 判断陪玩师是否是开始接单状态
-     * @param userId
-     * @return
-     */
-    Boolean isUserStartOrderReceivingStatus(Integer userId);
-
 
     /**
      * 查询商品详情页
@@ -114,4 +91,19 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * @return
      */
     PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId,Integer gender,Integer pageNum,Integer pageSize,String orderBy);
+
+    /**
+     * 判断商品是否是开始接单状态
+     * @param productId
+     * @return
+     */
+    Boolean isProductStartOrderReceivingStatus(Integer productId);
+
+    /**
+     * 判断陪玩师是否是开始接单状态
+     * @param userId
+     * @return
+     */
+    Boolean isUserStartOrderReceivingStatus(Integer userId);
+
 }
