@@ -23,7 +23,7 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
         if(sourceProductDoc==null){
             return createIndex(productShowCaseDoc);
         }else{
-            return updateIndex(productShowCaseDoc);
+            return updateIndex(productShowCaseDoc,productShowCaseDoc.getId());
         }
     }
 
