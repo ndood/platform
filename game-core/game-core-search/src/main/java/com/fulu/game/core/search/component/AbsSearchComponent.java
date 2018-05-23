@@ -19,7 +19,7 @@ public abstract class AbsSearchComponent<T,K> {
      * @param t
      * @return
      */
-    public Boolean createIndex(T t){
+    public boolean createIndex(T t){
         try {
             Index index = new Index.Builder(t)
                     .index(getIndexDB())
@@ -38,7 +38,7 @@ public abstract class AbsSearchComponent<T,K> {
      * @param t
      * @return
      */
-    public Boolean updateIndex(T t){
+    public boolean updateIndex(T t){
         try {
             Update update = new Update.Builder(t)
                     .index(getIndexDB())
@@ -80,7 +80,6 @@ public abstract class AbsSearchComponent<T,K> {
      */
     public T searchById(K id,Class<T> clazz){
         try {
-
             Get get= new Get.Builder(getIndexDB(), String.valueOf(id)).type(getIndexType()).build();
             DocumentResult result = getJestClient().execute(get);
             return result.getSourceAsObject(clazz);

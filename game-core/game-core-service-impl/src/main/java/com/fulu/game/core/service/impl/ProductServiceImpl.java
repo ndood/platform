@@ -8,20 +8,21 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.ProductDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.*;
+import com.fulu.game.core.search.component.ProductSearchComponent;
+import com.fulu.game.core.search.domain.ProductShowCaseDoc;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.list.PredicatedList;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Service
@@ -46,6 +47,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     private OrderService orderService;
     @Autowired
     private SalesModeService salesModeService;
+    @Autowired
+    private ProductSearchComponent productSearchComponent;
+
 
     @Override
     public ICommonDao<Product, Integer> getDao() {
@@ -86,43 +90,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         product.setUserId(userTechAuth.getUserId());
         product.setPrice(price);
         product.setStatus(false);
-        product.setCreateTime(new Date());
-        product.setUpdateTime(new Date());
-        create(product);
-        return product;
-    }
-
-
-
-    public Product tempCreate(Integer techAuthId, BigDecimal price, Integer unitId){
-        UserTechAuth userTechAuth = userTechAuthService.findById(techAuthId);
-        if(userTechAuth==null){
-            throw new ServiceErrorException("不能设置该技能接单!");
-        }
-        User user = userService.findById(userTechAuth.getUserId());
-        //查询销售方式的单位
-        SalesMode salesMode = salesModeService.findById(unitId);
-        Category category = categoryService.findById(userTechAuth.getCategoryId());
-        if(!salesMode.getCategoryId().equals(category.getId())){
-            throw new ServiceErrorException("接单方式单位不匹配!");
-        }
-        List<Product> products = findProductByUserAndSalesMode(user.getId(),userTechAuth.getId(),unitId);
-        if(products.size()>0){
-            throw new ServiceErrorException("不能设置同样单位的技能!");
-        }
-        Product product = new Product();
-        product.setCategoryId(userTechAuth.getCategoryId());
-        product.setGender(user.getGender());
-        product.setCategoryIcon(category.getIcon());
-        product.setProductName(userTechAuth.getCategoryName());
-        product.setDescription(userTechAuth.getDescription());
-        product.setTechAuthId(userTechAuth.getId());
-        product.setSalesModeId(salesMode.getId());
-        product.setUnit(salesMode.getName());
-        product.setSalesModeRank(salesMode.getRank()==null?0:salesMode.getRank());
-        product.setUserId(userTechAuth.getUserId());
-        product.setPrice(price);
-        product.setStatus(true);
         product.setCreateTime(new Date());
         product.setUpdateTime(new Date());
         create(product);
@@ -241,6 +208,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                 throw new ServiceErrorException("开始接单操作失败!");
             }
         }
+        //添加商品到首页
+        batchCreateUserProduct(user.getId());
     }
 
 
@@ -259,6 +228,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                 throw new ServiceErrorException("开始接单操作失败!");
             }
         }
+        //修改首页商品的状态
+        batchCreateUserProduct(user.getId());
     }
 
     /**
@@ -352,6 +323,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     }
 
 
+
     /**
      * 查找用户其他的商品
      * @param userId
@@ -386,6 +358,86 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         }
         return productVOS;
     }
+
+
+    /**
+     * 为用户所有商品添加索引
+     * @param userId
+     */
+    public void batchCreateUserProduct(Integer userId){
+        List<Product> products = findByUserId(userId);
+        batchCreateProductIndex(products);
+    }
+
+
+    /**
+     * 批量创建商品索引
+     * @param products
+     */
+    private void batchCreateProductIndex(List<Product> products){
+        List<Product> showIndexProducts = getShowIndexProduct(products);
+        for(Product product : products){
+            if(showIndexProducts.contains(product)){
+                createProductIndex(product,true);
+            }else{
+                createProductIndex(product,false);
+            }
+        }
+    }
+
+    /**
+     * 查询那些可以在首页显示的商品
+     * @param products
+     * @return
+     */
+    private List<Product> getShowIndexProduct(List<Product> products){
+        Map<Integer,List<Product>> categoryProductMap = new HashMap<>();
+        for(Product product :products){
+            Integer categoryId = product.getCategoryId();
+            if(categoryProductMap.containsKey(categoryId)){
+                categoryProductMap.get(categoryId).add(product);
+            }else{
+                categoryProductMap.put(categoryId, Lists.newArrayList(product));
+            }
+        }
+        List<Product> showIndexProducts = new ArrayList<>();
+        categoryProductMap.forEach((k,v)->{
+           List<Product> waitProducts = new ArrayList<>();
+           v.forEach((p)->{
+               if(p.getStatus()){
+                   waitProducts.add(p);
+               }
+           });
+           if(!waitProducts.isEmpty()){
+               waitProducts.sort((Product p1, Product p2) -> p1.getSalesModeRank().compareTo(p2.getSalesModeRank()));
+               showIndexProducts.add(waitProducts.get(0));
+           }
+        });
+        return showIndexProducts;
+    }
+
+
+    /**
+     * 创建商品索引
+     * @param product
+     * @param isIndexShow
+     * @return
+     */
+    private ProductShowCaseDoc createProductIndex(Product product,Boolean isIndexShow){
+        ProductShowCaseDoc productShowCaseDoc = new ProductShowCaseDoc();
+        BeanUtil.copyProperties(product,productShowCaseDoc);
+        UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(productShowCaseDoc.getUserId(),false,false,true,false);
+        productShowCaseDoc.setNickName(userInfoVO.getNickName());
+        productShowCaseDoc.setGender(userInfoVO.getGender());
+        productShowCaseDoc.setMainPhoto(userInfoVO.getMainPhotoUrl());
+        productShowCaseDoc.setCity(userInfoVO.getCity());
+        productShowCaseDoc.setIsIndexShow(isIndexShow);
+        productShowCaseDoc.setPersonTags(userInfoVO.getTags());
+        productShowCaseDoc.setOnLine(isProductStartOrderReceivingStatus(productShowCaseDoc.getId()));
+        productSearchComponent.saveProductIndex(productShowCaseDoc);
+        return productShowCaseDoc;
+    }
+
 
     /**
      *  判断商品是否是开始接单状态
