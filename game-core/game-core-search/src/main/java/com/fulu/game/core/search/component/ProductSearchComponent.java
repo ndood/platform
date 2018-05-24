@@ -42,7 +42,6 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
 
     /**
      * 保存商品索引
-     *
      * @param productShowCaseDoc
      * @return
      */
@@ -143,7 +142,7 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
             FieldSortBuilder sorter = SortBuilders.fieldSort("createTime").order(SortOrder.DESC);
             searchSourceBuilder.sort(sorter);
         }else if("sales".equals(orderBy)){
-            FieldSortBuilder sorter = SortBuilders.fieldSort("salesVolume").order(SortOrder.DESC);
+            FieldSortBuilder sorter = SortBuilders.fieldSort("orderCount").order(SortOrder.DESC);
             searchSourceBuilder.sort(sorter);
         }
 

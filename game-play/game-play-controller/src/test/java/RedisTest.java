@@ -1,3 +1,4 @@
+import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.play.PlayApplication;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -21,6 +22,8 @@ public class RedisTest {
 
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenServiceImpl;
 
     /**
      * 测试key-String
@@ -31,14 +34,7 @@ public class RedisTest {
         //StringRedisSerializer
         //Jackson2JsonRedisSerializer
 
-        RedisSerializer<String> redisSerializer = new StringRedisSerializer();
-        redisTemplate.setKeySerializer(redisSerializer);
-        redisTemplate.setValueSerializer(redisSerializer);
-
-        String key = "a";
-        String value = "123";
-        ValueOperations<String, Object> valueOps = redisTemplate.opsForValue();
-        valueOps.set(key, value);
+        redisOpenServiceImpl.set("xxada","123",10);
     }
 
     /**

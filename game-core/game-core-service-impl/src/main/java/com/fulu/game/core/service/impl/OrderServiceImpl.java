@@ -163,6 +163,9 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         return  count(serverId,statusList,startTime,endTime);
     }
 
+
+
+
     @Override
     public int allOrderCount(Integer serverId) {
         Integer[] statusList = OrderStatusGroupEnum.ALL_NORMAL_COMPLETE.getStatusList();
