@@ -3,6 +3,10 @@ package com.fulu.game.core.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.google.common.base.CharMatcher;
 import lombok.Data;
 import lombok.ToString;
 
@@ -14,7 +18,6 @@ import lombok.ToString;
  * @date 2018-04-27 16:27:58
  */
 @Data
-@ToString
 public class Product implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -49,4 +52,31 @@ public class Product implements Serializable {
 	//修改时间
 	private Date updateTime;
 
+
+	@Override
+	public String toString() {
+		String toStr="Product{" +
+				"id=" + id +
+				", userId=" + userId +
+				", gender=" + gender +
+				", categoryIcon='" + categoryIcon + '\'' +
+				", categoryId=" + categoryId +
+				", productName='" + productName + '\'' +
+				", description='" + description + '\'' +
+				", techAuthId=" + techAuthId +
+				", price=" + price +
+				", unit='" + unit + '\'' +
+				", salesModeId=" + salesModeId +
+				", salesModeRank=" + salesModeRank +
+				", status=" + status +
+				", createTime=" + createTime +
+				", updateTime=" + updateTime +
+				'}';
+		Pattern pattern = Pattern.compile("(\r\n|\r|\n|\n\r)");
+		Matcher m = pattern.matcher(toStr);
+		if (m.find()) {
+			toStr = m.replaceAll("");
+		}
+		return toStr;
+	}
 }
