@@ -41,6 +41,11 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService{
         }
     }
 
+
+
+
+
+
     @Override
     public String pushWechatTemplateMsg(String content,
                                         String acceptImId,
@@ -74,7 +79,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService{
             throw new ServiceErrorException("推送消息出错!");
         }
         //推送状态缓存两个小时
-        redisOpenService.set(RedisKeyEnum.WX_TEMPLATE_MSG.generateKey(imId+"|"+acceptImId),imId+"|"+acceptImId, Constant.TIME_HOUR_TOW);
+        redisOpenService.set(RedisKeyEnum.WX_TEMPLATE_MSG.generateKey(imId+"|"+acceptImId),imId+"|"+acceptImId, Constant.TIME_MINUTES_FIFTEEN);
         return "消息推送成功!";
     }
 
