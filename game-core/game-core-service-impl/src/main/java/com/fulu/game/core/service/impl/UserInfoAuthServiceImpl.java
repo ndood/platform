@@ -1,20 +1,16 @@
 package com.fulu.game.core.service.impl;
 
 
-import com.fulu.game.common.enums.AuthStatusEnum;
-import com.fulu.game.common.enums.FileTypeEnum;
-import com.fulu.game.common.enums.UserInfoFileTypeEnum;
-import com.fulu.game.common.enums.UserTypeEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
-import com.fulu.game.core.entity.vo.TagVO;
-import com.fulu.game.core.entity.vo.UserInfoAuthVO;
-import com.fulu.game.core.entity.vo.UserInfoVO;
+import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
+import com.xiaoleilu.hutool.util.CollectionUtil;
 import com.xiaoleilu.hutool.util.ObjectUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +40,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
     private OrderService orderService;
     @Autowired
     private UserTechAuthService utaService;
+    @Autowired
+    private SharingService sharingService;
 
     @Override
     public ICommonDao<UserInfoAuth, Integer> getDao() {
@@ -180,7 +178,37 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         return userInfo;
     }
 
+    @Override
+    public UserInfoVO findUserTechCardByUserId(Integer userId,Integer techAuthId){
+        User user = userService.findById(userId);
+        if(null == user){
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+        UserInfoVO userInfo = new UserInfoVO();
+        userInfo.setUserId(userId);
+        userInfo.setType(user.getType());
+        userInfo.setAge(user.getAge());
+        userInfo.setNickName(user.getNickname());
+        userInfo.setGender(user.getGender());
 
+        //个人主图
+        UserInfoAuth userInfoAuth = findByUserId(userId);
+        if (null != userInfoAuth){
+            userInfo.setMainPhotoUrl(userInfoAuth.getMainPicUrl());
+        }
+
+        //查询个人标签(外貌和声音)
+        List<PersonTag> personTagList = personTagService.findByUserId(userId);
+        List<String> tags = new ArrayList<>();
+        for(PersonTag personTag : personTagList){
+            tags.add(personTag.getName());
+        }
+        userInfo.setTags(tags);
+        //查询认证的技能
+        UserTechAuthVO userTechAuthVO = utaService.findTechAuthVOById(techAuthId);
+        userInfo.setUserTechAuthVO(userTechAuthVO);
+        return userInfo;
+    }
 
 
     @Override

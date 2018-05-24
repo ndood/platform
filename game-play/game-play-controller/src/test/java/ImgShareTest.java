@@ -11,8 +11,8 @@ public class ImgShareTest {
     private BufferedImage image;
     private int imageWidth = 400;  //图片的宽度
     private int imageHeight = 600; //图片的高度
-    private Font FONT_SONG_BOLD_16 = new Font("宋体", Font.BOLD, 16);
-    private Font FONT_SONG_PLAIN_14 = new Font("宋体", Font.PLAIN, 14);
+    private Font FONT_SONG_BOLD_16 = new Font("黑体", Font.BOLD, 16);
+    private Font FONT_SONG_PLAIN_14 = new Font("黑体", Font.PLAIN, 14);
 
     public void createImage(String fileLocation) {
         BufferedOutputStream bos = null;
@@ -74,7 +74,7 @@ public class ImgShareTest {
         int personLen = getContentLength(personContent,person);
         int ageLen = getContentLength(ageContent,person);
         person.setFont(FONT_SONG_PLAIN_14);
-        person.setColor(new Color(0xFF1F6E));
+        person.setColor(new Color(0xFF1562));
         person.fillRect(personLen+10, person2Top+5, ageLen, H_person/2);
         person.setColor(Color.white);
         person.drawString(ageContent, personLen+10, person2Top + H_person / 2);
@@ -118,7 +118,7 @@ public class ImgShareTest {
         Graphics2D line = image.createGraphics();
         int lineWidth = imageWidth - 20;
         int line2Top = tech2Top + H_tech + 10;
-        line.setColor(Color.black);
+        line.setColor(Color.DARK_GRAY);
         line.drawRect(10, line2Top, lineWidth, 0);
 
         //***********小程序码和文案

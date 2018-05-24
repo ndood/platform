@@ -38,4 +38,11 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth,Integer
      * @return
      */
     UserInfoVO findUserCardByUserId(Integer userId,Boolean hasPhotos,Boolean hasVoice,Boolean hasTags,Boolean hasTechs);
+
+    /**
+     * 查询用户技能分享名片信息
+     * @return
+     */
+    UserInfoVO findUserTechCardByUserId(Integer userId,Integer categoryId);
+
 }
