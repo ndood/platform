@@ -52,7 +52,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     private PayService payService;
     @Autowired
     private CouponService couponService;
-
+    @Autowired
+    private AdminService adminService;
 
     @Override
     public ICommonDao<Order, Integer> getDao() {
@@ -509,7 +510,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      * @return
      */
     public OrderVO adminHandleCompleteOrder(String orderNo){
-        log.info("管理员强制完成订单 (打款给打手)orderNo:{}",orderNo);
+        Admin admin = adminService.getCurrentUser();
+        log.info("管理员强制完成订单 (打款给打手)orderNo:{};adminId:{};adminName:{};",orderNo,admin.getId(),admin.getName());
         Order order =  findByOrderNo(orderNo);
         if(!order.getStatus().equals(OrderStatusEnum.APPEALING.getStatus())){
             throw new OrderException(order.getOrderNo(),"只有申诉中的订单才能操作!");
@@ -529,7 +531,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      * @return
      */
     public OrderVO adminHandleRefundOrder(String orderNo){
-        log.info("管理员退款用户orderNo:{}",orderNo);
+        Admin admin = adminService.getCurrentUser();
+        log.info("管理员退款用户orderNo:{};adminId:{};adminName:{};",orderNo,admin.getId(),admin.getName());
         Order order =  findByOrderNo(orderNo);
         if(!order.getStatus().equals(OrderStatusEnum.APPEALING.getStatus())){
             throw new OrderException(order.getOrderNo(),"只有申诉中的订单才能操作!");
@@ -551,6 +554,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      */
     @Override
     public OrderVO adminHandleNegotiateOrder(String orderNo) {
+        Admin admin = adminService.getCurrentUser();
+        log.info("管理员协商处理订单orderNo:{};adminId:{};adminName:{};",orderNo,admin.getId(),admin.getName());
         Order order =  findByOrderNo(orderNo);
         if(!order.getStatus().equals(OrderStatusEnum.APPEALING.getStatus())){
             throw new OrderException(order.getOrderNo(),"只有申诉中的订单才能操作!");

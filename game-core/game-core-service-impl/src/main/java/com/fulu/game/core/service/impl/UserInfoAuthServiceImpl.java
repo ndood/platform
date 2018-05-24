@@ -16,6 +16,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import com.xiaoleilu.hutool.util.ObjectUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import com.fulu.game.core.dao.UserInfoAuthDao;
 
 
 @Service
+@Slf4j
 public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integer> implements UserInfoAuthService {
 
     @Autowired
@@ -120,6 +122,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
     public UserInfoVO findUserCardByUserId(Integer userId,Boolean hasPhotos,Boolean hasVoice,Boolean hasTags,Boolean hasTechs){
         User user = userService.findById(userId);
         if(null == user){
+            log.error("用户不存在:{}",userId);
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
         UserInfoVO userInfo = new UserInfoVO();
