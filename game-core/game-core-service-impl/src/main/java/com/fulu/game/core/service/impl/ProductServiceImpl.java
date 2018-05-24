@@ -47,6 +47,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Autowired
     private SalesModeService salesModeService;
 
+
     @Override
     public ICommonDao<Product, Integer> getDao() {
         return productDao;
@@ -296,6 +297,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return serverCardVO;
     }
 
+
     @Override
     public SimpleProductVO findSimpleProductByProductId(Integer productId) {
         Product product = findById(productId);
@@ -345,6 +347,10 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             showCaseVO.setMainPhoto(userInfoVO.getMainPhotoUrl());
             showCaseVO.setCity(userInfoVO.getCity());
             showCaseVO.setPersonTags(userInfoVO.getTags());
+            UserTechInfo userTechInfo =userTechAuthService.findDanInfo(showCaseVO.getTechAuthId());
+            if(userTechInfo!=null){
+                showCaseVO.setDan(userTechInfo.getValue());
+            }
             showCaseVO.setOnLine(isProductStartOrderReceivingStatus(showCaseVO.getId()));
         }
         PageInfo page = new PageInfo(showCaseVOS);

@@ -13,6 +13,8 @@ public class ProductShowCaseVO {
     //用户商品
     private Integer userId;
 
+    private Integer techAuthId;
+
     private String description;
 
     private Integer gender;
@@ -38,6 +40,11 @@ public class ProductShowCaseVO {
     private Boolean onLine;
 
     private List<String> personTags;
+
+    /**
+     * 段位
+     */
+    private String dan;
 
     private String city;
 
