@@ -259,7 +259,7 @@ public class UserController extends BaseController {
         return Result.success().data(userList).msg("查询IM用户成功！");
     }
 
-    @PostMapping("chatwith/get")
+    @PostMapping("/chatwith/get")
     public Result chatWithGet(@RequestParam("id") Integer id) {
         UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(id, false, true, true, true);
         return Result.success().data(userInfoVO).msg("查询聊天对象信息成功！");
@@ -295,7 +295,6 @@ public class UserController extends BaseController {
 
     /**
      * 查询陪玩师的所有评论
-     *
      * @param pageNum
      * @param pageSize
      * @param serverId

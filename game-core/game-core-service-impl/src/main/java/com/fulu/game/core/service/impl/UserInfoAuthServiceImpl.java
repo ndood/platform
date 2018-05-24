@@ -89,6 +89,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         createUserAuthVoice(userInfoAuthVO.getVoiceUrl(),userInfoAuth.getId());
         //添加用户信息标签
         createUserInfoTags(userInfoAuthVO.getTags(),user.getId());
+
         return userInfoAuthVO;
     }
 
@@ -298,7 +299,13 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         }
     }
 
-
+    /**
+     * 添加用户认证文件
+     * @param userId
+     * @param fileUrl
+     * @param name
+     * @param type
+     */
     private void createUserInfoFile(Integer userId,String fileUrl,String name,Integer type){
         UserInfoFile userInfoFile = new UserInfoFile();
         userInfoFile.setName(name);
