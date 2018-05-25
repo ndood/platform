@@ -44,9 +44,13 @@ public class UserController extends BaseController{
      * @return
      */
     @PostMapping(value = "/info-auth/list")
-    public Result userInfoAuthList(Integer pageNum,
-                                   Integer pageSize) {
-        PageInfo<UserInfoAuthVO> pageInfo = userInfoAuthService.list(pageNum, pageSize, null);
+    public Result userInfoAuthList(@RequestParam("pageNum") Integer pageNum,
+                                   @RequestParam("pageSize") Integer pageSize,
+                                   @RequestParam(value = "startTime",required = false) String startTime,
+                                   @RequestParam(value="endTime",required = false) String endTime,
+                                   @RequestParam(value="mobile",required = false) String mobile) {
+        String orderBy = null;
+        PageInfo<UserInfoAuthVO> pageInfo = userInfoAuthService.list(pageNum, pageSize, orderBy,mobile,startTime,endTime);
         return Result.success().data(pageInfo);
     }
 
@@ -132,9 +136,18 @@ public class UserController extends BaseController{
      * @return
      */
     @PostMapping(value = "/tech-auth/list")
-    public Result techAuthList(Integer pageNum,
-                               Integer pageSize) {
-        PageInfo<UserTechAuthVO> page = userTechAuthService.list(pageNum, pageSize, null);
+    public Result techAuthList(@RequestParam("pageNum") Integer pageNum,
+                               @RequestParam("pageSize") Integer pageSize,
+                               @RequestParam(value = "nickname",required = false) String nickname,
+                               @RequestParam(value ="mobile",required = false) String mobile,
+                               @RequestParam(value ="startTime",required = false) String startTime,
+                               @RequestParam(value ="endTime",required = false) String endTime) {
+        UserTechAuthVO requestVo = new UserTechAuthVO();
+        requestVo.setNickname(nickname);
+        requestVo.setStartTime(startTime);
+        requestVo.setEndTime(endTime);
+        requestVo.setMobile(mobile);
+        PageInfo<UserTechAuthVO> page = userTechAuthService.list(pageNum, pageSize, null,requestVo);
         return Result.success().data(page);
     }
 

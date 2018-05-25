@@ -26,5 +26,6 @@ public interface Constant {
     BigDecimal DEFAULT_BALANCE = new BigDecimal(0.00);
 
     String DEFAULT_SPLIT_SEPARATOR = ",";
-
+    Integer TECH_CARD_WIDTH = 400;
+    Integer TECH_CARD_HEIGHT = 600;
 }

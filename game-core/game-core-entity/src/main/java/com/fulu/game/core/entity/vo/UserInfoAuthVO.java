@@ -11,11 +11,12 @@ import java.util.List;
 
 /**
  * 信息认证表
+ *
  * @author wangbin
  * @date 2018-04-20 11:12:13
  */
 @Data
-public class UserInfoAuthVO  extends UserInfoAuth {
+public class UserInfoAuthVO extends UserInfoAuth {
 
     //真实姓名
     private String realname;
@@ -54,5 +55,7 @@ public class UserInfoAuthVO  extends UserInfoAuth {
     //标签组
     private List<TagVO> groupTags;
 
+    private String startTime;
+    private String endTime;
 
 }

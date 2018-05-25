@@ -92,12 +92,13 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
     @Override
-    public PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize,String orderBy) {
+    public PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize,String orderBy,UserTechAuthVO requestVo) {
         if(StringUtils.isBlank(orderBy)){
             orderBy = "update_time desc";
         }
         PageHelper.startPage(pageNum,pageSize,orderBy);
-        List<UserTechAuth> userTechAuths = userTechAuthDao.findAll();
+        //List<UserTechAuth> userTechAuths = userTechAuthDao.findAll();
+        List<UserTechAuth> userTechAuths = userTechAuthDao.findByParameter(requestVo);
         List<UserTechAuthVO> userTechAuthVOList = new ArrayList<>();
         for(UserTechAuth userTechAuth : userTechAuths){
             UserTechAuthVO userTechAuthVO = new UserTechAuthVO();

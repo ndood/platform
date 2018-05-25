@@ -33,10 +33,11 @@ public class UserInfoVO {
     private Integer orderCount;
 
     private List<String> tags;
+    private List<PersonTagVO> personTagVOList;
 
     //陪玩师照片集
     private List<String> photos;
     private List<String> techs;
-
+    private UserTechAuthVO userTechAuthVO;
 
 }

@@ -30,7 +30,7 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth,Integer
      * @param orderBy
      * @return
      */
-    PageInfo<UserInfoAuthVO> list(Integer pageNum, Integer pageSize, String orderBy);
+    PageInfo<UserInfoAuthVO> list(Integer pageNum, Integer pageSize, String orderBy,String mobile,String startTime,String endTime);
 
     /**
      * 查询用户名片
@@ -38,4 +38,11 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth,Integer
      * @return
      */
     UserInfoVO findUserCardByUserId(Integer userId,Boolean hasPhotos,Boolean hasVoice,Boolean hasTags,Boolean hasTechs);
+
+    /**
+     * 查询用户技能分享名片信息
+     * @return
+     */
+    UserInfoVO findUserTechCardByUserId(Integer userId,Integer techAuthId);
+
 }

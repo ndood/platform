@@ -21,6 +21,7 @@ import com.fulu.game.core.service.UserTechAuthService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import me.chanjar.weixin.common.exception.WxErrorException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -306,5 +308,18 @@ public class UserController extends BaseController {
                                       Integer serverId) {
         PageInfo<UserCommentVO> page = commentService.findByServerId(pageNum, pageSize, serverId);
         return Result.success().data(page);
+    }
+
+    /**
+     * 陪玩师技能分享名片带小程序码
+     * @return
+     */
+    @RequestMapping("/techCard/share")
+    public Result getShareCard(@RequestParam("techAuthId") Integer techAuthId,
+                               @RequestParam("scene") String scene,
+                               @RequestParam("page") String page) throws WxErrorException, IOException {
+        User user = userService.getCurrentUser();
+        String techCardUrl = userService.getShareCard(user.getId(),techAuthId,scene,page);
+        return Result.success().data("techCardUrl",techCardUrl);
     }
 }
