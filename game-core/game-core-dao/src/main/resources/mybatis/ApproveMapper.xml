@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.ApproveDao">
+    <resultMap id="ApproveResultMap" type="com.fulu.game.core.entity.Approve">
+        <id column="id" property="id"/>
+        <result column="tech_owner_id" property="techOwnerId"/>
+        <result column="tech_auth_id" property="techAuthId"/>
+        <result column="user_id" property="userId"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="ApproveResultVOMap" type="com.fulu.game.core.entity.vo.ApproveVO" extends="ApproveResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,tech_owner_id,tech_auth_id,user_id,create_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="ApproveResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_approve
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="ApproveResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_approve
+    </select>
+
+    <select id="findByParameter" resultMap="ApproveResultMap" parameterType="com.fulu.game.core.entity.vo.ApproveVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_approve
+        <where>
+            <if test="techOwnerId != null">
+                and tech_owner_id = #{techOwnerId}
+            </if>
+            <if test="techAuthId != null">
+                and tech_auth_id = #{techAuthId}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_approve
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Approve">
+        insert into
+        t_approve (tech_owner_id,tech_auth_id,user_id,create_time)
+        values
+        (#{techOwnerId},#{techAuthId},#{userId},#{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.Approve">
+        update t_approve
+        <set>
+
+            <if test="techOwnerId != null">
+                tech_owner_id = #{techOwnerId},
+            </if>
+
+            <if test="techAuthId != null">
+                tech_auth_id = #{techAuthId},
+            </if>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

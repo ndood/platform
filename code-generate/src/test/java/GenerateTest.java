@@ -18,11 +18,8 @@ public class GenerateTest {
 
     @Test
     public void test2() {
-        codeGenerateForTable("yanbiao","t_sharing");
+        codeGenerateForTable("yanbiao","t_banner");
     }
-
-
-
 
     public void codeGenerateForTable(String author,String ... tableName){
         String driver = "com.mysql.jdbc.Driver";
@@ -40,9 +37,4 @@ public class GenerateTest {
                 .build();
         generateFactory.generatorCode(tableName);
     }
-
-
-
-
-
 }

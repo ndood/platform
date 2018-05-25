@@ -220,6 +220,7 @@ public class UserController extends BaseController {
         if (status == 200) {
             user.setImId(imId);
             user.setImPsw(imPsw);
+            user.setUpdateTime(new Date());
             userService.update(user);
             userService.updateRedisUser(user);
             log.info("用户{}绑定IM信息成功", user.getId());
