@@ -16,10 +16,10 @@ public class ElasticsearchJestConfig {
     private Config configProperties;
 
     @Bean
-    public JestClient jestClient(){
+    public JestClient jestClient() {
         JestClientFactory factory = new JestClientFactory();
-        factory.setHttpClientConfig(new HttpClientConfig
-                .Builder(configProperties.getElasticsearch().getHost())
+        factory.setHttpClientConfig(new HttpClientConfig.Builder(configProperties.getElasticsearch().getHost())
+                .defaultCredentials(configProperties.getElasticsearch().getUsername(),configProperties.getElasticsearch().getPassword())
                 .gson(new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create())
                 .multiThreaded(true)
                 .readTimeout(10000)

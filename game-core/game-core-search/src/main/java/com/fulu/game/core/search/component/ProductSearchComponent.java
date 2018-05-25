@@ -1,5 +1,6 @@
 package com.fulu.game.core.search.component;
 
+import com.fulu.game.common.exception.SearchException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.properties.Config;
 import com.fulu.game.core.search.domain.Criteria;
@@ -96,7 +97,7 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
                 .build();
         SearchResult result = jestClient.execute(search);
         if(!result.isSucceeded()){
-            throw  new ServiceErrorException(result.getErrorMessage());
+            throw new SearchException(SearchException.ExceptionCode.FIND_EXCEPTION,sql,result.getErrorMessage());
         }
         List<ProductShowCaseDoc> showCaseDocList = result.getSourceAsObjectList(ProductShowCaseDoc.class, false);
         Page<ProductShowCaseDoc> page = new Page(pageNum,pageSize);
@@ -158,10 +159,9 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
                 .build();
         SearchResult result = jestClient.execute(search);
         if(!result.isSucceeded()){
-           throw  new ServiceErrorException(result.getErrorMessage());
+            throw new SearchException(SearchException.ExceptionCode.FIND_EXCEPTION,sql,result.getErrorMessage());
         }
         List<ProductShowCaseDoc> showCaseDocList = result.getSourceAsObjectList(ProductShowCaseDoc.class, false);
-
         Page<ProductShowCaseDoc> page = new Page(pageNum,pageSize);
         page.addAll(showCaseDocList);
         page.setTotal(result.getTotal());

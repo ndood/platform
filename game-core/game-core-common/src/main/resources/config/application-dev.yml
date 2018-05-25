@@ -60,3 +60,5 @@ config:
       host: http://10.0.3.105:9200
       readTimeout: 10000
       indexDB: dev-gameplay
+      username: elastic
+      password: game20180525ES

@@ -85,5 +85,7 @@ public class Config {
         private String host;
         private int readTimeout;
         private String indexDB;
+        private String username;
+        private String password;
     }
 }

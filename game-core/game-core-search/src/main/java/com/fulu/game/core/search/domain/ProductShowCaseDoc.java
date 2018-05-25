@@ -2,12 +2,14 @@ package com.fulu.game.core.search.domain;
 
 import io.searchbox.annotations.JestId;
 import lombok.Data;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
 @Data
+@ToString
 public class ProductShowCaseDoc {
 
     @JestId

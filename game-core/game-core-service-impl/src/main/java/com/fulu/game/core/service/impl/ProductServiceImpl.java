@@ -316,7 +316,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             Page  searchResult = productSearchComponent.searchShowCaseDoc(categoryId, gender, pageNum, pageSize,orderBy);
             page = new PageInfo(searchResult);
         } catch (Exception e) {
-            log.error("ProductShowCase查询异常",e);
+            log.error("ProductShowCase查询异常:",e);
             PageHelper.startPage(pageNum,pageSize,"create_time desc");
             List<ProductShowCaseVO> showCaseVOS = productDao.findProductShowCase(categoryId,gender);
             for(ProductShowCaseVO showCaseVO : showCaseVOS){
@@ -344,6 +344,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             Page  searchResult = productSearchComponent.findByNickName(pageNum,pageSize,nickName);
             page = new PageInfo(searchResult);
         }catch (Exception e){
+            log.error("查询出错:",e);
             page = new PageInfo();
         }
         return page;
@@ -478,6 +479,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         if(userTechInfo!=null){
             productShowCaseDoc.setDan(userTechInfo.getValue());
         }
+        log.info("插入索引:{}",productShowCaseDoc);
         Boolean result = productSearchComponent.saveProductIndex(productShowCaseDoc);
         if (!result) {
             log.error("插入索引失败:{}", productShowCaseDoc);

@@ -30,6 +30,7 @@ public class RedisMessageListener implements MessageListener {
         //用户下线
         if(userOrderReceiveMatcher.find()){
             Integer userId = Integer.valueOf(userOrderReceiveMatcher.group(1));
+            log.info("下线用户商品:userId{}",userId);
             productService.batchCreateUserProduct(userId);
         }
 

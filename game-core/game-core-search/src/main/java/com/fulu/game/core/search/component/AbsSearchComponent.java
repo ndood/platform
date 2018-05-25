@@ -1,14 +1,15 @@
 package com.fulu.game.core.search.component;
 
+import com.fulu.game.common.exception.SearchException;
 import com.fulu.game.core.search.domain.Criteria;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.*;
-import io.searchbox.core.search.sort.Sort;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -27,6 +28,9 @@ public abstract class AbsSearchComponent<T,K> {
                     .type(getIndexType())
                     .build();
             DocumentResult result = getJestClient().execute(index);
+            if(!result.isSucceeded()){
+                throw new SearchException(SearchException.ExceptionCode.SAVE_EXCEPTION,index.getPathToResult(),result.getErrorMessage());
+            }
             return result.isSucceeded();
         }catch (Exception  e){
             log.error("创建索引错误:",e);
@@ -48,6 +52,9 @@ public abstract class AbsSearchComponent<T,K> {
                     .refresh(true)
                     .build();
             DocumentResult result = getJestClient().execute(update);
+            if(!result.isSucceeded()){
+                throw new SearchException(SearchException.ExceptionCode.SAVE_EXCEPTION,update.getPathToResult(),result.getErrorMessage());
+            }
             return result.isSucceeded();
         }catch (Exception  e){
             log.error("创建索引错误:",e);
@@ -68,9 +75,13 @@ public abstract class AbsSearchComponent<T,K> {
                     .type(getIndexType())
                     .build();
             DocumentResult result = getJestClient().execute(delete);
+            if(!result.isSucceeded()){
+                throw new SearchException(SearchException.ExceptionCode.DEL_EXCEPTION,delete.getPathToResult(),result.getErrorMessage());
+            }
             return result.isSucceeded();
         } catch (Exception e) {
-            throw new RuntimeException("delete exception", e);
+            log.error("删除索引错误:",e);
+            return false;
         }
     }
 
@@ -84,9 +95,13 @@ public abstract class AbsSearchComponent<T,K> {
         try {
             Get get= new Get.Builder(getIndexDB(), String.valueOf(id)).type(getIndexType()).build();
             DocumentResult result = getJestClient().execute(get);
+            if(!result.isSucceeded()){
+                throw new SearchException(SearchException.ExceptionCode.FIND_EXCEPTION,get.getPathToResult(),result.getErrorMessage());
+            }
             return result.getSourceAsObject(clazz);
         } catch (Exception e) {
-            throw new RuntimeException("searchById exception", e);
+            log.error("查询索引错误:",e);
+            return null;
         }
     }
 
@@ -98,15 +113,19 @@ public abstract class AbsSearchComponent<T,K> {
      */
     public List<T> search(List<Criteria> criterias, Class<T> clazz) {
         try {
-            SearchResult result = getJestClient().execute(new Search.Builder(buildSearch(criterias).toString())
+            String sql =  buildSearch(criterias).toString();
+            SearchResult result = getJestClient().execute(new Search.Builder(sql)
                     // multiple index or types can be added.
                     .addIndex(getIndexDB())
                     .addType(getIndexType())
                     .build());
+            if(!result.isSucceeded()){
+                throw new SearchException(SearchException.ExceptionCode.FIND_EXCEPTION,sql,result.getErrorMessage());
+            }
             return result.getSourceAsObjectList(clazz, false);
-
         } catch (Exception e) {
-            throw new RuntimeException("search exception", e);
+            log.error("查询索引错误:",e);
+            return new ArrayList<>();
         }
     }
 
