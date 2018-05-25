@@ -3,6 +3,7 @@ package com.fulu.game.core.service.impl;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.hutool.http.HttpConnection;
 import cn.hutool.http.Method;
+import cn.hutool.json.JSONObject;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.AuthStatusEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
@@ -10,11 +11,13 @@ import com.fulu.game.common.enums.ShareTypeEnum;
 import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.utils.ImgUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserDao;
 import com.fulu.game.core.entity.Sharing;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.PersonTagVO;
 import com.fulu.game.core.entity.vo.SharingVO;
 import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
@@ -47,6 +50,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     private SharingService sharingService;
     @Autowired
     private WxCodeService wxCodeService;
+    @Autowired
+    private ImgUtil imgUtil;
 
     @Override
     public ICommonDao<User, Integer> getDao() {
@@ -187,8 +192,45 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             shareContent = shareList.get(0).getContent();
         }
         String codeUrl = wxCodeService.create(scene, page);
+        Map<String ,String> contentMap = getContentMap(userInfoVO,shareContent,codeUrl);
+        String shareCardUrl = imgUtil.create(contentMap);
+        return shareCardUrl;
+    }
 
-        return null;
+    private Map<String ,String> getContentMap(UserInfoVO userInfoVO,String shareContent,String codeUrl){
+        Map<String,String> contentMap = new HashMap<>();
+        contentMap.put("nickname",userInfoVO.getNickName());
+        contentMap.put("gender",userInfoVO.getGender().toString());
+        contentMap.put("age",userInfoVO.getAge().toString());
+        StringBuilder sb = new StringBuilder();
+        sb.append(userInfoVO.getUserTechAuthVO().getCategoryName());
+        sb.append("陪玩；");
+        sb.append("段位 ");
+        sb.append(userInfoVO.getUserTechAuthVO().getDanInfo().getValue());
+        List<PersonTagVO> personTagVOList = userInfoVO.getPersonTagVOList();
+        String faceTagStr = "";
+        String voiceTagStr = "";
+        for (PersonTagVO personTagVO:personTagVOList) {
+            if(personTagVO.getTag().getPid()==101){
+                faceTagStr += " "+personTagVO.getName();
+            }
+            if(personTagVO.getTag().getPid()==102){
+                voiceTagStr += " "+personTagVO.getName();
+            }
+        }
+        if (null!=faceTagStr){
+            sb.append("；个人标签").append(faceTagStr);
+        }
+        if (null!=voiceTagStr){
+            sb.append("；声音标签").append(voiceTagStr);
+        }
+        contentMap.put("techAndTag",sb.toString());
+        JSONObject jo = new JSONObject(shareContent);
+        contentMap.put("title",jo.getStr("title"));
+        contentMap.put("content",jo.getStr("content"));
+        contentMap.put("mainPicUrl",userInfoVO.getMainPhotoUrl());
+        contentMap.put("codeUrl",codeUrl);
+        return contentMap;
     }
 
 }

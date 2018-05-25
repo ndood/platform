@@ -315,7 +315,8 @@ public class UserController extends BaseController {
      * 陪玩师技能分享名片带小程序码
      * @return
      */
-    public Result getShareCard(@RequestParam("categoryId") Integer techAuthId,
+    @RequestMapping("/techCard/share")
+    public Result getShareCard(@RequestParam("techAuthId") Integer techAuthId,
                                @RequestParam("scene") String scene,
                                @RequestParam("page") String page) throws WxErrorException, IOException {
         User user = userService.getCurrentUser();

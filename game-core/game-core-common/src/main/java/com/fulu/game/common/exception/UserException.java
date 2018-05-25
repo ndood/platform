@@ -13,7 +13,8 @@ public class UserException extends BizException {
         USER_NOT_EXIST_EXCEPTION(20001, "用户不存在"),
         USER_MISMATCH_EXCEPTION(20002, "用户不匹配"),
         IllEGAL_MOBILE_EXCEPTION(20003, "手机号参数为空或不合法"),
-        IllEGAL_IMID_EXCEPTION(20004, "imId参数为空或不合法");
+        IllEGAL_IMID_EXCEPTION(20004, "imId参数为空或不合法"),
+        TECH_AUTH_NOT_EXIST_EXCEPTION(20005, "认证技能记录不存在");
         private int code;
         private String msg;
     }

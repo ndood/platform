@@ -181,9 +181,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
     @Override
     public UserInfoVO findUserTechCardByUserId(Integer userId,Integer techAuthId){
         User user = userService.findById(userId);
-        if(null == user){
-            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
-        }
         UserInfoVO userInfo = new UserInfoVO();
         userInfo.setUserId(userId);
         userInfo.setType(user.getType());
@@ -199,11 +196,16 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
 
         //查询个人标签(外貌和声音)
         List<PersonTag> personTagList = personTagService.findByUserId(userId);
-        List<String> tags = new ArrayList<>();
+        List<PersonTagVO> personTagVOList = new ArrayList<>();
         for(PersonTag personTag : personTagList){
-            tags.add(personTag.getName());
+            Tag tag = tagService.findById(personTag.getTagId());
+            PersonTagVO personTagVO = new PersonTagVO();
+            personTagVO.setTag(tag);
+            personTagVO.setTagId(personTag.getTagId());
+            personTagVO.setName(personTag.getName());
+            personTagVOList.add(personTagVO);
         }
-        userInfo.setTags(tags);
+        userInfo.setPersonTagVOList(personTagVOList);
         //查询认证的技能
         UserTechAuthVO userTechAuthVO = utaService.findTechAuthVOById(techAuthId);
         userInfo.setUserTechAuthVO(userTechAuthVO);
