@@ -455,6 +455,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         ProductShowCaseDoc productShowCaseDoc = new ProductShowCaseDoc();
         BeanUtil.copyProperties(product,productShowCaseDoc);
         UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(productShowCaseDoc.getUserId(),false,false,true,false);
+        //查询销量
+        int userOrderCount = orderService.allOrderCount(product.getUserId());
         productShowCaseDoc.setNickName(userInfoVO.getNickName());
         productShowCaseDoc.setGender(userInfoVO.getGender());
         productShowCaseDoc.setMainPhoto(userInfoVO.getMainPhotoUrl());
@@ -462,6 +464,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         productShowCaseDoc.setIsIndexShow(isIndexShow);
         productShowCaseDoc.setPersonTags(userInfoVO.getTags());
         productShowCaseDoc.setOnLine(isProductStartOrderReceivingStatus(productShowCaseDoc.getId()));
+        productShowCaseDoc.setOrderCount(userOrderCount);
         Boolean result = productSearchComponent.saveProductIndex(productShowCaseDoc);
         if (!result) {
             log.error("插入索引失败:{}", productShowCaseDoc);
