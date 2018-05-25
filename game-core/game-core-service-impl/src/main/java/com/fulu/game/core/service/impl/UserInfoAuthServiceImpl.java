@@ -1,7 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
-import com.fulu.game.common.enums.AuthStatusEnum;
+import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
 import com.fulu.game.common.enums.FileTypeEnum;
 import com.fulu.game.common.enums.UserInfoFileTypeEnum;
 import com.fulu.game.common.enums.UserTypeEnum;
@@ -71,7 +71,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         user.setIdcard(userInfoAuthVO.getIdCard());
         user.setRealname(userInfoAuthVO.getRealname());
         user.setGender(userInfoAuthVO.getGender());
-        user.setUserInfoAuth(AuthStatusEnum.VERIFIED.getType());
+        user.setUserInfoAuth(UserInfoAuthStatusEnum.VERIFIED.getType());
         userService.update(user);
         //忽略为null的属性
         BeanUtil.CopyOptions copyOptions = BeanUtil.CopyOptions.create();
