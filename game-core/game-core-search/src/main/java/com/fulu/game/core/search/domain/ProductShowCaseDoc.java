@@ -2,12 +2,14 @@ package com.fulu.game.core.search.domain;
 
 import io.searchbox.annotations.JestId;
 import lombok.Data;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
 @Data
+@ToString
 public class ProductShowCaseDoc {
 
     @JestId
@@ -43,8 +45,10 @@ public class ProductShowCaseDoc {
     private List<String> personTags;
     //用户所在地
     private String city;
-
+    //销售量
     private Integer orderCount;
 
+    //段位
+    private String dan;
 
 }

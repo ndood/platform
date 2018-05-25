@@ -65,6 +65,11 @@ public interface ProductService extends ICommonService<Product,Integer>{
      */
     void stopOrderReceiving();
 
+    /**
+     * 为用户所有商品添加索引
+     * @param userId
+     */
+    void batchCreateUserProduct(Integer userId);
 
     /**
      * 查询商品详情页
@@ -73,7 +78,11 @@ public interface ProductService extends ICommonService<Product,Integer>{
      */
     ProductDetailsVO findDetailsByProductId(Integer productId);
 
-
+    /**
+     * 再来一单商品页面
+     * @param productId
+     * @return
+     */
     SimpleProductVO findSimpleProductByProductId(Integer productId);
 
     /**

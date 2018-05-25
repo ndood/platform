@@ -94,6 +94,32 @@
         </where>
     </select>
 
+
+    <select id="findUserMoneyByAction" resultMap="MoneyDetailsResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_money_details
+        <where>
+            <if test="targetId != null">
+                and target_id = #{targetId}
+            </if>
+            <if test="actionList != null">
+                and action in
+                <foreach collection="actionList" item="a" index="index" open="(" close=")" separator=",">
+                    #{a}
+                </foreach>
+            </if>
+            <if test="startTime!=null">
+                and create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime!=null">
+                and create_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
+
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_money_details
         <where>id = #{id}</where>

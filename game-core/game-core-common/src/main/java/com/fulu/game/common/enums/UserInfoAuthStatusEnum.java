@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum  AuthStatusEnum implements TypeEnum<Integer>{
+public enum UserInfoAuthStatusEnum implements TypeEnum<Integer>{
 
     NOT_PERFECT(0,"未完善"),
     ALREADY_PERFECT(1,"已完善"),

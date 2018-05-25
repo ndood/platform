@@ -1,7 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
-import com.fulu.game.common.enums.AuthStatusEnum;
+import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
 import com.fulu.game.common.enums.FileTypeEnum;
 import com.fulu.game.common.enums.UserInfoFileTypeEnum;
 import com.fulu.game.common.enums.UserTypeEnum;
@@ -15,6 +15,7 @@ import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import com.xiaoleilu.hutool.util.CollectionUtil;
 import com.xiaoleilu.hutool.util.ObjectUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import com.fulu.game.core.dao.UserInfoAuthDao;
 
 
 @Service
+@Slf4j
 public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integer> implements UserInfoAuthService {
 
     @Autowired
@@ -69,7 +71,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         user.setIdcard(userInfoAuthVO.getIdCard());
         user.setRealname(userInfoAuthVO.getRealname());
         user.setGender(userInfoAuthVO.getGender());
-        user.setUserInfoAuth(AuthStatusEnum.VERIFIED.getType());
+        user.setUserInfoAuth(UserInfoAuthStatusEnum.VERIFIED.getType());
         userService.update(user);
         //忽略为null的属性
         BeanUtil.CopyOptions copyOptions = BeanUtil.CopyOptions.create();
@@ -123,6 +125,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
     public UserInfoVO findUserCardByUserId(Integer userId,Boolean hasPhotos,Boolean hasVoice,Boolean hasTags,Boolean hasTechs){
         User user = userService.findById(userId);
         if(null == user){
+            log.error("用户不存在:{}",userId);
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
         UserInfoVO userInfo = new UserInfoVO();

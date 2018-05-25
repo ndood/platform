@@ -1,11 +1,8 @@
 package com.fulu.game.core.service.impl;
 
-import cn.binarywang.wx.miniapp.api.WxMaService;
-import cn.hutool.http.HttpConnection;
-import cn.hutool.http.Method;
 import cn.hutool.json.JSONObject;
 import com.fulu.game.common.Constant;
-import com.fulu.game.common.enums.AuthStatusEnum;
+import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.ShareTypeEnum;
 import com.fulu.game.common.enums.UserTypeEnum;
@@ -34,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 @Service("userService")
@@ -138,7 +134,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         BeanUtil.copyProperties(userVO, user);
         user.setStatus(1);//默认账户解封状态
         user.setType(UserTypeEnum.GENERAL_USER.getType());//默认普通用户
-        user.setUserInfoAuth(AuthStatusEnum.NOT_PERFECT.getType());//默认未审核
+        user.setUserInfoAuth(UserInfoAuthStatusEnum.NOT_PERFECT.getType());//默认未审核
         user.setBalance(Constant.DEFAULT_BALANCE);
         user.setScoreAvg(Constant.DEFAULT_SCORE_AVG);
         user.setCreateTime(new Date());

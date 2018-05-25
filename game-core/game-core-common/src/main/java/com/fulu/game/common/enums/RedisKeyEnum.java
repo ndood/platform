@@ -16,7 +16,7 @@ public enum RedisKeyEnum {
     SMS, //短信
     WX_TEMPLATE_MSG; //微信消息推送
 
-    private static final String SPLIT = "-";
+    public static final String SPLIT = "-";
 
     public String generateKey(Integer id) {
         return getEvnPrefix() + SPLIT + this.name() + SPLIT + id;

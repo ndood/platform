@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @Getter
 public class UserException extends BizException {
+
     private ExceptionCode exceptionCode;
 
     @AllArgsConstructor

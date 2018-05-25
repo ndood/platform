@@ -13,6 +13,8 @@ public class ProductShowCaseVO {
     //用户商品
     private Integer userId;
 
+    private Integer techAuthId;
+
     private String description;
 
     private Integer gender;
@@ -32,15 +34,15 @@ public class ProductShowCaseVO {
     private String nickName;
 
     private Date createTime;
-    /**
-     * 是否在线
-     */
+    //是否在线
     private Boolean onLine;
 
     private List<String> personTags;
 
-    private String city;
+    //段位
+    private String dan;
 
+    private String city;
 
 
 }

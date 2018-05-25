@@ -42,7 +42,7 @@ public interface MoneyDetailsService extends ICommonService<MoneyDetails,Integer
     MoneyDetails drawSave(MoneyDetails moneyDetails);
 
 
-    List<MoneyDetails> list(Integer targetId, Date startTime,Date endTime);
+    List<MoneyDetails> findUserMoneyByAction(Integer targetId, Date startTime, Date endTime);
 
     BigDecimal weekIncome(Integer targetId);
 }

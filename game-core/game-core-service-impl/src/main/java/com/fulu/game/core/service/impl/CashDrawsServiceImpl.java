@@ -16,6 +16,7 @@ import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service("/cashDrawsService")
+@Slf4j
 public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> implements CashDrawsService {
 
     @Autowired
@@ -50,17 +52,20 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
      */
     @Override
     public CashDraws save(CashDrawsVO cashDrawsVO) {
-        BigDecimal money = cashDrawsVO.getMoney();
-        if (money.compareTo(BigDecimal.ZERO) == -1) {
-            throw new CashException(CashException.ExceptionCode.CASH_NEGATIVE_EXCEPTION);
-        }
         User user = userService.getCurrentUser();
         if (null == user) {
+            log.error("提款申请异常，当前操作用户不存在");
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+        BigDecimal money = cashDrawsVO.getMoney();
+        if (money.compareTo(BigDecimal.ZERO) == -1) {
+            log.error("提款申请异常，提款金额小于0，用户id {}",user.getId());
+            throw new CashException(CashException.ExceptionCode.CASH_NEGATIVE_EXCEPTION);
         }
         user = userService.findById(user.getId());
         BigDecimal balance = user.getBalance();
         if (money.compareTo(balance) == 1) {
+            log.error("提款申请异常，金额超出账户余额，用户id {}",user.getId());
             throw new CashException(CashException.ExceptionCode.CASH_EXCEED_EXCEPTION);
         }
         //提现后的余额
@@ -73,7 +78,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         cashDraws.setCashStatus(CashProcessStatusEnum.WAITING.getType());
         cashDraws.setCreateTime(new Date());
         cashDrawsDao.create(cashDraws);
-
+        log.info("生成提款申请记录");
         MoneyDetails moneyDetails = new MoneyDetails();
         moneyDetails.setOperatorId(user.getId());
         moneyDetails.setTargetId(user.getId());
@@ -83,10 +88,12 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         moneyDetails.setCashId(cashDraws.getCashId());
         moneyDetails.setCreateTime(new Date());
         mdService.drawSave(moneyDetails);
-
+        log.info("记录账户提款流水至t_money_details");
         user.setBalance(newBalance);
         userService.update(user);
+        log.info("更新用户余额");
         userService.updateRedisUser(user);
+        log.info("更新redisUser");
         return cashDraws;
     }
 
