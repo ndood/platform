@@ -11,7 +11,7 @@ UPDATE t_user_tech_auth SET approve_count = 0;
 -- ----------------------------
 DROP TABLE IF EXISTS `t_approve`;
 CREATE TABLE `t_approve`  (
-  `id` int(11) NOT NULL COMMENT '主键id',
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `tech_owner_id` int(11) NULL DEFAULT NULL COMMENT '技能拥有者id',
   `tech_auth_id` int(11) NULL DEFAULT NULL COMMENT '认可的技能',
   `user_id` int(11) NULL DEFAULT NULL COMMENT '点击认可的用户的id',
@@ -27,7 +27,7 @@ CREATE TABLE `t_approve`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `t_banner`;
 CREATE TABLE `t_banner`  (
-  `id` int(2) NOT NULL COMMENT '主键id',
+  `id` int(2) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `sort` int(11) NULL DEFAULT NULL COMMENT '排序id',
   `operator_id` int(11) NULL DEFAULT NULL COMMENT '操作人id',
   `operator_name` varchar(255)  NULL DEFAULT NULL COMMENT '操作人用户名',
