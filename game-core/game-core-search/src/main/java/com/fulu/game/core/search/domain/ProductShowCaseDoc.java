@@ -43,8 +43,10 @@ public class ProductShowCaseDoc {
     private List<String> personTags;
     //用户所在地
     private String city;
-
+    //销售量
     private Integer orderCount;
 
+    //段位
+    private String dan;
 
 }

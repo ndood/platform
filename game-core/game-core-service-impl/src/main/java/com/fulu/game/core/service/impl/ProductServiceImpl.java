@@ -220,7 +220,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
 
     /**
-     * 停止接单
+     * 手动停止接单
      */
     @Override
     public void stopOrderReceiving() {
@@ -239,6 +239,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         //修改首页商品的状态
         batchCreateUserProduct(user.getId());
     }
+
+
 
 
 
@@ -387,9 +389,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * 为用户所有商品添加索引
      * @param userId
      */
+    @Override
     public void batchCreateUserProduct(Integer userId){
         List<Product> products = findByUserId(userId);
-        batchCreateProductIndex(products);
         List<Integer> rightfulProductIds = new ArrayList<>();
         for (Product product : products) {
             rightfulProductIds.add(product.getId());
@@ -401,6 +403,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                 productSearchComponent.deleteIndex(pdoc.getId());
             }
         }
+        batchCreateProductIndex(products);
     }
 
 
@@ -471,6 +474,10 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         productShowCaseDoc.setPersonTags(userInfoVO.getTags());
         productShowCaseDoc.setOnLine(isProductStartOrderReceivingStatus(productShowCaseDoc.getId()));
         productShowCaseDoc.setOrderCount(userOrderCount);
+        UserTechInfo userTechInfo =userTechAuthService.findDanInfo(product.getTechAuthId());
+        if(userTechInfo!=null){
+            productShowCaseDoc.setDan(userTechInfo.getValue());
+        }
         Boolean result = productSearchComponent.saveProductIndex(productShowCaseDoc);
         if (!result) {
             log.error("插入索引失败:{}", productShowCaseDoc);
