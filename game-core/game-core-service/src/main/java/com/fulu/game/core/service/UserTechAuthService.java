@@ -38,6 +38,6 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth,Integer
     List<UserTechAuth> findByUserId(Integer userId,Boolean status);
 
 
-    PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize,String orderBy);
+    PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize,String orderBy,UserTechAuthVO requestVo);
 
 }

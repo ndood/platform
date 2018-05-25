@@ -38,4 +38,9 @@ public class UserTechAuthVO  extends UserTechAuth {
      * 段位信息
      */
     private UserTechInfo danInfo;
+
+    private String nickname;
+    private String startTime;
+    private String endTime;
+
 }
