@@ -156,6 +156,7 @@ public class UserController extends BaseController {
         }
     }
 
+
     @PostMapping("/mobile/bind")
     public Result bind(WxUserInfo wxUserInfo) {
         String token = SubjectUtil.getToken();
@@ -163,56 +164,52 @@ public class UserController extends BaseController {
         String redisVerifyCode = redisOpenService.hget(RedisKeyEnum.SMS.generateKey(token), wxUserInfo.getMobile());
         if (null == redisVerifyCode) {
             return Result.error().msg("验证码失效");
-        } else {
-            String verifyCode = wxUserInfo.getVerifyCode();
-            if (verifyCode != null && !verifyCode.equals(redisVerifyCode)) {
-                return Result.error().msg("验证码提交错误");
-            } else {//绑定手机号
-                User user = userService.getCurrentUser();
-                String openId = user.getOpenId();
-                if (user == null) {
-                    return Result.error().msg("微信用户绑定失败！");
-                }
-                User newUser = null;
-                User openIdUser = userService.findByOpenId(openId);
-                //如果openId已经绑定手机号且手机号和绑定的手机号不一致,则返回错误
-                if (openIdUser != null && openIdUser.getMobile() != null) {
-                    if (!wxUserInfo.getMobile().equals(openIdUser.getMobile())) {
-                        return Result.error().msg("已经绑定过手机号！");
-                    }
-                }
-                User mobileUser = userService.findByMobile(wxUserInfo.getMobile());
-                if (mobileUser != null) {
-                    if (!mobileUser.getId().equals(openIdUser.getId())) {
-                        mobileUser.setOpenId(openId);
-                        mobileUser.setGender(wxUserInfo.getGender());
-                        mobileUser.setNickname(wxUserInfo.getNickName());
-                        mobileUser.setHeadPortraitsUrl(wxUserInfo.getAvatarUrl());
-                        mobileUser.setCity(wxUserInfo.getCity());
-                        mobileUser.setProvince(wxUserInfo.getProvince());
-                        mobileUser.setCountry(wxUserInfo.getCountry());
-                        mobileUser.setUpdateTime(new Date());
-                        userService.update(mobileUser);
-                        userService.deleteById(openIdUser.getId());
-                    }
-                    newUser = mobileUser;
-                } else {
-                    openIdUser.setMobile(wxUserInfo.getMobile());
-                    openIdUser.setGender(wxUserInfo.getGender());
-                    openIdUser.setNickname(wxUserInfo.getNickName());
-                    openIdUser.setHeadPortraitsUrl(wxUserInfo.getAvatarUrl());
-                    openIdUser.setCity(wxUserInfo.getCity());
-                    openIdUser.setProvince(wxUserInfo.getProvince());
-                    openIdUser.setCountry(wxUserInfo.getCountry());
-                    openIdUser.setUpdateTime(new Date());
-                    userService.update(openIdUser);
-                    newUser = openIdUser;
-                }
-                userService.updateRedisUser(newUser);
-                return Result.success().data(newUser).msg("手机号绑定成功！");
-            }
         }
+        String verifyCode = wxUserInfo.getVerifyCode();
+        if (verifyCode != null && !verifyCode.equals(redisVerifyCode)) {
+            return Result.error().msg("验证码提交错误");
+        } //绑定手机号
+        User user = userService.getCurrentUser();
+        String openId = user.getOpenId();
+        User newUser = null;
+        User openIdUser = userService.findByOpenId(openId);
+        //如果openId已经绑定手机号
+        if (openIdUser != null && openIdUser.getMobile() != null) {
+            return Result.error().msg("已经绑定过手机号！");
+        }
+        User mobileUser = userService.findByMobile(wxUserInfo.getMobile());
+        if (mobileUser != null) {
+            if(mobileUser.getOpenId()!=null){
+                return Result.error().msg("该手机号已经被绑定！");
+            }else{
+                mobileUser.setOpenId(openId);
+                mobileUser.setGender(wxUserInfo.getGender());
+                mobileUser.setNickname(wxUserInfo.getNickName());
+                mobileUser.setHeadPortraitsUrl(wxUserInfo.getAvatarUrl());
+                mobileUser.setCity(wxUserInfo.getCity());
+                mobileUser.setProvince(wxUserInfo.getProvince());
+                mobileUser.setCountry(wxUserInfo.getCountry());
+                mobileUser.setUpdateTime(new Date());
+                userService.update(mobileUser);
+                userService.deleteById(openIdUser.getId());
+                newUser = mobileUser;
+            }
+        } else {
+            openIdUser.setMobile(wxUserInfo.getMobile());
+            openIdUser.setGender(wxUserInfo.getGender());
+            openIdUser.setNickname(wxUserInfo.getNickName());
+            openIdUser.setHeadPortraitsUrl(wxUserInfo.getAvatarUrl());
+            openIdUser.setCity(wxUserInfo.getCity());
+            openIdUser.setProvince(wxUserInfo.getProvince());
+            openIdUser.setCountry(wxUserInfo.getCountry());
+            openIdUser.setUpdateTime(new Date());
+            userService.update(openIdUser);
+            newUser = openIdUser;
+        }
+        userService.updateRedisUser(newUser);
+        return Result.success().data(newUser).msg("手机号绑定成功！");
     }
+
 
     @PostMapping("/im/save")
     public Result imSave(@RequestParam("status") Integer status,
@@ -297,6 +294,7 @@ public class UserController extends BaseController {
 
     /**
      * 查询陪玩师的所有评论
+     *
      * @param pageNum
      * @param pageSize
      * @param serverId
@@ -312,6 +310,7 @@ public class UserController extends BaseController {
 
     /**
      * 陪玩师技能分享名片带小程序码
+     *
      * @return
      */
     @RequestMapping("/techCard/share")
@@ -319,7 +318,7 @@ public class UserController extends BaseController {
                                @RequestParam("scene") String scene,
                                @RequestParam("page") String page) throws WxErrorException, IOException {
         User user = userService.getCurrentUser();
-        String techCardUrl = userService.getShareCard(user.getId(),techAuthId,scene,page);
-        return Result.success().data("techCardUrl",techCardUrl);
+        String techCardUrl = userService.getShareCard(user.getId(), techAuthId, scene, page);
+        return Result.success().data("techCardUrl", techCardUrl);
     }
 }
