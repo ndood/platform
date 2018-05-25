@@ -96,6 +96,7 @@
             t1.id as id,
             t1.user_id as userId,
             t1.category_id as categoryId,
+            t1.tech_auth_id as techAuthId,
             t1.gender as gender,
             t1.description as description,
             t1.product_name as productName,

@@ -140,7 +140,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
 
-    private UserTechInfo findDanInfo(Integer techAuthId) {
+    public UserTechInfo findDanInfo(Integer techAuthId) {
         List<UserTechInfo> userTechInfoList = userTechInfoService.findByTechAuthId(techAuthId);
         if (!userTechInfoList.isEmpty()) {
             return userTechInfoList.get(0);

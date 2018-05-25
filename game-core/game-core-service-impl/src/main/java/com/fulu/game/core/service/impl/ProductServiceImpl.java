@@ -51,6 +51,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     private ProductSearchComponent productSearchComponent;
 
 
+
     @Override
     public ICommonDao<Product, Integer> getDao() {
         return productDao;
@@ -279,6 +280,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
 
 
+
     @Override
     public SimpleProductVO findSimpleProductByProductId(Integer productId) {
         Product product = findById(productId);
@@ -322,6 +324,10 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                 showCaseVO.setMainPhoto(userInfoVO.getMainPhotoUrl());
                 showCaseVO.setCity(userInfoVO.getCity());
                 showCaseVO.setPersonTags(userInfoVO.getTags());
+                UserTechInfo userTechInfo =userTechAuthService.findDanInfo(showCaseVO.getTechAuthId());
+                if(userTechInfo!=null){
+                    showCaseVO.setDan(userTechInfo.getValue());
+                }
                 showCaseVO.setOnLine(isProductStartOrderReceivingStatus(showCaseVO.getId()));
             }
             page = new PageInfo(showCaseVOS);

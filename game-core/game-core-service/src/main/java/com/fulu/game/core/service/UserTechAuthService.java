@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.UserTechAuth;
+import com.fulu.game.core.entity.UserTechInfo;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
 import com.github.pagehelper.PageInfo;
 
@@ -29,6 +30,8 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth,Integer
      * @return
      */
     UserTechAuthVO findTechAuthVOById(Integer id);
+
+    UserTechInfo findDanInfo(Integer techAuthId);
 
     /**
      * 通过用户ID查询技能认证

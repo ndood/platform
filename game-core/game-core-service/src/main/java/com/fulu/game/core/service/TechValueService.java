@@ -27,4 +27,6 @@ public interface TechValueService extends ICommonService<TechValue,Integer>{
 
 
      List<TechValue> findByTechAttrId(Integer attrId);
+
+
 }
