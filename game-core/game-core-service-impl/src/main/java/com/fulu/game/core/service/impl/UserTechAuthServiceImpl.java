@@ -1,12 +1,10 @@
 package com.fulu.game.core.service.impl;
 
-
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.dao.UserTechAuthDao;
 import com.fulu.game.core.entity.*;
-import com.fulu.game.core.entity.vo.TagVO;
-import com.fulu.game.core.entity.vo.TechValueVO;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
@@ -19,9 +17,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import com.fulu.game.core.dao.UserTechAuthDao;
-
 
 @Service
 public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Integer> implements UserTechAuthService {
@@ -51,7 +46,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     @Override
     public UserTechAuthVO save(UserTechAuthVO userTechAuthVO) {
         User user = userService.findById(userTechAuthVO.getUserId());
-        Category category =categoryService.findById(userTechAuthVO.getCategoryId());
+        Category category = categoryService.findById(userTechAuthVO.getCategoryId());
         userTechAuthVO.setStatus(true);
         userTechAuthVO.setMobile(user.getMobile());
         userTechAuthVO.setCategoryName(category.getName());
@@ -59,18 +54,18 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
         if (userTechAuthVO.getId() == null) {
             //查询是否有重复技能
-            List<UserTechAuth> userTechAuths =findByCategoryAndUser(userTechAuthVO.getCategoryId(),userTechAuthVO.getUserId());
-            if(userTechAuths.size()>0){
+            List<UserTechAuth> userTechAuths = findByCategoryAndUser(userTechAuthVO.getCategoryId(), userTechAuthVO.getUserId());
+            if (userTechAuths.size() > 0) {
                 throw new ServiceErrorException("不能添加重复的技能!");
             }
             userTechAuthVO.setCreateTime(new Date());
             userTechAuthDao.create(userTechAuthVO);
         } else {
-            UserTechAuth oldUserTechAuth= findById(userTechAuthVO.getId());
-            if(!oldUserTechAuth.getId().equals(userTechAuthVO.getId())){
+            UserTechAuth oldUserTechAuth = findById(userTechAuthVO.getId());
+            if (!oldUserTechAuth.getId().equals(userTechAuthVO.getId())) {
                 //查询是否有重复技能
-                List<UserTechAuth> userTechAuths =findByCategoryAndUser(userTechAuthVO.getCategoryId(),userTechAuthVO.getUserId());
-                if(userTechAuths.size()>0){
+                List<UserTechAuth> userTechAuths = findByCategoryAndUser(userTechAuthVO.getCategoryId(), userTechAuthVO.getUserId());
+                if (userTechAuths.size() > 0) {
                     throw new ServiceErrorException("不能添加重复的技能!");
                 }
             }
@@ -84,7 +79,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
     @Override
-    public List<UserTechAuth> findByUserId(Integer userId,Boolean status) {
+    public List<UserTechAuth> findByUserId(Integer userId, Boolean status) {
         UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
         userTechAuthVO.setUserId(userId);
         userTechAuthVO.setStatus(status);
@@ -92,22 +87,21 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
     @Override
-    public PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize,String orderBy,UserTechAuthVO requestVo) {
-        if(StringUtils.isBlank(orderBy)){
+    public PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize, String orderBy, UserTechAuthVO requestVo) {
+        if (StringUtils.isBlank(orderBy)) {
             orderBy = "update_time desc";
         }
-        PageHelper.startPage(pageNum,pageSize,orderBy);
-        //List<UserTechAuth> userTechAuths = userTechAuthDao.findAll();
+        PageHelper.startPage(pageNum, pageSize, orderBy);
         List<UserTechAuth> userTechAuths = userTechAuthDao.findByParameter(requestVo);
         List<UserTechAuthVO> userTechAuthVOList = new ArrayList<>();
-        for(UserTechAuth userTechAuth : userTechAuths){
+        for (UserTechAuth userTechAuth : userTechAuths) {
             UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
-            BeanUtil.copyProperties(userTechAuth,userTechAuthVO);
+            BeanUtil.copyProperties(userTechAuth, userTechAuthVO);
             //用户段位信息
             UserTechInfo userTechInfo = findDanInfo(userTechAuthVO.getId());
             userTechAuthVO.setDanInfo(userTechInfo);
             //用户技能标签
-            List<TechTag> techTagList =findTechTags(userTechAuthVO.getId());
+            List<TechTag> techTagList = findTechTags(userTechAuthVO.getId());
             userTechAuthVO.setTagList(techTagList);
             userTechAuthVOList.add(userTechAuthVO);
         }
@@ -117,7 +111,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
 
-    public List<UserTechAuth> findByCategoryAndUser(Integer categoryId,Integer userId){
+    public List<UserTechAuth> findByCategoryAndUser(Integer categoryId, Integer userId) {
         UserTechAuthVO param = new UserTechAuthVO();
         param.setCategoryId(categoryId);
         param.setUserId(userId);
@@ -150,6 +144,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
     /**
      * 查询用户选择的所有技能标签
+     *
      * @param techAuthId
      * @return
      */
