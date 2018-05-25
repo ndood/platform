@@ -61,6 +61,7 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
         userTechAuth.setApproveCount(newApproveCount);
         if (newApproveCount >= Constant.DEFAULT_APPROVE_COUNT) {
             //todo 后期技能认证的状态需要同步改掉
+            //todo
             userTechAuth.setStatus(true);
         }
         utaService.update(userTechAuth);
