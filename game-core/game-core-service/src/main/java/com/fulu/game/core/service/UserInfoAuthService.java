@@ -30,7 +30,7 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth,Integer
      * @param orderBy
      * @return
      */
-    PageInfo<UserInfoAuthVO> list(Integer pageNum, Integer pageSize, String orderBy);
+    PageInfo<UserInfoAuthVO> list(Integer pageNum, Integer pageSize, String orderBy,String mobile,String startTime,String endTime);
 
     /**
      * 查询用户名片

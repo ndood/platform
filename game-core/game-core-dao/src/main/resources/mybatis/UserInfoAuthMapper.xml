@@ -57,14 +57,11 @@
             <if test="mainPicUrl != null">
                 and main_pic_url = #{mainPicUrl}
             </if>
-            <if test="allowExport != null">
-                and allow_export = #{allowExport}
+            <if test="startTime != null">
+                and update_time &gt;= #{startTime}
             </if>
-            <if test="createTime != null">
-                and create_time = #{createTime}
-            </if>
-            <if test="updateTime != null">
-                and update_time = #{updateTime}
+            <if test="endTime != null">
+                and update_time &lt;= #{endTime}
             </if>
         </where>
     </select>

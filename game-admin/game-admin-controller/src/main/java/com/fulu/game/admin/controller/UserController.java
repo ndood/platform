@@ -44,9 +44,13 @@ public class UserController extends BaseController{
      * @return
      */
     @PostMapping(value = "/info-auth/list")
-    public Result userInfoAuthList(Integer pageNum,
-                                   Integer pageSize) {
-        PageInfo<UserInfoAuthVO> pageInfo = userInfoAuthService.list(pageNum, pageSize, null);
+    public Result userInfoAuthList(@RequestParam("pageNum") Integer pageNum,
+                                   @RequestParam("pageSize") Integer pageSize,
+                                   @RequestParam(value = "startTime",required = false) String startTime,
+                                   @RequestParam(value="endTime",required = false) String endTime,
+                                   @RequestParam(value="mobile",required = false) String mobile) {
+        String orderBy = null;
+        PageInfo<UserInfoAuthVO> pageInfo = userInfoAuthService.list(pageNum, pageSize, orderBy,mobile,startTime,endTime);
         return Result.success().data(pageInfo);
     }
 
