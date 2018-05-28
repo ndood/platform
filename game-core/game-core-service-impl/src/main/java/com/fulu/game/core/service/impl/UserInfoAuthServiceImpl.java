@@ -220,6 +220,71 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         return userInfo;
     }
 
+    public UserInfoVO findTechCard(Integer userId,Boolean hasPhotos,Boolean hasVoice,Boolean hasTags,Boolean hasTechs){
+        //todo 技能认证落地页接口
+        User user = userService.findById(userId);
+        if(null == user){
+            log.error("用户不存在:{}",userId);
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+        UserInfoVO userInfo = new UserInfoVO();
+        userInfo.setUserId(userId);
+        userInfo.setType(user.getType());
+        userInfo.setAge(user.getAge());
+        userInfo.setCity(user.getCity());
+        userInfo.setHeadUrl(user.getHeadPortraitsUrl());
+        userInfo.setNickName(user.getNickname());
+        userInfo.setGender(user.getGender());
+        userInfo.setScoreAvg(user.getScoreAvg());
+        userInfo.setImId(user.getImId());
+        userInfo.setImPsw(user.getImPsw());
+        int orderCount = orderService.allOrderCount(userId);//接单数
+        userInfo.setOrderCount(orderCount);
+
+        UserInfoAuth userInfoAuth = findByUserId(userId);
+        if (null != userInfoAuth){
+            userInfo.setMainPhotoUrl(userInfoAuth.getMainPicUrl());
+            //查询用户写真图
+            if(hasPhotos){
+                List<String> photos = new ArrayList<>();
+                photos.add(userInfoAuth.getMainPicUrl());
+                List<UserInfoAuthFile> portraitFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(),FileTypeEnum.PIC.getType());
+                for(UserInfoAuthFile authFile : portraitFiles){
+                    photos.add(authFile.getUrl());
+                }
+                userInfo.setPhotos(photos);
+            }
+            //查询用户声音
+            if(hasVoice){
+                List<UserInfoAuthFile> voiceFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(),FileTypeEnum.VOICE.getType());
+                for(UserInfoAuthFile authFile : voiceFiles){
+                    userInfo.setVoice(authFile.getUrl());
+                }
+            }
+        }
+
+
+        //查询用户标签
+        if (hasTags){
+            List<PersonTag> personTagList = personTagService.findByUserId(userId);
+            List<String> tags = new ArrayList<>();
+            for(PersonTag personTag : personTagList){
+                tags.add(personTag.getName());
+            }
+            userInfo.setTags(tags);
+        }
+        //查询用户技能
+        if (hasTechs){
+            List<UserTechAuth> userTechAuthList = utaService.findByStatusAndUserId(userId, TechAuthStatusEnum.NORMAL.getType());
+            List<String> techList = new ArrayList<String>();
+            for (UserTechAuth userTechAuth:userTechAuthList) {
+                techList.add(userTechAuth.getCategoryName());
+            }
+            userInfo.setTechs(techList);
+        }
+        return userInfo;
+    }
+
     @Override
     public UserInfoVO findUserTechCardByUserId(Integer userId, Integer techAuthId) {
         User user = userService.findById(userId);

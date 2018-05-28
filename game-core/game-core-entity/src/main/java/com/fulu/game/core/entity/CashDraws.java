@@ -14,7 +14,7 @@ import lombok.Data;
 @Data
 public class CashDraws implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	//提现记录id
 	private Integer cashId;
 	//提现申请时间
