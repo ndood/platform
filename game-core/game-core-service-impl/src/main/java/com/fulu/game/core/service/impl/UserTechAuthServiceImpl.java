@@ -63,7 +63,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
             userTechAuthDao.create(userTechAuthVO);
         } else {
             UserTechAuth oldUserTechAuth = findById(userTechAuthVO.getId());
-            if (!oldUserTechAuth.getId().equals(userTechAuthVO.getId())) {
+            if(!oldUserTechAuth.getId().equals(userTechAuthVO.getId())) {
                 //查询是否有重复技能
                 List<UserTechAuth> userTechAuths = findByCategoryAndUser(userTechAuthVO.getCategoryId(), userTechAuthVO.getUserId());
                 if (userTechAuths.size() > 0) {
@@ -123,16 +123,20 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     @Override
     public UserTechAuthVO findTechAuthVOById(Integer id) {
         UserTechAuth userTechAuth = findById(id);
+        if(userTechAuth==null){
+            return null;
+        }
         UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
         BeanUtil.copyProperties(userTechAuth, userTechAuthVO);
         //查询用户所有技能标签
         List<TechTag> techTagList = findTechTags(userTechAuth.getId());
         userTechAuthVO.setTagList(techTagList);
-        //查询用户所有技能
+        //查询用户所有段位
         UserTechInfo danInfo = findDanInfo(userTechAuthVO.getId());
         userTechAuthVO.setDanInfo(danInfo);
         return userTechAuthVO;
     }
+
 
     /**
      * 查询用户段位信息
@@ -147,16 +151,13 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         return null;
     }
 
-    /**
-     * 通过用户Id查询用户技能认证信息
-     * @param userId
-     * @return
-     */
+
     @Override
     public List<UserTechAuth> findByUserId(Integer userId) {
         UserTechAuthVO param = new UserTechAuthVO();
         param.setUserId(userId);
-        return userTechAuthDao.findByParameter(param);
+        List<UserTechAuth> userTechAuths =userTechAuthDao.findByParameter(param);
+        return userTechAuths;
     }
 
     /**

@@ -2,6 +2,7 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.common.enums.*;
+import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
@@ -86,6 +87,10 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         BeanUtil.copyProperties(userInfoAuthVO,userInfoAuth,copyOptions);
         userInfoAuth.setUpdateTime(new Date());
         if(userInfoAuth.getId()==null){
+            UserInfoAuth userAuth =findByUserId(user.getId());
+            if(userAuth!=null){
+                throw new UserAuthException(UserAuthException.ExceptionCode.EXIST_USER_AUTH);
+            }
             userInfoAuth.setCreateTime(new Date());
             create(userInfoAuth);
         }else{

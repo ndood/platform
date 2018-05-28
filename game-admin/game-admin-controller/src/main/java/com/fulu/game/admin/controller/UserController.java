@@ -136,7 +136,6 @@ public class UserController extends BaseController {
 
     /**
      * 用户技能认证信息添加和修改
-     *
      * @param userTechAuthVO
      * @return
      */
@@ -148,7 +147,6 @@ public class UserController extends BaseController {
 
     /**
      * 用户技能认证信息查询
-     *
      * @return
      */
     @PostMapping(value = "/tech-auth/list")
