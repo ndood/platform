@@ -3,6 +3,8 @@ package com.fulu.game.admin.controller;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.ResultStatus;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.utils.TimeUtil;
+import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
@@ -29,6 +31,8 @@ public class UserController extends BaseController {
     private UserInfoAuthService userInfoAuthService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private AdminService adminService;
     @Autowired
     private UserInfoFileService userInfoFileService;
     @Autowired
@@ -187,8 +191,9 @@ public class UserController extends BaseController {
      */
     @PostMapping("/lock")
     public Result lock(@RequestParam("id") Integer id) {
+        Admin admin = adminService.getCurrentUser();
         userService.lock(id);
-        log.info("用户id {} 于 {} 被封禁", id, new Date());
+        log.info("用户id {} 于 {} 被管理员id {} 封禁", id,admin.getId(), TimeUtil.defaultFormat(new Date()));
         return Result.success().msg("操作成功！");
     }
 
@@ -200,8 +205,9 @@ public class UserController extends BaseController {
      */
     @PostMapping("/unlock")
     public Result unlock(@RequestParam("id") Integer id) {
+        Admin admin = adminService.getCurrentUser();
         userService.unlock(id);
-        log.info("用户id {} 于 {} 被解封", id, new Date());
+        log.info("用户id {} 于 {} 被管理员id {} 解封", id,admin.getId(), TimeUtil.defaultFormat(new Date()));
         return Result.success().msg("操作成功！");
     }
 
