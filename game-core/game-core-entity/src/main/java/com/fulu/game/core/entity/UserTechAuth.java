@@ -26,7 +26,7 @@ public class UserTechAuth implements Serializable {
     private String gradePicUrl;
     //技能描述
     private String description;
-    //状态(0未审核,1审核通过)
+    //状态(0未认证,1认证中，2正常，3冻结)
     private Integer status;
 
     private String mobile;
@@ -37,8 +37,5 @@ public class UserTechAuth implements Serializable {
     private Date updateTime;
 
     private Integer approveCount;
-
-
-
 
 }

@@ -1,5 +1,6 @@
 package com.fulu.game.core.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -24,6 +25,7 @@ public class Approve implements Serializable {
     //点击认可的用户的id
     private Integer userId;
     //生成时间
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
 }

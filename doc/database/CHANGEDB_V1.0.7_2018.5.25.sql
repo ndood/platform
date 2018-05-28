@@ -30,6 +30,7 @@ CREATE TABLE `t_approve`  (
 DROP TABLE IF EXISTS `t_banner`;
 CREATE TABLE `t_banner`  (
   `id` int(2) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+  `disable` tinyint(1) NULL DEFAULT NULL COMMENT '是否启用',
   `sort` int(11) NULL DEFAULT NULL COMMENT '排序id',
   `operator_id` int(11) NULL DEFAULT NULL COMMENT '操作人id',
   `operator_name` varchar(255)  NULL DEFAULT NULL COMMENT '操作人用户名',
