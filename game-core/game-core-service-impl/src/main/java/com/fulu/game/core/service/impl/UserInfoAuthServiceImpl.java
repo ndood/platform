@@ -1,10 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
-import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
-import com.fulu.game.common.enums.FileTypeEnum;
-import com.fulu.game.common.enums.UserInfoFileTypeEnum;
-import com.fulu.game.common.enums.UserTypeEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
@@ -32,6 +29,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
     @Autowired
 	private UserInfoAuthDao userInfoAuthDao;
     @Autowired
+    private UserInfoAuthRejectService userInfoAuthRejectService;
+    @Autowired
     private UserService userService;
     @Autowired
     private UserInfoFileService userInfoFileService;
@@ -45,6 +44,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
     private OrderService orderService;
     @Autowired
     private UserTechAuthService utaService;
+    @Autowired
+    private AdminService adminService;
 
     @Override
     public ICommonDao<UserInfoAuth, Integer> getDao() {
@@ -66,6 +67,10 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
     public UserInfoAuthVO save(UserInfoAuthVO userInfoAuthVO) {
         //更新用户信息
         User user = userService.findById(userInfoAuthVO.getUserId());
+        //如果是驳回状态
+        if(user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.NOT_PERFECT.getType())){
+            userInfoAuthVO.setIsRejectSubmit(true);
+        }
         user.setHeadPortraitsUrl(userInfoAuthVO.getHeadUrl());
         user.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
         user.setIdcard(userInfoAuthVO.getIdCard());
@@ -97,6 +102,35 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         return userInfoAuthVO;
     }
 
+    /**
+     * 认证信息驳回
+     * @param id
+     * @param reason
+     * @return
+     */
+    @Override
+    public UserInfoAuth reject(Integer id,String reason) {
+        Admin admin = adminService.getCurrentUser();
+        log.info("驳回用户个人认证信息:adminId:{};adminName:{};authInfoId:{},reason:{}",admin.getId(),admin.getName(),id,reason);
+        //修改认证驳回状态
+        UserInfoAuth userInfoAuth = findById(id);
+        userInfoAuth.setIsRejectSubmit(true);
+        userInfoAuth.setUpdateTime(new Date());
+        update(userInfoAuth);
+        //修改用户表认证状态信息
+        User user = userService.findById(userInfoAuth.getUserId());
+        user.setUserInfoAuth(UserInfoAuthStatusEnum.NOT_PERFECT.getType());
+        user.setUpdateTime(new Date());
+        userService.update(user);
+        //添加驳回理由
+        UserInfoAuthReject userInfoAuthReject = new UserInfoAuthReject();
+        userInfoAuthReject.setReason(reason);
+        userInfoAuthReject.setUserId(userInfoAuth.getUserId());
+        userInfoAuthReject.setUserInfoAuthId(id);
+        userInfoAuthReject.setCreateTime(new Date());
+        userInfoAuthRejectService.create(userInfoAuthReject);
+        return userInfoAuth;
+    }
 
 
     @Override
@@ -176,7 +210,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         }
         //查询用户技能
         if (hasTechs){
-            List<UserTechAuth> userTechAuthList = utaService.findByUserId(userId,true);
+            List<UserTechAuth> userTechAuthList = utaService.findByStatusAndUserId(userId, TechAuthStatusEnum.NORMAL.getType());
             List<String> techList = new ArrayList<String>();
             for (UserTechAuth userTechAuth:userTechAuthList) {
                 techList.add(userTechAuth.getCategoryName());

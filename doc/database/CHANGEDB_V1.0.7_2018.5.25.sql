@@ -2,8 +2,10 @@
 -- Table column add for t_user_tech_auth
 -- 技能认证表添加好友认可次数
 -- ----------------------------
-ALTER TABLE t_user_tech_auth ADD COLUMN approve_count INT ( 11 ) NULL DEFAULT 0 COMMENT '好友认可次数';
+ALTER TABLE `t_user_tech_auth` ADD COLUMN approve_count INT ( 11 ) NULL DEFAULT 0 COMMENT '好友认可次数';
 UPDATE t_user_tech_auth SET approve_count = 0;
+
+
 
 -- ----------------------------
 -- Table structure for t_approve
@@ -38,3 +40,17 @@ CREATE TABLE `t_banner`  (
   `update_time` datetime(0) NULL DEFAULT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`) USING BTREE
 ) COMMENT = 'banner管理表';
+
+
+ALTER TABLE `t_user_info_auth` ADD COLUMN is_reject_submit tinyint ( 1 ) NULL DEFAULT 0 COMMENT '是否是驳回提交(1是,0否）'  AFTER `wechat`;
+
+
+CREATE TABLE `t_user_info_auth_reject` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL COMMENT '用户ID',
+  `user_info_auth_id` int(11) NOT NULL COMMENT '用户信息认证ID',
+  `user_info_auth_status` tinyint(1) NOT NULL COMMENT '用户认证状态',
+  `reason` varchar(255) NOT NULL COMMENT '原因',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+)  COMMENT='用户认证信息驳回表';

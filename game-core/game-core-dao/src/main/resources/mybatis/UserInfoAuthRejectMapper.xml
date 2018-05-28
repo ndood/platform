@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.UserInfoAuthRejectDao">
+    <resultMap id="UserInfoAuthRejectResultMap" type="com.fulu.game.core.entity.UserInfoAuthReject">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="user_info_auth_id" property="userInfoAuthId"/>
+        <result column="user_info_auth_status" property="userInfoAuthStatus"/>
+        <result column="reason" property="reason"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="UserInfoAuthRejectResultVOMap" type="com.fulu.game.core.entity.vo.UserInfoAuthRejectVO"
+               extends="UserInfoAuthRejectResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,user_info_auth_id,user_info_auth_status,reason,create_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="UserInfoAuthRejectResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user_info_auth_reject
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="UserInfoAuthRejectResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user_info_auth_reject
+    </select>
+
+    <select id="findByParameter" resultMap="UserInfoAuthRejectResultMap"
+            parameterType="com.fulu.game.core.entity.vo.UserInfoAuthRejectVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_user_info_auth_reject
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="userInfoAuthId != null">
+                and user_info_auth_id = #{userInfoAuthId}
+            </if>
+            <if test="userInfoAuthStatus != null">
+                and user_info_auth_status = #{userInfoAuthStatus}
+            </if>
+            <if test="reason != null">
+                and reason = #{reason}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_user_info_auth_reject
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.UserInfoAuthReject">
+        insert into
+        t_user_info_auth_reject (user_id,user_info_auth_id,user_info_auth_status,reason,create_time)
+        values
+        (#{userId},#{userInfoAuthId},#{userInfoAuthStatus},#{reason},#{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.UserInfoAuthReject">
+        update t_user_info_auth_reject
+        <set>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="userInfoAuthId != null">
+                user_info_auth_id = #{userInfoAuthId},
+            </if>
+
+            <if test="userInfoAuthStatus != null">
+                user_info_auth_status = #{userInfoAuthStatus},
+            </if>
+
+            <if test="reason != null">
+                reason = #{reason},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.Constant;
+import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.common.exception.ApproveException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ApproveDao;
@@ -62,7 +63,7 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
         if (newApproveCount >= Constant.DEFAULT_APPROVE_COUNT) {
             //todo 后期技能认证的状态需要同步改掉
             //todo
-            userTechAuth.setStatus(true);
+            userTechAuth.setStatus(TechAuthStatusEnum.NORMAL.getType());
         }
         utaService.update(userTechAuth);
         return approve;

@@ -13,7 +13,7 @@ public class GenerateTest {
 
     @Test
     public void test1() {
-        codeGenerateForTable("wangbin","t_coupon_grant_user");
+        codeGenerateForTable("wangbin","t_user_info_auth_reject");
     }
 
     @Test

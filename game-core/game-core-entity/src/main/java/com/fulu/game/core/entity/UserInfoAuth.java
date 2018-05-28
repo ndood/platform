@@ -25,6 +25,8 @@ public class UserInfoAuth implements Serializable {
 	private String qq;
 	//微信号
 	private String wechat;
+	//是否是驳回提交
+	private Boolean isRejectSubmit;
 	//主图
 	private String mainPicUrl;
 	//是否允许导出

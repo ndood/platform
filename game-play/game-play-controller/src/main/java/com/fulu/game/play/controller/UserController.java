@@ -4,6 +4,7 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.ResultStatus;
 import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
@@ -53,7 +54,7 @@ public class UserController extends BaseController {
     public Result userTechList() {
         User user = userService.getCurrentUser();
         //查询所有用户认证的技能
-        List<UserTechAuth> techAuthList = userTechAuthService.findByUserId(user.getId(), true);
+        List<UserTechAuth> techAuthList = userTechAuthService.findByStatusAndUserId(user.getId(), TechAuthStatusEnum.NORMAL.getType());
         return Result.success().data(techAuthList);
     }
 

@@ -66,6 +66,22 @@ public class UserController extends BaseController {
         return Result.success().data(userInfoAuthVO);
     }
 
+
+    /**
+     * 认证信息驳回
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "/info-auth/reject")
+    public Result userInfoAuthReject(Integer id,
+                                     String reason){
+
+
+        return Result.success();
+    }
+
+
+
     /**
      * 删除身份证照片
      *

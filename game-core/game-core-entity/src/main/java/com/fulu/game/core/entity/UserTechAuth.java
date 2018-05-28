@@ -27,7 +27,7 @@ public class UserTechAuth implements Serializable {
     //技能描述
     private String description;
     //状态(0未审核,1审核通过)
-    private Boolean status;
+    private Integer status;
 
     private String mobile;
 
@@ -37,5 +37,8 @@ public class UserTechAuth implements Serializable {
     private Date updateTime;
 
     private Integer approveCount;
+
+
+
 
 }

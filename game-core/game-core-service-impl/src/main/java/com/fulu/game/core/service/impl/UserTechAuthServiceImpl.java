@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.enums.TechAttrTypeEnum;
+import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserTechAuthDao;
@@ -47,7 +48,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     public UserTechAuthVO save(UserTechAuthVO userTechAuthVO) {
         User user = userService.findById(userTechAuthVO.getUserId());
         Category category = categoryService.findById(userTechAuthVO.getCategoryId());
-        userTechAuthVO.setStatus(true);
+        userTechAuthVO.setStatus(TechAuthStatusEnum.AUTHENTICATION_ING.getType());
         userTechAuthVO.setMobile(user.getMobile());
         userTechAuthVO.setCategoryName(category.getName());
         userTechAuthVO.setUpdateTime(new Date());
@@ -79,11 +80,11 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
     @Override
-    public List<UserTechAuth> findByUserId(Integer userId, Boolean status) {
-        UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
-        userTechAuthVO.setUserId(userId);
-        userTechAuthVO.setStatus(status);
-        return userTechAuthDao.findByParameter(userTechAuthVO);
+    public List<UserTechAuth> findByStatusAndUserId(Integer userId, Integer status) {
+        UserTechAuthVO param = new UserTechAuthVO();
+        param.setUserId(userId);
+        param.setStatus(status);
+        return userTechAuthDao.findByParameter(param);
     }
 
     @Override
@@ -133,13 +134,29 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         return userTechAuthVO;
     }
 
-
+    /**
+     * 查询用户段位信息
+     * @param techAuthId
+     * @return
+     */
     public UserTechInfo findDanInfo(Integer techAuthId) {
         List<UserTechInfo> userTechInfoList = userTechInfoService.findByTechAuthId(techAuthId);
         if (!userTechInfoList.isEmpty()) {
             return userTechInfoList.get(0);
         }
         return null;
+    }
+
+    /**
+     * 通过用户Id查询用户技能认证信息
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<UserTechAuth> findByUserId(Integer userId) {
+        UserTechAuthVO param = new UserTechAuthVO();
+        param.setUserId(userId);
+        return userTechAuthDao.findByParameter(param);
     }
 
     /**

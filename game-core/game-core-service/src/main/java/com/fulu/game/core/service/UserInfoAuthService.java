@@ -17,6 +17,19 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth,Integer
     UserInfoAuthVO save(UserInfoAuthVO userInfoAuthVO);
 
     /**
+     * 通过用户ID查询用户认证信息
+      * @param userId
+     * @return
+     */
+    UserInfoAuth findByUserId(Integer userId);
+    /**
+     * 认证信息驳回
+     * @param id
+     * @return
+     */
+    UserInfoAuth reject(Integer id,String reason);
+
+    /**
      * 查找用户个人认证信息
      * @param userId
      * @return

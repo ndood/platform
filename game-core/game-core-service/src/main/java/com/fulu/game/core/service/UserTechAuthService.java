@@ -32,15 +32,22 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
      */
     UserTechAuthVO findTechAuthVOById(Integer id);
 
+    /**
+     * 查询用户段位信息
+     * @param techAuthId
+     * @return
+     */
     UserTechInfo findDanInfo(Integer techAuthId);
+
+
+    List<UserTechAuth> findByUserId(Integer userId);
 
     /**
      * 通过用户ID查询技能认证
-     *
      * @param userId
      * @return
      */
-    List<UserTechAuth> findByUserId(Integer userId, Boolean status);
+    List<UserTechAuth> findByStatusAndUserId(Integer userId, Integer status);
 
 
     PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize, String orderBy, UserTechAuthVO requestVo);
