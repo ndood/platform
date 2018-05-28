@@ -2,10 +2,7 @@ package com.fulu.game.core.service.impl;
 
 import cn.hutool.json.JSONObject;
 import com.fulu.game.common.Constant;
-import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
-import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.enums.ShareTypeEnum;
-import com.fulu.game.common.enums.UserTypeEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.ImgUtil;
@@ -109,14 +106,17 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Override
     public void lock(int id) {
         User user = findById(id);
-        user.setStatus(0);
+        user.setUpdateTime(new Date());
+        user.setStatus(UserStatusEnum.BANNED.getType());
         userDao.update(user);
+        SubjectUtil.setCurrentUser(user);
     }
 
     @Override
     public void unlock(int id) {
         User user = findById(id);
-        user.setStatus(1);
+        user.setUpdateTime(new Date());
+        user.setStatus(UserStatusEnum.NORMAL.getType());
         userDao.update(user);
         SubjectUtil.setCurrentUser(user);
     }
@@ -132,7 +132,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     public User save(UserVO userVO) {
         User user = new User();
         BeanUtil.copyProperties(userVO, user);
-        user.setStatus(1);//默认账户解封状态
+        user.setStatus(UserStatusEnum.NORMAL.getType());//默认账户解封状态
         user.setType(UserTypeEnum.GENERAL_USER.getType());//默认普通用户
         user.setUserInfoAuth(UserInfoAuthStatusEnum.NOT_PERFECT.getType());//默认未审核
         user.setBalance(Constant.DEFAULT_BALANCE);
