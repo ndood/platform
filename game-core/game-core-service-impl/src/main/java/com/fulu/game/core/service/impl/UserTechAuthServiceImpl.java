@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.enums.TechAttrTypeEnum;
+import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserTechAuthDao;
@@ -47,7 +48,8 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     public UserTechAuthVO save(UserTechAuthVO userTechAuthVO) {
         User user = userService.findById(userTechAuthVO.getUserId());
         Category category = categoryService.findById(userTechAuthVO.getCategoryId());
-        userTechAuthVO.setStatus(true);
+        //TODO @ WANG BIN 下一行修改下
+        userTechAuthVO.setStatus(TechAuthStatusEnum.NO_AUTHENTICATION.getType());
         userTechAuthVO.setMobile(user.getMobile());
         userTechAuthVO.setCategoryName(category.getName());
         userTechAuthVO.setUpdateTime(new Date());
@@ -82,7 +84,8 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     public List<UserTechAuth> findByUserId(Integer userId, Boolean status) {
         UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
         userTechAuthVO.setUserId(userId);
-        userTechAuthVO.setStatus(status);
+        //TODO @ WANG BIN 下一行修改下
+        userTechAuthVO.setStatus(TechAuthStatusEnum.NORMAL.getType());
         return userTechAuthDao.findByParameter(userTechAuthVO);
     }
 

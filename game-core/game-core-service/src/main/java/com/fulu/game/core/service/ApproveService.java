@@ -1,6 +1,10 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Approve;
+import com.fulu.game.core.entity.vo.ApproveVO;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * 好友认可记录表
@@ -8,6 +12,7 @@ import com.fulu.game.core.entity.Approve;
  * @author yanbiao
  * @date 2018-05-25 12:15:34
  */
+@Transactional
 public interface ApproveService extends ICommonService<Approve, Integer> {
 
     /**
@@ -18,4 +23,5 @@ public interface ApproveService extends ICommonService<Approve, Integer> {
      */
     Approve save(Integer techAuthId);
 
+    List<Approve> findByParam(ApproveVO approveVO);
 }
