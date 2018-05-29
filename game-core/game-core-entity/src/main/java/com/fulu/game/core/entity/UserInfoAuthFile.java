@@ -27,6 +27,8 @@ public class UserInfoAuthFile implements Serializable {
 	private String url;
 	//扩展名
 	private String ext;
+
+	private Integer duration;
 	//
 	private Date createTime;
 	//

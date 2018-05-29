@@ -5,14 +5,18 @@ import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.WechatTemplateEnum;
+import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.WechatFormid;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.WechatFormidService;
 import com.fulu.game.core.service.WxTemplateMsgService;
+import com.google.zxing.common.StringUtils;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.CollectionUtil;
+import com.xiaoleilu.hutool.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -22,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@Slf4j
 public class WxTemplateMsgServiceImpl implements WxTemplateMsgService{
 
     @Autowired
@@ -42,7 +47,45 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService{
     }
 
 
+    public Boolean pushWechatTemplateMsg(Integer userId,
+                                      WechatTemplateMsgEnum wechatTemplateMsgEnum,
+                                      String... replaces){
+        User user = userService.findById(userId);
+        String content = wechatTemplateMsgEnum.getContent();
+        if(replaces!=null&&replaces.length>0){
+            content = StrUtil.format(content,replaces);
+        }
+        return pushWechatTemplateMsg(user.getId(),wechatTemplateMsgEnum.getPage(),wechatTemplateMsgEnum.getTemplateId(),content);
+    }
 
+
+
+    public Boolean pushWechatTemplateMsg(Integer userId,
+                                      String page,
+                                      String templateId,
+                                      String content){
+        User user = userService.findById(userId);
+        String formId = getWechatUserFormId(user.getId());
+        if(formId==null){
+            log.error("formId为null,无法给用户推送消息。userId:{};page:{};templateId:{};content:{}",userId,page,templateId,content);
+            return false;
+        }
+        String date = DateUtil.format(new Date(),"yyyy年MM月dd日 HH:mm");
+        WxMaTemplateMessage wxMaTemplateMessage = new WxMaTemplateMessage();
+        wxMaTemplateMessage.setTemplateId(templateId);
+        wxMaTemplateMessage.setToUser(user.getOpenId());
+        wxMaTemplateMessage.setPage(page);
+        wxMaTemplateMessage.setFormId(formId);
+        List<WxMaTemplateMessage.Data> dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", content),new WxMaTemplateMessage.Data("keyword2", date));
+        wxMaTemplateMessage.setData(dataList);
+        try {
+            wxMaService.getMsgService().sendTemplateMsg(wxMaTemplateMessage);
+            return true;
+        }catch (Exception e){
+            log.error("推送消息出错!",e);
+        }
+        return false;
+    }
 
 
 

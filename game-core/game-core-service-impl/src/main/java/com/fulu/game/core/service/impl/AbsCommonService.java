@@ -29,15 +29,15 @@ public abstract class AbsCommonService<T,K> implements ICommonService<T,K> {
     public T findById(K id){
         return getDao().findById(id);
     }
-    @Transactional
+
     public int deleteById(K id){
         return getDao().deleteById(id);
     }
-    @Transactional
+
     public int create(T t){
         return getDao().create(t);
     }
-    @Transactional
+
     public int update(T t){
         return getDao().update(t);
     }

@@ -185,6 +185,17 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return productDao.findByParameter(productVO);
     }
 
+    /**
+     * 根据技能查询所有的商品
+     * @param techAuthId
+     * @return
+     */
+    public List<Product> findProductByTech(int techAuthId) {
+        ProductVO productVO = new ProductVO();
+        productVO.setTechAuthId(techAuthId);
+        return productDao.findByParameter(productVO);
+    }
+
 
     /**
      * 开始接单业务
@@ -238,10 +249,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         //修改首页商品的状态
         batchCreateUserProduct(user.getId());
     }
-
-
-
-
 
 
     /**
@@ -499,6 +506,46 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         ProductVO productVO = new ProductVO();
         productVO.setUserId(userId);
         return productDao.findByParameter(productVO);
+    }
+
+
+    /**
+     * 删除该技能下的所有商品
+     */
+    public void deleteProductByTech(Integer techAuthId){
+        log.info("删除技能下所有商品techAuthId:{}",techAuthId);
+        List<Product> productList = findProductByTech(techAuthId);
+        for(Product product : productList){
+            deleteProduct(product);
+        }
+    }
+
+
+    /**
+     * 删除该用户的所有商品
+     */
+    public void deleteProductByUser(Integer userId){
+        log.info("删除用户所有商品userId:{}",userId);
+        List<Product> productList = findByUserId(userId);
+        for(Product product : productList){
+            deleteProduct(product);
+        }
+    }
+
+    public int deleteById(Integer id){
+        Product product = findById(id);
+        if(product==null){
+            throw new ServiceErrorException("商品ID不存在!");
+        }
+        return deleteProduct(product);
+    }
+
+
+    public int  deleteProduct(Product product){
+        log.info("删除商品product:{}",product);
+        productSearchComponent.deleteIndex(product.getId());
+        product.setDelFlag(true);
+        return update(product);
     }
 
     /**

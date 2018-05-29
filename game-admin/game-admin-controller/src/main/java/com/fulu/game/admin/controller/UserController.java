@@ -180,6 +180,19 @@ public class UserController extends BaseController {
     }
 
     /**
+     * 技能审核通过
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "/tech-auth/pass")
+    public Result techAuthPass(Integer id){
+        userTechAuthService.pass(id);
+        return Result.success().msg("技能审核通过!");
+    }
+
+
+
+    /**
      * 技能不通过
      * @param id
      * @param reason

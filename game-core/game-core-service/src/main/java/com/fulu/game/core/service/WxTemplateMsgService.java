@@ -1,7 +1,12 @@
 package com.fulu.game.core.service;
 
+import com.fulu.game.common.enums.WechatTemplateMsgEnum;
+
 public interface WxTemplateMsgService {
 
+
+
+     Boolean pushWechatTemplateMsg(Integer userId, WechatTemplateMsgEnum wechatTemplateMsgEnum, String... replaces);
 
      /**
       *

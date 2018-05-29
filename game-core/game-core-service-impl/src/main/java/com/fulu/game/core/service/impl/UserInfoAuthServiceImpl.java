@@ -270,6 +270,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
                 List<UserInfoAuthFile> voiceFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(), FileTypeEnum.VOICE.getType());
                 for (UserInfoAuthFile authFile : voiceFiles) {
                     userInfo.setVoice(authFile.getUrl());
+                    userInfo.setVoiceDuration(authFile.getDuration());
                 }
             }
         }
@@ -284,6 +285,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             }
             userInfo.setTags(tags);
         }
+
         //查询用户技能
         if (hasTechs) {
             List<UserTechAuth> userTechAuthList = utaService.findByStatusAndUserId(userId, TechAuthStatusEnum.NORMAL.getType());
