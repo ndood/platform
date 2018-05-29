@@ -22,6 +22,11 @@ public class BannerController {
     @Autowired
     private BannerService bannerService;
 
+    /**
+     * --卡拉啊
+     * @param bannerVO
+     * @return
+     */
     @PostMapping("/save")
     public Result save(@Valid BannerVO bannerVO) {
         Banner banner = bannerService.save(bannerVO);
