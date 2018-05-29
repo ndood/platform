@@ -44,9 +44,11 @@ CREATE TABLE `t_banner`  (
 ) COMMENT = 'banner管理表';
 
 
-ALTER TABLE `t_user_info_auth` ADD COLUMN is_reject_submit tinyint ( 1 ) NULL DEFAULT 0 COMMENT '是否是驳回提交(1是,0否）'  AFTER `wechat`;
+ALTER TABLE `t_user_info_auth` ADD COLUMN `is_reject_submit` tinyint ( 1 ) NULL DEFAULT 0 COMMENT '是否是驳回提交(1是,0否）'  AFTER `wechat`;
 
 
+
+-- 用户信息认证驳回表
 CREATE TABLE `t_user_info_auth_reject` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL COMMENT '用户ID',
@@ -60,3 +62,18 @@ CREATE TABLE `t_user_info_auth_reject` (
 ALTER TABLE `t_user_info_auth_reject` ADD COLUMN admin_id INT ( 11 ) NULL  COMMENT '管理员ID' AFTER `reason`;
 ALTER TABLE `t_user_info_auth_reject` ADD COLUMN admin_name varchar ( 255 ) NULL  COMMENT '管理员ID' AFTER `admin_id`;
 
+--技能认证驳回表
+CREATE TABLE `t_user_tech_auth_reject` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `user_tech_auth_id` int(11) NOT NULL COMMENT '技能认证ID',
+  `user_tech_auth_status` tinyint(4) NOT NULL COMMENT '技能认证状态',
+  `reason` varchar(255) NOT NULL COMMENT '原因',
+  `admin_id` int(11) DEFAULT NULL COMMENT '管理员ID',
+  `admin_name` varchar(255) DEFAULT NULL COMMENT '管理员名称',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+)  COMMENT='技能认证信息驳回表';
+
+--更改之前技能认证数据
+UPDATE `t_user_tech_auth` SET `status` = 2 WHERE `status` = 1;

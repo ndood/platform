@@ -23,4 +23,6 @@ public enum TechAuthStatusEnum implements TypeEnum<Integer>{
         }
         return null;
     }
+
+
 }
