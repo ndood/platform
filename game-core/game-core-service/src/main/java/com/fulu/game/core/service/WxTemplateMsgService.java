@@ -5,7 +5,13 @@ import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 public interface WxTemplateMsgService {
 
 
-
+     /**
+      * 通过枚举发送消息
+      * @param userId
+      * @param wechatTemplateMsgEnum
+      * @param replaces
+      * @return
+      */
      Boolean pushWechatTemplateMsg(Integer userId, WechatTemplateMsgEnum wechatTemplateMsgEnum, String... replaces);
 
      /**

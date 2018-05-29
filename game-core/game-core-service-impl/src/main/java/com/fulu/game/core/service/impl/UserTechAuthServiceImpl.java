@@ -117,6 +117,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         return userTechAuth;
     }
 
+
     @Override
     public UserTechAuth pass(Integer id) {
         Admin admin = adminService.getCurrentUser();
@@ -128,7 +129,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         wxTemplateMsgService.pushWechatTemplateMsg(userTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_SUCCESS);
 
         //todo 技能下商品置为正常
-        return null;
+        return userTechAuth;
     }
 
     @Override
@@ -161,6 +162,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         UserTechAuth userTechAuth = findById(id);
         userTechAuth.setStatus(TechAuthStatusEnum.AUTHENTICATION_ING.getType());
         update(userTechAuth);
+
         //todo 技能下商品置为正常
         return userTechAuth;
     }
