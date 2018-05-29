@@ -11,7 +11,6 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserDao;
 import com.fulu.game.core.entity.Sharing;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.vo.PersonTagVO;
 import com.fulu.game.core.entity.vo.SharingVO;
 import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
@@ -188,44 +187,34 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             shareContent = shareList.get(0).getContent();
         }
         String codeUrl = wxCodeService.create(scene, page);
-        Map<String ,String> contentMap = getContentMap(userInfoVO,shareContent,codeUrl);
+        Map<String, String> contentMap = getContentMap(userInfoVO, shareContent, codeUrl);
         String shareCardUrl = imgUtil.create(contentMap);
         return shareCardUrl;
     }
 
-    private Map<String ,String> getContentMap(UserInfoVO userInfoVO,String shareContent,String codeUrl){
-        Map<String,String> contentMap = new HashMap<>();
-        contentMap.put("nickname",userInfoVO.getNickName());
-        contentMap.put("gender",userInfoVO.getGender().toString());
-        contentMap.put("age",userInfoVO.getAge().toString());
+    private Map<String, String> getContentMap(UserInfoVO userInfoVO, String shareContent, String codeUrl) {
+        Map<String, String> contentMap = new HashMap<>();
+        contentMap.put("nickname", userInfoVO.getNickName());
+        contentMap.put("gender", userInfoVO.getGender().toString());
+        contentMap.put("age", userInfoVO.getAge().toString());
         StringBuilder sb = new StringBuilder();
         sb.append(userInfoVO.getUserTechAuthVO().getCategoryName());
         sb.append("陪玩 ");
         sb.append("段位 ");
         sb.append(userInfoVO.getUserTechAuthVO().getDanInfo().getValue());
-        List<PersonTagVO> personTagVOList = userInfoVO.getPersonTagVOList();
-        String faceTagStr = "";
-        String voiceTagStr = "";
-        for (PersonTagVO personTagVO:personTagVOList) {
-            if(TagTypeEnum.FACE.getType() == personTagVO.getTag().getPid()){
-                faceTagStr += " "+personTagVO.getName();
-            }
-            if(TagTypeEnum.VOICE.getType()== personTagVO.getTag().getPid()){
-                voiceTagStr += " "+personTagVO.getName();
-            }
+        sb.append(" 标签");
+        String tagStr = "";
+        List<String> tagList = userInfoVO.getTags();
+        for (String str : tagList) {
+            tagStr += " " + str;
         }
-        if (null!=faceTagStr){
-            sb.append(" 个人标签").append(faceTagStr);
-        }
-        if (null!=voiceTagStr){
-            sb.append(" 声音标签").append(voiceTagStr);
-        }
-        contentMap.put("techAndTag",sb.toString());
+        sb.append(tagStr);
+        contentMap.put("techAndTag", sb.toString());
         JSONObject jo = new JSONObject(shareContent);
-        contentMap.put("title",jo.getStr("title"));
-        contentMap.put("content",jo.getStr("content"));
-        contentMap.put("mainPicUrl",userInfoVO.getMainPhotoUrl());
-        contentMap.put("codeUrl",codeUrl);
+        contentMap.put("title", jo.getStr("title"));
+        contentMap.put("content", jo.getStr("content"));
+        contentMap.put("mainPicUrl", userInfoVO.getMainPhotoUrl());
+        contentMap.put("codeUrl", codeUrl);
         return contentMap;
     }
 

@@ -7,7 +7,10 @@ import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserInfoAuthDao;
 import com.fulu.game.core.entity.*;
-import com.fulu.game.core.entity.vo.*;
+import com.fulu.game.core.entity.vo.TagVO;
+import com.fulu.game.core.entity.vo.UserInfoAuthVO;
+import com.fulu.game.core.entity.vo.UserInfoVO;
+import com.fulu.game.core.entity.vo.UserTechAuthVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -144,13 +147,14 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     /**
      * 清楚驳回记录状态
+     *
      * @param id
      * @return
      */
     @Override
     public UserInfoAuth unReject(Integer id) {
         Admin admin = adminService.getCurrentUser();
-        log.info("清楚用户认证信息驳回状态:adminId:{};adminName:{};authInfoId:{}",admin.getId(),admin.getName(),id);
+        log.info("清楚用户认证信息驳回状态:adminId:{};adminName:{};authInfoId:{}", admin.getId(), admin.getName(), id);
         UserInfoAuth userInfoAuth = findById(id);
         userInfoAuth.setIsRejectSubmit(false);
         update(userInfoAuth);
@@ -159,6 +163,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     /**
      * 认证信息冻结
+     *
      * @param id
      * @param reason
      * @return
@@ -166,7 +171,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     @Override
     public UserInfoAuth freeze(Integer id, String reason) {
         Admin admin = adminService.getCurrentUser();
-        log.info("冻结用户个人认证信息:adminId:{};adminName:{};authInfoId:{},reason:{}",admin.getId(),admin.getName(),id,reason);
+        log.info("冻结用户个人认证信息:adminId:{};adminName:{};authInfoId:{},reason:{}", admin.getId(), admin.getName(), id, reason);
         UserInfoAuth userInfoAuth = findById(id);
         //修改用户表认证状态信息
         User user = userService.findById(userInfoAuth.getUserId());
@@ -192,7 +197,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     @Override
     public UserInfoAuth unFreeze(Integer id) {
         Admin admin = adminService.getCurrentUser();
-        log.info("解冻用户个人认证信息:adminId:{};adminName:{};authInfoId:{};",admin.getId(),admin.getName(),id);
+        log.info("解冻用户个人认证信息:adminId:{};adminName:{};authInfoId:{};", admin.getId(), admin.getName(), id);
         UserInfoAuth userInfoAuth = findById(id);
         //修改用户表认证状态信息
         User user = userService.findById(userInfoAuth.getUserId());
@@ -305,18 +310,13 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         if (null != userInfoAuth) {
             userInfo.setMainPhotoUrl(userInfoAuth.getMainPicUrl());
         }
-        //查询个人标签(外貌和声音)
+        //查询个人标签
         List<PersonTag> personTagList = personTagService.findByUserId(userId);
-        List<PersonTagVO> personTagVOList = new ArrayList<>();
+        List<String> tagList = new ArrayList<>();
         for (PersonTag personTag : personTagList) {
-            Tag tag = tagService.findById(personTag.getTagId());
-            PersonTagVO personTagVO = new PersonTagVO();
-            personTagVO.setTag(tag);
-            personTagVO.setTagId(personTag.getTagId());
-            personTagVO.setName(personTag.getName());
-            personTagVOList.add(personTagVO);
+            tagList.add(personTag.getName());
         }
-        userInfo.setPersonTagVOList(personTagVOList);
+        userInfo.setTags(tagList);
         //查询认证的技能
         UserTechAuthVO userTechAuthVO = utaService.findTechAuthVOById(techAuthId);
         userInfo.setUserTechAuthVO(userTechAuthVO);
@@ -506,7 +506,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         if (portraitUrls == null) {
             return;
         }
-        userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuthId,FileTypeEnum.PIC.getType());
+        userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuthId, FileTypeEnum.PIC.getType());
         for (int i = 0; i < portraitUrls.length; i++) {
             UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
             String portraitUrl = portraitUrls[i];
