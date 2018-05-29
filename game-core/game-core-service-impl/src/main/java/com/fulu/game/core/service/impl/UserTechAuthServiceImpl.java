@@ -124,8 +124,11 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     @Override
     public UserTechAuthVO findTechAuthVOById(Integer id) {
         UserTechAuth userTechAuth = findById(id);
+        if (userTechAuth == null) {
+            return null;
+        }
         Integer approveCount = userTechAuth.getApproveCount();
-        Integer requireCount = approveCount<5? Constant.DEFAULT_APPROVE_COUNT-approveCount:0;
+        Integer requireCount = approveCount < 5 ? Constant.DEFAULT_APPROVE_COUNT - approveCount : 0;
         UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
         userTechAuthVO.setRequireCount(requireCount);
         BeanUtil.copyProperties(userTechAuth, userTechAuthVO);
@@ -140,6 +143,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuthVO.setCategory(category);
         return userTechAuthVO;
     }
+
 
     /**
      * 查询用户段位信息
@@ -165,7 +169,8 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     public List<UserTechAuth> findByUserId(Integer userId) {
         UserTechAuthVO param = new UserTechAuthVO();
         param.setUserId(userId);
-        return userTechAuthDao.findByParameter(param);
+        List<UserTechAuth> userTechAuths = userTechAuthDao.findByParameter(param);
+        return userTechAuths;
     }
 
     /**

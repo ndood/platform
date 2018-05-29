@@ -1,6 +1,6 @@
 package com.fulu.game.core.entity.vo;
 
-
+import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.TechTag;
 import com.fulu.game.core.entity.UserTechAuth;
@@ -45,8 +45,22 @@ public class UserTechAuthVO extends UserTechAuth {
 
     private Integer requireCount;
 
+    //认证状态文字
+    private String statusStr;
+
+    //认证数显示
+    private String approveCountStr;
+
     private String nickname;
+
     private String startTime;
     private String endTime;
 
+    public String getStatusStr() {
+        return TechAuthStatusEnum.getMsgByType(getStatus());
+    }
+
+    public void setStatusStr(String statusStr) {
+        this.statusStr = statusStr;
+    }
 }

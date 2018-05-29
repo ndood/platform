@@ -13,4 +13,14 @@ public enum TechAuthStatusEnum implements TypeEnum<Integer>{
 
     private Integer type;
     private String msg;
+
+
+    public static String getMsgByType(Integer type){
+        for(TechAuthStatusEnum authStatusEnum : TechAuthStatusEnum.values()){
+            if(authStatusEnum.getType().equals(type)){
+                return authStatusEnum.getMsg();
+            }
+        }
+        return null;
+    }
 }
