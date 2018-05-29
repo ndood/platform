@@ -2,8 +2,9 @@
 -- Table column add for t_user_tech_auth
 -- 技能认证表添加好友认可次数
 -- ----------------------------
-ALTER TABLE `t_user_tech_auth` ADD COLUMN approve_count INT ( 11 ) NULL DEFAULT 0 COMMENT '好友认可次数';
+ALTER TABLE `t_user_tech_auth` ADD COLUMN approve_count INT ( 11 ) NULL DEFAULT 0 COMMENT '好友认可次数' AFTER `status`;
 UPDATE t_user_tech_auth SET approve_count = 0;
+
 
 
 
@@ -55,3 +56,7 @@ CREATE TABLE `t_user_info_auth_reject` (
   `create_time` datetime NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
 )  COMMENT='用户认证信息驳回表';
+
+ALTER TABLE `t_user_info_auth_reject` ADD COLUMN admin_id INT ( 11 ) NULL  COMMENT '管理员ID' AFTER `reason`;
+ALTER TABLE `t_user_info_auth_reject` ADD COLUMN admin_name varchar ( 255 ) NULL  COMMENT '管理员ID' AFTER `admin_id`;
+

@@ -30,6 +30,23 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth,Integer
     UserInfoAuth reject(Integer id,String reason);
 
     /**
+     * 清楚驳回标记
+     * @param id
+     * @return
+     */
+    UserInfoAuth unReject(Integer id);
+
+    /**
+     * 冻结用户认证信息
+     * @param id
+     * @param reason
+     * @return
+     */
+    UserInfoAuth freeze(Integer id,String reason);
+
+    UserInfoAuth unFreeze(Integer id);
+
+    /**
      * 查找用户个人认证信息
      * @param userId
      * @return

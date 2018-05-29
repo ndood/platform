@@ -79,16 +79,47 @@ public class UserController extends BaseController {
     @PostMapping(value = "/info-auth/reject")
     public Result userInfoAuthReject(Integer id,
                                      String reason){
-
-
-        return Result.success();
+        userInfoAuthService.reject(id,reason);
+        return Result.success().msg("认证信息驳回成功!");
     }
 
+    /**
+     * 认证信息冻结
+     * @param id
+     * @param reason
+     * @return
+     */
+    @PostMapping(value = "/info-auth/freeze")
+    public Result userInfoAuthFreeze(Integer id,
+                                     String reason){
+        userInfoAuthService.freeze(id,reason);
+        return Result.success().msg("认证信息冻结成功!");
+    }
 
+    /**
+     * 认证信息解冻
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "/info-auth/unfreeze")
+    public Result userInfoAuthUnFreeze(Integer id){
+        userInfoAuthService.unFreeze(id);
+        return Result.success().msg("认证信息解冻成功!");
+    }
+
+    /**
+     * 清楚认证信息驳回状态
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "/info-auth/unreject")
+    public Result userInfoAuthUnReject(Integer id){
+        userInfoAuthService.unReject(id);
+        return Result.success().msg("清除驳回记录状态成功!");
+    }
 
     /**
      * 删除身份证照片
-     *
      * @param id
      * @return
      */
@@ -109,7 +140,6 @@ public class UserController extends BaseController {
         userInfoAuthFileService.deleteById(id);
         return Result.success().msg("删除成功!");
     }
-
 
     /**
      * 查询用户个人认证信息
@@ -147,6 +177,43 @@ public class UserController extends BaseController {
     public Result techAuthSave(UserTechAuthVO userTechAuthVO) {
         userTechAuthService.save(userTechAuthVO);
         return Result.success().data(userTechAuthVO);
+    }
+
+    /**
+     * 技能不通过
+     * @param id
+     * @param reason
+     * @return
+     */
+    @PostMapping(value = "/tech-auth/reject")
+    public Result techAuthReject(Integer id,
+                                 String reason) {
+        userTechAuthService.reject(id,reason);
+        return Result.success().msg("技能驳回成功!");
+    }
+
+    /**
+     * 技能冻结
+     * @param id
+     * @param reason
+     * @return
+     */
+    @PostMapping(value = "/tech-auth/freeze")
+    public Result techAuthFreeze(Integer id,
+                                 String reason) {
+        userTechAuthService.freeze(id,reason);
+        return Result.success().msg("技能冻结成功!");
+    }
+
+    /**
+     * 技能解冻
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "/tech-auth/unfreeze")
+    public Result techAuthUnFreeze(Integer id) {
+        userTechAuthService.unFreeze(id);
+        return Result.success().msg("技能解冻成功!");
     }
 
     /**
@@ -223,6 +290,7 @@ public class UserController extends BaseController {
         PageInfo<User> userList = userService.list(userVO, pageNum, pageSize);
         return Result.success().data(userList).msg("查询用户列表成功！");
     }
+
 
     @PostMapping("/save")
     public Result save(@Valid UserVO userVO) {

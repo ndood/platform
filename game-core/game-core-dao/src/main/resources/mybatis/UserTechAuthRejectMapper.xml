@@ -1,54 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.fulu.game.core.dao.UserInfoAuthRejectDao">
-    <resultMap id="UserInfoAuthRejectResultMap" type="com.fulu.game.core.entity.UserInfoAuthReject">
+<mapper namespace="com.fulu.game.core.dao.UserTechAuthRejectDao">
+    <resultMap id="UserTechAuthRejectResultMap" type="com.fulu.game.core.entity.UserTechAuthReject">
         <id column="id" property="id"/>
         <result column="user_id" property="userId"/>
-        <result column="user_info_auth_id" property="userInfoAuthId"/>
-        <result column="user_info_auth_status" property="userInfoAuthStatus"/>
+        <result column="user_tech_auth_id" property="userTechAuthId"/>
+        <result column="user_tech_auth_status" property="userTechAuthStatus"/>
         <result column="reason" property="reason"/>
         <result column="admin_id" property="adminId"/>
         <result column="admin_name" property="adminName"/>
         <result column="create_time" property="createTime"/>
     </resultMap>
 
-    <resultMap id="UserInfoAuthRejectResultVOMap" type="com.fulu.game.core.entity.vo.UserInfoAuthRejectVO"
-               extends="UserInfoAuthRejectResultMap">
+    <resultMap id="UserTechAuthRejectResultVOMap" type="com.fulu.game.core.entity.vo.UserTechAuthRejectVO"
+               extends="UserTechAuthRejectResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,user_info_auth_id,user_info_auth_status,reason,admin_id,admin_name,create_time    </sql>
+        id,user_id,user_tech_auth_id,user_tech_auth_status,reason,admin_id,admin_name,create_time    </sql>
 
-    <select id="findById" parameterType="java.lang.Integer" resultMap="UserInfoAuthRejectResultMap">
+    <select id="findById" parameterType="java.lang.Integer" resultMap="UserTechAuthRejectResultMap">
         select
         <include refid="Base_Column_List"/>
-        from t_user_info_auth_reject
+        from t_user_tech_auth_reject
         <where>
             id = #{id}
         </where>
     </select>
 
-    <select id="findAll" resultMap="UserInfoAuthRejectResultMap">
+    <select id="findAll" resultMap="UserTechAuthRejectResultMap">
         select
         <include refid="Base_Column_List"/>
-        from t_user_info_auth_reject
+        from t_user_tech_auth_reject
     </select>
 
-    <select id="findByParameter" resultMap="UserInfoAuthRejectResultMap"
-            parameterType="com.fulu.game.core.entity.vo.UserInfoAuthRejectVO">
+    <select id="findByParameter" resultMap="UserTechAuthRejectResultMap" parameterType="com.fulu.game.core.entity.vo.UserTechAuthRejectVO">
         SELECT
         <include refid="Base_Column_List"/>
-        FROM t_user_info_auth_reject
+        FROM t_user_tech_auth_reject
         <where>
             <if test="userId != null">
                 and user_id = #{userId}
             </if>
-            <if test="userInfoAuthId != null">
-                and user_info_auth_id = #{userInfoAuthId}
+            <if test="userTechAuthId != null">
+                and user_tech_auth_id = #{userTechAuthId}
             </if>
-            <if test="userInfoAuthStatus != null">
-                and user_info_auth_status = #{userInfoAuthStatus}
+            <if test="userTechAuthStatus != null">
+                and user_tech_auth_status = #{userTechAuthStatus}
             </if>
             <if test="reason != null">
                 and reason = #{reason}
@@ -67,34 +66,34 @@
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">
-        delete from t_user_info_auth_reject
+        delete from t_user_tech_auth_reject
         <where>
             id = #{id}
         </where>
     </delete>
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id"
-            parameterType="com.fulu.game.core.entity.UserInfoAuthReject">
+            parameterType="com.fulu.game.core.entity.UserTechAuthReject">
         insert into
-        t_user_info_auth_reject (user_id,user_info_auth_id,user_info_auth_status,reason,admin_id,admin_name,create_time)
+        t_user_tech_auth_reject (user_id,user_tech_auth_id,user_tech_auth_status,reason,admin_id,admin_name,create_time)
         values
-        (#{userId},#{userInfoAuthId},#{userInfoAuthStatus},#{reason},#{adminId},#{adminName},#{createTime})
+        (#{userId},#{userTechAuthId},#{userTechAuthStatus},#{reason},#{adminId},#{adminName},#{createTime})
     </insert>
 
-    <update id="update" parameterType="com.fulu.game.core.entity.UserInfoAuthReject">
-        update t_user_info_auth_reject
+    <update id="update" parameterType="com.fulu.game.core.entity.UserTechAuthReject">
+        update t_user_tech_auth_reject
         <set>
 
             <if test="userId != null">
                 user_id = #{userId},
             </if>
 
-            <if test="userInfoAuthId != null">
-                user_info_auth_id = #{userInfoAuthId},
+            <if test="userTechAuthId != null">
+                user_tech_auth_id = #{userTechAuthId},
             </if>
 
-            <if test="userInfoAuthStatus != null">
-                user_info_auth_status = #{userInfoAuthStatus},
+            <if test="userTechAuthStatus != null">
+                user_tech_auth_status = #{userTechAuthStatus},
             </if>
 
             <if test="reason != null">

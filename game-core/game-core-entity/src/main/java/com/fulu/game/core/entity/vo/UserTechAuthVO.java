@@ -40,6 +40,8 @@ public class UserTechAuthVO  extends UserTechAuth {
      */
     private UserTechInfo danInfo;
 
+    //不通过原因
+    private String reason;
 
     //认证状态文字
     private String statusStr;

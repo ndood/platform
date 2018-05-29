@@ -120,7 +120,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         //修改认证驳回状态
         UserInfoAuth userInfoAuth = findById(id);
         userInfoAuth.setIsRejectSubmit(true);
-        userInfoAuth.setUpdateTime(new Date());
         update(userInfoAuth);
         //修改用户表认证状态信息
         User user = userService.findById(userInfoAuth.getUserId());
@@ -130,10 +129,76 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         //添加驳回理由
         UserInfoAuthReject userInfoAuthReject = new UserInfoAuthReject();
         userInfoAuthReject.setReason(reason);
+        userInfoAuthReject.setUserInfoAuthStatus(user.getUserInfoAuth());
         userInfoAuthReject.setUserId(userInfoAuth.getUserId());
+        userInfoAuthReject.setAdminId(admin.getId());
+        userInfoAuthReject.setAdminName(admin.getName());
         userInfoAuthReject.setUserInfoAuthId(id);
         userInfoAuthReject.setCreateTime(new Date());
         userInfoAuthRejectService.create(userInfoAuthReject);
+
+        //todo 下架该用户上传的所有商品
+        return userInfoAuth;
+    }
+
+    /**
+     * 清楚驳回记录状态
+     * @param id
+     * @return
+     */
+    @Override
+    public UserInfoAuth unReject(Integer id) {
+        Admin admin = adminService.getCurrentUser();
+        log.info("清楚用户认证信息驳回状态:adminId:{};adminName:{};authInfoId:{}",admin.getId(),admin.getName(),id);
+        UserInfoAuth userInfoAuth = findById(id);
+        userInfoAuth.setIsRejectSubmit(false);
+        update(userInfoAuth);
+        return userInfoAuth;
+    }
+
+    /**
+     * 认证信息冻结
+     * @param id
+     * @param reason
+     * @return
+     */
+    @Override
+    public UserInfoAuth freeze(Integer id, String reason) {
+        Admin admin = adminService.getCurrentUser();
+        log.info("冻结用户个人认证信息:adminId:{};adminName:{};authInfoId:{},reason:{}",admin.getId(),admin.getName(),id,reason);
+        UserInfoAuth userInfoAuth = findById(id);
+        //修改用户表认证状态信息
+        User user = userService.findById(userInfoAuth.getUserId());
+        user.setUserInfoAuth(UserInfoAuthStatusEnum.FREEZE.getType());
+        user.setUpdateTime(new Date());
+        userService.update(user);
+
+        //添加驳回理由
+        UserInfoAuthReject userInfoAuthReject = new UserInfoAuthReject();
+        userInfoAuthReject.setReason(reason);
+        userInfoAuthReject.setUserInfoAuthStatus(user.getUserInfoAuth());
+        userInfoAuthReject.setUserId(userInfoAuth.getUserId());
+        userInfoAuthReject.setUserInfoAuthId(id);
+        userInfoAuthReject.setAdminId(admin.getId());
+        userInfoAuthReject.setAdminName(admin.getName());
+        userInfoAuthReject.setCreateTime(new Date());
+        userInfoAuthRejectService.create(userInfoAuthReject);
+
+        //todo 下架该用户上传的所有商品
+        return userInfoAuth;
+    }
+
+    @Override
+    public UserInfoAuth unFreeze(Integer id) {
+        Admin admin = adminService.getCurrentUser();
+        log.info("解冻用户个人认证信息:adminId:{};adminName:{};authInfoId:{};",admin.getId(),admin.getName(),id);
+        UserInfoAuth userInfoAuth = findById(id);
+        //修改用户表认证状态信息
+        User user = userService.findById(userInfoAuth.getUserId());
+        user.setUserInfoAuth(UserInfoAuthStatusEnum.VERIFIED.getType());
+        user.setUpdateTime(new Date());
+        userService.update(user);
+
         return userInfoAuth;
     }
 
@@ -234,13 +299,11 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         userInfo.setAge(user.getAge());
         userInfo.setNickName(user.getNickname());
         userInfo.setGender(user.getGender());
-
         //个人主图
         UserInfoAuth userInfoAuth = findByUserId(userId);
         if (null != userInfoAuth) {
             userInfo.setMainPhotoUrl(userInfoAuth.getMainPicUrl());
         }
-
         //查询个人标签(外貌和声音)
         List<PersonTag> personTagList = personTagService.findByUserId(userId);
         List<PersonTagVO> personTagVOList = new ArrayList<>();
@@ -285,6 +348,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
             copyAuthFile2InfoAuthVo(userInfoAuthVO);
             List<TagVO> allPersonTagVos = findAllUserTag(user.getId(), true);
             userInfoAuthVO.setGroupTags(allPersonTagVos);
+
             userInfoAuthVOList.add(userInfoAuthVO);
         }
         PageInfo page = new PageInfo(userInfoAuths);
@@ -404,6 +468,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth,Integ
         if (portraitUrls == null) {
             return;
         }
+        userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuthId,FileTypeEnum.PIC.getType());
         for (int i = 0; i < portraitUrls.length; i++) {
             UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
             String portraitUrl = portraitUrls[i];

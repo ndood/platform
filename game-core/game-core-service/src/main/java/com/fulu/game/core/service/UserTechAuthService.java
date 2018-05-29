@@ -18,15 +18,37 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
 
     /**
      * 保存用户技能
-     *
      * @param userTechAuthVO
      * @return
      */
     UserTechAuthVO save(UserTechAuthVO userTechAuthVO);
 
     /**
+     * 驳回用户技能认证
+     * @param id
+     * @param reason
+     * @return
+     */
+    UserTechAuth reject(Integer id,String reason);
+
+    /**
+     * 冻结用户技能认证
+     * @param id
+     * @param reason
+     * @return
+     */
+    UserTechAuth freeze(Integer id,String reason);
+
+    /**
+     * 解冻用户技能认证
+     * @param id
+     * @param reason
+     * @return
+     */
+    UserTechAuth unFreeze(Integer id);
+
+    /**
      * 用户技能认证信息(包括标签和段位)
-     *
      * @param id
      * @return
      */
