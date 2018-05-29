@@ -12,6 +12,7 @@ import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@Slf4j
 public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Integer> implements UserTechAuthService {
 
     @Autowired
@@ -34,11 +36,15 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     @Autowired
     private UserTechInfoService userTechInfoService;
     @Autowired
+    private UserTechAuthRejectService userTechAuthRejectService;
+    @Autowired
     private TagService tagService;
     @Autowired
     private CategoryService categoryService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private AdminService adminService;
 
     @Override
     public ICommonDao<UserTechAuth, Integer> getDao() {
@@ -78,6 +84,64 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         //创建游戏段位
         createTechDan(userTechAuthVO.getId(), userTechAuthVO.getCategoryId(), userTechAuthVO.getDanId());
         return userTechAuthVO;
+    }
+
+    @Override
+    public UserTechAuth reject(Integer id, String reason) {
+        Admin admin = adminService.getCurrentUser();
+        log.info("驳回技能认证信息:adminId:{};adminName:{};authInfoId:{},reason:{}",admin.getId(),admin.getName(),id,reason);
+        UserTechAuth userTechAuth = findById(id);
+        userTechAuth.setStatus(TechAuthStatusEnum.NO_AUTHENTICATION.getType());
+        userTechAuth.setApproveCount(0);
+        update(userTechAuth);
+        //添加拒绝原因
+        UserTechAuthReject userTechAuthReject = new UserTechAuthReject();
+        userTechAuthReject.setReason(reason);
+        userTechAuthReject.setUserTechAuthId(userTechAuth.getStatus());
+        userTechAuthReject.setUserId(userTechAuth.getUserId());
+        userTechAuthReject.setUserTechAuthId(id);
+        userTechAuthReject.setAdminId(admin.getId());
+        userTechAuthReject.setAdminName(admin.getName());
+        userTechAuthReject.setCreateTime(new Date());
+        userTechAuthRejectService.create(userTechAuthReject);
+
+        //todo 同步下架用户该技能商品
+
+        return userTechAuth;
+    }
+
+    @Override
+    public UserTechAuth freeze(Integer id, String reason) {
+        Admin admin = adminService.getCurrentUser();
+        log.info("冻结技能认证信息:adminId:{};adminName:{};authInfoId:{},reason:{}",admin.getId(),admin.getName(),id,reason);
+        UserTechAuth userTechAuth = findById(id);
+        userTechAuth.setStatus(TechAuthStatusEnum.FREEZE.getType());
+        userTechAuth.setApproveCount(0);
+        update(userTechAuth);
+        //添加拒绝原因
+        UserTechAuthReject userTechAuthReject = new UserTechAuthReject();
+        userTechAuthReject.setReason(reason);
+        userTechAuthReject.setUserTechAuthId(userTechAuth.getStatus());
+        userTechAuthReject.setUserId(userTechAuth.getUserId());
+        userTechAuthReject.setUserTechAuthId(id);
+        userTechAuthReject.setAdminId(admin.getId());
+        userTechAuthReject.setAdminName(admin.getName());
+        userTechAuthReject.setCreateTime(new Date());
+        userTechAuthRejectService.create(userTechAuthReject);
+        //todo 同步下架用户该技能商品
+        return userTechAuth;
+    }
+
+    @Override
+    public UserTechAuth unFreeze(Integer id) {
+        Admin admin = adminService.getCurrentUser();
+        log.info("解冻技能认证信息:adminId:{};adminName:{};authInfoId:{}",admin.getId(),admin.getName(),id);
+        UserTechAuth userTechAuth = findById(id);
+        userTechAuth.setStatus(TechAuthStatusEnum.AUTHENTICATION_ING.getType());
+        update(userTechAuth);
+
+
+        return userTechAuth;
     }
 
     @Override

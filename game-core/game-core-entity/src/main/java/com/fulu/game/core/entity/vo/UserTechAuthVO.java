@@ -1,5 +1,6 @@
 package com.fulu.game.core.entity.vo;
 
+
 import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.TechTag;
@@ -9,6 +10,7 @@ import lombok.Data;
 
 import java.util.List;
 
+
 /**
  * 技能认证表
  *
@@ -16,7 +18,7 @@ import java.util.List;
  * @date 2018-04-23 11:17:40
  */
 @Data
-public class UserTechAuthVO extends UserTechAuth {
+public class UserTechAuthVO  extends UserTechAuth {
 
     /**
      * 技能认证标签
@@ -38,6 +40,8 @@ public class UserTechAuthVO extends UserTechAuth {
      */
     private UserTechInfo danInfo;
 
+    //不通过原因
+    private String reason;
     /**
      * 游戏信息
      */

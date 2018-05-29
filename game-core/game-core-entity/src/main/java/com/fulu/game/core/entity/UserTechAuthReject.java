@@ -6,23 +6,23 @@ import lombok.Data;
 
 
 /**
- * 用户认证信息驳回表
+ * 技能认证信息驳回表
  * 
  * @author wangbin
  * @date 2018-05-28 20:04:35
  */
 @Data
-public class UserInfoAuthReject implements Serializable {
+public class UserTechAuthReject implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	//
 	private Integer id;
-	//用户ID
+	//
 	private Integer userId;
-	//用户信息认证ID
-	private Integer userInfoAuthId;
-	//信息认证状态
-	private Integer userInfoAuthStatus;
+	//技能认证ID
+	private Integer userTechAuthId;
+	//技能认证状态
+	private Integer userTechAuthStatus;
 	//原因
 	private String reason;
 	//管理员ID

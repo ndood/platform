@@ -62,6 +62,8 @@ public class UserInfoAuthVO extends UserInfoAuth {
     //标签组
     private List<TagVO> groupTags;
 
+    private String remark;
+
     @JsonIgnore
     private String startTime;
     @JsonIgnore

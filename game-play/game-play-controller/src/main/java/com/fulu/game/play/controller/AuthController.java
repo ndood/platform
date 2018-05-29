@@ -2,16 +2,10 @@ package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
-import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.UserInfoAuth;
-import com.fulu.game.core.entity.UserInfoAuthReject;
-import com.fulu.game.core.entity.UserTechAuth;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
-import com.fulu.game.core.service.UserInfoAuthRejectService;
-import com.fulu.game.core.service.UserInfoAuthService;
-import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.UserTechAuthService;
+import com.fulu.game.core.service.*;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +32,8 @@ public class AuthController extends BaseController {
     private UserInfoAuthRejectService userInfoAuthRejectService;
     @Autowired
     private UserTechAuthService userTechAuthService;
-
+    @Autowired
+    private UserTechAuthRejectService userTechAuthRejectService;
 
     /**
      * 保存认证信息
@@ -111,6 +106,10 @@ public class AuthController extends BaseController {
             if (userTechAuth.getApproveCount() > 0) {
                 userTechAuthVO.setApproveCountStr(userTechAuth.getApproveCount() + "/" + Constant.DEFAULT_APPROVE_COUNT);
             }
+            UserTechAuthReject techAuthReject =userTechAuthRejectService.findLastRecordByTechAuth(userTechAuth.getId(),userTechAuth.getStatus());
+            if(techAuthReject!=null){
+                userTechAuthVO.setReason(techAuthReject.getReason());
+            }
             userTechAuthVOList.add(userTechAuthVO);
         }
         return Result.success().data(userTechAuthVOList);
@@ -145,6 +144,7 @@ public class AuthController extends BaseController {
         userTechAuthService.save(userTechAuthVO);
         return Result.success().data(userTechAuthVO);
     }
+
 
 
 
