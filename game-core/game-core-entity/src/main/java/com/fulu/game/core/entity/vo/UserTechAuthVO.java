@@ -2,7 +2,7 @@ package com.fulu.game.core.entity.vo;
 
 
 import com.fulu.game.common.enums.TechAuthStatusEnum;
-import com.fulu.game.core.entity.Tag;
+import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.TechTag;
 import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.UserTechInfo;
@@ -42,6 +42,12 @@ public class UserTechAuthVO  extends UserTechAuth {
 
     //不通过原因
     private String reason;
+    /**
+     * 游戏信息
+     */
+    private Category category;
+
+    private Integer requireCount;
 
     //认证状态文字
     private String statusStr;

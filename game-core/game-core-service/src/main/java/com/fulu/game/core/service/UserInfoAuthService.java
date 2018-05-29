@@ -75,4 +75,10 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth,Integer
      */
     UserInfoVO findUserTechCardByUserId(Integer userId,Integer techAuthId);
 
+    /**
+     * 查询用户技能分享名片信息
+     * @return
+     */
+    UserInfoVO getSharePage(Integer techAuthId);
+
 }
