@@ -242,18 +242,13 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             userInfo.setMainPhotoUrl(userInfoAuth.getMainPicUrl());
         }
 
-        //查询个人标签(外貌和声音)
+        //查询个人标签
         List<PersonTag> personTagList = personTagService.findByUserId(userId);
-        List<PersonTagVO> personTagVOList = new ArrayList<>();
+        List<String> tagList = new ArrayList<>();
         for (PersonTag personTag : personTagList) {
-            Tag tag = tagService.findById(personTag.getTagId());
-            PersonTagVO personTagVO = new PersonTagVO();
-            personTagVO.setTag(tag);
-            personTagVO.setTagId(personTag.getTagId());
-            personTagVO.setName(personTag.getName());
-            personTagVOList.add(personTagVO);
+            tagList.add(personTag.getName());
         }
-        userInfo.setPersonTagVOList(personTagVOList);
+        userInfo.setTags(tagList);
         //查询认证的技能
         UserTechAuthVO userTechAuthVO = utaService.findTechAuthVOById(techAuthId);
         userInfo.setUserTechAuthVO(userTechAuthVO);

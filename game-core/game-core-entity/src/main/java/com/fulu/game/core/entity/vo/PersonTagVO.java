@@ -14,5 +14,5 @@ import lombok.Data;
  */
 @Data
 public class PersonTagVO  extends PersonTag {
-    private Tag tag;
+
 }
