@@ -17,8 +17,6 @@ public class CashDraws implements Serializable {
 
 	//提现记录id
 	private Integer cashId;
-	//提现申请时间
-	private Date createTime;
 	//申请人
 	private Integer userId;
 	//申请者昵称
@@ -38,8 +36,10 @@ public class CashDraws implements Serializable {
 	//申请单操作人
 	private String operator;
 	//提现单号（处理成功后生成）
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private String cashNo;
+	//提现申请时间
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	private Date createTime;
 	//处理时间
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date processTime;

@@ -180,9 +180,9 @@ public class UserController extends BaseController {
         }
         User mobileUser = userService.findByMobile(wxUserInfo.getMobile());
         if (mobileUser != null) {
-            if(mobileUser.getOpenId()!=null){
+            if (mobileUser.getOpenId() != null) {
                 return Result.error().msg("该手机号已经被绑定！");
-            }else{
+            } else {
                 mobileUser.setOpenId(openId);
                 mobileUser.setGender(wxUserInfo.getGender());
                 mobileUser.setNickname(wxUserInfo.getNickName());
@@ -322,5 +322,17 @@ public class UserController extends BaseController {
         User user = userService.getCurrentUser();
         String techCardUrl = userService.getShareCard(user.getId(), techAuthId, scene, page);
         return Result.success().data("techCardUrl", techCardUrl);
+    }
+
+    /**
+     * 陪玩师技能认证分享进入页接口
+     *
+     * @param techAuthId
+     * @return
+     */
+    @RequestMapping("/techpage/share/get")
+    public Result getSharePage(@RequestParam("techAuthId") Integer techAuthId) {
+        UserInfoVO userInfoVO = userInfoAuthService.getSharePage(techAuthId);
+        return Result.success().data(userInfoVO);
     }
 }

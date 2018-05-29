@@ -200,25 +200,25 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         contentMap.put("age",userInfoVO.getAge().toString());
         StringBuilder sb = new StringBuilder();
         sb.append(userInfoVO.getUserTechAuthVO().getCategoryName());
-        sb.append("陪玩；");
+        sb.append("陪玩 ");
         sb.append("段位 ");
         sb.append(userInfoVO.getUserTechAuthVO().getDanInfo().getValue());
         List<PersonTagVO> personTagVOList = userInfoVO.getPersonTagVOList();
         String faceTagStr = "";
         String voiceTagStr = "";
         for (PersonTagVO personTagVO:personTagVOList) {
-            if(personTagVO.getTag().getPid()==101){
+            if(TagTypeEnum.FACE.getType() == personTagVO.getTag().getPid()){
                 faceTagStr += " "+personTagVO.getName();
             }
-            if(personTagVO.getTag().getPid()==102){
+            if(TagTypeEnum.VOICE.getType()== personTagVO.getTag().getPid()){
                 voiceTagStr += " "+personTagVO.getName();
             }
         }
         if (null!=faceTagStr){
-            sb.append("；个人标签").append(faceTagStr);
+            sb.append(" 个人标签").append(faceTagStr);
         }
         if (null!=voiceTagStr){
-            sb.append("；声音标签").append(voiceTagStr);
+            sb.append(" 声音标签").append(voiceTagStr);
         }
         contentMap.put("techAndTag",sb.toString());
         JSONObject jo = new JSONObject(shareContent);

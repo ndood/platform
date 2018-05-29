@@ -1,5 +1,6 @@
 package com.fulu.game.core.service.impl;
 
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
@@ -123,19 +124,26 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     @Override
     public UserTechAuthVO findTechAuthVOById(Integer id) {
         UserTechAuth userTechAuth = findById(id);
+        Integer approveCount = userTechAuth.getApproveCount();
+        Integer requireCount = approveCount<5? Constant.DEFAULT_APPROVE_COUNT-approveCount:0;
         UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
+        userTechAuthVO.setRequireCount(requireCount);
         BeanUtil.copyProperties(userTechAuth, userTechAuthVO);
         //查询用户所有技能标签
         List<TechTag> techTagList = findTechTags(userTechAuth.getId());
         userTechAuthVO.setTagList(techTagList);
-        //查询用户所有技能
+        //查询技能的段位信息
         UserTechInfo danInfo = findDanInfo(userTechAuthVO.getId());
         userTechAuthVO.setDanInfo(danInfo);
+        //查询该技能对应的游戏信息
+        Category category = categoryService.findById(userTechAuthVO.getCategoryId());
+        userTechAuthVO.setCategory(category);
         return userTechAuthVO;
     }
 
     /**
      * 查询用户段位信息
+     *
      * @param techAuthId
      * @return
      */
@@ -149,6 +157,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
     /**
      * 通过用户Id查询用户技能认证信息
+     *
      * @param userId
      * @return
      */
