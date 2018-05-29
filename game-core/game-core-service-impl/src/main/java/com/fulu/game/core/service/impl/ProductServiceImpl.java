@@ -83,7 +83,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         product.setGender(user.getGender());
         product.setCategoryIcon(category.getIcon());
         product.setProductName(userTechAuth.getCategoryName());
-        product.setDescription(userTechAuth.getDescription());
         product.setTechAuthId(userTechAuth.getId());
         product.setSalesModeId(salesMode.getId());
         product.setUnit(salesMode.getName());
@@ -93,6 +92,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         product.setStatus(false);
         product.setCreateTime(new Date());
         product.setUpdateTime(new Date());
+        product.setDelFlag(false);
         create(product);
         return product;
     }
@@ -119,7 +119,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             Category category = categoryService.findById(userTechAuth.getCategoryId());
             product.setCategoryId(userTechAuth.getCategoryId());
             product.setProductName(userTechAuth.getCategoryName());
-            product.setDescription(userTechAuth.getDescription());
             product.setTechAuthId(userTechAuth.getId());
             product.setCategoryIcon(category.getIcon());
         }
@@ -253,20 +252,24 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Override
     public ProductDetailsVO findDetailsByProductId(Integer productId) {
         Product product = findById(productId);
+        //查询用户信息
         UserInfoVO userInfo = userInfoAuthService.findUserCardByUserId(product.getUserId(),true,true,true,false);
+        //查询技能标签
         List<String> techTags = new ArrayList<>();
         List<TechTag> techTagList = techTagService.findByTechAuthId(product.getTechAuthId());
         for(TechTag techTag : techTagList){
             techTags.add(techTag.getName());
         }
         List<ProductVO> productVOList = findOtherProductVO(product.getUserId(),productId);
+        //查询用户认证的技能
+        UserTechAuth userTechAuth = userTechAuthService.findById(product.getTechAuthId());
         //查询完成订单数
         int orderCount =  orderService.allOrderCount(userInfo.getUserId());
         ProductDetailsVO serverCardVO = ProductDetailsVO.builder()
                                     .categoryId(product.getCategoryId())
                                     .id(product.getId())
                                     .onLine(isProductStartOrderReceivingStatus(product.getId()))
-                                    .description(product.getDescription())
+                                    .description(userTechAuth.getDescription())
                                     .productName(product.getProductName())
                                     .categoryIcon(product.getCategoryIcon())
                                     .price(product.getPrice())
@@ -281,8 +284,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     }
 
 
-
-
     @Override
     public SimpleProductVO findSimpleProductByProductId(Integer productId) {
         Product product = findById(productId);
@@ -292,7 +293,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         simpleProductVO.setUserInfo(userInfo);
         return simpleProductVO;
     }
-
 
 
     /**

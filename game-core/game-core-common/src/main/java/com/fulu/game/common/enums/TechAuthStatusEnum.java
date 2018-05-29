@@ -25,4 +25,5 @@ public enum TechAuthStatusEnum implements TypeEnum<Integer>{
     }
 
 
+
 }
