@@ -21,7 +21,7 @@ public interface ApproveService extends ICommonService<Approve, Integer> {
      * @param techAuthId
      * @return
      */
-    Approve save(Integer techAuthId);
+    ApproveVO save(Integer techAuthId);
 
     List<Approve> findByParam(ApproveVO approveVO);
 }

@@ -6,6 +6,7 @@ import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import lombok.extern.slf4j.Slf4j;
+import me.chanjar.weixin.common.exception.WxErrorException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -120,6 +121,17 @@ public class ExceptionHandlerAdvice {
     public Result handleException(Exception e) {
         log.error(e.getMessage(), e);
         return	Result.error().msg("服务器错误!");
+    }
+
+    /**
+     * 统一异常
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(WxErrorException.class)
+    public Result wxErrorException(WxErrorException e) {
+        log.error(e.getMessage(), e);
+        return	Result.error().msg("生成小程序码错误");
     }
 
 }

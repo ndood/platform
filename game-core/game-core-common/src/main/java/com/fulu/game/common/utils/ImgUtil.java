@@ -26,10 +26,10 @@ public class ImgUtil {
     private String EXT_NAME = "jpg";
     private int imageWidth = Constant.TECH_CARD_WIDTH;  //图片的宽度400
     private int imageHeight = Constant.TECH_CARD_HEIGHT; //图片的高度600
-    private static final int FONT_SIZE_16 = 16;
-    private static final int FONT_SIZE_14 = 14;
-    private Font FONT_SONG_BOLD_16 = new Font("宋体", Font.BOLD, FONT_SIZE_16);
-    private Font FONT_SONG_PLAIN_14 = new Font("宋体", Font.PLAIN, FONT_SIZE_14);
+    private static final int FONT_SIZE_24 = 24;
+    private static final int FONT_SIZE_22 = 22;
+    private Font FONT_SONG_BOLD = new Font("宋体", Font.BOLD, FONT_SIZE_24);
+    private Font FONT_SONG_PLAIN = new Font("宋体", Font.PLAIN, FONT_SIZE_22);
     private static final Color WHITE = Color.white;
     private static final Color BLACK = Color.black;
     private static final Color FEMALE_COLOR = Color.pink;
@@ -43,7 +43,7 @@ public class ImgUtil {
         main.fillRect(0, 0, imageWidth, imageHeight);
 
         //插入陪玩师主图
-        int H_mainPic = 330;
+        int H_mainPic = 700;
         int mainPic2Top = 0;
         Graphics mainPic = image.getGraphics();
         BufferedImage bimg = null;
@@ -57,16 +57,14 @@ public class ImgUtil {
         }
 
         //陪玩师个人信息区域
-        int H_person = 40;
+        int H_person = 70;
         int person2Top = mainPic2Top + H_mainPic + 10;
-        //String personContent = "泼辣小医仙";
         String personContent = contentMap.get("nickname");
         Integer gender = Integer.valueOf(contentMap.get("gender"));
         Integer age = Integer.valueOf(contentMap.get("age"));
-        //String ageContent = "♀22";
         Color defaultColor = FEMALE_COLOR;
-        String genderAndAge = null;
-        if (0 == gender || 1 == gender) {
+        String genderAndAge = "";
+        if (GenderEnum.ASEXUALITY.getType() == gender || GenderEnum.MALE.getType() == gender) {
             genderAndAge = GenderEnum.SYMBOL_MALE.getMsg() + " " + age;
         } else {
             defaultColor = FEMALE_COLOR;
@@ -77,27 +75,26 @@ public class ImgUtil {
         person.fillRect(0, person2Top, imageWidth, H_person);
 
         person.setColor(BLACK);
-        person.setFont(FONT_SONG_BOLD_16);
+        person.setFont(FONT_SONG_BOLD);
         person.drawString(personContent, 0, person2Top + H_person / 2);
         int personLen = getContentLength(personContent, person);
         int ageLen = getContentLength(genderAndAge, person);
-        person.setFont(FONT_SONG_PLAIN_14);
+        person.setFont(FONT_SONG_PLAIN);
         person.setColor(defaultColor);
         person.fillRect(personLen + 10, person2Top + 5, ageLen, H_person / 2);
         person.setColor(WHITE);
         person.drawString(genderAndAge, personLen + 10, person2Top + H_person / 2);
 
         //*******技能和技能标签区域
-        int H_tech = 50;
+        int H_tech = 70;
         int tech2Top = person2Top + H_person + 5;
-        //String techStr = "王者荣耀陪玩 段位：永恒钻石 个人标签：御姐 娇小 声音标签：萝莉音 浪漫";
         String techAndTag = contentMap.get("techAndTag");
         Graphics2D tech = image.createGraphics();
         tech.setColor(WHITE);
         tech.fillRect(0, tech2Top, imageWidth, H_tech);
         //设置字体
         tech.setColor(BLACK);
-        tech.setFont(FONT_SONG_PLAIN_14);
+        tech.setFont(FONT_SONG_PLAIN);
 
         //文字叠加,自动换行叠加
         int tempX = 0;
@@ -113,29 +110,26 @@ public class ImgUtil {
                 //长度已经满一行,进行文字叠加
                 tech.drawString(sb.toString(), tempX, tempY);
                 sb.delete(0, sb.length());//清空内容,重新追加
-                tempY += FONT_SONG_PLAIN_14.getSize() + 5;
+                tempY += FONT_SONG_PLAIN.getSize() + 10;
                 tempLineLen = 0;
             }
             sb.append(tempChar);//追加字符
         }
-
         tech.drawString(sb.toString(), tempX, tempY);//最后叠加余下的文字
         tech.dispose();
 
         //画一条横线
         Graphics2D line = image.createGraphics();
         int lineWidth = imageWidth - 20;
-        int line2Top = tech2Top + H_tech + 10;
+        int line2Top = tech2Top + H_tech;
         line.setColor(LIGHT_GRAY);
         line.drawRect(10, line2Top, lineWidth, 0);
 
         //小程序码和文案
-        int H_code = 130;
+        int H_code = 200;
         int code2Top = line2Top + 10;
         int codeWidth = imageWidth / 3;
         int shareWidth = imageWidth - codeWidth;
-//        String shareStr1 = "泼辣小医仙正在申请陪玩师";
-//        String shareStr2 = "长按识别二维码认可她的能力";
         String shareTitle = personContent + contentMap.get("title");
         String shareContent = contentMap.get("content");
 
@@ -152,19 +146,19 @@ public class ImgUtil {
 
         Graphics2D share = image.createGraphics();
         share.setColor(WHITE);
-        share.fillRect(codeWidth + 20, code2Top, shareWidth - 10, H_code);
+        share.fillRect(codeWidth + 30, code2Top, shareWidth - 10, H_code);
         share.setColor(BLACK);
-        share.setFont(FONT_SONG_BOLD_16);
-        share.drawString(shareTitle, codeWidth + 20, code2Top + (H_code / 2) - 10);
-        share.setFont(FONT_SONG_PLAIN_14);
-        share.drawString(shareContent, codeWidth + 20, code2Top + (H_code / 2) + 10);
+        share.setFont(FONT_SONG_BOLD);
+        share.drawString(shareTitle, codeWidth + 30, code2Top + (H_code / 2) - 15);
+        share.setFont(FONT_SONG_PLAIN);
+        share.drawString(shareContent, codeWidth + 30, code2Top + (H_code / 2) + 15);
 
         ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
         ImageOutputStream imageOS = ImageIO.createImageOutputStream(byteArrayOS);
         ImageIO.write(image, EXT_NAME, imageOS);
         InputStream is = new ByteArrayInputStream(byteArrayOS.toByteArray());
         String imgName = GenIdUtil.GetImgNo() + "." + EXT_NAME;
-        return ossUtil.uploadFile(is,imgName);
+        return ossUtil.uploadFile(is, imgName);
     }
 
     private int getCharLen(char c, Graphics2D g) {

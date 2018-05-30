@@ -2,6 +2,7 @@ package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
+import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.exception.ApproveException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.TimeUtil;
@@ -14,6 +15,8 @@ import com.fulu.game.core.entity.vo.ApproveVO;
 import com.fulu.game.core.service.ApproveService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.UserTechAuthService;
+import com.fulu.game.core.service.WxTemplateMsgService;
+import com.xiaoleilu.hutool.util.BeanUtil;
 import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,9 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
     private UserService userService;
 
     @Autowired
+    private WxTemplateMsgService wxTemplateMsgService;
+
+    @Autowired
     private ApproveDao approveDao;
 
     @Override
@@ -41,7 +47,7 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
     }
 
     @Override
-    public Approve save(Integer techAuthId) {
+    public ApproveVO save(Integer techAuthId) {
         log.info("====好友认可接口执行====入参技能id:{},时间:{}", techAuthId, TimeUtil.defaultFormat(new Date()));
         UserTechAuth userTechAuth = utaService.findById(techAuthId);
         if (null == userTechAuth) {
@@ -50,14 +56,14 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
         if (userTechAuth.getStatus() == TechAuthStatusEnum.FREEZE.getType()) {
             throw new ApproveException(ApproveException.ExceptionCode.APPROVE_FREEZE);
         }
-        ApproveVO approveVO = new ApproveVO();
+        ApproveVO paramVO = new ApproveVO();
         Integer techOwnerId = userTechAuth.getUserId();
         log.info("技能申请者id:{}", techOwnerId);
-        approveVO.setTechOwnerId(techOwnerId);
+        paramVO.setTechOwnerId(techOwnerId);
         User user = userService.getCurrentUser();
         log.info("认可人id:{}", user.getId());
-        approveVO.setUserId(user.getId());
-        List<Approve> list = approveDao.findByParameter(approveVO);
+        paramVO.setUserId(user.getId());
+        List<Approve> list = approveDao.findByParameter(paramVO);
         if (!CollectionUtil.isEmpty(list)) {
             throw new ApproveException(ApproveException.ExceptionCode.APPROVE_DUPLICATE);
         }
@@ -77,7 +83,22 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
             userTechAuth.setStatus(TechAuthStatusEnum.AUTHENTICATION_ING.getType());
         }
         utaService.update(userTechAuth);
-        return approve;
+
+        UserTechAuth nowUserTechAuth = utaService.findById(userTechAuth.getId());
+        Integer techStatus = nowUserTechAuth.getStatus();
+        Integer approveCount = nowUserTechAuth.getApproveCount();
+        Integer requireCount = approveCount < 5 ? Constant.DEFAULT_APPROVE_COUNT - approveCount : 0;
+        if (techStatus == TechAuthStatusEnum.NORMAL.getType()) {
+            wxTemplateMsgService.pushWechatTemplateMsg(nowUserTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_ING);
+        } else {
+            wxTemplateMsgService.pushWechatTemplateMsg(nowUserTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_ING, user.getNickname(), requireCount.toString());
+        }
+        ApproveVO responseVO = new ApproveVO();
+        BeanUtil.copyProperties(approve, responseVO);
+        responseVO.setTechStatus(techStatus);
+        responseVO.setApproveCount(approveCount);
+        responseVO.setRequireCount(requireCount);
+        return responseVO;
     }
 
     @Override

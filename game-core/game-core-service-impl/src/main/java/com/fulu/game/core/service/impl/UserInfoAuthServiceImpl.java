@@ -324,9 +324,16 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     }
 
     @Override
-    public UserInfoVO findUserTechCardByUserId(Integer userId, Integer techAuthId) {
-        User user = userService.findById(userId);
+    public UserInfoVO findUserTechCardByUserId(Integer techAuthId) {
+        //查询认证的技能
         UserInfoVO userInfo = new UserInfoVO();
+        UserTechAuthVO userTechAuthVO = utaService.findTechAuthVOById(techAuthId);
+        if(null == userTechAuthVO){
+            throw new UserException(UserException.ExceptionCode.TECH_AUTH_NOT_EXIST_EXCEPTION);
+        }
+        Integer userId = userTechAuthVO.getUserId();
+        userInfo.setUserTechAuthVO(userTechAuthVO);
+        User user = userService.findById(userId);
         userInfo.setUserId(userId);
         userInfo.setType(user.getType());
         userInfo.setAge(user.getAge());
@@ -344,9 +351,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             tagList.add(personTag.getName());
         }
         userInfo.setTags(tagList);
-        //查询认证的技能
-        UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(techAuthId);
-        userInfo.setUserTechAuthVO(userTechAuthVO);
         return userInfo;
     }
 
