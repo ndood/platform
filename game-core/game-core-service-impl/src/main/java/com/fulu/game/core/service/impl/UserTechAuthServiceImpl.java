@@ -113,6 +113,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuthReject.setUserTechAuthId(userTechAuth.getStatus());
         userTechAuthReject.setUserId(userTechAuth.getUserId());
         userTechAuthReject.setUserTechAuthId(id);
+        userTechAuthReject.setUserTechAuthStatus(userTechAuth.getStatus());
         userTechAuthReject.setAdminId(admin.getId());
         userTechAuthReject.setAdminName(admin.getName());
         userTechAuthReject.setCreateTime(new Date());
@@ -157,6 +158,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuthReject.setReason(reason);
         userTechAuthReject.setUserTechAuthId(userTechAuth.getStatus());
         userTechAuthReject.setUserId(userTechAuth.getUserId());
+        userTechAuthReject.setUserTechAuthStatus(userTechAuth.getStatus());
         userTechAuthReject.setUserTechAuthId(id);
         userTechAuthReject.setAdminId(admin.getId());
         userTechAuthReject.setAdminName(admin.getName());
@@ -235,8 +237,15 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         Integer approveCount = userTechAuth.getApproveCount();
         Integer requireCount = approveCount < 5 ? Constant.DEFAULT_APPROVE_COUNT - approveCount : 0;
         UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
-        userTechAuthVO.setRequireCount(requireCount);
         BeanUtil.copyProperties(userTechAuth, userTechAuthVO);
+        //审核不通过原因
+        UserTechAuthReject techAuthReject =userTechAuthRejectService.findLastRecordByTechAuth(userTechAuth.getId(),userTechAuth.getStatus());
+        if(techAuthReject!=null){
+            userTechAuthVO.setReason(techAuthReject.getReason());
+        }
+
+        userTechAuthVO.setRequireCount(requireCount);
+
         //查询用户所有技能标签
         List<TechTag> techTagList = findTechTags(userTechAuth.getId());
         userTechAuthVO.setTagList(techTagList);

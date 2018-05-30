@@ -2,6 +2,7 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.entity.Tag;
 import com.fulu.game.core.entity.vo.PersonTagVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,5 +38,10 @@ public class PersonTagServiceImpl extends AbsCommonService<PersonTag,Integer> im
     @Override
     public int deleteByUserId(Integer userId) {
         return personTagDao.deleteByUserId(userId);
+    }
+
+    @Override
+    public int updatePersonTagByTag(Tag tag){
+        return personTagDao.updatePersonTagByTag(tag);
     }
 }

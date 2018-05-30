@@ -53,8 +53,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Autowired
     private ProductSearchComponent productSearchComponent;
 
-
-
     @Override
     public ICommonDao<Product, Integer> getDao() {
         return productDao;
@@ -62,16 +60,19 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     @Override
     public Product create(Integer techAuthId, BigDecimal price, Integer unitId) {
+
         UserTechAuth userTechAuth = userTechAuthService.findById(techAuthId);
         if(userTechAuth==null){
             throw new ServiceErrorException("不能设置该技能接单!");
         }
+        //检查用户技能状态
         userTechAuthService.checkUserTechAuth(techAuthId);
 
         User user = userService.findById(userTechAuth.getUserId());
         userService.isCurrentUser(user.getId());
         //检查用户认证的状态
         userService.checkUserInfoAuthStatus(user.getId());
+
         //查询销售方式的单位
         SalesMode salesMode = salesModeService.findById(unitId);
         if(salesMode==null){
@@ -109,6 +110,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     @Override
     public Product update(Integer id, Integer techAuthId, BigDecimal price, Integer unitId) {
+        //检查用户技能状态
         userTechAuthService.checkUserTechAuth(techAuthId);
         if (redisOpenService.hasKey(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(id))) {
             throw new ServiceErrorException("在线技能不允许修改!");
@@ -224,6 +226,12 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         log.info("通过techAuthId恢复商品删除状态:techAuthId:{}",techAuthId);
         productDao.recoverProductDelFlagByTechAuthId(techAuthId);
     }
+
+    @Override
+    public int updateProductSalesModel(SalesMode salesMode) {
+        return productDao.updateProductSalesModel(salesMode);
+    }
+
     /**
      * 开始接单业务
      */
@@ -265,7 +273,10 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      */
     @Override
     public void stopOrderReceiving() {
-        User user =(User) SubjectUtil.getCurrentUser();
+        User user = userService.getCurrentUser();
+        //检查用户认证的状态
+        userService.checkUserInfoAuthStatus(user.getId());
+
         List<Product> products = findEnabledProductByUser(user.getId());
         redisOpenService.delete(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()));
         for (Product product : products) {
@@ -605,7 +616,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
 
     public Map<String, Object> readOrderReceivingStatus() {
-        User user =(User) SubjectUtil.getCurrentUser();
+        User user = userService.getCurrentUser();
+        //检查用户认证的状态
+        userService.checkUserInfoAuthStatus(user.getId());
         return redisOpenService.hget(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()));
     }
 

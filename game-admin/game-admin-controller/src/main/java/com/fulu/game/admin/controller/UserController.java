@@ -281,7 +281,6 @@ public class UserController extends BaseController {
 
     /**
      * 用户技能认证信息查询
-     *
      * @param id
      * @return
      */

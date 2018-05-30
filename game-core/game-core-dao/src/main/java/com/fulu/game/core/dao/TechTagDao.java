@@ -1,5 +1,6 @@
 package com.fulu.game.core.dao;
 
+import com.fulu.game.core.entity.Tag;
 import com.fulu.game.core.entity.TechTag;
 import com.fulu.game.core.entity.vo.TechTagVO;
 
@@ -21,4 +22,5 @@ public interface TechTagDao extends ICommonDao<TechTag,Integer>{
 
     int deleteByTechAuthId(Integer techAuthId);
 
+    int updateTechTagByTag(Tag tag);
 }

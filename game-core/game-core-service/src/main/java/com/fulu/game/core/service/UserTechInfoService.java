@@ -1,5 +1,6 @@
 package com.fulu.game.core.service;
 
+import com.fulu.game.core.entity.TechValue;
 import com.fulu.game.core.entity.UserTechInfo;
 
 import java.util.List;
@@ -17,5 +18,7 @@ public interface UserTechInfoService extends ICommonService<UserTechInfo,Integer
 
     int deleteByTechAuthId(Integer techAuthId);
 
-    public List<UserTechInfo> findByTechAuthId(Integer techAuthId);
+    List<UserTechInfo> findByTechAuthId(Integer techAuthId);
+
+    int updateUserTechInfoByTechValue(TechValue techValue);
 }

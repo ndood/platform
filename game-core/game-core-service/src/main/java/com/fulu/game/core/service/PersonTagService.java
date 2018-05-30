@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.PersonTag;
+import com.fulu.game.core.entity.Tag;
 
 import java.util.List;
 import java.util.Map;
@@ -18,4 +19,5 @@ public interface PersonTagService extends ICommonService<PersonTag,Integer>{
 
     int deleteByUserId(Integer userId);
 
+    int updatePersonTagByTag(Tag tag);
 }

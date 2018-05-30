@@ -46,7 +46,6 @@ public class TagController extends BaseController {
 
     /**
      * 创建内容标签
-     *
      * @param categoryId
      * @param name
      * @return
@@ -56,6 +55,13 @@ public class TagController extends BaseController {
                                     String name) {
         Tag tag = tagService.create(categoryId, name);
         return Result.success().data(tag).msg("添加游戏标签成功!");
+    }
+
+    @PostMapping(value = "/update")
+    public Result updateCategoryTag(Integer id,
+                                    String name) {
+        Tag tag = tagService.update(id, name);
+        return Result.success().data(tag).msg("修改标签成功!");
     }
 
     /**

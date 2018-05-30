@@ -60,7 +60,7 @@ public class CollectFormIdQueue implements Runnable{
                 log.error("WechatformidProcessTask run exp", e);
             }
         }
-        log.info("结束手机formId");
+        log.info("结束收集formId");
     }
 
     private void process(WechatFormid formid) {

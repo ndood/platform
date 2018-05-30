@@ -138,4 +138,19 @@
             id = #{id}
         </where>
     </update>
+
+    <update id="updateUserTechInfoByTechValue" parameterType="com.fulu.game.core.entity.TechValue">
+        update t_user_tech_info
+        <set>
+            <if test="name != null">
+                value = #{name},
+            </if>
+            <if test="rank != null">
+                rank = #{rank},
+            </if>
+        </set>
+        <where>
+            tech_value_id = #{id}
+        </where>
+    </update>
 </mapper>

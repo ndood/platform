@@ -1,5 +1,6 @@
 package com.fulu.game.core.service.impl;
 
+import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.exception.CouponException;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.dao.CouponDao;
@@ -8,10 +9,7 @@ import com.fulu.game.core.entity.Coupon;
 import com.fulu.game.core.entity.CouponGroup;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.CouponVO;
-import com.fulu.game.core.service.CouponGroupService;
-import com.fulu.game.core.service.CouponService;
-import com.fulu.game.core.service.OrderService;
-import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.date.DateUnit;
@@ -39,7 +37,8 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
     private UserService userService;
     @Autowired
     private OrderService orderService;
-
+    @Autowired
+    private WxTemplateMsgService wxTemplateMsgService;
 
     @Override
     public ICommonDao<Coupon, Integer> getDao() {
@@ -222,6 +221,8 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
             coupon.setIsFirstReceive(false);
         }
         create(coupon);
+        //发放优惠券通知
+        wxTemplateMsgService.pushWechatTemplateMsg(coupon.getUserId(), WechatTemplateMsgEnum.GRANT_COUPON,coupon.getDeduction().toString());
         return coupon;
     }
 
