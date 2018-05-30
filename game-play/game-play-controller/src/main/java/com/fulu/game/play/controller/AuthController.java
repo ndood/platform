@@ -2,6 +2,8 @@ package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
+import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
@@ -44,6 +46,7 @@ public class AuthController extends BaseController {
     public Result userAuthSave(UserInfoAuthVO userInfoAuthVO) {
         //todo 判断用户是否是冻结
         User user = userService.getCurrentUser();
+
         if(userInfoAuthVO.getId()!=null){
             UserInfoAuth userInfoAuth = userInfoAuthService.findById(userInfoAuthVO.getId());
             userService.isCurrentUser(userInfoAuth.getUserId());
@@ -74,6 +77,10 @@ public class AuthController extends BaseController {
     @PostMapping(value = "/user-info/status")
     public Result userAuthStauts() {
         User user = userService.findById(userService.getCurrentUser().getId());
+        //如果是用户冻结状态给错误提示
+        if(user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())){
+            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE);
+        }
         Integer authStatus = user.getUserInfoAuth();
         UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
         if (userInfoAuth == null) {

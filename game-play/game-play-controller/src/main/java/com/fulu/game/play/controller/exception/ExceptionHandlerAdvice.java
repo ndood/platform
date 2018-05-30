@@ -4,6 +4,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.exception.BizException;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ServiceErrorException;
+import com.fulu.game.common.exception.UserAuthException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
@@ -74,7 +75,6 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 订单业务错误
-     *
      * @param e
      * @return
      */
@@ -84,9 +84,21 @@ public class ExceptionHandlerAdvice {
         return Result.error().msg(e.getMessage());
     }
 
+
+    /**
+     * 用户认证异常
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(UserAuthException.class)
+    public Result handleUserAuthException(UserAuthException e) {
+        log.error(e.getMessage(), e);
+        return Result.error().msg(e.getMessage()).data("errcode", e.getCode());
+    }
+
+
     /**
      * 业务异常的父类
-     *
      * @param e
      * @return
      */
@@ -96,6 +108,8 @@ public class ExceptionHandlerAdvice {
         log.error(e.getMessage(), e);
         return Result.error().msg(e.getMessage()).data("errcode", e.getCode());
     }
+
+
 
     /**
      * 统一异常

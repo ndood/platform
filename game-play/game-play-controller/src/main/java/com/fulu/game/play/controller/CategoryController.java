@@ -111,9 +111,13 @@ public class CategoryController extends BaseController{
     @PostMapping(value = "/dan/list")
     public Result danList(@RequestParam(required = true) Integer categoryId) {
         TechAttr techAttr = techAttrService.findByCategoryAndType(categoryId, TechAttrTypeEnum.DAN.getType());
+        if(techAttr==null){
+            return Result.error().msg("该游戏没有设置段位信息!");
+        }
         List<TechValue> techValueList = techValueService.findByTechAttrId(techAttr.getId());
         return Result.success().data(techValueList);
     }
+
 
 
 

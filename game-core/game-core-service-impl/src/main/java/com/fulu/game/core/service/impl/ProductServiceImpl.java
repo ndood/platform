@@ -65,6 +65,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         }
         User user = userService.findById(userTechAuth.getUserId());
         userService.isCurrentUser(user.getId());
+        //检查用户认证的状态
+        userService.checkUserInfoAuthStatus(user.getId());
         //查询销售方式的单位
         SalesMode salesMode = salesModeService.findById(unitId);
         if(salesMode==null){
@@ -107,6 +109,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         }
         Product product = findById(id);
         userService.isCurrentUser(product.getUserId());
+        //检查用户认证的状态
+        userService.checkUserInfoAuthStatus(product.getUserId());
         if (techAuthId != null) {
             if(!product.getTechAuthId().equals(techAuthId)){
                 List<Product> products = findProductByUserAndSalesMode(product.getUserId(),techAuthId,unitId);
@@ -150,6 +154,10 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      */
     @Override
     public Product enable(int id, boolean status) {
+        User user = userService.getCurrentUser();
+        userService.isCurrentUser(user.getId());
+        //检查用户认证的状态
+        userService.checkUserInfoAuthStatus(user.getId());
         if (redisOpenService.hasKey(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(id))) {
             throw new ServiceErrorException("在线技能不允许修改!");
         }
@@ -203,7 +211,11 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     //todo 开始接单的时候要去校验商品字段有没有更新
     @Override
     public void startOrderReceiving(Float hour) {
-        User user =(User) SubjectUtil.getCurrentUser();
+        User user = userService.getCurrentUser();
+        userService.isCurrentUser(user.getId());
+        //检查用户认证的状态
+        userService.checkUserInfoAuthStatus(user.getId());
+
         Long expire = (long)(hour * 3600) ;
         List<Product> products = findEnabledProductByUser(user.getId());
         if (products.isEmpty()) {
@@ -526,6 +538,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      */
     public void deleteProductByUser(Integer userId){
         log.info("删除用户所有商品userId:{}",userId);
+        redisOpenService.delete(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(userId));
         List<Product> productList = findByUserId(userId);
         for(Product product : productList){
             deleteProduct(product);
@@ -543,6 +556,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     public int  deleteProduct(Product product){
         log.info("删除商品product:{}",product);
+        redisOpenService.delete(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(product.getId()));
         productSearchComponent.deleteIndex(product.getId());
         product.setDelFlag(true);
         return update(product);

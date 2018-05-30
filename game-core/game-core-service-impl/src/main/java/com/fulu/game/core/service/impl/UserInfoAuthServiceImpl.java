@@ -73,6 +73,10 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     public UserInfoAuthVO save(UserInfoAuthVO userInfoAuthVO) {
         //更新用户信息
         User user = userService.findById(userInfoAuthVO.getUserId());
+        //如果是用户冻结状态给错误提示
+        if(user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())){
+            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE);
+        }
         //如果是驳回状态
         if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.NOT_PERFECT.getType())) {
             userInfoAuthVO.setIsRejectSubmit(true);
