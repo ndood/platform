@@ -319,8 +319,7 @@ public class UserController extends BaseController {
     public Result getShareCard(@RequestParam("techAuthId") Integer techAuthId,
                                @RequestParam("scene") String scene,
                                @RequestParam("page") String page) throws WxErrorException, IOException {
-        User user = userService.getCurrentUser();
-        String techCardUrl = userService.getShareCard(user.getId(), techAuthId, scene, page);
+        String techCardUrl = userService.getShareCard(techAuthId, scene, page);
         return Result.success().data("techCardUrl", techCardUrl);
     }
 

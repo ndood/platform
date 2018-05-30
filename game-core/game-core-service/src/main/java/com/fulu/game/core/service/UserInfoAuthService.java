@@ -73,7 +73,7 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth,Integer
      * 查询用户技能分享名片信息
      * @return
      */
-    UserInfoVO findUserTechCardByUserId(Integer userId,Integer techAuthId);
+    UserInfoVO findUserTechCardByUserId(Integer techAuthId);
 
     /**
      * 查询用户技能分享名片信息

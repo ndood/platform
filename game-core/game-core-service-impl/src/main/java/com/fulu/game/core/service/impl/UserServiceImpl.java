@@ -173,9 +173,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public String getShareCard(Integer userId, Integer techAuthId, String scene, String page) throws WxErrorException, IOException {
+    public String getShareCard(Integer techAuthId, String scene, String page) throws WxErrorException, IOException {
 
-        UserInfoVO userInfoVO = userInfoAuthService.findUserTechCardByUserId(userId, techAuthId);
+        UserInfoVO userInfoVO = userInfoAuthService.findUserTechCardByUserId(techAuthId);
         //查询文案信息
         SharingVO sharingVO = new SharingVO();
         sharingVO.setShareType(ShareTypeEnum.TECH_AUTH.getType());
