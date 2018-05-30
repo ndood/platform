@@ -39,4 +39,7 @@ public interface UserService extends ICommonService<User, Integer> {
     Boolean isCurrentUser(Integer userId);
 
     String getShareCard(Integer techAuthId, String scene, String page) throws WxErrorException, IOException;
+
+    void checkUserInfoAuthStatus(Integer userId);
+
 }

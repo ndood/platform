@@ -57,6 +57,8 @@ public class UserTechAuthVO  extends UserTechAuth {
 
     private String nickname;
 
+    private Integer gender;
+
     private String startTime;
     private String endTime;
 

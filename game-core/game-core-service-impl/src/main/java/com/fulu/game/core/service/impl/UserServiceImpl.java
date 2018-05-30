@@ -4,6 +4,7 @@ import cn.hutool.json.JSONObject;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ServiceErrorException;
+import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.ImgUtil;
 import com.fulu.game.common.utils.SubjectUtil;
@@ -171,6 +172,19 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         }
         throw new ServiceErrorException("用户不匹配!");
     }
+
+
+    public void checkUserInfoAuthStatus(Integer userId){
+        User user = findById(userId);
+        if(user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.NOT_PERFECT.getType())){
+            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_REJECT);
+        }
+        if(user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())){
+            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE);
+        }
+    }
+
+
 
     @Override
     public String getShareCard(Integer techAuthId, String scene, String page) throws WxErrorException, IOException {

@@ -192,6 +192,11 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
             //用户技能标签
             List<TechTag> techTagList = findTechTags(userTechAuthVO.getId());
             userTechAuthVO.setTagList(techTagList);
+            //查找用户基础信息
+            User user = userService.findById(userTechAuthVO.getId());
+            userTechAuthVO.setNickname(user.getNickname());
+            userTechAuthVO.setGender(user.getGender());
+
             userTechAuthVOList.add(userTechAuthVO);
         }
         PageInfo page = new PageInfo(userTechAuths);

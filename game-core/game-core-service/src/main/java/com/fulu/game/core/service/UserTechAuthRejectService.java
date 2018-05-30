@@ -17,4 +17,6 @@ public interface UserTechAuthRejectService extends ICommonService<UserTechAuthRe
     UserTechAuthReject findLastRecordByTechAuth(Integer techAuthId,Integer status);
 
     List<UserTechAuthReject> findByTechAuth(Integer techAuthId, Integer status);
+
+    List<UserTechAuthReject> findByTechAuth(Integer techAuthId);
 }

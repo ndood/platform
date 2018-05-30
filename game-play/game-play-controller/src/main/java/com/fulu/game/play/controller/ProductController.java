@@ -123,6 +123,7 @@ public class ProductController extends BaseController {
                          @RequestParam(required = false) Integer techAuthId,
                          @RequestParam(required = false) BigDecimal price,
                          @RequestParam(required = false) Integer unitId) {
+
         productService.update(id, techAuthId, price, unitId);
         return Result.success().msg("修改接单方式成功!");
     }
@@ -146,7 +147,6 @@ public class ProductController extends BaseController {
 
     /**
      * 用户所有接单方式列表
-     *
      * @return
      */
     @RequestMapping(value = "/order-receive/list")
@@ -164,6 +164,7 @@ public class ProductController extends BaseController {
     public Result orderReceiveStatus() {
         Map<String, Object> status = productService.readOrderReceivingStatus();
         status.put("CURRENT_TIME", new Date());
+
         return Result.success().data(status);
     }
 
@@ -185,6 +186,10 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "/order-receive/stop")
     public Result orderReceiveStop() {
+        User user = userService.getCurrentUser();
+        userService.isCurrentUser(user.getId());
+        //检查用户认证的状态
+        userService.checkUserInfoAuthStatus(user.getId());
         productService.stopOrderReceiving();
         return Result.success().data("已经停止自动接单!");
     }
