@@ -12,7 +12,8 @@ public class UserAuthException extends BizException{
     @AllArgsConstructor
     @Getter
     public enum ExceptionCode{
-        EXIST_USER_AUTH(21001, "个人信息已认证过,不能重复认证!");
+        EXIST_USER_AUTH(21001, "个人信息已认证过,不能重复认证!"),
+        SERVICE_USER_AUTH(21001, "个人信息已认证过,不能重复认证!");
 
         private int code;
         private String msg;

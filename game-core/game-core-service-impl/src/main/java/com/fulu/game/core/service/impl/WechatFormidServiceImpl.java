@@ -52,7 +52,6 @@ public class WechatFormidServiceImpl extends AbsCommonService<WechatFormid,Integ
                 @Override
                 public void run() {
                     deleteNotAvailableFormIds(notAvailableFormIds.toArray(new WechatFormid[]{}));
-
                 }
             });
         }

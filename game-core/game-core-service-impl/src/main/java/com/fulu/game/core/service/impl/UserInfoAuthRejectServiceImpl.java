@@ -43,4 +43,20 @@ public class UserInfoAuthRejectServiceImpl extends AbsCommonService<UserInfoAuth
         List<UserInfoAuthReject> rejectList=  userInfoAuthRejectDao.findByParameter(param);
         return rejectList;
     }
+
+    @Override
+    public List<UserInfoAuthReject> findByUserId(Integer userId) {
+        UserInfoAuthRejectVO param = new UserInfoAuthRejectVO();
+        param.setUserId(userId);
+        List<UserInfoAuthReject> rejectList=  userInfoAuthRejectDao.findByParameter(param);
+        return rejectList;
+    }
+
+    @Override
+    public List<UserInfoAuthReject> findByUserInfoAuthId(Integer userInfoAuthId) {
+        UserInfoAuthRejectVO param = new UserInfoAuthRejectVO();
+        param.setUserInfoAuthId(userInfoAuthId);
+        List<UserInfoAuthReject> rejectList=  userInfoAuthRejectDao.findByParameter(param);
+        return rejectList;
+    }
 }

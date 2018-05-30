@@ -31,6 +31,9 @@ public class UserInfoAuthVO extends UserInfoAuth {
     private String city;
     //性别
     private Integer gender;
+
+    private Integer duration;
+
     //身份证号
     private String idCard;
     //身份证人像

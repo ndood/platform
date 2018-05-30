@@ -18,4 +18,8 @@ public interface UserInfoAuthRejectService extends ICommonService<UserInfoAuthRe
     UserInfoAuthReject findLastRecordByUserId(Integer userId,Integer status);
 
     List<UserInfoAuthReject> findByUserId(Integer userId,Integer status);
+
+    List<UserInfoAuthReject> findByUserId(Integer userId);
+
+    List<UserInfoAuthReject> findByUserInfoAuthId(Integer userInfoAuthId);
 }

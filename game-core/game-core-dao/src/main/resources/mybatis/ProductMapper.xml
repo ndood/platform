@@ -160,10 +160,6 @@
             <if test="categoryIcon != null">
                 category_icon = #{categoryIcon},
             </if>
-            <if test="description != null">
-                description = #{description},
-            </if>
-
             <if test="techAuthId != null">
                 tech_auth_id = #{techAuthId},
             </if>

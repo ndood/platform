@@ -43,4 +43,12 @@ public class UserTechAuthRejectServiceImpl extends AbsCommonService<UserTechAuth
         List<UserTechAuthReject> rejectList=  userTechAuthRejectDao.findByParameter(param);
         return rejectList;
     }
+
+    @Override
+    public List<UserTechAuthReject> findByTechAuth(Integer techAuthId) {
+        UserTechAuthRejectVO param = new UserTechAuthRejectVO();
+        param.setUserTechAuthId(techAuthId);
+        List<UserTechAuthReject> rejectList=  userTechAuthRejectDao.findByParameter(param);
+        return rejectList;
+    }
 }

@@ -17,5 +17,5 @@ public interface WechatFormidService extends ICommonService<WechatFormid,Integer
 
     List<WechatFormid> findInSevenDaysFormIdByUser(Integer userId);
 
-    void deleteNotAvailableFormIds(WechatFormid ... wechatFormid);
+    void  deleteNotAvailableFormIds(WechatFormid ... wechatFormid);
 }

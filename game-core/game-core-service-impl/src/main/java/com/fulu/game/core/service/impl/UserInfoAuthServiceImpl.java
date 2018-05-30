@@ -2,6 +2,7 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.common.enums.*;
+import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
@@ -49,6 +50,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     private UserTechAuthService utaService;
     @Autowired
     private AdminService adminService;
+    @Autowired
+    private ProductService productService;
 
     @Override
     public ICommonDao<UserInfoAuth, Integer> getDao() {
@@ -104,7 +107,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         //添加用户认证写真图片
         createUserAuthPortrait(userInfoAuthVO.getPortraitUrls(), userInfoAuth.getId());
         //添加语音介绍
-        createUserAuthVoice(userInfoAuthVO.getVoiceUrl(), userInfoAuth.getId());
+        createUserAuthVoice(userInfoAuthVO.getVoiceUrl(), userInfoAuth.getId(),userInfoAuthVO.getDuration());
         //添加用户信息标签
         createUserInfoTags(userInfoAuthVO.getTags(), user.getId());
         return userInfoAuthVO;
@@ -123,6 +126,10 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         log.info("驳回用户个人认证信息:adminId:{};adminName:{};authInfoId:{},reason:{}", admin.getId(), admin.getName(), id, reason);
         //修改认证驳回状态
         UserInfoAuth userInfoAuth = findById(id);
+        if(userInfoAuth==null){
+            throw new ServiceErrorException("个人信息认证ID不存在!");
+        }
+
         userInfoAuth.setIsRejectSubmit(true);
         update(userInfoAuth);
         //修改用户表认证状态信息
@@ -141,7 +148,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userInfoAuthReject.setCreateTime(new Date());
         userInfoAuthRejectService.create(userInfoAuthReject);
 
-        //todo 下架该用户上传的所有商品
+        //下架该用户上传的所有商品
+        //同步下架用户该技能商品
+        productService.deleteProductByUser(userInfoAuth.getUserId());
         return userInfoAuth;
     }
 
@@ -527,13 +536,14 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
      * @param voiceUrl
      * @param userInfoAuthId
      */
-    public void createUserAuthVoice(String voiceUrl, Integer userInfoAuthId) {
+    public void createUserAuthVoice(String voiceUrl, Integer userInfoAuthId,Integer duration) {
         if (voiceUrl == null) {
             return;
         }
         userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuthId, FileTypeEnum.VOICE.getType());
         UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
         userInfoAuthFile.setUrl(voiceUrl);
+        userInfoAuthFile.setDuration(duration);
         userInfoAuthFile.setInfoAuthId(userInfoAuthId);
         userInfoAuthFile.setName("语音介绍");
         userInfoAuthFile.setCreateTime(new Date());

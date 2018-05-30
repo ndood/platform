@@ -123,6 +123,7 @@ public class ProductController extends BaseController {
                          @RequestParam(required = false) Integer techAuthId,
                          @RequestParam(required = false) BigDecimal price,
                          @RequestParam(required = false) Integer unitId) {
+
         productService.update(id, techAuthId, price, unitId);
         return Result.success().msg("修改接单方式成功!");
     }

@@ -76,7 +76,7 @@ public abstract class AbsSearchComponent<T,K> {
                     .build();
             DocumentResult result = getJestClient().execute(delete);
             if(!result.isSucceeded()){
-                throw new SearchException(SearchException.ExceptionCode.DEL_EXCEPTION,delete.getPathToResult(),result.getErrorMessage());
+                throw new SearchException(SearchException.ExceptionCode.DEL_EXCEPTION,"deleteId:"+id,result.getErrorMessage());
             }
             return result.isSucceeded();
         } catch (Exception e) {

@@ -3,14 +3,13 @@ package com.fulu.game.admin.controller;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.ResultStatus;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.common.utils.TimeUtil;
-import com.fulu.game.core.entity.Admin;
-import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.vo.UserInfoAuthVO;
-import com.fulu.game.core.entity.vo.UserTechAuthVO;
-import com.fulu.game.core.entity.vo.UserVO;
+import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -39,6 +40,10 @@ public class UserController extends BaseController {
     private UserInfoAuthFileService userInfoAuthFileService;
     @Autowired
     private UserTechAuthService userTechAuthService;
+    @Autowired
+    private UserInfoAuthRejectService userInfoAuthRejectService;
+    @Autowired
+    private UserTechAuthRejectService userTechAuthRejectService;
 
     /**
      * 用户认证信息列表
@@ -70,6 +75,18 @@ public class UserController extends BaseController {
         return Result.success().data(userInfoAuthVO);
     }
 
+
+    /**
+     * 信息认证说明
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "/info-auth/reason")
+    public Result infoAuthRejectReason(Integer id){
+        List<UserInfoAuthReject> authRejectList = userInfoAuthRejectService.findByUserInfoAuthId(id);
+        List<UserInfoAuthRejectVO> userTechAuthRejectVOList = CollectionUtil.copyNewCollections(authRejectList,UserInfoAuthRejectVO.class);
+        return Result.success().data(userTechAuthRejectVOList);
+    }
 
     /**
      * 认证信息驳回
@@ -143,7 +160,6 @@ public class UserController extends BaseController {
 
     /**
      * 查询用户个人认证信息
-     *
      * @param userId
      * @return
      */
@@ -153,9 +169,11 @@ public class UserController extends BaseController {
         return Result.success().data(userInfoAuthVO);
     }
 
+
+
+
     /**
      * 通过用户手机查询用户信息
-     *
      * @param mobile
      * @return
      */
@@ -167,6 +185,8 @@ public class UserController extends BaseController {
         }
         return Result.success().data(user);
     }
+
+
 
     /**
      * 用户技能认证信息添加和修改
@@ -191,7 +211,6 @@ public class UserController extends BaseController {
     }
 
 
-
     /**
      * 技能不通过
      * @param id
@@ -203,6 +222,18 @@ public class UserController extends BaseController {
                                  String reason) {
         userTechAuthService.reject(id,reason);
         return Result.success().msg("技能驳回成功!");
+    }
+
+    /**
+     * 信息认证说明
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "/tech-auth/reason")
+    public Result techAuthRejectReason(Integer id){
+        List<UserTechAuthReject> techAuthRejectList = userTechAuthRejectService.findByTechAuth(id);
+        List<UserTechAuthRejectVO> userTechAuthRejectVOList = CollectionUtil.copyNewCollections(techAuthRejectList,UserTechAuthRejectVO.class);
+        return Result.success().data(userTechAuthRejectVOList);
     }
 
     /**
