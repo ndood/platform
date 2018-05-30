@@ -2,6 +2,7 @@ package com.fulu.game.core.entity.vo;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
 import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.UserInfoAuthFile;
 import com.fulu.game.core.entity.UserInfoFile;
@@ -26,7 +27,12 @@ public class UserInfoAuthVO extends UserInfoAuth {
 
     private String realMobile;
 
+    private Integer userInfoAuth;
+
+    private String userInfoAuthStr;
+
     private Integer age;
+
 
     private String city;
     //性别
@@ -71,5 +77,14 @@ public class UserInfoAuthVO extends UserInfoAuth {
     private String startTime;
     @JsonIgnore
     private String endTime;
+
+
+    public String getUserInfoAuthStr() {
+        return UserInfoAuthStatusEnum.getMsgByType(getUserInfoAuth());
+    }
+
+    public void setUserInfoAuthStr(String userInfoAuthStr) {
+        this.userInfoAuthStr = userInfoAuthStr;
+    }
 
 }

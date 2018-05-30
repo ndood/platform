@@ -58,8 +58,7 @@ public class UserController extends BaseController {
                                    @RequestParam(value = "startTime", required = false) String startTime,
                                    @RequestParam(value = "endTime", required = false) String endTime,
                                    @RequestParam(value = "mobile", required = false) String mobile) {
-        String orderBy = null;
-        PageInfo<UserInfoAuthVO> pageInfo = userInfoAuthService.list(pageNum, pageSize, orderBy, mobile, startTime, endTime);
+        PageInfo<UserInfoAuthVO> pageInfo = userInfoAuthService.list(pageNum, pageSize, null, mobile, startTime, endTime);
         return Result.success().data(pageInfo);
     }
 
@@ -82,7 +81,7 @@ public class UserController extends BaseController {
      * @return
      */
     @PostMapping(value = "/info-auth/reason")
-    public Result infoAuthRejectReason(Integer id){
+    public Result infoAuthRejectReason(@RequestParam(required = true) Integer id){
         List<UserInfoAuthReject> authRejectList = userInfoAuthRejectService.findByUserInfoAuthId(id);
         List<UserInfoAuthRejectVO> userTechAuthRejectVOList = CollectionUtil.copyNewCollections(authRejectList,UserInfoAuthRejectVO.class);
         return Result.success().data(userTechAuthRejectVOList);
@@ -94,8 +93,8 @@ public class UserController extends BaseController {
      * @return
      */
     @PostMapping(value = "/info-auth/reject")
-    public Result userInfoAuthReject(Integer id,
-                                     String reason){
+    public Result userInfoAuthReject(@RequestParam(required = true) Integer id,
+                                     @RequestParam(required = true) String reason){
         userInfoAuthService.reject(id,reason);
         return Result.success().msg("认证信息驳回成功!");
     }
@@ -107,8 +106,8 @@ public class UserController extends BaseController {
      * @return
      */
     @PostMapping(value = "/info-auth/freeze")
-    public Result userInfoAuthFreeze(Integer id,
-                                     String reason){
+    public Result userInfoAuthFreeze(@RequestParam(required = true)Integer id,
+                                     @RequestParam(required = true) String reason){
         userInfoAuthService.freeze(id,reason);
         return Result.success().msg("认证信息冻结成功!");
     }
@@ -119,7 +118,7 @@ public class UserController extends BaseController {
      * @return
      */
     @PostMapping(value = "/info-auth/unfreeze")
-    public Result userInfoAuthUnFreeze(Integer id){
+    public Result userInfoAuthUnFreeze(@RequestParam(required = true) Integer id){
         userInfoAuthService.unFreeze(id);
         return Result.success().msg("认证信息解冻成功!");
     }
@@ -130,9 +129,9 @@ public class UserController extends BaseController {
      * @return
      */
     @PostMapping(value = "/info-auth/unreject")
-    public Result userInfoAuthUnReject(Integer id){
+    public Result userInfoAuthUnReject(@RequestParam(required = true) Integer id){
         userInfoAuthService.unReject(id);
-        return Result.success().msg("清除驳回记录状态成功!");
+        return Result.success().msg("认证信息认证通过!");
     }
 
     /**

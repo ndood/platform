@@ -2,6 +2,7 @@ package com.fulu.game.common.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.omg.CORBA.PUBLIC_MEMBER;
 
 @AllArgsConstructor
 @Getter
@@ -14,5 +15,14 @@ public enum UserInfoAuthStatusEnum implements TypeEnum<Integer>{
 
     private Integer type;
     private String msg;
+
+    public static String getMsgByType(Integer type){
+        for(UserInfoAuthStatusEnum authStatusEnum : UserInfoAuthStatusEnum.values()){
+            if(authStatusEnum.getType().equals(type)){
+                return authStatusEnum.getMsg();
+            }
+        }
+        return null;
+    }
 
 }
