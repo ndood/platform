@@ -327,7 +327,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     public UserInfoVO findUserTechCardByUserId(Integer techAuthId) {
         //查询认证的技能
         UserInfoVO userInfo = new UserInfoVO();
-        UserTechAuthVO userTechAuthVO = utaService.findTechAuthVOById(techAuthId);
+        UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(techAuthId);
         if(null == userTechAuthVO){
             throw new UserException(UserException.ExceptionCode.TECH_AUTH_NOT_EXIST_EXCEPTION);
         }
