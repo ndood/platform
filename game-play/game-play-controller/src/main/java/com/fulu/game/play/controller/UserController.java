@@ -54,7 +54,7 @@ public class UserController extends BaseController {
     public Result userTechList() {
         User user = userService.getCurrentUser();
         //查询所有用户认证的技能
-        List<UserTechAuth> techAuthList = userTechAuthService.findByStatusAndUserId(user.getId(), TechAuthStatusEnum.NORMAL.getType());
+        List<UserTechAuth> techAuthList = userTechAuthService.findUserNormalTechs(user.getId());
         return Result.success().data(techAuthList);
     }
 

@@ -47,7 +47,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     @Autowired
     private OrderService orderService;
     @Autowired
-    private UserTechAuthService utaService;
+    private UserTechAuthService userTechAuthService;
     @Autowired
     private AdminService adminService;
     @Autowired
@@ -131,9 +131,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         //修改认证驳回状态
         UserInfoAuth userInfoAuth = findById(id);
         if(userInfoAuth==null){
-            throw new ServiceErrorException("个人信息认证ID不存在!");
+            throw new UserAuthException(UserAuthException.ExceptionCode.NOT_EXIST_USER_AUTH);
         }
-
         userInfoAuth.setIsRejectSubmit(true);
         update(userInfoAuth);
         //修改用户表认证状态信息
@@ -152,7 +151,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userInfoAuthReject.setCreateTime(new Date());
         userInfoAuthRejectService.create(userInfoAuthReject);
 
-        //下架该用户上传的所有商品
         //同步下架用户该技能商品
         productService.deleteProductByUser(userInfoAuth.getUserId());
         return userInfoAuth;
@@ -160,7 +158,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     /**
      * 清楚驳回记录状态
-     *
      * @param id
      * @return
      */
@@ -171,6 +168,12 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         UserInfoAuth userInfoAuth = findById(id);
         userInfoAuth.setIsRejectSubmit(false);
         update(userInfoAuth);
+
+        //同步恢复用户正确技能的商品状态
+        List<UserTechAuth> userTechAuthList = userTechAuthService.findUserNormalTechs(userInfoAuth.getUserId());
+        for(UserTechAuth userTechAuth : userTechAuthList){
+            productService.recoverProductDelFlagByTechAuthId(userTechAuth.getId());
+        }
         return userInfoAuth;
     }
 
@@ -186,6 +189,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         Admin admin = adminService.getCurrentUser();
         log.info("冻结用户个人认证信息:adminId:{};adminName:{};authInfoId:{},reason:{}", admin.getId(), admin.getName(), id, reason);
         UserInfoAuth userInfoAuth = findById(id);
+        if(userInfoAuth==null){
+            throw new UserAuthException(UserAuthException.ExceptionCode.NOT_EXIST_USER_AUTH);
+        }
         //修改用户表认证状态信息
         User user = userService.findById(userInfoAuth.getUserId());
         user.setUserInfoAuth(UserInfoAuthStatusEnum.FREEZE.getType());
@@ -203,7 +209,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userInfoAuthReject.setCreateTime(new Date());
         userInfoAuthRejectService.create(userInfoAuthReject);
 
-        //todo 下架该用户上传的所有商品
+        //下架该用户上传的所有商品
+        productService.deleteProductByUser(userInfoAuth.getUserId());
         return userInfoAuth;
     }
 
@@ -217,6 +224,11 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         user.setUserInfoAuth(UserInfoAuthStatusEnum.VERIFIED.getType());
         user.setUpdateTime(new Date());
         userService.update(user);
+        //同步恢复用户正确技能的商品状态
+        List<UserTechAuth> userTechAuthList = userTechAuthService.findUserNormalTechs(userInfoAuth.getUserId());
+        for(UserTechAuth userTechAuth : userTechAuthList){
+            productService.recoverProductDelFlagByTechAuthId(userTechAuth.getId());
+        }
 
         return userInfoAuth;
     }
@@ -301,7 +313,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
         //查询用户技能
         if (hasTechs) {
-            List<UserTechAuth> userTechAuthList = utaService.findByStatusAndUserId(userId, TechAuthStatusEnum.NORMAL.getType());
+            List<UserTechAuth> userTechAuthList = userTechAuthService.findUserNormalTechs(userId);
             List<String> techList = new ArrayList<String>();
             for (UserTechAuth userTechAuth : userTechAuthList) {
                 techList.add(userTechAuth.getCategoryName());
@@ -315,7 +327,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     public UserInfoVO findUserTechCardByUserId(Integer techAuthId) {
         //查询认证的技能
         UserInfoVO userInfo = new UserInfoVO();
-        UserTechAuthVO userTechAuthVO = utaService.findTechAuthVOById(techAuthId);
+        UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(techAuthId);
         if(null == userTechAuthVO){
             throw new UserException(UserException.ExceptionCode.TECH_AUTH_NOT_EXIST_EXCEPTION);
         }
@@ -346,7 +358,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     public UserInfoVO getSharePage(Integer techAuthId) {
         UserInfoVO userInfo = new UserInfoVO();
         //查询认证的技能
-        UserTechAuthVO userTechAuthVO = utaService.findTechAuthVOById(techAuthId);
+        UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(techAuthId);
         userInfo.setUserTechAuthVO(userTechAuthVO);
         Integer userId = userTechAuthVO.getUserId();
         //陪玩师个人信息

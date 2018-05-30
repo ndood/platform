@@ -1,10 +1,12 @@
 package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.Constant;
+import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
+import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserTechAuthDao;
 import com.fulu.game.core.entity.*;
@@ -64,17 +66,20 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuthVO.setMobile(user.getMobile());
         userTechAuthVO.setCategoryName(category.getName());
         userTechAuthVO.setUpdateTime(new Date());
+        userTechAuthVO.setApproveCount(0);
         if (userTechAuthVO.getId() == null) {
             //查询是否有重复技能
             List<UserTechAuth> userTechAuths = findByCategoryAndUser(userTechAuthVO.getCategoryId(), userTechAuthVO.getUserId());
             if (userTechAuths.size() > 0) {
                 throw new ServiceErrorException("不能添加重复的技能!");
             }
-            userTechAuthVO.setApproveCount(0);
             userTechAuthVO.setCreateTime(new Date());
             userTechAuthDao.create(userTechAuthVO);
         } else {
             UserTechAuth oldUserTechAuth = findById(userTechAuthVO.getId());
+            if(oldUserTechAuth.getStatus().equals(TechAuthStatusEnum.FREEZE.getType())){
+                throw new  UserAuthException(UserAuthException.ExceptionCode.USER_TECH_FREEZE);
+            }
             if (!oldUserTechAuth.getId().equals(userTechAuthVO.getId())) {
                 //查询是否有重复技能
                 List<UserTechAuth> userTechAuths = findByCategoryAndUser(userTechAuthVO.getCategoryId(), userTechAuthVO.getUserId());
@@ -96,6 +101,9 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         Admin admin = adminService.getCurrentUser();
         log.info("驳回技能认证信息:adminId:{};adminName:{};authInfoId:{},reason:{}",admin.getId(),admin.getName(),id,reason);
         UserTechAuth userTechAuth = findById(id);
+        if(userTechAuth.getStatus().equals(TechAuthStatusEnum.FREEZE.getType())){
+            throw new  UserAuthException(UserAuthException.ExceptionCode.USER_TECH_FREEZE);
+        }
         userTechAuth.setStatus(TechAuthStatusEnum.NO_AUTHENTICATION.getType());
         userTechAuth.setApproveCount(0);
         update(userTechAuth);
@@ -123,12 +131,16 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         Admin admin = adminService.getCurrentUser();
         log.info("技能审核通过:adminId:{};adminName:{};authInfoId:{}",admin.getId(),admin.getName(),id);
         UserTechAuth userTechAuth = findById(id);
+        if(userTechAuth.getStatus().equals(TechAuthStatusEnum.FREEZE.getType())){
+            throw new  UserAuthException(UserAuthException.ExceptionCode.USER_TECH_FREEZE);
+        }
         userTechAuth.setStatus(TechAuthStatusEnum.NORMAL.getType());
         update(userTechAuth);
         //给用户推送通知
         wxTemplateMsgService.pushWechatTemplateMsg(userTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_SUCCESS);
 
-        //todo 技能下商品置为正常
+        //技能下商品置为正常
+        productService.recoverProductDelFlagByTechAuthId(userTechAuth.getId());
         return userTechAuth;
     }
 
@@ -163,7 +175,8 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuth.setStatus(TechAuthStatusEnum.AUTHENTICATION_ING.getType());
         update(userTechAuth);
 
-        //todo 技能下商品置为正常
+        //技能下商品置为正常
+        productService.recoverProductDelFlagByTechAuthId(userTechAuth.getId());
         return userTechAuth;
     }
 
@@ -193,7 +206,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
             List<TechTag> techTagList = findTechTags(userTechAuthVO.getId());
             userTechAuthVO.setTagList(techTagList);
             //查找用户基础信息
-            User user = userService.findById(userTechAuthVO.getId());
+            User user = userService.findById(userTechAuthVO.getUserId());
             userTechAuthVO.setNickname(user.getNickname());
             userTechAuthVO.setGender(user.getGender());
 
@@ -236,10 +249,18 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         return userTechAuthVO;
     }
 
+    /**
+     * 查询用户可用的技能
+     * @param userId
+     * @return
+     */
+    public List<UserTechAuth> findUserNormalTechs(Integer userId){
+        List<UserTechAuth> techAuthList = findByStatusAndUserId(userId, TechAuthStatusEnum.NORMAL.getType());
+        return techAuthList;
+    }
 
     /**
      * 查询用户段位信息
-     *
      * @param techAuthId
      * @return
      */
@@ -250,6 +271,20 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         }
         return null;
     }
+
+    public void checkUserTechAuth(Integer techAuthId){
+        UserTechAuth userTechAuth = findById(techAuthId);
+        if(userTechAuth.getStatus().equals(TechAuthStatusEnum.AUTHENTICATION_ING.getType())){
+            throw new UserAuthException(UserAuthException.ExceptionCode.USER_TECH_AUTHENTICATION_ING);
+        }
+        if(userTechAuth.getStatus().equals(TechAuthStatusEnum.NO_AUTHENTICATION.getType())){
+            throw new UserAuthException(UserAuthException.ExceptionCode.USER_TECH_NO_AUTHENTICATION);
+        }
+        if(userTechAuth.getStatus().equals(TechAuthStatusEnum.FREEZE.getType())){
+            throw new UserAuthException(UserAuthException.ExceptionCode.USER_TECH_FREEZE);
+        }
+    }
+
 
     /**
      * 通过用户Id查询用户技能认证信息

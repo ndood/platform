@@ -12,6 +12,7 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserDao;
 import com.fulu.game.core.entity.Sharing;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.vo.SharingVO;
 import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
@@ -176,6 +177,10 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     public void checkUserInfoAuthStatus(Integer userId){
         User user = findById(userId);
+        UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(userId);
+        if(userInfoAuth==null){
+            throw new UserAuthException(UserAuthException.ExceptionCode.NOT_EXIST_USER_AUTH);
+        }
         if(user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.NOT_PERFECT.getType())){
             throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_REJECT);
         }

@@ -44,9 +44,7 @@ public class AuthController extends BaseController {
      */
     @PostMapping(value = "/user-info/save")
     public Result userAuthSave(UserInfoAuthVO userInfoAuthVO) {
-        //todo 判断用户是否是冻结
         User user = userService.getCurrentUser();
-
         if(userInfoAuthVO.getId()!=null){
             UserInfoAuth userInfoAuth = userInfoAuthService.findById(userInfoAuthVO.getId());
             userService.isCurrentUser(userInfoAuth.getUserId());
@@ -75,7 +73,7 @@ public class AuthController extends BaseController {
      * @return
      */
     @PostMapping(value = "/user-info/status")
-    public Result userAuthStauts() {
+    public Result userAuthStatus() {
         User user = userService.findById(userService.getCurrentUser().getId());
         //如果是用户冻结状态给错误提示
         if(user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())){
@@ -140,6 +138,8 @@ public class AuthController extends BaseController {
     @PostMapping(value = "/tech-info/save")
     public Result techAuthSave(UserTechAuthVO userTechAuthVO) {
         User user = userService.getCurrentUser();
+        //验证用户的认证信息
+        userService.checkUserInfoAuthStatus(user.getId());
         if(userTechAuthVO.getId()!=null){
             UserTechAuth userTechAuth = userTechAuthService.findById(userTechAuthVO.getId());
             userService.isCurrentUser(userTechAuth.getUserId());
