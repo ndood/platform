@@ -26,6 +26,5 @@ public class BannerVO extends Banner {
     @Range(min = 1, max = 5, message = "跳转类型填写1-10的数字")
     private Integer redirectType;
     //跳转地址
-    @NotNull(message = "跳转地址不能为空")
     private String redirectUrl;
 }
