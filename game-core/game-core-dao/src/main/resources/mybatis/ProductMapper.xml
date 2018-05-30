@@ -200,4 +200,27 @@
             id = #{id}
         </where>
     </update>
+
+    <update id="recoverProductDelFlag" parameterType="java.lang.Integer">
+        update t_product
+        <set>
+            del_flag = FALSE
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+
+
+
+    <update id="recoverProductDelFlagByTechAuthId" parameterType="java.lang.Integer">
+        update t_product
+        <set>
+            del_flag = FALSE
+        </set>
+        <where>
+            tech_auth_id = #{techAuthId}
+        </where>
+    </update>
+
 </mapper>

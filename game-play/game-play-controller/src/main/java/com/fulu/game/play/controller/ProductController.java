@@ -164,7 +164,6 @@ public class ProductController extends BaseController {
     public Result orderReceiveStatus() {
         Map<String, Object> status = productService.readOrderReceivingStatus();
         status.put("CURRENT_TIME", new Date());
-
         return Result.success().data(status);
     }
 

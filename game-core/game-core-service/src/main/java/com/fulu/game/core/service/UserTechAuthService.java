@@ -61,6 +61,13 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
     UserTechAuthVO findTechAuthVOById(Integer id);
 
     /**
+     * 查询用户正常可用的技能
+     * @param userId
+     * @return
+     */
+    List<UserTechAuth> findUserNormalTechs(Integer userId);
+
+    /**
      * 查询用户段位信息
      * @param techAuthId
      * @return
@@ -69,6 +76,9 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
 
 
     List<UserTechAuth> findByUserId(Integer userId);
+
+
+    void checkUserTechAuth(Integer techAuthId);
 
     /**
      * 通过用户ID查询技能认证

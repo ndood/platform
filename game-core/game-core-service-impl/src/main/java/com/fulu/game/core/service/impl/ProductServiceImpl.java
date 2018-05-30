@@ -2,7 +2,10 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.TechAuthStatusEnum;
+import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
+import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.ProductDao;
@@ -63,6 +66,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         if(userTechAuth==null){
             throw new ServiceErrorException("不能设置该技能接单!");
         }
+        userTechAuthService.checkUserTechAuth(techAuthId);
+
         User user = userService.findById(userTechAuth.getUserId());
         userService.isCurrentUser(user.getId());
         //检查用户认证的状态
@@ -104,6 +109,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     @Override
     public Product update(Integer id, Integer techAuthId, BigDecimal price, Integer unitId) {
+        userTechAuthService.checkUserTechAuth(techAuthId);
         if (redisOpenService.hasKey(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(id))) {
             throw new ServiceErrorException("在线技能不允许修改!");
         }
@@ -204,7 +210,20 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return productDao.findByParameter(productVO);
     }
 
+    /**
+     * 恢复商品删除状态
+     * @param productId
+     */
+    public void recoverProductDelFlag(int productId){
+        log.info("恢复商品删除状态:productId:{}",productId);
+        productDao.recoverProductDelFlag(productId);
+    }
 
+
+    public void recoverProductDelFlagByTechAuthId(Integer techAuthId){
+        log.info("通过techAuthId恢复商品删除状态:techAuthId:{}",techAuthId);
+        productDao.recoverProductDelFlagByTechAuthId(techAuthId);
+    }
     /**
      * 开始接单业务
      */
@@ -271,6 +290,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Override
     public ProductDetailsVO findDetailsByProductId(Integer productId) {
         Product product = findById(productId);
+        if(product==null){
+            throw new ProductException(ProductException.ExceptionCode.PRODUCT_NOT_EXIST);
+        }
         //查询用户信息
         UserInfoVO userInfo = userInfoAuthService.findUserCardByUserId(product.getUserId(),true,true,true,false);
         //查询技能标签
@@ -306,6 +328,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Override
     public SimpleProductVO findSimpleProductByProductId(Integer productId) {
         Product product = findById(productId);
+        if(product==null){
+            throw new ProductException(ProductException.ExceptionCode.PRODUCT_NOT_EXIST);
+        }
         UserInfoVO userInfo = userInfoAuthService.findUserCardByUserId(product.getUserId(),false,false,false,false);
         SimpleProductVO simpleProductVO = new SimpleProductVO();
         BeanUtil.copyProperties(product,simpleProductVO);

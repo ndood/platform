@@ -22,4 +22,7 @@ public interface ProductDao extends ICommonDao<Product,Integer>{
 
     List<ProductShowCaseVO> findProductShowCase(@Param(value = "categoryId") Integer categoryId,@Param(value = "gender") Integer gender);
 
+    int recoverProductDelFlag(Integer productId);
+
+    int recoverProductDelFlagByTechAuthId(Integer techAuthId);
 }

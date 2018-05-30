@@ -148,4 +148,13 @@ public interface ProductService extends ICommonService<Product,Integer>{
      */
     int deleteProduct(Product product);
 
+    /**
+     * 恢复商品删除状态
+     * @param productId
+     */
+    void recoverProductDelFlag(int productId);
+
+
+    void recoverProductDelFlagByTechAuthId(Integer techAuthId);
+
 }
