@@ -182,7 +182,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         sharingVO.setGender(userInfoVO.getGender());
         sharingVO.setStatus(true);
         List<Sharing> shareList = sharingService.findByParam(sharingVO);
-        String shareContent = null;
+        String shareContent = "";
         if (!CollectionUtil.isEmpty(shareList)) {
             shareContent = shareList.get(0).getContent();
         }

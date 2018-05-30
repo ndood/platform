@@ -45,6 +45,7 @@ public class ApproveController {
         approveVO.setTechStatus(techStatus);
         approveVO.setApproveCount(approveCount);
         approveVO.setRequireCount(requireCount);
+        //todo 陪玩师认证通知
         return Result.success().data(approveVO).msg("帮助好友证实成功");
     }
 

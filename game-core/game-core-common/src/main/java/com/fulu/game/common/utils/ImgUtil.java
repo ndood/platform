@@ -59,7 +59,6 @@ public class ImgUtil {
         //陪玩师个人信息区域
         int H_person = 40;
         int person2Top = mainPic2Top + H_mainPic + 10;
-        //String personContent = "泼辣小医仙";
         String personContent = contentMap.get("nickname");
         Integer gender = Integer.valueOf(contentMap.get("gender"));
         Integer age = Integer.valueOf(contentMap.get("age"));
@@ -90,7 +89,6 @@ public class ImgUtil {
         //*******技能和技能标签区域
         int H_tech = 50;
         int tech2Top = person2Top + H_person + 5;
-        //String techStr = "王者荣耀陪玩 段位：永恒钻石 个人标签：御姐 娇小 声音标签：萝莉音 浪漫";
         String techAndTag = contentMap.get("techAndTag");
         Graphics2D tech = image.createGraphics();
         tech.setColor(WHITE);
@@ -134,8 +132,6 @@ public class ImgUtil {
         int code2Top = line2Top + 10;
         int codeWidth = imageWidth / 3;
         int shareWidth = imageWidth - codeWidth;
-//        String shareStr1 = "泼辣小医仙正在申请陪玩师";
-//        String shareStr2 = "长按识别二维码认可她的能力";
         String shareTitle = personContent + contentMap.get("title");
         String shareContent = contentMap.get("content");
 
