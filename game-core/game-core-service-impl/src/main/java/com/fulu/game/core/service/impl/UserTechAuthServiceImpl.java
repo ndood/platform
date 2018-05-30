@@ -3,6 +3,7 @@ package com.fulu.game.core.service.impl;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
+import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserTechAuthDao;
@@ -45,6 +46,10 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     private UserService userService;
     @Autowired
     private AdminService adminService;
+    @Autowired
+    private WxTemplateMsgService wxTemplateMsgService;
+    @Autowired
+    private ProductService productService;
 
     @Override
     public ICommonDao<UserTechAuth, Integer> getDao() {
@@ -59,13 +64,13 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuthVO.setMobile(user.getMobile());
         userTechAuthVO.setCategoryName(category.getName());
         userTechAuthVO.setUpdateTime(new Date());
-
         if (userTechAuthVO.getId() == null) {
             //查询是否有重复技能
             List<UserTechAuth> userTechAuths = findByCategoryAndUser(userTechAuthVO.getCategoryId(), userTechAuthVO.getUserId());
             if (userTechAuths.size() > 0) {
                 throw new ServiceErrorException("不能添加重复的技能!");
             }
+            userTechAuthVO.setApproveCount(0);
             userTechAuthVO.setCreateTime(new Date());
             userTechAuthDao.create(userTechAuthVO);
         } else {
@@ -104,9 +109,26 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuthReject.setAdminName(admin.getName());
         userTechAuthReject.setCreateTime(new Date());
         userTechAuthRejectService.create(userTechAuthReject);
+        //给用户推送通知
+        wxTemplateMsgService.pushWechatTemplateMsg(userTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_FAIL,reason);
+        //同步下架用户该技能商品
+        productService.deleteProductByTech(userTechAuth.getId());
 
-        //todo 同步下架用户该技能商品
+        return userTechAuth;
+    }
 
+
+    @Override
+    public UserTechAuth pass(Integer id) {
+        Admin admin = adminService.getCurrentUser();
+        log.info("技能审核通过:adminId:{};adminName:{};authInfoId:{}",admin.getId(),admin.getName(),id);
+        UserTechAuth userTechAuth = findById(id);
+        userTechAuth.setStatus(TechAuthStatusEnum.NORMAL.getType());
+        update(userTechAuth);
+        //给用户推送通知
+        wxTemplateMsgService.pushWechatTemplateMsg(userTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_SUCCESS);
+
+        //todo 技能下商品置为正常
         return userTechAuth;
     }
 
@@ -128,7 +150,8 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuthReject.setAdminName(admin.getName());
         userTechAuthReject.setCreateTime(new Date());
         userTechAuthRejectService.create(userTechAuthReject);
-        //todo 同步下架用户该技能商品
+        //同步下架用户该技能商品
+        productService.deleteProductByTech(userTechAuth.getId());
         return userTechAuth;
     }
 
@@ -140,7 +163,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuth.setStatus(TechAuthStatusEnum.AUTHENTICATION_ING.getType());
         update(userTechAuth);
 
-
+        //todo 技能下商品置为正常
         return userTechAuth;
     }
 

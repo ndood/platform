@@ -28,8 +28,6 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * @return
      */
     Product create(Integer techAuthId,BigDecimal price,Integer unitId);
-
-
     /**
      * 修改接单方式
      * @param id
@@ -123,5 +121,31 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * @return
      */
     Boolean isUserStartOrderReceivingStatus(Integer userId);
+
+    /**
+     * 删除用户下所有商品
+     * @param userId
+     */
+    void deleteProductByUser(Integer userId);
+
+    /**
+     * 删除技能下所有商品
+     * @param techAuthId
+     */
+    void deleteProductByTech(Integer techAuthId);
+
+    /**
+     * 根据ID删除商品
+     * @param id
+     * @return
+     */
+    int deleteById(Integer id);
+
+    /**
+     * 逻辑删除商品
+     * @param product
+     * @return
+     */
+    int deleteProduct(Product product);
 
 }

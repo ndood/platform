@@ -32,6 +32,13 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
     UserTechAuth reject(Integer id,String reason);
 
     /**
+     * 技能审核通过
+     * @param id
+     * @return
+     */
+    UserTechAuth pass(Integer id);
+
+    /**
      * 冻结用户技能认证
      * @param id
      * @param reason
@@ -42,7 +49,6 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
     /**
      * 解冻用户技能认证
      * @param id
-     * @param reason
      * @return
      */
     UserTechAuth unFreeze(Integer id);

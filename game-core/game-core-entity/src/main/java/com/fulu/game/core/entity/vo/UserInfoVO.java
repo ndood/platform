@@ -28,7 +28,12 @@ public class UserInfoVO {
 
     private String city;
 
+    //声音
     private String voice;
+
+    //声音时长
+    private Integer voiceDuration;
+
 
     private Integer orderCount;
 

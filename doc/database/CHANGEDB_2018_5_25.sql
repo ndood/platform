@@ -77,3 +77,8 @@ CREATE TABLE `t_user_tech_auth_reject` (
 
 --更改之前技能认证数据
 UPDATE `t_user_tech_auth` SET `status` = 2 WHERE `status` = 1;
+
+
+ALTER TABLE `t_product` ADD COLUMN `del_flag` tinyint ( 1 ) NULL DEFAULT 0 COMMENT '逻辑删除'  AFTER `update_time`;
+
+ALTER TABLE `t_user_info_auth_file` ADD COLUMN `duration` int ( 11 ) NULL  COMMENT '声音时长'  AFTER `url`;

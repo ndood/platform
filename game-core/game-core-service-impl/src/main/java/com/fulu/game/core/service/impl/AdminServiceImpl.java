@@ -11,10 +11,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.Date;
 import java.util.List;
-
 import com.fulu.game.core.dao.AdminDao;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.service.AdminService;
@@ -34,7 +32,11 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
     public Admin findByUsername(String username) {
         AdminVO memberVO = new AdminVO();
         memberVO.setUsername(username);
-        return adminDao.findByParameter(memberVO).get(0);
+        List<Admin> adminList = adminDao.findByParameter(memberVO);
+        if(adminList.isEmpty()){
+            return null;
+        }
+        return adminList.get(0);
     }
 
     @Override

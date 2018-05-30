@@ -9,16 +9,17 @@
         <result column="type" property="type"/>
         <result column="url" property="url"/>
         <result column="ext" property="ext"/>
+        <result column="duration" property="duration"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
-    <resultMap id="UserInfoAuthFileResultVOMap" type="com.fulu.game.core.entity.vo.UserInfoAuthFileVO"
-               extends="UserInfoAuthFileResultMap">
+    <resultMap id="UserInfoAuthFileResultVOMap" type="com.fulu.game.core.entity.vo.UserInfoAuthFileVO" extends="UserInfoAuthFileResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name,info_auth_id,type,url,ext,create_time,update_time    </sql>
+        id,name,info_auth_id,type,url,ext,duration,create_time,update_time
+    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserInfoAuthFileResultMap">
         select
@@ -56,6 +57,9 @@
             <if test="ext != null">
                 and ext = #{ext}
             </if>
+            <if test="duration != null">
+                and duration = #{duration}
+            </if>
             <if test="createTime != null">
                 and create_time = #{createTime}
             </if>
@@ -86,9 +90,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserInfoAuthFile">
         insert into
-        t_user_info_auth_file (name,info_auth_id,type,url,ext,create_time,update_time)
+        t_user_info_auth_file (name,info_auth_id,type,url,ext,duration,create_time,update_time)
         values
-        (#{name},#{infoAuthId},#{type},#{url},#{ext},#{createTime},#{updateTime})
+        (#{name},#{infoAuthId},#{type},#{url},#{ext},#{duration},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.UserInfoAuthFile">
@@ -113,6 +117,10 @@
 
             <if test="ext != null">
                 ext = #{ext},
+            </if>
+
+            <if test="duration != null">
+                duration = #{duration},
             </if>
 
             <if test="createTime != null">

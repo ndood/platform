@@ -83,7 +83,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         product.setGender(user.getGender());
         product.setCategoryIcon(category.getIcon());
         product.setProductName(userTechAuth.getCategoryName());
-        product.setDescription(userTechAuth.getDescription());
         product.setTechAuthId(userTechAuth.getId());
         product.setSalesModeId(salesMode.getId());
         product.setUnit(salesMode.getName());
@@ -93,6 +92,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         product.setStatus(false);
         product.setCreateTime(new Date());
         product.setUpdateTime(new Date());
+        product.setDelFlag(false);
         create(product);
         return product;
     }
@@ -119,7 +119,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             Category category = categoryService.findById(userTechAuth.getCategoryId());
             product.setCategoryId(userTechAuth.getCategoryId());
             product.setProductName(userTechAuth.getCategoryName());
-            product.setDescription(userTechAuth.getDescription());
             product.setTechAuthId(userTechAuth.getId());
             product.setCategoryIcon(category.getIcon());
         }
@@ -186,6 +185,17 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return productDao.findByParameter(productVO);
     }
 
+    /**
+     * 根据技能查询所有的商品
+     * @param techAuthId
+     * @return
+     */
+    public List<Product> findProductByTech(int techAuthId) {
+        ProductVO productVO = new ProductVO();
+        productVO.setTechAuthId(techAuthId);
+        return productDao.findByParameter(productVO);
+    }
+
 
     /**
      * 开始接单业务
@@ -241,10 +251,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     }
 
 
-
-
-
-
     /**
      * 查询用户详情页
      * @param productId
@@ -253,20 +259,24 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Override
     public ProductDetailsVO findDetailsByProductId(Integer productId) {
         Product product = findById(productId);
+        //查询用户信息
         UserInfoVO userInfo = userInfoAuthService.findUserCardByUserId(product.getUserId(),true,true,true,false);
+        //查询技能标签
         List<String> techTags = new ArrayList<>();
         List<TechTag> techTagList = techTagService.findByTechAuthId(product.getTechAuthId());
         for(TechTag techTag : techTagList){
             techTags.add(techTag.getName());
         }
         List<ProductVO> productVOList = findOtherProductVO(product.getUserId(),productId);
+        //查询用户认证的技能
+        UserTechAuth userTechAuth = userTechAuthService.findById(product.getTechAuthId());
         //查询完成订单数
         int orderCount =  orderService.allOrderCount(userInfo.getUserId());
         ProductDetailsVO serverCardVO = ProductDetailsVO.builder()
                                     .categoryId(product.getCategoryId())
                                     .id(product.getId())
                                     .onLine(isProductStartOrderReceivingStatus(product.getId()))
-                                    .description(product.getDescription())
+                                    .description(userTechAuth.getDescription())
                                     .productName(product.getProductName())
                                     .categoryIcon(product.getCategoryIcon())
                                     .price(product.getPrice())
@@ -281,8 +291,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     }
 
 
-
-
     @Override
     public SimpleProductVO findSimpleProductByProductId(Integer productId) {
         Product product = findById(productId);
@@ -292,7 +300,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         simpleProductVO.setUserInfo(userInfo);
         return simpleProductVO;
     }
-
 
 
     /**
@@ -499,6 +506,46 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         ProductVO productVO = new ProductVO();
         productVO.setUserId(userId);
         return productDao.findByParameter(productVO);
+    }
+
+
+    /**
+     * 删除该技能下的所有商品
+     */
+    public void deleteProductByTech(Integer techAuthId){
+        log.info("删除技能下所有商品techAuthId:{}",techAuthId);
+        List<Product> productList = findProductByTech(techAuthId);
+        for(Product product : productList){
+            deleteProduct(product);
+        }
+    }
+
+
+    /**
+     * 删除该用户的所有商品
+     */
+    public void deleteProductByUser(Integer userId){
+        log.info("删除用户所有商品userId:{}",userId);
+        List<Product> productList = findByUserId(userId);
+        for(Product product : productList){
+            deleteProduct(product);
+        }
+    }
+
+    public int deleteById(Integer id){
+        Product product = findById(id);
+        if(product==null){
+            throw new ServiceErrorException("商品ID不存在!");
+        }
+        return deleteProduct(product);
+    }
+
+
+    public int  deleteProduct(Product product){
+        log.info("删除商品product:{}",product);
+        productSearchComponent.deleteIndex(product.getId());
+        product.setDelFlag(true);
+        return update(product);
     }
 
     /**
