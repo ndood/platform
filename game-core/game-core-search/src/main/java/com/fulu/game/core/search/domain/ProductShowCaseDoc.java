@@ -12,8 +12,8 @@ import java.util.List;
 @ToString
 public class ProductShowCaseDoc {
 
-    @JestId
     //商品ID
+    @JestId
     private Integer id;
     //陪玩师ID
     private Integer userId;

@@ -77,6 +77,30 @@
         </where>
     </select>
 
+
+
+    <select id="search" resultMap="UserTechAuthResultMap" parameterType="com.fulu.game.core.entity.vo.serachVO.UserTechAuthSearchVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_user_tech_auth
+        <where>
+            <if test="mobile != null">
+                and mobile = #{mobile}
+            </if>
+            <if test="nickname != null">
+                and user_id in (SELECT id FROM t_user u WHERE u.nickname like  '%'||#{nickname}||'%')
+            </if>
+            <if test="startTime != null">
+                and update_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and update_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
+
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_user_tech_auth
         <where>

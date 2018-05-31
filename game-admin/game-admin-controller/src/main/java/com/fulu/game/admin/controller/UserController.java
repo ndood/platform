@@ -7,6 +7,7 @@ import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.common.utils.TimeUtil;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.*;
+import com.fulu.game.core.entity.vo.serachVO.UserTechAuthSearchVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
 
@@ -264,16 +265,8 @@ public class UserController extends BaseController {
     @PostMapping(value = "/tech-auth/list")
     public Result techAuthList(@RequestParam("pageNum") Integer pageNum,
                                @RequestParam("pageSize") Integer pageSize,
-                               @RequestParam(value = "nickname", required = false) String nickname,
-                               @RequestParam(value = "mobile", required = false) String mobile,
-                               @RequestParam(value = "startTime", required = false) String startTime,
-                               @RequestParam(value = "endTime", required = false) String endTime) {
-        UserTechAuthVO requestVo = new UserTechAuthVO();
-        requestVo.setNickname(nickname);
-        requestVo.setStartTime(startTime);
-        requestVo.setEndTime(endTime);
-        requestVo.setMobile(mobile);
-        PageInfo<UserTechAuthVO> page = userTechAuthService.list(pageNum, pageSize, null, requestVo);
+                               UserTechAuthSearchVO userTechAuthSearchVO) {
+        PageInfo<UserTechAuthVO> page = userTechAuthService.list(pageNum, pageSize, null, userTechAuthSearchVO);
         return Result.success().data(page);
     }
 
