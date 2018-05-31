@@ -315,11 +315,23 @@ public class UserController extends BaseController {
      *
      * @return
      */
-    @RequestMapping("/techCard/share")
+    @RequestMapping("/tech-auth/share")
     public Result getShareCard(@RequestParam("techAuthId") Integer techAuthId,
                                @RequestParam("scene") String scene,
                                @RequestParam("page") String page) throws WxErrorException, IOException {
-        String techCardUrl = userService.getShareCard(techAuthId, scene, page);
+        String techAuthUrl = userService.getTechAuthCard(techAuthId, scene, page);
+        return Result.success().data("techAuthUrl", techAuthUrl);
+    }
+
+    /**
+     * 陪玩师名片带小程序码
+     *
+     * @return
+     */
+    @RequestMapping("/tech-card/share")
+    public Result getShareCard(@RequestParam("scene") String scene,
+                               @RequestParam("productId") Integer productId) throws WxErrorException, IOException {
+        String techCardUrl = userService.getTechShareCard(scene,productId);
         return Result.success().data("techCardUrl", techCardUrl);
     }
 
@@ -329,7 +341,7 @@ public class UserController extends BaseController {
      * @param techAuthId
      * @return
      */
-    @RequestMapping("/techpage/share/get")
+    @RequestMapping("/tech-auth/page/get")
     public Result getSharePage(@RequestParam("techAuthId") Integer techAuthId) {
         UserInfoVO userInfoVO = userInfoAuthService.getSharePage(techAuthId);
         return Result.success().data(userInfoVO);

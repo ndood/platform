@@ -649,5 +649,35 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return redisOpenService.hget(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()));
     }
 
+    /**
+     * 查找用户其他的商品
+     *
+     * @param productId
+     * @return
+     */
+    public List<ProductVO> findOthersByproductId(Integer productId) {
+        Product mainProduct = productDao.findById(productId);
+        ProductVO requestVO = new ProductVO();
+        requestVO.setUserId(mainProduct.getUserId());
+        requestVO.setCategoryId(mainProduct.getCategoryId());
+        List<Product> products = productDao.findByParameter(requestVO);
+        List<ProductVO> productVOS = new ArrayList<>();
+        for (Product product : products) {
+            if (product.getId().equals(productId)) {
+                continue;
+            }
+            ProductVO productVO = new ProductVO();
+            BeanUtil.copyProperties(product, productVO);
+            List<String> techTags = new ArrayList<>();
+            List<TechTag> techTagList = techTagService.findByTechAuthId(productVO.getTechAuthId());
+            for (TechTag techTag : techTagList) {
+                techTags.add(techTag.getName());
+            }
+            productVO.setTechTags(techTags);
+            productVOS.add(productVO);
+        }
+        return productVOS;
+    }
+
 
 }

@@ -13,13 +13,8 @@ import com.fulu.game.core.dao.UserDao;
 import com.fulu.game.core.entity.Sharing;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserInfoAuth;
-import com.fulu.game.core.entity.vo.SharingVO;
-import com.fulu.game.core.entity.vo.UserInfoVO;
-import com.fulu.game.core.entity.vo.UserVO;
-import com.fulu.game.core.service.SharingService;
-import com.fulu.game.core.service.UserInfoAuthService;
-import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.WxCodeService;
+import com.fulu.game.core.entity.vo.*;
+import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
@@ -44,6 +39,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     private SharingService sharingService;
     @Autowired
     private WxCodeService wxCodeService;
+    @Autowired
+    private ProductService productService;
     @Autowired
     private ImgUtil imgUtil;
 
@@ -183,24 +180,22 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
 
-    public void checkUserInfoAuthStatus(Integer userId){
+    public void checkUserInfoAuthStatus(Integer userId) {
         User user = findById(userId);
         UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(userId);
-        if(userInfoAuth==null){
+        if (userInfoAuth == null) {
             throw new UserAuthException(UserAuthException.ExceptionCode.NOT_EXIST_USER_AUTH);
         }
-        if(user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.NOT_PERFECT.getType())){
+        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.NOT_PERFECT.getType())) {
             throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_REJECT);
         }
-        if(user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())){
+        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
             throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE);
         }
     }
 
-
-
     @Override
-    public String getShareCard(Integer techAuthId, String scene, String page) throws WxErrorException, IOException {
+    public String getTechAuthCard(Integer techAuthId, String scene, String page) throws WxErrorException, IOException {
 
         UserInfoVO userInfoVO = userInfoAuthService.findUserTechCardByUserId(techAuthId);
         //查询文案信息
@@ -214,12 +209,12 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             shareContent = shareList.get(0).getContent();
         }
         String codeUrl = wxCodeService.create(scene, page);
-        Map<String, String> contentMap = getContentMap(userInfoVO, shareContent, codeUrl);
-        String shareCardUrl = imgUtil.create(contentMap);
+        Map<String, String> contentMap = getTechAuthContentMap(userInfoVO, shareContent, codeUrl);
+        String shareCardUrl = imgUtil.createTechAuth(contentMap);
         return shareCardUrl;
     }
 
-    private Map<String, String> getContentMap(UserInfoVO userInfoVO, String shareContent, String codeUrl) {
+    private Map<String, String> getTechAuthContentMap(UserInfoVO userInfoVO, String shareContent, String codeUrl) {
         Map<String, String> contentMap = new HashMap<>();
         contentMap.put("nickname", userInfoVO.getNickName());
         contentMap.put("gender", userInfoVO.getGender().toString());
@@ -241,6 +236,80 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         contentMap.put("title", jo.getStr("title"));
         contentMap.put("content", jo.getStr("content"));
         contentMap.put("mainPicUrl", userInfoVO.getMainPhotoUrl());
+        contentMap.put("codeUrl", codeUrl);
+        return contentMap;
+    }
+
+    @Override
+    public String getTechShareCard(String scene, Integer productId) throws WxErrorException, IOException {
+        ProductDetailsVO productDetailsVO = productService.findDetailsByProductId(productId);
+
+        //查询文案信息
+        SharingVO sharingVO = new SharingVO();
+        sharingVO.setShareType(ShareTypeEnum.ORDER_SET.getType());
+        sharingVO.setGender(productDetailsVO.getUserInfo().getGender());
+        sharingVO.setStatus(true);
+        List<Sharing> shareList = sharingService.findByParam(sharingVO);
+        String shareStr = "";
+        if (!CollectionUtil.isEmpty(shareList)) {
+            shareStr = shareList.get(0).getContent();
+        }
+        String codeUrl = wxCodeService.create(scene, PagePathEnum.TECH_SHARE_CARD.getPagePath());
+        Map<String, String> contentMap = getTechCardContentMap(productDetailsVO, shareStr, codeUrl);
+        String shareCardUrl = imgUtil.createTechCard(contentMap);
+        return shareCardUrl;
+    }
+
+    private Map<String, String> getTechCardContentMap(ProductDetailsVO pdVO, String shareStr, String codeUrl) {
+        Map<String, String> contentMap = new HashMap<>();
+        UserInfoVO userInfoVO = pdVO.getUserInfo();
+        //组装个人信息
+        if (null != userInfoVO) {
+            contentMap.put("mainPicUrl", userInfoVO.getMainPhotoUrl());
+            contentMap.put("nickname", userInfoVO.getNickName());
+            contentMap.put("gender", userInfoVO.getGender().toString());
+            contentMap.put("age", userInfoVO.getAge().toString());
+            contentMap.put("city", userInfoVO.getCity());
+            String tagStr = "";
+            List<String> tagList = userInfoVO.getTags();
+            for (String str : tagList) {
+                tagStr += " " + str;
+            }
+            contentMap.put("tagStr", tagStr);
+        }
+
+        //主商品信息
+        contentMap.put("mainTechIconUrl", pdVO.getCategoryIcon());
+        String mainTech = pdVO.getProductName() + " 陪玩 " ;
+        contentMap.put("mainTechName", mainTech);
+
+        String mainPrice = "￥" + pdVO.getPrice() + "元/" + pdVO.getUnit();
+        contentMap.put("mainPrice", mainPrice);
+
+        String mainTechTagStr = "";
+        List<String> techTagList = pdVO.getTechTags();
+        for (String str : techTagList) {
+            mainTechTagStr += " " + str;
+        }
+        contentMap.put("mainTechTagStr", mainTechTagStr);
+
+        //次商品信息
+        List<ProductVO> otherProductList = productService.findOthersByproductId(pdVO.getId());
+        if (!CollectionUtil.isEmpty(otherProductList)) {
+            ProductVO productVO = otherProductList.get(0);
+            contentMap.put("seccondTechIconUrl", productVO.getCategoryIcon());
+            String seccondTech = productVO.getProductName() + " 陪玩 ";
+            contentMap.put("seccondTech", seccondTech);
+            String secondPrice = "￥" + productVO.getPrice() + "元/" + productVO.getUnit();
+            contentMap.put("secondPrice", secondPrice);
+            String secondTechTagStr = "";
+            List<String> secondTechTagList = productVO.getTechTags();
+            for (String str : secondTechTagList) {
+                secondTechTagStr += " " + str;
+            }
+            contentMap.put("secondTechTagStr", secondTechTagStr);
+        }
+        contentMap.put("shareStr", shareStr);
         contentMap.put("codeUrl", codeUrl);
         return contentMap;
     }
