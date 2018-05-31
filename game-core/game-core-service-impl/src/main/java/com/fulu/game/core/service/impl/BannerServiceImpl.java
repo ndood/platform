@@ -95,6 +95,7 @@ public class BannerServiceImpl extends AbsCommonService<Banner, Integer> impleme
 
     @Override
     public List<Banner> findByParam(BannerVO bannerVO){
+        PageHelper.startPage(1, 1000, "sort DESC");
         return bannerDao.findByParameter(bannerVO);
     }
 
