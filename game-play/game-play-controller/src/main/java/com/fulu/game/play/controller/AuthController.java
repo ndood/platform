@@ -69,7 +69,6 @@ public class AuthController extends BaseController {
 
     /**
      * 查询用户个信息认证状态
-     *
      * @return
      */
     @PostMapping(value = "/user-info/status")

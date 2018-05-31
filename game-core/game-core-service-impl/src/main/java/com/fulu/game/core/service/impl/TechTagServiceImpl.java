@@ -2,6 +2,7 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.entity.Tag;
 import com.fulu.game.core.entity.vo.TechTagVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,5 +40,10 @@ public class TechTagServiceImpl extends AbsCommonService<TechTag,Integer> implem
         techTagVO.setTechAuthId(techAuthId);
         List<TechTag>  techTagList =   techTagDao.findByParameter(techTagVO);
         return techTagList;
+    }
+
+    @Override
+    public int updateTechTagByTag(Tag tag) {
+        return techTagDao.updateTechTagByTag(tag);
     }
 }

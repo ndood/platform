@@ -104,4 +104,17 @@
             id = #{id}
         </where>
     </update>
+
+
+    <update id="updateTechTagByTag" parameterType="com.fulu.game.core.entity.Tag">
+        update t_tech_tag
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+        </set>
+        <where>
+            tag_id = #{id}
+        </where>
+    </update>
 </mapper>

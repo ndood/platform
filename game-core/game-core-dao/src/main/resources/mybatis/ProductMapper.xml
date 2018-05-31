@@ -201,6 +201,21 @@
         </where>
     </update>
 
+    <update id="updateProductSalesModel" parameterType="com.fulu.game.core.entity.SalesMode">
+        update t_product
+        <set>
+            <if test="name != null">
+                unit = #{name},
+            </if>
+            <if test="rank != null">
+                sales_mode_rank = #{rank},
+            </if>
+        </set>
+        <where>
+            sales_mode_id = #{id}
+        </where>
+    </update>
+
     <update id="recoverProductDelFlag" parameterType="java.lang.Integer">
         update t_product
         <set>

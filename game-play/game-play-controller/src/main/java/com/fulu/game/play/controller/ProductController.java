@@ -185,10 +185,6 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "/order-receive/stop")
     public Result orderReceiveStop() {
-        User user = userService.getCurrentUser();
-        userService.isCurrentUser(user.getId());
-        //检查用户认证的状态
-        userService.checkUserInfoAuthStatus(user.getId());
         productService.stopOrderReceiving();
         return Result.success().data("已经停止自动接单!");
     }

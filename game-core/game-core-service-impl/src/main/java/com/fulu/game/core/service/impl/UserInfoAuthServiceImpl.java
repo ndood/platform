@@ -95,7 +95,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         UserInfoAuth userInfoAuth = new UserInfoAuth();
         BeanUtil.copyProperties(userInfoAuthVO, userInfoAuth, copyOptions);
         userInfoAuth.setUpdateTime(new Date());
-
         if (userInfoAuth.getId() == null) {
             UserInfoAuth userAuth = findByUserId(user.getId());
             if (userAuth != null) {
@@ -105,6 +104,11 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             create(userInfoAuth);
         } else {
             update(userInfoAuth);
+            //同步恢复用户正确技能的商品状态
+            List<UserTechAuth> userTechAuthList = userTechAuthService.findUserNormalTechs(userInfoAuth.getUserId());
+            for(UserTechAuth userTechAuth : userTechAuthList){
+                productService.recoverProductDelFlagByTechAuthId(userTechAuth.getId());
+            }
         }
         //添加认证身份证文件
         createUserIdCard(user.getId(), userInfoAuthVO.getIdCardHeadUrl(), userInfoAuthVO.getIdCardEmblemUrl(), userInfoAuthVO.getIdCardHandUrl());
@@ -133,10 +137,15 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         if(userInfoAuth==null){
             throw new UserAuthException(UserAuthException.ExceptionCode.NOT_EXIST_USER_AUTH);
         }
+
         userInfoAuth.setIsRejectSubmit(true);
         update(userInfoAuth);
         //修改用户表认证状态信息
         User user = userService.findById(userInfoAuth.getUserId());
+        //如果是用户冻结状态给错误提示
+        if(user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())){
+            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE_ADMIN);
+        }
         user.setUserInfoAuth(UserInfoAuthStatusEnum.NOT_PERFECT.getType());
         user.setUpdateTime(new Date());
         userService.update(user);
@@ -168,6 +177,14 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         UserInfoAuth userInfoAuth = findById(id);
         userInfoAuth.setIsRejectSubmit(false);
         update(userInfoAuth);
+        //修改用户表认证状态信息
+        User user = userService.findById(userInfoAuth.getUserId());
+        //如果是用户冻结状态给错误提示
+        if(user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())){
+            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE_ADMIN);
+        }
+        user.setUserInfoAuth(UserInfoAuthStatusEnum.VERIFIED.getType());
+        userService.update(user);
 
         //同步恢复用户正确技能的商品状态
         List<UserTechAuth> userTechAuthList = userTechAuthService.findUserNormalTechs(userInfoAuth.getUserId());
@@ -409,6 +426,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             UserInfoAuthVO userInfoAuthVO = new UserInfoAuthVO();
             BeanUtil.copyProperties(userInfoAuth, userInfoAuthVO);
             User user = userService.findById(userInfoAuthVO.getUserId());
+            userInfoAuthVO.setUserInfoAuth(user.getUserInfoAuth());
+
             copyUserInfo2InfoAuthVo(user, userInfoAuthVO);
             //查询身份证信息
             List<UserInfoFile> userInfoFileList = userInfoFileService.findByUserId(user.getId());

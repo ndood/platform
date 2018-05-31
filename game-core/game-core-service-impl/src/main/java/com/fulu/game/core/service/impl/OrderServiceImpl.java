@@ -6,7 +6,6 @@ import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.common.utils.SMSUtil;
-import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OrderVO;
@@ -54,6 +53,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     private CouponService couponService;
     @Autowired
     private AdminService adminService;
+    @Autowired
+    private WxTemplateMsgService wxTemplateMsgService;
 
     @Override
     public ICommonDao<Order, Integer> getDao() {
@@ -298,6 +299,11 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         //发送短信通知给陪玩师
         User server = userService.findById(order.getServiceUserId());
         SMSUtil.sendOrderReceivingRemind(server.getMobile(),order.getName());
+
+        User user = userService.findById(order.getUserId());
+        //推送通知陪玩师
+        wxTemplateMsgService.pushWechatTemplateMsg(server.getId(),WechatTemplateMsgEnum.ORDER_USER_PAY,user.getNickname(),order.getName());
+
         return orderConvertVo(order);
     }
 
@@ -420,6 +426,11 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         deleteAlreadyService(order.getServiceUserId());
         //添加申诉文件
         orderDealService.create(orderNo, order.getUserId(),OrderDealTypeEnum.APPEAL.getType(),remark,fileUrl);
+
+        //推送通知给双方
+        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(),WechatTemplateMsgEnum.ORDER_USER_APPEAL);
+        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(),WechatTemplateMsgEnum.ORDER_SERVER_USER_APPEAL);
+
         return orderConvertVo(order);
     }
 
@@ -445,6 +456,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         //添加验收文件
         orderDealService.create(orderNo, order.getServiceUserId(),OrderDealTypeEnum.CHECK.getType(),remark,fileUrl);
         deleteAlreadyService(order.getServiceUserId());
+
+        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(),WechatTemplateMsgEnum.ORDER_SERVER_USER_CHECK,order.getName());
         return orderConvertVo(order);
     }
 
@@ -508,7 +521,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
 
 
     /**
-     * 管理员强制完成订单 (大款给打手)
+     * 管理员强制完成订单 (打款给打手)
      * @param orderNo
      * @return
      */
@@ -525,6 +538,10 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         update(order);
         //订单分润
         shareProfit(order);
+
+        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(),WechatTemplateMsgEnum.ORDER_USER_APPEAL_COMPLETE);
+        wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(),WechatTemplateMsgEnum.ORDER_SERVER_USER_APPEAL_COMPLETE);
+
         return orderConvertVo(order);
     }
 
@@ -547,6 +564,10 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         if(order.getIsPay()){
             orderRefund(order.getOrderNo(),order.getUserId(),order.getActualMoney());
         }
+
+
+        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(),WechatTemplateMsgEnum.ORDER_USER_APPEAL_REFUND);
+        wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(),WechatTemplateMsgEnum.ORDER_SERVER_USER_APPEAL_REFUND);
         return orderConvertVo(order);
     }
 
@@ -569,7 +590,10 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setCommissionMoney(order.getTotalMoney());
         update(order);
         //订单协商,全部金额记录平台流水
-        //platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_NEGOTIATE,order.getOrderNo(),order.getCommissionMoney());
+
+        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(),WechatTemplateMsgEnum.ORDER_SYSTEM_USER_APPEAL_COMPLETE);
+        wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(),WechatTemplateMsgEnum.ORDER_SYSTEM_SERVER_APPEAL_COMPLETE);
+
         return orderConvertVo(order);
     }
 

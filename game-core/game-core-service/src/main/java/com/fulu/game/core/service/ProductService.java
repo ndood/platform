@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Product;
+import com.fulu.game.core.entity.SalesMode;
 import com.fulu.game.core.entity.vo.ProductShowCaseVO;
 import com.fulu.game.core.entity.vo.ProductDetailsVO;
 import com.fulu.game.core.entity.vo.SimpleProductVO;
@@ -154,7 +155,17 @@ public interface ProductService extends ICommonService<Product,Integer>{
      */
     void recoverProductDelFlag(int productId);
 
-
+    /**
+     * 通过TechAuthId恢复商品状态
+     * @param techAuthId
+     */
     void recoverProductDelFlagByTechAuthId(Integer techAuthId);
+
+    /**
+     * 修改商品销售方式
+     * @param salesMode
+     * @return
+     */
+    int updateProductSalesModel(SalesMode salesMode);
 
 }
