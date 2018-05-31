@@ -19,7 +19,6 @@ import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -115,6 +114,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         userService.isCurrentUser(product.getUserId());
         //检查用户认证的状态
         userService.checkUserInfoAuthStatus(product.getUserId());
+        if(product==null){
+            throw new ProductException(ProductException.ExceptionCode.PRODUCT_REVIEW_ING);
+        }
         if (techAuthId != null) {
             if (!product.getTechAuthId().equals(techAuthId)) {
                 List<Product> products = findProductByUserAndSalesMode(product.getUserId(), techAuthId, unitId);
@@ -152,7 +154,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 激活或者取消激活商品
-     *
      * @param id
      * @param status
      * @return
@@ -168,6 +169,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             throw new ServiceErrorException("在线技能不允许修改!");
         }
         Product product = findById(id);
+        if(product==null){
+            throw new ProductException(ProductException.ExceptionCode.PRODUCT_REVIEW_ING);
+        }
         product.setStatus(status);
         update(product);
         return product;
@@ -215,13 +219,12 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
 
     public void bathUpdateProductIndex() {
+        log.info("批量更新所有商品索引");
         List<User> userList = userService.findAllServeUser();
-        productSearchComponent.deleteIndexAll();
         for (User user : userList) {
             batchCreateUserProduct(user.getId());
         }
     }
-
 
     /**
      * 恢复商品删除状态
@@ -307,8 +310,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
 
     /**
-     * 查询用户详情页
-     *
+     * 查询商品详情页
      * @param productId
      * @return
      */
@@ -364,6 +366,89 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     }
 
 
+
+    /**
+     * 查找用户其他的商品
+     * @param userId
+     * @param productId
+     * @return
+     */
+    public List<ProductVO> findOtherProductVO(Integer userId, Integer productId) {
+        List<Product> products = findByUserId(userId);
+        List<ProductVO> productVOS = new ArrayList<>();
+        for (Product product : products) {
+            if (product.getId().equals(productId)) {
+                continue;
+            }
+            ProductVO productVO = new ProductVO();
+            BeanUtil.copyProperties(product, productVO);
+            List<String> techTags = new ArrayList<>();
+            List<TechTag> techTagList = techTagService.findByTechAuthId(productVO.getTechAuthId());
+            for (TechTag techTag : techTagList) {
+                techTags.add(techTag.getName());
+            }
+            if (isUserStartOrderReceivingStatus(userId)) {
+                if (isProductStartOrderReceivingStatus(productVO.getId())) {
+                    productVO.setOnLine(true);
+                    productVO.setTechTags(techTags);
+                    productVOS.add(productVO);
+                }
+            } else {
+                productVO.setOnLine(isProductStartOrderReceivingStatus(productVO.getId()));
+                productVO.setTechTags(techTags);
+                productVOS.add(productVO);
+            }
+        }
+        return productVOS;
+    }
+
+
+    /**
+     * 为用户所有商品添加索引
+     * @param userId
+     */
+    @Override
+    public void batchCreateUserProduct(Integer userId) {
+        List<Product> products = findByUserId(userId);
+        List<Integer> rightfulProductIds = new ArrayList<>();
+        for (Product product : products) {
+            rightfulProductIds.add(product.getId());
+        }
+        if(productSearchComponent.indicesExists()){
+            //删除掉之前用户的垃圾商品数据
+            List<ProductShowCaseDoc> productShowCaseDocList = productSearchComponent.findByUser(userId);
+            for (ProductShowCaseDoc pdoc : productShowCaseDocList) {
+                if (!rightfulProductIds.contains(pdoc.getId())) {
+                    productSearchComponent.deleteIndex(pdoc.getId());
+                }
+            }
+        }
+        batchCreateProductIndex(products);
+    }
+
+
+    /**
+     * 搜索商品
+     * @param pageNum
+     * @param pageSize
+     * @param nickName
+     * @return
+     */
+
+    @Override
+    public PageInfo searchContent(int pageNum, int pageSize, String nickName) {
+        PageInfo page = null;
+        try {
+            Page searchResult = productSearchComponent.findByNickName(pageNum, pageSize, nickName);
+            page = new PageInfo(searchResult);
+        } catch (Exception e) {
+            log.error("查询出错:查询内容:{};", nickName);
+            log.error("查询出错:", e);
+            page = new PageInfo();
+        }
+        return page;
+    }
+
     /**
      * 商品首页和列表页
      *
@@ -406,85 +491,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return page;
     }
 
-
-    public PageInfo searchContent(int pageNum, int pageSize, String nickName) {
-        PageInfo page = null;
-        try {
-            Page searchResult = productSearchComponent.findByNickName(pageNum, pageSize, nickName);
-            page = new PageInfo(searchResult);
-        } catch (Exception e) {
-            log.error("查询出错:查询内容:{};", nickName);
-            log.error("查询出错:", e);
-            page = new PageInfo();
-        }
-        return page;
-    }
-
-    /**
-     * 查找用户其他的商品
-     *
-     * @param userId
-     * @param productId
-     * @return
-     */
-    public List<ProductVO> findOtherProductVO(Integer userId, Integer productId) {
-        List<Product> products = findByUserId(userId);
-        List<ProductVO> productVOS = new ArrayList<>();
-        for (Product product : products) {
-            if (product.getId().equals(productId)) {
-                continue;
-            }
-            ProductVO productVO = new ProductVO();
-            BeanUtil.copyProperties(product, productVO);
-            List<String> techTags = new ArrayList<>();
-            List<TechTag> techTagList = techTagService.findByTechAuthId(productVO.getTechAuthId());
-            for (TechTag techTag : techTagList) {
-                techTags.add(techTag.getName());
-            }
-            if (isUserStartOrderReceivingStatus(userId)) {
-                if (isProductStartOrderReceivingStatus(productVO.getId())) {
-                    productVO.setOnLine(true);
-                    productVO.setTechTags(techTags);
-                    productVOS.add(productVO);
-                }
-            } else {
-                productVO.setOnLine(isProductStartOrderReceivingStatus(productVO.getId()));
-                productVO.setTechTags(techTags);
-                productVOS.add(productVO);
-            }
-        }
-        return productVOS;
-    }
-
-
-    /**
-     * 为用户所有商品添加索引
-     *
-     * @param userId
-     */
-    @Override
-    public void batchCreateUserProduct(Integer userId) {
-        List<Product> products = findByUserId(userId);
-        List<Integer> rightfulProductIds = new ArrayList<>();
-        for (Product product : products) {
-            rightfulProductIds.add(product.getId());
-        }
-        if(productSearchComponent.indicesExists()){
-            //删除掉之前用户的垃圾商品数据
-            List<ProductShowCaseDoc> productShowCaseDocList = productSearchComponent.findByUser(userId);
-            for (ProductShowCaseDoc pdoc : productShowCaseDocList) {
-                if (!rightfulProductIds.contains(pdoc.getId())) {
-                    productSearchComponent.deleteIndex(pdoc.getId());
-                }
-            }
-        }
-        batchCreateProductIndex(products);
-    }
-
-
     /**
      * 批量创建商品索引
-     *
      * @param products (每个用户的所有商品集合)
      */
     private void batchCreateProductIndex(List<Product> products) {

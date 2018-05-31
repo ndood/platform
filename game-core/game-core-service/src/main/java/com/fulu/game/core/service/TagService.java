@@ -19,7 +19,7 @@ public interface TagService extends ICommonService<Tag,Integer>{
 
     Tag create(Integer categoryId, String tagName);
 
-    Tag update(Integer id, String tagName);
+    Tag update(Integer id, String tagName,Integer gender);
 
     PageInfo<Tag> parentList(Integer pageNum, Integer pageSize);
 

@@ -11,6 +11,7 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserTechAuthDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
+import com.fulu.game.core.entity.vo.serachVO.UserTechAuthSearchVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -88,6 +89,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
                 }
             }
             userTechAuthDao.update(userTechAuthVO);
+            productService.deleteProductByTech(userTechAuthVO.getId());
         }
         //创建技能标签关联
         createTechTag(userTechAuthVO.getId(), userTechAuthVO.getTagIds());
@@ -191,12 +193,12 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
     @Override
-    public PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize, String orderBy, UserTechAuthVO requestVo) {
+    public PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize, String orderBy, UserTechAuthSearchVO userTechAuthSearchVO) {
         if (StringUtils.isBlank(orderBy)) {
             orderBy = "update_time desc";
         }
         PageHelper.startPage(pageNum, pageSize, orderBy);
-        List<UserTechAuth> userTechAuths = userTechAuthDao.findByParameter(requestVo);
+        List<UserTechAuth> userTechAuths = userTechAuthDao.search(userTechAuthSearchVO);
         List<UserTechAuthVO> userTechAuthVOList = new ArrayList<>();
         for (UserTechAuth userTechAuth : userTechAuths) {
             UserTechAuthVO userTechAuthVO = new UserTechAuthVO();

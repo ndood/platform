@@ -77,6 +77,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
         List<WxMaTemplateMessage.Data> dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", content), new WxMaTemplateMessage.Data("keyword2", date));
         wxMaTemplateMessage.setData(dataList);
         try {
+            log.info("推送微信模板消息:{}",wxMaTemplateMessage);
             wxMaService.getMsgService().sendTemplateMsg(wxMaTemplateMessage);
             return true;
         } catch (Exception e) {
@@ -114,6 +115,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
         List<WxMaTemplateMessage.Data> dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", sendUser.getNickname() + ":" + content), new WxMaTemplateMessage.Data("keyword2", date));
         wxMaTemplateMessage.setData(dataList);
         try {
+            log.info("推送微信模板消息:{}",wxMaTemplateMessage);
             wxMaService.getMsgService().sendTemplateMsg(wxMaTemplateMessage);
         } catch (Exception e) {
             throw new ServiceErrorException("推送消息出错!");

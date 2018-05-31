@@ -3,6 +3,7 @@ package com.fulu.game.core.service;
 import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.UserTechInfo;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
+import com.fulu.game.core.entity.vo.serachVO.UserTechAuthSearchVO;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -88,6 +89,6 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
     List<UserTechAuth> findByStatusAndUserId(Integer userId, Integer status);
 
 
-    PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize, String orderBy, UserTechAuthVO requestVo);
+    PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize, String orderBy, UserTechAuthSearchVO userTechAuthSearchVO);
 
 }

@@ -96,8 +96,9 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
     }
 
     @Override
-    public Tag update(Integer id, String tagName) {
+    public Tag update(Integer id, String tagName,Integer gender) {
         Tag tag = findById(id);
+        tag.setGender(gender);
         tag.setName(tagName);
         update(tag);
         techTagService.updateTechTagByTag(tag);

@@ -59,8 +59,9 @@ public class TagController extends BaseController {
 
     @PostMapping(value = "/update")
     public Result updateCategoryTag(Integer id,
+                                    Integer gender,
                                     String name) {
-        Tag tag = tagService.update(id, name);
+        Tag tag = tagService.update(id, name,gender);
         return Result.success().data(tag).msg("修改标签成功!");
     }
 
