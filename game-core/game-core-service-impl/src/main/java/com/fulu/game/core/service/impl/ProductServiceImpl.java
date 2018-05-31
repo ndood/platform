@@ -56,16 +56,16 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     @Override
     public Product create(Integer techAuthId, BigDecimal price, Integer unitId) {
-
+        User user = userService.getCurrentUser();
+        log.info("创建接单方式:userId:{};techAuthId:{};price:{};unitId:{}", user.getId(), techAuthId, price, unitId);
         UserTechAuth userTechAuth = userTechAuthService.findById(techAuthId);
+        userService.isCurrentUser(userTechAuth.getUserId());
         if (userTechAuth == null) {
             throw new ServiceErrorException("不能设置该技能接单!");
         }
         //检查用户技能状态
         userTechAuthService.checkUserTechAuth(techAuthId);
 
-        User user = userService.findById(userTechAuth.getUserId());
-        userService.isCurrentUser(user.getId());
         //检查用户认证的状态
         userService.checkUserInfoAuthStatus(user.getId());
 
@@ -104,6 +104,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     @Override
     public Product update(Integer id, Integer techAuthId, BigDecimal price, Integer unitId) {
+        User user = userService.getCurrentUser();
+        log.info("修改接单方式:userId:{};techAuthId:{};price:{};unitId:{}", user.getId(), techAuthId, price, unitId);
         //检查用户技能状态
         userTechAuthService.checkUserTechAuth(techAuthId);
         if (redisOpenService.hasKey(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(id))) {
@@ -158,6 +160,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Override
     public Product enable(int id, boolean status) {
         User user = userService.getCurrentUser();
+        log.info("激活或者取消激活商品:userId:{};id:{};status:{};", user.getId(), id, status);
         userService.isCurrentUser(user.getId());
         //检查用户认证的状态
         userService.checkUserInfoAuthStatus(user.getId());
@@ -210,6 +213,16 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return productDao.findByParameter(productVO);
     }
 
+
+    public void bathUpdateProductIndex() {
+        List<User> userList = userService.findAllServeUser();
+        productSearchComponent.deleteIndexAll();
+        for (User user : userList) {
+            batchCreateUserProduct(user.getId());
+        }
+    }
+
+
     /**
      * 恢复商品删除状态
      *
@@ -238,6 +251,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Override
     public void startOrderReceiving(Float hour) {
         User user = userService.getCurrentUser();
+        log.info("用户开始接单:userId:{};hour:{};", user.getId(), hour);
         userService.isCurrentUser(user.getId());
         //检查用户认证的状态
         userService.checkUserInfoAuthStatus(user.getId());
@@ -273,9 +287,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Override
     public void stopOrderReceiving() {
         User user = userService.getCurrentUser();
+        log.info("用户停止接单:userId:{};", user.getId());
         //检查用户认证的状态
         userService.checkUserInfoAuthStatus(user.getId());
-
         List<Product> products = findEnabledProductByUser(user.getId());
         redisOpenService.delete(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()));
         for (Product product : products) {
@@ -366,7 +380,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                                         Integer pageNum,
                                         Integer pageSize,
                                         String orderBy) {
-
         PageInfo page = null;
         try {
             Page searchResult = productSearchComponent.searchShowCaseDoc(categoryId, gender, pageNum, pageSize, orderBy);
@@ -400,7 +413,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             Page searchResult = productSearchComponent.findByNickName(pageNum, pageSize, nickName);
             page = new PageInfo(searchResult);
         } catch (Exception e) {
-            log.error("查询出错:", e);
+            log.error("查询出错:查询内容:{};", nickName);
             page = new PageInfo();
         }
         return page;
@@ -455,11 +468,13 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         for (Product product : products) {
             rightfulProductIds.add(product.getId());
         }
-        //删除掉之前用户的垃圾商品数据
-        List<ProductShowCaseDoc> productShowCaseDocList = productSearchComponent.findByUser(userId);
-        for (ProductShowCaseDoc pdoc : productShowCaseDocList) {
-            if (!rightfulProductIds.contains(pdoc.getId())) {
-                productSearchComponent.deleteIndex(pdoc.getId());
+        if (productSearchComponent.indicesExists()) {
+            //删除掉之前用户的垃圾商品数据
+            List<ProductShowCaseDoc> productShowCaseDocList = productSearchComponent.findByUser(userId);
+            for (ProductShowCaseDoc pdoc : productShowCaseDocList) {
+                if (!rightfulProductIds.contains(pdoc.getId())) {
+                    productSearchComponent.deleteIndex(pdoc.getId());
+                }
             }
         }
         batchCreateProductIndex(products);
@@ -468,8 +483,12 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 批量创建商品索引
+     * <p>
+     * <<<<<<< HEAD
      *
-     * @param products
+     * @param products =======
+     * @param products (每个用户的所有商品集合)
+     *                 >>>>>>> 46381f2dadeccc83d234ea3e62334be6f31e372d
      */
     private void batchCreateProductIndex(List<Product> products) {
         List<Product> showIndexProducts = getShowIndexProduct(products);
@@ -589,20 +608,15 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     }
 
     public int deleteById(Integer id) {
-        Product product = findById(id);
-        if (product == null) {
-            throw new ServiceErrorException("商品ID不存在!");
-        }
-        return deleteProduct(product);
+        redisOpenService.delete(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(id));
+        productSearchComponent.deleteIndex(id);
+        return productDao.deleteById(id);
     }
 
 
     public int deleteProduct(Product product) {
         log.info("删除商品product:{}", product);
-        redisOpenService.delete(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(product.getId()));
-        productSearchComponent.deleteIndex(product.getId());
-        product.setDelFlag(true);
-        return update(product);
+        return deleteById(product.getId());
     }
 
     /**

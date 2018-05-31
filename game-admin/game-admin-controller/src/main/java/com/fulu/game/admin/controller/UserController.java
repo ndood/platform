@@ -47,7 +47,6 @@ public class UserController extends BaseController {
 
     /**
      * 用户认证信息列表
-     *
      * @param pageNum
      * @param pageSize
      * @return
@@ -65,7 +64,6 @@ public class UserController extends BaseController {
 
     /**
      * 认证信息创建
-     *
      * @return
      */
     @PostMapping(value = "/info-auth/save")
@@ -348,5 +346,7 @@ public class UserController extends BaseController {
             return Result.success().data(newUser).msg("新用户添加成功！");
         }
     }
+
+
 
 }

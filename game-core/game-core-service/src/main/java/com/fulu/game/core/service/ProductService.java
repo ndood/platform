@@ -137,12 +137,9 @@ public interface ProductService extends ICommonService<Product,Integer>{
     void deleteProductByTech(Integer techAuthId);
 
     /**
-     * 根据ID删除商品
-     * @param id
-     * @return
+     * 批量更新所有用户索引
      */
-    int deleteById(Integer id);
-
+    void bathUpdateProductIndex();
     /**
      * 逻辑删除商品
      * @param product

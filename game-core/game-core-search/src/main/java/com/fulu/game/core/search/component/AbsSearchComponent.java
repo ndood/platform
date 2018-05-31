@@ -3,7 +3,10 @@ package com.fulu.game.core.search.component;
 import com.fulu.game.common.exception.SearchException;
 import com.fulu.game.core.search.domain.Criteria;
 import io.searchbox.client.JestClient;
+import io.searchbox.client.JestResult;
 import io.searchbox.core.*;
+import io.searchbox.indices.DeleteIndex;
+import io.searchbox.indices.IndicesExists;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -38,6 +41,7 @@ public abstract class AbsSearchComponent<T,K> {
         }
     }
 
+
     /**
      * 更新索引
      * @param t
@@ -53,7 +57,7 @@ public abstract class AbsSearchComponent<T,K> {
                     .build();
             DocumentResult result = getJestClient().execute(update);
             if(!result.isSucceeded()){
-                throw new SearchException(SearchException.ExceptionCode.SAVE_EXCEPTION,update.getPathToResult(),result.getErrorMessage());
+                throw new SearchException(SearchException.ExceptionCode.SAVE_EXCEPTION,update.getURI(),result.getErrorMessage());
             }
             return result.isSucceeded();
         }catch (Exception  e){
@@ -62,9 +66,37 @@ public abstract class AbsSearchComponent<T,K> {
         }
     }
 
+
+    public  boolean indicesExists()  {
+        try {
+            IndicesExists indicesExists = new IndicesExists.Builder(getIndexDB()).build();
+            JestResult result = getJestClient().execute(indicesExists);
+            return result.isSucceeded();
+        }catch (Exception e){
+            log.error("查询索引出错:",e);
+            return false;
+        }
+    }
+
+    public boolean deleteIndexAll(){
+        try {
+            DeleteIndex deleteIndex = new DeleteIndex.Builder(getIndexDB()).build();
+            JestResult result = getJestClient().execute(deleteIndex);
+            if(!result.isSucceeded()){
+                throw new SearchException(SearchException.ExceptionCode.DEL_EXCEPTION,deleteIndex.getURI(),result.getErrorMessage());
+            }
+            log.info("删除所有索引完成{}",result);
+            return true;
+        }catch (Exception e){
+            log.error("删除索引错误:",e);
+            return false;
+        }
+
+    }
+
+
     /**
      * 删除
-     *
      * @param id 文档id
      * @return 是否执行成功
      */
@@ -84,6 +116,8 @@ public abstract class AbsSearchComponent<T,K> {
             return false;
         }
     }
+
+
 
     /**
      * 通过ID查询

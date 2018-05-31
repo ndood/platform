@@ -71,15 +71,15 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     @Override
     public UserInfoAuthVO save(UserInfoAuthVO userInfoAuthVO) {
+        log.info("保存用户认证信息:userInfoAuthVO:{}",userInfoAuthVO);
         //更新用户信息
         User user = userService.findById(userInfoAuthVO.getUserId());
         //如果是用户冻结状态给错误提示
         if(user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())){
             throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE);
         }
-        //如果是驳回状态
-        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.NOT_PERFECT.getType())) {
-            userInfoAuthVO.setIsRejectSubmit(true);
+        if(userInfoAuthVO.getMobile()==null){
+            userInfoAuthVO.setMobile(user.getMobile());
         }
         user.setHeadPortraitsUrl(userInfoAuthVO.getHeadUrl());
         user.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
@@ -100,6 +100,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             if (userAuth != null) {
                 throw new UserAuthException(UserAuthException.ExceptionCode.EXIST_USER_AUTH);
             }
+            userInfoAuth.setIsRejectSubmit(false);
             userInfoAuth.setCreateTime(new Date());
             create(userInfoAuth);
         } else {
@@ -537,6 +538,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
 
     private void createUserInfoFile(Integer userId, String fileUrl, String name, Integer type) {
+        userInfoFileService.deleteByUserIdAndType(userId,type);
         UserInfoFile userInfoFile = new UserInfoFile();
         userInfoFile.setName(name);
         userInfoFile.setUrl(fileUrl);
@@ -548,7 +550,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     /**
      * 添加用户写真图集
-     *
      * @param portraitUrls
      * @param userInfoAuthId
      */
