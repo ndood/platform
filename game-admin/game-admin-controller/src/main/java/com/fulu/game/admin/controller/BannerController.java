@@ -23,7 +23,6 @@ public class BannerController {
     private BannerService bannerService;
 
     /**
-     * --卡拉啊
      * @param bannerVO
      * @return
      */
@@ -41,12 +40,13 @@ public class BannerController {
 
     /**
      * 启用和禁用
+     *
      * @return
      */
     @PostMapping("/disable")
     public Result disable(@RequestParam("id") Integer id,
                           @RequestParam("disable") Boolean disable) {
-        Banner banner = bannerService.disable(id,disable);
+        Banner banner = bannerService.disable(id, disable);
         return Result.success().data(banner).msg("操作成功");
     }
 
