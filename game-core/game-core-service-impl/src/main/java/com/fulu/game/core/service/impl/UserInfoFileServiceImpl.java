@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.UserInfoFileVO;
@@ -21,10 +22,8 @@ public class UserInfoFileServiceImpl extends AbsCommonService<UserInfoFile,Integ
 
     @Autowired
 	private UserInfoFileDao userInfoFileDao;
-
-
-
-
+    @Autowired
+    private OssUtil ossUtil;
 
     @Override
     public ICommonDao<UserInfoFile, Integer> getDao() {
@@ -37,5 +36,17 @@ public class UserInfoFileServiceImpl extends AbsCommonService<UserInfoFile,Integ
         userInfoFileVO.setUserId(userId);
         List<UserInfoFile> userInfoFiles = userInfoFileDao.findByParameter(userInfoFileVO);
         return userInfoFiles;
+    }
+
+
+    public void deleteByUserIdAndType(Integer userId,Integer type){
+        UserInfoFileVO userInfoFileVO = new UserInfoFileVO();
+        userInfoFileVO.setUserId(userId);
+        userInfoFileVO.setType(type);
+        List<UserInfoFile> userInfoFiles = userInfoFileDao.findByParameter(userInfoFileVO);
+        for(UserInfoFile userInfoFile : userInfoFiles){
+            userInfoFileDao.deleteById(userInfoFile.getId());
+            ossUtil.deleteFile(userInfoFile.getUrl());
+        }
     }
 }

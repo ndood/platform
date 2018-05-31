@@ -10,7 +10,6 @@ import com.fulu.game.core.service.WechatFormidService;
 import com.xiaoleilu.hutool.date.DateUnit;
 import com.xiaoleilu.hutool.date.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,10 +18,10 @@ import java.util.List;
 
 
 @Service
-public class WechatFormidServiceImpl extends AbsCommonService<WechatFormid,Integer> implements WechatFormidService {
+public class WechatFormidServiceImpl extends AbsCommonService<WechatFormid, Integer> implements WechatFormidService {
 
     @Autowired
-	private WechatFormidDao wechatFormidDao;
+    private WechatFormidDao wechatFormidDao;
     @Autowired
     private SpringThreadPoolExecutor springThreadPoolExecutor;
 
@@ -43,11 +42,11 @@ public class WechatFormidServiceImpl extends AbsCommonService<WechatFormid,Integ
             long day = DateUtil.between(formid.getCreateTime(), new Date(), DateUnit.DAY);
             if (day < 7) {
                 availableFormIds.add(formid);
-            }else{
+            } else {
                 notAvailableFormIds.add(formid);
             }
         }
-        if(notAvailableFormIds.size()>0){
+        if (notAvailableFormIds.size() > 0) {
             springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
                 @Override
                 public void run() {
@@ -59,8 +58,8 @@ public class WechatFormidServiceImpl extends AbsCommonService<WechatFormid,Integ
     }
 
 
-    public void deleteNotAvailableFormIds(WechatFormid ... wechatFormid){
-        if(wechatFormid.length>0){
+    public void deleteNotAvailableFormIds(WechatFormid... wechatFormid) {
+        if (wechatFormid.length > 0) {
             for (WechatFormid w : wechatFormid) {
                 deleteById(w.getId());
             }

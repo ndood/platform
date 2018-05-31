@@ -125,7 +125,10 @@
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">
-        delete from t_product
+        update t_product
+        <set>
+            del_flag = TRUE
+        </set>
         <where>
             id = #{id}
         </where>

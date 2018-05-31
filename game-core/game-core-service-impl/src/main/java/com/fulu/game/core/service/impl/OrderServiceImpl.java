@@ -3,6 +3,7 @@ package com.fulu.game.core.service.impl;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
+import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.common.utils.SMSUtil;
@@ -184,6 +185,9 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         log.info("用户提交订单productId:{},num:{},remark:{}",productId,num,remark);
         User user = userService.getCurrentUser();
         Product product = productService.findById(productId);
+        if(product==null){
+            throw new ProductException(ProductException.ExceptionCode.PRODUCT_NOT_EXIST);
+        }
         Category category = categoryService.findById(product.getCategoryId());
         //计算订单总价格
         BigDecimal totalMoney = product.getPrice().multiply(new BigDecimal(num));

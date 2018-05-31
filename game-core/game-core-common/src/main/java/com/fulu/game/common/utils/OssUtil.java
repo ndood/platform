@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,7 +27,6 @@ public class OssUtil {
     private Config configProperties;
 
     /**
-     *  todo 需要做一个m4a到mp3的转换
      * 上传文件
      * @param inputStream
      * @param fileName
@@ -52,13 +52,16 @@ public class OssUtil {
         return null;
     }
 
-
+    /**
+     * 删除oss文件
+     * @param fileName
+     */
     public void deleteFile(String ... fileName){
         String endpoint =  configProperties.getOss().getEndpoint();
         String bucketName =  configProperties.getOss().getBucketName();
         OSSClient ossClient = new OSSClient(endpoint,configProperties.getOss().getAccessKeyId(), configProperties.getOss().getAccessKeySecret());
         try {
-            DeleteObjectsResult deleteObjectsResult = ossClient.deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(Arrays.asList(fileName)));
+            DeleteObjectsResult deleteObjectsResult = ossClient.deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(formatOssKey(fileName)));
             log.info("oss删除文件:{}",deleteObjectsResult.getDeletedObjects());
         }
         catch (Exception e){
@@ -69,7 +72,31 @@ public class OssUtil {
         }
     }
 
+    /**
+     * 文件url路径格式化成ossKey
+     * @param fileName
+     * @return
+     */
+    private List<String> formatOssKey(String ... fileName){
+        List<String> result = new ArrayList<>();
+        for(String path:fileName){
+            try {
+                URL url = new URL(path);
+                String key = url.getPath().substring(1);
+                result.add(key);
+            }catch (Exception e){
+                log.error("文件路径格式化异常:",e);
+            }
+        }
+        return result;
+    }
 
+
+    /**
+     * 获取文件url路径
+     * @param fileName
+     * @return
+     */
     private String generateOssKey(String fileName){
         StringBuilder sb = new StringBuilder();
         String uuid = GenIdUtil.GetGUID();

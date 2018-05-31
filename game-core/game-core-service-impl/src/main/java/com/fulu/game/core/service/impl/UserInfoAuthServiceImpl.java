@@ -538,6 +538,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
 
     private void createUserInfoFile(Integer userId, String fileUrl, String name, Integer type) {
+        userInfoFileService.deleteByUserIdAndType(userId,type);
         UserInfoFile userInfoFile = new UserInfoFile();
         userInfoFile.setName(name);
         userInfoFile.setUrl(fileUrl);
@@ -549,7 +550,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     /**
      * 添加用户写真图集
-     *
      * @param portraitUrls
      * @param userInfoAuthId
      */

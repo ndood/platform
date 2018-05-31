@@ -2,11 +2,8 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
-import com.fulu.game.common.exception.UserAuthException;
-import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.ProductDao;
 import com.fulu.game.core.entity.*;
@@ -20,7 +17,6 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,11 +56,11 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     @Override
     public Product create(Integer techAuthId, BigDecimal price, Integer unitId) {
-        User user =userService.getCurrentUser();
-        log.info("创建接单方式:userId:{};techAuthId:{};price:{};unitId:{}",user.getId(),techAuthId,price,unitId);
+        User user = userService.getCurrentUser();
+        log.info("创建接单方式:userId:{};techAuthId:{};price:{};unitId:{}", user.getId(), techAuthId, price, unitId);
         UserTechAuth userTechAuth = userTechAuthService.findById(techAuthId);
         userService.isCurrentUser(userTechAuth.getUserId());
-        if(userTechAuth==null){
+        if (userTechAuth == null) {
             throw new ServiceErrorException("不能设置该技能接单!");
         }
         //检查用户技能状态
@@ -75,15 +71,15 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
         //查询销售方式的单位
         SalesMode salesMode = salesModeService.findById(unitId);
-        if(salesMode==null){
+        if (salesMode == null) {
             throw new ServiceErrorException("单位不能为空!");
         }
         Category category = categoryService.findById(userTechAuth.getCategoryId());
-        if(!salesMode.getCategoryId().equals(category.getId())){
+        if (!salesMode.getCategoryId().equals(category.getId())) {
             throw new ServiceErrorException("接单方式单位不匹配!");
         }
-        List<Product> products = findProductByUserAndSalesMode(user.getId(),userTechAuth.getId(),unitId);
-        if(products.size()>0){
+        List<Product> products = findProductByUserAndSalesMode(user.getId(), userTechAuth.getId(), unitId);
+        if (products.size() > 0) {
             throw new ServiceErrorException("不能设置同样单位的技能!");
         }
         Product product = new Product();
@@ -94,7 +90,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         product.setTechAuthId(userTechAuth.getId());
         product.setSalesModeId(salesMode.getId());
         product.setUnit(salesMode.getName());
-        product.setSalesModeRank(salesMode.getRank()==null?0:salesMode.getRank());
+        product.setSalesModeRank(salesMode.getRank() == null ? 0 : salesMode.getRank());
         product.setUserId(userTechAuth.getUserId());
         product.setPrice(price);
         product.setStatus(false);
@@ -106,12 +102,10 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     }
 
 
-
-
     @Override
     public Product update(Integer id, Integer techAuthId, BigDecimal price, Integer unitId) {
-        User user =userService.getCurrentUser();
-        log.info("修改接单方式:userId:{};techAuthId:{};price:{};unitId:{}",user.getId(),techAuthId,price,unitId);
+        User user = userService.getCurrentUser();
+        log.info("修改接单方式:userId:{};techAuthId:{};price:{};unitId:{}", user.getId(), techAuthId, price, unitId);
         //检查用户技能状态
         userTechAuthService.checkUserTechAuth(techAuthId);
         if (redisOpenService.hasKey(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(id))) {
@@ -122,9 +116,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         //检查用户认证的状态
         userService.checkUserInfoAuthStatus(product.getUserId());
         if (techAuthId != null) {
-            if(!product.getTechAuthId().equals(techAuthId)){
-                List<Product> products = findProductByUserAndSalesMode(product.getUserId(),techAuthId,unitId);
-                if(products.size()>0){
+            if (!product.getTechAuthId().equals(techAuthId)) {
+                List<Product> products = findProductByUserAndSalesMode(product.getUserId(), techAuthId, unitId);
+                if (products.size() > 0) {
                     throw new ServiceErrorException("不能设置同样单位的技能!");
                 }
             }
@@ -140,9 +134,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             product.setPrice(price);
         }
         if (unitId != null) {
-            if(!product.getSalesModeId().equals(unitId)){
-                List<Product> products = findProductByUserAndSalesMode(product.getUserId(),techAuthId,unitId);
-                if(products.size()>0){
+            if (!product.getSalesModeId().equals(unitId)) {
+                List<Product> products = findProductByUserAndSalesMode(product.getUserId(), techAuthId, unitId);
+                if (products.size() > 0) {
                     throw new ServiceErrorException("不能设置同样单位的技能!");
                 }
             }
@@ -158,6 +152,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 激活或者取消激活商品
+     *
      * @param id
      * @param status
      * @return
@@ -165,7 +160,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Override
     public Product enable(int id, boolean status) {
         User user = userService.getCurrentUser();
-        log.info("激活或者取消激活商品:userId:{};id:{};status:{};",user.getId(),id,status);
+        log.info("激活或者取消激活商品:userId:{};id:{};status:{};", user.getId(), id, status);
         userService.isCurrentUser(user.getId());
         //检查用户认证的状态
         userService.checkUserInfoAuthStatus(user.getId());
@@ -180,6 +175,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 查找激活的商品
+     *
      * @param userId
      * @return
      */
@@ -192,11 +188,12 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 查询用户是否设置了同样单位的商品
+     *
      * @param userId
      * @param salesModeId
      * @return
      */
-    public List<Product> findProductByUserAndSalesMode(int userId,int techAuthId,int salesModeId) {
+    public List<Product> findProductByUserAndSalesMode(int userId, int techAuthId, int salesModeId) {
         ProductVO productVO = new ProductVO();
         productVO.setTechAuthId(techAuthId);
         productVO.setUserId(userId);
@@ -206,6 +203,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 根据技能查询所有的商品
+     *
      * @param techAuthId
      * @return
      */
@@ -215,18 +213,29 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return productDao.findByParameter(productVO);
     }
 
+
+    public void bathUpdateProductIndex() {
+        List<User> userList = userService.findAllServeUser();
+        productSearchComponent.deleteIndexAll();
+        for (User user : userList) {
+            batchCreateUserProduct(user.getId());
+        }
+    }
+
+
     /**
      * 恢复商品删除状态
+     *
      * @param productId
      */
-    public void recoverProductDelFlag(int productId){
-        log.info("恢复商品删除状态:productId:{}",productId);
+    public void recoverProductDelFlag(int productId) {
+        log.info("恢复商品删除状态:productId:{}", productId);
         productDao.recoverProductDelFlag(productId);
     }
 
 
-    public void recoverProductDelFlagByTechAuthId(Integer techAuthId){
-        log.info("通过techAuthId恢复商品删除状态:techAuthId:{}",techAuthId);
+    public void recoverProductDelFlagByTechAuthId(Integer techAuthId) {
+        log.info("通过techAuthId恢复商品删除状态:techAuthId:{}", techAuthId);
         productDao.recoverProductDelFlagByTechAuthId(techAuthId);
     }
 
@@ -242,18 +251,18 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Override
     public void startOrderReceiving(Float hour) {
         User user = userService.getCurrentUser();
-        log.info("用户开始接单:userId:{};hour:{};",user.getId(),hour);
+        log.info("用户开始接单:userId:{};hour:{};", user.getId(), hour);
         userService.isCurrentUser(user.getId());
         //检查用户认证的状态
         userService.checkUserInfoAuthStatus(user.getId());
 
-        Long expire = (long)(hour * 3600) ;
+        Long expire = (long) (hour * 3600);
         List<Product> products = findEnabledProductByUser(user.getId());
         if (products.isEmpty()) {
             throw new ServiceErrorException("请选择技能后再点击开始接单!");
         }
         redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()), "HOUR", hour, expire);
-        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()), "START_TIME",  new Date().getTime(), expire);
+        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()), "START_TIME", new Date().getTime(), expire);
         for (Product product : products) {
             ProductVO productVO = new ProductVO();
             BeanUtil.copyProperties(product, productVO);
@@ -278,7 +287,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Override
     public void stopOrderReceiving() {
         User user = userService.getCurrentUser();
-        log.info("用户停止接单:userId:{};",user.getId());
+        log.info("用户停止接单:userId:{};", user.getId());
         //检查用户认证的状态
         userService.checkUserInfoAuthStatus(user.getId());
         List<Product> products = findEnabledProductByUser(user.getId());
@@ -299,43 +308,44 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 查询用户详情页
+     *
      * @param productId
      * @return
      */
     @Override
     public ProductDetailsVO findDetailsByProductId(Integer productId) {
         Product product = findById(productId);
-        if(product==null){
+        if (product == null) {
             throw new ProductException(ProductException.ExceptionCode.PRODUCT_NOT_EXIST);
         }
         //查询用户信息
-        UserInfoVO userInfo = userInfoAuthService.findUserCardByUserId(product.getUserId(),true,true,true,false);
+        UserInfoVO userInfo = userInfoAuthService.findUserCardByUserId(product.getUserId(), true, true, true, false);
         //查询技能标签
         List<String> techTags = new ArrayList<>();
         List<TechTag> techTagList = techTagService.findByTechAuthId(product.getTechAuthId());
-        for(TechTag techTag : techTagList){
+        for (TechTag techTag : techTagList) {
             techTags.add(techTag.getName());
         }
-        List<ProductVO> productVOList = findOtherProductVO(product.getUserId(),productId);
+        List<ProductVO> productVOList = findOtherProductVO(product.getUserId(), productId);
         //查询用户认证的技能
         UserTechAuth userTechAuth = userTechAuthService.findById(product.getTechAuthId());
         //查询完成订单数
-        int orderCount =  orderService.allOrderCount(userInfo.getUserId());
+        int orderCount = orderService.allOrderCount(userInfo.getUserId());
         ProductDetailsVO serverCardVO = ProductDetailsVO.builder()
-                                    .categoryId(product.getCategoryId())
-                                    .id(product.getId())
-                                    .onLine(isProductStartOrderReceivingStatus(product.getId()))
-                                    .description(userTechAuth.getDescription())
-                                    .productName(product.getProductName())
-                                    .categoryIcon(product.getCategoryIcon())
-                                    .price(product.getPrice())
-                                    .unit(product.getUnit())
-                                    .techAuthId(product.getTechAuthId())
-                                    .userInfo(userInfo)
-                                    .orderCount(orderCount)
-                                    .techTags(techTags)
-                                    .otherProduct(productVOList)
-                                    .build();
+                .categoryId(product.getCategoryId())
+                .id(product.getId())
+                .onLine(isProductStartOrderReceivingStatus(product.getId()))
+                .description(userTechAuth.getDescription())
+                .productName(product.getProductName())
+                .categoryIcon(product.getCategoryIcon())
+                .price(product.getPrice())
+                .unit(product.getUnit())
+                .techAuthId(product.getTechAuthId())
+                .userInfo(userInfo)
+                .orderCount(orderCount)
+                .techTags(techTags)
+                .otherProduct(productVOList)
+                .build();
         return serverCardVO;
     }
 
@@ -343,12 +353,12 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Override
     public SimpleProductVO findSimpleProductByProductId(Integer productId) {
         Product product = findById(productId);
-        if(product==null){
+        if (product == null) {
             throw new ProductException(ProductException.ExceptionCode.PRODUCT_NOT_EXIST);
         }
-        UserInfoVO userInfo = userInfoAuthService.findUserCardByUserId(product.getUserId(),false,false,false,false);
+        UserInfoVO userInfo = userInfoAuthService.findUserCardByUserId(product.getUserId(), false, false, false, false);
         SimpleProductVO simpleProductVO = new SimpleProductVO();
-        BeanUtil.copyProperties(product,simpleProductVO);
+        BeanUtil.copyProperties(product, simpleProductVO);
         simpleProductVO.setUserInfo(userInfo);
         return simpleProductVO;
     }
@@ -356,6 +366,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 商品首页和列表页
+     *
      * @param categoryId
      * @param gender
      * @param pageNum
@@ -371,21 +382,21 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                                         String orderBy) {
         PageInfo page = null;
         try {
-            Page  searchResult = productSearchComponent.searchShowCaseDoc(categoryId, gender, pageNum, pageSize,orderBy);
+            Page searchResult = productSearchComponent.searchShowCaseDoc(categoryId, gender, pageNum, pageSize, orderBy);
             page = new PageInfo(searchResult);
         } catch (Exception e) {
-            log.error("ProductShowCase查询异常:",e);
-            PageHelper.startPage(pageNum,pageSize,"create_time desc");
-            List<ProductShowCaseVO> showCaseVOS = productDao.findProductShowCase(categoryId,gender);
-            for(ProductShowCaseVO showCaseVO : showCaseVOS){
-                UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(showCaseVO.getUserId(),false,false,true,false);
+            log.error("ProductShowCase查询异常:", e);
+            PageHelper.startPage(pageNum, pageSize, "create_time desc");
+            List<ProductShowCaseVO> showCaseVOS = productDao.findProductShowCase(categoryId, gender);
+            for (ProductShowCaseVO showCaseVO : showCaseVOS) {
+                UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(showCaseVO.getUserId(), false, false, true, false);
                 showCaseVO.setNickName(userInfoVO.getNickName());
                 showCaseVO.setGender(userInfoVO.getGender());
                 showCaseVO.setMainPhoto(userInfoVO.getMainPhotoUrl());
                 showCaseVO.setCity(userInfoVO.getCity());
                 showCaseVO.setPersonTags(userInfoVO.getTags());
-                UserTechInfo userTechInfo =userTechAuthService.findDanInfo(showCaseVO.getTechAuthId());
-                if(userTechInfo!=null){
+                UserTechInfo userTechInfo = userTechAuthService.findDanInfo(showCaseVO.getTechAuthId());
+                if (userTechInfo != null) {
                     showCaseVO.setDan(userTechInfo.getValue());
                 }
                 showCaseVO.setOnLine(isProductStartOrderReceivingStatus(showCaseVO.getId()));
@@ -396,14 +407,14 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     }
 
 
-    public PageInfo searchContent(int pageNum, int pageSize, String nickName){
+    public PageInfo searchContent(int pageNum, int pageSize, String nickName) {
         PageInfo page = null;
         try {
-            Page  searchResult = productSearchComponent.findByNickName(pageNum,pageSize,nickName);
+            Page searchResult = productSearchComponent.findByNickName(pageNum, pageSize, nickName);
             page = new PageInfo(searchResult);
-        }catch (Exception e){
-            log.error("查询出错:查询内容:{};",nickName);
-            log.error("查询出错:",e);
+        } catch (Exception e) {
+            log.error("查询出错:查询内容:{};", nickName);
+            log.error("查询出错:", e);
             page = new PageInfo();
         }
         return page;
@@ -411,31 +422,32 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 查找用户其他的商品
+     *
      * @param userId
      * @param productId
      * @return
      */
-    public List<ProductVO> findOtherProductVO(Integer userId,Integer productId){
-        List<Product>  products = findByUserId(userId);
+    public List<ProductVO> findOtherProductVO(Integer userId, Integer productId) {
+        List<Product> products = findByUserId(userId);
         List<ProductVO> productVOS = new ArrayList<>();
-        for(Product product : products){
-            if(product.getId().equals(productId)){
+        for (Product product : products) {
+            if (product.getId().equals(productId)) {
                 continue;
             }
             ProductVO productVO = new ProductVO();
-            BeanUtil.copyProperties(product,productVO);
+            BeanUtil.copyProperties(product, productVO);
             List<String> techTags = new ArrayList<>();
             List<TechTag> techTagList = techTagService.findByTechAuthId(productVO.getTechAuthId());
-            for(TechTag techTag : techTagList){
+            for (TechTag techTag : techTagList) {
                 techTags.add(techTag.getName());
             }
-            if(isUserStartOrderReceivingStatus(userId)){
-                if(isProductStartOrderReceivingStatus(productVO.getId())){
+            if (isUserStartOrderReceivingStatus(userId)) {
+                if (isProductStartOrderReceivingStatus(productVO.getId())) {
                     productVO.setOnLine(true);
                     productVO.setTechTags(techTags);
                     productVOS.add(productVO);
                 }
-            }else{
+            } else {
                 productVO.setOnLine(isProductStartOrderReceivingStatus(productVO.getId()));
                 productVO.setTechTags(techTags);
                 productVOS.add(productVO);
@@ -447,20 +459,23 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 为用户所有商品添加索引
+     *
      * @param userId
      */
     @Override
-    public void batchCreateUserProduct(Integer userId){
+    public void batchCreateUserProduct(Integer userId) {
         List<Product> products = findByUserId(userId);
         List<Integer> rightfulProductIds = new ArrayList<>();
         for (Product product : products) {
             rightfulProductIds.add(product.getId());
         }
-        //删除掉之前用户的垃圾商品数据
-        List<ProductShowCaseDoc> productShowCaseDocList = productSearchComponent.findByUser(userId);
-        for (ProductShowCaseDoc pdoc : productShowCaseDocList) {
-            if (!rightfulProductIds.contains(pdoc.getId())) {
-                productSearchComponent.deleteIndex(pdoc.getId());
+        if(productSearchComponent.indicesExists()){
+            //删除掉之前用户的垃圾商品数据
+            List<ProductShowCaseDoc> productShowCaseDocList = productSearchComponent.findByUser(userId);
+            for (ProductShowCaseDoc pdoc : productShowCaseDocList) {
+                if (!rightfulProductIds.contains(pdoc.getId())) {
+                    productSearchComponent.deleteIndex(pdoc.getId());
+                }
             }
         }
         batchCreateProductIndex(products);
@@ -469,46 +484,48 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 批量创建商品索引
-     * @param products
+     *
+     * @param products (每个用户的所有商品集合)
      */
-    private void batchCreateProductIndex(List<Product> products){
+    private void batchCreateProductIndex(List<Product> products) {
         List<Product> showIndexProducts = getShowIndexProduct(products);
-        for(Product product : products){
-            if(showIndexProducts.contains(product)){
-                createProductIndex(product,true);
-            }else{
-                createProductIndex(product,false);
+        for (Product product : products) {
+            if (showIndexProducts.contains(product)) {
+                createProductIndex(product, true);
+            } else {
+                createProductIndex(product, false);
             }
         }
     }
 
     /**
      * 查询那些可以在首页显示的商品
+     *
      * @param products
      * @return
      */
-    private List<Product> getShowIndexProduct(List<Product> products){
-        Map<Integer,List<Product>> categoryProductMap = new HashMap<>();
-        for(Product product :products){
+    private List<Product> getShowIndexProduct(List<Product> products) {
+        Map<Integer, List<Product>> categoryProductMap = new HashMap<>();
+        for (Product product : products) {
             Integer categoryId = product.getCategoryId();
-            if(categoryProductMap.containsKey(categoryId)){
+            if (categoryProductMap.containsKey(categoryId)) {
                 categoryProductMap.get(categoryId).add(product);
-            }else{
+            } else {
                 categoryProductMap.put(categoryId, Lists.newArrayList(product));
             }
         }
         List<Product> showIndexProducts = new ArrayList<>();
-        categoryProductMap.forEach((k,v)->{
-           List<Product> waitProducts = new ArrayList<>();
-           v.forEach((p)->{
-               if(p.getStatus()){
-                   waitProducts.add(p);
-               }
-           });
-           if(!waitProducts.isEmpty()){
-               waitProducts.sort((Product p1, Product p2) -> p2.getSalesModeRank().compareTo(p1.getSalesModeRank()));
-               showIndexProducts.add(waitProducts.get(0));
-           }
+        categoryProductMap.forEach((k, v) -> {
+            List<Product> waitProducts = new ArrayList<>();
+            v.forEach((p) -> {
+                if (p.getStatus()) {
+                    waitProducts.add(p);
+                }
+            });
+            if (!waitProducts.isEmpty()) {
+                waitProducts.sort((Product p1, Product p2) -> p2.getSalesModeRank().compareTo(p1.getSalesModeRank()));
+                showIndexProducts.add(waitProducts.get(0));
+            }
         });
         return showIndexProducts;
     }
@@ -516,14 +533,15 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 创建商品索引
+     *
      * @param product
      * @param isIndexShow
      * @return
      */
-    private ProductShowCaseDoc createProductIndex(Product product,Boolean isIndexShow){
+    private ProductShowCaseDoc createProductIndex(Product product, Boolean isIndexShow) {
         ProductShowCaseDoc productShowCaseDoc = new ProductShowCaseDoc();
-        BeanUtil.copyProperties(product,productShowCaseDoc);
-        UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(productShowCaseDoc.getUserId(),false,false,true,false);
+        BeanUtil.copyProperties(product, productShowCaseDoc);
+        UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(productShowCaseDoc.getUserId(), false, false, true, false);
         //查询销量
         int userOrderCount = orderService.allOrderCount(product.getUserId());
         productShowCaseDoc.setNickName(userInfoVO.getNickName());
@@ -534,11 +552,11 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         productShowCaseDoc.setPersonTags(userInfoVO.getTags());
         productShowCaseDoc.setOnLine(isProductStartOrderReceivingStatus(productShowCaseDoc.getId()));
         productShowCaseDoc.setOrderCount(userOrderCount);
-        UserTechInfo userTechInfo =userTechAuthService.findDanInfo(product.getTechAuthId());
-        if(userTechInfo!=null){
+        UserTechInfo userTechInfo = userTechAuthService.findDanInfo(product.getTechAuthId());
+        if (userTechInfo != null) {
             productShowCaseDoc.setDan(userTechInfo.getValue());
         }
-        log.info("插入索引:{}",productShowCaseDoc);
+        log.info("插入索引:{}", productShowCaseDoc);
         Boolean result = productSearchComponent.saveProductIndex(productShowCaseDoc);
         if (!result) {
             log.error("插入索引失败:{}", productShowCaseDoc);
@@ -550,6 +568,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 查询用户全部的商品
+     *
      * @param userId
      * @return
      */
@@ -564,10 +583,10 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     /**
      * 删除该技能下的所有商品
      */
-    public void deleteProductByTech(Integer techAuthId){
-        log.info("删除技能下所有商品techAuthId:{}",techAuthId);
+    public void deleteProductByTech(Integer techAuthId) {
+        log.info("删除技能下所有商品techAuthId:{}", techAuthId);
         List<Product> productList = findProductByTech(techAuthId);
-        for(Product product : productList){
+        for (Product product : productList) {
             deleteProduct(product);
         }
     }
@@ -576,46 +595,42 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     /**
      * 删除该用户的所有商品
      */
-    public void deleteProductByUser(Integer userId){
-        log.info("删除用户所有商品userId:{}",userId);
+    public void deleteProductByUser(Integer userId) {
+        log.info("删除用户所有商品userId:{}", userId);
         redisOpenService.delete(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(userId));
         List<Product> productList = findByUserId(userId);
-        for(Product product : productList){
+        for (Product product : productList) {
             deleteProduct(product);
         }
     }
 
-    public int deleteById(Integer id){
-        Product product = findById(id);
-        if(product==null){
-            throw new ServiceErrorException("商品ID不存在!");
-        }
-        return deleteProduct(product);
+    public int deleteById(Integer id) {
+        redisOpenService.delete(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(id));
+        productSearchComponent.deleteIndex(id);
+        return productDao.deleteById(id);
     }
 
 
-    public int  deleteProduct(Product product){
-        log.info("删除商品product:{}",product);
-        redisOpenService.delete(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(product.getId()));
-        productSearchComponent.deleteIndex(product.getId());
-        product.setDelFlag(true);
-        return update(product);
+    public int deleteProduct(Product product) {
+        log.info("删除商品product:{}", product);
+        return deleteById(product.getId());
     }
 
     /**
-     *  判断商品是否是开始接单状态
+     * 判断商品是否是开始接单状态
+     *
      * @param productId
      * @return
      */
     @Override
-    public Boolean isProductStartOrderReceivingStatus(Integer productId){
+    public Boolean isProductStartOrderReceivingStatus(Integer productId) {
         return redisOpenService.hasKey(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(productId));
     }
 
 
     @Override
-    public Boolean isUserStartOrderReceivingStatus(Integer userId){
-        return redisOpenService.hasKey( RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(userId));
+    public Boolean isUserStartOrderReceivingStatus(Integer userId) {
+        return redisOpenService.hasKey(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(userId));
     }
 
 

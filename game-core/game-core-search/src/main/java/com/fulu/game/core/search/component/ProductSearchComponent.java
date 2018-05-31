@@ -1,12 +1,10 @@
 package com.fulu.game.core.search.component;
 
 import com.fulu.game.common.exception.SearchException;
-import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.properties.Config;
 import com.fulu.game.core.search.domain.Criteria;
 import com.fulu.game.core.search.domain.ProductShowCaseDoc;
 import com.github.pagehelper.Page;
-import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Search;
@@ -16,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchContextException;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -31,7 +28,7 @@ import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 
 @Component
 @Slf4j
-public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDoc,Integer>{
+public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDoc, Integer> {
 
 
     public final static String INDEX_TYPE = "product";
@@ -43,6 +40,7 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
 
     /**
      * 保存商品索引
+     *
      * @param productShowCaseDoc
      * @return
      */
@@ -64,6 +62,7 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
 
     /**
      * 昵称查询
+     *
      * @param pageNum
      * @param pageSize
      * @param nickName
@@ -72,7 +71,7 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
      */
     public Page<ProductShowCaseDoc> findByNickName(Integer pageNum,
                                                    Integer pageSize,
-                                                   String nickName) throws IOException{
+                                                   String nickName) throws IOException {
         //封装查询条件
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         MatchQueryBuilder matchQueryBuilder = matchQuery("nickName", nickName);
@@ -86,21 +85,21 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
         searchSourceBuilder.sort(onLineSort);
 
         //分页
-        int form = (pageNum-1)*pageSize;
+        int form = (pageNum - 1) * pageSize;
         searchSourceBuilder.from(form).size(pageSize);
         String sql = searchSourceBuilder.toString();
-        log.info("昵称查询商品:{}",sql);
+        log.info("昵称查询商品:{}", sql);
         //查询
         Search search = new Search.Builder(sql)
                 .addIndex(getIndexDB())
                 .addType(getIndexType())
                 .build();
         SearchResult result = jestClient.execute(search);
-        if(!result.isSucceeded()){
-            throw new SearchException(SearchException.ExceptionCode.FIND_EXCEPTION,sql,result.getErrorMessage());
+        if (!result.isSucceeded()) {
+            throw new SearchException(SearchException.ExceptionCode.FIND_EXCEPTION, sql, result.getErrorMessage());
         }
         List<ProductShowCaseDoc> showCaseDocList = result.getSourceAsObjectList(ProductShowCaseDoc.class, false);
-        Page<ProductShowCaseDoc> page = new Page(pageNum,pageSize);
+        Page<ProductShowCaseDoc> page = new Page(pageNum, pageSize);
         page.addAll(showCaseDocList);
         page.setTotal(result.getTotal());
         return page;
@@ -109,6 +108,7 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
 
     /**
      * 分类商品查询
+     *
      * @param categoryId
      * @param gender
      * @param pageNum
@@ -135,40 +135,39 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
         //在线状态排在前面
         FieldSortBuilder onLineSort = SortBuilders.fieldSort("onLine").order(SortOrder.DESC);
         searchSourceBuilder.sort(onLineSort);
-        if(StringUtils.isBlank(orderBy) ){
+        if (StringUtils.isBlank(orderBy)) {
             orderBy = "sales";
         }
-        if("newman".equals(orderBy)){
+        if ("newman".equals(orderBy)) {
             //排序
             FieldSortBuilder sorter = SortBuilders.fieldSort("createTime").order(SortOrder.DESC);
             searchSourceBuilder.sort(sorter);
-        }else if("sales".equals(orderBy)){
+        } else if ("sales".equals(orderBy)) {
             FieldSortBuilder sorter = SortBuilders.fieldSort("orderCount").order(SortOrder.DESC);
             searchSourceBuilder.sort(sorter);
         }
 
         //分页
-        int form = (pageNum-1)*pageSize;
+        int form = (pageNum - 1) * pageSize;
         searchSourceBuilder.from(form).size(pageSize);
         String sql = searchSourceBuilder.toString();
-        log.info("分页查询类别下商品:{}",sql);
+        log.info("分页查询类别下商品:{}", sql);
         //查询
         Search search = new Search.Builder(sql)
                 .addIndex(getIndexDB())
                 .addType(getIndexType())
                 .build();
         SearchResult result = jestClient.execute(search);
-        if(!result.isSucceeded()){
-            throw new SearchException(SearchException.ExceptionCode.FIND_EXCEPTION,sql,result.getErrorMessage());
+        if (!result.isSucceeded()) {
+            throw new SearchException(SearchException.ExceptionCode.FIND_EXCEPTION, sql, result.getErrorMessage());
         }
         List<ProductShowCaseDoc> showCaseDocList = result.getSourceAsObjectList(ProductShowCaseDoc.class, false);
-        Page<ProductShowCaseDoc> page = new Page(pageNum,pageSize);
+        Page<ProductShowCaseDoc> page = new Page(pageNum, pageSize);
         page.addAll(showCaseDocList);
         page.setTotal(result.getTotal());
         page.setOrderBy(orderBy);
         return page;
     }
-
 
 
     @Override

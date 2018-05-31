@@ -64,6 +64,14 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
+    public List<User> findAllServeUser() {
+        UserVO params = new UserVO();
+        params.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
+        List<User> users = userDao.findByParameter(params);
+        return users;
+    }
+
+    @Override
     public User findByOpenId(String openId) {
         UserVO userVO = new UserVO();
         userVO.setOpenId(openId);

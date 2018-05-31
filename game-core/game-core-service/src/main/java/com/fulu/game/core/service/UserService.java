@@ -18,6 +18,8 @@ public interface UserService extends ICommonService<User, Integer> {
 
     User findByMobile(String mobile);
 
+    List<User> findAllServeUser();
+
     User findByOpenId(String openId);
 
     User findByImId(String imId);

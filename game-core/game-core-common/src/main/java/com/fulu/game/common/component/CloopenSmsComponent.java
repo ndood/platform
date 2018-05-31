@@ -19,6 +19,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.entity.BasicHttpEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.http.ssl.SSLContextBuilder;
@@ -105,7 +106,7 @@ public class CloopenSmsComponent {
         int status = 0;
         try {
             HttpPost httppost = (HttpPost) getHttpRequestBase(1, TemplateSMS);
-            String requsetbody = "";
+            String requestBodyStr = "";
             if (BODY_TYPE == BodyType.Type_JSON) {
                 JsonObject json = new JsonObject();
                 json.addProperty("appId", App_ID);
@@ -122,7 +123,7 @@ public class CloopenSmsComponent {
                             .getAsJsonArray();
                     json.add("datas", Jarray);
                 }
-                requsetbody = json.toString();
+                requestBodyStr = json.toString();
             } else {
                 StringBuilder sb = new StringBuilder(
                         "<?xml version='1.0' encoding='utf-8'?><TemplateSMS>");
@@ -138,13 +139,13 @@ public class CloopenSmsComponent {
                     sb.append("</datas>");
                 }
                 sb.append("</TemplateSMS>").toString();
-                requsetbody = sb.toString();
+                requestBodyStr = sb.toString();
             }
             //打印包体
-            log.debug("请求的包体：" + requsetbody);
+            log.debug("请求的包体：" + requestBodyStr);
             BasicHttpEntity requestBody = new BasicHttpEntity();
-            requestBody.setContent(new ByteArrayInputStream(requsetbody.getBytes("UTF-8")));
-            requestBody.setContentLength(requsetbody.getBytes("UTF-8").length);
+            requestBody.setContent(new ByteArrayInputStream(requestBodyStr.getBytes("UTF-8")));
+            requestBody.setContentLength(requestBodyStr.getBytes("UTF-8").length);
             httppost.setEntity(requestBody);
 
             HttpResponse response = httpclient.execute(httppost);
