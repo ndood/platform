@@ -19,6 +19,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import com.xiaoleilu.hutool.util.CollectionUtil;
+import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.util.*;
 
 @Service("userService")
+@Slf4j
 public class UserServiceImpl extends AbsCommonService<User, Integer> implements UserService {
 
     @Autowired
@@ -201,7 +203,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         //查询文案信息
         SharingVO sharingVO = new SharingVO();
         sharingVO.setShareType(ShareTypeEnum.TECH_AUTH.getType());
-        sharingVO.setGender(userInfoVO.getGender());
+        sharingVO.setGender(null==userInfoVO.getGender()?GenderEnum.ASEXUALITY.getType():userInfoVO.getGender());
         sharingVO.setStatus(true);
         List<Sharing> shareList = sharingService.findByParam(sharingVO);
         String shareContent = "";
@@ -254,7 +256,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         if (!CollectionUtil.isEmpty(shareList)) {
             shareStr = shareList.get(0).getContent();
         }
+        log.info("技能名片分享接口,查询文案为shareStr= {}",shareStr);
         String codeUrl = wxCodeService.create(scene, PagePathEnum.TECH_SHARE_CARD.getPagePath());
+        log.info("技能名片分享接口,成功生成小程序码codeUrl= {}",codeUrl);
         Map<String, String> contentMap = getTechCardContentMap(productDetailsVO, shareStr, codeUrl);
         String shareCardUrl = imgUtil.createTechCard(contentMap);
         return shareCardUrl;
@@ -277,7 +281,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             }
             contentMap.put("tagStr", tagStr);
         }
-
+        log.info("图片需要的个人信息字段：{}",contentMap.toString());
         //主商品信息
         contentMap.put("mainTechIconUrl", pdVO.getCategoryIcon());
         String mainTech = pdVO.getProductName() + " 陪玩 " ;
@@ -311,6 +315,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         }
         contentMap.put("shareStr", shareStr);
         contentMap.put("codeUrl", codeUrl);
+        log.info("图片展示的全部信息：{}",contentMap.toString());
         return contentMap;
     }
 

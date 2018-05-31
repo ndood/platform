@@ -331,6 +331,7 @@ public class UserController extends BaseController {
     @RequestMapping("/tech-card/share")
     public Result getShareCard(@RequestParam("scene") String scene,
                                @RequestParam("productId") Integer productId) throws WxErrorException, IOException {
+        log.info("调用/tech-card/share接口，入参:scene= {},productId= {}",scene,productId);
         String techCardUrl = userService.getTechShareCard(scene,productId);
         return Result.success().data("techCardUrl", techCardUrl);
     }
