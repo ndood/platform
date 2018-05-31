@@ -4,6 +4,7 @@ import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.SalesMode;
 import com.fulu.game.core.entity.vo.ProductShowCaseVO;
 import com.fulu.game.core.entity.vo.ProductDetailsVO;
+import com.fulu.game.core.entity.vo.ProductVO;
 import com.fulu.game.core.entity.vo.SimpleProductVO;
 import com.github.pagehelper.PageInfo;
 
@@ -167,5 +168,12 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * @return
      */
     int updateProductSalesModel(SalesMode salesMode);
+
+    /**
+     * 查询同一种游戏下的所有商品
+     */
+    List<ProductVO> findOthersByproductId(Integer productId);
+
+
 
 }
