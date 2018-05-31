@@ -5,8 +5,11 @@ import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.utils.SubjectUtil;
+import com.fulu.game.core.entity.Banner;
 import com.fulu.game.core.entity.SysConfig;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.BannerVO;
+import com.fulu.game.core.service.BannerService;
 import com.fulu.game.core.service.SysConfigService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.play.shiro.PlayUserToken;
@@ -20,10 +23,7 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +39,18 @@ public class HomeController {
 
     @Autowired
     private SysConfigService sysConfigService;
+
+    @Autowired
+    private BannerService bannerService;
+
+    @PostMapping("/banner/list")
+    @ResponseBody
+    public Result list() {
+        BannerVO bannerVO = new BannerVO();
+        bannerVO.setDisable(true);
+        List<Banner> bannerList = bannerService.findByParam(bannerVO);
+        return Result.success().data(bannerList);
+    }
 
     /**
      * 初始化加载系统配置
