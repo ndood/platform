@@ -3,7 +3,11 @@ package com.fulu.game.core.service.impl;
 import cn.hutool.json.JSONObject;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.*;
-import com.fulu.game.common.exception.*;
+import com.fulu.game.common.exception.ImgException;
+import com.fulu.game.common.exception.ServiceErrorException;
+import com.fulu.game.common.exception.UserAuthException;
+import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.utils.EmojiTools;
 import com.fulu.game.common.utils.ImgUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
@@ -277,7 +281,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         for (String str : tagList) {
             tagStr += str + "、";
         }
-        tagStr = tagStr.substring(0,tagStr.length()-1);
+        tagStr = tagStr.substring(0, tagStr.length() - 1);
         sb.append(tagStr);
         String title = "";
         String content = "";
@@ -289,7 +293,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             throw new ImgException(ImgException.ExceptionCode.JSONFORMAT_ERROR);
         }
         return ImgUtil.CardImg.builder()
-                .nickname(null == userInfoVO.getNickName() ? "陪玩师" : userInfoVO.getNickName())
+                .nickname(null == userInfoVO.getNickName() ? "陪玩师" : EmojiTools.filterEmoji(userInfoVO.getNickName()))
                 .gender(null == userInfoVO.getGender() ? GenderEnum.ASEXUALITY.getType() : userInfoVO.getGender())
                 .age(null == userInfoVO.getAge() ? Constant.DEFAULT_AGE : userInfoVO.getAge())
                 .techStr(sb.toString())
@@ -344,7 +348,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             secTechMap.put("techTagStr", secTechTagStr);
         }
         return ImgUtil.CardImg.builder()
-                .nickname(null == userInfoVO.getNickName() ? "陪玩师" : userInfoVO.getNickName())
+                .nickname(null == userInfoVO.getNickName() ? "陪玩师" : EmojiTools.filterEmoji(userInfoVO.getNickName()))
                 .gender(null == userInfoVO.getGender() ? GenderEnum.ASEXUALITY.getType() : userInfoVO.getGender())
                 .age(null == userInfoVO.getAge() ? Constant.DEFAULT_AGE : userInfoVO.getAge())
                 .city(null == userInfoVO.getCity() ? "不详" : userInfoVO.getCity())

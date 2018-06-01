@@ -100,7 +100,7 @@ public class ImgUtil {
 
         //小程序码和文案
         int H_code = 220;
-        int code2Top = line2Top + 10;
+        int code2Top = imageHeight-H_code -30;
         int codeWidth = imageWidth / 3;
         String shareTitle = nickname + cardImg.getShareTitle();
         String shareContent = cardImg.getShareContent();
