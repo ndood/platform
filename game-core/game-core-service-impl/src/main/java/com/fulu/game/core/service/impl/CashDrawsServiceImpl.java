@@ -4,6 +4,7 @@ import com.fulu.game.common.enums.CashProcessStatusEnum;
 import com.fulu.game.common.enums.MoneyOperateTypeEnum;
 import com.fulu.game.common.exception.CashException;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.utils.TimeUtil;
 import com.fulu.game.core.dao.CashDrawsDao;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.CashDraws;
@@ -52,6 +53,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
      */
     @Override
     public CashDraws save(CashDrawsVO cashDrawsVO) {
+        log.info("====调用提现申请接口====");
         User user = userService.getCurrentUser();
         if (null == user) {
             log.error("提款申请异常，当前操作用户不存在");
@@ -68,6 +70,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
             log.error("提款申请异常，金额超出账户余额，用户id {}",user.getId());
             throw new CashException(CashException.ExceptionCode.CASH_EXCEED_EXCEPTION);
         }
+        log.info("====提现用户id:{},提现金额:{},账户余额:{},申请时间:{}",user.getId(),money,balance, TimeUtil.defaultFormat(new Date()));
         //提现后的余额
         BigDecimal newBalance = balance.subtract(money);
         CashDraws cashDraws = new CashDraws();
