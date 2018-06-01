@@ -299,7 +299,7 @@ public class UserController extends BaseController {
     @RequestMapping("/tech-auth/share")
     public Result getShareCard(@RequestParam("techAuthId") Integer techAuthId,
                                @RequestParam("scene") String scene) throws WxErrorException, IOException {
-        log.info("调用技能认证-分享接口，入参:scene= {},page= {}，techAuthId={}", scene, techAuthId);
+        log.info("调用技能认证-分享接口，入参:scene= {}，techAuthId={}", scene, techAuthId);
         String techAuthUrl = userService.getTechAuthCard(techAuthId, scene);
         return Result.success().data("techAuthUrl", techAuthUrl);
     }

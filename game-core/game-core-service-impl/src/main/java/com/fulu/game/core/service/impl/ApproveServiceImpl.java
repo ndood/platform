@@ -92,7 +92,7 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
         Integer approveCount = nowUserTechAuth.getApproveCount();
         Integer requireCount = approveCount < 5 ? Constant.DEFAULT_APPROVE_COUNT - approveCount : 0;
         if (techStatus == TechAuthStatusEnum.NORMAL.getType()) {
-            wxTemplateMsgService.pushWechatTemplateMsg(nowUserTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_ING);
+            wxTemplateMsgService.pushWechatTemplateMsg(nowUserTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_SUCCESS);
         } else {
             wxTemplateMsgService.pushWechatTemplateMsg(nowUserTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_ING, user.getNickname(), requireCount.toString());
         }
