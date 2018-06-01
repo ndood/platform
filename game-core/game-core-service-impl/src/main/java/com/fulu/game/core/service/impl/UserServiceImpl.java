@@ -268,9 +268,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     private ImgUtil.CardImg getTechAuthContentMap(UserInfoVO userInfoVO, String shareContent, String codeUrl) {
         StringBuilder sb = new StringBuilder();
         sb.append(userInfoVO.getUserTechAuthVO().getCategoryName());
-        sb.append("陪玩|");
+        sb.append("陪玩｜");
         sb.append("段位:");
-        sb.append(userInfoVO.getUserTechAuthVO().getDanInfo().getValue()).append("|");
+        sb.append(userInfoVO.getUserTechAuthVO().getDanInfo().getValue()).append("｜");
         sb.append("标签:");
         String tagStr = "";
         List<String> tagList = userInfoVO.getTags();
@@ -305,7 +305,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         String tagStr = "";
         List<String> tagList = userInfoVO.getTags();
         for (String str : tagList) {
-            tagStr += " " + str;
+            tagStr += "｜" + str;
         }
         //主商品信息
         Map<String, String> mainTechMap = new HashMap<>();
@@ -313,7 +313,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             throw new ImgException(ImgException.ExceptionCode.CATEGORY_ICON_URL);
         }
         mainTechMap.put("techIconUrl", pdVO.getCategoryIcon());
-        String mainTech = pdVO.getProductName() + " 陪玩 ";
+        String mainTech = pdVO.getProductName() + "陪玩 ";
         mainTechMap.put("techName", mainTech);
 
         String mainPrice = "￥" + pdVO.getPrice() + "元/" + pdVO.getUnit();
@@ -332,7 +332,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         if (!CollectionUtil.isEmpty(otherProductList)) {
             ProductVO productVO = otherProductList.get(0);
             secTechMap.put("techIconUrl", productVO.getCategoryIcon());
-            String secTechName = productVO.getProductName() + " 陪玩 ";
+            String secTechName = productVO.getProductName() + "陪玩 ";
             secTechMap.put("techName", secTechName);
             String price = "￥" + productVO.getPrice() + "元/" + productVO.getUnit();
             secTechMap.put("price", price);
