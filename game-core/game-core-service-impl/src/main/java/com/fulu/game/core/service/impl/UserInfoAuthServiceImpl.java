@@ -173,7 +173,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     @Override
     public UserInfoAuth unReject(Integer id) {
         Admin admin = adminService.getCurrentUser();
-        log.info("清楚用户认证信息驳回状态:adminId:{};adminName:{};authInfoId:{}", admin.getId(), admin.getName(), id);
+        log.info("清除用户认证信息驳回状态:adminId:{};adminName:{};authInfoId:{}", admin.getId(), admin.getName(), id);
         UserInfoAuth userInfoAuth = findById(id);
         userInfoAuth.setIsRejectSubmit(false);
         update(userInfoAuth);
