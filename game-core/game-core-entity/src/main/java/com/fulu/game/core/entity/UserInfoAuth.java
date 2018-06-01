@@ -2,6 +2,8 @@ package com.fulu.game.core.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 
@@ -32,8 +34,10 @@ public class UserInfoAuth implements Serializable {
 	//是否允许导出
 	private Boolean allowExport;
 	//
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date createTime;
 	//
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date updateTime;
 
 

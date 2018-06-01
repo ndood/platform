@@ -69,7 +69,7 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * 为用户所有商品添加索引
      * @param userId
      */
-    void batchCreateUserProduct(Integer userId);
+    void batchCreateUserProduct(Integer userId,Boolean updateTime);
 
     /**
      * 查询商品详情页
