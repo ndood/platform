@@ -59,8 +59,6 @@ public class UserTechAuthVO  extends UserTechAuth {
 
     private Integer gender;
 
-    private String startTime;
-    private String endTime;
 
     public String getStatusStr() {
         return TechAuthStatusEnum.getMsgByType(getStatus());

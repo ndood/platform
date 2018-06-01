@@ -222,7 +222,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         log.info("批量更新所有商品索引");
         List<User> userList = userService.findAllServeUser();
         for (User user : userList) {
-            batchCreateUserProduct(user.getId());
+            batchCreateUserProduct(user.getId(),true);
         }
     }
 
@@ -280,7 +280,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             }
         }
         //添加商品到首页
-        batchCreateUserProduct(user.getId());
+        batchCreateUserProduct(user.getId(),true);
     }
 
 
@@ -305,7 +305,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             }
         }
         //修改首页商品的状态
-        batchCreateUserProduct(user.getId());
+        batchCreateUserProduct(user.getId(),false);
     }
 
 
@@ -408,10 +408,18 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * @param userId
      */
     @Override
-    public void batchCreateUserProduct(Integer userId) {
+    public void batchCreateUserProduct(Integer userId,Boolean needUpdateTime) {
         List<Product> products = findByUserId(userId);
         List<Integer> rightfulProductIds = new ArrayList<>();
         for (Product product : products) {
+            if(needUpdateTime){
+                product.setCreateTime(new Date());
+            }else{
+                ProductShowCaseDoc productShowCaseDoc =productSearchComponent.searchById(product.getId(),ProductShowCaseDoc.class);
+                if(productShowCaseDoc!=null){
+                    product.setCreateTime(productShowCaseDoc.getCreateTime());
+                }
+            }
             rightfulProductIds.add(product.getId());
         }
         if(productSearchComponent.indicesExists()){
@@ -551,7 +559,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         BeanUtil.copyProperties(product, productShowCaseDoc);
         UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(productShowCaseDoc.getUserId(), false, false, true, false);
         //查询销量
-        int userOrderCount = orderService.allOrderCount(product.getUserId());
+        int userOrderCount = orderService.weekOrderCount(product.getUserId());
         productShowCaseDoc.setNickName(userInfoVO.getNickName());
         productShowCaseDoc.setGender(userInfoVO.getGender());
         productShowCaseDoc.setMainPhoto(userInfoVO.getMainPhotoUrl());

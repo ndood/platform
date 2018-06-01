@@ -88,7 +88,7 @@
                 and mobile = #{mobile}
             </if>
             <if test="nickname != null">
-                and user_id in (SELECT id FROM t_user u WHERE u.nickname like  '%'||#{nickname}||'%')
+                and user_id in (SELECT id FROM t_user u WHERE u.nickname like  CONCAT('%',#{nickname},'%'))
             </if>
             <if test="startTime != null">
                 and update_time &gt;= #{startTime}
