@@ -10,6 +10,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -34,6 +35,12 @@ public class SpringThreadPoolExecutor implements AsyncConfigurer {
         taskExecutor.setQueueCapacity(20000);
         taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         taskExecutor.initialize();
+    }
+
+    @PreDestroy
+    public void destroy() {
+        log.info("全局线程池注销");
+        taskExecutor.destroy();
     }
 
 

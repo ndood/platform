@@ -1,6 +1,7 @@
 package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.WechatFormid;
 import com.fulu.game.core.service.UserService;
@@ -26,7 +27,8 @@ public class WxTemplateController {
     private UserService userService;
     @Autowired
     private CollectFormIdQueue collectFormIdQueue;
-
+    @Autowired
+    private SpringThreadPoolExecutor springThreadPoolExecutor;
     /**
      * 收集用户的formID
      * @param formId
