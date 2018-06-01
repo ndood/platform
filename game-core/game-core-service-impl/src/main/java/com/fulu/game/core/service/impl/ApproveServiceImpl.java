@@ -80,21 +80,18 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
         Integer currentCount = userTechAuth.getApproveCount();
         Integer newApproveCount = currentCount + 1;
         userTechAuth.setApproveCount(newApproveCount);
+
+        Integer techStatus = 0;
+        Integer approveCount = newApproveCount;
+        Integer requireCount = approveCount < 5 ? Constant.DEFAULT_APPROVE_COUNT - approveCount : 0;
         if (newApproveCount >= Constant.DEFAULT_APPROVE_COUNT) {
-            userTechAuth.setStatus(TechAuthStatusEnum.NORMAL.getType());
+            utaService.pass(techAuthId);
+            techStatus = TechAuthStatusEnum.NORMAL.getType();
         } else {
             userTechAuth.setStatus(TechAuthStatusEnum.AUTHENTICATION_ING.getType());
-        }
-        utaService.update(userTechAuth);
-
-        UserTechAuth nowUserTechAuth = utaService.findById(userTechAuth.getId());
-        Integer techStatus = nowUserTechAuth.getStatus();
-        Integer approveCount = nowUserTechAuth.getApproveCount();
-        Integer requireCount = approveCount < 5 ? Constant.DEFAULT_APPROVE_COUNT - approveCount : 0;
-        if (techStatus == TechAuthStatusEnum.NORMAL.getType()) {
-            wxTemplateMsgService.pushWechatTemplateMsg(nowUserTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_SUCCESS);
-        } else {
-            wxTemplateMsgService.pushWechatTemplateMsg(nowUserTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_ING, user.getNickname(), requireCount.toString());
+            utaService.update(userTechAuth);
+            wxTemplateMsgService.pushWechatTemplateMsg(userTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_ING, user.getNickname(), requireCount.toString());
+            techStatus = userTechAuth.getStatus();
         }
         ApproveVO responseVO = new ApproveVO();
         BeanUtil.copyProperties(approve, responseVO);
