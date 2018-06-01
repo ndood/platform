@@ -76,27 +76,8 @@ public class UserController extends BaseController {
      * @return
      */
     @PostMapping("/get")
-    public Result get(@RequestParam(name = "mobile", required = false, defaultValue = "false") Boolean mobile,
-                      @RequestParam(name = "idcard", required = false, defaultValue = "false") Boolean idcard,
-                      @RequestParam(name = "gender", required = false, defaultValue = "false") Boolean gender,
-                      @RequestParam(name = "realname", required = false, defaultValue = "false") Boolean realname,
-                      @RequestParam(name = "age", required = false, defaultValue = "false") Boolean age) {
+    public Result get() {
         User user = userService.findById(userService.getCurrentUser().getId());
-        if (null != idcard && !idcard) {
-            user.setIdcard(null);
-        }
-        if (!realname) {
-            user.setRealname(null);
-        }
-        if (!gender) {
-            user.setGender(null);
-        }
-        if (!mobile) {
-            user.setMobile(null);
-        }
-        if (!age) {
-            user.setAge(null);
-        }
         return Result.success().data(user).msg("查询信息成功！");
     }
 
@@ -142,7 +123,7 @@ public class UserController extends BaseController {
                 return Result.error().msg("半小时内发送次数不能超过" + Constant.MOBILE_CODE_SEND_TIMES_DEV + "次，请等待！");
             } else {
                 String verifyCode = SMSUtil.sendVerificationCode(mobile);
-                log.info("手机号 {} 发送验证码为 {}", mobile, verifyCode);
+                log.info("发送验证码{}={}", mobile, verifyCode);
                 redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode, Constant.VERIFYCODE_CACHE_TIME_DEV);
                 times = String.valueOf(Integer.parseInt(times) + 1);
                 redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), times, Constant.MOBILE_CACHE_TIME_DEV);
@@ -150,7 +131,7 @@ public class UserController extends BaseController {
             }
         } else {
             String verifyCode = SMSUtil.sendVerificationCode(mobile);
-            log.info("重新计数，手机号 {} 发送验证码为 {}", mobile, verifyCode);
+            log.info("发送验证码{}={}", mobile, verifyCode);
             redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode, Constant.VERIFYCODE_CACHE_TIME_DEV);
             redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), "1", Constant.MOBILE_CACHE_TIME_DEV);
             return Result.success().msg("验证码发送成功！");

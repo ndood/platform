@@ -175,7 +175,7 @@ public class ImgUtil {
             otherTechStr += " " + secTechMap.get("techTagStr");
             otherTechStr += " " + secTechMap.get("price");
             Graphics2D g_tech2 = image.createGraphics();
-            drawString(g_tech2, BLACK, FONT_SONG_PLAIN, otherTechStr, icon_width + 10, line2Top1 + H_tech / 2);
+            drawString(g_tech2, BLACK, FONT_SONG_PLAIN, otherTechStr, icon_width + 10, line2Top1 + H_tech / 2+10);
 
             //画一条横线
             Graphics2D line = image.createGraphics();

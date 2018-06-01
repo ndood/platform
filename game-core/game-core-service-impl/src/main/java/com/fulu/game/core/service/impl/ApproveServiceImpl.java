@@ -62,6 +62,9 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
         paramVO.setTechOwnerId(techOwnerId);
         User user = userService.getCurrentUser();
         log.info("认可人id:{}", user.getId());
+        if (user.getId() == techOwnerId){
+            throw new ApproveException(ApproveException.ExceptionCode.CANNOT_APPROVE_SELF);
+        }
         paramVO.setUserId(user.getId());
         List<Approve> list = approveDao.findByParameter(paramVO);
         if (!CollectionUtil.isEmpty(list)) {
