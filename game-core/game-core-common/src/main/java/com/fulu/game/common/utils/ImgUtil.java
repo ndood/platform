@@ -56,11 +56,11 @@ public class ImgUtil {
         String genderAndAge = getGenderAndAge(cardImg.getGender(), cardImg.getAge());
 
         Graphics2D g_nickname = image.createGraphics();
-        drawString(g_nickname, BLACK, FONT_SONG_BOLD, nickname, 10, person2Top + H_person / 2);
+        drawString(g_nickname, BLACK, FONT_SONG_BOLD, nickname, 20, person2Top + H_person / 2);
         int nicknameLen = getContentLength(nickname, g_nickname);
         int ageLen = getContentLength(genderAndAge, g_nickname);
-        fillRound(g_nickname, FEMALE_COLOR, nicknameLen + 10, person2Top + 12, ageLen, H_person / 2-10);
-        drawString(g_nickname, WHITE, FONT_SONG_PLAIN, genderAndAge, nicknameLen + 15, person2Top + H_person / 2);
+        fillRound(g_nickname, FEMALE_COLOR, 20+nicknameLen + 10, person2Top + 12, ageLen, H_person / 2-10);
+        drawString(g_nickname, WHITE, FONT_SONG_PLAIN, genderAndAge, nicknameLen + 30, person2Top + H_person / 2);
 
         //技能和技能标签区域
         int H_tech = 70;
@@ -69,7 +69,7 @@ public class ImgUtil {
         Graphics2D tech = image.createGraphics();
 
         //文字叠加,自动换行叠加
-        int tempX = 10;
+        int tempX = 20;
         int tempY = tech2Top;
         int tempCharLen = 0;//单字符长度
         int tempLineLen = 0;//单行字符总长度临时计算
@@ -94,7 +94,7 @@ public class ImgUtil {
         //画一条横线
         Graphics2D line = image.createGraphics();
         int lineWidth = imageWidth - 20;
-        int line2Top = tech2Top + H_tech;
+        int line2Top = tech2Top + H_tech-20;
         line.setColor(LIGHT_GRAY);
         line.drawRect(10, line2Top, lineWidth, 0);
 
@@ -105,7 +105,7 @@ public class ImgUtil {
         String shareTitle = nickname + cardImg.getShareTitle();
         String shareContent = cardImg.getShareContent();
 
-        drawImage(cardImg.getCodeUrl(), 10, code2Top, codeWidth, H_code);
+        drawImage(cardImg.getCodeUrl(), 20, code2Top, codeWidth, H_code);
         Graphics2D g_share = image.createGraphics();
         drawString(g_share, BLACK, FONT_SONG_BOLD, shareTitle, codeWidth + 40, code2Top + (H_code / 2) - 15);
         drawString(g_share, BLACK, FONT_SONG_PLAIN, shareContent, codeWidth + 40, code2Top + (H_code / 2) + 15);
@@ -139,10 +139,10 @@ public class ImgUtil {
         presonInfo += " " + cardImg.getCity();
         presonInfo += " " + cardImg.getPersonTagStr();
         Graphics2D g_nickname = image.createGraphics();
-        drawString(g_nickname, BLACK, FONT_SONG_BOLD, nickname, 0, person2Top + H_person / 2);
+        drawString(g_nickname, BLACK, FONT_SONG_BOLD, nickname, 20, person2Top + H_person / 2);
         int personLen = getContentLength(nickname, g_nickname);
         int ageLen = getContentLength(presonInfo, g_nickname);
-        fillRect(g_nickname, FEMALE_COLOR, personLen + 10, person2Top + 5, ageLen, H_person / 2);
+        fillRound(g_nickname, FEMALE_COLOR, personLen + 10, person2Top + 5, ageLen, H_person / 2);
         drawString(g_nickname, WHITE, FONT_SONG_PLAIN, presonInfo, personLen + 10, person2Top + H_person / 2);
 
         //技能和技能标签区域
@@ -201,7 +201,6 @@ public class ImgUtil {
         InputStream is = new ByteArrayInputStream(byteArrayOS.toByteArray());
         String imgName = GenIdUtil.GetImgNo() + "." + EXT_NAME;
         return ossUtil.uploadFile(is, imgName);
-
     }
 
     private String getGenderAndAge(Integer gender, Integer age) {

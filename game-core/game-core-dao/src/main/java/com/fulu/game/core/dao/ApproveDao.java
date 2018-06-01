@@ -17,4 +17,5 @@ public interface ApproveDao extends ICommonDao<Approve, Integer> {
 
     List<Approve> findByParameter(ApproveVO approveVO);
 
+    void delByTechAuthId(Integer techAuthId);
 }

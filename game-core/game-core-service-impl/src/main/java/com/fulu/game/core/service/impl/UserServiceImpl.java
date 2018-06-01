@@ -199,28 +199,28 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     public String getTechAuthCard(Integer techAuthId, String scene) throws WxErrorException, IOException {
 
         UserInfoVO userInfoVO = userInfoAuthService.findUserTechCardByUserId(techAuthId);
-        if (null == userInfoVO){
+        if (null == userInfoVO) {
             log.error("技能认证分享-查不到该用户信息");
             throw new UserException(UserException.ExceptionCode.USER_INFO_NULL_EXCEPTION);
         }
-        if (StringUtils.isEmpty(userInfoVO.getMainPhotoUrl())){
+        if (StringUtils.isEmpty(userInfoVO.getMainPhotoUrl())) {
             log.error("技能认证分享-未上传主图");
             throw new UserException(UserException.ExceptionCode.MAINPHOTO_NOT_EXIST_EXCEPTION);
         }
         //查询文案信息
         SharingVO sharingVO = new SharingVO();
         sharingVO.setShareType(ShareTypeEnum.TECH_AUTH.getType());
-        sharingVO.setGender(null==userInfoVO.getGender()?GenderEnum.ASEXUALITY.getType():userInfoVO.getGender());
+        sharingVO.setGender(null == userInfoVO.getGender() ? GenderEnum.ASEXUALITY.getType() : userInfoVO.getGender());
         sharingVO.setStatus(true);
         List<Sharing> shareList = sharingService.findByParam(sharingVO);
         String shareContent = "";
         if (!CollectionUtil.isEmpty(shareList)) {
             shareContent = shareList.get(0).getContent();
-            if(StringUtils.isEmpty(shareContent)){
+            if (StringUtils.isEmpty(shareContent)) {
                 log.error("技能认证分享-文案为空");
                 throw new ImgException(ImgException.ExceptionCode.SHARECONTENT_BLANK);
             }
-        }else{
+        } else {
             log.error("技能认证分享-未查询到对应文案");
             throw new ImgException(ImgException.ExceptionCode.SHARE_NOT_EXSISTS);
         }
@@ -234,11 +234,11 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     public String getTechShareCard(String scene, Integer productId) throws WxErrorException, IOException {
         ProductDetailsVO productDetailsVO = productService.findDetailsByProductId(productId);
         UserInfoVO userInfoVO = productDetailsVO.getUserInfo();
-        if (null == userInfoVO){
+        if (null == userInfoVO) {
             log.error("技能认证分享-查不到该用户信息");
             throw new UserException(UserException.ExceptionCode.USER_INFO_NULL_EXCEPTION);
         }
-        if (StringUtils.isEmpty(userInfoVO.getMainPhotoUrl())){
+        if (StringUtils.isEmpty(userInfoVO.getMainPhotoUrl())) {
             log.error("技能认证分享-未上传主图");
             throw new UserException(UserException.ExceptionCode.MAINPHOTO_NOT_EXIST_EXCEPTION);
         }
@@ -251,11 +251,11 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         String shareStr = "";
         if (!CollectionUtil.isEmpty(shareList)) {
             shareStr = shareList.get(0).getContent();
-            if(StringUtils.isEmpty(shareStr)){
+            if (StringUtils.isEmpty(shareStr)) {
                 log.error("技能认证分享-文案为空");
                 throw new ImgException(ImgException.ExceptionCode.SHARECONTENT_BLANK);
             }
-        }else{
+        } else {
             log.error("技能认证分享-未查询到对应文案");
             throw new ImgException(ImgException.ExceptionCode.SHARE_NOT_EXSISTS);
         }
@@ -268,29 +268,30 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     private ImgUtil.CardImg getTechAuthContentMap(UserInfoVO userInfoVO, String shareContent, String codeUrl) {
         StringBuilder sb = new StringBuilder();
         sb.append(userInfoVO.getUserTechAuthVO().getCategoryName());
-        sb.append("陪玩 ");
-        sb.append("段位 ");
-        sb.append(userInfoVO.getUserTechAuthVO().getDanInfo().getValue());
-        sb.append(" 标签");
+        sb.append("陪玩|");
+        sb.append("段位:");
+        sb.append(userInfoVO.getUserTechAuthVO().getDanInfo().getValue()).append("|");
+        sb.append("标签:");
         String tagStr = "";
         List<String> tagList = userInfoVO.getTags();
         for (String str : tagList) {
-            tagStr += " " + str;
+            tagStr += str + "、";
         }
+        tagStr = tagStr.substring(0,tagStr.length()-1);
         sb.append(tagStr);
         String title = "";
-        String content= "";
-        try{
+        String content = "";
+        try {
             JSONObject jo = new JSONObject(shareContent);
             title = jo.getStr("title");
             content = jo.getStr("content");
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new ImgException(ImgException.ExceptionCode.JSONFORMAT_ERROR);
         }
         return ImgUtil.CardImg.builder()
-                .nickname(null == userInfoVO.getNickName()?"陪玩师":userInfoVO.getNickName())
-                .gender(null==userInfoVO.getGender()?GenderEnum.ASEXUALITY.getType():userInfoVO.getGender())
-                .age(null==userInfoVO.getAge()?Constant.DEFAULT_AGE:userInfoVO.getAge())
+                .nickname(null == userInfoVO.getNickName() ? "陪玩师" : userInfoVO.getNickName())
+                .gender(null == userInfoVO.getGender() ? GenderEnum.ASEXUALITY.getType() : userInfoVO.getGender())
+                .age(null == userInfoVO.getAge() ? Constant.DEFAULT_AGE : userInfoVO.getAge())
                 .techStr(sb.toString())
                 .mainPicUrl(userInfoVO.getMainPhotoUrl())
                 .codeUrl(codeUrl)
@@ -307,12 +308,12 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             tagStr += " " + str;
         }
         //主商品信息
-        Map<String ,String> mainTechMap = new HashMap<>();
-        if(StringUtils.isEmpty(pdVO.getCategoryIcon())){
+        Map<String, String> mainTechMap = new HashMap<>();
+        if (StringUtils.isEmpty(pdVO.getCategoryIcon())) {
             throw new ImgException(ImgException.ExceptionCode.CATEGORY_ICON_URL);
         }
-        mainTechMap.put("techIconUrl",pdVO.getCategoryIcon());
-        String mainTech = pdVO.getProductName() + " 陪玩 " ;
+        mainTechMap.put("techIconUrl", pdVO.getCategoryIcon());
+        String mainTech = pdVO.getProductName() + " 陪玩 ";
         mainTechMap.put("techName", mainTech);
 
         String mainPrice = "￥" + pdVO.getPrice() + "元/" + pdVO.getUnit();
@@ -327,7 +328,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
         //次商品信息
         List<ProductVO> otherProductList = productService.findOthersByproductId(pdVO.getId());
-        Map<String ,String> secTechMap = new HashMap<>();
+        Map<String, String> secTechMap = new HashMap<>();
         if (!CollectionUtil.isEmpty(otherProductList)) {
             ProductVO productVO = otherProductList.get(0);
             secTechMap.put("techIconUrl", productVO.getCategoryIcon());
@@ -343,10 +344,10 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             secTechMap.put("techTagStr", secTechTagStr);
         }
         return ImgUtil.CardImg.builder()
-                .nickname(null == userInfoVO.getNickName()?"陪玩师":userInfoVO.getNickName())
-                .gender(null==userInfoVO.getGender()?GenderEnum.ASEXUALITY.getType():userInfoVO.getGender())
-                .age(null==userInfoVO.getAge()?Constant.DEFAULT_AGE:userInfoVO.getAge())
-                .city(null==userInfoVO.getCity()?"不详":userInfoVO.getCity())
+                .nickname(null == userInfoVO.getNickName() ? "陪玩师" : userInfoVO.getNickName())
+                .gender(null == userInfoVO.getGender() ? GenderEnum.ASEXUALITY.getType() : userInfoVO.getGender())
+                .age(null == userInfoVO.getAge() ? Constant.DEFAULT_AGE : userInfoVO.getAge())
+                .city(null == userInfoVO.getCity() ? "不详" : userInfoVO.getCity())
                 .mainPicUrl(userInfoVO.getMainPhotoUrl())
                 .codeUrl(codeUrl)
                 .shareStr(shareStr)

@@ -109,4 +109,10 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
         return approveDao.findByParameter(approveVO);
     }
 
+    @Override
+    public void delByTechAuthId(Integer techAuthId){
+        approveDao.delByTechAuthId(techAuthId);
+
+    }
+
 }

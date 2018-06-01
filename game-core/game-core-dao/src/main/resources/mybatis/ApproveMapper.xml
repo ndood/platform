@@ -58,6 +58,13 @@
         </where>
     </delete>
 
+    <delete id="delByTechAuthId" parameterType="java.lang.Integer">
+        delete from t_approve
+        <where>
+            tech_auth_id = #{techAuthId}
+        </where>
+    </delete>
+
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Approve">
         insert into
         t_approve (tech_owner_id,tech_auth_id,user_id,create_time)
