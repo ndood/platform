@@ -311,7 +311,7 @@ public class UserController extends BaseController {
     }
 
     /**
-     * 陪玩师技能分享名片带小程序码
+     * 陪玩师技能认证分享带小程序码
      *
      * @return
      */
