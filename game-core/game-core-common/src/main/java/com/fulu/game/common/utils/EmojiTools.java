@@ -46,7 +46,6 @@ public class EmojiTools {
 
         if (!containsEmoji(str)) {
             return str;
-        } else {
         }
         StringBuilder buf = null;
         int len = str.length();
