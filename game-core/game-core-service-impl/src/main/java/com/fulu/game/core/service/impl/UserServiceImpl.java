@@ -309,7 +309,10 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         String tagStr = "";
         List<String> tagList = userInfoVO.getTags();
         for (String str : tagList) {
-            tagStr += "｜" + str;
+            tagStr += str + "｜";
+        }
+        if (!"".equals(tagStr)){
+            tagStr = tagStr.substring(0,tagStr.length()-1);
         }
         //主商品信息
         Map<String, String> mainTechMap = new HashMap<>();
