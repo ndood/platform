@@ -19,5 +19,5 @@ public interface UserInfoAuthFileService extends ICommonService<UserInfoAuthFile
 
      void deleteByUserAuthIdAndType(Integer userAuthId, Integer fileType);
 
-
+      int deleteFile(UserInfoAuthFile userInfoAuthFile);
 }

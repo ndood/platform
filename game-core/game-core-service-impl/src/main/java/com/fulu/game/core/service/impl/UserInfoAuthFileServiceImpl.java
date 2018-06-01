@@ -48,4 +48,12 @@ public class UserInfoAuthFileServiceImpl extends AbsCommonService<UserInfoAuthFi
         userInfoAuthFileDao.deleteByUserAuthIdAndType(userAuthId,fileType);
         ossUtil.deleteFile(urls);
     }
+
+    public int deleteFile(UserInfoAuthFile userInfoAuthFile){
+        ossUtil.deleteFile(userInfoAuthFile.getUrl());
+        return deleteById(userInfoAuthFile.getId());
+    }
+
+
+
 }

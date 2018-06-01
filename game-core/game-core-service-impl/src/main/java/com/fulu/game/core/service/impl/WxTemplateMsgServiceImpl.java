@@ -38,7 +38,6 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
     private static final int LOCK_NUM = 10000;
     private List<Object> objects = new ArrayList<>(LOCK_NUM);
-
     {
         for (Integer i = 0; i < LOCK_NUM; i++) {
             objects.add(i);
@@ -110,7 +109,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
         WxMaTemplateMessage wxMaTemplateMessage = new WxMaTemplateMessage();
         wxMaTemplateMessage.setTemplateId(WechatTemplateEnum.PUSH_MSG.getType());
         wxMaTemplateMessage.setToUser(acceptUser.getOpenId());
-        wxMaTemplateMessage.setPage("pages/index/index");
+        wxMaTemplateMessage.setPage("pages/imsg/imsg");
         wxMaTemplateMessage.setFormId(formId);
         List<WxMaTemplateMessage.Data> dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", sendUser.getNickname() + ":" + content), new WxMaTemplateMessage.Data("keyword2", date));
         wxMaTemplateMessage.setData(dataList);
