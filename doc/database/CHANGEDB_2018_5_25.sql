@@ -55,12 +55,12 @@ CREATE TABLE `t_user_info_auth_reject` (
   `user_info_auth_id` int(11) NOT NULL COMMENT '用户信息认证ID',
   `user_info_auth_status` tinyint(1) NOT NULL COMMENT '用户认证状态',
   `reason` varchar(255) NOT NULL COMMENT '原因',
+  `admin_id` int(11)  NULL COMMENT '管理员ID',
+  `admin_name` varchar(255)  NULL COMMENT '管理员名称',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
 )  COMMENT='用户认证信息驳回表';
 
-ALTER TABLE `t_user_info_auth_reject` ADD COLUMN admin_id INT ( 11 ) NULL  COMMENT '管理员ID' AFTER `reason`;
-ALTER TABLE `t_user_info_auth_reject` ADD COLUMN admin_name varchar ( 255 ) NULL  COMMENT '管理员ID' AFTER `admin_id`;
 
 --技能认证驳回表
 CREATE TABLE `t_user_tech_auth_reject` (
