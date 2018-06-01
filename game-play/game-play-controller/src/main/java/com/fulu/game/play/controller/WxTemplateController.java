@@ -55,17 +55,6 @@ public class WxTemplateController {
         return Result.success().msg(result);
     }
 
-    @RequestMapping("/temp")
-    public Result pushWechatMsg()throws Exception{
-        springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("xx");
-            }
-        });
-        return Result.success();
-    }
-
 
 
 
