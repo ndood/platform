@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Approve;
+import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.vo.ApproveVO;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,5 +27,7 @@ public interface ApproveService extends ICommonService<Approve, Integer> {
     List<Approve> findByParam(ApproveVO approveVO);
 
     void delByTechAuthId(Integer techAuthId);
+
+    void resetApproveStatus(UserTechAuth userTechAuth);
 
 }

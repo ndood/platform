@@ -53,6 +53,8 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     private WxTemplateMsgService wxTemplateMsgService;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private ApproveService approveService;
 
     @Override
     public ICommonDao<UserTechAuth, Integer> getDao() {
@@ -106,9 +108,9 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         if(userTechAuth.getStatus().equals(TechAuthStatusEnum.FREEZE.getType())){
             throw new  UserAuthException(UserAuthException.ExceptionCode.USER_TECH_FREEZE);
         }
+        //重置技能好友认证状态
         userTechAuth.setStatus(TechAuthStatusEnum.NO_AUTHENTICATION.getType());
-        userTechAuth.setApproveCount(0);
-        update(userTechAuth);
+        approveService.resetApproveStatus(userTechAuth);
         //添加拒绝原因
         UserTechAuthReject userTechAuthReject = new UserTechAuthReject();
         userTechAuthReject.setReason(reason);
@@ -131,8 +133,12 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
     @Override
     public UserTechAuth pass(Integer id) {
-        Admin admin = adminService.getCurrentUser();
-        log.info("技能审核通过:adminId:{};adminName:{};authInfoId:{}",admin.getId(),admin.getName(),id);
+        try {
+            Admin admin = adminService.getCurrentUser();
+            log.info("技能审核通过:管理员操作:adminId:{};adminName:{};authInfoId:{}",admin.getId(),admin.getName(),id);
+        }catch (Exception e){
+            log.info("技能审核通过:用户好友操作:authInfoId:{}",id);
+        }
         UserTechAuth userTechAuth = findById(id);
         if(userTechAuth.getStatus().equals(TechAuthStatusEnum.FREEZE.getType())){
             throw new  UserAuthException(UserAuthException.ExceptionCode.USER_TECH_FREEZE);
@@ -141,7 +147,6 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         update(userTechAuth);
         //给用户推送通知
         wxTemplateMsgService.pushWechatTemplateMsg(userTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_SUCCESS);
-
         //技能下商品置为正常
         productService.recoverProductDelFlagByTechAuthId(userTechAuth.getId());
         return userTechAuth;
@@ -151,10 +156,11 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     public UserTechAuth freeze(Integer id, String reason) {
         Admin admin = adminService.getCurrentUser();
         log.info("冻结技能认证信息:adminId:{};adminName:{};authInfoId:{},reason:{}",admin.getId(),admin.getName(),id,reason);
+        //重置技能好友认证状态
         UserTechAuth userTechAuth = findById(id);
+        //重置技能好友认证状态
         userTechAuth.setStatus(TechAuthStatusEnum.FREEZE.getType());
-        userTechAuth.setApproveCount(0);
-        update(userTechAuth);
+        approveService.resetApproveStatus(userTechAuth);
         //添加拒绝原因
         UserTechAuthReject userTechAuthReject = new UserTechAuthReject();
         userTechAuthReject.setReason(reason);
@@ -166,6 +172,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuthReject.setAdminName(admin.getName());
         userTechAuthReject.setCreateTime(new Date());
         userTechAuthRejectService.create(userTechAuthReject);
+
         //同步下架用户该技能商品
         productService.deleteProductByTech(userTechAuth.getId());
         return userTechAuth;
