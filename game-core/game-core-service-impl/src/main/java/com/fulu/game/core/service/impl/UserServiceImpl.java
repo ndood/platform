@@ -311,8 +311,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         for (String str : tagList) {
             tagStr += str + "｜";
         }
-        if (!"".equals(tagStr)){
-            tagStr = tagStr.substring(0,tagStr.length()-1);
+        if (!"".equals(tagStr)) {
+            tagStr = tagStr.substring(0, tagStr.length() - 1);
         }
         //主商品信息
         Map<String, String> mainTechMap = new HashMap<>();
