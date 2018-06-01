@@ -17,7 +17,7 @@ public class OrderReceivingTest {
 
     @Test
     public void test() {
-        List<String> lines = FileUtil.readLines("E:\\data\\527.log", "utf-8");
+        List<String> lines = FileUtil.readLines("E:\\data\\529.log", "utf-8");
         // 创建 Pattern 对象
         Pattern genderPattern = Pattern.compile("gender=2");
 
@@ -167,7 +167,7 @@ public class OrderReceivingTest {
 
 
 
-        FileUtil.writeLines(errLog,"E:\\data\\525-err.log","utf-8",false);
+        FileUtil.writeLines(errLog,"E:\\data\\529-err.log","utf-8",false);
 
     }
 

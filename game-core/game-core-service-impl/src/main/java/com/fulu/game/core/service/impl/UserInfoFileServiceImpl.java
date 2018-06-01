@@ -39,6 +39,22 @@ public class UserInfoFileServiceImpl extends AbsCommonService<UserInfoFile,Integ
     }
 
 
+    public List<UserInfoFile> findByUserIdAndType(Integer userId,Integer type){
+        UserInfoFileVO param = new UserInfoFileVO();
+        param.setUserId(userId);
+        param.setUserId(type);
+        List<UserInfoFile> userInfoFiles = userInfoFileDao.findByParameter(param);
+        return userInfoFiles;
+    }
+
+    public int deleteFile(UserInfoFile file){
+        int result = deleteById(file.getId());
+        ossUtil.deleteFile(file.getUrl());
+        return result;
+
+    }
+
+
     public void deleteByUserIdAndType(Integer userId,Integer type){
         UserInfoFileVO userInfoFileVO = new UserInfoFileVO();
         userInfoFileVO.setUserId(userId);

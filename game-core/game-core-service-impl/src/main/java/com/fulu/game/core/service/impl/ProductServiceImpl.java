@@ -174,6 +174,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         }
         product.setStatus(status);
         update(product);
+        if(!status){
+            saveProductIndex(product,status);
+        }
         return product;
     }
 
@@ -507,9 +510,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         List<Product> showIndexProducts = getShowIndexProduct(products);
         for (Product product : products) {
             if (showIndexProducts.contains(product)) {
-                createProductIndex(product, true);
+                saveProductIndex(product, true);
             } else {
-                createProductIndex(product, false);
+                saveProductIndex(product, false);
             }
         }
     }
@@ -554,7 +557,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * @param isIndexShow
      * @return
      */
-    private ProductShowCaseDoc createProductIndex(Product product, Boolean isIndexShow) {
+    private ProductShowCaseDoc saveProductIndex(Product product, Boolean isIndexShow) {
         ProductShowCaseDoc productShowCaseDoc = new ProductShowCaseDoc();
         BeanUtil.copyProperties(product, productShowCaseDoc);
         UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(productShowCaseDoc.getUserId(), false, false, true, false);

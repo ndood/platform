@@ -2,7 +2,6 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.common.enums.*;
-import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
@@ -538,14 +537,24 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
 
     private void createUserInfoFile(Integer userId, String fileUrl, String name, Integer type) {
-        userInfoFileService.deleteByUserIdAndType(userId,type);
-        UserInfoFile userInfoFile = new UserInfoFile();
-        userInfoFile.setName(name);
-        userInfoFile.setUrl(fileUrl);
-        userInfoFile.setUserId(userId);
-        userInfoFile.setCreateTime(new Date());
-        userInfoFile.setType(type);
-        userInfoFileService.create(userInfoFile);
+        List<UserInfoFile> idCardFileList =  userInfoFileService.findByUserIdAndType(userId,type);
+        boolean flag = true;
+        for(UserInfoFile file : idCardFileList){
+            if(file.getUrl().contains(fileUrl)){
+                flag = false;
+            }else{
+                userInfoFileService.deleteFile(file);
+            }
+        }
+        if(flag){
+            UserInfoFile userInfoFile = new UserInfoFile();
+            userInfoFile.setName(name);
+            userInfoFile.setUrl(fileUrl);
+            userInfoFile.setUserId(userId);
+            userInfoFile.setCreateTime(new Date());
+            userInfoFile.setType(type);
+            userInfoFileService.create(userInfoFile);
+        }
     }
 
     /**
@@ -557,22 +566,32 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         if (portraitUrls == null) {
             return;
         }
-        userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuthId, FileTypeEnum.PIC.getType());
+        List<UserInfoAuthFile> picFiles =userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthId, FileTypeEnum.PIC.getType());
+        List<String>  uploadUrlList =Arrays.asList(portraitUrls);
+        List<String> dbFilesUrlList = new ArrayList<>();
+        for(UserInfoAuthFile file : picFiles){
+            dbFilesUrlList.add(file.getUrl());
+            if(!uploadUrlList.contains(file.getUrl())){
+                userInfoAuthFileService.deleteFile(file);
+            }
+        }
         for (int i = 0; i < portraitUrls.length; i++) {
-            UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
             String portraitUrl = portraitUrls[i];
-            userInfoAuthFile.setUrl(portraitUrl);
-            userInfoAuthFile.setInfoAuthId(userInfoAuthId);
-            userInfoAuthFile.setName("写真" + (i + 1));
-            userInfoAuthFile.setCreateTime(new Date());
-            userInfoAuthFile.setType(FileTypeEnum.PIC.getType());
-            userInfoAuthFileService.create(userInfoAuthFile);
+            if(!dbFilesUrlList.contains(portraitUrl)){
+                UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
+                userInfoAuthFile.setUrl(portraitUrl);
+                userInfoAuthFile.setInfoAuthId(userInfoAuthId);
+                userInfoAuthFile.setName("写真" + (i + 1));
+                userInfoAuthFile.setCreateTime(new Date());
+                userInfoAuthFile.setType(FileTypeEnum.PIC.getType());
+                userInfoAuthFileService.create(userInfoAuthFile);
+            }
         }
     }
 
+
     /**
      * 添加用户认证声音
-     *
      * @param voiceUrl
      * @param userInfoAuthId
      */
@@ -580,15 +599,25 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         if (voiceUrl == null) {
             return;
         }
-        userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuthId, FileTypeEnum.VOICE.getType());
-        UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
-        userInfoAuthFile.setUrl(voiceUrl);
-        userInfoAuthFile.setDuration(duration);
-        userInfoAuthFile.setInfoAuthId(userInfoAuthId);
-        userInfoAuthFile.setName("语音介绍");
-        userInfoAuthFile.setCreateTime(new Date());
-        userInfoAuthFile.setType(FileTypeEnum.VOICE.getType());
-        userInfoAuthFileService.create(userInfoAuthFile);
+        List<UserInfoAuthFile> voiceFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthId, FileTypeEnum.VOICE.getType());
+        boolean flag = true;
+        for(UserInfoAuthFile file : voiceFiles){
+            if(file.getUrl().contains(voiceUrl)){
+                flag = false;
+            }else{
+                userInfoAuthFileService.deleteFile(file);
+            }
+        }
+        if(flag){
+            UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
+            userInfoAuthFile.setUrl(voiceUrl);
+            userInfoAuthFile.setDuration(duration);
+            userInfoAuthFile.setInfoAuthId(userInfoAuthId);
+            userInfoAuthFile.setName("语音介绍");
+            userInfoAuthFile.setCreateTime(new Date());
+            userInfoAuthFile.setType(FileTypeEnum.VOICE.getType());
+            userInfoAuthFileService.create(userInfoAuthFile);
+        }
     }
 
     /**

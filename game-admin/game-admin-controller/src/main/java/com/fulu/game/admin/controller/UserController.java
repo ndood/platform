@@ -146,7 +146,6 @@ public class UserController extends BaseController {
 
     /**
      * 删除认证信息(写真和声音)
-     *
      * @param id
      * @return
      */
