@@ -21,6 +21,7 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 判断唯一索引
+     *
      * @param e
      * @return
      */
@@ -32,6 +33,7 @@ public class ExceptionHandlerAdvice {
 
     /**
      * SQL执行错误
+     *
      * @param e
      * @return
      */
@@ -43,6 +45,7 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 404错误
+     *
      * @param e
      * @return
      */
@@ -54,6 +57,7 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 必填参数为空
+     *
      * @param e
      * @return
      */
@@ -65,6 +69,7 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 业务错误,直接提示给用户
+     *
      * @param e
      * @return
      */
@@ -76,6 +81,7 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 订单业务错误
+     *
      * @param e
      * @return
      */
@@ -85,9 +91,9 @@ public class ExceptionHandlerAdvice {
         return Result.error().msg(e.getMessage());
     }
 
-
     /**
      * 用户认证异常
+     *
      * @param e
      * @return
      */
@@ -97,9 +103,9 @@ public class ExceptionHandlerAdvice {
         return Result.error().msg(e.getMessage()).data("errcode", e.getCode());
     }
 
-
     /**
      * 业务异常的父类
+     *
      * @param e
      * @return
      */
@@ -110,28 +116,28 @@ public class ExceptionHandlerAdvice {
         return Result.error().msg(e.getMessage()).data("errcode", e.getCode());
     }
 
-
-
     /**
      * 统一异常
+     *
      * @param e
      * @return
      */
     @ExceptionHandler(Exception.class)
     public Result handleException(Exception e) {
         log.error(e.getMessage(), e);
-        return	Result.error().msg("服务器错误!");
+        return Result.error().msg("服务器错误!");
     }
 
     /**
      * 统一异常
+     *
      * @param e
      * @return
      */
     @ExceptionHandler(WxErrorException.class)
     public Result wxErrorException(WxErrorException e) {
         log.error(e.getMessage(), e);
-        return	Result.error().msg("生成小程序码错误");
+        return Result.error().msg("生成小程序码错误");
     }
 
 }
