@@ -44,12 +44,12 @@ public class ImgUtil {
         Graphics2D g_image = image.createGraphics();
         fillRect(g_image, Color.white, 0, 0, imageWidth, imageHeight);
 
-        //插入陪玩师主图
+        //主图
         int H_mainPic = 700;
         int mainPic2Top = 0;
         drawImage(cardImg.getMainPicUrl(), 0, mainPic2Top, imageWidth, H_mainPic);
 
-        //陪玩师个人信息区域
+        //昵称+性别+年龄+
         int H_person = 70;
         int person2Top = mainPic2Top + H_mainPic + 10;
         String nickname = cardImg.getNickname();
@@ -62,13 +62,13 @@ public class ImgUtil {
         fillRound(g_nickname, FEMALE_COLOR, 20 + nicknameLen + 10, person2Top + 12, ageLen, H_person / 2 - 10);
         drawString(g_nickname, Color.white, FONT_SONG_PLAIN, genderAndAge, nicknameLen + 30, person2Top + H_person / 2);
 
-        //技能和技能标签区域
+        //技能+技能标签
         int H_tech = 70;
         int tech2Top = person2Top + H_person + 5;
         String techStr = cardImg.getTechStr();
         Graphics2D tech = image.createGraphics();
 
-        //文字叠加,自动换行叠加
+        //自动换行
         int tempX = 20;
         int tempY = tech2Top;
         int tempCharLen = 0;//单字符长度
@@ -100,7 +100,7 @@ public class ImgUtil {
 
         //小程序码和文案
         int H_code = 220;
-        int code2Top = imageHeight-H_code -30;
+        int code2Top = imageHeight - H_code - 30;
         int codeWidth = imageWidth / 3;
         String shareTitle = nickname + cardImg.getShareTitle();
         String shareContent = cardImg.getShareContent();
@@ -118,20 +118,20 @@ public class ImgUtil {
         return ossUtil.uploadFile(is, imgName);
     }
 
-    //陪玩师技能名片分享
+    //技能名片分享
     public String createTechCard(CardImg cardImg) throws IOException {
         //画布整体布局背景为白色
         image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D g_image = image.createGraphics();
         fillRect(g_image, Color.white, 0, 0, imageWidth, imageHeight);
 
-        //插入陪玩师主图
+        //主图
         int H_mainPic = 640;
         int mainPic2Top = 0;
         String mainPicUrl = cardImg.getMainPicUrl();
         drawImage(mainPicUrl, 0, mainPic2Top, imageWidth, H_mainPic);
 
-        //陪玩师个人信息区域
+        //昵称+性别+年龄+个人标签
         int H_person = 70;
         int person2Top = mainPic2Top + H_mainPic + 10;
         String nickname = cardImg.getNickname();
@@ -141,9 +141,9 @@ public class ImgUtil {
         drawString(g_nickname, Color.black, FONT_SONG_BOLD, nickname, 20, person2Top + H_person / 2);
         int personLen = getContentLength(nickname, g_nickname);
         drawString(g_nickname, Color.gray, FONT_SONG_PLAIN_18, genderAndAge, personLen + 30, person2Top + H_person / 2);
-        drawString(g_nickname, Color.gray, FONT_SONG_PLAIN_18, cardImg.getPersonTagStr(), 18, person2Top + H_person+5);
+        drawString(g_nickname, Color.gray, FONT_SONG_PLAIN_18, cardImg.getPersonTagStr(), 18, person2Top + H_person + 5);
 
-        //技能和技能标签区域
+        //技能+技能标签
         int H_tech = 80;
         int tech2Top = person2Top + H_person + 20;
         int icon_width = imageWidth / 6;
@@ -155,7 +155,7 @@ public class ImgUtil {
         Graphics2D g_tech = image.createGraphics();
         drawString(g_tech, Color.black, FONT_SONG_PLAIN, techAndTag, icon_width + 30, tech2Top + H_tech / 2);
         int techLen = getContentLength(techAndTag, g_tech);
-        drawString(g_tech, Color.gray, FONT_SONG_PLAIN_18, mainTechMap.get("techTagStr")+" "+mainTechMap.get("price"), icon_width + techLen + 20, tech2Top + H_tech / 2);
+        drawString(g_tech, Color.gray, FONT_SONG_PLAIN_18, mainTechMap.get("techTagStr") + " " + mainTechMap.get("price"), icon_width + techLen + 20, tech2Top + H_tech / 2);
 
         //画一条横线
         Graphics2D line1 = image.createGraphics();
@@ -164,17 +164,17 @@ public class ImgUtil {
         line1.setColor(LIGHT_GRAY);
         line1.drawRect(10, line2Top1, lineWidth, 0);
 
+        //其他技能+标签
         Map<String, String> secTechMap = cardImg.getSecTech();
         int line2Top = line2Top1 + 10;
         if (!secTechMap.isEmpty()) {
-            //其他技能
             String secIconUrl = secTechMap.get("techIconUrl");
             drawImage(secIconUrl, 10, line2Top1 + 10, icon_width, H_tech);
             String otherTechStr = secTechMap.get("techName");
             Graphics2D g_tech2 = image.createGraphics();
             drawString(g_tech2, Color.black, FONT_SONG_PLAIN, otherTechStr, icon_width + 30, line2Top1 + H_tech / 2 + 10);
             int techLen2 = getContentLength(techAndTag, g_tech2);
-            drawString(g_tech, Color.gray, FONT_SONG_PLAIN_18, secTechMap.get("techTagStr")+" "+secTechMap.get("price"), icon_width + techLen2 + 20, line2Top1 + H_tech / 2 + 10);
+            drawString(g_tech, Color.gray, FONT_SONG_PLAIN_18, secTechMap.get("techTagStr") + " " + secTechMap.get("price"), icon_width + techLen2 + 20, line2Top1 + H_tech / 2 + 10);
 
             //画一条横线
             Graphics2D line = image.createGraphics();
@@ -182,7 +182,7 @@ public class ImgUtil {
             line.setColor(LIGHT_GRAY);
             line.drawRect(10, line2Top, lineWidth, 0);
         }
-        //小程序码和文案
+        //小程序码+文案
         int H_code = 200;
         int code2Top = line2Top + 10;
         int codeWidth = imageWidth / 3;
@@ -193,6 +193,7 @@ public class ImgUtil {
         Graphics2D g_share = image.createGraphics();
         drawString(g_share, Color.black, FONT_SONG_BOLD, shareStr, codeWidth + 30, code2Top + (H_code / 2) - 15);
 
+        //上传oss
         ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
         ImageOutputStream imageOS = ImageIO.createImageOutputStream(byteArrayOS);
         ImageIO.write(image, EXT_NAME, imageOS);
