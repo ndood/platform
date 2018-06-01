@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,12 +30,12 @@ public class ImgUtil {
     private int imageWidth = Constant.TECH_CARD_WIDTH;
     private int imageHeight = Constant.TECH_CARD_HEIGHT;
     private static final int FONT_SIZE_24 = 24;
-    private static final int FONT_SIZE_22 = 22;
-    private Font FONT_SONG_BOLD = new Font("宋体", Font.BOLD, FONT_SIZE_24);
-    private Font FONT_SONG_PLAIN = new Font("宋体", Font.PLAIN, FONT_SIZE_22);
+    private static final int FONT_SIZE_20 = 20;
+    private Font FONT_SONG_BOLD = new Font("", Font.PLAIN, FONT_SIZE_24);
+    private Font FONT_SONG_PLAIN = new Font("宋体", Font.PLAIN, FONT_SIZE_20);
     private static final Color WHITE = Color.white;
     private static final Color BLACK = Color.black;
-    private static final Color FEMALE_COLOR = Color.pink;
+    private static final Color FEMALE_COLOR = new Color(255,156,163);
     private static final Color LIGHT_GRAY = Color.LIGHT_GRAY;
 
     public String createTechAuth(CardImg cardImg) throws IOException {
@@ -55,11 +56,11 @@ public class ImgUtil {
         String genderAndAge = getGenderAndAge(cardImg.getGender(), cardImg.getAge());
 
         Graphics2D g_nickname = image.createGraphics();
-        drawString(g_nickname, BLACK, FONT_SONG_BOLD, nickname, 5, person2Top + H_person / 2);
+        drawString(g_nickname, BLACK, FONT_SONG_BOLD, nickname, 10, person2Top + H_person / 2);
         int nicknameLen = getContentLength(nickname, g_nickname);
         int ageLen = getContentLength(genderAndAge, g_nickname);
-        fillRect(g_nickname, FEMALE_COLOR, nicknameLen + 10, person2Top + 5, ageLen, H_person / 2);
-        drawString(g_nickname, WHITE, FONT_SONG_PLAIN, genderAndAge, nicknameLen + 10, person2Top + H_person / 2);
+        fillRound(g_nickname, FEMALE_COLOR, nicknameLen + 10, person2Top + 12, ageLen, H_person / 2-10);
+        drawString(g_nickname, WHITE, FONT_SONG_PLAIN, genderAndAge, nicknameLen + 15, person2Top + H_person / 2);
 
         //技能和技能标签区域
         int H_tech = 70;
@@ -68,7 +69,7 @@ public class ImgUtil {
         Graphics2D tech = image.createGraphics();
 
         //文字叠加,自动换行叠加
-        int tempX = 0;
+        int tempX = 10;
         int tempY = tech2Top;
         int tempCharLen = 0;//单字符长度
         int tempLineLen = 0;//单行字符总长度临时计算
@@ -98,7 +99,7 @@ public class ImgUtil {
         line.drawRect(10, line2Top, lineWidth, 0);
 
         //小程序码和文案
-        int H_code = 200;
+        int H_code = 220;
         int code2Top = line2Top + 10;
         int codeWidth = imageWidth / 3;
         String shareTitle = nickname + cardImg.getShareTitle();
@@ -106,8 +107,8 @@ public class ImgUtil {
 
         drawImage(cardImg.getCodeUrl(), 10, code2Top, codeWidth, H_code);
         Graphics2D g_share = image.createGraphics();
-        drawString(g_share, BLACK, FONT_SONG_BOLD, shareTitle, codeWidth + 30, code2Top + (H_code / 2) - 15);
-        drawString(g_share, BLACK, FONT_SONG_PLAIN, shareContent, codeWidth + 30, code2Top + (H_code / 2) + 15);
+        drawString(g_share, BLACK, FONT_SONG_BOLD, shareTitle, codeWidth + 40, code2Top + (H_code / 2) - 15);
+        drawString(g_share, BLACK, FONT_SONG_PLAIN, shareContent, codeWidth + 40, code2Top + (H_code / 2) + 15);
 
         ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
         ImageOutputStream imageOS = ImageIO.createImageOutputStream(byteArrayOS);
@@ -205,9 +206,9 @@ public class ImgUtil {
 
     private String getGenderAndAge(Integer gender, Integer age) {
         if (GenderEnum.ASEXUALITY.getType() == gender || GenderEnum.MALE.getType() == gender) {
-            return GenderEnum.SYMBOL_MALE.getMsg() + " " + age;
+            return GenderEnum.SYMBOL_MALE.getMsg() + age;
         } else {
-            return GenderEnum.SYMBOL_LADY.getMsg() + " " + age;
+            return GenderEnum.SYMBOL_LADY.getMsg() + age;
         }
     }
 
@@ -216,7 +217,15 @@ public class ImgUtil {
         g.fillRect(x, y, width, height);
     }
 
+    private void fillRound(Graphics2D g, Color color, int x, int y, int width, int height) {
+        g.setColor(color);
+        RoundRectangle2D rect = new RoundRectangle2D.Double(x, y, width, height, 8, 8);
+        g.draw(rect);
+        g.fillRect(x, y, width, height);
+    }
+
     private void drawString(Graphics2D g, Color color, Font font, String str, int x, int y) {
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setColor(color);
         g.setFont(font);
         g.drawString(str, x, y);
@@ -226,7 +235,7 @@ public class ImgUtil {
         BufferedImage bi = javax.imageio.ImageIO.read(new URL(imgUrl));
         if (bi != null) {
             Graphics g = image.getGraphics();
-            g.drawImage(bi, x, y, width, height, null);
+            g.drawImage(bi.getScaledInstance(width,height, Image.SCALE_SMOOTH), x, y,  null);
             g.dispose();
         }
     }
