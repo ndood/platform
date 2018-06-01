@@ -10,9 +10,9 @@ public interface Constant {
     Long VERIFYCODE_CACHE_TIME_DEV = 5 * 60L;
     Long VERIFYCODE_CACHE_TIME_DEP = 1 * 60L;
 
-    Long TIME_HOUR_TOW = 2*3600L;
+    Long TIME_HOUR_TOW = 2 * 3600L;
 
-    Long TIME_MINUTES_FIFTEEN = 15*60L;
+    Long TIME_MINUTES_FIFTEEN = 15 * 60L;
 
     //手机验证码限定次数和限定时间
     Integer MOBILE_CODE_SEND_TIMES_DEV = 20;
@@ -30,4 +30,6 @@ public interface Constant {
     String DEFAULT_SPLIT_SEPARATOR = ",";
     Integer TECH_CARD_WIDTH = 690;
     Integer TECH_CARD_HEIGHT = 1146;
+    //若无年龄，默认为18
+    Integer DEFAULT_AGE = 18;
 }
