@@ -292,40 +292,42 @@ public class UserController extends BaseController {
     }
 
     /**
-     * 陪玩师技能认证分享带小程序码
+     * 技能认证-分享
      *
      * @return
      */
     @RequestMapping("/tech-auth/share")
     public Result getShareCard(@RequestParam("techAuthId") Integer techAuthId,
-                               @RequestParam("scene") String scene,
-                               @RequestParam("page") String page) throws WxErrorException, IOException {
-        String techAuthUrl = userService.getTechAuthCard(techAuthId, scene, page);
+                               @RequestParam("scene") String scene) throws WxErrorException, IOException {
+        log.info("调用技能认证-分享接口，入参:scene= {},page= {}，techAuthId={}", scene, techAuthId);
+        String techAuthUrl = userService.getTechAuthCard(techAuthId, scene);
         return Result.success().data("techAuthUrl", techAuthUrl);
     }
 
     /**
-     * 陪玩师名片带小程序码
-     *
-     * @return
-     */
-    @RequestMapping("/tech-card/share")
-    public Result getShareCard(@RequestParam("scene") String scene,
-                               @RequestParam("productId") Integer productId) throws WxErrorException, IOException {
-        log.info("调用/tech-card/share接口，入参:scene= {},productId= {}",scene,productId);
-        String techCardUrl = userService.getTechShareCard(scene,productId);
-        return Result.success().data("techCardUrl", techCardUrl);
-    }
-
-    /**
-     * 陪玩师技能认证分享进入页接口
+     * 技能认证-分享-落地页
      *
      * @param techAuthId
      * @return
      */
     @RequestMapping("/tech-auth/page/get")
     public Result getSharePage(@RequestParam("techAuthId") Integer techAuthId) {
+        log.info("调用技能认证-分享落地页接口，入参:techAuthId={}", techAuthId);
         UserInfoVO userInfoVO = userInfoAuthService.getSharePage(techAuthId);
         return Result.success().data(userInfoVO);
     }
+
+    /**
+     * 陪玩师名片-分享
+     *
+     * @return
+     */
+    @RequestMapping("/tech-card/share")
+    public Result getShareCard(@RequestParam("scene") String scene,
+                               @RequestParam("productId") Integer productId) throws WxErrorException, IOException {
+        log.info("调用/tech-card/share接口，入参:scene= {},productId= {}", scene, productId);
+        String techCardUrl = userService.getTechShareCard(scene, productId);
+        return Result.success().data("techCardUrl", techCardUrl);
+    }
+
 }

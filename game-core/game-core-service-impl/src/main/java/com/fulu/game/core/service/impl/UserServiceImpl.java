@@ -196,7 +196,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public String getTechAuthCard(Integer techAuthId, String scene, String page) throws WxErrorException, IOException {
+    public String getTechAuthCard(Integer techAuthId, String scene) throws WxErrorException, IOException {
 
         UserInfoVO userInfoVO = userInfoAuthService.findUserTechCardByUserId(techAuthId);
         if (null == userInfoVO){
@@ -224,7 +224,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             log.error("技能认证分享-未查询到对应文案");
             throw new ImgException(ImgException.ExceptionCode.SHARE_NOT_EXSISTS);
         }
-        String codeUrl = wxCodeService.create(scene, page);
+        String codeUrl = wxCodeService.create(scene, PagePathEnum.TECH_AUTH_CARD.getPagePath());
         ImgUtil.CardImg cardImg = getTechAuthContentMap(userInfoVO, shareContent, codeUrl);
         String shareCardUrl = imgUtil.createTechAuth(cardImg);
         return shareCardUrl;
