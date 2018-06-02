@@ -17,7 +17,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
@@ -52,7 +51,7 @@ public class ImgUtil {
         int person_top = mainPic_top + H_mainPic + y_gap;
         int H_person = 50;
 
-        int tech_top = person_top + H_person +y_gap;
+        int tech_top = person_top + H_person + y_gap;
         int H_tech = 40;
 
         //小程序码
@@ -64,10 +63,10 @@ public class ImgUtil {
         //画布整体布局背景为白色
         image = new BufferedImage(imageWidth, authImageHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D g_image = image.createGraphics();
-        fillRect(g_image, Color.white,0 , 0, imageWidth, authImageHeight);
+        fillRect(g_image, Color.white, 0, 0, imageWidth, authImageHeight);
 
         //画主图
-        drawImage(cardImg.getMainPicUrl(), x_gap, mainPic_top, imageWidth-2*x_gap, H_mainPic);
+        drawImage(cardImg.getMainPicUrl(), x_gap, mainPic_top, imageWidth - 2 * x_gap, H_mainPic);
         //画昵称
         Graphics2D g_nickname = image.createGraphics();
         String nickname = cardImg.getNickname();
@@ -76,7 +75,7 @@ public class ImgUtil {
         //画性别和年龄
         String genderAndAge = getGenderAndAge(cardImg.getGender(), cardImg.getAge());
         int ageLen = getContentLength(genderAndAge, g_nickname);
-        fillRound(g_nickname, FEMALE_COLOR, x_gap + nicknameLen + 10, person_top+y_gap-1, ageLen, H_person / 2 - 5);
+        fillRound(g_nickname, FEMALE_COLOR, x_gap + nicknameLen + 10, person_top + y_gap - 1, ageLen, H_person / 2 - 5);
         drawString(g_nickname, Color.white, FONT_SONG_PLAIN, genderAndAge, nicknameLen + 30, person_top + H_person / 2);
 
         //技能+技能标签
@@ -85,7 +84,7 @@ public class ImgUtil {
 
         //自动换行
         int tempX = 20;
-        int tempY = tech_top+H_tech/2;
+        int tempY = tech_top + H_tech / 2;
         int tempCharLen = 0;//单字符长度
         int tempLineLen = 0;//单行字符总长度临时计算
         StringBuffer sb = new StringBuffer();
@@ -108,8 +107,8 @@ public class ImgUtil {
 
         //画一条横线
         Graphics2D line = image.createGraphics();
-        int line_top = (wxcode_top + tech_top+H_tech)/2;
-        drawRect(line,LIGHT_GRAY,10, line_top, lineWidth, 0);
+        int line_top = (wxcode_top + tech_top + H_tech) / 2;
+        drawRect(line, LIGHT_GRAY, 10, line_top, lineWidth, 0);
 
         //小程序码和文案
         drawImage(cardImg.getCodeUrl(), x_gap, wxcode_top, wxcodeWidth, H_wxcode);
@@ -166,11 +165,11 @@ public class ImgUtil {
         x_start += nameLen + x_gap;
         //画性别+年龄
         String genderAndAge = getGenderAndAge(cardImg.getGender(), cardImg.getAge());
-        int ageLen = drawStrWithBgcolor(g_nickname, genderAndAge, x_start, name_top + 8, H_nickname / 2+2, +name_top + 2*H_nickname / 3);
+        int ageLen = drawStrWithBgcolor(g_nickname, genderAndAge, x_start, name_top + 8, H_nickname / 2 + 2, +name_top + 2 * H_nickname / 3);
         x_start += ageLen + x_gap;
         //画城市
         String city = cardImg.getCity();
-        int cityLen = drawStrWithBgcolor(g_nickname, city, x_start, name_top + 8, H_nickname / 2+2, +name_top + 2*H_nickname / 3);
+        int cityLen = drawStrWithBgcolor(g_nickname, city, x_start, name_top + 8, H_nickname / 2 + 2, +name_top + 2 * H_nickname / 3);
         x_start += cityLen + x_gap;
         //画个人标签
         String personTags = cardImg.getPersonTagStr();

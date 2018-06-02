@@ -308,9 +308,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         UserInfoVO userInfoVO = pdVO.getUserInfo();
         String tagStr = "";
         List<String> tagList = userInfoVO.getTags();
-        int size = tagList.size()>2?2:tagList.size();
-        for (int i = 0;i<size;i++) {
-            tagStr += "|"+tagList.get(i);
+        int size = tagList.size() > 2 ? 2 : tagList.size();
+        for (int i = 0; i < size; i++) {
+            tagStr += "|" + tagList.get(i);
         }
         if (!"".equals(tagStr)) {
             tagStr = tagStr.substring(1, tagStr.length());
@@ -329,9 +329,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
         String techTagStr = "";
         List<String> techTagList = pdVO.getTechTags();
-        int techTagSize = techTagList.size()>2?2:techTagList.size();
-        for (int i = 0;i<techTagSize;i++) {
-            techTagStr += "｜"+techTagList.get(i);
+        int techTagSize = techTagList.size() > 2 ? 2 : techTagList.size();
+        for (int i = 0; i < techTagSize; i++) {
+            techTagStr += "｜" + techTagList.get(i);
         }
         if (!"".equals(techTagStr)) {
             techTagStr = techTagStr.substring(1, techTagStr.length());
@@ -350,9 +350,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             secTechMap.put("price", price);
             String secTechTagStr = "";
             List<String> secondTechTagList = productVO.getTechTags();
-            int sectechTagSize = secondTechTagList.size()>2?2:secondTechTagList.size();
-            for (int i = 0;i<sectechTagSize;i++) {
-                secTechTagStr += "｜"+secondTechTagList.get(i);
+            int sectechTagSize = secondTechTagList.size() > 2 ? 2 : secondTechTagList.size();
+            for (int i = 0; i < sectechTagSize; i++) {
+                secTechTagStr += "｜" + secondTechTagList.get(i);
             }
             if (!"".equals(secTechTagStr)) {
                 secTechTagStr = secTechTagStr.substring(1, secTechTagStr.length());
