@@ -28,8 +28,9 @@ public interface Constant {
     Integer DEFAULT_APPROVE_COUNT = 5;
 
     String DEFAULT_SPLIT_SEPARATOR = ",";
-    Integer TECH_CARD_WIDTH = 690;
+    Integer TECH_CARD_WIDTH = 650;
     Integer TECH_CARD_HEIGHT = 1146;
+    Integer TECH_AUTH_HEIGHT = 1000;
     //若无年龄，默认为18
     Integer DEFAULT_AGE = 18;
 }

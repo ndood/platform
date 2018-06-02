@@ -308,11 +308,12 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         UserInfoVO userInfoVO = pdVO.getUserInfo();
         String tagStr = "";
         List<String> tagList = userInfoVO.getTags();
-        for (String str : tagList) {
-            tagStr += str + "｜";
+        int size = tagList.size()>2?2:tagList.size();
+        for (int i = 0;i<size;i++) {
+            tagStr += "|"+tagList.get(i);
         }
         if (!"".equals(tagStr)) {
-            tagStr = tagStr.substring(0, tagStr.length() - 1);
+            tagStr = tagStr.substring(1, tagStr.length());
         }
         //主商品信息
         Map<String, String> mainTechMap = new HashMap<>();
@@ -328,8 +329,12 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
         String techTagStr = "";
         List<String> techTagList = pdVO.getTechTags();
-        for (String str : techTagList) {
-            techTagStr += " " + str;
+        int techTagSize = techTagList.size()>2?2:techTagList.size();
+        for (int i = 0;i<techTagSize;i++) {
+            techTagStr += "｜"+techTagList.get(i);
+        }
+        if (!"".equals(techTagStr)) {
+            techTagStr = techTagStr.substring(1, techTagStr.length());
         }
         mainTechMap.put("techTagStr", techTagStr);
 
@@ -345,8 +350,12 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             secTechMap.put("price", price);
             String secTechTagStr = "";
             List<String> secondTechTagList = productVO.getTechTags();
-            for (String str : secondTechTagList) {
-                secTechTagStr += " " + str;
+            int sectechTagSize = secondTechTagList.size()>2?2:secondTechTagList.size();
+            for (int i = 0;i<sectechTagSize;i++) {
+                secTechTagStr += "｜"+secondTechTagList.get(i);
+            }
+            if (!"".equals(secTechTagStr)) {
+                secTechTagStr = secTechTagStr.substring(1, secTechTagStr.length());
             }
             secTechMap.put("techTagStr", secTechTagStr);
         }
