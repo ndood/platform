@@ -4,8 +4,8 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.GenderEnum;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,11 +19,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
 @Component
+@Slf4j
 public class ImgUtil {
 
     @Autowired
@@ -45,14 +45,14 @@ public class ImgUtil {
     private Font FONT_SONG_PLAIN_22 = new Font("黑体", Font.PLAIN, FONT_SIZE_22);
     private static Color FEMALE_COLOR = new Color(255, 156, 163);
     private static Color LIGHT_GRAY = Color.LIGHT_GRAY;
-    private int x_gap_0 = 30,x_gap = 60, tag_x_gap = 20, tag_padding_y = 8, tag_h = 40, y_gap_1 = 30;
+    private int x_gap_0 = 30, x_gap = 60, tag_x_gap = 20, tag_padding_y = 8, tag_h = 40, y_gap_1 = 30;
     private int lineWidth = imageWidth - 2 * x_gap;
 
     public String createTechAuth(CardImg cardImg) throws IOException {
 
         //整体布局
         int mainPic_top = 30;
-        int H_mainPic = imageWidth-2*x_gap_0;
+        int H_mainPic = imageWidth - 2 * x_gap_0;
 
         int nickname_top = mainPic_top + H_mainPic + 35;
         int H_person = 30;
@@ -68,8 +68,8 @@ public class ImgUtil {
         //画布整体布局背景为白色
         image = new BufferedImage(imageWidth, default_authImageHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D g_image = image.createGraphics();
-        fillRect(g_image, new Color(245, 245 ,245), 0, 0, imageWidth, default_authImageHeight);
-        fillRect(g_image, Color.white, x_gap_0, y_gap_1, imageWidth-2*x_gap_0, default_authImageHeight-2*y_gap_1);
+        fillRect(g_image, new Color(245, 245, 245), 0, 0, imageWidth, default_authImageHeight);
+        fillRect(g_image, Color.white, x_gap_0, y_gap_1, imageWidth - 2 * x_gap_0, default_authImageHeight - 2 * y_gap_1);
 
         //画主图
         drawCornerImg(cardImg.getMainPicUrl(), x_gap_0, mainPic_top, H_mainPic, H_mainPic);
@@ -80,7 +80,7 @@ public class ImgUtil {
         int nicknameLen = getContentLength(nickname, g_nickname);
         //画性别和年龄
         String genderAndAge = getGenderAndAge(cardImg.getGender(), cardImg.getAge());
-        drawStrWithBgcolor(g_nickname,FEMALE_COLOR,Color.white,genderAndAge,nicknameLen+3*x_gap_0,nickname_top,40,nickname_top+tag_padding_y+FONT_SIZE_24);
+        drawStrWithBgcolor(g_nickname, FEMALE_COLOR, Color.white, genderAndAge, nicknameLen + 3 * x_gap_0, nickname_top, 40, nickname_top + tag_padding_y + FONT_SIZE_24);
         //技能+技能标签
         String techStr = cardImg.getTechStr();
         Graphics2D tech = image.createGraphics();
@@ -96,7 +96,7 @@ public class ImgUtil {
             tempLineLen += tempCharLen;
             if (tempLineLen >= lineWidth) {
                 //长度已经满一行,进行文字叠加
-                drawString(tech, new Color(170,170,170), FONT_SONG_PLAIN_24, sb.toString(), tempX, tempY);
+                drawString(tech, new Color(170, 170, 170), FONT_SONG_PLAIN_24, sb.toString(), tempX, tempY);
                 sb.delete(0, sb.length());//清空内容,重新追加
                 tempY += FONT_SONG_PLAIN_24.getSize() + 10;
                 tempLineLen = 0;
@@ -104,7 +104,7 @@ public class ImgUtil {
             sb.append(tempChar);//追加字符
         }
         //最后叠加余下的文字
-        drawString(tech, new Color(170,170,170), FONT_SONG_PLAIN_24, sb.toString(), tempX, tempY);
+        drawString(tech, new Color(170, 170, 170), FONT_SONG_PLAIN_24, sb.toString(), tempX, tempY);
         tech.dispose();
 
         //画一条横线
@@ -116,9 +116,9 @@ public class ImgUtil {
         drawImage(cardImg.getCodeUrl(), x_gap, wxcode_top, wxcodeWidth, wxcodeWidth);
         Graphics2D g_share = image.createGraphics();
         String shareTitle = nickname + cardImg.getShareTitle();
-        drawString(g_share, new Color(20, 25, 28), FONT_SONG_BOLD, shareTitle, x_gap+wxcodeWidth + 39, wxcode_top + wxcodeWidth / 2);
+        drawString(g_share, new Color(20, 25, 28), FONT_SONG_BOLD, shareTitle, x_gap + wxcodeWidth + 39, wxcode_top + wxcodeWidth / 2);
         String shareContent = cardImg.getShareContent();
-        drawString(g_share, new Color(170,170,170), FONT_SONG_PLAIN_24, shareContent, x_gap+wxcodeWidth + 39, wxcode_top + wxcodeWidth / 2 + 15+FONT_SIZE_24);
+        drawString(g_share, new Color(170, 170, 170), FONT_SONG_PLAIN_24, shareContent, x_gap + wxcodeWidth + 39, wxcode_top + wxcodeWidth / 2 + 15 + FONT_SIZE_24);
         return ossUpload();
     }
 
@@ -127,12 +127,12 @@ public class ImgUtil {
         int cardImageHeight = default_cardImageHeight;//1467
         Map<String, String> secTechMap = cardImg.getSecTech();
         if (secTechMap.isEmpty()) {
-            cardImageHeight = default_cardImageHeight-160;
+            cardImageHeight = default_cardImageHeight - 160;
         }
         //整体尺寸布局
         //主图
         int mainPic_top = 30;//顶部留白高度
-        int H_mainPic = imageWidth-2*x_gap_0;
+        int H_mainPic = imageWidth - 2 * x_gap_0;
         //昵称 + 性别+年龄 + 城市+个人标签
         int name_top = mainPic_top + H_mainPic + 35;
         int H_nickname = 30;
@@ -160,8 +160,8 @@ public class ImgUtil {
         //画布整体布局背景为白色
         image = new BufferedImage(imageWidth, cardImageHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D g_image = image.createGraphics();
-        fillRect(g_image, new Color(245,245,245),0, 0, imageWidth, cardImageHeight);
-        fillRect(g_image, Color.white, x_gap_0, y_gap_1, imageWidth-2*x_gap_0, cardImageHeight-2*y_gap_1);
+        fillRect(g_image, new Color(245, 245, 245), 0, 0, imageWidth, cardImageHeight);
+        fillRect(g_image, Color.white, x_gap_0, y_gap_1, imageWidth - 2 * x_gap_0, cardImageHeight - 2 * y_gap_1);
         //画主图
         String mainPicUrl = cardImg.getMainPicUrl();
         //drawImage(mainPicUrl, x_gap_0, mainPic_top, H_mainPic, H_mainPic);
@@ -218,7 +218,7 @@ public class ImgUtil {
             drawStrWithBgcolor(g_tech, new Color(246, 246, 246), new Color(153, 153, 153), techTag2, x_start_tech, y_start_tech, 40, y_start_tech + tag_padding_y + FONT_SIZE_22);
         }
         String price = mainTechMap.get("price");
-        drawString(g_tech, new Color(232, 100, 95), FONT_SONG_BOLD, price, 3 * imageWidth / 5-5, y_start_tech);
+        drawString(g_tech, new Color(232, 100, 95), FONT_SONG_BOLD, price, 3 * imageWidth / 5 - 5, y_start_tech);
 
         //画横线2
         Graphics2D line1 = image.createGraphics();
@@ -242,7 +242,7 @@ public class ImgUtil {
                 drawStrWithBgcolor(g_tech2, new Color(246, 246, 246), new Color(153, 153, 153), tech2Tag2, x_start_tech2, y_start_tech2, 40, y_start_tech2 + tag_padding_y + FONT_SIZE_22);
             }
             String price2 = secTechMap.get("price");
-            drawString(g_tech2, new Color(232, 100, 95), FONT_SONG_BOLD, price2, 3 * imageWidth / 5-5, y_start_tech2);
+            drawString(g_tech2, new Color(232, 100, 95), FONT_SONG_BOLD, price2, 3 * imageWidth / 5 - 5, y_start_tech2);
 
             //画一条横线3
             Graphics2D line2 = image.createGraphics();
@@ -257,7 +257,7 @@ public class ImgUtil {
         String shareStr = cardImg.getShareStr();
         //自动换行
         int tempX = 26 + wxcodeWidth + 50;
-        int limitWidth = imageWidth-3*x_gap_0-tempX;
+        int limitWidth = imageWidth - 3 * x_gap_0 - tempX;
         int tempY = wxcode_top + (wxcodeWidth / 2);
         int tempCharLen = 0;//单字符长度
         int tempLineLen = 0;//单行字符总长度临时计算
@@ -384,12 +384,12 @@ public class ImgUtil {
         g2.dispose();
         g2 = output.createGraphics();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.fillRoundRect(0, 0,w, h, 40, 40);
+        g2.fillRoundRect(0, 0, w, h, 40, 40);
         g2.setComposite(AlphaComposite.SrcIn);
         g2.drawImage(sourceImg, 0, 0, w, h, null);
         g2.dispose();
         Graphics2D g = image.createGraphics();
-        g.drawImage(output,x,y,width,height,null);
+        g.drawImage(output, x, y, width, height, null);
     }
 
     /**
