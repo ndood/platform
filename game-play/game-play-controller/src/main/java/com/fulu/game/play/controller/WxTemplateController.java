@@ -27,8 +27,7 @@ public class WxTemplateController {
     private UserService userService;
     @Autowired
     private CollectFormIdQueue collectFormIdQueue;
-    @Autowired
-    private SpringThreadPoolExecutor springThreadPoolExecutor;
+
     /**
      * 收集用户的formID
      * @param formId
@@ -42,6 +41,7 @@ public class WxTemplateController {
         wechatFormid.setFormId(formId);
         wechatFormid.setCreateTime(new Date());
         collectFormIdQueue.addFormId(wechatFormid);
+        log.info("收集formId成功:formId:{}",formId);
         return Result.success();
     }
 

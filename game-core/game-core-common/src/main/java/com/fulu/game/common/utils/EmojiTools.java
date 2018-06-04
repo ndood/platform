@@ -23,8 +23,6 @@ public class EmojiTools {
     }
 
     private static boolean isEmojiCharacter(int first) {
-
-
         return !((first == 0x0) ||
                 (first == 0x9) ||
                 (first == 0xA) ||
@@ -38,8 +36,6 @@ public class EmojiTools {
                 || ((first >= 0x1F000 && first <= 0x1FFFF))
                 || ((first >= 0x2702) && (first <= 0x27B0))
                 || ((first >= 0x1F601) && (first <= 0x1F64F));
-
-
     }
 
     public static String filterEmoji(String str) {
@@ -56,11 +52,8 @@ public class EmojiTools {
                     buf = new StringBuilder(str.length());
                 }
                 buf.append(codePoint);
-            } else {
-
             }
         }
-
         if (buf == null) {
             return "";
         } else {

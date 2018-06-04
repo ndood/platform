@@ -9,6 +9,7 @@ import com.fulu.game.core.entity.vo.WechatFormidVO;
 import com.fulu.game.core.service.WechatFormidService;
 import com.xiaoleilu.hutool.date.DateUnit;
 import com.xiaoleilu.hutool.date.DateUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.List;
 
 
 @Service
+@Slf4j
 public class WechatFormidServiceImpl extends AbsCommonService<WechatFormid, Integer> implements WechatFormidService {
 
     @Autowired
@@ -61,6 +63,7 @@ public class WechatFormidServiceImpl extends AbsCommonService<WechatFormid, Inte
     public void deleteNotAvailableFormIds(WechatFormid... wechatFormid) {
         if (wechatFormid.length > 0) {
             for (WechatFormid w : wechatFormid) {
+                log.info("删除formId:wechatFormid:{}",wechatFormid);
                 deleteById(w.getId());
             }
         }
