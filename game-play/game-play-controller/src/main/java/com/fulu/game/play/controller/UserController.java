@@ -101,7 +101,6 @@ public class UserController extends BaseController {
         user.setHeadPortraitsUrl(userVO.getHeadPortraitsUrl());
         userService.update(user);
         userService.updateRedisUser(user);
-
         user.setIdcard(null);
         user.setRealname(null);
         return Result.success().data(user).msg("个人信息设置成功！");
@@ -138,7 +137,89 @@ public class UserController extends BaseController {
         }
     }
 
+    /**
+     * 保存微信信息
+     * @param wxUserInfo
+     * @return
+     */
+    @PostMapping("/wxinfo/save")
+    public Result saveWxUserInfo(WxUserInfo wxUserInfo){
+        User user = userService.getCurrentUser();
+        if(user.getGender()==null){
+            user.setGender(wxUserInfo.getGender());
+        }
+        if(user.getNickname()==null){
+            user.setNickname(wxUserInfo.getNickName());
+        }
+        if(user.getHeadPortraitsUrl()==null){
+            user.setHeadPortraitsUrl(wxUserInfo.getAvatarUrl());
+        }
+        if(user.getCity()==null){
+            user.setCity(wxUserInfo.getCity());
+        }
+        if(user.getProvince()==null){
+            user.setProvince(wxUserInfo.getProvince());
+        }
+        if(user.getCountry()==null){
+            user.setCountry(wxUserInfo.getCountry());
+        }
+        user.setUpdateTime(new Date());
+        userService.update(user);
+        return Result.success();
+    }
 
+    /**
+     * 绑定手机号
+     * @param mobile
+     * @param verifyCode
+     * @return
+     */
+    @PostMapping("/mobile/bind/new")
+    public Result mobileBind(String mobile,
+                             String verifyCode){
+        String token = SubjectUtil.getToken();
+        //验证手机号的验证码
+        String redisVerifyCode = redisOpenService.hget(RedisKeyEnum.SMS.generateKey(token), mobile);
+        if (null == redisVerifyCode) {
+            return Result.error().msg("验证码失效");
+        }
+        if (verifyCode != null && !verifyCode.equals(redisVerifyCode)) {
+            return Result.error().msg("验证码提交错误");
+        }
+        User currentUser = userService.getCurrentUser();
+        User openIdUser = userService.findByOpenId(currentUser.getOpenId());
+        //如果openId已经绑定手机号
+        if (openIdUser != null && openIdUser.getMobile() != null) {
+            return Result.error().msg("已经绑定过手机号！");
+        }
+        User newUser = null;
+        User mobileUser = userService.findByMobile(mobile);
+        if(mobileUser!=null){
+            if (mobileUser.getOpenId() != null) {
+                return Result.error().msg("该手机号已经被绑定！");
+            } else {
+                mobileUser.setOpenId(currentUser.getOpenId());
+                mobileUser.setUpdateTime(new Date());
+                userService.update(mobileUser);
+                userService.deleteById(openIdUser.getId());
+                newUser = mobileUser;
+            }
+        }else{
+            openIdUser.setMobile(mobile);
+            openIdUser.setUpdateTime(new Date());
+            userService.update(openIdUser);
+            newUser = openIdUser;
+        }
+        userService.updateRedisUser(newUser);
+        return Result.success().data(newUser).msg("手机号绑定成功！");
+    }
+
+
+    /**
+     * 绑定手机号且更新用户信息
+     * @param wxUserInfo
+     * @return
+     */
     @PostMapping("/mobile/bind")
     public Result bind(WxUserInfo wxUserInfo) {
         String token = SubjectUtil.getToken();
