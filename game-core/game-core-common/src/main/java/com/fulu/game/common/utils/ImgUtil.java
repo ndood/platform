@@ -218,7 +218,7 @@ public class ImgUtil {
             drawStrWithBgcolor(g_tech, new Color(246, 246, 246), new Color(153, 153, 153), techTag2, x_start_tech, y_start_tech, 40, y_start_tech + tag_padding_y + FONT_SIZE_22);
         }
         String price = mainTechMap.get("price");
-        drawString(g_tech, new Color(232, 100, 95), FONT_SONG_BOLD, price, 7 * imageWidth / 10, y_start_tech);
+        drawString(g_tech, new Color(232, 100, 95), FONT_SONG_BOLD, price, 3 * imageWidth / 5-5, y_start_tech);
 
         //画横线2
         Graphics2D line1 = image.createGraphics();

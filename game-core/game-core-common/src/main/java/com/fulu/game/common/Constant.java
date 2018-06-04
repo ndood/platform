@@ -28,7 +28,9 @@ public interface Constant {
     Integer DEFAULT_APPROVE_COUNT = 5;
 
     String DEFAULT_SPLIT_SEPARATOR = ",";
+    //默认名片宽度
     Integer TECH_CARD_WIDTH = 750;
+    //默认名片高度
     Integer TECH_CARD_HEIGHT = 1467;
     Integer TECH_AUTH_HEIGHT = 1206;
     //若无年龄，默认为18
