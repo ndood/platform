@@ -21,5 +21,5 @@
 
 ### 手机号绑定需求
 
-- 小程序：https://pro.modao.cc/app/UMNIzKBekTYRUkaiD0iB0fYIq96eV7O
-- 后台: https://pro.modao.cc/app/FSV59Hq1epQmGFhM9NlhPA6wD9V6t9b
+- 1.0.13 小程序：https://pro.modao.cc/app/UMNIzKBekTYRUkaiD0iB0fYIq96eV7O
+- 1.0.13 后台: https://pro.modao.cc/app/FSV59Hq1epQmGFhM9NlhPA6wD9V6t9b
