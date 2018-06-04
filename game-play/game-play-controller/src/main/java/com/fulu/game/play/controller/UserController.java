@@ -165,7 +165,7 @@ public class UserController extends BaseController {
         }
         user.setUpdateTime(new Date());
         userService.update(user);
-        return Result.success();
+        return Result.success().data(user);
     }
 
     /**
