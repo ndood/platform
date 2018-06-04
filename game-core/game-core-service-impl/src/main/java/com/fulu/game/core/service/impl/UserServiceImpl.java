@@ -306,14 +306,14 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     private ImgUtil.CardImg getTechCardContentMap(ProductDetailsVO pdVO, String shareStr, String codeUrl) {
 
         UserInfoVO userInfoVO = pdVO.getUserInfo();
-        String tagStr = "";
+        String personTag1 = null;
+        String personTag2 = null;
         List<String> tagList = userInfoVO.getTags();
-        int size = tagList.size() > 2 ? 2 : tagList.size();
-        for (int i = 0; i < size; i++) {
-            tagStr += "|" + tagList.get(i);
-        }
-        if (!"".equals(tagStr)) {
-            tagStr = tagStr.substring(1, tagStr.length());
+        if (!CollectionUtil.isEmpty(tagList)){
+            personTag1 = tagList.get(0);
+            if (tagList.size()>1){
+                personTag2 = tagList.get(1);
+            }
         }
         //主商品信息
         Map<String, String> mainTechMap = new HashMap<>();
@@ -321,22 +321,23 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             throw new ImgException(ImgException.ExceptionCode.CATEGORY_ICON_URL);
         }
         mainTechMap.put("techIconUrl", pdVO.getCategoryIcon());
-        String mainTech = pdVO.getProductName() + "陪玩 ";
+        String mainTech = pdVO.getProductName();
         mainTechMap.put("techName", mainTech);
 
         String mainPrice = "￥" + pdVO.getPrice() + "元/" + pdVO.getUnit();
         mainTechMap.put("price", mainPrice);
 
-        String techTagStr = "";
+        String techTag1 = null;
+        String techTag2 = null;
         List<String> techTagList = pdVO.getTechTags();
-        int techTagSize = techTagList.size() > 2 ? 2 : techTagList.size();
-        for (int i = 0; i < techTagSize; i++) {
-            techTagStr += "｜" + techTagList.get(i);
+        if (!CollectionUtil.isEmpty(techTagList)){
+            techTag1 = techTagList.get(0);
+            if (techTagList.size()>1){
+                techTag2 = techTagList.get(1);
+            }
         }
-        if (!"".equals(techTagStr)) {
-            techTagStr = techTagStr.substring(1, techTagStr.length());
-        }
-        mainTechMap.put("techTagStr", techTagStr);
+        mainTechMap.put("techTag1", techTag1);
+        mainTechMap.put("techTag2", techTag2);
 
         //次商品信息
         List<ProductVO> otherProductList = productService.findOthersByproductId(pdVO.getId());
@@ -344,20 +345,21 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         if (!CollectionUtil.isEmpty(otherProductList)) {
             ProductVO productVO = otherProductList.get(0);
             secTechMap.put("techIconUrl", productVO.getCategoryIcon());
-            String secTechName = productVO.getProductName() + "陪玩 ";
+            String secTechName = productVO.getProductName();
             secTechMap.put("techName", secTechName);
             String price = "￥" + productVO.getPrice() + "元/" + productVO.getUnit();
             secTechMap.put("price", price);
-            String secTechTagStr = "";
-            List<String> secondTechTagList = productVO.getTechTags();
-            int sectechTagSize = secondTechTagList.size() > 2 ? 2 : secondTechTagList.size();
-            for (int i = 0; i < sectechTagSize; i++) {
-                secTechTagStr += "｜" + secondTechTagList.get(i);
+            String secTechTag1 = null;
+            String secTechTag2 = null;
+            List<String> secTechTagList = productVO.getTechTags();
+            if (!CollectionUtil.isEmpty(secTechTagList)){
+                secTechTag1 = secTechTagList.get(0);
+                if (secTechTagList.size()>1){
+                    secTechTag2 = secTechTagList.get(1);
+                }
             }
-            if (!"".equals(secTechTagStr)) {
-                secTechTagStr = secTechTagStr.substring(1, secTechTagStr.length());
-            }
-            secTechMap.put("techTagStr", secTechTagStr);
+            secTechMap.put("techTag1", secTechTag1);
+            secTechMap.put("techTag2", secTechTag2);
         }
         return ImgUtil.CardImg.builder()
                 .nickname(null == userInfoVO.getNickName() ? "陪玩师" : EmojiTools.filterEmoji(userInfoVO.getNickName()))
@@ -367,7 +369,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
                 .mainPicUrl(userInfoVO.getMainPhotoUrl())
                 .codeUrl(codeUrl)
                 .shareStr(shareStr)
-                .personTagStr(tagStr)
+                .personTag1(personTag1)
+                .personTag2(personTag2)
                 .mainTech(mainTechMap)
                 .secTech(secTechMap)
                 .build();
