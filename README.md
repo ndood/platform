@@ -18,3 +18,8 @@
 ### 陪玩第三期
 - 后台: https://pro.modao.cc/app/nwkMT8N7msNL95Dz8j3PCSqextwypLU#screen=s7027D3EC311525857975828
 - 前端: https://pro.modao.cc/app/Hau9FeMIVhXCs1A73jAGv1vYckXpurI#screen=sCB32B843971526635087785
+
+### 手机号绑定需求
+
+- 1.0.13 小程序：https://pro.modao.cc/app/UMNIzKBekTYRUkaiD0iB0fYIq96eV7O
+- 1.0.13 后台: https://pro.modao.cc/app/FSV59Hq1epQmGFhM9NlhPA6wD9V6t9b
