@@ -127,7 +127,7 @@ public class ImgUtil {
         int cardImageHeight = default_cardImageHeight;//1467
         Map<String, String> secTechMap = cardImg.getSecTech();
         if (secTechMap.isEmpty()) {
-            cardImageHeight = default_authImageHeight;//1206
+            cardImageHeight = default_cardImageHeight-160;
         }
         //整体尺寸布局
         //主图
