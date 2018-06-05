@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum WechatTemplateMsgEnum {
 
-    TECH_AUTH_AUDIT_ING("pages/a/card/card", WechatTemplateEnum.PUSH_MSG.getType(), "您的好友{}成功帮您认证,还剩{}位好友认证即可成功通过审核."), //好友认证
+    TECH_AUTH_AUDIT_ING("pages/a/verify/verify", WechatTemplateEnum.PUSH_MSG.getType(), "您的好友{}成功帮您认证,还剩{}位好友认证即可成功通过审核."), //好友认证
     TECH_AUTH_AUDIT_SUCCESS("pages/a/setting/setting", WechatTemplateEnum.PUSH_MSG.getType(), "恭喜您,成功通过审核,快快前往接单啦。"),
     TECH_AUTH_AUDIT_FAIL("pages/a/verify/verify", WechatTemplateEnum.PUSH_MSG.getType(), "审核未通过:{},请前往重新提交审核."),
 
