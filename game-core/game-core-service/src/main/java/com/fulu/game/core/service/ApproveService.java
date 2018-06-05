@@ -28,6 +28,6 @@ public interface ApproveService extends ICommonService<Approve, Integer> {
 
     void delByTechAuthId(Integer techAuthId);
 
-    void resetApproveStatus(UserTechAuth userTechAuth);
+    void resetApproveStatusAndUpdate(UserTechAuth userTechAuth);
 
 }

@@ -1,18 +1,28 @@
-package com.fulu.game.common.editor;
+package com.fulu.game.play.config.editor;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.beans.PropertyEditorSupport;
 
+@Slf4j
 public class CustomIntegerEditor extends PropertyEditorSupport {
 
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		if (StringUtils.isNotBlank(text) && !"null".equalsIgnoreCase(text)) {
 			text=text.replaceAll(",", "");
-			//todo 假如request参数不能转换成int是否要在这里处理
-			super.setValue(Integer.valueOf(text));
+			try {
+				super.setValue(Integer.valueOf(text));
+			}catch (Exception e){
+				HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+				log.info("接收参数出错:uri:{}",req.getRequestURI());
+				throw e;
+			}
 		} else {
 			super.setValue(null);
 		}

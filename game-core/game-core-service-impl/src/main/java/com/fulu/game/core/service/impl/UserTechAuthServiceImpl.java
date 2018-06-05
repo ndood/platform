@@ -1,7 +1,6 @@
 package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.Constant;
-import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
@@ -63,6 +62,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
     @Override
     public UserTechAuthVO save(UserTechAuthVO userTechAuthVO) {
+        log.info("修改认证技能:userTechAuthVO:{}",userTechAuthVO);
         User user = userService.findById(userTechAuthVO.getUserId());
         Category category = categoryService.findById(userTechAuthVO.getCategoryId());
         userTechAuthVO.setStatus(TechAuthStatusEnum.AUTHENTICATION_ING.getType());
@@ -90,7 +90,9 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
                     throw new ServiceErrorException("不能添加重复的技能!");
                 }
             }
-            userTechAuthDao.update(userTechAuthVO);
+            //重置技能好友认证状态
+            approveService.resetApproveStatusAndUpdate(userTechAuthVO);
+            //删除重新认证的商品
             productService.deleteProductByTech(userTechAuthVO.getId());
         }
         //创建技能标签关联
@@ -110,7 +112,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         }
         //重置技能好友认证状态
         userTechAuth.setStatus(TechAuthStatusEnum.NO_AUTHENTICATION.getType());
-        approveService.resetApproveStatus(userTechAuth);
+        approveService.resetApproveStatusAndUpdate(userTechAuth);
         //添加拒绝原因
         UserTechAuthReject userTechAuthReject = new UserTechAuthReject();
         userTechAuthReject.setReason(reason);
@@ -160,7 +162,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         UserTechAuth userTechAuth = findById(id);
         //重置技能好友认证状态
         userTechAuth.setStatus(TechAuthStatusEnum.FREEZE.getType());
-        approveService.resetApproveStatus(userTechAuth);
+        approveService.resetApproveStatusAndUpdate(userTechAuth);
         //添加拒绝原因
         UserTechAuthReject userTechAuthReject = new UserTechAuthReject();
         userTechAuthReject.setReason(reason);

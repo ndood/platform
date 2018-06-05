@@ -1,6 +1,6 @@
 package com.fulu.game.admin.controller;
 
-import com.fulu.game.common.editor.*;
+import com.fulu.game.admin.config.editor.*;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.multipart.MultipartFile;

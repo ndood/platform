@@ -5,17 +5,19 @@ import com.fulu.game.common.enums.AdminStatus;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.EncryptUtil;
 import com.fulu.game.common.utils.SubjectUtil;
+import com.fulu.game.core.dao.AdminDao;
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.vo.AdminVO;
+import com.fulu.game.core.service.AdminService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.xiaoleilu.hutool.util.CollectionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.Date;
 import java.util.List;
-import com.fulu.game.core.dao.AdminDao;
-import com.fulu.game.core.entity.Admin;
-import com.fulu.game.core.service.AdminService;
 
 @Service("adminService")
 public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implements AdminService {
@@ -33,7 +35,7 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
         AdminVO memberVO = new AdminVO();
         memberVO.setUsername(username);
         List<Admin> adminList = adminDao.findByParameter(memberVO);
-        if(adminList.isEmpty()){
+        if (adminList.isEmpty()) {
             return null;
         }
         return adminList.get(0);
@@ -41,6 +43,20 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
 
     @Override
     public Admin save(AdminVO adminVO) {
+        //判断username是否重名
+        AdminVO requestVO = new AdminVO();
+        requestVO.setName(adminVO.getName());
+        List<Admin> adminList = adminDao.findByParameter(requestVO);
+        if (!CollectionUtil.isEmpty(adminList)) {
+            throw new UserException(UserException.ExceptionCode.NAME_DUMPLICATE_EXCEPTION);
+        }else{
+            requestVO.setName(null);
+            requestVO.setUsername(adminVO.getUsername());
+            List<Admin> adminList1 = adminDao.findByParameter(requestVO);
+            if (!CollectionUtil.isEmpty(adminList1)){
+                throw new UserException(UserException.ExceptionCode.USERNAME_DUMPLICATE_EXCEPTION);
+            }
+        }
         Admin admin = new Admin();
         admin.setName(adminVO.getName());
         admin.setUsername(adminVO.getUsername());
@@ -54,7 +70,6 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
         return admin;
     }
 
-
     @Override
     public PageInfo<Admin> list(AdminVO adminVO, Integer pageNum, Integer pageSize) {
 
@@ -64,14 +79,14 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
     }
 
     @Override
-    public Admin getCurrentUser(){
+    public Admin getCurrentUser() {
         Object userObj = SubjectUtil.getCurrentUser();
-        if (null == userObj){
+        if (null == userObj) {
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
-        if(userObj instanceof Admin){
+        if (userObj instanceof Admin) {
             return (Admin) userObj;
-        }else{
+        } else {
             return null;
         }
     }

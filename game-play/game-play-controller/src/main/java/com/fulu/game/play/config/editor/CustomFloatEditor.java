@@ -1,4 +1,4 @@
-package com.fulu.game.common.editor;
+package com.fulu.game.play.config.editor;
 
 
 import org.apache.commons.lang3.StringUtils;

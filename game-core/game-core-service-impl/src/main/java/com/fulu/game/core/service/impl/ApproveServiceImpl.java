@@ -62,7 +62,7 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
         paramVO.setTechOwnerId(techOwnerId);
         User user = userService.getCurrentUser();
         log.info("认可人id:{}", user.getId());
-        if (user.getId() == techOwnerId){
+        if (user.getId().intValue() == techOwnerId.intValue()){
             throw new ApproveException(ApproveException.ExceptionCode.CANNOT_APPROVE_SELF);
         }
         paramVO.setUserId(user.getId());
@@ -83,8 +83,9 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
 
         Integer techStatus = 0;
         Integer approveCount = newApproveCount;
-        Integer requireCount = approveCount < 5 ? Constant.DEFAULT_APPROVE_COUNT - approveCount : 0;
+        Integer requireCount = approveCount < Constant.DEFAULT_APPROVE_COUNT ? Constant.DEFAULT_APPROVE_COUNT - approveCount : 0;
         if (newApproveCount >= Constant.DEFAULT_APPROVE_COUNT) {
+            utaService.update(userTechAuth);
             utaService.pass(techAuthId);
             techStatus = TechAuthStatusEnum.NORMAL.getType();
         } else {
@@ -113,7 +114,7 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
     }
 
     @Override
-    public void resetApproveStatus(UserTechAuth userTechAuth) {
+    public void resetApproveStatusAndUpdate(UserTechAuth userTechAuth) {
         userTechAuth.setApproveCount(0);
         utaService.update(userTechAuth);
         delByTechAuthId(userTechAuth.getId());
