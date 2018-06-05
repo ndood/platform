@@ -9,14 +9,19 @@ public class PlayUserToken extends UsernamePasswordToken {
 
     private static final long serialVersionUID = 1L;
     private String openId;
-    public void setOpenId(String openId){
+    private String sessionKey;
+    public PlayUserToken(String openId,String sessionKey) {
+        super(openId, "");
         this.openId = openId;
+        this.sessionKey = sessionKey;
     }
+
+
     public String getOpenId(){
         return openId;
     }
-    public PlayUserToken(String openId) {
-        super(openId, "");
-        this.openId = openId;
+
+    public String getSessionKey() {
+        return sessionKey;
     }
 }

@@ -4,6 +4,7 @@ import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +44,7 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
     public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
         PlayUserToken userToken = (PlayUserToken) token;
         String paramOpenId = userToken.getOpenId();
-        User user = (User) info.getPrincipals().getPrimaryPrincipal();
+        UserVO user = (UserVO) info.getPrincipals().getPrimaryPrincipal();
         String dBOpenId = user.getOpenId();
         //登录成功保存token和用户信息到redis
         if (paramOpenId.equals(dBOpenId)) {
