@@ -49,7 +49,7 @@ public class AclFilter extends AccessControlFilter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String token = httpRequest.getHeader("token");
         // 没有登录授权 且没有记住我
-        if (redisOpenService.hasKey(RedisKeyEnum.PLAY_TOKEN.generateKey(token))) {
+        if (!redisOpenService.hasKey(RedisKeyEnum.PLAY_TOKEN.generateKey(token))) {
             log.info("token {} 验证失效=====", token);
             // 没有登录
             HttpServletResponse httpResponse = (HttpServletResponse) response;
