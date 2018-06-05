@@ -86,6 +86,7 @@ public class ImgUtil {
         //技能+技能标签
         String techStr = cardImg.getTechStr();
         Graphics2D tech = image.createGraphics();
+        tech.setFont(FONT_24);
         //自动换行
         int tempX = x_gap;
         int tempY = tech_top + SIZE_24;
@@ -186,11 +187,11 @@ public class ImgUtil {
         Graphics2D g_tag = image.createGraphics();
         g_tag.setFont(FONT_22);
         if (!StringUtils.isEmpty(personTag1)) {
-            int personTag1Len = drawStrWithBgcolor(g_tag, FEMALE_COLOR, Color.white, personTag1, x_start, name_top, 40, name_top + tag_padding_y + SIZE_22);
+            int personTag1Len = drawStrWithBgcolor(g_tag, genderColor, Color.white, personTag1, x_start, name_top, 40, name_top + tag_padding_y + SIZE_22);
             String personTag2 = cardImg.getPersonTag2();
             if (!StringUtils.isEmpty(personTag2)) {
                 x_start += personTag1Len + tag_x_gap;
-                drawStrWithBgcolor(g_tag, FEMALE_COLOR, Color.white, personTag2, x_start, name_top, 40, name_top + tag_padding_y + SIZE_22);
+                drawStrWithBgcolor(g_tag, genderColor, Color.white, personTag2, x_start, name_top, 40, name_top + tag_padding_y + SIZE_22);
             }
         }
         //画城市和位置图标
@@ -310,9 +311,9 @@ public class ImgUtil {
 
     private String getGenderAndAge(Integer gender, Integer age) {
         if (GenderEnum.ASEXUALITY.getType() == gender || GenderEnum.MALE.getType() == gender) {
-            return GenderEnum.SYMBOL_MALE.getMsg() + age;
+            return GenderEnum.SYMBOL_MALE.getMsg() + (null == age?"未设置":age);
         } else {
-            return GenderEnum.SYMBOL_LADY.getMsg() + age;
+            return GenderEnum.SYMBOL_LADY.getMsg() + (null == age?"未设置":age);
         }
     }
 

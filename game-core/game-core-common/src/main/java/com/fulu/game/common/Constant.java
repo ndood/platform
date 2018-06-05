@@ -33,6 +33,6 @@ public interface Constant {
     //默认名片高度
     Integer TECH_CARD_HEIGHT = 1467;
     Integer TECH_AUTH_HEIGHT = 1206;
-    //若无年龄，默认为18
-    Integer DEFAULT_AGE = 18;
+
+    String DEFAULT_CITY = "未设置";
 }
