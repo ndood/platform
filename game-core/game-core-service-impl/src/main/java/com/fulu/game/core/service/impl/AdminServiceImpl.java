@@ -48,13 +48,13 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
         requestVO.setName(adminVO.getName());
         List<Admin> adminList = adminDao.findByParameter(requestVO);
         if (!CollectionUtil.isEmpty(adminList)) {
-            throw new UserException(UserException.ExceptionCode.USER_DUMPLICATE_EXCEPTION);
+            throw new UserException(UserException.ExceptionCode.NAME_DUMPLICATE_EXCEPTION);
         }else{
             requestVO.setName(null);
             requestVO.setUsername(adminVO.getUsername());
             List<Admin> adminList1 = adminDao.findByParameter(requestVO);
             if (!CollectionUtil.isEmpty(adminList1)){
-                throw new UserException(UserException.ExceptionCode.USER_DUMPLICATE_EXCEPTION);
+                throw new UserException(UserException.ExceptionCode.USERNAME_DUMPLICATE_EXCEPTION);
             }
         }
         Admin admin = new Admin();
