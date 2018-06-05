@@ -1,4 +1,4 @@
-package com.fulu.game.common.editor;
+package com.fulu.game.play.config.editor;
 
 
 import java.beans.PropertyEditorSupport;
