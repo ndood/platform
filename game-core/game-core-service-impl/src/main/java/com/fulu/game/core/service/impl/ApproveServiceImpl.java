@@ -85,6 +85,7 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
         Integer approveCount = newApproveCount;
         Integer requireCount = approveCount < 5 ? Constant.DEFAULT_APPROVE_COUNT - approveCount : 0;
         if (newApproveCount >= Constant.DEFAULT_APPROVE_COUNT) {
+            utaService.update(userTechAuth);
             utaService.pass(techAuthId);
             techStatus = TechAuthStatusEnum.NORMAL.getType();
         } else {
