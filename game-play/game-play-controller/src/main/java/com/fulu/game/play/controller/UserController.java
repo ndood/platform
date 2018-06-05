@@ -1,5 +1,9 @@
 package com.fulu.game.play.controller;
 
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
+import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
+import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.ResultStatus;
@@ -49,6 +53,8 @@ public class UserController extends BaseController {
     private RedisOpenServiceImpl redisOpenService;
     @Autowired
     private UserCommentService commentService;
+    @Autowired
+    private WxMaService wxMaService;
 
     @RequestMapping("tech/list")
     public Result userTechList() {
@@ -136,6 +142,41 @@ public class UserController extends BaseController {
             return Result.success().msg("验证码发送成功！");
         }
     }
+
+
+    /**
+     * 获取用户微信手机号
+     * @param code
+     * @param encryptedData
+     * @param iv
+     * @return
+     */
+    @PostMapping("/wxinfo/mobile")
+    public Result getWinfoMobile(String code,
+                                 String encryptedData,
+                                 String iv){
+        try {
+            WxMaJscode2SessionResult session = wxMaService.getUserService().getSessionInfo(code);
+            WxMaPhoneNumberInfo phoneNoInfo = wxMaService.getUserService().getPhoneNoInfo(session.getSessionKey(), encryptedData, iv);
+            if(phoneNoInfo==null&&phoneNoInfo.getPurePhoneNumber()==null){
+                 log.error("未获取用户微信手机号:",phoneNoInfo);
+                 return Result.error();
+            };
+            User user =  userService.findById(userService.getCurrentUser().getId());
+            log.info("获取用户微信手机号,原用户信息:{}",user);
+            user.setMobile(phoneNoInfo.getPurePhoneNumber());
+            user.setUpdateTime(new Date());
+            userService.update(user);
+            log.info("获取用户微信手机号,更新后用户信息:{};手机号:{};",user,user.getMobile());
+            userService.updateRedisUser(user);
+            return Result.success().data(user);
+        }catch (Exception e){
+            log.error("获取用户微信手机号:",e);
+            return Result.error();
+        }
+    }
+
+
 
     /**
      * 保存微信信息
