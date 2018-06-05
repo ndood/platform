@@ -1,17 +1,18 @@
-package com.fulu.game.common.editor;
+package com.fulu.game.admin.config.editor;
 
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.beans.PropertyEditorSupport;
 
-public class CustomDoubleEditor extends PropertyEditorSupport {
+public class CustomFloatEditor extends PropertyEditorSupport {
 
 	@Override
-	public void setAsText(String text) throws IllegalArgumentException {
+	public void setAsText(String text)
+			throws IllegalArgumentException {
 		if (StringUtils.isNotBlank(text)) {
 			text=text.replaceAll(",", "");
-			super.setValue(Double.valueOf(text));
+			super.setValue(Float.valueOf(text));
 		} else {
 			super.setValue(null);
 		}
