@@ -3,12 +3,10 @@ package com.fulu.game.play.controller;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
-import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.ResultStatus;
 import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
@@ -146,6 +144,7 @@ public class UserController extends BaseController {
 
     /**
      * 获取用户微信手机号
+     *
      * @param code
      * @param encryptedData
      * @param iv
@@ -154,54 +153,56 @@ public class UserController extends BaseController {
     @PostMapping("/wxinfo/mobile")
     public Result getWinfoMobile(String code,
                                  String encryptedData,
-                                 String iv){
+                                 String iv) {
         try {
             WxMaJscode2SessionResult session = wxMaService.getUserService().getSessionInfo(code);
+            log.info("未获取用户微信手机号:sessionKey:{}",session.getSessionKey());
             WxMaPhoneNumberInfo phoneNoInfo = wxMaService.getUserService().getPhoneNoInfo(session.getSessionKey(), encryptedData, iv);
-            if(phoneNoInfo==null&&phoneNoInfo.getPurePhoneNumber()==null){
-                 log.error("未获取用户微信手机号:",phoneNoInfo);
-                 return Result.error();
-            };
-            User user =  userService.findById(userService.getCurrentUser().getId());
-            log.info("获取用户微信手机号,原用户信息:{}",user);
+            if (phoneNoInfo == null && phoneNoInfo.getPurePhoneNumber() == null) {
+                log.error("未获取用户微信手机号:phoneNoInfo:{};encryptedData:{};iv:{};code:{};", phoneNoInfo, encryptedData, iv, code);
+                return Result.error();
+            }
+            User user = userService.findById(userService.getCurrentUser().getId());
+            log.info("获取用户微信手机号,原用户信息:{}", user);
             user.setMobile(phoneNoInfo.getPurePhoneNumber());
             user.setUpdateTime(new Date());
             userService.update(user);
-            log.info("获取用户微信手机号,更新后用户信息:{};手机号:{};",user,user.getMobile());
+            log.info("获取用户微信手机号,更新后用户信息:{};手机号:{};", user, user.getMobile());
             userService.updateRedisUser(user);
             return Result.success().data(user);
-        }catch (Exception e){
-            log.error("获取用户微信手机号:",e);
+        } catch (Exception e) {
+            log.error("获取用户微信手机号:encryptedData:{};iv:{};code:{};", encryptedData, iv, code);
+            log.error("获取用户微信手机号:", e);
             return Result.error();
         }
     }
 
 
-
     /**
      * 保存微信信息
+     *
      * @param wxUserInfo
      * @return
      */
     @PostMapping("/wxinfo/save")
-    public Result saveWxUserInfo(WxUserInfo wxUserInfo){
+    public Result saveWxUserInfo(WxUserInfo wxUserInfo) {
         User user = userService.getCurrentUser();
-        if(user.getGender()==null){
+        if (user.getGender() == null) {
             user.setGender(wxUserInfo.getGender());
         }
-        if(user.getNickname()==null){
+        if (user.getNickname() == null) {
             user.setNickname(wxUserInfo.getNickName());
         }
-        if(user.getHeadPortraitsUrl()==null){
+        if (user.getHeadPortraitsUrl() == null) {
             user.setHeadPortraitsUrl(wxUserInfo.getAvatarUrl());
         }
-        if(user.getCity()==null){
+        if (user.getCity() == null) {
             user.setCity(wxUserInfo.getCity());
         }
-        if(user.getProvince()==null){
+        if (user.getProvince() == null) {
             user.setProvince(wxUserInfo.getProvince());
         }
-        if(user.getCountry()==null){
+        if (user.getCountry() == null) {
             user.setCountry(wxUserInfo.getCountry());
         }
         user.setUpdateTime(new Date());
@@ -211,13 +212,14 @@ public class UserController extends BaseController {
 
     /**
      * 绑定手机号
+     *
      * @param mobile
      * @param verifyCode
      * @return
      */
     @PostMapping("/mobile/bind/new")
     public Result mobileBind(String mobile,
-                             String verifyCode){
+                             String verifyCode) {
         String token = SubjectUtil.getToken();
         //验证手机号的验证码
         String redisVerifyCode = redisOpenService.hget(RedisKeyEnum.SMS.generateKey(token), mobile);
@@ -235,7 +237,7 @@ public class UserController extends BaseController {
         }
         User newUser = null;
         User mobileUser = userService.findByMobile(mobile);
-        if(mobileUser!=null){
+        if (mobileUser != null) {
             if (mobileUser.getOpenId() != null) {
                 return Result.error().msg("该手机号已经被绑定！");
             } else {
@@ -245,7 +247,7 @@ public class UserController extends BaseController {
                 userService.deleteById(openIdUser.getId());
                 newUser = mobileUser;
             }
-        }else{
+        } else {
             openIdUser.setMobile(mobile);
             openIdUser.setUpdateTime(new Date());
             userService.update(openIdUser);
@@ -258,6 +260,7 @@ public class UserController extends BaseController {
 
     /**
      * 绑定手机号且更新用户信息
+     *
      * @param wxUserInfo
      * @return
      */
