@@ -1,7 +1,6 @@
 package com.fulu.game.play.controller;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
-import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
@@ -145,36 +144,35 @@ public class UserController extends BaseController {
     /**
      * 获取用户微信手机号
      *
-     * @param code
      * @param encryptedData
      * @param iv
      * @return
      */
     @PostMapping("/wxinfo/mobile")
-    public Result getWinfoMobile(String code,
-                                 String encryptedData,
+    public Result getWinfoMobile(String encryptedData,
                                  String iv) {
+
+        WxMaPhoneNumberInfo phoneNoInfo = null;
+        String sessionKey = redisOpenService.get(RedisKeyEnum.WX_SESSION_KEY.generateKey(SubjectUtil.getToken()));
         try {
-            WxMaJscode2SessionResult session = wxMaService.getUserService().getSessionInfo(code);
-            log.info("未获取用户微信手机号:sessionKey:{}",session.getSessionKey());
-            WxMaPhoneNumberInfo phoneNoInfo = wxMaService.getUserService().getPhoneNoInfo(session.getSessionKey(), encryptedData, iv);
-            if (phoneNoInfo == null && phoneNoInfo.getPurePhoneNumber() == null) {
-                log.error("未获取用户微信手机号:phoneNoInfo:{};encryptedData:{};iv:{};code:{};", phoneNoInfo, encryptedData, iv, code);
-                return Result.error();
-            }
-            User user = userService.findById(userService.getCurrentUser().getId());
-            log.info("获取用户微信手机号,原用户信息:{}", user);
-            user.setMobile(phoneNoInfo.getPurePhoneNumber());
-            user.setUpdateTime(new Date());
-            userService.update(user);
-            log.info("获取用户微信手机号,更新后用户信息:{};手机号:{};", user, user.getMobile());
-            userService.updateRedisUser(user);
-            return Result.success().data(user);
+            phoneNoInfo = wxMaService.getUserService().getPhoneNoInfo(sessionKey, encryptedData, iv);
         } catch (Exception e) {
-            log.error("获取用户微信手机号:encryptedData:{};iv:{};code:{};", encryptedData, iv, code);
-            log.error("获取用户微信手机号:", e);
-            return Result.error();
+            log.error("获取用户微信异常:encryptedData:{};iv:{};sessionKey:{};{}",encryptedData,iv,sessionKey,e.getMessage());
+            throw new UserException(UserException.ExceptionCode.SESSION_KEY_DISABLE_EXCEPTION);
         }
+        if (phoneNoInfo == null && phoneNoInfo.getPurePhoneNumber() == null) {
+            log.error("未获取用户微信手机号:phoneNoInfo:{};encryptedData:{};iv:{};sessionKey:{};", phoneNoInfo, encryptedData, iv, sessionKey);
+            throw new UserException(UserException.ExceptionCode.WX_PHONE_NOT_EXIST_EXCEPTION);
+        }
+        User user = userService.findById(userService.getCurrentUser().getId());
+        log.info("获取用户微信手机号,原用户信息:{}", user);
+        user.setMobile(phoneNoInfo.getPurePhoneNumber());
+        user.setUpdateTime(new Date());
+        userService.update(user);
+        log.info("获取用户微信手机号,更新后用户信息:{};手机号:{};", user, user.getMobile());
+        userService.updateRedisUser(user);
+        return Result.success().data(user);
+
     }
 
 

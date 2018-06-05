@@ -47,18 +47,14 @@ public class MyShiroRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) {
         PlayUserToken playUserToken = (PlayUserToken) token;
         String openId = playUserToken.getOpenId();
-        String sessionKey = playUserToken.getSessionKey();
         User user = userService.findByOpenId(openId);
-        UserVO userVO = new UserVO();
-        BeanUtil.copyProperties(user,userVO);
-        userVO.setSessionKey(sessionKey);
         if (user != null) {
             log.info("openId为{} 的用户已存在", openId);
         } else {
             user = userService.createUser(openId);
             log.info("创建openId为 {} 的用户",openId);
         }
-        return new SimpleAuthenticationInfo(userVO, user.getOpenId(), getName());
+        return new SimpleAuthenticationInfo(user, user.getOpenId(), getName());
 
     }
 

@@ -183,6 +183,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         }
     }
 
+
     public void updateRedisUser(User user) {
         String token = SubjectUtil.getToken();
         Map<String, Object> userMap = new HashMap<String, Object>();
