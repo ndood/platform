@@ -11,5 +11,4 @@ import lombok.Data;
  */
 @Data
 public class SharingVO extends Sharing {
-    private String mainPicUrl;
 }
