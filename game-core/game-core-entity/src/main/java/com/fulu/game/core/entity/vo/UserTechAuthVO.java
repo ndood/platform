@@ -1,6 +1,7 @@
 package com.fulu.game.core.entity.vo;
 
 
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.TechTag;
@@ -61,10 +62,28 @@ public class UserTechAuthVO  extends UserTechAuth {
 
 
     public String getStatusStr() {
-        return TechAuthStatusEnum.getMsgByType(getStatus());
+        return TechAuthStatusEnum.getMsgByType(getStatus())+authSuffix();
     }
 
     public void setStatusStr(String statusStr) {
         this.statusStr = statusStr;
+    }
+
+    private String authSuffix(){
+        if(TechAuthStatusEnum.NORMAL.getType().equals(getStatus())){
+            if(Constant.DEFAULT_APPROVE_COUNT.equals(getApproveCount())){
+                return "(好友通过)";
+            }else{
+                return "(管理员通过)";
+            }
+        }
+        if(TechAuthStatusEnum.AUTHENTICATION_ING.getType().equals(getStatus())){
+            return new StringBuilder().append("(")
+                                      .append(getApproveCount()==null?0:getApproveCount()).append("/")
+                                      .append(Constant.DEFAULT_APPROVE_COUNT)
+                                      .append(")").toString() ;
+
+        }
+        return "";
     }
 }

@@ -113,7 +113,7 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
     }
 
     @Override
-    public void resetApproveStatus(UserTechAuth userTechAuth) {
+    public void resetApproveStatusAndUpdate(UserTechAuth userTechAuth) {
         userTechAuth.setApproveCount(0);
         utaService.update(userTechAuth);
         delByTechAuthId(userTechAuth.getId());
