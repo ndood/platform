@@ -62,7 +62,7 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
         paramVO.setTechOwnerId(techOwnerId);
         User user = userService.getCurrentUser();
         log.info("认可人id:{}", user.getId());
-        if (user.getId() == techOwnerId){
+        if (user.getId().intValue() == techOwnerId.intValue()){
             throw new ApproveException(ApproveException.ExceptionCode.CANNOT_APPROVE_SELF);
         }
         paramVO.setUserId(user.getId());
