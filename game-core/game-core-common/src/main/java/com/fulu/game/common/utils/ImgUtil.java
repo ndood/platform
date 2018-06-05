@@ -209,6 +209,12 @@ public class ImgUtil {
         Graphics2D g_tech = image.createGraphics();
         String techName = mainTechMap.get("techName");
         drawString(g_tech, new Color(0, 0, 0), FONT_28, techName, x_start_tech, y_start_tech + SIZE_28);
+        String price = mainTechMap.get("price");
+        g_tech.setFont(FONT_24);
+        int priceLen = getContentLength(price, g_tech);
+        int priceStart = imgWidth - x_gap - priceLen;
+        drawString(g_tech, new Color(232, 100, 95), FONT_24, price, priceStart, y_start_tech+ SIZE_28);
+
         y_start_tech += SIZE_28 + 30;
         String techTag1 = mainTechMap.get("techTag1");
         int techTag1Len = drawStrWithBgcolor(g_tech, new Color(246, 246, 246), new Color(153, 153, 153), techTag1, x_start_tech, y_start_tech, 40, y_start_tech + tag_padding_y + SIZE_22);
@@ -217,11 +223,6 @@ public class ImgUtil {
         if (!StringUtils.isEmpty(techTag2)) {
             drawStrWithBgcolor(g_tech, new Color(246, 246, 246), new Color(153, 153, 153), techTag2, x_start_tech, y_start_tech, 40, y_start_tech + tag_padding_y + SIZE_22);
         }
-        String price = mainTechMap.get("price");
-        g_tech.setFont(FONT_32);
-        int priceLen = getContentLength(price, g_tech);
-        int priceStart = imgWidth - x_gap - priceLen;
-        drawString(g_tech, new Color(232, 100, 95), FONT_32, price, priceStart, y_start_tech);
 
         //画横线2
         Graphics2D line1 = image.createGraphics();
@@ -236,19 +237,22 @@ public class ImgUtil {
             Graphics2D g_tech2 = image.createGraphics();
             String secTechName = secTechMap.get("techName");
             drawString(g_tech2, new Color(0, 0, 0), FONT_28, secTechName, x_start_tech2, y_start_tech2 + SIZE_28);
+
+            String price2 = secTechMap.get("price");
+            g_tech2.setFont(FONT_24);
+            int price2Len = getContentLength(price2, g_tech2);
+            int price2Start = imgWidth - x_gap - price2Len;
+            drawString(g_tech2, new Color(232, 100, 95), FONT_24, price2, price2Start, y_start_tech2+SIZE_28);
+
             y_start_tech2 += SIZE_28 + 30;
             String tech2Tag1 = secTechMap.get("techTag1");
+            g_tech2.setFont(FONT_22);
             int tech2Tag1Len = drawStrWithBgcolor(g_tech2, new Color(246, 246, 246), new Color(153, 153, 153), tech2Tag1, x_start_tech2, y_start_tech2, 40, y_start_tech2 + tag_padding_y + SIZE_22);
             x_start_tech2 += tech2Tag1Len + tag_x_gap;
             String tech2Tag2 = secTechMap.get("techTag2");
             if (!StringUtils.isEmpty(tech2Tag2)) {
                 drawStrWithBgcolor(g_tech2, new Color(246, 246, 246), new Color(153, 153, 153), tech2Tag2, x_start_tech2, y_start_tech2, 40, y_start_tech2 + tag_padding_y + SIZE_22);
             }
-            String price2 = secTechMap.get("price");
-            g_tech2.setFont(FONT_32);
-            int price2Len = getContentLength(price2, g_tech2);
-            int price2Start = imgWidth - x_gap - price2Len;
-            drawString(g_tech2, new Color(232, 100, 95), FONT_32, price2, price2Start, y_start_tech2);
 
             //画一条横线3
             Graphics2D line2 = image.createGraphics();
@@ -264,7 +268,7 @@ public class ImgUtil {
         //自动换行
         int tempX = 26 + wxcodeWidth + 50;
         int limitWidth = imgWidth - 3 * x_gap_0 - tempX;
-        int tempY = wxcode_top + (wxcodeWidth / 2)-20;
+        int tempY = wxcode_top + (wxcodeWidth / 2) - 20;
         int tempCharLen = 0;//单字符长度
         int tempLineLen = 0;//单行字符总长度临时计算
         StringBuffer sb = new StringBuffer();
