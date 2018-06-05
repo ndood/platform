@@ -164,7 +164,6 @@ public class ImgUtil {
         fillRect(g_image, Color.white, x_gap_0, y_gap, imgWidth - 2 * x_gap_0, cardImageHeight - 2 * y_gap);
         //画主图
         String mainPicUrl = cardImg.getMainPicUrl();
-        //drawImage(mainPicUrl, x_gap_0, mainPic_top, H_mainPic, H_mainPic);
         drawCornerImg(mainPicUrl, x_gap_0, mainPic_top, H_mainPic, H_mainPic);
         //画昵称
         int x_start = x_gap;
@@ -384,10 +383,29 @@ public class ImgUtil {
         }
     }
 
+    /**
+     * 主图处理为圆角
+     * @param imgUrl
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     * @throws IOException
+     */
     private void drawCornerImg(String imgUrl, int x, int y, int width, int height) throws IOException {
         BufferedImage sourceImg = ImageIO.read(new URL(imgUrl));
         int w = sourceImg.getWidth();
         int h = sourceImg.getHeight();
+        //图片resize
+        if ( w < h) {
+            w = (int)Math.round(height*(w * 1.0 / h));
+            h = height;
+            x +=(h-w)/2;
+        } else {
+            h = (int)Math.round(width*(h * 1.0 / w));
+            w = width;
+            y +=(w-h)/2;
+        }
         BufferedImage output = new BufferedImage(w, h, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D g2 = output.createGraphics();
         output = g2.getDeviceConfiguration().createCompatibleImage(w, h, Transparency.TRANSLUCENT);
@@ -399,7 +417,7 @@ public class ImgUtil {
         g2.drawImage(sourceImg, 0, 0, w, h, null);
         g2.dispose();
         Graphics2D g = image.createGraphics();
-        g.drawImage(output, x, y, width, height, null);
+        g.drawImage(output, x, y, w, h, null);
     }
 
     /**
