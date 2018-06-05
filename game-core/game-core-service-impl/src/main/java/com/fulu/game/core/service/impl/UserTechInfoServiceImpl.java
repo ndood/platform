@@ -2,6 +2,7 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.entity.TechValue;
 import com.fulu.game.core.entity.vo.UserTechInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,5 +37,10 @@ public class UserTechInfoServiceImpl extends AbsCommonService<UserTechInfo,Integ
         UserTechInfoVO userTechInfoVO = new UserTechInfoVO();
         userTechInfoVO.setTechAuthId(techAuthId);
         return userTechInfoDao.findByParameter(userTechInfoVO);
+    }
+
+    @Override
+    public int updateUserTechInfoByTechValue(TechValue techValue) {
+        return userTechInfoDao.updateUserTechInfoByTechValue(techValue);
     }
 }

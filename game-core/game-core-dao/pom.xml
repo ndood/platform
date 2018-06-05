@@ -12,18 +12,12 @@
 
     <artifactId>game-core-dao</artifactId>
     <dependencies>
-
         <dependency>
             <groupId>com.fulu.game</groupId>
             <artifactId>game-core-entity</artifactId>
             <version>${game.core.version}</version>
         </dependency>
-        <!--分页插件 -->
-        <dependency>
-            <groupId>com.github.pagehelper</groupId>
-            <artifactId>pagehelper</artifactId>
-            <version>${pagehelper.version}</version>
-        </dependency>
+
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>

@@ -8,18 +8,16 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.vo.TagVO;
 import com.fulu.game.core.service.CategoryService;
+import com.fulu.game.core.service.PersonTagService;
+import com.fulu.game.core.service.TechTagService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
-import com.xiaoleilu.hutool.util.CollectionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
 import com.fulu.game.core.dao.TagDao;
 import com.fulu.game.core.entity.Tag;
 import com.fulu.game.core.service.TagService;
@@ -31,6 +29,10 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
 
     @Autowired
 	private TagDao tagDao;
+    @Autowired
+    private TechTagService techTagService;
+    @Autowired
+    private PersonTagService personTagService;
 
     @Autowired
     private CategoryService categoryService;
@@ -90,6 +92,17 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
         tag.setUpdateTime(new Date());
         tag.setGender(GenderEnum.ASEXUALITY.getType());
         create(tag);
+        return tag;
+    }
+
+    @Override
+    public Tag update(Integer id, String tagName,Integer gender) {
+        Tag tag = findById(id);
+        tag.setGender(gender);
+        tag.setName(tagName);
+        update(tag);
+        techTagService.updateTechTagByTag(tag);
+        personTagService.updatePersonTagByTag(tag);
         return tag;
     }
 

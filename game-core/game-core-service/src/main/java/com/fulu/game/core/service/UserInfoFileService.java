@@ -17,5 +17,12 @@ public interface UserInfoFileService extends ICommonService<UserInfoFile,Integer
 
 
     List<UserInfoFile> findByUserId(Integer userId);
-	
+
+
+    void deleteByUserIdAndType(Integer userId,Integer type);
+
+    List<UserInfoFile> findByUserIdAndType(Integer userId,Integer type);
+
+
+    int deleteFile(UserInfoFile file);
 }

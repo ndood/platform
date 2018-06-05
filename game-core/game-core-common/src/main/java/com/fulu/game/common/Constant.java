@@ -10,9 +10,9 @@ public interface Constant {
     Long VERIFYCODE_CACHE_TIME_DEV = 5 * 60L;
     Long VERIFYCODE_CACHE_TIME_DEP = 1 * 60L;
 
-    Long TIME_HOUR_TOW = 2*3600L;
+    Long TIME_HOUR_TOW = 2 * 3600L;
 
-    Long TIME_MINUTES_FIFTEEN = 15*60L;
+    Long TIME_MINUTES_FIFTEEN = 15 * 60L;
 
     //手机验证码限定次数和限定时间
     Integer MOBILE_CODE_SEND_TIMES_DEV = 20;
@@ -24,7 +24,15 @@ public interface Constant {
     BigDecimal DEFAULT_SCORE_AVG = new BigDecimal(4);
     //默认余额
     BigDecimal DEFAULT_BALANCE = new BigDecimal(0.00);
+    //默认认证通过需要的认可数
+    Integer DEFAULT_APPROVE_COUNT = 5;
 
     String DEFAULT_SPLIT_SEPARATOR = ",";
+    //默认名片宽度
+    Integer TECH_CARD_WIDTH = 750;
+    //默认名片高度
+    Integer TECH_CARD_HEIGHT = 1467;
+    Integer TECH_AUTH_HEIGHT = 1206;
 
+    String DEFAULT_CITY = "未设置";
 }

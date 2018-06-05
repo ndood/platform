@@ -46,3 +46,9 @@ config:
       keyPath: /data/cert/apiclient_cert.p12
       tradeType: JSAPI
       notifyUrl: http://api-play.wzpeilian.com/wechat/pay/callback
+    elasticsearch:
+      host: http://es-cn-4590mggyt00026uid.elasticsearch.aliyuncs.com:9200
+      readTimeout: 10000
+      username: elastic
+      password: game20180525ES
+      indexDB: prod-gameplay

@@ -7,10 +7,7 @@ import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -33,14 +30,12 @@ public class GlobalController extends BaseController{
     }
 
 
-    @PostMapping(value = "temp/add/data")
-    public Result addProdcutData(Integer techAuthId,
-                                 BigDecimal price,
-                                 Integer unitId){
-        Product product = productService.tempCreate(techAuthId, price, unitId);
-        return Result.success().data(product);
-    }
 
+    @PostMapping("/bath/updateindex")
+    public Result bathUpdateIndex(){
+        productService.bathUpdateProductIndex();
+        return Result.success().msg("批量更新所有商品索引完成!");
+    }
 
 
 }

@@ -5,12 +5,11 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.SalesMode;
+import com.fulu.game.core.entity.TechAttr;
 import com.fulu.game.core.entity.TechValue;
 import com.fulu.game.core.entity.vo.ProductShowCaseVO;
-import com.fulu.game.core.service.CategoryService;
-import com.fulu.game.core.service.ProductService;
-import com.fulu.game.core.service.SalesModeService;
-import com.fulu.game.core.service.TechAttrService;
+import com.fulu.game.core.entity.vo.TagVO;
+import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,10 @@ public class CategoryController extends BaseController{
     private ProductService productService;
     @Autowired
     private SalesModeService salesModeService;
-
+    @Autowired
+    private TagService tagService;
+    @Autowired
+    private TechValueService techValueService;
     /**
      * 查询所有陪玩业务
       * @return
@@ -84,6 +86,36 @@ public class CategoryController extends BaseController{
     public Result saleModel(@RequestParam(required = true)Integer categoryId){
         List<SalesMode> salesModeList =  salesModeService.findByCategory(categoryId);
         return Result.success().data(salesModeList);
+    }
+
+
+    /**
+     * 查询游戏所有标签
+     * @param categoryId
+     * @return
+     */
+    @PostMapping(value = "/tag/list")
+    public Result techTags(@RequestParam(required = true) Integer categoryId) {
+        Category category = categoryService.findById(categoryId);
+        if (category.getTagId() == null) {
+            return Result.error().msg("该游戏没有设置标签!");
+        }
+        TagVO tagVO = tagService.findTagsByTagPid(category.getTagId());
+        return Result.success().data(tagVO);
+    }
+
+    /**
+     * 查询游戏所有段位
+     * @return
+     */
+    @PostMapping(value = "/dan/list")
+    public Result danList(@RequestParam(required = true) Integer categoryId) {
+        TechAttr techAttr = techAttrService.findByCategoryAndType(categoryId, TechAttrTypeEnum.DAN.getType());
+        if(techAttr==null){
+            return Result.error().msg("该游戏没有设置段位信息!");
+        }
+        List<TechValue> techValueList = techValueService.findByTechAttrId(techAttr.getId());
+        return Result.success().data(techValueList);
     }
 
 

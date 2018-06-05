@@ -1,8 +1,10 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Product;
+import com.fulu.game.core.entity.SalesMode;
 import com.fulu.game.core.entity.vo.ProductShowCaseVO;
 import com.fulu.game.core.entity.vo.ProductDetailsVO;
+import com.fulu.game.core.entity.vo.ProductVO;
 import com.fulu.game.core.entity.vo.SimpleProductVO;
 import com.github.pagehelper.PageInfo;
 
@@ -28,16 +30,6 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * @return
      */
     Product create(Integer techAuthId,BigDecimal price,Integer unitId);
-
-    /**
-     * 添加临时导商品的接口
-     * @param techAuthId
-     * @param price
-     * @param unitId
-     * @return
-     */
-    Product tempCreate(Integer techAuthId, BigDecimal price, Integer unitId);
-
     /**
      * 修改接单方式
      * @param id
@@ -74,20 +66,10 @@ public interface ProductService extends ICommonService<Product,Integer>{
     void stopOrderReceiving();
 
     /**
-     * 判断商品是否是开始接单状态
-     * @param productId
-     * @return
-     */
-    Boolean isProductStartOrderReceivingStatus(Integer productId);
-
-
-    /**
-     * 判断陪玩师是否是开始接单状态
+     * 为用户所有商品添加索引
      * @param userId
-     * @return
      */
-    Boolean isUserStartOrderReceivingStatus(Integer userId);
-
+    void batchCreateUserProduct(Integer userId,Boolean updateTime);
 
     /**
      * 查询商品详情页
@@ -96,7 +78,11 @@ public interface ProductService extends ICommonService<Product,Integer>{
      */
     ProductDetailsVO findDetailsByProductId(Integer productId);
 
-
+    /**
+     * 再来一单商品页面
+     * @param productId
+     * @return
+     */
     SimpleProductVO findSimpleProductByProductId(Integer productId);
 
     /**
@@ -114,4 +100,77 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * @return
      */
     PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId,Integer gender,Integer pageNum,Integer pageSize,String orderBy);
+
+    /**
+     * 通过昵称查找商品
+     * @param pageNum
+     * @param pageSize
+     * @param nickName
+     * @return
+     */
+    PageInfo searchContent(int pageNum, int pageSize, String nickName);
+
+    /**
+     * 判断商品是否是开始接单状态
+     * @param productId
+     * @return
+     */
+    Boolean isProductStartOrderReceivingStatus(Integer productId);
+
+    /**
+     * 判断陪玩师是否是开始接单状态
+     * @param userId
+     * @return
+     */
+    Boolean isUserStartOrderReceivingStatus(Integer userId);
+
+    /**
+     * 删除用户下所有商品
+     * @param userId
+     */
+    void deleteProductByUser(Integer userId);
+
+    /**
+     * 删除技能下所有商品
+     * @param techAuthId
+     */
+    void deleteProductByTech(Integer techAuthId);
+
+    /**
+     * 批量更新所有用户索引
+     */
+    void bathUpdateProductIndex();
+    /**
+     * 逻辑删除商品
+     * @param product
+     * @return
+     */
+    int deleteProduct(Product product);
+
+    /**
+     * 恢复商品删除状态
+     * @param productId
+     */
+    void recoverProductDelFlag(int productId);
+
+    /**
+     * 通过TechAuthId恢复商品状态
+     * @param techAuthId
+     */
+    void recoverProductDelFlagByTechAuthId(Integer techAuthId);
+
+    /**
+     * 修改商品销售方式
+     * @param salesMode
+     * @return
+     */
+    int updateProductSalesModel(SalesMode salesMode);
+
+    /**
+     * 查询同一种游戏下的所有商品
+     */
+    List<ProductVO> findOthersByproductId(Integer productId);
+
+
+
 }

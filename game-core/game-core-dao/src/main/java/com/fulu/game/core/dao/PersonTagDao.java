@@ -1,6 +1,7 @@
 package com.fulu.game.core.dao;
 
 import com.fulu.game.core.entity.PersonTag;
+import com.fulu.game.core.entity.Tag;
 import com.fulu.game.core.entity.vo.PersonTagVO;
 
 import java.util.List;
@@ -20,5 +21,7 @@ public interface PersonTagDao extends ICommonDao<PersonTag,Integer>{
     List<PersonTag> findByParameter(PersonTagVO personTagVO);
 
     int deleteByUserId(Integer userId);
+
+    int updatePersonTagByTag(Tag tag);
 
 }

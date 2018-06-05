@@ -1,6 +1,7 @@
 package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.WechatFormid;
 import com.fulu.game.core.service.UserService;
@@ -40,6 +41,7 @@ public class WxTemplateController {
         wechatFormid.setFormId(formId);
         wechatFormid.setCreateTime(new Date());
         collectFormIdQueue.addFormId(wechatFormid);
+        log.info("收集formId成功:formId:{}",formId);
         return Result.success();
     }
 

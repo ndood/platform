@@ -6,6 +6,7 @@ import com.fulu.game.core.entity.vo.UserTechAuthVO;
 import java.util.List;
 import java.util.Map;
 
+import com.fulu.game.core.entity.vo.serachVO.UserTechAuthSearchVO;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -19,4 +20,5 @@ public interface UserTechAuthDao extends ICommonDao<UserTechAuth,Integer>{
 
     List<UserTechAuth> findByParameter(UserTechAuthVO userTechAuthVO);
 
+    List<UserTechAuth> search(UserTechAuthSearchVO userTechAuthSearchVO);
 }

@@ -1,5 +1,6 @@
 package com.fulu.game.core.service;
 
+import com.fulu.game.core.entity.Tag;
 import com.fulu.game.core.entity.TechTag;
 
 import java.util.List;
@@ -17,4 +18,6 @@ public interface TechTagService extends ICommonService<TechTag,Integer>{
     int deleteByTechAuthId(Integer techAuthId);
 
     List<TechTag> findByTechAuthId(Integer techAuthId);
+
+    int updateTechTagByTag(Tag tag);
 }

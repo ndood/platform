@@ -18,4 +18,5 @@ public interface TagDao extends ICommonDao<Tag,Integer>{
 
     List<Tag> findByParameter(TagVO tagVO);
 
+
 }

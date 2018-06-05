@@ -1,17 +1,21 @@
 package com.fulu.game.core.service.impl;
 
-
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
+import com.fulu.game.common.enums.TechAuthStatusEnum;
+import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
+import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.dao.UserTechAuthDao;
 import com.fulu.game.core.entity.*;
-import com.fulu.game.core.entity.vo.TagVO;
-import com.fulu.game.core.entity.vo.TechValueVO;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
+import com.fulu.game.core.entity.vo.serachVO.UserTechAuthSearchVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,10 +24,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.fulu.game.core.dao.UserTechAuthDao;
-
-
 @Service
+@Slf4j
 public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Integer> implements UserTechAuthService {
 
     @Autowired
@@ -37,11 +39,21 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     @Autowired
     private UserTechInfoService userTechInfoService;
     @Autowired
+    private UserTechAuthRejectService userTechAuthRejectService;
+    @Autowired
     private TagService tagService;
     @Autowired
     private CategoryService categoryService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private AdminService adminService;
+    @Autowired
+    private WxTemplateMsgService wxTemplateMsgService;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private ApproveService approveService;
 
     @Override
     public ICommonDao<UserTechAuth, Integer> getDao() {
@@ -50,31 +62,38 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
     @Override
     public UserTechAuthVO save(UserTechAuthVO userTechAuthVO) {
+        log.info("修改认证技能:userTechAuthVO:{}",userTechAuthVO);
         User user = userService.findById(userTechAuthVO.getUserId());
-        Category category =categoryService.findById(userTechAuthVO.getCategoryId());
-        userTechAuthVO.setStatus(true);
+        Category category = categoryService.findById(userTechAuthVO.getCategoryId());
+        userTechAuthVO.setStatus(TechAuthStatusEnum.AUTHENTICATION_ING.getType());
         userTechAuthVO.setMobile(user.getMobile());
         userTechAuthVO.setCategoryName(category.getName());
         userTechAuthVO.setUpdateTime(new Date());
-
+        userTechAuthVO.setApproveCount(0);
         if (userTechAuthVO.getId() == null) {
             //查询是否有重复技能
-            List<UserTechAuth> userTechAuths =findByCategoryAndUser(userTechAuthVO.getCategoryId(),userTechAuthVO.getUserId());
-            if(userTechAuths.size()>0){
+            List<UserTechAuth> userTechAuths = findByCategoryAndUser(userTechAuthVO.getCategoryId(), userTechAuthVO.getUserId());
+            if (userTechAuths.size() > 0) {
                 throw new ServiceErrorException("不能添加重复的技能!");
             }
             userTechAuthVO.setCreateTime(new Date());
             userTechAuthDao.create(userTechAuthVO);
         } else {
-            UserTechAuth oldUserTechAuth= findById(userTechAuthVO.getId());
-            if(!oldUserTechAuth.getId().equals(userTechAuthVO.getId())){
+            UserTechAuth oldUserTechAuth = findById(userTechAuthVO.getId());
+            if(oldUserTechAuth.getStatus().equals(TechAuthStatusEnum.FREEZE.getType())){
+                throw new  UserAuthException(UserAuthException.ExceptionCode.USER_TECH_FREEZE);
+            }
+            if (!oldUserTechAuth.getId().equals(userTechAuthVO.getId())) {
                 //查询是否有重复技能
-                List<UserTechAuth> userTechAuths =findByCategoryAndUser(userTechAuthVO.getCategoryId(),userTechAuthVO.getUserId());
-                if(userTechAuths.size()>0){
+                List<UserTechAuth> userTechAuths = findByCategoryAndUser(userTechAuthVO.getCategoryId(), userTechAuthVO.getUserId());
+                if (userTechAuths.size() > 0) {
                     throw new ServiceErrorException("不能添加重复的技能!");
                 }
             }
-            userTechAuthDao.update(userTechAuthVO);
+            //重置技能好友认证状态
+            approveService.resetApproveStatusAndUpdate(userTechAuthVO);
+            //删除重新认证的商品
+            productService.deleteProductByTech(userTechAuthVO.getId());
         }
         //创建技能标签关联
         createTechTag(userTechAuthVO.getId(), userTechAuthVO.getTagIds());
@@ -84,30 +103,126 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
     @Override
-    public List<UserTechAuth> findByUserId(Integer userId,Boolean status) {
-        UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
-        userTechAuthVO.setUserId(userId);
-        userTechAuthVO.setStatus(status);
-        return userTechAuthDao.findByParameter(userTechAuthVO);
+    public UserTechAuth reject(Integer id, String reason) {
+        Admin admin = adminService.getCurrentUser();
+        log.info("驳回技能认证信息:adminId:{};adminName:{};authInfoId:{},reason:{}",admin.getId(),admin.getName(),id,reason);
+        UserTechAuth userTechAuth = findById(id);
+        if(userTechAuth.getStatus().equals(TechAuthStatusEnum.FREEZE.getType())){
+            throw new  UserAuthException(UserAuthException.ExceptionCode.USER_TECH_FREEZE);
+        }
+        //重置技能好友认证状态
+        userTechAuth.setStatus(TechAuthStatusEnum.NO_AUTHENTICATION.getType());
+        approveService.resetApproveStatusAndUpdate(userTechAuth);
+        //添加拒绝原因
+        UserTechAuthReject userTechAuthReject = new UserTechAuthReject();
+        userTechAuthReject.setReason(reason);
+        userTechAuthReject.setUserTechAuthId(userTechAuth.getStatus());
+        userTechAuthReject.setUserId(userTechAuth.getUserId());
+        userTechAuthReject.setUserTechAuthId(id);
+        userTechAuthReject.setUserTechAuthStatus(userTechAuth.getStatus());
+        userTechAuthReject.setAdminId(admin.getId());
+        userTechAuthReject.setAdminName(admin.getName());
+        userTechAuthReject.setCreateTime(new Date());
+        userTechAuthRejectService.create(userTechAuthReject);
+        //给用户推送通知
+        wxTemplateMsgService.pushWechatTemplateMsg(userTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_FAIL,reason);
+        //同步下架用户该技能商品
+        productService.deleteProductByTech(userTechAuth.getId());
+
+        return userTechAuth;
+    }
+
+
+    @Override
+    public UserTechAuth pass(Integer id) {
+        try {
+            Admin admin = adminService.getCurrentUser();
+            log.info("技能审核通过:管理员操作:adminId:{};adminName:{};authInfoId:{}",admin.getId(),admin.getName(),id);
+        }catch (Exception e){
+            log.info("技能审核通过:用户好友操作:authInfoId:{}",id);
+        }
+        UserTechAuth userTechAuth = findById(id);
+        if(userTechAuth.getStatus().equals(TechAuthStatusEnum.FREEZE.getType())){
+            throw new  UserAuthException(UserAuthException.ExceptionCode.USER_TECH_FREEZE);
+        }
+        userTechAuth.setStatus(TechAuthStatusEnum.NORMAL.getType());
+        update(userTechAuth);
+        //给用户推送通知
+        wxTemplateMsgService.pushWechatTemplateMsg(userTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_SUCCESS);
+        //技能下商品置为正常
+        productService.recoverProductDelFlagByTechAuthId(userTechAuth.getId());
+        return userTechAuth;
     }
 
     @Override
-    public PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize,String orderBy) {
-        if(StringUtils.isBlank(orderBy)){
+    public UserTechAuth freeze(Integer id, String reason) {
+        Admin admin = adminService.getCurrentUser();
+        log.info("冻结技能认证信息:adminId:{};adminName:{};authInfoId:{},reason:{}",admin.getId(),admin.getName(),id,reason);
+        //重置技能好友认证状态
+        UserTechAuth userTechAuth = findById(id);
+        //重置技能好友认证状态
+        userTechAuth.setStatus(TechAuthStatusEnum.FREEZE.getType());
+        approveService.resetApproveStatusAndUpdate(userTechAuth);
+        //添加拒绝原因
+        UserTechAuthReject userTechAuthReject = new UserTechAuthReject();
+        userTechAuthReject.setReason(reason);
+        userTechAuthReject.setUserTechAuthId(userTechAuth.getStatus());
+        userTechAuthReject.setUserId(userTechAuth.getUserId());
+        userTechAuthReject.setUserTechAuthStatus(userTechAuth.getStatus());
+        userTechAuthReject.setUserTechAuthId(id);
+        userTechAuthReject.setAdminId(admin.getId());
+        userTechAuthReject.setAdminName(admin.getName());
+        userTechAuthReject.setCreateTime(new Date());
+        userTechAuthRejectService.create(userTechAuthReject);
+
+        //同步下架用户该技能商品
+        productService.deleteProductByTech(userTechAuth.getId());
+        return userTechAuth;
+    }
+
+    @Override
+    public UserTechAuth unFreeze(Integer id) {
+        Admin admin = adminService.getCurrentUser();
+        log.info("解冻技能认证信息:adminId:{};adminName:{};authInfoId:{}",admin.getId(),admin.getName(),id);
+        UserTechAuth userTechAuth = findById(id);
+        userTechAuth.setStatus(TechAuthStatusEnum.AUTHENTICATION_ING.getType());
+        update(userTechAuth);
+
+        //技能下商品置为正常
+        productService.recoverProductDelFlagByTechAuthId(userTechAuth.getId());
+        return userTechAuth;
+    }
+
+    @Override
+    public List<UserTechAuth> findByStatusAndUserId(Integer userId, Integer status) {
+        UserTechAuthVO param = new UserTechAuthVO();
+        param.setUserId(userId);
+        param.setStatus(status);
+        return userTechAuthDao.findByParameter(param);
+    }
+
+    @Override
+    public PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize, String orderBy, UserTechAuthSearchVO userTechAuthSearchVO) {
+        if (StringUtils.isBlank(orderBy)) {
             orderBy = "update_time desc";
         }
-        PageHelper.startPage(pageNum,pageSize,orderBy);
-        List<UserTechAuth> userTechAuths = userTechAuthDao.findAll();
+        PageHelper.startPage(pageNum, pageSize, orderBy);
+        List<UserTechAuth> userTechAuths = userTechAuthDao.search(userTechAuthSearchVO);
         List<UserTechAuthVO> userTechAuthVOList = new ArrayList<>();
-        for(UserTechAuth userTechAuth : userTechAuths){
+        for (UserTechAuth userTechAuth : userTechAuths) {
             UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
-            BeanUtil.copyProperties(userTechAuth,userTechAuthVO);
+            BeanUtil.copyProperties(userTechAuth, userTechAuthVO);
             //用户段位信息
             UserTechInfo userTechInfo = findDanInfo(userTechAuthVO.getId());
             userTechAuthVO.setDanInfo(userTechInfo);
             //用户技能标签
-            List<TechTag> techTagList =findTechTags(userTechAuthVO.getId());
+            List<TechTag> techTagList = findTechTags(userTechAuthVO.getId());
             userTechAuthVO.setTagList(techTagList);
+            //查找用户基础信息
+            User user = userService.findById(userTechAuthVO.getUserId());
+            userTechAuthVO.setNickname(user.getNickname());
+            userTechAuthVO.setGender(user.getGender());
+
             userTechAuthVOList.add(userTechAuthVO);
         }
         PageInfo page = new PageInfo(userTechAuths);
@@ -116,7 +231,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
 
-    public List<UserTechAuth> findByCategoryAndUser(Integer categoryId,Integer userId){
+    public List<UserTechAuth> findByCategoryAndUser(Integer categoryId, Integer userId) {
         UserTechAuthVO param = new UserTechAuthVO();
         param.setCategoryId(categoryId);
         param.setUserId(userId);
@@ -127,18 +242,48 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     @Override
     public UserTechAuthVO findTechAuthVOById(Integer id) {
         UserTechAuth userTechAuth = findById(id);
+        if (userTechAuth == null) {
+            return null;
+        }
+        Integer approveCount = userTechAuth.getApproveCount();
+        Integer requireCount = approveCount < 5 ? Constant.DEFAULT_APPROVE_COUNT - approveCount : 0;
         UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
         BeanUtil.copyProperties(userTechAuth, userTechAuthVO);
+        //审核不通过原因
+        UserTechAuthReject techAuthReject =userTechAuthRejectService.findLastRecordByTechAuth(userTechAuth.getId(),userTechAuth.getStatus());
+        if(techAuthReject!=null){
+            userTechAuthVO.setReason(techAuthReject.getReason());
+        }
+
+        userTechAuthVO.setRequireCount(requireCount);
+
         //查询用户所有技能标签
         List<TechTag> techTagList = findTechTags(userTechAuth.getId());
         userTechAuthVO.setTagList(techTagList);
-        //查询用户所有技能
+        //查询技能的段位信息
         UserTechInfo danInfo = findDanInfo(userTechAuthVO.getId());
         userTechAuthVO.setDanInfo(danInfo);
+        //查询该技能对应的游戏信息
+        Category category = categoryService.findById(userTechAuthVO.getCategoryId());
+        userTechAuthVO.setCategory(category);
         return userTechAuthVO;
     }
 
+    /**
+     * 查询用户可用的技能
+     * @param userId
+     * @return
+     */
+    public List<UserTechAuth> findUserNormalTechs(Integer userId){
+        List<UserTechAuth> techAuthList = findByStatusAndUserId(userId, TechAuthStatusEnum.NORMAL.getType());
+        return techAuthList;
+    }
 
+    /**
+     * 查询用户段位信息
+     * @param techAuthId
+     * @return
+     */
     public UserTechInfo findDanInfo(Integer techAuthId) {
         List<UserTechInfo> userTechInfoList = userTechInfoService.findByTechAuthId(techAuthId);
         if (!userTechInfoList.isEmpty()) {
@@ -147,8 +292,37 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         return null;
     }
 
+    public void checkUserTechAuth(Integer techAuthId){
+        UserTechAuth userTechAuth = findById(techAuthId);
+        if(userTechAuth.getStatus().equals(TechAuthStatusEnum.AUTHENTICATION_ING.getType())){
+            throw new UserAuthException(UserAuthException.ExceptionCode.USER_TECH_AUTHENTICATION_ING);
+        }
+        if(userTechAuth.getStatus().equals(TechAuthStatusEnum.NO_AUTHENTICATION.getType())){
+            throw new UserAuthException(UserAuthException.ExceptionCode.USER_TECH_NO_AUTHENTICATION);
+        }
+        if(userTechAuth.getStatus().equals(TechAuthStatusEnum.FREEZE.getType())){
+            throw new UserAuthException(UserAuthException.ExceptionCode.USER_TECH_FREEZE);
+        }
+    }
+
+
+    /**
+     * 通过用户Id查询用户技能认证信息
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<UserTechAuth> findByUserId(Integer userId) {
+        UserTechAuthVO param = new UserTechAuthVO();
+        param.setUserId(userId);
+        List<UserTechAuth> userTechAuths = userTechAuthDao.findByParameter(param);
+        return userTechAuths;
+    }
+
     /**
      * 查询用户选择的所有技能标签
+     *
      * @param techAuthId
      * @return
      */

@@ -23,6 +23,8 @@ public class Config {
 
     private Wechat wechat = new Wechat();
 
+    private Elasticsearch elasticsearch = new Elasticsearch();
+
     //环信账户配置信息
     private Im im = new Im();
 
@@ -76,5 +78,14 @@ public class Config {
         private String grantType;
         private String clientId;
         private String clientSecret;
+    }
+
+    @Data
+    public static class Elasticsearch{
+        private String host;
+        private int readTimeout;
+        private String indexDB;
+        private String username;
+        private String password;
     }
 }

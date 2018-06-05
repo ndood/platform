@@ -110,7 +110,6 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         //加钱之前该用户的零钱
         BigDecimal balance = user.getBalance();
         BigDecimal newBalance = balance.add(money);
-
         MoneyDetails moneyDetails = new MoneyDetails();
         moneyDetails.setMoney(money);
         moneyDetails.setOperatorId(targetId);//默认是系统加款

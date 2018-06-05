@@ -42,7 +42,7 @@ public class WxaCodeTest {
      * 获取accessToken
      */
     public String getAccessTokenTest() {
-        //TODO wechat4j 中控服务器统一获取和刷新accessToken 微信公众平台配置IP白名单
+
         String appId = "wx27fc4b9385ffde13";
         String secret = "40ef671d910e97b55d4370031af1d9c2";
         String tokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential"
@@ -72,7 +72,6 @@ public class WxaCodeTest {
                 .body(property)
                 .execute()
                 .bodyStream();
-        //TODO 上传至阿里云
     }
 
     /**

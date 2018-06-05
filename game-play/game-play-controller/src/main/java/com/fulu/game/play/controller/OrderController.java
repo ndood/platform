@@ -22,7 +22,7 @@ import java.util.Map;
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/order")
-public class OrderController {
+public class OrderController extends BaseController {
 
     @Autowired
     private OrderService orderService;
@@ -66,13 +66,14 @@ public class OrderController {
                          String couponNo,
                          String remark) {
         String ip = RequestUtil.getIpAdrress(request);
-        OrderVO orderVO = orderService.submit(productId, num, remark,couponNo,ip);
+        OrderVO orderVO = orderService.submit(productId, num, remark, couponNo, ip);
         return Result.success().data(orderVO.getOrderNo()).msg("创建订单成功!");
     }
 
 
     /**
      * 订单支付接口
+     *
      * @param orderNo
      * @return
      */
@@ -111,7 +112,7 @@ public class OrderController {
                                 @RequestParam(required = true) Integer pageSize,
                                 Integer categoryId,
                                 @RequestParam(required = true) Integer status) {
-        if(status==null){
+        if (status == null) {
             status = OrderStatusGroupEnum.USER_ALL.getValue();
         }
         Integer[] statusArr = OrderStatusGroupEnum.getByValue(status);
@@ -145,7 +146,7 @@ public class OrderController {
                                   @RequestParam(required = true) Integer pageSize,
                                   Integer categoryId,
                                   @RequestParam(required = true) Integer status) {
-        if(status==null){
+        if (status == null) {
             status = OrderStatusGroupEnum.SERVER_ALL.getValue();
         }
         Integer[] statusArr = OrderStatusGroupEnum.getByValue(status);

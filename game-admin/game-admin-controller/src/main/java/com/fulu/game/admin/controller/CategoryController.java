@@ -138,7 +138,6 @@ public class CategoryController extends BaseController {
                                   @RequestParam(required = true) String name,
                                   @RequestParam(required = false) BigDecimal price,
                                   @RequestParam(required = true) Integer rank) {
-
         SalesMode salesMode = new SalesMode();
         salesMode.setCategoryId(categoryId);
         salesMode.setName(name);
@@ -149,6 +148,16 @@ public class CategoryController extends BaseController {
         salesModeService.create(salesMode);
         return Result.success().msg("销售方式创建成功!").data(salesMode);
     }
+
+    @PostMapping(value = "/salesmode/update")
+    public Result salesModeUpdate(@RequestParam(required = true) Integer id,
+                                  @RequestParam(required = true) String name,
+                                  @RequestParam(required = false) BigDecimal price,
+                                  @RequestParam(required = true) Integer rank) {
+        SalesMode salesMode =salesModeService.update(id,name,price,rank);
+        return Result.success().msg("销售方式修改成功!").data(salesMode);
+    }
+
 
     /**
      * 删除销售方式
@@ -172,9 +181,25 @@ public class CategoryController extends BaseController {
         return Result.success().msg("段位创建成功!").data(techValue);
     }
 
+
+
+    /**
+     * 修改段位
+     **/
+    @PostMapping(value = "/dan/update")
+    public Result danUpdate(@RequestParam(required = true) Integer id,
+                            @RequestParam(required = true) String name,
+                            @RequestParam(required = true) Integer rank) {
+        TechValue techValue = techValueService.updateDan(id, name, rank);
+        return Result.success().msg("段位修改成功!").data(techValue);
+    }
+
+
+
+
+
     /**
      * 删除段位
-     *
      * @param id
      * @return
      */

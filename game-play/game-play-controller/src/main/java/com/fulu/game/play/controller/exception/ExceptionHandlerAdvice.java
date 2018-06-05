@@ -4,7 +4,9 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.exception.BizException;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ServiceErrorException;
+import com.fulu.game.common.exception.UserAuthException;
 import lombok.extern.slf4j.Slf4j;
+import me.chanjar.weixin.common.exception.WxErrorException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -19,6 +21,7 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 判断唯一索引
+     *
      * @param e
      * @return
      */
@@ -30,6 +33,7 @@ public class ExceptionHandlerAdvice {
 
     /**
      * SQL执行错误
+     *
      * @param e
      * @return
      */
@@ -41,6 +45,7 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 404错误
+     *
      * @param e
      * @return
      */
@@ -52,6 +57,7 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 必填参数为空
+     *
      * @param e
      * @return
      */
@@ -63,6 +69,7 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 业务错误,直接提示给用户
+     *
      * @param e
      * @return
      */
@@ -85,6 +92,18 @@ public class ExceptionHandlerAdvice {
     }
 
     /**
+     * 用户认证异常
+     *
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(UserAuthException.class)
+    public Result handleUserAuthException(UserAuthException e) {
+        log.error(e.getMessage(), e);
+        return Result.error().msg(e.getMessage()).data("errcode", e.getCode());
+    }
+
+    /**
      * 业务异常的父类
      *
      * @param e
@@ -99,13 +118,26 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 统一异常
+     *
      * @param e
      * @return
      */
     @ExceptionHandler(Exception.class)
     public Result handleException(Exception e) {
         log.error(e.getMessage(), e);
-        return	Result.error().msg("服务器错误!");
+        return Result.error().msg("服务器错误!");
+    }
+
+    /**
+     * 统一异常
+     *
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(WxErrorException.class)
+    public Result wxErrorException(WxErrorException e) {
+        log.error(e.getMessage(), e);
+        return Result.error().msg("生成小程序码错误");
     }
 
 }

@@ -13,6 +13,7 @@
         <result column="status" property="status"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
+        <result column="approve_count" property="approveCount"/>
     </resultMap>
 
     <resultMap id="UserTechAuthResultVOMap" type="com.fulu.game.core.entity.vo.UserTechAuthVO"
@@ -20,7 +21,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,category_id,user_id,category_name,mobile,grade_pic_url,description,status,create_time,update_time
+        id,category_id,user_id,category_name,mobile,grade_pic_url,description,status,create_time,update_time,approve_count
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserTechAuthResultMap">
@@ -64,14 +65,35 @@
             <if test="status != null">
                 and status = #{status}
             </if>
-            <if test="createTime != null">
-                and create_time = #{createTime}
-            </if>
-            <if test="updateTime != null">
-                and update_time = #{updateTime}
+            <if test="approveCount != null">
+                and approve_count &lt;= #{approveCount}
             </if>
         </where>
     </select>
+
+
+
+    <select id="search" resultMap="UserTechAuthResultMap" parameterType="com.fulu.game.core.entity.vo.serachVO.UserTechAuthSearchVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_user_tech_auth
+        <where>
+            <if test="mobile != null">
+                and mobile = #{mobile}
+            </if>
+            <if test="nickname != null">
+                and user_id in (SELECT id FROM t_user u WHERE u.nickname like  CONCAT('%',#{nickname},'%'))
+            </if>
+            <if test="startTime != null">
+                and update_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and update_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
+
 
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_user_tech_auth
@@ -82,9 +104,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserTechAuth">
         insert into
-        t_user_tech_auth (category_id,user_id,category_name,mobile,grade_pic_url,description,status,create_time,update_time)
+        t_user_tech_auth (category_id,user_id,category_name,mobile,grade_pic_url,description,status,create_time,update_time,approve_count)
         values
-        (#{categoryId},#{userId},#{categoryName},#{mobile},#{gradePicUrl},#{description},#{status},#{createTime},#{updateTime})
+        (#{categoryId},#{userId},#{categoryName},#{mobile},#{gradePicUrl},#{description},#{status},#{createTime},#{updateTime},#{approveCount})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.UserTechAuth">
@@ -125,6 +147,9 @@
 
             <if test="updateTime != null">
                 update_time = #{updateTime},
+            </if>
+            <if test="approveCount != null">
+                approve_count = #{approveCount},
             </if>
         </set>
         <where>

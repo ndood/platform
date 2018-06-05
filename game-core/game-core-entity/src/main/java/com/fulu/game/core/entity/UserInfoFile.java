@@ -21,7 +21,7 @@ public class UserInfoFile implements Serializable {
 	private String name;
 	//
 	private Integer userId;
-	//类型(1图片,2声音)
+	//
 	private Integer type;
 	//
 	private String url;

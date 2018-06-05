@@ -105,4 +105,17 @@
             id = #{id}
         </where>
     </update>
+
+    <update id="updatePersonTagByTag" parameterType="com.fulu.game.core.entity.Tag">
+        update t_person_tag
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+        </set>
+        <where>
+            tag_id = #{id}
+        </where>
+    </update>
+
 </mapper>

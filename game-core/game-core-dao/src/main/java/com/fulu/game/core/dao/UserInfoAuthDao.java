@@ -6,6 +6,8 @@ import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * 信息认证表
  * @author wangbin
@@ -15,6 +17,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface UserInfoAuthDao extends ICommonDao<UserInfoAuth,Integer>{
 
-    UserInfoAuth findByParameter(UserInfoAuthVO userInfoAuthVO);
+    List<UserInfoAuth> findByParameter(UserInfoAuthVO userInfoAuthVO);
 
 }

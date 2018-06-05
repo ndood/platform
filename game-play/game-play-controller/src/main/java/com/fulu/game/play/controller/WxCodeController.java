@@ -52,7 +52,6 @@ public class WxCodeController {
         } else {
             return Result.error().msg("获取小程序码失败！");
         }
-        //TODO 是否和分享文案一起返回给前端
 
     }
 

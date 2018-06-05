@@ -4,6 +4,7 @@ package com.fulu.game.core.entity.vo;
 import com.fulu.game.core.entity.CouponGroup;
 import lombok.Data;
 
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;

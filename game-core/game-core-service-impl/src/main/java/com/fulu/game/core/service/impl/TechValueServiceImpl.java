@@ -6,14 +6,12 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.TechAttr;
 import com.fulu.game.core.entity.vo.TechValueVO;
-import com.fulu.game.core.service.CategoryService;
-import com.fulu.game.core.service.TechAttrService;
+import com.fulu.game.core.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fulu.game.core.dao.TechValueDao;
 import com.fulu.game.core.entity.TechValue;
-import com.fulu.game.core.service.TechValueService;
 
 import java.util.Date;
 import java.util.List;
@@ -28,6 +26,8 @@ public class TechValueServiceImpl extends AbsCommonService<TechValue,Integer> im
     private TechAttrService techAttrService;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private UserTechInfoService userTechInfoService;
 
     @Override
     public ICommonDao<TechValue, Integer> getDao() {
@@ -66,6 +66,16 @@ public class TechValueServiceImpl extends AbsCommonService<TechValue,Integer> im
         techValue.setCreateTime(new Date());
         techValue.setUpdateTime(new Date());
         create(techValue);
+        return techValue;
+    }
+
+    @Override
+    public TechValue updateDan(Integer id, String danName, Integer rank) {
+        TechValue techValue =findById(id);
+        techValue.setName(danName);
+        techValue.setRank(rank);
+        update(techValue);
+        userTechInfoService.updateUserTechInfoByTechValue(techValue);
         return techValue;
     }
 

@@ -28,7 +28,12 @@ public class UserInfoVO {
 
     private String city;
 
+    //声音
     private String voice;
+
+    //声音时长
+    private Integer voiceDuration;
+
 
     private Integer orderCount;
 
@@ -37,6 +42,6 @@ public class UserInfoVO {
     //陪玩师照片集
     private List<String> photos;
     private List<String> techs;
-
+    private UserTechAuthVO userTechAuthVO;
 
 }

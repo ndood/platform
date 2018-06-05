@@ -5,8 +5,11 @@ import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.utils.SubjectUtil;
+import com.fulu.game.core.entity.Banner;
 import com.fulu.game.core.entity.SysConfig;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.BannerVO;
+import com.fulu.game.core.service.BannerService;
 import com.fulu.game.core.service.SysConfigService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.play.shiro.PlayUserToken;
@@ -20,10 +23,7 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +39,18 @@ public class HomeController {
 
     @Autowired
     private SysConfigService sysConfigService;
+
+    @Autowired
+    private BannerService bannerService;
+
+    @PostMapping("/banner/list")
+    @ResponseBody
+    public Result list() {
+        BannerVO bannerVO = new BannerVO();
+        bannerVO.setDisable(true);
+        List<Banner> bannerList = bannerService.findByParam(bannerVO);
+        return Result.success().data(bannerList);
+    }
 
     /**
      * 初始化加载系统配置
@@ -71,19 +83,17 @@ public class HomeController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
     public Result login(@RequestParam("code") String code) throws WxErrorException {
-        log.info("==调用/login方法==");
         if (StringUtils.isBlank(code)) {
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
         WxMaJscode2SessionResult session = wxService.getUserService().getSessionInfo(code);
         String openId = session.getOpenid();
-        log.info("==获取到openId== {}", openId);
+        log.info("调用/login接口，获取微信openId= {}", openId);
         //1.认证和凭据的token
         PlayUserToken playUserToken = new PlayUserToken(openId);
         Subject subject = SecurityUtils.getSubject();
         //2.提交认证和凭据给身份验证系统
         try {
-            log.info("==开始shiro验证==");
             subject.login(playUserToken);
             User cachedUser = userService.getCurrentUser();
             User user = userService.findById(cachedUser.getId());
@@ -91,10 +101,8 @@ public class HomeController {
             jo.put("token", SubjectUtil.getToken());
             jo.put("type", user.getType());
             if (StringUtils.isEmpty(user.getMobile())) {
-                log.info("id {} 为无手机号新用户,type {}", cachedUser.getId(), user.getType());
                 return Result.newUser().data(jo).msg("登录成功，请绑定手机号！");
             } else {
-                log.info("id {} 用户已有手机号", cachedUser.getId());
                 return Result.success().data(jo).msg("登录成功!");
             }
         } catch (AuthenticationException e) {

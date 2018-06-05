@@ -52,6 +52,14 @@ public class GenIdUtil {
         return date+randomStr;
     }
 
+    /**
+     * 生成分享图随机码
+     * @return
+     */
+    public static String GetImgNo(){
+        return RandomUtil.randomNumbers(7);
+    }
+
 
 
 }

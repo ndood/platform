@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.vo.UserInfoAuthFileVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,8 @@ public class UserInfoAuthFileServiceImpl extends AbsCommonService<UserInfoAuthFi
 
     @Autowired
 	private UserInfoAuthFileDao userInfoAuthFileDao;
-
-
+    @Autowired
+    private OssUtil ossUtil ;
 
     @Override
     public ICommonDao<UserInfoAuthFile, Integer> getDao() {
@@ -39,6 +40,20 @@ public class UserInfoAuthFileServiceImpl extends AbsCommonService<UserInfoAuthFi
 
     @Override
     public void deleteByUserAuthIdAndType(Integer userAuthId, Integer fileType) {
+        List<UserInfoAuthFile> userInfoAuthFiles = findByUserAuthIdAndType(userAuthId,fileType);
+        String[] urls = new String[userInfoAuthFiles.size()];
+        for(int i=0;i<userInfoAuthFiles.size();i++){
+            urls[i] = userInfoAuthFiles.get(i).getUrl();
+        }
         userInfoAuthFileDao.deleteByUserAuthIdAndType(userAuthId,fileType);
+        ossUtil.deleteFile(urls);
     }
+
+    public int deleteFile(UserInfoAuthFile userInfoAuthFile){
+        ossUtil.deleteFile(userInfoAuthFile.getUrl());
+        return deleteById(userInfoAuthFile.getId());
+    }
+
+
+
 }

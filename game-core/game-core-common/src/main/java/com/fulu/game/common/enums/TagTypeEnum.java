@@ -5,11 +5,10 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum TagTypeEnum implements TypeEnum<Integer>{
+public enum TagTypeEnum implements TypeEnum<Integer> {
 
-    PERSON(1,"个人标签"),
-    GAME(2,"游戏标签");
-
+    PERSON(1, "个人标签"),
+    GAME(2, "游戏标签");
 
     private Integer type;
     private String msg;

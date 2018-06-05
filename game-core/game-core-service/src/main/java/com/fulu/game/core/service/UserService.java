@@ -3,7 +3,9 @@ package com.fulu.game.core.service;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.github.pagehelper.PageInfo;
+import me.chanjar.weixin.common.exception.WxErrorException;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -15,6 +17,8 @@ import java.util.List;
 public interface UserService extends ICommonService<User, Integer> {
 
     User findByMobile(String mobile);
+
+    List<User> findAllServeUser();
 
     User findByOpenId(String openId);
 
@@ -36,4 +40,9 @@ public interface UserService extends ICommonService<User, Integer> {
 
     Boolean isCurrentUser(Integer userId);
 
+    String getTechAuthCard(Integer techAuthId, String scene) throws WxErrorException, IOException;
+
+    void checkUserInfoAuthStatus(Integer userId);
+
+    String getTechShareCard(String scene,Integer productId) throws WxErrorException, IOException;
 }
