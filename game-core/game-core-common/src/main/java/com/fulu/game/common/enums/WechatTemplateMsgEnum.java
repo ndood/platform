@@ -11,7 +11,7 @@ public enum WechatTemplateMsgEnum {
     TECH_AUTH_AUDIT_SUCCESS("pages/a/setting/setting", WechatTemplateEnum.PUSH_MSG.getType(), "恭喜您,成功通过审核,快快前往接单啦。"),
     TECH_AUTH_AUDIT_FAIL("pages/a/verify/verify", WechatTemplateEnum.PUSH_MSG.getType(), "审核未通过:{},请前往重新提交审核."),
 
-    GRANT_COUPON("pages/c/coupon/coupon", WechatTemplateEnum.PUSH_MSG.getType(), "恭喜你,获得一张{}元优惠券"),
+    GRANT_COUPON("pages/c/coupon/coupon?backHome=true", WechatTemplateEnum.PUSH_MSG.getType(), "恭喜你,获得一张{}元优惠券"),
 
 
     ORDER_USER_PAY("pages/a/order/order", WechatTemplateEnum.PUSH_MSG.getType(), "{}向您下单{},快快去赚钱"), //用户付款

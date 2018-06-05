@@ -44,6 +44,7 @@ public class ImgUtil {
     private Font FONT_24 = new Font("黑体", Font.PLAIN, SIZE_24);
     private Font FONT_22 = new Font("黑体", Font.PLAIN, SIZE_22);
     private static Color FEMALE_COLOR = new Color(255, 156, 163);
+    private static Color MALE_COLOR = new Color(156, 186, 255);
     private static Color LIGHT_GRAY = Color.LIGHT_GRAY;
     private int x_gap_0 = 30, x_gap = 60, tag_x_gap = 20, tag_padding_y = 8, tag_h = 40, y_gap = 30;
     private int lineWidth = imgWidth - 2 * x_gap;
@@ -80,10 +81,12 @@ public class ImgUtil {
         int nicknameLen = getContentLength(nickname, g_nickname);
         //画性别和年龄
         String genderAndAge = getGenderAndAge(cardImg.getGender(), cardImg.getAge());
-        drawStrWithBgcolor(g_nickname, FEMALE_COLOR, Color.white, genderAndAge, nicknameLen + 3 * x_gap_0, nickname_top, 40, nickname_top + tag_padding_y + SIZE_24);
+        Color genderColor = getGenderColor(cardImg.getGender());
+        drawStrWithBgcolor(g_nickname, genderColor, Color.white, genderAndAge, nicknameLen + 3 * x_gap_0, nickname_top, 40, nickname_top + tag_padding_y + SIZE_24);
         //技能+技能标签
         String techStr = cardImg.getTechStr();
         Graphics2D tech = image.createGraphics();
+        tech.setFont(FONT_24);
         //自动换行
         int tempX = x_gap;
         int tempY = tech_top + SIZE_24;
@@ -174,20 +177,21 @@ public class ImgUtil {
         x_start += nameLen + x_gap_0;
         //画性别+年龄
         String genderAndAge = getGenderAndAge(cardImg.getGender(), cardImg.getAge());
+        Color genderColor = getGenderColor(cardImg.getGender());
         Graphics2D g_age = image.createGraphics();
         g_age.setFont(FONT_22);
-        int ageLen = drawStrWithBgcolor(g_age, FEMALE_COLOR, Color.white, genderAndAge, x_start, name_top, 40, name_top + tag_padding_y + SIZE_22);
+        int ageLen = drawStrWithBgcolor(g_age, genderColor, Color.white, genderAndAge, x_start, name_top, 40, name_top + tag_padding_y + SIZE_22);
         x_start += ageLen + tag_x_gap;
         //画个人标签
         String personTag1 = cardImg.getPersonTag1();
         Graphics2D g_tag = image.createGraphics();
         g_tag.setFont(FONT_22);
         if (!StringUtils.isEmpty(personTag1)) {
-            int personTag1Len = drawStrWithBgcolor(g_tag, FEMALE_COLOR, Color.white, personTag1, x_start, name_top, 40, name_top + tag_padding_y + SIZE_22);
+            int personTag1Len = drawStrWithBgcolor(g_tag, genderColor, Color.white, personTag1, x_start, name_top, 40, name_top + tag_padding_y + SIZE_22);
             String personTag2 = cardImg.getPersonTag2();
             if (!StringUtils.isEmpty(personTag2)) {
                 x_start += personTag1Len + tag_x_gap;
-                drawStrWithBgcolor(g_tag, FEMALE_COLOR, Color.white, personTag2, x_start, name_top, 40, name_top + tag_padding_y + SIZE_22);
+                drawStrWithBgcolor(g_tag, genderColor, Color.white, personTag2, x_start, name_top, 40, name_top + tag_padding_y + SIZE_22);
             }
         }
         //画城市和位置图标
@@ -212,7 +216,7 @@ public class ImgUtil {
         g_tech.setFont(FONT_24);
         int priceLen = getContentLength(price, g_tech);
         int priceStart = imgWidth - x_gap - priceLen;
-        drawString(g_tech, new Color(232, 100, 95), FONT_24, price, priceStart, y_start_tech+ SIZE_28);
+        drawString(g_tech, new Color(232, 100, 95), FONT_24, price, priceStart, y_start_tech + SIZE_28);
 
         y_start_tech += SIZE_28 + 30;
         String techTag1 = mainTechMap.get("techTag1");
@@ -241,7 +245,7 @@ public class ImgUtil {
             g_tech2.setFont(FONT_24);
             int price2Len = getContentLength(price2, g_tech2);
             int price2Start = imgWidth - x_gap - price2Len;
-            drawString(g_tech2, new Color(232, 100, 95), FONT_24, price2, price2Start, y_start_tech2+SIZE_28);
+            drawString(g_tech2, new Color(232, 100, 95), FONT_24, price2, price2Start, y_start_tech2 + SIZE_28);
 
             y_start_tech2 += SIZE_28 + 30;
             String tech2Tag1 = secTechMap.get("techTag1");
@@ -307,9 +311,17 @@ public class ImgUtil {
 
     private String getGenderAndAge(Integer gender, Integer age) {
         if (GenderEnum.ASEXUALITY.getType() == gender || GenderEnum.MALE.getType() == gender) {
-            return GenderEnum.SYMBOL_MALE.getMsg() + age;
+            return GenderEnum.SYMBOL_MALE.getMsg() + (null == age?"未设置":age);
         } else {
-            return GenderEnum.SYMBOL_LADY.getMsg() + age;
+            return GenderEnum.SYMBOL_LADY.getMsg() + (null == age?"未设置":age);
+        }
+    }
+
+    private Color getGenderColor(Integer gender) {
+        if (gender.intValue() == GenderEnum.LADY.getType()) {
+            return FEMALE_COLOR;
+        } else {
+            return MALE_COLOR;
         }
     }
 
@@ -385,6 +397,7 @@ public class ImgUtil {
 
     /**
      * 主图处理为圆角
+     *
      * @param imgUrl
      * @param x
      * @param y
@@ -397,14 +410,14 @@ public class ImgUtil {
         int w = sourceImg.getWidth();
         int h = sourceImg.getHeight();
         //图片resize
-        if ( w < h) {
-            w = (int)Math.round(height*(w * 1.0 / h));
+        if (w < h) {
+            w = (int) Math.round(height * (w * 1.0 / h));
             h = height;
-            x +=(h-w)/2;
+            x += (h - w) / 2;
         } else {
-            h = (int)Math.round(width*(h * 1.0 / w));
+            h = (int) Math.round(width * (h * 1.0 / w));
             w = width;
-            y +=(w-h)/2;
+            y += (w - h) / 2;
         }
         BufferedImage output = new BufferedImage(w, h, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D g2 = output.createGraphics();
