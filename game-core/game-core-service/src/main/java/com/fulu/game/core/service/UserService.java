@@ -34,9 +34,13 @@ public interface UserService extends ICommonService<User, Integer> {
 
     User save(UserVO userVO);
 
+    User createUser(String openId);
+
     User getCurrentUser();
 
     void updateRedisUser(User user);
+
+
 
     Boolean isCurrentUser(Integer userId);
 

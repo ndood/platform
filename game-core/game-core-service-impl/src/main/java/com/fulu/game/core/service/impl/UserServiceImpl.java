@@ -156,6 +156,21 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
+    public User createUser(String openId) {
+        User user = new User();
+        user.setOpenId(openId);
+        user.setStatus(UserStatusEnum.NORMAL.getType());//默认账户解封状态
+        user.setType(UserTypeEnum.GENERAL_USER.getType());//默认普通用户
+        user.setUserInfoAuth(UserInfoAuthStatusEnum.NOT_PERFECT.getType());//默认未审核
+        user.setBalance(Constant.DEFAULT_BALANCE);
+        user.setScoreAvg(Constant.DEFAULT_SCORE_AVG);
+        user.setCreateTime(new Date());
+        user.setUpdateTime(new Date());
+        userDao.create(user);
+        return user;
+    }
+
+    @Override
     public User getCurrentUser() {
         Object userObj = SubjectUtil.getCurrentUser();
         if (null == userObj) {
@@ -167,6 +182,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             return null;
         }
     }
+
 
     public void updateRedisUser(User user) {
         String token = SubjectUtil.getToken();

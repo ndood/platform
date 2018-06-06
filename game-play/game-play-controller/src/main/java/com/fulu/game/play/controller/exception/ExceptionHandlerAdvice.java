@@ -1,10 +1,7 @@
 package com.fulu.game.play.controller.exception;
 
 import com.fulu.game.common.Result;
-import com.fulu.game.common.exception.BizException;
-import com.fulu.game.common.exception.OrderException;
-import com.fulu.game.common.exception.ServiceErrorException;
-import com.fulu.game.common.exception.UserAuthException;
+import com.fulu.game.common.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import org.springframework.dao.DataAccessException;
@@ -93,7 +90,6 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 用户认证异常
-     *
      * @param e
      * @return
      */
@@ -103,6 +99,8 @@ public class ExceptionHandlerAdvice {
         return Result.error().msg(e.getMessage()).data("errcode", e.getCode());
     }
 
+
+
     /**
      * 业务异常的父类
      *
@@ -111,8 +109,7 @@ public class ExceptionHandlerAdvice {
      */
     @ExceptionHandler(BizException.class)
     public Result BizException(BizException e) {
-        log.error("业务异常:", e);
-        log.error(e.getMessage(), e);
+        log.error("业务异常:"+e.getMessage(), e);
         return Result.error().msg(e.getMessage()).data("errcode", e.getCode());
     }
 

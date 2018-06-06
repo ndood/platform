@@ -88,9 +88,8 @@ public class HomeController {
         }
         WxMaJscode2SessionResult session = wxService.getUserService().getSessionInfo(code);
         String openId = session.getOpenid();
-        log.info("调用/login接口，获取微信openId= {}", openId);
         //1.认证和凭据的token
-        PlayUserToken playUserToken = new PlayUserToken(openId);
+        PlayUserToken playUserToken = new PlayUserToken(openId,session.getSessionKey());
         Subject subject = SecurityUtils.getSubject();
         //2.提交认证和凭据给身份验证系统
         try {
@@ -117,7 +116,7 @@ public class HomeController {
     @ResponseBody
     public Result testLogin(String openId) {
         log.info("==调用/test/login方法==");
-        PlayUserToken playUserToken = new PlayUserToken(openId);
+        PlayUserToken playUserToken = new PlayUserToken(openId,"");
         Subject subject = SecurityUtils.getSubject();
         try {
             subject.login(playUserToken);
