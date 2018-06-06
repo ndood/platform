@@ -8,8 +8,8 @@ import com.fulu.game.core.entity.OrderDealFile;
 import com.fulu.game.core.entity.OrderProduct;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderProductVO;
-import com.fulu.game.core.entity.vo.requestVO.OrderReqVO;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
+import com.fulu.game.core.entity.vo.serachVO.OrderReqVO;
 import com.fulu.game.core.service.OrderDealService;
 import com.fulu.game.core.service.OrderProductService;
 import com.github.pagehelper.PageHelper;
@@ -46,7 +46,7 @@ public class OrderProductServiceImpl extends AbsCommonService<OrderProduct, Inte
     }
 
     @Override
-    public PageInfo<OrderResVO> list(OrderReqVO orderReqVO,Integer pageNum,Integer pageSize,String orderBy) {
+    public PageInfo<OrderResVO> list(OrderReqVO orderReqVO, Integer pageNum, Integer pageSize, String orderBy) {
         if(StringUtils.isBlank(orderBy)){
             orderBy = "id DESC";
         }

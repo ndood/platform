@@ -3,8 +3,8 @@ package com.fulu.game.admin.controller;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.core.entity.vo.OrderVO;
-import com.fulu.game.core.entity.vo.requestVO.OrderReqVO;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
+import com.fulu.game.core.entity.vo.serachVO.OrderReqVO;
 import com.fulu.game.core.service.OrderProductService;
 import com.fulu.game.core.service.OrderService;
 import com.github.pagehelper.PageInfo;
@@ -37,10 +37,9 @@ public class OrderController extends BaseController {
                        Integer pageSize,
                        String orderBy,
                        OrderReqVO orderReqVO) {
-        PageInfo<OrderResVO> orderList = orderProductService.list(orderReqVO,pageNum,pageSize,orderBy);
+        PageInfo<OrderResVO> orderList = orderProductService.list(orderReqVO, pageNum, pageSize, orderBy);
         return Result.success().data(orderList).msg("查询列表成功！");
     }
-
 
     @RequestMapping("status-all")
     public Result statusList() {
@@ -56,7 +55,6 @@ public class OrderController extends BaseController {
         }
         return Result.success().data(ja);
     }
-
 
     /**
      * 管理员强制完成订单,协商处理

@@ -8,13 +8,8 @@ public class EmojiTools {
         if (StringUtils.isEmpty(str)) {
             return false;
         }
-
         for (int i = 0; i < str.length(); i++) {
-
-
             int cp = str.codePointAt(i);
-
-
             if (isEmojiCharacter(cp)) {
                 return true;
             }
@@ -39,7 +34,6 @@ public class EmojiTools {
     }
 
     public static String filterEmoji(String str) {
-
         if (!containsEmoji(str)) {
             return str;
         }
@@ -59,6 +53,5 @@ public class EmojiTools {
         } else {
             return buf.toString();
         }
-
     }
 }

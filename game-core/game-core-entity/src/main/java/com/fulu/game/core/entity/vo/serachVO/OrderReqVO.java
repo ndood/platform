@@ -1,8 +1,6 @@
-package com.fulu.game.core.entity.vo.requestVO;
+package com.fulu.game.core.entity.vo.serachVO;
 
 import lombok.Data;
-
-import java.util.Date;
 
 /**
  * @author 2018.4.29
@@ -17,7 +15,5 @@ public class OrderReqVO {
     private Integer categoryId;//游戏id（内容id）
     private String startTime;
     private String endTime;
-
-
     private Integer[] statusList;
 }
