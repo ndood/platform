@@ -22,6 +22,7 @@
 
     <select id="findByAdmin" resultMap="MoneyDetailsResultVOMap" parameterType="com.fulu.game.core.entity.vo.MoneyDetailsVO">
         SELECT
+        tmd.id           AS id,
         tmd.operator_id  AS operator_id,
         tmd.target_id    AS target_id,
         tmd.money        AS money,
