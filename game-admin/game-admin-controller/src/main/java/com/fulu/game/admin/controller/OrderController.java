@@ -4,7 +4,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
-import com.fulu.game.core.entity.vo.serachVO.OrderReqVO;
+import com.fulu.game.core.entity.vo.searchVO.OrderReqVO;
 import com.fulu.game.core.service.OrderProductService;
 import com.fulu.game.core.service.OrderService;
 import com.github.pagehelper.PageInfo;

@@ -73,7 +73,7 @@
 
 
 
-    <select id="search" resultMap="UserTechAuthResultMap" parameterType="com.fulu.game.core.entity.vo.serachVO.UserTechAuthSearchVO">
+    <select id="search" resultMap="UserTechAuthResultMap" parameterType="com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO">
         SELECT
         <include refid="Base_Column_List"/>
         FROM t_user_tech_auth

@@ -1,4 +1,4 @@
-package com.fulu.game.core.entity.vo.serachVO;
+package com.fulu.game.core.entity.vo.searchVO;
 
 import lombok.Data;
 

@@ -72,7 +72,7 @@
         </where>
     </select>
 
-    <select id="findByUnionParam" resultMap="OrderResVOMap" parameterType="com.fulu.game.core.entity.vo.requestVO.OrderReqVO">
+    <select id="findByUnionParam" resultMap="OrderResVOMap" parameterType="com.fulu.game.core.entity.vo.searchVO.OrderReqVO">
         SELECT
         op.id AS id,
         op.order_no AS order_no,

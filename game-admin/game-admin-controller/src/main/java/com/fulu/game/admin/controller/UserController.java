@@ -7,7 +7,7 @@ import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.common.utils.TimeUtil;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.*;
-import com.fulu.game.core.entity.vo.serachVO.UserTechAuthSearchVO;
+import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
 
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 

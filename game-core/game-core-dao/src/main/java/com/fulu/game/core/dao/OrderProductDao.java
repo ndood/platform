@@ -3,7 +3,7 @@ package com.fulu.game.core.dao;
 import com.fulu.game.core.entity.OrderProduct;
 import com.fulu.game.core.entity.vo.OrderProductVO;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
-import com.fulu.game.core.entity.vo.serachVO.OrderReqVO;
+import com.fulu.game.core.entity.vo.searchVO.OrderReqVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
