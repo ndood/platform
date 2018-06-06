@@ -113,6 +113,14 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         return userList;
     }
 
+    @Override
+    public List<User> findAllNormalUser() {
+        UserVO param = new UserVO();
+        param.setStatus(UserStatusEnum.NORMAL.getType());
+        List<User> users = userDao.findByParameter(param);
+        return users;
+    }
+
 
     @Override
     public void lock(int id) {

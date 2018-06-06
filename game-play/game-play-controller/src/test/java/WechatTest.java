@@ -1,14 +1,9 @@
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import com.fulu.game.common.enums.WechatTemplateEnum;
-import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.service.PayService;
 import com.fulu.game.play.PlayApplication;
-import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderRequest;
-import com.github.binarywang.wxpay.bean.result.WxPayRefundResult;
-import com.github.binarywang.wxpay.bean.result.WxPayUnifiedOrderResult;
 import com.github.binarywang.wxpay.service.WxPayService;
-import com.xiaoleilu.hutool.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -35,7 +28,7 @@ public class WechatTest {
 
     @Test
     public void test1(){
-        String id =WechatTemplateEnum.PUSH_MSG.getType();
+        String id =WechatTemplateEnum.LEAVE_MSG.getType();
         System.out.println(id);
     }
 

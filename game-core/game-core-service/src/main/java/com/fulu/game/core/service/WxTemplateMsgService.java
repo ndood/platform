@@ -12,7 +12,7 @@ public interface WxTemplateMsgService {
       * @param replaces
       * @return
       */
-     Boolean pushWechatTemplateMsg(Integer userId, WechatTemplateMsgEnum wechatTemplateMsgEnum, String... replaces);
+     void pushWechatTemplateMsg(int userId, WechatTemplateMsgEnum wechatTemplateMsgEnum, String... replaces);
 
      /**
       *
@@ -21,5 +21,14 @@ public interface WxTemplateMsgService {
       * @param imId  发送者IMid
       * @return
       */
-     String pushWechatTemplateMsg(String content,String acceptImId,String imId);
+     String pushIMWxTemplateMsg(String content,String acceptImId,String imId);
+
+     /**
+      * 管理员推送微信消息
+      * @param pushId
+      * @param userId
+      * @param page
+      * @param content
+      */
+     void adminPushWxTemplateMsg(int pushId, int userId, String  page, String  content);
 }

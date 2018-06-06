@@ -51,7 +51,7 @@ public class WxTemplateController {
                                 String acceptImId,
                                 String imId)throws Exception{
         log.info("推送模板消息imId:{},acceptImId:{},content:{}",imId,acceptImId,content);
-        String result = wxTemplateMsgService.pushWechatTemplateMsg(content,acceptImId,imId);
+        String result = wxTemplateMsgService.pushIMWxTemplateMsg(content,acceptImId,imId);
         return Result.success().msg(result);
     }
 

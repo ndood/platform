@@ -51,7 +51,7 @@
         <!--</triggeringPolicy>-->
     </appender>
 
-    <!--<logger name="com.fulu.game.core.dao" level="DEBUG" />-->
+    <logger name="com.fulu.game.core.dao" level="DEBUG" />
     <!-- 日志输出级别 -->
     <root level="INFO">
         <appender-ref ref="STDOUT" />

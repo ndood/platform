@@ -26,6 +26,12 @@ public interface UserService extends ICommonService<User, Integer> {
 
     List<User> findByImIds(String imIds);
 
+    /**
+     * 查询所有状态正常的用户
+     * @return
+     */
+    List<User> findAllNormalUser();
+
     void lock(int id);
 
     void unlock(int id);
