@@ -68,8 +68,6 @@ public class CouponController extends BaseController {
         return Result.success().data(resultMap).msg("查询成功！");
     }
 
-
-
     /**
      * 查询用户所有可用的优惠券
      * @return

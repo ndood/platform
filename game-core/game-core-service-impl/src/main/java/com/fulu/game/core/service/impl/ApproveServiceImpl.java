@@ -53,16 +53,16 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
         if (null == userTechAuth) {
             throw new UserException(UserException.ExceptionCode.TECH_AUTH_NOT_EXIST_EXCEPTION);
         }
-        if (userTechAuth.getStatus() == TechAuthStatusEnum.FREEZE.getType()) {
+        if (userTechAuth.getStatus().intValue() == TechAuthStatusEnum.FREEZE.getType().intValue()) {
             throw new ApproveException(ApproveException.ExceptionCode.APPROVE_FREEZE);
         }
         ApproveVO paramVO = new ApproveVO();
-        Integer techOwnerId = userTechAuth.getUserId();
+        int techOwnerId = userTechAuth.getUserId();
         log.info("技能申请者id:{}", techOwnerId);
         paramVO.setTechOwnerId(techOwnerId);
         User user = userService.getCurrentUser();
         log.info("认可人id:{}", user.getId());
-        if (user.getId().intValue() == techOwnerId.intValue()){
+        if (user.getId() == techOwnerId) {
             throw new ApproveException(ApproveException.ExceptionCode.CANNOT_APPROVE_SELF);
         }
         paramVO.setUserId(user.getId());
@@ -77,13 +77,11 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
         approve.setCreateTime(new Date());
         approveDao.create(approve);
 
-        Integer currentCount = userTechAuth.getApproveCount();
-        Integer newApproveCount = currentCount + 1;
+        int currentCount = userTechAuth.getApproveCount();
+        int newApproveCount = currentCount + 1;
+        int requireCount = newApproveCount < Constant.DEFAULT_APPROVE_COUNT ? Constant.DEFAULT_APPROVE_COUNT - newApproveCount : 0;
         userTechAuth.setApproveCount(newApproveCount);
-
-        Integer techStatus = 0;
-        Integer approveCount = newApproveCount;
-        Integer requireCount = approveCount < Constant.DEFAULT_APPROVE_COUNT ? Constant.DEFAULT_APPROVE_COUNT - approveCount : 0;
+        int techStatus = 0;
         if (newApproveCount >= Constant.DEFAULT_APPROVE_COUNT) {
             utaService.update(userTechAuth);
             utaService.pass(techAuthId);
@@ -91,13 +89,13 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
         } else {
             userTechAuth.setStatus(TechAuthStatusEnum.AUTHENTICATION_ING.getType());
             utaService.update(userTechAuth);
-            wxTemplateMsgService.pushWechatTemplateMsg(userTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_ING, user.getNickname(), requireCount.toString());
+            wxTemplateMsgService.pushWechatTemplateMsg(userTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_ING, user.getNickname(), String.valueOf(requireCount));
             techStatus = userTechAuth.getStatus();
         }
         ApproveVO responseVO = new ApproveVO();
         BeanUtil.copyProperties(approve, responseVO);
         responseVO.setTechStatus(techStatus);
-        responseVO.setApproveCount(approveCount);
+        responseVO.setApproveCount(newApproveCount);
         responseVO.setRequireCount(requireCount);
         return responseVO;
     }
@@ -108,9 +106,8 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
     }
 
     @Override
-    public void delByTechAuthId(Integer techAuthId){
+    public void delByTechAuthId(Integer techAuthId) {
         approveDao.delByTechAuthId(techAuthId);
-
     }
 
     @Override

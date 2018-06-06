@@ -183,7 +183,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         }
     }
 
-
     public void updateRedisUser(User user) {
         String token = SubjectUtil.getToken();
         Map<String, Object> userMap = new HashMap<String, Object>();
@@ -199,7 +198,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         }
         throw new ServiceErrorException("用户不匹配!");
     }
-
 
     public void checkUserInfoAuthStatus(Integer userId) {
         User user = findById(userId);
@@ -325,9 +323,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         String personTag1 = null;
         String personTag2 = null;
         List<String> tagList = userInfoVO.getTags();
-        if (!CollectionUtil.isEmpty(tagList)){
+        if (!CollectionUtil.isEmpty(tagList)) {
             personTag1 = tagList.get(0);
-            if (tagList.size()>1){
+            if (tagList.size() > 1) {
                 personTag2 = tagList.get(1);
             }
         }
@@ -346,9 +344,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         String techTag1 = null;
         String techTag2 = null;
         List<String> techTagList = pdVO.getTechTags();
-        if (!CollectionUtil.isEmpty(techTagList)){
+        if (!CollectionUtil.isEmpty(techTagList)) {
             techTag1 = techTagList.get(0);
-            if (techTagList.size()>1){
+            if (techTagList.size() > 1) {
                 techTag2 = techTagList.get(1);
             }
         }
@@ -368,9 +366,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             String secTechTag1 = null;
             String secTechTag2 = null;
             List<String> secTechTagList = productVO.getTechTags();
-            if (!CollectionUtil.isEmpty(secTechTagList)){
+            if (!CollectionUtil.isEmpty(secTechTagList)) {
                 secTechTag1 = secTechTagList.get(0);
-                if (secTechTagList.size()>1){
+                if (secTechTagList.size() > 1) {
                     secTechTag2 = secTechTagList.get(1);
                 }
             }

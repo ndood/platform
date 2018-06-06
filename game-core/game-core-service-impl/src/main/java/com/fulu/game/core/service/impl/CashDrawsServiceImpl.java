@@ -123,7 +123,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         cashDraws.setOperator("admin");
         cashDraws.setComment(comment);
         cashDraws.setCashStatus(CashProcessStatusEnum.DONE.getType());//修改为已处理状态
-        cashDraws.setCashNo("");//订单处理号暂做保留
+        cashDraws.setCashNo(null);//订单处理号暂做保留
         cashDraws.setProcessTime(new Date());
         cashDrawsDao.update(cashDraws);
         return cashDraws;

@@ -8,7 +8,6 @@ import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +24,7 @@ public class MoneyDetailsController extends BaseController {
     private UserService userService;
 
     @RequestMapping("/list")
-    public Result list( MoneyDetailsVO moneyDetailsVO,
+    public Result list(MoneyDetailsVO moneyDetailsVO,
                        @RequestParam("pageSize") Integer pageSize,
                        @RequestParam("pageNum") Integer pageNum) {
         User user = userService.getCurrentUser();
