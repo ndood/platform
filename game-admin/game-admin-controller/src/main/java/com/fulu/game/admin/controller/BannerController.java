@@ -17,7 +17,7 @@ import javax.validation.Valid;
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/banner")
-public class BannerController {
+public class BannerController extends BaseController{
 
     @Autowired
     private BannerService bannerService;

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.PushMsgDao">
+    <resultMap id="PushMsgResultMap" type="com.fulu.game.core.entity.PushMsg">
+        <id column="id" property="id"/>
+        <result column="type" property="type"/>
+        <result column="page" property="page"/>
+        <result column="content" property="content"/>
+        <result column="hits" property="hits"/>
+        <result column="success_num" property="successNum"/>
+        <result column="total_num" property="totalNum"/>
+        <result column="admin_id" property="adminId"/>
+        <result column="admin_name" property="adminName"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="PushMsgResultVOMap" type="com.fulu.game.core.entity.vo.PushMsgVO" extends="PushMsgResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,type,page,content,hits,success_num,total_num,admin_id,admin_name,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="PushMsgResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_push_msg
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="PushMsgResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_push_msg
+    </select>
+
+    <select id="findByParameter" resultMap="PushMsgResultMap" parameterType="com.fulu.game.core.entity.vo.PushMsgVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_push_msg
+        <where>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="page != null">
+                and page = #{page}
+            </if>
+            <if test="content != null">
+                and content = #{content}
+            </if>
+            <if test="hits != null">
+                and hits = #{hits}
+            </if>
+            <if test="successNum != null">
+                and success_num = #{successNum}
+            </if>
+            <if test="totalNum != null">
+                and total_num = #{totalNum}
+            </if>
+            <if test="adminId != null">
+                and admin_id = #{adminId}
+            </if>
+            <if test="adminName != null">
+                and admin_name = #{adminName}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_push_msg
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.PushMsg">
+        insert into
+        t_push_msg (type,page,content,hits,success_num,total_num,admin_id,admin_name,create_time,update_time)
+        values
+        (#{type},#{page},#{content},#{hits},#{successNum},#{totalNum},#{adminId},#{adminName},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.PushMsg">
+        update t_push_msg
+        <set>
+
+            <if test="type != null">
+                type = #{type},
+            </if>
+
+            <if test="page != null">
+                page = #{page},
+            </if>
+
+            <if test="content != null">
+                content = #{content},
+            </if>
+
+            <if test="hits != null">
+                hits = #{hits},
+            </if>
+
+            <if test="successNum != null">
+                success_num = #{successNum},
+            </if>
+
+            <if test="totalNum != null">
+                total_num = #{totalNum},
+            </if>
+
+            <if test="adminId != null">
+                admin_id = #{adminId},
+            </if>
+
+            <if test="adminName != null">
+                admin_name = #{adminName},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

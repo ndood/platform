@@ -1,0 +1,41 @@
+package com.fulu.game.core.entity;
+
+import java.io.Serializable;
+import java.util.Date;
+import lombok.Data;
+
+
+/**
+ * 
+ * 
+ * @author wangbin
+ * @date 2018-06-06 10:29:12
+ */
+@Data
+public class PushMsg implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
+	//
+	private Integer id;
+	//推送类型
+	private Integer type;
+	//落地页
+	private String page;
+	//推送内容
+	private String content;
+	//点击数
+	private Long hits;
+	//成功数
+	private Integer successNum;
+	//失败数
+	private Integer totalNum;
+	//管理员ID
+	private Integer adminId;
+	//管理员名称
+	private String adminName;
+	//创建时间
+	private Date createTime;
+	//
+	private Date updateTime;
+
+}
