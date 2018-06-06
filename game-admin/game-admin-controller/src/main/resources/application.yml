@@ -1,6 +1,7 @@
 spring:
-    thymeleaf:
-       cache: false
-       mode: LEGACYHTML5
     profiles:
        active: dev
+    http:
+       multipart:
+          max-file-size: 2MB
+          max-request-size: 2MB
