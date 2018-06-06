@@ -28,9 +28,22 @@ public interface PushMsgService extends ICommonService<PushMsg,Integer>{
      */
     void appointPush(PushMsg pushMsg);
 
+    /**
+     * 查询推送消息列表
+     * @param pageNum
+     * @param pageSize
+     * @param orderBy
+     * @return
+     */
     PageInfo<PushMsg> list(int pageNum, int pageSize, String orderBy);
 
-
+    /**
+     * 查找今天没有推送的微信消息
+     * @return
+     */
     List<PushMsg> findTodayNotPushMsg();
+
+
+    void hitsStatistics(int pushId);
 
 }

@@ -14,7 +14,8 @@ public enum RedisKeyEnum {
     ADMIN_TOKEN,//管理员token
     PLAY_TOKEN,//用户token
     SMS, //短信
-    WX_TEMPLATE_MSG; //微信消息推送
+    WX_TEMPLATE_MSG, //微信消息推送
+    BITSET_PUSH_MSG_HITS; //微信消息推送
 
     public static final String SPLIT = "-";
 

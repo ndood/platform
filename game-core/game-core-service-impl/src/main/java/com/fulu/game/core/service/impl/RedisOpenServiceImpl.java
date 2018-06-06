@@ -34,6 +34,28 @@ public class RedisOpenServiceImpl {
     }
 
     /**
+     * 添加一个BitSet
+     * @param key
+     * @param val
+     */
+    public void bitSet(String key,long val){
+        redisTemplate.opsForValue().setBit(key,val,true);
+    }
+
+    /**
+     * 判断bitSet值(Value是在bit中存在)
+     * @param key
+     * @param val
+     * @return
+     */
+    public Boolean getBitSet(String key,long val){
+        return redisTemplate.opsForValue().getBit(key,val);
+    }
+
+
+
+
+    /**
      * 设置某个key的值
      *
      * @param key
@@ -114,7 +136,6 @@ public class RedisOpenServiceImpl {
 
     /**
      * 根据key获取整个hashtable
-     *
      * @param key
      * @return
      */

@@ -43,6 +43,10 @@ public class RedisTest {
     @Test
     public void testHash() {
 
+        redisTemplate.opsForValue().setBit("user2.flags",0,true);
+
+        redisTemplate.opsForValue().getBit("user2.flags",0);
+
         RedisSerializer<String> redisSerializer = new StringRedisSerializer();
         redisTemplate.setHashKeySerializer(redisSerializer);
         redisTemplate.setHashValueSerializer(redisSerializer);
@@ -53,4 +57,33 @@ public class RedisTest {
         map.put("b", "2");
         opsForHash.putAll("hh", map);
     }
+
+    @Test
+    public void testBitSetIn(){
+        redisTemplate.opsForValue().setBit("user2.flags",0,true);
+        redisTemplate.opsForValue().setBit("user2.flags",2,true);
+        redisTemplate.opsForValue().setBit("user2.flags",3,true);
+        redisTemplate.opsForValue().setBit("user2.flags",4,true);
+        redisTemplate.opsForValue().setBit("user2.flags",5,true);
+        redisTemplate.opsForValue().setBit("user2.flags",6,true);
+        redisTemplate.opsForValue().setBit("user2.flags",7,true);
+        redisTemplate.opsForValue().setBit("user2.flags",8,true);
+
+    }
+
+   @Test
+    public void testBitSetOut(){
+       System.out.println(redisTemplate.opsForValue().getBit("user2.flags",5));
+       System.out.println( redisTemplate.opsForValue().getBit("user2.flags",6));
+       System.out.println(redisTemplate.opsForValue().getBit("user2.flags",7));
+       System.out.println( redisTemplate.opsForValue().getBit("user2.flags",8));
+       System.out.println(  redisTemplate.opsForValue().getBit("user2.flags",9));
+       System.out.println(  redisTemplate.opsForValue().getBit("user2.flags",10));
+       System.out.println(  redisTemplate.opsForValue().getBit("user2.flags",11));
+       System.out.println(  redisTemplate.opsForValue().getBit("user2.flags",12));
+
+    }
+
+
+
 }

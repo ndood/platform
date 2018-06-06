@@ -4,6 +4,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.WechatFormid;
+import com.fulu.game.core.service.PushMsgService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.WechatFormidService;
 import com.fulu.game.core.service.WxTemplateMsgService;
@@ -12,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
@@ -19,7 +21,7 @@ import java.util.Date;
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/wxtemplate")
-public class WxTemplateController {
+public class WxTemplateController extends BaseController{
 
     @Autowired
     private WxTemplateMsgService wxTemplateMsgService;
@@ -27,6 +29,8 @@ public class WxTemplateController {
     private UserService userService;
     @Autowired
     private CollectFormIdQueue collectFormIdQueue;
+    @Autowired
+    private PushMsgService pushMsgService;
 
     /**
      * 收集用户的formID
@@ -56,6 +60,12 @@ public class WxTemplateController {
     }
 
 
+
+    @RequestMapping("/pushmsg/hits")
+    public Result pushMsgHits(@RequestParam(required = true) Integer pushId)throws Exception{
+        pushMsgService.hitsStatistics(pushId);
+        return Result.success();
+    }
 
 
 

@@ -3,6 +3,7 @@ package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.enums.PagePathEnum;
 import com.fulu.game.common.enums.PushMsgTypeEnum;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Admin;
@@ -28,6 +29,8 @@ import com.fulu.game.core.service.PushMsgService;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 @Service
@@ -42,6 +45,11 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg,Integer> implem
     private UserService userService;
     @Autowired
     private WxTemplateMsgService wxTemplateMsgService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
+
+
+    private Lock lock = new ReentrantLock();
 
     @Override
     public ICommonDao<PushMsg, Integer> getDao() {
@@ -56,6 +64,7 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg,Integer> implem
         pushMsgVO.setAdminName(admin.getName());
         pushMsgVO.setCreateTime(new Date());
         pushMsgVO.setUpdateTime(new Date());
+        pushMsgVO.setHits(0L);
         pushMsgVO.setSuccessNum(0);
         pushMsgVO.setIsPushed(false);
         create(pushMsgVO);
@@ -138,6 +147,28 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg,Integer> implem
         return pushMsgs;
     }
 
+
+    @Override
+    public void hitsStatistics(int pushId) {
+        User user = userService.getCurrentUser();
+        long bitSetVal =  Long.valueOf(pushId+""+user);
+        boolean flag = redisOpenService.getBitSet(RedisKeyEnum.BITSET_PUSH_MSG_HITS.generateKey(),bitSetVal);
+        if(flag){
+            log.info("用户已经点击过该推送:pushId:{};userId:{};",pushId,user.getId());
+            return;
+        }
+        redisOpenService.bitSet(RedisKeyEnum.BITSET_PUSH_MSG_HITS.generateKey(),bitSetVal);
+        lock.lock();
+        try {
+            PushMsg pushMsg = findById(pushId);
+            pushMsg.setHits(pushMsg.getHits()+1);
+            update(pushMsg);
+            log.info("用户点击该推送:pushId:{};userId:{};",pushId,user.getId());
+        }finally {
+            lock.unlock();
+        }
+
+    }
 
 
 }
