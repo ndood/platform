@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequestMapping("/api/v1/cashDraws")
 public class CashDrawsController extends BaseController{
+
     @Autowired
     private CashDrawsService cashDrawsService;
 
