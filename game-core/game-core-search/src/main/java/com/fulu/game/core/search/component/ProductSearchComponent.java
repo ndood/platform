@@ -38,6 +38,11 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
     @Autowired
     private Config configProperties;
 
+
+    enum OrderType{
+        sales,newman
+    }
+
     /**
      * 保存商品索引
      *
@@ -135,14 +140,18 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
         //在线状态排在前面
         FieldSortBuilder onLineSort = SortBuilders.fieldSort("onLine").order(SortOrder.DESC);
         searchSourceBuilder.sort(onLineSort);
+        //置顶排序
+        FieldSortBuilder topSort = SortBuilders.fieldSort("topSort").order(SortOrder.DESC);
+        searchSourceBuilder.sort(topSort);
+        //切换排序规则
         if (StringUtils.isBlank(orderBy)) {
-            orderBy = "sales";
+            orderBy = OrderType.sales.name();
         }
-        if ("newman".equals(orderBy)) {
+        if (OrderType.newman.name().equals(orderBy)) {
             //排序
             FieldSortBuilder sorter = SortBuilders.fieldSort("createTime").order(SortOrder.DESC);
             searchSourceBuilder.sort(sorter);
-        } else if ("sales".equals(orderBy)) {
+        } else if (OrderType.sales.name().equals(orderBy)) {
             FieldSortBuilder sorter = SortBuilders.fieldSort("orderCount").order(SortOrder.DESC);
             searchSourceBuilder.sort(sorter);
         }

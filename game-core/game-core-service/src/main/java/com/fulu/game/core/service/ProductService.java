@@ -65,11 +65,13 @@ public interface ProductService extends ICommonService<Product,Integer>{
      */
     void stopOrderReceiving();
 
+
     /**
-     * 为用户所有商品添加索引
+     * 更新用户所有商品索引
      * @param userId
+     * @param updateTime  是否要更新商品接单时间
      */
-    void batchCreateUserProduct(Integer userId,Boolean updateTime);
+    void updateUserProductIndex(Integer userId, Boolean needUpdateTime);
 
     /**
      * 查询商品详情页

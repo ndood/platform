@@ -47,6 +47,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     private SalesModeService salesModeService;
     @Autowired
     private ProductSearchComponent productSearchComponent;
+    @Autowired
+    private ProductTopService productTopService;
 
     @Override
     public ICommonDao<Product, Integer> getDao() {
@@ -225,7 +227,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         log.info("批量更新所有商品索引");
         List<User> userList = userService.findAllServeUser();
         for (User user : userList) {
-            batchCreateUserProduct(user.getId(),true);
+            updateUserProductIndex(user.getId(),true);
         }
     }
 
@@ -283,7 +285,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             }
         }
         //添加商品到首页
-        batchCreateUserProduct(user.getId(),true);
+        updateUserProductIndex(user.getId(),true);
     }
 
 
@@ -308,7 +310,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             }
         }
         //修改首页商品的状态
-        batchCreateUserProduct(user.getId(),false);
+        updateUserProductIndex(user.getId(),false);
     }
 
 
@@ -411,7 +413,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * @param userId
      */
     @Override
-    public void batchCreateUserProduct(Integer userId,Boolean needUpdateTime) {
+    public void updateUserProductIndex(Integer userId, Boolean needUpdateTime) {
         List<Product> products = findByUserId(userId);
         List<Integer> rightfulProductIds = new ArrayList<>();
         for (Product product : products) {
@@ -425,16 +427,14 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             }
             rightfulProductIds.add(product.getId());
         }
-        if(productSearchComponent.indicesExists()){
-            //删除掉之前用户的垃圾商品数据
-            List<ProductShowCaseDoc> productShowCaseDocList = productSearchComponent.findByUser(userId);
-            for (ProductShowCaseDoc pdoc : productShowCaseDocList) {
-                if (!rightfulProductIds.contains(pdoc.getId())) {
-                    productSearchComponent.deleteIndex(pdoc.getId());
-                }
+        //删除掉之前用户的垃圾商品数据
+        List<ProductShowCaseDoc> productShowCaseDocList = productSearchComponent.findByUser(userId);
+        for (ProductShowCaseDoc pdoc : productShowCaseDocList) {
+            if (!rightfulProductIds.contains(pdoc.getId())) {
+                productSearchComponent.deleteIndex(pdoc.getId());
             }
         }
-        batchCreateProductIndex(products);
+        batchUpdateProductIndex(products);
     }
 
 
@@ -506,7 +506,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * 批量创建商品索引
      * @param products (每个用户的所有商品集合)
      */
-    private void batchCreateProductIndex(List<Product> products) {
+    private void batchUpdateProductIndex(List<Product> products) {
         List<Product> showIndexProducts = getShowIndexProduct(products);
         for (Product product : products) {
             if (showIndexProducts.contains(product)) {
@@ -519,7 +519,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 查询那些可以在首页显示的商品
-     *
      * @param products
      * @return
      */
@@ -551,8 +550,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
 
     /**
-     * 创建商品索引
-     *
+     * 保存商品索引
      * @param product
      * @param isIndexShow
      * @return
@@ -560,7 +558,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     private ProductShowCaseDoc saveProductIndex(Product product, Boolean isIndexShow) {
         ProductShowCaseDoc productShowCaseDoc = new ProductShowCaseDoc();
         BeanUtil.copyProperties(product, productShowCaseDoc);
-        UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(productShowCaseDoc.getUserId(), false, false, true, false);
+        UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(productShowCaseDoc.getUserId(), Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE);
         //查询销量
         int userOrderCount = orderService.weekOrderCount(product.getUserId());
         productShowCaseDoc.setNickName(userInfoVO.getNickName());
@@ -571,10 +569,15 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         productShowCaseDoc.setPersonTags(userInfoVO.getTags());
         productShowCaseDoc.setOnLine(isProductStartOrderReceivingStatus(productShowCaseDoc.getId()));
         productShowCaseDoc.setOrderCount(userOrderCount);
+        //查询段位信息
         UserTechInfo userTechInfo = userTechAuthService.findDanInfo(product.getTechAuthId());
         if (userTechInfo != null) {
             productShowCaseDoc.setDan(userTechInfo.getValue());
         }
+        //查询置顶排序
+        int topSort = productTopService.findTopSortByUserCategory(product.getUserId(),product.getCategoryId());
+        productShowCaseDoc.setTopSort(topSort);
+
         log.info("插入索引:{}", productShowCaseDoc);
         Boolean result = productSearchComponent.saveProductIndex(productShowCaseDoc);
         if (!result) {
