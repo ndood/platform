@@ -18,11 +18,11 @@ public class PlayApplication extends SpringBootServletInitializer {
         SpringApplication.run(PlayApplication.class, args);
     }
 
-
-
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(PlayApplication.class);
     }
+
+
 
 }
