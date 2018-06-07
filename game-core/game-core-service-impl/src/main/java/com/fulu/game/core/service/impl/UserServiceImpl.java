@@ -7,6 +7,7 @@ import com.fulu.game.common.exception.ImgException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.utils.EmojiTools;
 import com.fulu.game.common.utils.ImgUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
@@ -306,7 +307,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             throw new ImgException(ImgException.ExceptionCode.JSONFORMAT_ERROR);
         }
         return ImgUtil.CardImg.builder()
-                .nickname(null == userInfoVO.getNickName() ? "陪玩师" : userInfoVO.getNickName())
+                .nickname(null == userInfoVO.getNickName() ? "陪玩师" : EmojiTools.filterEmoji(userInfoVO.getNickName()))
                 .gender(null == userInfoVO.getGender() ? GenderEnum.ASEXUALITY.getType() : userInfoVO.getGender())
                 .age(userInfoVO.getAge())
                 .techStr(sb.toString())
@@ -375,7 +376,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             secTechMap.put("techTag2", secTechTag2);
         }
         return ImgUtil.CardImg.builder()
-                .nickname(null == userInfoVO.getNickName() ? "陪玩师" : userInfoVO.getNickName())
+                .nickname(null == userInfoVO.getNickName() ? "陪玩师" : EmojiTools.filterEmoji(userInfoVO.getNickName()))
                 .gender(null == userInfoVO.getGender() ? GenderEnum.ASEXUALITY.getType() : userInfoVO.getGender())
                 .age(userInfoVO.getAge())
                 .city(null == userInfoVO.getCity() ? Constant.DEFAULT_CITY : userInfoVO.getCity())

@@ -22,6 +22,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
 
+/**
+ * 图片生成类
+ */
 @Component
 @Slf4j
 public class ImgUtil {
@@ -78,11 +81,12 @@ public class ImgUtil {
         //画昵称
         Graphics2D g_nickname = image.createGraphics();
         String nickname = cardImg.getNickname();
-        Font nameFont = FONT_32;
-        if (EmojiTools.containsEmoji(nickname)) {
-            nameFont = FONT_32_DEFAULT;
-        }
-        drawString(g_nickname, new Color(20, 25, 28), nameFont, nickname, x_gap, nickname_top + SIZE_32);
+//        Font nameFont = FONT_32;
+//        if (EmojiTools.containsEmoji(nickname)) {
+//            nameFont = FONT_32_DEFAULT;
+//        }
+//        drawString(g_nickname, new Color(20, 25, 28), nameFont, nickname, x_gap, nickname_top + SIZE_32);
+        drawString(g_nickname, new Color(20, 25, 28), FONT_32, nickname, x_gap, nickname_top + SIZE_32);
         g_nickname.setFont(FONT_32);//处理完表情符后恢复字体
         int nicknameLen = getContentLength(nickname, g_nickname);
         //画性别和年龄
@@ -124,7 +128,7 @@ public class ImgUtil {
         //小程序码和文案
         drawImage(cardImg.getCodeUrl(), x_gap, wxcode_top, wxcodeWidth, wxcodeWidth);
         Graphics2D g_share = image.createGraphics();
-        drawString(g_share, new Color(20, 25, 28), nameFont, nickname, x_gap + wxcodeWidth + 39, wxcode_top + wxcodeWidth / 2);
+        drawString(g_share, new Color(20, 25, 28), FONT_32, nickname, x_gap + wxcodeWidth + 39, wxcode_top + wxcodeWidth / 2);
         int nameLen = getContentLength(nickname, g_share);
         String shareTitle = cardImg.getShareTitle();
         drawString(g_share, new Color(20, 25, 28), FONT_32, shareTitle, x_gap + wxcodeWidth + 39 + nameLen, wxcode_top + wxcodeWidth / 2);
@@ -180,11 +184,11 @@ public class ImgUtil {
         int x_start = x_gap;
         String nickname = cardImg.getNickname();
         Graphics2D g_nickname = image.createGraphics();
-        Font nameFont = FONT_32;
-        if (EmojiTools.containsEmoji(nickname)) {
-            nameFont = FONT_32_DEFAULT;
-        }
-        drawString(g_nickname, new Color(20, 25, 28), nameFont, nickname, x_start, name_top + H_nickname);
+//        Font nameFont = FONT_32;
+//        if (EmojiTools.containsEmoji(nickname)) {
+//            nameFont = FONT_32_DEFAULT;
+//        }
+        drawString(g_nickname, new Color(20, 25, 28), FONT_32, nickname, x_start, name_top + H_nickname);
         int nameLen = getContentLength(nickname, g_nickname);
         x_start += nameLen + x_gap_0;
         //画性别+年龄
@@ -389,6 +393,28 @@ public class ImgUtil {
         g.setColor(color);
         g.setFont(font);
         g.drawString(str, x, y);
+    }
+
+    private void drawNickname(Graphics2D g, Color color, Font font, String str, int x, int y) {
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setColor(color);
+        if (!EmojiTools.containsEmoji(str)){
+            g.setFont(font);
+            g.drawString(str, x, y);
+        }else{
+            int start = x;
+            String[] arr = str.split("");
+            for (int i=0;i<arr.length;i++){
+                if (EmojiTools.containsEmoji(arr[i])){
+                    g.setFont(FONT_32_DEFAULT);
+                }else{
+                    g.setFont(font);
+                }
+                g.drawString(arr[i], start, y);
+                start += getContentLength(arr[i],g);
+            }
+        }
+
     }
 
     private int drawStrWithBgcolor(Graphics2D g, Color bgColor, Color wordColor, String str, int start, int fill_y, int fill_h, int draw_h) {
