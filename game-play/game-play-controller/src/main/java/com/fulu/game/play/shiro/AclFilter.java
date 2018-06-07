@@ -65,8 +65,9 @@ public class AclFilter extends AccessControlFilter {
                 res.put("data", "");
                 res.put("msg", "您未登录，暂无访问权限！");
                 out.write(res.toString());
+                log.info("acl返回501,map:{};", map);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("IO错误:", e);
             } finally {
                 if (out != null) {
                     out.close();
@@ -76,7 +77,6 @@ public class AclFilter extends AccessControlFilter {
         }
         //在存5分钟，保证会话时长
         redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token), map);
-
         //已登录的，就保存该token从redis查到的用户信息
         User user = BeanUtil.mapToBean(map, User.class, true);
         SubjectUtil.setCurrentUser(user);
