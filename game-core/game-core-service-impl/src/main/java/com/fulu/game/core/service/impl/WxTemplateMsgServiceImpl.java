@@ -119,8 +119,8 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
         } catch (Exception e) {
             throw new ServiceErrorException("推送消息出错!");
         }
-        //推送状态缓存两个小时
-        redisOpenService.set(RedisKeyEnum.WX_TEMPLATE_MSG.generateKey(imId + "|" + acceptImId), imId + "|" + acceptImId, Constant.TIME_MINUTES_FIFTEEN);
+        //推送状态缓存5分钟
+        redisOpenService.set(RedisKeyEnum.WX_TEMPLATE_MSG.generateKey(imId + "|" + acceptImId), imId + "|" + acceptImId, Constant.TIME_MINUTES_FIVE);
         return "消息推送成功!";
     }
 

@@ -10,6 +10,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @ControllerAdvice
 @ResponseBody
@@ -103,7 +104,6 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 业务异常的父类
-     *
      * @param e
      * @return
      */
@@ -113,6 +113,15 @@ public class ExceptionHandlerAdvice {
         return Result.error().msg(e.getMessage()).data("errcode", e.getCode());
     }
 
+    /**
+     * 上传文件过大异常
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public Result handleException(MaxUploadSizeExceededException ex) {
+        return Result.error().msg("上传文件不能超过5M");
+    }
     /**
      * 统一异常
      *
