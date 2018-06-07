@@ -1,57 +1,56 @@
 package com.fulu.game.common.utils;
 
-import org.apache.commons.lang3.StringUtils;
-
+/**
+ * @author yanbiao
+ * @date 2018.6.6
+ */
 public class EmojiTools {
 
-    public static boolean containsEmoji(String str) {
-        if (StringUtils.isEmpty(str)) {
-            return false;
+    /**
+     * 判断字符串是否含有Emoji表情符
+     *
+     * @param source
+     * @return
+     */
+    public static boolean containsEmoji(String source) {
+        boolean isContains = false;
+        if (null == source) {
+            return isContains;
         }
-        for (int i = 0; i < str.length(); i++) {
-            int cp = str.codePointAt(i);
-            if (isEmojiCharacter(cp)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static boolean isEmojiCharacter(int first) {
-        return !((first == 0x0) ||
-                (first == 0x9) ||
-                (first == 0xA) ||
-                (first == 0xD) ||
-                ((first >= 0x20) && (first <= 0xD7FF)) ||
-                ((first >= 0xE000) && (first <= 0xFFFD)) ||
-                ((first >= 0x10000))) ||
-                (first == 0xa9 || first == 0xae || first == 0x2122 ||
-                        first == 0x3030 || (first >= 0x25b6 && first <= 0x27bf) ||
-                        first == 0x2328 || (first >= 0x23e9 && first <= 0x23fa))
-                || ((first >= 0x1F000 && first <= 0x1FFFF))
-                || ((first >= 0x2702) && (first <= 0x27B0))
-                || ((first >= 0x1F601) && (first <= 0x1F64F));
-    }
-
-    public static String filterEmoji(String str) {
-        if (!containsEmoji(str)) {
-            return str;
-        }
-        StringBuilder buf = null;
-        int len = str.length();
+        int len = source.length();
         for (int i = 0; i < len; i++) {
-            char codePoint = str.charAt(i);
-            if (!isEmojiCharacter(codePoint)) {
-                if (buf == null) {
-                    buf = new StringBuilder(str.length());
+            char hs = source.charAt(i);
+            if (0xd800 <= hs && hs <= 0xdbff) {
+                if (source.length() > 1) {
+                    char ls = source.charAt(i + 1);
+                    int uc = ((hs - 0xd800) * 0x400) + (ls - 0xdc00) + 0x10000;
+                    if (0x1d000 <= uc && uc <= 0x1f77f) {
+                        return true;
+                    }
                 }
-                buf.append(codePoint);
+            } else {
+                // non surrogate
+                if (0x2100 <= hs && hs <= 0x27ff && hs != 0x263b) {
+                    return true;
+                } else if (0x2B05 <= hs && hs <= 0x2b07) {
+                    return true;
+                } else if (0x2934 <= hs && hs <= 0x2935) {
+                    return true;
+                } else if (0x3297 <= hs && hs <= 0x3299) {
+                    return true;
+                } else if (hs == 0xa9 || hs == 0xae || hs == 0x303d
+                        || hs == 0x3030 || hs == 0x2b55 || hs == 0x2b1c
+                        || hs == 0x2b1b || hs == 0x2b50 || hs == 0x231a) {
+                    return true;
+                }
+                if (!isContains && source.length() > 1 && i < source.length() - 1) {
+                    char ls = source.charAt(i + 1);
+                    if (ls == 0x20e3) {
+                        return true;
+                    }
+                }
             }
         }
-        if (buf == null) {
-            return "";
-        } else {
-            return buf.toString();
-        }
+        return isContains;
     }
 }

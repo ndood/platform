@@ -353,5 +353,5 @@ public class UserController extends BaseController {
             return Result.success().data(newUser).msg("新用户添加成功！");
         }
     }
-    
+
 }

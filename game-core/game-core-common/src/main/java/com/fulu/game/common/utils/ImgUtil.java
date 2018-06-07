@@ -39,6 +39,7 @@ public class ImgUtil {
     private static int SIZE_28 = 28;
     private static int SIZE_24 = 24;
     private static int SIZE_22 = 22;
+    private Font FONT_32_DEFAULT = new Font("", Font.PLAIN, SIZE_32);
     private Font FONT_32 = new Font("黑体", Font.PLAIN, SIZE_32);
     private Font FONT_28 = new Font("黑体", Font.PLAIN, SIZE_28);
     private Font FONT_24 = new Font("黑体", Font.PLAIN, SIZE_24);
@@ -77,7 +78,12 @@ public class ImgUtil {
         //画昵称
         Graphics2D g_nickname = image.createGraphics();
         String nickname = cardImg.getNickname();
-        drawString(g_nickname, new Color(20, 25, 28), FONT_32, nickname, x_gap, nickname_top + SIZE_32);
+        Font nameFont = FONT_32;
+        if (EmojiTools.containsEmoji(nickname)) {
+            nameFont = FONT_32_DEFAULT;
+        }
+        drawString(g_nickname, new Color(20, 25, 28), nameFont, nickname, x_gap, nickname_top + SIZE_32);
+        g_nickname.setFont(FONT_32);//处理完表情符后恢复字体
         int nicknameLen = getContentLength(nickname, g_nickname);
         //画性别和年龄
         String genderAndAge = getGenderAndAge(cardImg.getGender(), cardImg.getAge());
@@ -118,8 +124,10 @@ public class ImgUtil {
         //小程序码和文案
         drawImage(cardImg.getCodeUrl(), x_gap, wxcode_top, wxcodeWidth, wxcodeWidth);
         Graphics2D g_share = image.createGraphics();
-        String shareTitle = nickname + cardImg.getShareTitle();
-        drawString(g_share, new Color(20, 25, 28), FONT_32, shareTitle, x_gap + wxcodeWidth + 39, wxcode_top + wxcodeWidth / 2);
+        drawString(g_share, new Color(20, 25, 28), nameFont, nickname, x_gap + wxcodeWidth + 39, wxcode_top + wxcodeWidth / 2);
+        int nameLen = getContentLength(nickname, g_share);
+        String shareTitle = cardImg.getShareTitle();
+        drawString(g_share, new Color(20, 25, 28), FONT_32, shareTitle, x_gap + wxcodeWidth + 39 + nameLen, wxcode_top + wxcodeWidth / 2);
         String shareContent = cardImg.getShareContent();
         drawString(g_share, new Color(170, 170, 170), FONT_24, shareContent, x_gap + wxcodeWidth + 39, wxcode_top + wxcodeWidth / 2 + 15 + SIZE_24);
         return ossUpload();
@@ -172,7 +180,11 @@ public class ImgUtil {
         int x_start = x_gap;
         String nickname = cardImg.getNickname();
         Graphics2D g_nickname = image.createGraphics();
-        drawString(g_nickname, new Color(20, 25, 28), FONT_32, nickname, x_start, name_top + H_nickname);
+        Font nameFont = FONT_32;
+        if (EmojiTools.containsEmoji(nickname)) {
+            nameFont = FONT_32_DEFAULT;
+        }
+        drawString(g_nickname, new Color(20, 25, 28), nameFont, nickname, x_start, name_top + H_nickname);
         int nameLen = getContentLength(nickname, g_nickname);
         x_start += nameLen + x_gap_0;
         //画性别+年龄
@@ -311,9 +323,9 @@ public class ImgUtil {
 
     private String getGenderAndAge(Integer gender, Integer age) {
         if (GenderEnum.ASEXUALITY.getType() == gender || GenderEnum.MALE.getType() == gender) {
-            return GenderEnum.SYMBOL_MALE.getMsg() + (null == age?"未设置":age);
+            return GenderEnum.SYMBOL_MALE.getMsg() + (null == age ? "未设置" : age);
         } else {
-            return GenderEnum.SYMBOL_LADY.getMsg() + (null == age?"未设置":age);
+            return GenderEnum.SYMBOL_LADY.getMsg() + (null == age ? "未设置" : age);
         }
     }
 
