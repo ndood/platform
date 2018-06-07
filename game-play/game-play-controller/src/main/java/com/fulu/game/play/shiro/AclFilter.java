@@ -48,8 +48,10 @@ public class AclFilter extends AccessControlFilter {
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String token = httpRequest.getHeader("token");
+        log.info("请求header中的token {}", token);
+        Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.PLAY_TOKEN.generateKey(token));
         // 没有登录授权 且没有记住我
-        if (!redisOpenService.hasKey(RedisKeyEnum.PLAY_TOKEN.generateKey(token))) {
+        if (MapUtils.isEmpty(map)) {
             log.info("token {} 验证失效=====", token);
             // 没有登录
             HttpServletResponse httpResponse = (HttpServletResponse) response;
@@ -63,8 +65,9 @@ public class AclFilter extends AccessControlFilter {
                 res.put("data", "");
                 res.put("msg", "您未登录，暂无访问权限！");
                 out.write(res.toString());
+                log.info("acl返回501,map:{};", map);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("IO错误:", e);
             } finally {
                 if (out != null) {
                     out.close();
@@ -72,12 +75,8 @@ public class AclFilter extends AccessControlFilter {
             }
             return false;
         }
-        Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.PLAY_TOKEN.generateKey(token));
+        //在存5分钟，保证会话时长
         redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token), map);
-        //sessionKey 时间用户token时间保持一致
-        String sessionKey = redisOpenService.get(RedisKeyEnum.WX_SESSION_KEY.generateKey(token));
-        redisOpenService.set(RedisKeyEnum.WX_SESSION_KEY.generateKey(token),sessionKey);
-
         //已登录的，就保存该token从redis查到的用户信息
         User user = BeanUtil.mapToBean(map, User.class, true);
         SubjectUtil.setCurrentUser(user);
