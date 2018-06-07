@@ -3,6 +3,7 @@ package com.fulu.game.admin.controller.exception;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.exception.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.FileUploadBase;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
 
 import java.util.List;
 
@@ -117,6 +119,7 @@ public class ExceptionHandlerAdvice {
         return	Result.error(e.getCode()).msg(e.getMessage());
     }
 
+
     @ExceptionHandler(UserException.class)
     public Result UserException(UserException e) {
         log.error(e.getMessage(), e);
@@ -126,11 +129,12 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 上传文件过大异常
-     * @param ex
+     * @param e
      * @return
      */
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public Result handleException(MaxUploadSizeExceededException ex) {
+    @ExceptionHandler(MultipartException.class)
+    public Result handleException(MultipartException e) {
+        log.error("文件上传错误", e);
         return Result.error().msg("上传文件不能超过2M");
     }
 
