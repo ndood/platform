@@ -3,6 +3,7 @@ package com.fulu.game.play.shiro;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.UserService;
+import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -49,14 +50,12 @@ public class MyShiroRealm extends AuthorizingRealm {
         User user = userService.findByOpenId(openId);
         if (user != null) {
             log.info("openId为{} 的用户已存在", openId);
-            return new SimpleAuthenticationInfo(user, user.getOpenId(), getName());
         } else {
-            UserVO userVO = new UserVO();
-            userVO.setOpenId(openId);
-            user = userService.save(userVO);
+            user = userService.createUser(openId);
             log.info("创建openId为 {} 的用户",openId);
-            return new SimpleAuthenticationInfo(user, user.getOpenId(), getName());
         }
+        return new SimpleAuthenticationInfo(user, user.getOpenId(), getName());
+
     }
 
 }

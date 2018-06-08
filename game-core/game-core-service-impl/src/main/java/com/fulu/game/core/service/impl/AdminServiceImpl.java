@@ -49,11 +49,11 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
         List<Admin> adminList = adminDao.findByParameter(requestVO);
         if (!CollectionUtil.isEmpty(adminList)) {
             throw new UserException(UserException.ExceptionCode.NAME_DUMPLICATE_EXCEPTION);
-        }else{
+        } else {
             requestVO.setName(null);
             requestVO.setUsername(adminVO.getUsername());
             List<Admin> adminList1 = adminDao.findByParameter(requestVO);
-            if (!CollectionUtil.isEmpty(adminList1)){
+            if (!CollectionUtil.isEmpty(adminList1)) {
                 throw new UserException(UserException.ExceptionCode.USERNAME_DUMPLICATE_EXCEPTION);
             }
         }
@@ -72,7 +72,6 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
 
     @Override
     public PageInfo<Admin> list(AdminVO adminVO, Integer pageNum, Integer pageSize) {
-
         PageHelper.startPage(pageNum, pageSize, "create_time DESC");
         List<Admin> list = adminDao.findByParameter(adminVO);
         return new PageInfo(list);

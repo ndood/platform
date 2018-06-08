@@ -3,7 +3,7 @@ package com.fulu.game.core.service;
 import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.UserTechInfo;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
-import com.fulu.game.core.entity.vo.serachVO.UserTechAuthSearchVO;
+import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;

@@ -22,6 +22,7 @@
 
     <select id="findByAdmin" resultMap="MoneyDetailsResultVOMap" parameterType="com.fulu.game.core.entity.vo.MoneyDetailsVO">
         SELECT
+        tmd.id           AS id,
         tmd.operator_id  AS operator_id,
         tmd.target_id    AS target_id,
         tmd.money        AS money,
@@ -31,6 +32,7 @@
         tu.mobile        AS mobile
         FROM t_money_details tmd LEFT JOIN t_user tu ON tmd.target_id = tu.id
         <where>
+            <if test="id != null">and tmd.id = #{id}</if>
             <if test="action != null">and tmd.action = #{action}</if>
             <if test="operatorId != null">and tmd.operator_id = #{operatorId}</if>
         </where>

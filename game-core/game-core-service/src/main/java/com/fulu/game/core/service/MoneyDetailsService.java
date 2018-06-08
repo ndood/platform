@@ -14,13 +14,15 @@ import java.util.List;
  * @date 2018-04-25 14:59:54
  */
 @Transactional
-public interface MoneyDetailsService extends ICommonService<MoneyDetails,Integer>{
+public interface MoneyDetailsService extends ICommonService<MoneyDetails, Integer> {
 
     PageInfo<MoneyDetailsVO> listByAdmin(MoneyDetailsVO moneyDetailsVO, Integer pageSize, Integer pageNum);
+
     PageInfo<MoneyDetailsVO> listByUser(MoneyDetailsVO moneyDetailsVO, Integer pageSize, Integer pageNum);
 
     /**
      * 入款-管理员加零钱
+     *
      * @param moneyDetailsVO
      * @return
      */
@@ -28,19 +30,20 @@ public interface MoneyDetailsService extends ICommonService<MoneyDetails,Integer
 
     /**
      * 入款-完成陪玩订单
+     *
      * @param money
      * @param targetId
      * @param orderNo
      * @return
      */
-    MoneyDetails orderSave(BigDecimal money,Integer targetId,String orderNo);
+    MoneyDetails orderSave(BigDecimal money, Integer targetId, String orderNo);
 
     /**
      * 提款-生成提款申请单后调用该接口
+     *
      * @return
      */
     MoneyDetails drawSave(MoneyDetails moneyDetails);
-
 
     List<MoneyDetails> findUserMoneyByAction(Integer targetId, Date startTime, Date endTime);
 

@@ -4,9 +4,8 @@ import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
 
 import java.util.List;
-import java.util.Map;
 
-import com.fulu.game.core.entity.vo.serachVO.UserTechAuthSearchVO;
+import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

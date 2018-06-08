@@ -39,7 +39,8 @@
         from t_user_tech_auth
     </select>
 
-    <select id="findByParameter" resultMap="UserTechAuthResultMap" parameterType="com.fulu.game.core.entity.vo.UserTechAuthVO">
+    <select id="findByParameter" resultMap="UserTechAuthResultMap"
+            parameterType="com.fulu.game.core.entity.vo.UserTechAuthVO">
         SELECT
         <include refid="Base_Column_List"/>
         FROM t_user_tech_auth
@@ -72,8 +73,8 @@
     </select>
 
 
-
-    <select id="search" resultMap="UserTechAuthResultMap" parameterType="com.fulu.game.core.entity.vo.serachVO.UserTechAuthSearchVO">
+    <select id="search" resultMap="UserTechAuthResultMap"
+            parameterType="com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO">
         SELECT
         <include refid="Base_Column_List"/>
         FROM t_user_tech_auth
@@ -82,7 +83,7 @@
                 and mobile = #{mobile}
             </if>
             <if test="nickname != null">
-                and user_id in (SELECT id FROM t_user u WHERE u.nickname like  CONCAT('%',#{nickname},'%'))
+                and user_id in (SELECT id FROM t_user u WHERE u.nickname like CONCAT('%',#{nickname},'%'))
             </if>
             <if test="startTime != null">
                 and update_time &gt;= #{startTime}
@@ -92,7 +93,6 @@
             </if>
         </where>
     </select>
-
 
 
     <delete id="deleteById" parameterType="java.lang.Integer">
@@ -122,11 +122,11 @@
             </if>
 
             <if test="categoryName != null">
-                 category_name = #{categoryName},
+                category_name = #{categoryName},
             </if>
 
             <if test="mobile != null">
-                 mobile = #{mobile},
+                mobile = #{mobile},
             </if>
 
             <if test="gradePicUrl != null">

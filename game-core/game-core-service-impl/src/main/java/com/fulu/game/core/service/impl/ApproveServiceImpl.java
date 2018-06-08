@@ -5,7 +5,6 @@ import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.exception.ApproveException;
 import com.fulu.game.common.exception.UserException;
-import com.fulu.game.common.utils.TimeUtil;
 import com.fulu.game.core.dao.ApproveDao;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Approve;
@@ -48,21 +47,21 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
 
     @Override
     public ApproveVO save(Integer techAuthId) {
-        log.info("====好友认可接口执行====入参技能id:{},时间:{}", techAuthId, TimeUtil.defaultFormat(new Date()));
+        log.info("====好友认可接口执行====入参技能id:{}", techAuthId);
         UserTechAuth userTechAuth = utaService.findById(techAuthId);
         if (null == userTechAuth) {
             throw new UserException(UserException.ExceptionCode.TECH_AUTH_NOT_EXIST_EXCEPTION);
         }
-        if (userTechAuth.getStatus() == TechAuthStatusEnum.FREEZE.getType()) {
+        if (userTechAuth.getStatus().intValue() == TechAuthStatusEnum.FREEZE.getType().intValue()) {
             throw new ApproveException(ApproveException.ExceptionCode.APPROVE_FREEZE);
         }
         ApproveVO paramVO = new ApproveVO();
-        Integer techOwnerId = userTechAuth.getUserId();
+        int techOwnerId = userTechAuth.getUserId();
         log.info("技能申请者id:{}", techOwnerId);
         paramVO.setTechOwnerId(techOwnerId);
         User user = userService.getCurrentUser();
         log.info("认可人id:{}", user.getId());
-        if (user.getId().intValue() == techOwnerId.intValue()){
+        if (user.getId() == techOwnerId) {
             throw new ApproveException(ApproveException.ExceptionCode.CANNOT_APPROVE_SELF);
         }
         paramVO.setUserId(user.getId());
@@ -76,28 +75,29 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
         approve.setTechOwnerId(techOwnerId);
         approve.setCreateTime(new Date());
         approveDao.create(approve);
-
-        Integer currentCount = userTechAuth.getApproveCount();
-        Integer newApproveCount = currentCount + 1;
+        log.info("生成认可记录成功");
+        int currentCount = userTechAuth.getApproveCount();
+        int newApproveCount = currentCount + 1;
+        int requireCount = newApproveCount < Constant.DEFAULT_APPROVE_COUNT ? Constant.DEFAULT_APPROVE_COUNT - newApproveCount : 0;
         userTechAuth.setApproveCount(newApproveCount);
-
-        Integer techStatus = 0;
-        Integer approveCount = newApproveCount;
-        Integer requireCount = approveCount < Constant.DEFAULT_APPROVE_COUNT ? Constant.DEFAULT_APPROVE_COUNT - approveCount : 0;
+        int techStatus = 0;
         if (newApproveCount >= Constant.DEFAULT_APPROVE_COUNT) {
             utaService.update(userTechAuth);
+            log.info("更新t_user_tech_auth表,当前认可数:{}", newApproveCount);
             utaService.pass(techAuthId);
             techStatus = TechAuthStatusEnum.NORMAL.getType();
         } else {
             userTechAuth.setStatus(TechAuthStatusEnum.AUTHENTICATION_ING.getType());
             utaService.update(userTechAuth);
-            wxTemplateMsgService.pushWechatTemplateMsg(userTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_ING, user.getNickname(), requireCount.toString());
+            log.info("更新t_user_tech_auth表,当前认可数:{}", newApproveCount);
+            wxTemplateMsgService.pushWechatTemplateMsg(userTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_ING, user.getNickname(), String.valueOf(requireCount));
+            log.info("好友认可-调用发送通知接口完成");
             techStatus = userTechAuth.getStatus();
         }
         ApproveVO responseVO = new ApproveVO();
         BeanUtil.copyProperties(approve, responseVO);
         responseVO.setTechStatus(techStatus);
-        responseVO.setApproveCount(approveCount);
+        responseVO.setApproveCount(newApproveCount);
         responseVO.setRequireCount(requireCount);
         return responseVO;
     }
@@ -108,9 +108,9 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
     }
 
     @Override
-    public void delByTechAuthId(Integer techAuthId){
+    public void delByTechAuthId(Integer techAuthId) {
+        log.info("删除技能认可记录，入参techAuthId:{}", techAuthId);
         approveDao.delByTechAuthId(techAuthId);
-
     }
 
     @Override

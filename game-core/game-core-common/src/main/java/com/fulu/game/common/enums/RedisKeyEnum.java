@@ -13,6 +13,7 @@ public enum RedisKeyEnum {
     USER_ORDER_ALREADY_SERVICE_KEY, //陪玩师是已经开始服务key
     ADMIN_TOKEN,//管理员token
     PLAY_TOKEN,//用户token
+    WX_SESSION_KEY,//用户token
     SMS, //短信
     WX_TEMPLATE_MSG, //微信消息推送
     BITSET_PUSH_MSG_HITS; //微信消息推送

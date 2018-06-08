@@ -10,8 +10,10 @@ import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.EmojiTools;
 import com.fulu.game.common.utils.ImgUtil;
 import com.fulu.game.common.utils.SubjectUtil;
+import com.fulu.game.common.utils.TimeUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserDao;
+import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.Sharing;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserInfoAuth;
@@ -46,6 +48,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     private WxCodeService wxCodeService;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private AdminService adminService;
     @Autowired
     private ImgUtil imgUtil;
 
@@ -124,20 +128,24 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public void lock(int id) {
+        Admin admin = adminService.getCurrentUser();
         User user = findById(id);
         user.setUpdateTime(new Date());
         user.setStatus(UserStatusEnum.BANNED.getType());
         userDao.update(user);
         SubjectUtil.setCurrentUser(user);
+        log.info("用户id:{}被管理员id:{}封禁", id, admin.getId());
     }
 
     @Override
     public void unlock(int id) {
+        Admin admin = adminService.getCurrentUser();
         User user = findById(id);
         user.setUpdateTime(new Date());
         user.setStatus(UserStatusEnum.NORMAL.getType());
         userDao.update(user);
         SubjectUtil.setCurrentUser(user);
+        log.info("用户id:{}被管理员id:{}解封", id, admin.getId());
     }
 
     @Override
@@ -160,6 +168,21 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         user.setUpdateTime(new Date());
         userDao.create(user);
         SubjectUtil.setCurrentUser(user);
+        return user;
+    }
+
+    @Override
+    public User createUser(String openId) {
+        User user = new User();
+        user.setOpenId(openId);
+        user.setStatus(UserStatusEnum.NORMAL.getType());//默认账户解封状态
+        user.setType(UserTypeEnum.GENERAL_USER.getType());//默认普通用户
+        user.setUserInfoAuth(UserInfoAuthStatusEnum.NOT_PERFECT.getType());//默认未审核
+        user.setBalance(Constant.DEFAULT_BALANCE);
+        user.setScoreAvg(Constant.DEFAULT_SCORE_AVG);
+        user.setCreateTime(new Date());
+        user.setUpdateTime(new Date());
+        userDao.create(user);
         return user;
     }
 
@@ -191,7 +214,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         }
         throw new ServiceErrorException("用户不匹配!");
     }
-
 
     public void checkUserInfoAuthStatus(Integer userId) {
         User user = findById(userId);
@@ -301,7 +323,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             throw new ImgException(ImgException.ExceptionCode.JSONFORMAT_ERROR);
         }
         return ImgUtil.CardImg.builder()
-                .nickname(null == userInfoVO.getNickName() ? "陪玩师" : EmojiTools.filterEmoji(userInfoVO.getNickName()))
+                .nickname(null == userInfoVO.getNickName() ? "陪玩师" : userInfoVO.getNickName())
                 .gender(null == userInfoVO.getGender() ? GenderEnum.ASEXUALITY.getType() : userInfoVO.getGender())
                 .age(userInfoVO.getAge())
                 .techStr(sb.toString())
@@ -317,9 +339,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         String personTag1 = null;
         String personTag2 = null;
         List<String> tagList = userInfoVO.getTags();
-        if (!CollectionUtil.isEmpty(tagList)){
+        if (!CollectionUtil.isEmpty(tagList)) {
             personTag1 = tagList.get(0);
-            if (tagList.size()>1){
+            if (tagList.size() > 1) {
                 personTag2 = tagList.get(1);
             }
         }
@@ -338,9 +360,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         String techTag1 = null;
         String techTag2 = null;
         List<String> techTagList = pdVO.getTechTags();
-        if (!CollectionUtil.isEmpty(techTagList)){
+        if (!CollectionUtil.isEmpty(techTagList)) {
             techTag1 = techTagList.get(0);
-            if (techTagList.size()>1){
+            if (techTagList.size() > 1) {
                 techTag2 = techTagList.get(1);
             }
         }
@@ -360,9 +382,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             String secTechTag1 = null;
             String secTechTag2 = null;
             List<String> secTechTagList = productVO.getTechTags();
-            if (!CollectionUtil.isEmpty(secTechTagList)){
+            if (!CollectionUtil.isEmpty(secTechTagList)) {
                 secTechTag1 = secTechTagList.get(0);
-                if (secTechTagList.size()>1){
+                if (secTechTagList.size() > 1) {
                     secTechTag2 = secTechTagList.get(1);
                 }
             }
@@ -370,7 +392,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             secTechMap.put("techTag2", secTechTag2);
         }
         return ImgUtil.CardImg.builder()
-                .nickname(null == userInfoVO.getNickName() ? "陪玩师" : EmojiTools.filterEmoji(userInfoVO.getNickName()))
+                .nickname(null == userInfoVO.getNickName() ? "陪玩师" : userInfoVO.getNickName())
                 .gender(null == userInfoVO.getGender() ? GenderEnum.ASEXUALITY.getType() : userInfoVO.getGender())
                 .age(userInfoVO.getAge())
                 .city(null == userInfoVO.getCity() ? Constant.DEFAULT_CITY : userInfoVO.getCity())

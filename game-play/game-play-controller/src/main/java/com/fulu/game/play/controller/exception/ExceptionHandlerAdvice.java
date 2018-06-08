@@ -1,18 +1,18 @@
 package com.fulu.game.play.controller.exception;
 
 import com.fulu.game.common.Result;
-import com.fulu.game.common.exception.BizException;
-import com.fulu.game.common.exception.OrderException;
-import com.fulu.game.common.exception.ServiceErrorException;
-import com.fulu.game.common.exception.UserAuthException;
+import com.fulu.game.common.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
+import org.apache.tomcat.util.http.fileupload.FileUploadBase;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
 
 @ControllerAdvice
 @ResponseBody
@@ -93,7 +93,6 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 用户认证异常
-     *
      * @param e
      * @return
      */
@@ -103,17 +102,28 @@ public class ExceptionHandlerAdvice {
         return Result.error().msg(e.getMessage()).data("errcode", e.getCode());
     }
 
+
+
     /**
      * 业务异常的父类
-     *
      * @param e
      * @return
      */
     @ExceptionHandler(BizException.class)
     public Result BizException(BizException e) {
-        log.error("业务异常:", e);
-        log.error(e.getMessage(), e);
+        log.error("业务异常:"+e.getMessage(), e);
         return Result.error().msg(e.getMessage()).data("errcode", e.getCode());
+    }
+
+    /**
+     * 上传文件过大异常
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler(MultipartException.class)
+    public Result handleException(MultipartException e) {
+        log.error("文件上传错误", e);
+        return Result.error().msg("上传文件不能超过5M");
     }
 
     /**
