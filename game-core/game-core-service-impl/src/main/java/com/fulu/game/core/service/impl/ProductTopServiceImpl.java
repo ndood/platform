@@ -39,15 +39,9 @@ public class ProductTopServiceImpl extends AbsCommonService<ProductTop, Integer>
     @Override
     public void productTopPutAway(Integer id, Boolean status) {
         ProductTop productTop = findById(id);
-        if (status) {
-            productTop.setStatus(status);
-            productTop.setUpdateTime(new Date());
-            update(productTop);
-        } else {
-            productTop.setStatus(status);
-            productTop.setUpdateTime(new Date());
-            update(productTop);
-        }
+        productTop.setStatus(status);
+        productTop.setUpdateTime(new Date());
+        update(productTop);
         productService.updateUserProductIndex(productTop.getUserId(),Boolean.FALSE);
     }
 
