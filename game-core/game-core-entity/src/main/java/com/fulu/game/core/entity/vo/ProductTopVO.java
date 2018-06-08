@@ -2,6 +2,7 @@ package com.fulu.game.core.entity.vo;
 
 
 import com.fulu.game.core.entity.ProductTop;
+import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotNull;
  * @author wangbin
  * @date 2018-06-07 15:28:32
  */
+@Data
 public class ProductTopVO  extends ProductTop {
 
     //指定分类
@@ -24,4 +26,5 @@ public class ProductTopVO  extends ProductTop {
     @NotNull(message = "[排序ID]字段不能为空")
     private Integer sort;
 
+    private String categoryName;
 }

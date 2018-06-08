@@ -1,7 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.ProductTop;
-
+import com.github.pagehelper.PageInfo;
 
 
 /**
@@ -27,4 +27,8 @@ public interface ProductTopService extends ICommonService<ProductTop,Integer>{
 	 * @return
 	 */
 	 int findTopSortByUserCategory(Integer userId,Integer categoryId);
+
+
+	 PageInfo<ProductTop> productList(int pageNum,int pageSize,String nickName,String mobile,Integer categoryId);
+
 }

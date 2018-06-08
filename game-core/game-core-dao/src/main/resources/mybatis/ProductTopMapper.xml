@@ -37,6 +37,24 @@
         from t_product_top
     </select>
 
+    <select id="list" resultMap="ProductTopResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_product_top
+        <where>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="mobile != null">
+                and mobile = #{mobile}
+            </if>
+            <if test="nickname != null">
+                and user_id in (SELECT id FROM t_user u WHERE u.nickname like  CONCAT('%',#{nickname},'%'))
+            </if>
+
+        </where>
+    </select>
+
     <select id="findByParameter" resultMap="ProductTopResultMap"
             parameterType="com.fulu.game.core.entity.vo.ProductTopVO">
         SELECT
