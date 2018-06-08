@@ -48,13 +48,7 @@ public interface CouponService extends ICommonService<Coupon, Integer> {
      */
     List<Coupon> findByUserReceive(Integer couponGroupId, Integer userId);
 
-    /**
-     * 通过优惠券兑换码发放优惠券
-     * @param redeemCode
-     * @param userId
-     * @return
-     */
-    Coupon generateCoupon(String redeemCode, Integer userId);
+
 
     /**
      * 通过优惠券兑换码发放优惠券

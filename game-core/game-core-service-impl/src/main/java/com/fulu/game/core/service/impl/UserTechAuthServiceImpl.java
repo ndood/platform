@@ -6,6 +6,7 @@ import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
+import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserTechAuthDao;
 import com.fulu.game.core.entity.*;
@@ -54,6 +55,8 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     private ProductService productService;
     @Autowired
     private ApproveService approveService;
+    @Autowired
+    private OssUtil ossUtil;
 
     @Override
     public ICommonDao<UserTechAuth, Integer> getDao() {
@@ -67,6 +70,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         Category category = categoryService.findById(userTechAuthVO.getCategoryId());
         userTechAuthVO.setStatus(TechAuthStatusEnum.AUTHENTICATION_ING.getType());
         userTechAuthVO.setMobile(user.getMobile());
+        userTechAuthVO.setGradePicUrl(ossUtil.activateOssFile(userTechAuthVO.getGradePicUrl()));
         userTechAuthVO.setCategoryName(category.getName());
         userTechAuthVO.setUpdateTime(new Date());
         userTechAuthVO.setApproveCount(0);
@@ -77,7 +81,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
                 throw new ServiceErrorException("不能添加重复的技能!");
             }
             userTechAuthVO.setCreateTime(new Date());
-            userTechAuthDao.create(userTechAuthVO);
+            create(userTechAuthVO);
         } else {
             UserTechAuth oldUserTechAuth = findById(userTechAuthVO.getId());
             if(oldUserTechAuth.getStatus().equals(TechAuthStatusEnum.FREEZE.getType())){
@@ -92,6 +96,9 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
             }
             //重置技能好友认证状态
             approveService.resetApproveStatusAndUpdate(userTechAuthVO);
+            if(!oldUserTechAuth.getGradePicUrl().equals(userTechAuthVO.getGradePicUrl())){
+                ossUtil.deleteFile(oldUserTechAuth.getGradePicUrl());
+            }
             //删除重新认证的商品
             productService.deleteProductByTech(userTechAuthVO.getId());
         }

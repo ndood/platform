@@ -4,6 +4,7 @@ package com.fulu.game.core.service.impl;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserInfoAuthDao;
 import com.fulu.game.core.entity.*;
@@ -51,6 +52,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     private AdminService adminService;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private OssUtil ossUtil;
 
     @Override
     public ICommonDao<UserInfoAuth, Integer> getDao() {
@@ -71,6 +74,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     @Override
     public UserInfoAuthVO save(UserInfoAuthVO userInfoAuthVO) {
         log.info("保存用户认证信息:userInfoAuthVO:{}",userInfoAuthVO);
+        userInfoAuthVO.setMainPicUrl(ossUtil.activateOssFile(userInfoAuthVO.getMainPicUrl()));
         //更新用户信息
         User user = userService.findById(userInfoAuthVO.getUserId());
         //如果是用户冻结状态给错误提示
@@ -549,7 +553,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         if(flag){
             UserInfoFile userInfoFile = new UserInfoFile();
             userInfoFile.setName(name);
-            userInfoFile.setUrl(fileUrl);
+            userInfoFile.setUrl(ossUtil.activateOssFile(fileUrl));
             userInfoFile.setUserId(userId);
             userInfoFile.setCreateTime(new Date());
             userInfoFile.setType(type);
@@ -576,7 +580,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             }
         }
         for (int i = 0; i < portraitUrls.length; i++) {
-            String portraitUrl = portraitUrls[i];
+            String portraitUrl = ossUtil.activateOssFile(portraitUrls[i]);
             if(!dbFilesUrlList.contains(portraitUrl)){
                 UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
                 userInfoAuthFile.setUrl(portraitUrl);
@@ -610,7 +614,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         }
         if(flag){
             UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
-            userInfoAuthFile.setUrl(voiceUrl);
+            userInfoAuthFile.setUrl(ossUtil.activateOssFile(voiceUrl));
             userInfoAuthFile.setDuration(duration);
             userInfoAuthFile.setInfoAuthId(userInfoAuthId);
             userInfoAuthFile.setName("语音介绍");

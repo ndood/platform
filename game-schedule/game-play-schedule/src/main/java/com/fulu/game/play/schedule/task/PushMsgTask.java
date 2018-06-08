@@ -17,15 +17,19 @@ public class PushMsgTask {
     private PushMsgService pushMsgService;
 
     /**
-     * 自动完成订单
+     *  推送消息
      */
     @Scheduled(cron = "0 0/1 * * * ? ")  //cron接受cron表达式，根据cron表达式确定定时规则
     public void autoCompleteOrder() {
        List<PushMsg> pushMsgList = pushMsgService.findTodayNotPushMsg();
-       for(PushMsg pushMsg :pushMsgList ){
-           log.info("查询到今天未执行的消息推送:{}",pushMsg);
-           pushMsgService.appointPush(pushMsg);
-       }
+           for(PushMsg pushMsg :pushMsgList ){
+               log.info("查询到今天未执行的消息推送:{}",pushMsg);
+               try {
+                   pushMsgService.appointPush(pushMsg);
+               }catch (Exception e){
+                   log.error("推送任务出错:pushMsg:{};{}",pushMsg,e.getMessage());
+               }
+           }
     }
 
 }

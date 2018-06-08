@@ -1,6 +1,7 @@
 package com.fulu.game.admin.controller;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.entity.Banner;
 import com.fulu.game.core.entity.vo.BannerVO;
 import com.fulu.game.core.service.BannerService;
@@ -21,19 +22,22 @@ public class BannerController extends BaseController{
 
     @Autowired
     private BannerService bannerService;
-
+    @Autowired
+    private OssUtil ossUtil;
     /**
      * @param bannerVO
      * @return
      */
     @PostMapping("/save")
     public Result save(@Valid BannerVO bannerVO) {
+        bannerVO.setPicUrl(ossUtil.activateOssFile(bannerVO.getPicUrl()));
         Banner banner = bannerService.save(bannerVO);
         return Result.success().data(banner).msg("添加成功");
     }
 
     @PostMapping("/update")
     public Result update(@Valid BannerVO bannerVO) {
+        bannerVO.setPicUrl(ossUtil.activateOssFile(bannerVO.getPicUrl()));
         Banner banner = bannerService.update(bannerVO);
         return Result.success().data(banner).msg("修改成功");
     }

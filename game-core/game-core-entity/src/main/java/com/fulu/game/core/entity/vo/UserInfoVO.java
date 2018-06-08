@@ -42,6 +42,7 @@ public class UserInfoVO {
     //陪玩师照片集
     private List<String> photos;
     private List<String> techs;
+
     private UserTechAuthVO userTechAuthVO;
 
 }

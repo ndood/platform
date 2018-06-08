@@ -17,3 +17,18 @@ CREATE TABLE `t_push_msg` (
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 )  COMMENT='推送信息表';
+
+CREATE TABLE `t_product_top` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `category_id` int(11) NOT NULL COMMENT '指定分类',
+  `user_id` int(11) NOT NULL COMMENT '用户ID',
+  `mobile` varchar(255) NOT NULL COMMENT '手机号',
+  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '上下架(0下架,1上架)',
+  `sort` int(11) NOT NULL COMMENT '排序',
+  `admin_id` int(11) NOT NULL,
+  `admin_name` varchar(255) DEFAULT NULL,
+  `create_time` datetime NOT NULL,
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `category_id-user_id` (`category_id`,`user_id`) USING BTREE
+)  COMMENT='商品置顶表';

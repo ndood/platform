@@ -3,6 +3,7 @@ package com.fulu.game.admin.controller;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.CategoryParentEnum;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
+import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.CategoryVO;
 import com.fulu.game.core.entity.vo.TagVO;
@@ -32,7 +33,8 @@ public class CategoryController extends BaseController {
     private TagService tagService;
     @Autowired
     private SalesModeService salesModeService;
-
+    @Autowired
+    private OssUtil ossUtil;
     /**
      * 内容列表
      *
@@ -103,7 +105,7 @@ public class CategoryController extends BaseController {
         if (charges != null) {
             category.setCharges(charges.divide(new BigDecimal(100)));
         }
-        category.setIcon(icon);
+        category.setIcon(ossUtil.activateOssFile(icon));
         category.setId(id);
         if (category.getId() == null) {
             category.setPid(CategoryParentEnum.ACCOMPANY_PLAY.getType());
@@ -112,14 +114,17 @@ public class CategoryController extends BaseController {
             categoryService.create(category);
             return Result.success().data(category).msg("内容创建成功!");
         } else {
+            Category origCategory = categoryService.findById(id);
             if (most != null) {
-                Category origCategory = categoryService.findById(id);
                 if (origCategory.getTagId() != null) {
                     Tag tag = new Tag();
                     tag.setId(origCategory.getTagId());
                     tag.setMost(most);
                     tagService.update(tag);
                 }
+            }
+            if(!origCategory.getIcon().equals(category.getIcon())){
+                ossUtil.deleteFile(origCategory.getIcon());
             }
             category.setUpdateTime(new Date());
             categoryService.update(category);

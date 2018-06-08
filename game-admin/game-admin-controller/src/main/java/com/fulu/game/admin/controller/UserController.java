@@ -329,6 +329,7 @@ public class UserController extends BaseController {
         return Result.success().data(userList).msg("查询用户列表成功！");
     }
 
+
     @PostMapping("/save")
     public Result save(UserVO userVO) {
         if (StringUtils.isEmpty(userVO.getMobile())) {
@@ -339,7 +340,7 @@ public class UserController extends BaseController {
         if (user != null) {
             return Result.error(ResultStatus.MOBILE_DUPLICATE).msg("手机号已注册");
         } else {
-            User newUser = userService.save(userVO);
+            User newUser = userService.createNewUser(userVO);
             return Result.success().data(newUser).msg("新用户添加成功！");
         }
     }
