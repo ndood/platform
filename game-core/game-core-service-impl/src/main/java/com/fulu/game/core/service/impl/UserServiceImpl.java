@@ -376,7 +376,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             secTechMap.put("techTag2", secTechTag2);
         }
         return ImgUtil.CardImg.builder()
-                .nickname(null == userInfoVO.getNickName() ? "陪玩师" : EmojiTools.filterEmoji(userInfoVO.getNickName()))
+                .nickname(null == userInfoVO.getNickName() ? "陪玩师" : userInfoVO.getNickName())
                 .gender(null == userInfoVO.getGender() ? GenderEnum.ASEXUALITY.getType() : userInfoVO.getGender())
                 .age(userInfoVO.getAge())
                 .city(null == userInfoVO.getCity() ? Constant.DEFAULT_CITY : userInfoVO.getCity())
