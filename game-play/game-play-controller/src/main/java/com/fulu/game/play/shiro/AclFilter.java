@@ -48,6 +48,7 @@ public class AclFilter extends AccessControlFilter {
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String token = httpRequest.getHeader("token");
+        log.info("head中的token:{}", token);
         // 没有登录授权 且没有记住我
         if (!redisOpenService.hasKey(RedisKeyEnum.PLAY_TOKEN.generateKey(token))) {
             log.info("token {} 验证失效=====", token);
@@ -64,7 +65,7 @@ public class AclFilter extends AccessControlFilter {
                 res.put("msg", "您未登录，暂无访问权限！");
                 out.write(res.toString());
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("IO异常:{}", e);
             } finally {
                 if (out != null) {
                     out.close();
