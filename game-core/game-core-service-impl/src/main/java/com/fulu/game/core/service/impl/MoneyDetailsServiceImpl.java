@@ -5,6 +5,7 @@ import com.fulu.game.common.exception.CashException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.MoneyDetailsDao;
+import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.MoneyDetails;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.MoneyDetailsVO;
@@ -17,6 +18,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service("moneyDetailsService")
+@Slf4j
 public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Integer> implements MoneyDetailsService {
 
     @Autowired
@@ -66,6 +69,8 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
      */
     @Override
     public MoneyDetails save(MoneyDetailsVO moneyDetailsVO) {
+        Admin admin = adminService.getCurrentUser();
+        log.info("调用管理员加零钱接口，管理员id:{}",admin.getId());
         User user = userService.findByMobile(moneyDetailsVO.getMobile());
         if (null == user) {
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
@@ -73,20 +78,21 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         //加钱之前该用户的零钱
         BigDecimal balance = user.getBalance();
         BigDecimal newBalance = balance.add(moneyDetailsVO.getMoney());
-
+        log.info("当前余额:{},加零钱金额:{}",balance,moneyDetailsVO.getMoney());
         MoneyDetails moneyDetails = new MoneyDetails();
         BeanUtil.copyProperties(moneyDetailsVO, moneyDetails);
         moneyDetails.setSum(newBalance);
-        moneyDetails.setOperatorId(adminService.getCurrentUser().getId());//查询当前管理员对象后修改掉
+        moneyDetails.setOperatorId(admin.getId());
         moneyDetails.setTargetId(user.getId());
         moneyDetails.setAction(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType());
         moneyDetails.setCreateTime(new Date());
         moneyDetailsDao.create(moneyDetails);
         user.setBalance(newBalance);
         userService.update(user);
-
+        log.info("更新用户余额完成，加零钱后余额:{}",user.getBalance());
         //计入平台支出流水
         platformMoneyDetailsService.createSmallChangeDetails(moneyDetails.getRemark(),user.getId(),moneyDetails.getMoney().negate());
+        log.info("调用平台支出流水接口执行结束");
         return moneyDetails;
     }
 
@@ -100,6 +106,7 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
      */
     @Override
     public MoneyDetails orderSave(BigDecimal money, Integer targetId, String orderNo) {
+        log.info("调用陪玩订单完成生成提现记录接口，入参金额money:{},入账人id:{},订单号:{}",money,targetId,orderNo);
         if (money.compareTo(BigDecimal.ZERO) == -1) {
             throw new CashException(CashException.ExceptionCode.CASH_NEGATIVE_EXCEPTION);
         }
@@ -112,9 +119,9 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         BigDecimal newBalance = balance.add(money);
         MoneyDetails moneyDetails = new MoneyDetails();
         moneyDetails.setMoney(money);
-        moneyDetails.setOperatorId(targetId);//默认是系统加款
+        moneyDetails.setOperatorId(targetId);
         moneyDetails.setTargetId(targetId);
-        moneyDetails.setAction(MoneyOperateTypeEnum.ORDER_COMPLETE.getType());//2表示陪玩订单
+        moneyDetails.setAction(MoneyOperateTypeEnum.ORDER_COMPLETE.getType());
         moneyDetails.setSum(newBalance);
         moneyDetails.setRemark("陪玩订单完成，系统打款,订单号_" + orderNo);
         moneyDetails.setCreateTime(new Date());

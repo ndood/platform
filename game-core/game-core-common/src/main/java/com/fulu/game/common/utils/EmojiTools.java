@@ -59,6 +59,12 @@ public class EmojiTools {
         return isContains;
     }
 
+    /**
+     * Emoji表情符过滤
+     *
+     * @param source
+     * @return
+     */
     public static String filterEmoji(String source) {
         if (StringUtils.isBlank(source)) {
             return source;
@@ -86,6 +92,12 @@ public class EmojiTools {
         }
     }
 
+    /**
+     * 判断是否是emoji字符
+     *
+     * @param codePoint
+     * @return
+     */
     public static boolean isEmojiCharacter(char codePoint) {
         return (codePoint == 0x0) || (codePoint == 0x9) || (codePoint == 0xA)
                 || (codePoint == 0xD)
@@ -94,6 +106,12 @@ public class EmojiTools {
                 || ((codePoint >= 0x10000) && (codePoint <= 0x10FFFF));
     }
 
+    /**
+     * 判断是否是Emoji字符
+     *
+     * @param codePoint
+     * @return
+     */
     private static boolean isEmojiCharacter(int codePoint) {
         return (codePoint >= 0x2600 && codePoint <= 0x27BF) // 杂项符号与符号字体
                 || codePoint == 0x303D
@@ -115,6 +133,12 @@ public class EmojiTools {
                 || codePoint >= 0x10000; // Plane在第二平面以上的，char都不可以存，全部都转
     }
 
+    /**
+     * 将字符串分割成字符（带Emoji字符的占4字节）
+     *
+     * @param source
+     * @return
+     */
     public static List<String> splitEmoji(String source) {
         if (StringUtils.isBlank(source)) {
             return null;

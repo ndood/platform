@@ -23,7 +23,7 @@ import java.net.URL;
 import java.util.Map;
 
 /**
- * 图片生成类
+ * 图片生成类/技能认证/技能名片
  */
 @Component
 @Slf4j
@@ -33,11 +33,11 @@ public class ImgUtil {
     private OssUtil ossUtil;
 
     private BufferedImage image;
-    private String EXT_NAME = "jpg";
-    private String locateIconUrl = "http://t-admin.wzpeilian.com/icon/place.png";
-    private static int imgWidth = Constant.TECH_CARD_WIDTH;
-    private static int cardImgHeight = Constant.TECH_CARD_HEIGHT;
-    private static int authImgHeight = Constant.TECH_AUTH_HEIGHT;
+    private static String EXT_NAME = "jpg";
+    private static String LOCATE_ICON_URL = "http://t-admin.wzpeilian.com/icon/place.png";
+    private static int IMG_WIDTH = Constant.TECH_CARD_WIDTH;
+    private static int CARDIMGHEIGHT = Constant.TECH_CARD_HEIGHT;
+    private static int AUTHIMGHEIGHT = Constant.TECH_AUTH_HEIGHT;
     private static int SIZE_32 = 32;
     private static int SIZE_28 = 28;
     private static int SIZE_24 = 24;
@@ -50,55 +50,57 @@ public class ImgUtil {
     private static Color FEMALE_COLOR = new Color(255, 156, 163);
     private static Color MALE_COLOR = new Color(156, 186, 255);
     private static Color LIGHT_GRAY = Color.LIGHT_GRAY;
-    private int x_gap_0 = 30, x_gap = 60, tag_x_gap = 20, tag_padding_y = 8, tag_h = 40, y_gap = 30;
-    private int lineWidth = imgWidth - 2 * x_gap;
+    private int xGap0 = 30, xGap = 60, tagGapX = 20, tagPaddingY = 8, tagH = 40, YGap = 30;
+    private int LINEWIDTH = IMG_WIDTH - 2 * xGap;
 
+    /**
+     * 技能认证图片生成
+     *
+     * @param cardImg
+     * @return
+     * @throws IOException
+     */
     public String createTechAuth(CardImg cardImg) throws IOException {
 
         //整体布局
         int mainPic_top = 30;
-        int H_mainPic = imgWidth - 2 * x_gap_0;
+        int H_mainPic = IMG_WIDTH - 2 * xGap0;
 
         int nickname_top = mainPic_top + H_mainPic + 35;
         int H_person = 30;
 
-        int tech_top = nickname_top + H_person + y_gap;
+        int tech_top = nickname_top + H_person + YGap;
         int H_tech = 40;
 
         //小程序码
         int H_bottom = 66;//底部留白高度
         int wxcodeWidth = 180;
-        int wxcode_top = authImgHeight - H_bottom - wxcodeWidth;
+        int wxcode_top = AUTHIMGHEIGHT - H_bottom - wxcodeWidth;
 
         //画布整体布局背景为白色
-        image = new BufferedImage(imgWidth, authImgHeight, BufferedImage.TYPE_INT_RGB);
+        image = new BufferedImage(IMG_WIDTH, AUTHIMGHEIGHT, BufferedImage.TYPE_INT_RGB);
         Graphics2D g_image = image.createGraphics();
-        fillRect(g_image, new Color(245, 245, 245), 0, 0, imgWidth, authImgHeight);
-        fillRect(g_image, Color.white, x_gap_0, y_gap, imgWidth - 2 * x_gap_0, authImgHeight - 2 * y_gap);
+        fillRect(g_image, new Color(245, 245, 245), 0, 0, IMG_WIDTH, AUTHIMGHEIGHT);
+        fillRect(g_image, Color.white, xGap0, YGap, IMG_WIDTH - 2 * xGap0, AUTHIMGHEIGHT - 2 * YGap);
 
         //画主图
-        drawCornerImg(cardImg.getMainPicUrl(), x_gap_0, mainPic_top, H_mainPic, H_mainPic);
+        drawCornerImg(cardImg.getMainPicUrl(), xGap0, mainPic_top, H_mainPic, H_mainPic);
         //画昵称
         Graphics2D g_nickname = image.createGraphics();
         String nickname = cardImg.getNickname();
-//        Font nameFont = FONT_32;
-//        if (EmojiTools.containsEmoji(nickname)) {
-//            nameFont = FONT_32_DEFAULT;
-//        }
-//        drawString(g_nickname, new Color(20, 25, 28), nameFont, nickname, x_gap, nickname_top + SIZE_32);
-        drawString(g_nickname, new Color(20, 25, 28), FONT_32, nickname, x_gap, nickname_top + SIZE_32);
+        drawNickname(g_nickname, new Color(20, 25, 28), FONT_32, nickname, xGap, nickname_top + SIZE_32);
         g_nickname.setFont(FONT_32);//处理完表情符后恢复字体
         int nicknameLen = getContentLength(nickname, g_nickname);
         //画性别和年龄
         String genderAndAge = getGenderAndAge(cardImg.getGender(), cardImg.getAge());
         Color genderColor = getGenderColor(cardImg.getGender());
-        drawStrWithBgcolor(g_nickname, genderColor, Color.white, genderAndAge, nicknameLen + 3 * x_gap_0, nickname_top, 40, nickname_top + tag_padding_y + SIZE_24);
+        drawStrWithBgcolor(g_nickname, genderColor, Color.white, genderAndAge, nicknameLen + 3 * xGap0, nickname_top, 40, nickname_top + tagPaddingY + SIZE_24);
         //技能+技能标签
         String techStr = cardImg.getTechStr();
         Graphics2D tech = image.createGraphics();
         tech.setFont(FONT_24);
         //自动换行
-        int tempX = x_gap;
+        int tempX = xGap;
         int tempY = tech_top + SIZE_24;
         int tempCharLen = 0;//单字符长度
         int tempLineLen = 0;//单行字符总长度临时计算
@@ -107,7 +109,7 @@ public class ImgUtil {
             char tempChar = techStr.charAt(i);
             tempCharLen = getCharLen(tempChar, tech);
             tempLineLen += tempCharLen;
-            if (tempLineLen >= lineWidth) {
+            if (tempLineLen >= LINEWIDTH) {
                 //长度已经满一行,进行文字叠加
                 drawString(tech, new Color(170, 170, 170), FONT_24, sb.toString(), tempX, tempY);
                 sb.delete(0, sb.length());//清空内容,重新追加
@@ -123,36 +125,42 @@ public class ImgUtil {
         //画一条横线
         Graphics2D line = image.createGraphics();
         int line_top = (wxcode_top + tempY) / 2;
-        drawRect(line, LIGHT_GRAY, x_gap, line_top, lineWidth, 0);
+        drawRect(line, LIGHT_GRAY, xGap, line_top, LINEWIDTH, 0);
 
         //小程序码和文案
-        drawImage(cardImg.getCodeUrl(), x_gap, wxcode_top, wxcodeWidth, wxcodeWidth);
+        drawImage(cardImg.getCodeUrl(), xGap, wxcode_top, wxcodeWidth, wxcodeWidth);
         Graphics2D g_share = image.createGraphics();
-        drawString(g_share, new Color(20, 25, 28), FONT_32, nickname, x_gap + wxcodeWidth + 39, wxcode_top + wxcodeWidth / 2);
+        drawNickname(g_share, new Color(20, 25, 28), FONT_32, nickname, xGap + wxcodeWidth + 39, wxcode_top + wxcodeWidth / 2);
         int nameLen = getContentLength(nickname, g_share);
         String shareTitle = cardImg.getShareTitle();
-        drawString(g_share, new Color(20, 25, 28), FONT_32, shareTitle, x_gap + wxcodeWidth + 39 + nameLen, wxcode_top + wxcodeWidth / 2);
+        drawString(g_share, new Color(20, 25, 28), FONT_32, shareTitle, xGap + wxcodeWidth + 39 + nameLen, wxcode_top + wxcodeWidth / 2);
         String shareContent = cardImg.getShareContent();
-        drawString(g_share, new Color(170, 170, 170), FONT_24, shareContent, x_gap + wxcodeWidth + 39, wxcode_top + wxcodeWidth / 2 + 15 + SIZE_24);
+        drawString(g_share, new Color(170, 170, 170), FONT_24, shareContent, xGap + wxcodeWidth + 39, wxcode_top + wxcodeWidth / 2 + 15 + SIZE_24);
         return ossUpload();
     }
 
-    //技能名片分享
+    /**
+     * 技能名片图片生成
+     *
+     * @param cardImg
+     * @return
+     * @throws IOException
+     */
     public String createTechCard(CardImg cardImg) throws IOException {
-        int cardImageHeight = cardImgHeight;//1467
+        int cardImageHeight = CARDIMGHEIGHT;//1467
         Map<String, String> secTechMap = cardImg.getSecTech();
         if (secTechMap.isEmpty()) {
-            cardImageHeight = cardImgHeight - 160;
+            cardImageHeight = CARDIMGHEIGHT - 160;
         }
         //整体尺寸布局
         //主图
         int mainPic_top = 30;//顶部留白高度
-        int H_mainPic = imgWidth - 2 * x_gap_0;
+        int H_mainPic = IMG_WIDTH - 2 * xGap0;
         //昵称 + 性别+年龄 + 城市+个人标签
         int name_top = mainPic_top + H_mainPic + 35;
         int H_nickname = 30;
         //城市
-        int city_top = name_top + tag_h + 29;
+        int city_top = name_top + tagH + 29;
         int H_city = SIZE_22;
         //横线0
         int line0_top = city_top + H_city + 30;
@@ -173,87 +181,82 @@ public class ImgUtil {
         int wxcode_top = cardImageHeight - H_bottom - wxcodeWidth;
 
         //画布整体布局背景为白色
-        image = new BufferedImage(imgWidth, cardImageHeight, BufferedImage.TYPE_INT_RGB);
+        image = new BufferedImage(IMG_WIDTH, cardImageHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D g_image = image.createGraphics();
-        fillRect(g_image, new Color(245, 245, 245), 0, 0, imgWidth, cardImageHeight);
-        fillRect(g_image, Color.white, x_gap_0, y_gap, imgWidth - 2 * x_gap_0, cardImageHeight - 2 * y_gap);
+        fillRect(g_image, new Color(245, 245, 245), 0, 0, IMG_WIDTH, cardImageHeight);
+        fillRect(g_image, Color.white, xGap0, YGap, IMG_WIDTH - 2 * xGap0, cardImageHeight - 2 * YGap);
         //画主图
         String mainPicUrl = cardImg.getMainPicUrl();
-        drawCornerImg(mainPicUrl, x_gap_0, mainPic_top, H_mainPic, H_mainPic);
+        drawCornerImg(mainPicUrl, xGap0, mainPic_top, H_mainPic, H_mainPic);
         //画昵称
-        int x_start = x_gap;
+        int x_start = xGap;
         String nickname = cardImg.getNickname();
         Graphics2D g_nickname = image.createGraphics();
-//        Font nameFont = FONT_32;
-//        if (EmojiTools.containsEmoji(nickname)) {
-//            nameFont = FONT_32_DEFAULT;
-//        }
-        //drawString(g_nickname, new Color(20, 25, 28), FONT_32, nickname, x_start, name_top + H_nickname);
         drawNickname(g_nickname, new Color(20, 25, 28), FONT_32, nickname, x_start, name_top + H_nickname);
         int nameLen = getContentLength(nickname, g_nickname);
-        x_start += nameLen + x_gap_0;
+        x_start += nameLen + xGap0;
         //画性别+年龄
         String genderAndAge = getGenderAndAge(cardImg.getGender(), cardImg.getAge());
         Color genderColor = getGenderColor(cardImg.getGender());
         Graphics2D g_age = image.createGraphics();
         g_age.setFont(FONT_22);
-        int ageLen = drawStrWithBgcolor(g_age, genderColor, Color.white, genderAndAge, x_start, name_top, 40, name_top + tag_padding_y + SIZE_22);
-        x_start += ageLen + tag_x_gap;
+        int ageLen = drawStrWithBgcolor(g_age, genderColor, Color.white, genderAndAge, x_start, name_top, 40, name_top + tagPaddingY + SIZE_22);
+        x_start += ageLen + tagGapX;
         //画个人标签
         String personTag1 = cardImg.getPersonTag1();
         Graphics2D g_tag = image.createGraphics();
         g_tag.setFont(FONT_22);
         if (!StringUtils.isEmpty(personTag1)) {
-            int personTag1Len = drawStrWithBgcolor(g_tag, genderColor, Color.white, personTag1, x_start, name_top, 40, name_top + tag_padding_y + SIZE_22);
+            int personTag1Len = drawStrWithBgcolor(g_tag, genderColor, Color.white, personTag1, x_start, name_top, 40, name_top + tagPaddingY + SIZE_22);
             String personTag2 = cardImg.getPersonTag2();
             if (!StringUtils.isEmpty(personTag2)) {
-                x_start += personTag1Len + tag_x_gap;
-                drawStrWithBgcolor(g_tag, genderColor, Color.white, personTag2, x_start, name_top, 40, name_top + tag_padding_y + SIZE_22);
+                x_start += personTag1Len + tagGapX;
+                drawStrWithBgcolor(g_tag, genderColor, Color.white, personTag2, x_start, name_top, 40, name_top + tagPaddingY + SIZE_22);
             }
         }
         //画城市和位置图标
         String city = cardImg.getCity();
-        drawImage(locateIconUrl, x_gap, city_top, H_city, H_city);
+        drawImage(LOCATE_ICON_URL, xGap, city_top, H_city, H_city);
         Graphics2D g_city = image.createGraphics();
-        drawString(g_city, new Color(170, 170, 170), FONT_22, city, x_gap + 27, city_top + H_city);
+        drawString(g_city, new Color(170, 170, 170), FONT_22, city, xGap + 27, city_top + H_city);
         //画横线0
         Graphics2D line0 = image.createGraphics();
-        drawRect(line0, LIGHT_GRAY, x_gap, line0_top, lineWidth, 0);
+        drawRect(line0, LIGHT_GRAY, xGap, line0_top, LINEWIDTH, 0);
         //画主技能 图标+技能名+标签+价格
-        int x_start_tech = x_gap;
-        int y_start_tech = tech_top + y_gap;
+        int x_start_tech = xGap;
+        int y_start_tech = tech_top + YGap;
         Map<String, String> mainTechMap = cardImg.getMainTech();
         String iconUrl = mainTechMap.get("techIconUrl");
         drawCircleImg(iconUrl, x_start_tech, y_start_tech, icon_width);
-        x_start_tech += icon_width + x_gap;
+        x_start_tech += icon_width + xGap;
         Graphics2D g_tech = image.createGraphics();
         String techName = mainTechMap.get("techName");
         drawString(g_tech, new Color(0, 0, 0), FONT_28, techName, x_start_tech, y_start_tech + SIZE_28);
         String price = mainTechMap.get("price");
         g_tech.setFont(FONT_24);
         int priceLen = getContentLength(price, g_tech);
-        int priceStart = imgWidth - x_gap - priceLen;
+        int priceStart = IMG_WIDTH - xGap - priceLen;
         drawString(g_tech, new Color(232, 100, 95), FONT_24, price, priceStart, y_start_tech + SIZE_28);
 
         y_start_tech += SIZE_28 + 30;
         String techTag1 = mainTechMap.get("techTag1");
-        int techTag1Len = drawStrWithBgcolor(g_tech, new Color(246, 246, 246), new Color(153, 153, 153), techTag1, x_start_tech, y_start_tech, 40, y_start_tech + tag_padding_y + SIZE_22);
-        x_start_tech += techTag1Len + tag_x_gap;
+        int techTag1Len = drawStrWithBgcolor(g_tech, new Color(246, 246, 246), new Color(153, 153, 153), techTag1, x_start_tech, y_start_tech, 40, y_start_tech + tagPaddingY + SIZE_22);
+        x_start_tech += techTag1Len + tagGapX;
         String techTag2 = mainTechMap.get("techTag2");
         if (!StringUtils.isEmpty(techTag2)) {
-            drawStrWithBgcolor(g_tech, new Color(246, 246, 246), new Color(153, 153, 153), techTag2, x_start_tech, y_start_tech, 40, y_start_tech + tag_padding_y + SIZE_22);
+            drawStrWithBgcolor(g_tech, new Color(246, 246, 246), new Color(153, 153, 153), techTag2, x_start_tech, y_start_tech, 40, y_start_tech + tagPaddingY + SIZE_22);
         }
 
         //画横线2
         Graphics2D line1 = image.createGraphics();
-        drawRect(line1, LIGHT_GRAY, x_gap, line1_top, lineWidth, 0);
+        drawRect(line1, LIGHT_GRAY, xGap, line1_top, LINEWIDTH, 0);
         //画其他技能+标签
         if (!secTechMap.isEmpty()) {
-            int x_start_tech2 = x_gap;
-            int y_start_tech2 = secTech_top + y_gap;
+            int x_start_tech2 = xGap;
+            int y_start_tech2 = secTech_top + YGap;
             String secIconUrl = secTechMap.get("techIconUrl");
             drawCircleImg(secIconUrl, x_start_tech2, y_start_tech2, icon_width);
-            x_start_tech2 += icon_width + x_gap;
+            x_start_tech2 += icon_width + xGap;
             Graphics2D g_tech2 = image.createGraphics();
             String secTechName = secTechMap.get("techName");
             drawString(g_tech2, new Color(0, 0, 0), FONT_28, secTechName, x_start_tech2, y_start_tech2 + SIZE_28);
@@ -261,33 +264,33 @@ public class ImgUtil {
             String price2 = secTechMap.get("price");
             g_tech2.setFont(FONT_24);
             int price2Len = getContentLength(price2, g_tech2);
-            int price2Start = imgWidth - x_gap - price2Len;
+            int price2Start = IMG_WIDTH - xGap - price2Len;
             drawString(g_tech2, new Color(232, 100, 95), FONT_24, price2, price2Start, y_start_tech2 + SIZE_28);
 
             y_start_tech2 += SIZE_28 + 30;
             String tech2Tag1 = secTechMap.get("techTag1");
             g_tech2.setFont(FONT_22);
-            int tech2Tag1Len = drawStrWithBgcolor(g_tech2, new Color(246, 246, 246), new Color(153, 153, 153), tech2Tag1, x_start_tech2, y_start_tech2, 40, y_start_tech2 + tag_padding_y + SIZE_22);
-            x_start_tech2 += tech2Tag1Len + tag_x_gap;
+            int tech2Tag1Len = drawStrWithBgcolor(g_tech2, new Color(246, 246, 246), new Color(153, 153, 153), tech2Tag1, x_start_tech2, y_start_tech2, 40, y_start_tech2 + tagPaddingY + SIZE_22);
+            x_start_tech2 += tech2Tag1Len + tagGapX;
             String tech2Tag2 = secTechMap.get("techTag2");
             if (!StringUtils.isEmpty(tech2Tag2)) {
-                drawStrWithBgcolor(g_tech2, new Color(246, 246, 246), new Color(153, 153, 153), tech2Tag2, x_start_tech2, y_start_tech2, 40, y_start_tech2 + tag_padding_y + SIZE_22);
+                drawStrWithBgcolor(g_tech2, new Color(246, 246, 246), new Color(153, 153, 153), tech2Tag2, x_start_tech2, y_start_tech2, 40, y_start_tech2 + tagPaddingY + SIZE_22);
             }
 
             //画一条横线3
             Graphics2D line2 = image.createGraphics();
-            drawRect(line2, LIGHT_GRAY, x_gap, line2_top, lineWidth, 0);
+            drawRect(line2, LIGHT_GRAY, xGap, line2_top, LINEWIDTH, 0);
         }
         //画小程序码
         String codeUrl = cardImg.getCodeUrl();
-        drawImage(codeUrl, x_gap, wxcode_top, wxcodeWidth, wxcodeWidth);
+        drawImage(codeUrl, xGap, wxcode_top, wxcodeWidth, wxcodeWidth);
         //文案自动换行处理
         Graphics2D g_share = image.createGraphics();
         g_share.setFont(FONT_32);
         String shareStr = cardImg.getShareStr();
         //自动换行
         int tempX = 26 + wxcodeWidth + 50;
-        int limitWidth = imgWidth - 3 * x_gap_0 - tempX;
+        int limitWidth = IMG_WIDTH - 3 * xGap0 - tempX;
         int tempY = wxcode_top + (wxcodeWidth / 2) - 20;
         int tempCharLen = 0;//单字符长度
         int tempLineLen = 0;//单行字符总长度临时计算
@@ -326,6 +329,13 @@ public class ImgUtil {
         return ossUtil.uploadFile(is, imgName);
     }
 
+    /**
+     * 处理性别+年龄
+     *
+     * @param gender
+     * @param age
+     * @return
+     */
     private String getGenderAndAge(Integer gender, Integer age) {
         if (GenderEnum.ASEXUALITY.getType() == gender || GenderEnum.MALE.getType() == gender) {
             return GenderEnum.SYMBOL_MALE.getMsg() + (null == age ? "未设置" : age);
@@ -381,13 +391,6 @@ public class ImgUtil {
 
     /**
      * 画文字
-     *
-     * @param g
-     * @param color
-     * @param font
-     * @param str
-     * @param x
-     * @param y
      */
     private void drawString(Graphics2D g, Color color, Font font, String str, int x, int y) {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -396,6 +399,9 @@ public class ImgUtil {
         g.drawString(str, x, y);
     }
 
+    /**
+     * 画昵称单独处理
+     */
     private void drawNickname(Graphics2D g, Color color, Font font, String str, int x, int y) {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setColor(color);
@@ -418,6 +424,9 @@ public class ImgUtil {
 
     }
 
+    /**
+     * 画带背景色块的文字
+     */
     private int drawStrWithBgcolor(Graphics2D g, Color bgColor, Color wordColor, String str, int start, int fill_y, int fill_h, int draw_h) {
         int len = getContentLength(str, g);
         fillRound(g, bgColor, start, fill_y, len + 2 * 15, fill_h);
@@ -436,13 +445,6 @@ public class ImgUtil {
 
     /**
      * 主图处理为圆角
-     *
-     * @param imgUrl
-     * @param x
-     * @param y
-     * @param width
-     * @param height
-     * @throws IOException
      */
     private void drawCornerImg(String imgUrl, int x, int y, int width, int height) throws IOException {
         BufferedImage sourceImg = ImageIO.read(new URL(imgUrl));
@@ -508,10 +510,16 @@ public class ImgUtil {
         g.dispose();
     }
 
+    /**
+     * 计算字符长度
+     */
     private int getCharLen(char c, Graphics2D g) {
         return g.getFontMetrics(g.getFont()).charWidth(c);
     }
 
+    /**
+     * 计算文字内容长度
+     */
     private int getContentLength(String content, Graphics2D g) {
         return g.getFontMetrics(g.getFont()).charsWidth(content.toCharArray(), 0, content.length());
     }

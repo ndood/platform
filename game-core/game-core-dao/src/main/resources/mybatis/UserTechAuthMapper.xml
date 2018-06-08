@@ -138,8 +138,8 @@
             </if>
 
             <if test="status != null">
-                status = #{status},
-            </if>
+            status = #{status},
+        </if>
 
             <if test="createTime != null">
                 create_time = #{createTime},

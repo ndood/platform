@@ -10,8 +10,10 @@ import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.EmojiTools;
 import com.fulu.game.common.utils.ImgUtil;
 import com.fulu.game.common.utils.SubjectUtil;
+import com.fulu.game.common.utils.TimeUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserDao;
+import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.Sharing;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserInfoAuth;
@@ -46,6 +48,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     private WxCodeService wxCodeService;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private AdminService adminService;
     @Autowired
     private ImgUtil imgUtil;
 
@@ -116,20 +120,24 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public void lock(int id) {
+        Admin admin = adminService.getCurrentUser();
         User user = findById(id);
         user.setUpdateTime(new Date());
         user.setStatus(UserStatusEnum.BANNED.getType());
         userDao.update(user);
         SubjectUtil.setCurrentUser(user);
+        log.info("用户id:{}被管理员id:{}封禁", id, admin.getId());
     }
 
     @Override
     public void unlock(int id) {
+        Admin admin = adminService.getCurrentUser();
         User user = findById(id);
         user.setUpdateTime(new Date());
         user.setStatus(UserStatusEnum.NORMAL.getType());
         userDao.update(user);
         SubjectUtil.setCurrentUser(user);
+        log.info("用户id:{}被管理员id:{}解封", id, admin.getId());
     }
 
     @Override
@@ -307,7 +315,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             throw new ImgException(ImgException.ExceptionCode.JSONFORMAT_ERROR);
         }
         return ImgUtil.CardImg.builder()
-                .nickname(null == userInfoVO.getNickName() ? "陪玩师" : EmojiTools.filterEmoji(userInfoVO.getNickName()))
+                .nickname(null == userInfoVO.getNickName() ? "陪玩师" : userInfoVO.getNickName())
                 .gender(null == userInfoVO.getGender() ? GenderEnum.ASEXUALITY.getType() : userInfoVO.getGender())
                 .age(userInfoVO.getAge())
                 .techStr(sb.toString())

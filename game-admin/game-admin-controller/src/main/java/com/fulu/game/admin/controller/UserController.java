@@ -4,8 +4,6 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.ResultStatus;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.CollectionUtil;
-import com.fulu.game.common.utils.TimeUtil;
-import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserInfoAuthReject;
 import com.fulu.game.core.entity.UserTechAuthReject;
@@ -21,8 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -34,8 +30,6 @@ public class UserController extends BaseController {
     private UserInfoAuthService userInfoAuthService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private AdminService adminService;
     @Autowired
     private UserInfoFileService userInfoFileService;
     @Autowired
@@ -130,7 +124,7 @@ public class UserController extends BaseController {
     }
 
     /**
-     * 清楚认证信息驳回状态
+     * 清除认证信息驳回状态
      *
      * @param id
      * @return
@@ -304,9 +298,7 @@ public class UserController extends BaseController {
      */
     @PostMapping("/lock")
     public Result lock(@RequestParam("id") Integer id) {
-        Admin admin = adminService.getCurrentUser();
         userService.lock(id);
-        log.info("用户id {} 于 {} 被管理员id {} 封禁", id, admin.getId(), TimeUtil.defaultFormat(new Date()));
         return Result.success().msg("操作成功！");
     }
 
@@ -318,9 +310,7 @@ public class UserController extends BaseController {
      */
     @PostMapping("/unlock")
     public Result unlock(@RequestParam("id") Integer id) {
-        Admin admin = adminService.getCurrentUser();
         userService.unlock(id);
-        log.info("用户id {} 于 {} 被管理员id {} 解封", id, admin.getId(), TimeUtil.defaultFormat(new Date()));
         return Result.success().msg("操作成功！");
     }
 
@@ -340,7 +330,7 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("/save")
-    public Result save(@Valid UserVO userVO) {
+    public Result save(UserVO userVO) {
         if (StringUtils.isEmpty(userVO.getMobile())) {
             throw new UserException(UserException.ExceptionCode.IllEGAL_MOBILE_EXCEPTION);
         }
