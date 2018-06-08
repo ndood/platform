@@ -56,6 +56,10 @@ public class ProductController extends BaseController {
         if (user == null) {
             return Result.error().msg("手机号错误!");
         }
+        ProductTop  productTop = productTopService.findByUserAndCategory(productTopVO.getUserId(),productTopVO.getCategoryId());
+        if(productTop!=null){
+            return Result.error().msg("不能为同一个用户置顶同一个分类!");
+        }
         log.info("管理员保存置顶:productTopVO:{};adminId:{};adminName:{};",productTopVO,admin.getId(),admin.getName());
         productTopVO.setAdminId(admin.getId());
         productTopVO.setAdminName(admin.getName());

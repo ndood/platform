@@ -46,6 +46,20 @@ public class ProductTopServiceImpl extends AbsCommonService<ProductTop, Integer>
     }
 
     @Override
+    public ProductTop findByUserAndCategory(Integer userId, Integer categoryId){
+        ProductTopVO param = new ProductTopVO();
+        param.setUserId(userId);
+        param.setCategoryId(categoryId);
+        List<ProductTop> productTopList =  productTopDao.findByParameter(param);
+        if(productTopList.isEmpty()){
+            return null;
+        }
+        return productTopList.get(0);
+    }
+
+
+
+    @Override
     public int findTopSortByUserCategory(Integer userId, Integer categoryId) {
         ProductTopVO param = new ProductTopVO();
         param.setUserId(userId);

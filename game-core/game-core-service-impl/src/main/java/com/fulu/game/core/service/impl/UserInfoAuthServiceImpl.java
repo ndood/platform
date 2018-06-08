@@ -320,8 +320,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
                 }
             }
         }
-
-
         //查询用户标签
         if (hasTags) {
             List<PersonTag> personTagList = personTagService.findByUserId(userId);

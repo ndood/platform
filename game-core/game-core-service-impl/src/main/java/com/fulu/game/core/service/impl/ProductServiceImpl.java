@@ -338,22 +338,29 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         UserTechAuth userTechAuth = userTechAuthService.findById(product.getTechAuthId());
         //查询完成订单数
         int orderCount = orderService.allOrderCount(userInfo.getUserId());
-        ProductDetailsVO serverCardVO = ProductDetailsVO.builder()
-                .categoryId(product.getCategoryId())
-                .id(product.getId())
-                .onLine(isProductStartOrderReceivingStatus(product.getId()))
-                .description(userTechAuth.getDescription())
-                .productName(product.getProductName())
-                .categoryIcon(product.getCategoryIcon())
-                .price(product.getPrice())
-                .unit(product.getUnit())
-                .techAuthId(product.getTechAuthId())
-                .userInfo(userInfo)
-                .orderCount(orderCount)
-                .techTags(techTags)
-                .otherProduct(productVOList)
-                .build();
-        return serverCardVO;
+        //查询用户段位信息
+        ProductDetailsVO productDetailsVO = ProductDetailsVO.builder()
+                                        .categoryId(product.getCategoryId())
+                                        .id(product.getId())
+                                        .onLine(isProductStartOrderReceivingStatus(product.getId()))
+                                        .description(userTechAuth.getDescription())
+                                        .productName(product.getProductName())
+                                        .categoryIcon(product.getCategoryIcon())
+                                        .price(product.getPrice())
+                                        .unit(product.getUnit())
+                                        .techAuthId(product.getTechAuthId())
+                                        .userInfo(userInfo)
+                                        .orderCount(orderCount)
+                                        .techTags(techTags)
+                                        .otherProduct(productVOList)
+                                        .build();
+
+        UserTechInfo userTechInfo = userTechAuthService.findDanInfo(product.getTechAuthId());
+        if(userTechInfo!=null){
+            productDetailsVO.setDan(userTechInfo.getValue());
+        }
+
+        return productDetailsVO;
     }
 
 
