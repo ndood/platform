@@ -62,6 +62,7 @@ public class User implements Serializable {
     private String birth;
     private String imId;
     private String imPsw;
+    private Integer sourceId;
 
     //创建时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

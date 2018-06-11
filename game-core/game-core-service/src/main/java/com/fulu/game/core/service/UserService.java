@@ -99,7 +99,7 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param openId
      * @return
      */
-    User createUser(String openId);
+    User createUser(String openId,Integer sourceId);
 
     /**
      * 获取当前登录用户

@@ -172,8 +172,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public User createUser(String openId) {
+    public User createUser(String openId,Integer sourceId) {
         User user = new User();
+        user.setSourceId(sourceId);
         user.setOpenId(openId);
         user.setStatus(UserStatusEnum.NORMAL.getType());//默认账户解封状态
         user.setType(UserTypeEnum.GENERAL_USER.getType());//默认普通用户
