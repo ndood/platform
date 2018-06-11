@@ -54,6 +54,29 @@ public class OssUtil {
         return null;
     }
 
+
+    /**
+     * 判断文件是否在oss中存在
+     * @param fileUrl
+     * @return
+     */
+    public Boolean ossFileIsExists(String fileUrl){
+        if(StringUtils.isBlank(fileUrl)){
+            return false;
+        }
+        String sourceKey = formatOssKey(fileUrl);
+        String endpoint = configProperties.getOss().getEndpoint();
+        String bucketName = configProperties.getOss().getBucketName();
+        OSSClient ossClient = new OSSClient(endpoint, configProperties.getOss().getAccessKeyId(), configProperties.getOss().getAccessKeySecret());
+        try {
+            boolean exists = ossClient.doesObjectExist(bucketName, sourceKey);
+            return exists;
+        }finally {
+            ossClient.shutdown();
+        }
+    }
+
+
     /**
      * 激活oss文件,删除临时上传的文件
      * @param fileUrl
@@ -68,11 +91,15 @@ public class OssUtil {
         if(!sourceKey.contains("temp")){
             return fileUrl;
         }
-        String destinationKey = sourceKey.replace(TEMP,"");
         String endpoint = configProperties.getOss().getEndpoint();
         String bucketName = configProperties.getOss().getBucketName();
         OSSClient ossClient = new OSSClient(endpoint, configProperties.getOss().getAccessKeyId(), configProperties.getOss().getAccessKeySecret());
         try {
+            boolean sourceFileExists = ossClient.doesObjectExist(bucketName, sourceKey);
+            String destinationKey = sourceKey.replace(TEMP,"");
+            if(!sourceFileExists){
+                return configProperties.getOss().getHost() + destinationKey;
+            }
             ossClient.copyObject(bucketName,sourceKey,bucketName,destinationKey);
             boolean exists = ossClient.doesObjectExist(bucketName, destinationKey);
             if (exists) {

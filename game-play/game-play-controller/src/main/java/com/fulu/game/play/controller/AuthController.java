@@ -37,7 +37,7 @@ public class AuthController extends BaseController {
     @Autowired
     private UserTechAuthRejectService userTechAuthRejectService;
 
-    /**
+     /**
      * 保存认证信息
      * @param userInfoAuthVO
      * @return

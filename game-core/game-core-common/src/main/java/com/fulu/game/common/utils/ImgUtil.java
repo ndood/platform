@@ -2,6 +2,7 @@ package com.fulu.game.common.utils;
 
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.GenderEnum;
+import com.fulu.game.common.exception.ImgException;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -435,7 +436,13 @@ public class ImgUtil {
     }
 
     private void drawImage(String imgUrl, int x, int y, int width, int height) throws IOException {
-        BufferedImage bi = javax.imageio.ImageIO.read(new URL(imgUrl));
+        BufferedImage bi;
+        try {
+            bi = ImageIO.read(new URL(imgUrl));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ImgException(ImgException.ExceptionCode.PIC_URL_UNAVAILABLE);
+        }
         if (bi != null) {
             Graphics g = image.getGraphics();
             g.drawImage(bi.getScaledInstance(width, height, Image.SCALE_SMOOTH), x, y, null);
@@ -447,7 +454,13 @@ public class ImgUtil {
      * 主图处理为圆角
      */
     private void drawCornerImg(String imgUrl, int x, int y, int width, int height) throws IOException {
-        BufferedImage sourceImg = ImageIO.read(new URL(imgUrl));
+        BufferedImage sourceImg;
+        try {
+            sourceImg = ImageIO.read(new URL(imgUrl));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ImgException(ImgException.ExceptionCode.MAIN_PIC_UNAVAILABLE);
+        }
         int w = sourceImg.getWidth();
         int h = sourceImg.getHeight();
         //图片resize
@@ -488,7 +501,13 @@ public class ImgUtil {
         float strokeWidth = 1.0F;
         int border = 1;
         Color color = Color.white;
-        BufferedImage srcImg0 = ImageIO.read(new URL(imgUrl));
+        BufferedImage srcImg0;
+        try {
+            srcImg0 = ImageIO.read(new URL(imgUrl));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ImgException(ImgException.ExceptionCode.PIC_URL_UNAVAILABLE);
+        }
         // 透明底的图片
         BufferedImage formatImage = new BufferedImage(width, width, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D g = image.createGraphics();

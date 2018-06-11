@@ -13,7 +13,9 @@ public class ImgException extends BizException {
         SHARE_NOT_EXSISTS(80001, "未配置该分享文案"),
         SHARECONTENT_BLANK(80002, "分享文案内容配置为空"),
         JSONFORMAT_ERROR(80003, "技能认证分享文案内容格式错误"),
-        CATEGORY_ICON_URL(80004, "游戏图标未配置");
+        CATEGORY_ICON_URL(80004, "游戏图标未配置"),
+        MAIN_PIC_UNAVAILABLE(80005, "陪玩师主图URL不可用"),
+        PIC_URL_UNAVAILABLE(80006, "图片URL不可用");
         private int code;
         private String msg;
     }
