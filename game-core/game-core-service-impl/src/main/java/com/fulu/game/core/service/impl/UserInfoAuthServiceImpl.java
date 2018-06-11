@@ -55,6 +55,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     @Autowired
     private OssUtil ossUtil;
 
+
+
     @Override
     public ICommonDao<UserInfoAuth, Integer> getDao() {
         return userInfoAuthDao;
@@ -122,6 +124,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         createUserAuthVoice(userInfoAuthVO.getVoiceUrl(), userInfoAuth.getId(),userInfoAuthVO.getDuration());
         //添加用户信息标签
         createUserInfoTags(userInfoAuthVO.getTags(), user.getId());
+        //更新用户商品索引的信息
+        productService.updateUserProductIndex(user.getId(),Boolean.FALSE);
         return userInfoAuthVO;
     }
 

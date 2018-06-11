@@ -37,13 +37,11 @@ public class PushMsgController extends BaseController{
                 return Result.error().msg("指定用户不能为空!");
             }
         }
-
         if(pushMsgVO.getTouchTime()!=null){
             if(DateUtil.beginOfDay(pushMsgVO.getTouchTime()).before(DateUtil.beginOfDay(new Date()))){
                 return Result.error().msg("推送日期不能小于当前日期!");
             }
         }
-
         pushMsgService.push(pushMsgVO);
         return Result.success();
     }

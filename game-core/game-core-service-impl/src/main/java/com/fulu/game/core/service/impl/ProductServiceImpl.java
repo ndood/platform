@@ -424,6 +424,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         List<Product> products = findByUserId(userId);
         List<Integer> rightfulProductIds = new ArrayList<>();
         for (Product product : products) {
+            //是否需要更新接单时间,如果不需要就获取索引里面的更新时间
             if(needUpdateTime){
                 product.setCreateTime(new Date());
             }else{
@@ -514,6 +515,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * @param products (每个用户的所有商品集合)
      */
     private void batchUpdateProductIndex(List<Product> products) {
+        if(products.isEmpty()){
+            return;
+        }
         List<Product> showIndexProducts = getShowIndexProduct(products);
         for (Product product : products) {
             if (showIndexProducts.contains(product)) {
