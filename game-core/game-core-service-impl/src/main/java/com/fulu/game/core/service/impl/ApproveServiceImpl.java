@@ -80,7 +80,7 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
         int newApproveCount = currentCount + 1;
         int requireCount = newApproveCount < Constant.DEFAULT_APPROVE_COUNT ? Constant.DEFAULT_APPROVE_COUNT - newApproveCount : 0;
         userTechAuth.setApproveCount(newApproveCount);
-        int techStatus = 0;
+        int techStatus;
         if (newApproveCount >= Constant.DEFAULT_APPROVE_COUNT) {
             utaService.update(userTechAuth);
             log.info("更新t_user_tech_auth表,当前认可数:{}", newApproveCount);

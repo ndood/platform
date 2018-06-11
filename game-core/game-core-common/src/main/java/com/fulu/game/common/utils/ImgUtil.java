@@ -2,6 +2,7 @@ package com.fulu.game.common.utils;
 
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.GenderEnum;
+import com.fulu.game.common.exception.ImgException;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -33,11 +34,7 @@ public class ImgUtil {
     private OssUtil ossUtil;
 
     private BufferedImage image;
-    private static String EXT_NAME = "jpg";
-    private static String LOCATE_ICON_URL = "http://t-admin.wzpeilian.com/icon/place.png";
     private static int IMG_WIDTH = Constant.TECH_CARD_WIDTH;
-    private static int CARDIMGHEIGHT = Constant.TECH_CARD_HEIGHT;
-    private static int AUTHIMGHEIGHT = Constant.TECH_AUTH_HEIGHT;
     private static int SIZE_32 = 32;
     private static int SIZE_28 = 28;
     private static int SIZE_24 = 24;
@@ -63,6 +60,7 @@ public class ImgUtil {
     public String createTechAuth(CardImg cardImg) throws IOException {
 
         //整体布局
+        int authImgHeight = Constant.TECH_AUTH_HEIGHT;
         int mainPic_top = 30;
         int H_mainPic = IMG_WIDTH - 2 * xGap0;
 
@@ -70,18 +68,17 @@ public class ImgUtil {
         int H_person = 30;
 
         int tech_top = nickname_top + H_person + YGap;
-        int H_tech = 40;
 
         //小程序码
         int H_bottom = 66;//底部留白高度
         int wxcodeWidth = 180;
-        int wxcode_top = AUTHIMGHEIGHT - H_bottom - wxcodeWidth;
+        int wxcode_top = authImgHeight - H_bottom - wxcodeWidth;
 
         //画布整体布局背景为白色
-        image = new BufferedImage(IMG_WIDTH, AUTHIMGHEIGHT, BufferedImage.TYPE_INT_RGB);
+        image = new BufferedImage(IMG_WIDTH, authImgHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D g_image = image.createGraphics();
-        fillRect(g_image, new Color(245, 245, 245), 0, 0, IMG_WIDTH, AUTHIMGHEIGHT);
-        fillRect(g_image, Color.white, xGap0, YGap, IMG_WIDTH - 2 * xGap0, AUTHIMGHEIGHT - 2 * YGap);
+        fillRect(g_image, new Color(245, 245, 245), 0, 0, IMG_WIDTH, authImgHeight);
+        fillRect(g_image, Color.white, xGap0, YGap, IMG_WIDTH - 2 * xGap0, authImgHeight - 2 * YGap);
 
         //画主图
         drawCornerImg(cardImg.getMainPicUrl(), xGap0, mainPic_top, H_mainPic, H_mainPic);
@@ -102,9 +99,9 @@ public class ImgUtil {
         //自动换行
         int tempX = xGap;
         int tempY = tech_top + SIZE_24;
-        int tempCharLen = 0;//单字符长度
+        int tempCharLen;//单字符长度
         int tempLineLen = 0;//单行字符总长度临时计算
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < techStr.length(); i++) {
             char tempChar = techStr.charAt(i);
             tempCharLen = getCharLen(tempChar, tech);
@@ -147,10 +144,11 @@ public class ImgUtil {
      * @throws IOException
      */
     public String createTechCard(CardImg cardImg) throws IOException {
-        int cardImageHeight = CARDIMGHEIGHT;//1467
+        int cardImgHeight = Constant.TECH_CARD_HEIGHT;
+        int cardImageHeight = cardImgHeight;//1467
         Map<String, String> secTechMap = cardImg.getSecTech();
         if (secTechMap.isEmpty()) {
-            cardImageHeight = CARDIMGHEIGHT - 160;
+            cardImageHeight = cardImgHeight - 160;
         }
         //整体尺寸布局
         //主图
@@ -216,7 +214,8 @@ public class ImgUtil {
         }
         //画城市和位置图标
         String city = cardImg.getCity();
-        drawImage(LOCATE_ICON_URL, xGap, city_top, H_city, H_city);
+        String locateIconUrl = "http://t-admin.wzpeilian.com/icon/place.png";
+        drawImage(locateIconUrl, xGap, city_top, H_city, H_city);
         Graphics2D g_city = image.createGraphics();
         drawString(g_city, new Color(170, 170, 170), FONT_22, city, xGap + 27, city_top + H_city);
         //画横线0
@@ -321,6 +320,7 @@ public class ImgUtil {
      * @throws IOException
      */
     private String ossUpload() throws IOException {
+        String EXT_NAME = "jpg";
         ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
         ImageOutputStream imageOS = ImageIO.createImageOutputStream(byteArrayOS);
         ImageIO.write(image, EXT_NAME, imageOS);
@@ -359,13 +359,6 @@ public class ImgUtil {
 
     /**
      * 画矩形并填充
-     *
-     * @param g
-     * @param color
-     * @param x
-     * @param y
-     * @param width
-     * @param height
      */
     private void fillRect(Graphics2D g, Color color, int x, int y, int width, int height) {
         g.setColor(color);
@@ -374,13 +367,6 @@ public class ImgUtil {
 
     /**
      * 画圆角矩形并填充
-     *
-     * @param g
-     * @param color
-     * @param x
-     * @param y
-     * @param width
-     * @param height
      */
     private void fillRound(Graphics2D g, Color color, int x, int y, int width, int height) {
         g.setColor(color);
@@ -434,8 +420,14 @@ public class ImgUtil {
         return len + 2 * 15;
     }
 
-    private void drawImage(String imgUrl, int x, int y, int width, int height) throws IOException {
-        BufferedImage bi = javax.imageio.ImageIO.read(new URL(imgUrl));
+    private void drawImage(String imgUrl, int x, int y, int width, int height) {
+        BufferedImage bi;
+        try {
+            bi = ImageIO.read(new URL(imgUrl));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ImgException(ImgException.ExceptionCode.PIC_URL_UNAVAILABLE);
+        }
         if (bi != null) {
             Graphics g = image.getGraphics();
             g.drawImage(bi.getScaledInstance(width, height, Image.SCALE_SMOOTH), x, y, null);
@@ -446,8 +438,14 @@ public class ImgUtil {
     /**
      * 主图处理为圆角
      */
-    private void drawCornerImg(String imgUrl, int x, int y, int width, int height) throws IOException {
-        BufferedImage sourceImg = ImageIO.read(new URL(imgUrl));
+    private void drawCornerImg(String imgUrl, int x, int y, int width, int height) {
+        BufferedImage sourceImg;
+        try {
+            sourceImg = ImageIO.read(new URL(imgUrl));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ImgException(ImgException.ExceptionCode.MAIN_PIC_UNAVAILABLE);
+        }
         int w = sourceImg.getWidth();
         int h = sourceImg.getHeight();
         //图片resize
@@ -483,14 +481,19 @@ public class ImgUtil {
      * @param width  外切正方形边长
      * @throws IOException
      */
-    private void drawCircleImg(String imgUrl, int x, int y, int width) throws IOException {
+    private void drawCircleImg(String imgUrl, int x, int y, int width) {
         //自定义线条宽度、圆圈距离正方形的边距，圆圈颜色
         float strokeWidth = 1.0F;
         int border = 1;
         Color color = Color.white;
-        BufferedImage srcImg0 = ImageIO.read(new URL(imgUrl));
+        BufferedImage srcImg0;
+        try {
+            srcImg0 = ImageIO.read(new URL(imgUrl));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ImgException(ImgException.ExceptionCode.PIC_URL_UNAVAILABLE);
+        }
         // 透明底的图片
-        BufferedImage formatImage = new BufferedImage(width, width, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics2D g = image.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         Ellipse2D.Double shape = new Ellipse2D.Double(x, y, width, width);
