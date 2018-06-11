@@ -7,10 +7,8 @@ import com.fulu.game.common.exception.ImgException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
-import com.fulu.game.common.utils.EmojiTools;
 import com.fulu.game.common.utils.ImgUtil;
 import com.fulu.game.common.utils.SubjectUtil;
-import com.fulu.game.common.utils.TimeUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserDao;
 import com.fulu.game.core.entity.Admin;
@@ -172,7 +170,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public User createNewUser(String openId,Integer sourceId) {
+    public User createNewUser(String openId, Integer sourceId) {
         UserVO user = new UserVO();
         user.setSourceId(sourceId);
         user.setOpenId(openId);

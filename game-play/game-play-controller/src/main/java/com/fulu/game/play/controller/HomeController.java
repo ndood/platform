@@ -61,7 +61,7 @@ public class HomeController {
     @ResponseBody
     public Result sysConfig(@RequestParam(value = "version", required = false, defaultValue = "1.0.2") String version) {
         List<SysConfig> result = sysConfigService.findByVersion(version);
-        if (CollectionUtil.isEmpty(result)){
+        if (CollectionUtil.isEmpty(result)) {
             result = new ArrayList<SysConfig>();
             SysConfig sysConfig1 = new SysConfig();
             sysConfig1.setName("MMCON");
@@ -82,14 +82,15 @@ public class HomeController {
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
-    public Result login(@RequestParam("code") String code,@RequestParam(value = "sourceId",required = false) Integer sourceId) throws WxErrorException {
+    public Result login(@RequestParam("code") String code,
+                        @RequestParam(value = "sourceId", required = false) Integer sourceId) throws WxErrorException {
         if (StringUtils.isBlank(code)) {
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
         WxMaJscode2SessionResult session = wxService.getUserService().getSessionInfo(code);
         String openId = session.getOpenid();
         //1.认证和凭据的token
-        PlayUserToken playUserToken = new PlayUserToken(openId,session.getSessionKey(),sourceId);
+        PlayUserToken playUserToken = new PlayUserToken(openId, session.getSessionKey(), sourceId);
         Subject subject = SecurityUtils.getSubject();
         //2.提交认证和凭据给身份验证系统
         try {
@@ -114,9 +115,9 @@ public class HomeController {
 
     @RequestMapping(value = "/test/login", method = RequestMethod.POST)
     @ResponseBody
-    public Result testLogin(String openId,@RequestParam(value="sourceId",required = false) Integer sourceId) {
+    public Result testLogin(String openId, @RequestParam(value = "sourceId", required = false) Integer sourceId) {
         log.info("==调用/test/login方法==");
-        PlayUserToken playUserToken = new PlayUserToken(openId,"",sourceId);
+        PlayUserToken playUserToken = new PlayUserToken(openId, "", sourceId);
         Subject subject = SecurityUtils.getSubject();
         try {
             subject.login(playUserToken);
@@ -137,8 +138,6 @@ public class HomeController {
             return Result.error().msg("测试登陆异常！");
         }
     }
-
-
 
 
 }

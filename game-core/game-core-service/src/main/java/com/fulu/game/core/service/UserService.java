@@ -57,6 +57,7 @@ public interface UserService extends ICommonService<User, Integer> {
 
     /**
      * 查询所有状态正常的用户
+     *
      * @return
      */
     List<User> findAllNormalUser();
@@ -99,7 +100,7 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param openId
      * @return
      */
-    User createNewUser(String openId,Integer sourceId);
+    User createNewUser(String openId, Integer sourceId);
 
     /**
      * 获取当前登录用户
