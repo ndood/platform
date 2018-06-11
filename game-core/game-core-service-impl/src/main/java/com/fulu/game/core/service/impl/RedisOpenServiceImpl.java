@@ -39,7 +39,7 @@ public class RedisOpenServiceImpl {
      * @param val
      */
     public void bitSet(String key,long val){
-        redisTemplate.opsForValue().setBit(key,val,true);
+        redisTemplate.opsForValue().setBit(key, val,true);
     }
 
     /**

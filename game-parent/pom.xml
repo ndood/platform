@@ -161,7 +161,6 @@
             <name>Local Nexus Repository</name>
             <url>http://10.0.3.105:8081/repository/maven-snapshots/</url>
         </snapshotRepository>
-
     </distributionManagement>
 
     <build>

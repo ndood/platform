@@ -6,6 +6,7 @@ import com.fulu.game.core.entity.vo.CouponGrantVO;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Component;
 
 /**
  * 优惠券发放记录

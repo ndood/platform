@@ -52,7 +52,7 @@ public class MyShiroRealm extends AuthorizingRealm {
         if (user != null) {
             log.info("openId为{} 的用户已存在", openId);
         } else {
-            user = userService.createUser(openId,sourceId);
+            user = userService.createNewUser(openId,sourceId);
             log.info("创建openId为 {} 的用户",openId);
         }
         return new SimpleAuthenticationInfo(user, user.getOpenId(), getName());

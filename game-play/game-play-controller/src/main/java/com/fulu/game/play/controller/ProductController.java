@@ -1,5 +1,6 @@
 package com.fulu.game.play.controller;
 
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Product;
@@ -59,6 +60,9 @@ public class ProductController extends BaseController {
     public Result create(@RequestParam(required = true) Integer techAuthId,
                          @RequestParam(required = true) BigDecimal price,
                          @RequestParam(required = true) Integer unitId) {
+        if(new BigDecimal(Constant.DEF_RECEIVING_ORDER_PRICE).compareTo(price)>0){
+            return Result.error().msg("接单价格不能低于"+Constant.DEF_RECEIVING_ORDER_PRICE+"元");
+        }
         productService.create(techAuthId, price, unitId);
         return Result.success().msg("添加接单方式成功!");
     }
@@ -123,7 +127,9 @@ public class ProductController extends BaseController {
                          @RequestParam(required = false) Integer techAuthId,
                          @RequestParam(required = false) BigDecimal price,
                          @RequestParam(required = false) Integer unitId) {
-
+        if(new BigDecimal(Constant.DEF_RECEIVING_ORDER_PRICE).compareTo(price)>0){
+            return Result.error().msg("接单价格不能低于"+Constant.DEF_RECEIVING_ORDER_PRICE+"元");
+        }
         productService.update(id, techAuthId, price, unitId);
         return Result.success().msg("修改接单方式成功!");
     }

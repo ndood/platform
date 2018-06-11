@@ -24,6 +24,8 @@ public class ProductDetailsVO {
     private String productName;
     //是否在线
     private Boolean onLine;
+    //商品段位信息
+    private String dan;
 
     //价格
     private BigDecimal price;

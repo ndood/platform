@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderDealFile;
@@ -29,6 +30,8 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal,Integer> im
     private OrderDealFileService orderDealFileService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private OssUtil ossUtil;
 
     @Override
     public ICommonDao<OrderDeal, Integer> getDao() {
@@ -46,7 +49,7 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal,Integer> im
         create(orderDeal);
         for(String url : fileUrls){
             OrderDealFile orderDealFile = new OrderDealFile();
-            orderDealFile.setFileUrl(url);
+            orderDealFile.setFileUrl(ossUtil.activateOssFile(url));
             orderDealFile.setOrderDealId(orderDeal.getId());
             orderDealFile.setCreateTime(new Date());
             orderDealFileService.create(orderDealFile);

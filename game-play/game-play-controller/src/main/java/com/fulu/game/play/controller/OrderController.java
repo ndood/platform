@@ -222,7 +222,6 @@ public class OrderController extends BaseController {
 
     /**
      * 陪玩师提交验收订单
-     *
      * @param orderNo
      * @param remark
      * @param fileUrl
@@ -239,7 +238,6 @@ public class OrderController extends BaseController {
 
     /**
      * 查看申诉或者验收截图
-     *
      * @return
      */
     @RequestMapping(value = "/deals")

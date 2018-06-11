@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.exception.CommonException;
+import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.common.utils.TimeUtil;
 import com.fulu.game.core.dao.BannerDao;
 import com.fulu.game.core.dao.ICommonDao;
@@ -27,6 +28,8 @@ public class BannerServiceImpl extends AbsCommonService<Banner, Integer> impleme
     private AdminService adminService;
     @Autowired
     private BannerDao bannerDao;
+    @Autowired
+    private OssUtil ossUtil;
 
     @Override
     public ICommonDao<Banner, Integer> getDao() {
@@ -54,6 +57,9 @@ public class BannerServiceImpl extends AbsCommonService<Banner, Integer> impleme
         Banner banner = bannerDao.findById(bannerVO.getId());
         if (null == banner) {
             throw new CommonException(CommonException.ExceptionCode.RECORD_NOT_EXSISTS);
+        }
+        if(!bannerVO.getPicUrl().equals(banner.getPicUrl())){
+            ossUtil.deleteFile(bannerVO.getPicUrl());
         }
         banner.setPicUrl(bannerVO.getPicUrl());
         banner.setRedirectUrl(bannerVO.getRedirectUrl());

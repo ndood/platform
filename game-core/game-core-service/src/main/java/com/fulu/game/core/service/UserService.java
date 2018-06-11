@@ -91,7 +91,7 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param userVO
      * @return
      */
-    User save(UserVO userVO);
+    User createNewUser(UserVO userVO);
 
     /**
      * 通过openId创建用户
@@ -99,7 +99,7 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param openId
      * @return
      */
-    User createUser(String openId,Integer sourceId);
+    User createNewUser(String openId,Integer sourceId);
 
     /**
      * 获取当前登录用户

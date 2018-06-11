@@ -7,6 +7,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.ResultStatus;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
@@ -52,6 +53,8 @@ public class UserController extends BaseController {
     private UserCommentService commentService;
     @Autowired
     private WxMaService wxMaService;
+    @Autowired
+    private OssUtil ossUtil;
 
     @RequestMapping("tech/list")
     public Result userTechList() {
@@ -85,7 +88,6 @@ public class UserController extends BaseController {
 
     /**
      * 用户-更新个人信息
-     *
      * @param userVO
      * @return
      */
@@ -100,7 +102,7 @@ public class UserController extends BaseController {
         user.setBirth(userVO.getBirth());
         user.setConstellation(userVO.getConstellation());
         user.setNickname(userVO.getNickname());
-        user.setHeadPortraitsUrl(userVO.getHeadPortraitsUrl());
+        user.setHeadPortraitsUrl(ossUtil.activateOssFile(userVO.getHeadPortraitsUrl()));
         userService.update(user);
         userService.updateRedisUser(user);
         user.setIdcard(null);

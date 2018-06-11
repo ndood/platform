@@ -1,6 +1,7 @@
 package com.fulu.game.admin.controller;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.PushMsgTypeEnum;
 import com.fulu.game.core.entity.PushMsg;
 import com.fulu.game.core.entity.vo.PushMsgVO;
 import com.fulu.game.core.service.PushMsgService;
@@ -28,6 +29,9 @@ public class PushMsgController extends BaseController{
      */
     @PostMapping(value = "/push")
     public Result push(@Valid PushMsgVO pushMsgVO){
+        if(PushMsgTypeEnum.ASSIGN_USERID.getType().equals(pushMsgVO.getType())){
+            return Result.error().msg("指定用户不能为空!");
+        }
         pushMsgService.push(pushMsgVO);
         return Result.success();
     }

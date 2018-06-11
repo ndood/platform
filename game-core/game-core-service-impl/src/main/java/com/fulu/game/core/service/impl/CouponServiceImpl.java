@@ -150,25 +150,20 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
     }
 
 
+
     /**
-     * 通过兑换码发放优惠券给用户
+     * 用户领取优惠券
      * @param redeemCode
      * @param userId
+     * @param receiveTime
+     * @param receiveIp
      * @return
-     * @throws CouponException
      */
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Coupon generateCoupon(String redeemCode, Integer userId) {
-        CouponGroup couponGroup = couponGroupService.findByRedeemCode(redeemCode);
-        if (couponGroup == null) {
-            throw new CouponException(CouponException.ExceptionCode.REDEEMCODE_ERROR);
-        }
-        return generateCoupon(couponGroup, userId,null,null);
-    }
-
-    @Override
-    public Coupon generateCoupon(String redeemCode, Integer userId, Date receiveTime, String receiveIp) {
+    public Coupon generateCoupon(String redeemCode,
+                                 Integer userId,
+                                 Date receiveTime,
+                                 String receiveIp) {
         CouponGroup couponGroup = couponGroupService.findByRedeemCode(redeemCode);
         if (couponGroup == null) {
             throw new CouponException(CouponException.ExceptionCode.REDEEMCODE_ERROR);

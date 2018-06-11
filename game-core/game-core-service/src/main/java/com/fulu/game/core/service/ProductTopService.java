@@ -20,6 +20,8 @@ public interface ProductTopService extends ICommonService<ProductTop,Integer>{
 	 */
 	 void productTopPutAway(Integer id, Boolean status);
 
+	 ProductTop findByUserAndCategory(Integer userId, Integer categoryId);
+
 	/**
 	 * 查找用户所有商品类型排序
 	 * @param userId

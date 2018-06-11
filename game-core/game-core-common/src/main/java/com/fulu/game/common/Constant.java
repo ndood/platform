@@ -6,6 +6,8 @@ public interface Constant {
 
     Integer DEF_PID = 0;  //默认的父类ID
 
+    Double DEF_RECEIVING_ORDER_PRICE = 1.0;
+
     //手机验证码缓存时间
     Long VERIFYCODE_CACHE_TIME_DEV = 5 * 60L;
     Long VERIFYCODE_CACHE_TIME_DEP = 1 * 60L;

@@ -156,7 +156,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public User save(UserVO userVO) {
+    public User createNewUser(UserVO userVO) {
         User user = new User();
         BeanUtil.copyProperties(userVO, user);
         user.setStatus(UserStatusEnum.NORMAL.getType());//默认账户解封状态
@@ -172,18 +172,11 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public User createUser(String openId,Integer sourceId) {
-        User user = new User();
+    public User createNewUser(String openId,Integer sourceId) {
+        UserVO user = new UserVO();
         user.setSourceId(sourceId);
         user.setOpenId(openId);
-        user.setStatus(UserStatusEnum.NORMAL.getType());//默认账户解封状态
-        user.setType(UserTypeEnum.GENERAL_USER.getType());//默认普通用户
-        user.setUserInfoAuth(UserInfoAuthStatusEnum.NOT_PERFECT.getType());//默认未审核
-        user.setBalance(Constant.DEFAULT_BALANCE);
-        user.setScoreAvg(Constant.DEFAULT_SCORE_AVG);
-        user.setCreateTime(new Date());
-        user.setUpdateTime(new Date());
-        userDao.create(user);
+        createNewUser(user);
         return user;
     }
 
