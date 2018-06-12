@@ -302,7 +302,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         for (String str : tagList) {
             tagStr += str + "、";
         }
-        tagStr = tagStr.substring(0, tagStr.length() - 1);
+        if (!"".equals(tagStr)){
+            tagStr = tagStr.substring(0, tagStr.length() - 1);
+        }
         sb.append(tagStr);
         String title = "";
         String content = "";
