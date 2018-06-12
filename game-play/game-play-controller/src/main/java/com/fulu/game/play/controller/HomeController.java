@@ -106,6 +106,7 @@ public class HomeController {
                 return Result.success().data(jo).msg("登录成功!");
             }
         } catch (AuthenticationException e) {
+            log.error("验证登录异常，异常信息:", e);
             return Result.noLogin().msg("用户验证信息错误！");
         } catch (Exception e) {
             log.error("登录异常!", e);

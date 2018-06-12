@@ -324,7 +324,7 @@ public class UserController extends BaseController {
                          @RequestParam("imId") String imId,
                          @RequestParam("imPsw") String imPsw,
                          @RequestParam(value = "errorMsg", required = false) String errorMsg) {
-        log.info("IM注册请求开始,请求参数 status=={},imId=={}", status, imId);
+        log.info("IM注册请求开始,请求参数 status={},imId={},imPsw={},errorMsg={}", status, imId,imPsw,errorMsg);
         int userId = userService.getCurrentUser().getId();
         if (status == 200) {
             User user = userService.findById(userId);
