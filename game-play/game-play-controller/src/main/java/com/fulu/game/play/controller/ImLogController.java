@@ -15,7 +15,7 @@ public class ImLogController extends BaseController{
 
     @PostMapping(value = "collect")
     public Result log(String content){
-        log.error("IM错误:{}",content);
+        log.error("日志收集:{}",content);
         return Result.success();
     }
 

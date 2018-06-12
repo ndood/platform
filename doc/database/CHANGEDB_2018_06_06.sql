@@ -32,3 +32,6 @@ CREATE TABLE `t_product_top` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `category_id-user_id` (`category_id`,`user_id`) USING BTREE
 )  COMMENT='商品置顶表';
+
+
+ALTER TABLE `t_user` ADD COLUMN source_id  INT ( 11 ) NULL DEFAULT NULL COMMENT '注册来源id' AFTER `age`;
