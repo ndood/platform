@@ -86,9 +86,3 @@ ALTER TABLE `t_user_info_auth_file` ADD COLUMN `duration` int ( 11 ) NULL  COMME
 
 -- 项目部署完成后再执行
 ALTER TABLE `t_product` DROP COLUMN `description`;
-
--- ----------------------------
--- Table column add for t_user
--- 用户注册来源id
--- ----------------------------
-ALTER TABLE `t_user` ADD COLUMN source_id INT ( 11 ) NULL DEFAULT NULL COMMENT '注册来源id';
