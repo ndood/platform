@@ -78,6 +78,7 @@ public class UserController extends BaseController {
 
     /**
      * 用户-进入我的页面
+     *
      * @return
      */
     @PostMapping("/get")
@@ -88,6 +89,7 @@ public class UserController extends BaseController {
 
     /**
      * 用户-更新个人信息
+     *
      * @param userVO
      * @return
      */
@@ -158,7 +160,7 @@ public class UserController extends BaseController {
         try {
             phoneNoInfo = wxMaService.getUserService().getPhoneNoInfo(sessionKey, encryptedData, iv);
         } catch (Exception e) {
-            log.error("获取用户微信异常:encryptedData:{};iv:{};sessionKey:{};{}",encryptedData,iv,sessionKey,e.getMessage());
+            log.error("获取用户微信异常:encryptedData:{};iv:{};sessionKey:{};{}", encryptedData, iv, sessionKey, e.getMessage());
             throw new UserException(UserException.ExceptionCode.SESSION_KEY_DISABLE_EXCEPTION);
         }
         if (phoneNoInfo == null && phoneNoInfo.getPurePhoneNumber() == null) {
@@ -318,12 +320,14 @@ public class UserController extends BaseController {
 
 
     @PostMapping("/im/save")
-    public Result imSave(@RequestParam("status") Integer status,
+    public Result imSave(@RequestParam("status") int status,
                          @RequestParam("imId") String imId,
-                         @RequestParam("imPsw") String imPsw) {
+                         @RequestParam("imPsw") String imPsw,
+                         @RequestParam(value = "errorMsg", required = false) String errorMsg) {
         log.info("IM注册请求开始,请求参数 status=={},imId=={}", status, imId);
-        User user = userService.findById(userService.getCurrentUser().getId());
+        int userId = userService.getCurrentUser().getId();
         if (status == 200) {
+            User user = userService.findById(userId);
             user.setImId(imId);
             user.setImPsw(imPsw);
             user.setUpdateTime(new Date());
@@ -331,7 +335,7 @@ public class UserController extends BaseController {
             userService.updateRedisUser(user);
             log.info("用户{}绑定IM信息成功", user.getId());
         } else if (status == 500) {
-            log.error("用户{}绑定IM失败", user.getId());
+            log.error("用户:{}绑定IM失败,失败原因:{}", userId, errorMsg);
             return Result.error(ResultStatus.IM_REGIST_FAIL).msg("IM用户注册失败！");
         }
         return Result.success().msg("IM用户信息保存成功！");

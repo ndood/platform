@@ -10,10 +10,12 @@ public class PlayUserToken extends UsernamePasswordToken {
     private static final long serialVersionUID = 1L;
     private String openId;
     private String sessionKey;
-    public PlayUserToken(String openId,String sessionKey) {
+    private Integer sourceId;
+    public PlayUserToken(String openId,String sessionKey,Integer sourceId) {
         super(openId, "");
         this.openId = openId;
         this.sessionKey = sessionKey;
+        this.sourceId = sourceId;
     }
 
 
@@ -23,5 +25,9 @@ public class PlayUserToken extends UsernamePasswordToken {
 
     public String getSessionKey() {
         return sessionKey;
+    }
+
+    public Integer getSourceId() {
+        return sourceId;
     }
 }
