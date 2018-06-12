@@ -160,6 +160,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
      * @return
      */
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Coupon generateCoupon(String redeemCode,
                                  Integer userId,
                                  Date receiveTime,

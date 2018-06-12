@@ -111,7 +111,7 @@
         <include refid="Base_Column_List"/>
         FROM t_coupon
         <where>
-            coupon_group_id = #{couponGroupId} and user_id = #{userId}
+            coupon_group_id = #{couponGroupId} and user_id = #{userId} for update
         </where>
     </select>
 
