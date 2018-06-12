@@ -46,7 +46,7 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
     }
 
     @Override
-    public synchronized ApproveVO save(Integer techAuthId) {
+    public ApproveVO save(Integer techAuthId) {
         log.info("====好友认可接口执行====入参技能id:{}", techAuthId);
         UserTechAuth userTechAuth = utaService.findById(techAuthId);
         if (null == userTechAuth) {

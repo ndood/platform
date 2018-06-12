@@ -37,4 +37,4 @@ CREATE TABLE `t_product_top` (
 -- Table column add for t_user
 -- 用户注册来源id
 -- ----------------------------
-ALTER TABLE `t_user` ADD COLUMN source_id INT ( 11 ) NULL DEFAULT NULL COMMENT '注册来源id';
+ALTER TABLE `t_user` ADD COLUMN source_id INT ( 11 ) NULL DEFAULT NULL COMMENT '注册来源id' AFTER `age`;
