@@ -174,8 +174,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         UserVO user = new UserVO();
         user.setSourceId(sourceId);
         user.setOpenId(openId);
-        createNewUser(user);
-        return user;
+        return createNewUser(user);
     }
 
     @Override

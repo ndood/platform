@@ -25,6 +25,13 @@
 - 1.0.13 小程序：https://pro.modao.cc/app/UMNIzKBekTYRUkaiD0iB0fYIq96eV7O
 - 1.0.13 后台: https://pro.modao.cc/app/FSV59Hq1epQmGFhM9NlhPA6wD9V6t9b
 
+### 集市版本
+
+web端:https://pro.modao.cc/app/KmU8Jxs1hdjFFFBxDUe4Ub0VdD7CmaI#screen=s65673F5B931528367962571
+小程序：https://pro.modao.cc/app/RbJqmuzihjULlKr3lsOG6ygKwjmTHGB
+后台：https://pro.modao.cc/app/Mg0mx6NJPbtNr8X5aBM5eC4N4KssLpC
+
+
 
 ##订单状态
 |订单状态|状态注释|

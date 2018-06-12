@@ -55,6 +55,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     @Autowired
     private OssUtil ossUtil;
 
+
+
     @Override
     public ICommonDao<UserInfoAuth, Integer> getDao() {
         return userInfoAuthDao;
@@ -74,7 +76,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     @Override
     public UserInfoAuthVO save(UserInfoAuthVO userInfoAuthVO) {
         log.info("保存用户认证信息:userInfoAuthVO:{}",userInfoAuthVO);
-        userInfoAuthVO.setMainPicUrl(ossUtil.activateOssFile(userInfoAuthVO.getMainPicUrl()));
+
         //更新用户信息
         User user = userService.findById(userInfoAuthVO.getUserId());
         //如果是用户冻结状态给错误提示
@@ -122,6 +124,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         createUserAuthVoice(userInfoAuthVO.getVoiceUrl(), userInfoAuth.getId(),userInfoAuthVO.getDuration());
         //添加用户信息标签
         createUserInfoTags(userInfoAuthVO.getTags(), user.getId());
+        //更新用户商品索引的信息
+        productService.updateUserProductIndex(user.getId(),Boolean.FALSE);
         return userInfoAuthVO;
     }
 
@@ -304,7 +308,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             //查询用户写真图
             if (hasPhotos) {
                 List<String> photos = new ArrayList<>();
-                photos.add(userInfoAuth.getMainPicUrl());
                 List<UserInfoAuthFile> portraitFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(), FileTypeEnum.PIC.getType());
                 for (UserInfoAuthFile authFile : portraitFiles) {
                     photos.add(authFile.getUrl());
@@ -565,20 +568,30 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
      * @param userInfoAuthId
      */
     public void createUserAuthPortrait(String[] portraitUrls, Integer userInfoAuthId) {
-        if (portraitUrls == null) {
+        if (portraitUrls==null||portraitUrls.length==0) {
             return;
         }
+        //激活所有写真URL
+        List<String> portraitUrlList = Arrays.asList(portraitUrls);
+        for (int i = 0; i < portraitUrlList.size(); i++){
+            portraitUrlList.set(i,ossUtil.activateOssFile(portraitUrlList.get(i)));
+        }
         List<UserInfoAuthFile> picFiles =userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthId, FileTypeEnum.PIC.getType());
-        List<String>  uploadUrlList =Arrays.asList(portraitUrls);
         List<String> dbFilesUrlList = new ArrayList<>();
         for(UserInfoAuthFile file : picFiles){
             dbFilesUrlList.add(file.getUrl());
-            if(!uploadUrlList.contains(file.getUrl())){
+            if(!portraitUrlList.contains(file.getUrl())){
                 userInfoAuthFileService.deleteFile(file);
             }
         }
-        for (int i = 0; i < portraitUrls.length; i++) {
-            String portraitUrl = ossUtil.activateOssFile(portraitUrls[i]);
+        //添加第一张写真图作为主图保存
+        UserInfoAuth userInfoAuth = new UserInfoAuth();
+        userInfoAuth.setId(userInfoAuthId);
+        userInfoAuth.setMainPicUrl(portraitUrlList.get(0));
+        update(userInfoAuth);
+        //添加多余的图片
+        for (int i = 0; i < portraitUrlList.size(); i++) {
+            String portraitUrl = portraitUrlList.get(i);
             if(!dbFilesUrlList.contains(portraitUrl)){
                 UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
                 userInfoAuthFile.setUrl(portraitUrl);

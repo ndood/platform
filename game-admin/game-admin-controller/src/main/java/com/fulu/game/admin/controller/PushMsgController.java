@@ -6,13 +6,16 @@ import com.fulu.game.core.entity.PushMsg;
 import com.fulu.game.core.entity.vo.PushMsgVO;
 import com.fulu.game.core.service.PushMsgService;
 import com.github.pagehelper.PageInfo;
+import com.xiaoleilu.hutool.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.Date;
 
 @RestController
 @Slf4j
@@ -30,7 +33,14 @@ public class PushMsgController extends BaseController{
     @PostMapping(value = "/push")
     public Result push(@Valid PushMsgVO pushMsgVO){
         if(PushMsgTypeEnum.ASSIGN_USERID.getType().equals(pushMsgVO.getType())){
-            return Result.error().msg("指定用户不能为空!");
+            if(StringUtils.isBlank(pushMsgVO.getPushIds())){
+                return Result.error().msg("指定用户不能为空!");
+            }
+        }
+        if(pushMsgVO.getTouchTime()!=null){
+            if(DateUtil.beginOfDay(pushMsgVO.getTouchTime()).before(DateUtil.beginOfDay(new Date()))){
+                return Result.error().msg("推送日期不能小于当前日期!");
+            }
         }
         pushMsgService.push(pushMsgVO);
         return Result.success();

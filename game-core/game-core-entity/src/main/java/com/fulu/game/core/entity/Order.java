@@ -61,4 +61,15 @@ public class Order implements Serializable {
 	//订单完成时间
 	private Date completeTime;
 
+
+	public String getRemark() {
+		if(null==remark){
+			return "";
+		}
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
 }
