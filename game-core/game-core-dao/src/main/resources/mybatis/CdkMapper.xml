@@ -9,6 +9,7 @@
         <result column="price" property="price"/>
         <result column="type" property="type"/>
         <result column="group_id" property="groupId"/>
+        <result column="channel_id" property="channelId"/>
         <result column="is_use" property="isUse"/>
         <result column="order_no" property="orderNo"/>
         <result column="update_time" property="updateTime"/>
@@ -19,7 +20,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,series,category_id,price,type,group_id,is_use,order_no,update_time,create_time    </sql>
+        id,series,category_id,price,type,group_id,channel_id,is_use,order_no,update_time,create_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="CdkResultMap">
         select
@@ -53,6 +54,9 @@
             <if test="groupId != null">
                 and group_id = #{groupId}
             </if>
+            <if test="channelId != null">
+                and channel_id = #{channelId}
+            </if>
             <if test="isUse != null">
                 and is_use = #{isUse}
             </if>
@@ -71,9 +75,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Cdk">
         insert into
-        t_cdk (series,category_id,price,type,group_id,is_use,order_no,update_time,create_time)
+        t_cdk (series,category_id,price,type,group_id,channel_id,is_use,order_no,update_time,create_time)
         values
-        (#{series},#{categoryId},#{price},#{type},#{groupId},#{isUse},#{orderNo},#{updateTime},#{createTime})
+        (#{series},#{categoryId},#{price},#{type},#{groupId},#{channelId},#{isUse},#{orderNo},#{updateTime},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Cdk">
@@ -98,6 +102,10 @@
 
             <if test="groupId != null">
                 group_id = #{groupId},
+            </if>
+
+            <if test="channelId != null">
+                channel_id = #{channelId},
             </if>
 
             <if test="isUse != null">

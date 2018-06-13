@@ -29,6 +29,8 @@ public class Cdk implements Serializable {
     private String type;
     //批次id
     private Integer groupId;
+    //渠道商id
+    private Integer channelId;
     //使用状态(0未使用，1已使用)
     private Integer isUse;
     //使用订单号
