@@ -20,7 +20,7 @@ public enum RedisKeyEnum {
 
     public static final String SPLIT = "-";
 
-    public String generateKey(Integer id) {
+    public String generateKey(int id) {
         return getEvnPrefix() + SPLIT + this.name() + SPLIT + id;
     }
 
