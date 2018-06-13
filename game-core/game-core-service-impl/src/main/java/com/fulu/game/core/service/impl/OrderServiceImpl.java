@@ -260,6 +260,12 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     }
 
 
+    public String submitMarketOrder(){
+
+
+        return null;
+    }
+
     /**
      * 使用优惠券
      * @return
