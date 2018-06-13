@@ -21,6 +21,8 @@ public class Cdk implements Serializable {
     private Integer id;
     //序列号
     private String series;
+    //游戏id
+    private Integer categoryId;
     //单价
     private BigDecimal price;
     //类型

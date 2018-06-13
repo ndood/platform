@@ -23,6 +23,8 @@ public class CdkGroup implements Serializable {
 	private String type;
 	//启用状态(1为启用，0为关闭)
 	private Integer status;
+	//游戏id
+	private Integer categoryId;
 	//单价
 	private BigDecimal price;
 	//数量

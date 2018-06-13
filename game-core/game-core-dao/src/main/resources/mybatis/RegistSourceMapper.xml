@@ -49,13 +49,6 @@
         </where>
     </select>
 
-    <delete id="deleteById" parameterType="java.lang.Integer">
-        delete from t_regist_source
-        <where>
-            id = #{id}
-        </where>
-    </delete>
-
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.RegistSource">
         insert into
         t_regist_source (name,admin_id,remark,wxcode_url,create_time,update_time)

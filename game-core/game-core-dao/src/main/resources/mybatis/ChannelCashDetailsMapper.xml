@@ -58,13 +58,6 @@
         </where>
     </select>
 
-    <delete id="deleteById" parameterType="java.lang.Integer">
-        delete from t_channel_cash_details
-        <where>
-            id = #{id}
-        </where>
-    </delete>
-
     <insert id="create" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.fulu.game.core.entity.ChannelCashDetails">
         insert into

@@ -5,6 +5,7 @@
     <resultMap id="CdkResultMap" type="com.fulu.game.core.entity.Cdk">
         <id column="id" property="id"/>
         <result column="series" property="series"/>
+        <result column="category_id" property="categoryId"/>
         <result column="price" property="price"/>
         <result column="type" property="type"/>
         <result column="group_id" property="groupId"/>
@@ -18,7 +19,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,series,price,type,group_id,is_use,order_no,update_time,create_time    </sql>
+        id,series,category_id,price,type,group_id,is_use,order_no,update_time,create_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="CdkResultMap">
         select
@@ -43,8 +44,8 @@
             <if test="series != null">
                 and series = #{series}
             </if>
-            <if test="price != null">
-                and price = #{price}
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
             </if>
             <if test="type != null">
                 and type = #{type}
@@ -58,12 +59,6 @@
             <if test="orderNo != null">
                 and order_no = #{orderNo}
             </if>
-            <if test="updateTime != null">
-                and update_time = #{updateTime}
-            </if>
-            <if test="createTime != null">
-                and create_time = #{createTime}
-            </if>
         </where>
     </select>
 
@@ -76,9 +71,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Cdk">
         insert into
-        t_cdk (series,price,type,group_id,is_use,order_no,update_time,create_time)
+        t_cdk (series,category_id,price,type,group_id,is_use,order_no,update_time,create_time)
         values
-        (#{series},#{price},#{type},#{groupId},#{isUse},#{orderNo},#{updateTime},#{createTime})
+        (#{series},#{categoryId},#{price},#{type},#{groupId},#{isUse},#{orderNo},#{updateTime},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Cdk">
@@ -87,6 +82,10 @@
 
             <if test="series != null">
                 series = #{series},
+            </if>
+
+            <if test="categoryId != null">
+                category_id = #{categoryId},
             </if>
 
             <if test="price != null">
