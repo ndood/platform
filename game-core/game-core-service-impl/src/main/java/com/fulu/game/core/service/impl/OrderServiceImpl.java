@@ -20,6 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.fulu.game.core.dao.OrderDao;
+
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -56,6 +58,9 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     private AdminService adminService;
     @Autowired
     private WxTemplateMsgService wxTemplateMsgService;
+    @Autowired
+    private OrderMarketProductService orderMarketProductService;
+
 
     @Override
     public ICommonDao<Order, Integer> getDao() {
@@ -259,6 +264,55 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         return orderVO;
     }
 
+
+    /**
+     * 提交集市订单
+     * @param channelId
+     * @param orderMarketProduct
+     * @param remark
+     * @param orderIp
+     * @return
+     */
+    public String submitMarketOrder(int channelId,
+                                    @Valid OrderMarketProduct orderMarketProduct,
+                                    String remark,
+                                    String orderIp){
+        log.info("提交集市订单:channelId:{};orderMarketProduct:{};remark:{};orderIp:{}",channelId,orderMarketProduct,remark,orderIp);
+        Category category = categoryService.findById(orderMarketProduct.getCategoryId());
+        //计算订单总价格
+        BigDecimal totalMoney = orderMarketProduct.getPrice().multiply(new BigDecimal(orderMarketProduct.getAmount()));
+        //计算单笔订单佣金
+        BigDecimal commissionMoney = totalMoney.multiply(category.getCharges());
+        if(commissionMoney.compareTo(totalMoney)>0){
+            throw new OrderException(category.getName(),"订单错误,佣金比订单总价高!");
+        }
+        //创建订单
+        Order order = new Order();
+        order.setName(orderMarketProduct.getProductName());
+        order.setOrderNo(generateOrderNo());
+        order.setCategoryId(orderMarketProduct.getCategoryId());
+        order.setRemark(remark);
+        order.setIsPay(true);
+        order.setType(OrderTypeEnum.MARKET.getType());
+        order.setChannelId(channelId);
+        order.setTotalMoney(totalMoney);
+        order.setActualMoney(totalMoney);
+        order.setStatus(OrderStatusEnum.WAIT_SERVICE.getStatus());
+        order.setCommissionMoney(commissionMoney);
+        order.setPayTime(new Date());
+        order.setCreateTime(new Date());
+        order.setUpdateTime(new Date());
+        order.setOrderIp(orderIp);
+        create(order);
+        //更新集市订单商品
+        orderMarketProduct.setCreateTime(new Date());
+        orderMarketProduct.setUpdateTime(new Date());
+        orderMarketProduct.setOrderNo(order.getOrderNo());
+        orderMarketProductService.create(orderMarketProduct);
+        //todo 更新cdkey使用状态
+
+        return order.getOrderNo();
+    }
 
     /**
      * 使用优惠券
@@ -594,10 +648,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setCommissionMoney(order.getTotalMoney());
         update(order);
         //订单协商,全部金额记录平台流水
-
         wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(),WechatTemplateMsgEnum.ORDER_SYSTEM_USER_APPEAL_COMPLETE);
         wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(),WechatTemplateMsgEnum.ORDER_SYSTEM_SERVER_APPEAL_COMPLETE);
-
         return orderConvertVo(order);
     }
 

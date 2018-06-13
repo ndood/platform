@@ -18,7 +18,7 @@ public class ProductException  extends BizException{
         private String msg;
     }
 
-    public ProductException(ProductException.ExceptionCode exceptionCode) {
+    public ProductException(ExceptionCode exceptionCode) {
         super();
         this.code = exceptionCode.getCode();
         this.message = exceptionCode.getMsg();

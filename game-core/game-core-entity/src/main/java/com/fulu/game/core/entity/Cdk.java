@@ -32,7 +32,7 @@ public class Cdk implements Serializable {
     //渠道商id
     private Integer channelId;
     //使用状态(0未使用，1已使用)
-    private Integer isUse;
+    private Boolean isUse;
     //使用订单号
     private String orderNo;
     //使用时间

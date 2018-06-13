@@ -10,4 +10,6 @@ import com.fulu.game.core.entity.Cdk;
  */
 public interface CdkService extends ICommonService<Cdk, Integer> {
 
+
+    Cdk findBySeries(String series);
 }
