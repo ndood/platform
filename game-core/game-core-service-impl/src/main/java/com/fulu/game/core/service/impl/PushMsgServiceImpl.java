@@ -149,13 +149,13 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
     @Override
     public void hitsStatistics(int pushId) {
         User user = userService.getCurrentUser();
-        long bitSetVal = Long.valueOf(pushId + "" + user.getId());
-        boolean flag = redisOpenService.getBitSet(RedisKeyEnum.BITSET_PUSH_MSG_HITS.generateKey(), bitSetVal);
+        long bitSetVal = Long.valueOf(user.getId());
+        boolean flag = redisOpenService.getBitSet(RedisKeyEnum.BITSET_PUSH_MSG_HITS.generateKey(pushId), bitSetVal);
         if (flag) {
             log.info("用户已经点击过该推送:pushId:{};userId:{};", pushId, user.getId());
             return;
         }
-        redisOpenService.bitSet(RedisKeyEnum.BITSET_PUSH_MSG_HITS.generateKey(), bitSetVal);
+        redisOpenService.bitSet(RedisKeyEnum.BITSET_PUSH_MSG_HITS.generateKey(pushId), bitSetVal);
         lock.lock();
         try {
             PushMsg pushMsg = findById(pushId);
