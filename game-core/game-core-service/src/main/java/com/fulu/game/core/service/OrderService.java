@@ -1,9 +1,11 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Order;
+import com.fulu.game.core.entity.OrderMarketProduct;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.github.pagehelper.PageInfo;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -35,6 +37,7 @@ public interface OrderService extends ICommonService<Order,Integer>{
      * @return
      */
     PageInfo<OrderVO> serverList(int pageNum, int pageSize, Integer categoryId, Integer[] statusArr);
+
     /**
      * 提交订单
      * @param productId
@@ -43,6 +46,16 @@ public interface OrderService extends ICommonService<Order,Integer>{
      * @return
      */
     OrderVO submit(int productId,int num,String remark,String couponNo,String userIp);
+
+    /**
+     * 提交集市订单
+     * @param channelId
+     * @param orderMarketProduct
+     * @param remark
+     * @param orderIp
+     * @return
+     */
+    String submitMarketOrder(int channelId, OrderMarketProduct orderMarketProduct, String remark, String orderIp);
 
     /**
      * 支付订单,订单回调的时候调用

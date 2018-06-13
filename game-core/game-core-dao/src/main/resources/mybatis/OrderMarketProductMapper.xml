@@ -3,72 +3,78 @@
 
 <mapper namespace="com.fulu.game.core.dao.OrderMarketProductDao">
     <resultMap id="OrderMarketProductResultMap" type="com.fulu.game.core.entity.OrderMarketProduct">
-                                    <id column="id"  property="id" />
-                                            <result column="order_no"  property="orderNo" />
-                                            <result column="category_id"  property="categoryId" />
-                                            <result column="product_name"  property="productName" />
-                                            <result column="mobile"  property="mobile" />
-                                            <result column="rolename"  property="rolename" />
-                                            <result column="price"  property="price" />
-                                            <result column="amount"  property="amount" />
-                                            <result column="create_time"  property="createTime" />
-                                            <result column="update_time"  property="updateTime" />
-                        </resultMap>
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="product_name" property="productName"/>
+        <result column="mobile" property="mobile"/>
+        <result column="game_area" property="gameArea"/>
+        <result column="rolename" property="rolename"/>
+        <result column="price" property="price"/>
+        <result column="amount" property="amount"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
 
-    <resultMap id="OrderMarketProductResultVOMap" type="com.fulu.game.core.entity.vo.OrderMarketProductVO" extends="OrderMarketProductResultMap">
+    <resultMap id="OrderMarketProductResultVOMap" type="com.fulu.game.core.entity.vo.OrderMarketProductVO"
+               extends="OrderMarketProductResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,order_no,category_id,product_name,mobile,rolename,price,amount,create_time,update_time    </sql>
+        id,order_no,category_id,product_name,mobile,game_area,rolename,price,amount,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="OrderMarketProductResultMap">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from t_order_market_product
         <where>
-        id = #{id}
+            id = #{id}
         </where>
     </select>
 
-    <select id="findAll"  resultMap="OrderMarketProductResultMap">
+    <select id="findAll" resultMap="OrderMarketProductResultMap">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from t_order_market_product
     </select>
 
-    <select id="findByParameter" resultMap="OrderMarketProductResultMap" parameterType="com.fulu.game.core.entity.vo.OrderMarketProductVO">
+    <select id="findByParameter" resultMap="OrderMarketProductResultMap"
+            parameterType="com.fulu.game.core.entity.vo.OrderMarketProductVO">
         SELECT
         <include refid="Base_Column_List"/>
         FROM t_order_market_product
         <where>
-                                                                            <if test="orderNo != null">
-                       and order_no = #{orderNo}
-                    </if>
-                                                                <if test="categoryId != null">
-                       and category_id = #{categoryId}
-                    </if>
-                                                                <if test="productName != null">
-                       and product_name = #{productName}
-                    </if>
-                                                                <if test="mobile != null">
-                       and mobile = #{mobile}
-                    </if>
-                                                                <if test="rolename != null">
-                       and rolename = #{rolename}
-                    </if>
-                                                                <if test="price != null">
-                       and price = #{price}
-                    </if>
-                                                                <if test="amount != null">
-                       and amount = #{amount}
-                    </if>
-                                                                <if test="createTime != null">
-                       and create_time = #{createTime}
-                    </if>
-                                                                <if test="updateTime != null">
-                       and update_time = #{updateTime}
-                    </if>
-                                    </where>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="productName != null">
+                and product_name = #{productName}
+            </if>
+            <if test="mobile != null">
+                and mobile = #{mobile}
+            </if>
+            <if test="gameArea != null">
+                and game_area = #{gameArea}
+            </if>
+            <if test="rolename != null">
+                and rolename = #{rolename}
+            </if>
+            <if test="price != null">
+                and price = #{price}
+            </if>
+            <if test="amount != null">
+                and amount = #{amount}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">
@@ -78,53 +84,58 @@
         </where>
     </delete>
 
-    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.OrderMarketProduct">
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.OrderMarketProduct">
         insert into
-        t_order_market_product (order_no,category_id,product_name,mobile,rolename,price,amount,create_time,update_time)
+        t_order_market_product (order_no,category_id,product_name,mobile,game_area,rolename,price,amount,create_time,update_time)
         values
-        (#{orderNo},#{categoryId},#{productName},#{mobile},#{rolename},#{price},#{amount},#{createTime},#{updateTime})
+        (#{orderNo},#{categoryId},#{productName},#{mobile},#{gameArea},#{rolename},#{price},#{amount},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.OrderMarketProduct">
         update t_order_market_product
         <set>
-                                                        
-                    <if test="orderNo != null">
-                        order_no = #{orderNo},
-                    </if>
-                                            
-                    <if test="categoryId != null">
-                        category_id = #{categoryId},
-                    </if>
-                                            
-                    <if test="productName != null">
-                        product_name = #{productName},
-                    </if>
-                                            
-                    <if test="mobile != null">
-                        mobile = #{mobile},
-                    </if>
-                                            
-                    <if test="rolename != null">
-                        rolename = #{rolename},
-                    </if>
-                                            
-                    <if test="price != null">
-                        price = #{price},
-                    </if>
-                                            
-                    <if test="amount != null">
-                        amount = #{amount},
-                    </if>
-                                            
-                    <if test="createTime != null">
-                        create_time = #{createTime},
-                    </if>
-                                            
-                    <if test="updateTime != null">
-                        update_time = #{updateTime},
-                    </if>
-                                    </set>
+
+            <if test="orderNo != null">
+                order_no = #{orderNo},
+            </if>
+
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+
+            <if test="productName != null">
+                product_name = #{productName},
+            </if>
+
+            <if test="mobile != null">
+                mobile = #{mobile},
+            </if>
+
+            <if test="gameArea != null">
+                game_area = #{gameArea},
+            </if>
+
+            <if test="rolename != null">
+                rolename = #{rolename},
+            </if>
+
+            <if test="price != null">
+                price = #{price},
+            </if>
+
+            <if test="amount != null">
+                amount = #{amount},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
         <where>
             id = #{id}
         </where>

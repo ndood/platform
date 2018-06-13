@@ -20,6 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.fulu.game.core.dao.OrderDao;
+
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -263,11 +265,19 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     }
 
 
-
+    /**
+     * 提交集市订单
+     * @param channelId
+     * @param orderMarketProduct
+     * @param remark
+     * @param orderIp
+     * @return
+     */
     public String submitMarketOrder(int channelId,
-                                    OrderMarketProduct orderMarketProduct,
+                                    @Valid OrderMarketProduct orderMarketProduct,
                                     String remark,
                                     String orderIp){
+        log.info("提交集市订单:channelId:{};orderMarketProduct:{};remark:{};orderIp:{}",channelId,orderMarketProduct,remark,orderIp);
         Category category = categoryService.findById(orderMarketProduct.getCategoryId());
         //计算订单总价格
         BigDecimal totalMoney = orderMarketProduct.getPrice().multiply(new BigDecimal(orderMarketProduct.getAmount()));
@@ -299,6 +309,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         orderMarketProduct.setUpdateTime(new Date());
         orderMarketProduct.setOrderNo(order.getOrderNo());
         orderMarketProductService.create(orderMarketProduct);
+        //todo 更新cdkey使用状态
 
         return order.getOrderNo();
     }
