@@ -22,6 +22,8 @@ public class OrderMarketProduct implements Serializable {
 	private Integer id;
 	//订单号
 	private String orderNo;
+
+	private String type;
 	//游戏分类ID
 	@NotNull(message = "[游戏分类ID]字段不能为空")
 	private Integer categoryId;
