@@ -47,14 +47,21 @@ public class ChannelController {
      */
     @RequestMapping("/token/recreate")
     public Result recreate(@RequestParam("id") Integer id) {
-        //channelService.recreate();
-        return null;
+        log.info("调用token重生成接口，入参:id={}",id);
+        String token = channelService.recreate(id);
+        return Result.success().data(token).msg("操作成功");
     }
 
+    /**
+     * 修改
+     * @param id
+     * @param name
+     * @return
+     */
+    @RequestMapping("/update")
     public Result update(@RequestParam("id") Integer id,@RequestParam("name") String name){
-        Channel channel = channelService.findById(id);
-        channel.setName(name);
-        return null;
+        Channel channel = channelService.update(id,name);
+        return Result.success().data(channel).msg("操作成功");
     }
 
     /**
@@ -62,7 +69,9 @@ public class ChannelController {
      *
      * @return
      */
-    public Result list() {
+    @RequestMapping("/list")
+    public Result list(@RequestParam(value = "pageNum") Integer pageNum,
+                       @RequestParam(value = "pageSize") Integer pageSize) {
         return null;
     }
 }
