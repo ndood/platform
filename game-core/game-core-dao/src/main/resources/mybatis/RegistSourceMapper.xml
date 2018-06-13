@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.RegistSourceDao">
+    <resultMap id="RegistSourceResultMap" type="com.fulu.game.core.entity.RegistSource">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="admin_id" property="adminId"/>
+        <result column="remark" property="remark"/>
+        <result column="wxcode_url" property="wxcodeUrl"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="RegistSourceResultVOMap" type="com.fulu.game.core.entity.vo.RegistSourceVO"
+               extends="RegistSourceResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,admin_id,remark,wxcode_url,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="RegistSourceResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_regist_source
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="RegistSourceResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_regist_source
+    </select>
+
+    <select id="findByParameter" resultMap="RegistSourceResultMap"
+            parameterType="com.fulu.game.core.entity.vo.RegistSourceVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_regist_source
+        <where>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="wxcodeUrl != null">
+                and wxcode_url = #{wxcodeUrl}
+            </if>
+        </where>
+    </select>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.RegistSource">
+        insert into
+        t_regist_source (name,admin_id,remark,wxcode_url,create_time,update_time)
+        values
+        (#{name},#{adminId},#{remark},#{wxcodeUrl},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.RegistSource">
+        update t_regist_source
+        <set>
+
+            <if test="name != null">
+                name = #{name},
+            </if>
+
+            <if test="adminId != null">
+                admin_id = #{adminId},
+            </if>
+
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+
+            <if test="wxcodeUrl != null">
+                wxcode_url = #{wxcodeUrl},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.CdkDao">
+    <resultMap id="CdkResultMap" type="com.fulu.game.core.entity.Cdk">
+        <id column="id" property="id"/>
+        <result column="series" property="series"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="price" property="price"/>
+        <result column="type" property="type"/>
+        <result column="group_id" property="groupId"/>
+        <result column="is_use" property="isUse"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="CdkResultVOMap" type="com.fulu.game.core.entity.vo.CdkVO" extends="CdkResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,series,category_id,price,type,group_id,is_use,order_no,update_time,create_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="CdkResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_cdk
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="CdkResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_cdk
+    </select>
+
+    <select id="findByParameter" resultMap="CdkResultMap" parameterType="com.fulu.game.core.entity.vo.CdkVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_cdk
+        <where>
+            <if test="series != null">
+                and series = #{series}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="groupId != null">
+                and group_id = #{groupId}
+            </if>
+            <if test="isUse != null">
+                and is_use = #{isUse}
+            </if>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_cdk
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Cdk">
+        insert into
+        t_cdk (series,category_id,price,type,group_id,is_use,order_no,update_time,create_time)
+        values
+        (#{series},#{categoryId},#{price},#{type},#{groupId},#{isUse},#{orderNo},#{updateTime},#{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.Cdk">
+        update t_cdk
+        <set>
+
+            <if test="series != null">
+                series = #{series},
+            </if>
+
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+
+            <if test="price != null">
+                price = #{price},
+            </if>
+
+            <if test="type != null">
+                type = #{type},
+            </if>
+
+            <if test="groupId != null">
+                group_id = #{groupId},
+            </if>
+
+            <if test="isUse != null">
+                is_use = #{isUse},
+            </if>
+
+            <if test="orderNo != null">
+                order_no = #{orderNo},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>
