@@ -27,6 +27,10 @@ public class Order implements Serializable {
 	private String couponNo;
 	//下单用户ID
 	private Integer userId;
+	//订单类型
+	private Integer type;
+	//渠道商ID
+	private Integer channelId;
 	//陪玩师用户ID
 	private Integer serviceUserId;
 	//订单游戏分类
@@ -60,6 +64,8 @@ public class Order implements Serializable {
 	private Date payTime;
 	//订单完成时间
 	private Date completeTime;
+	//下单IP
+	private String orderIp;
 
 
 	public String getRemark() {
