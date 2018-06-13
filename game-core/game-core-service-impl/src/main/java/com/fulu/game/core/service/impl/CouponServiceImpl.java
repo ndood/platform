@@ -165,6 +165,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
                                  Integer userId,
                                  Date receiveTime,
                                  String receiveIp) {
+        log.info("领取或发放优惠券:redeemCode:{},userId:{},receiveTime:{},receiveIp:{}",redeemCode,userId,receiveTime,receiveIp);
         CouponGroup couponGroup = couponGroupService.findByRedeemCode(redeemCode);
         if (couponGroup == null) {
             throw new CouponException(CouponException.ExceptionCode.REDEEMCODE_ERROR);
@@ -217,6 +218,8 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
             coupon.setIsFirstReceive(false);
         }
         create(coupon);
+        log.info("生成优惠券:coupon:{}",coupon);
+
         //发放优惠券通知
         wxTemplateMsgService.pushWechatTemplateMsg(coupon.getUserId(), WechatTemplateMsgEnum.GRANT_COUPON,coupon.getDeduction().toString());
         return coupon;
