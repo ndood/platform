@@ -1,7 +1,6 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.CdkGroup;
-import com.fulu.game.core.entity.vo.CdkGroupVO;
 import com.github.pagehelper.PageInfo;
 
 /**
@@ -14,6 +13,7 @@ public interface CdkGroupService extends ICommonService<CdkGroup, Integer> {
 
     /**
      * 生成cdk批次和cdk
+     *
      * @param cdkGroup
      * @return
      */
@@ -21,10 +21,17 @@ public interface CdkGroupService extends ICommonService<CdkGroup, Integer> {
 
     /**
      * cdk批次列表
+     *
      * @param pageNum
      * @param pageSize
      * @param orderBy
      * @return
      */
-    PageInfo<CdkGroupVO> list(Integer pageNum, Integer pageSize, String orderBy);
+    PageInfo<CdkGroup> list(Integer pageNum, Integer pageSize, String orderBy);
+
+    /**
+     * cdk批次废除
+     * @param groupId
+     */
+    void abolish(Integer groupId);
 }

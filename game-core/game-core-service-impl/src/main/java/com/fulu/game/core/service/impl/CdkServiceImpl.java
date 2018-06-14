@@ -73,4 +73,12 @@ public class CdkServiceImpl extends AbsCommonService<Cdk, Integer> implements Cd
         List<CdkVO> cdkList = cdkDao.listByParam(cdkVO);
         return new PageInfo<>(cdkList);
     }
+
+    @Override
+    public int count(Integer groupId, Boolean b) {
+        CdkVO cdkVO = new CdkVO();
+        cdkVO.setIsUse(b);
+        cdkVO.setGroupId(groupId);
+        return cdkDao.count(cdkVO);
+    }
 }

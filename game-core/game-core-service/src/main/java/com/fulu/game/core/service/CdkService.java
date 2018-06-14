@@ -13,9 +13,39 @@ import com.github.pagehelper.PageInfo;
  */
 public interface CdkService extends ICommonService<Cdk, Integer> {
 
+    /**
+     * 通过序列号查询
+     *
+     * @param series
+     * @return
+     */
     Cdk findBySeries(String series);
 
+    /**
+     * 批量插入
+     *
+     * @param cdkGroup
+     * @return
+     */
     int insertList(CdkGroup cdkGroup);
 
+    /**
+     * cdk列表
+     *
+     * @param pageNum
+     * @param pageSize
+     * @param series
+     * @param orderBy
+     * @return
+     */
     PageInfo<CdkVO> list(Integer pageNum, Integer pageSize, String series, String orderBy);
+
+    /**
+     * 按使用状态统计
+     *
+     * @param groupId
+     * @param b
+     * @return
+     */
+    int count(Integer groupId, Boolean b);
 }
