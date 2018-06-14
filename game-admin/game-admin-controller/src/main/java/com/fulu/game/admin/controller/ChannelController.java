@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -60,6 +61,7 @@ public class ChannelController {
      */
     @RequestMapping("/update")
     public Result update(@RequestParam("id") Integer id,@RequestParam("name") String name){
+        log.info("调用修改渠道商名接口，入参:id={},name={}",id,name);
         Channel channel = channelService.update(id,name);
         return Result.success().data(channel).msg("操作成功");
     }
@@ -74,4 +76,11 @@ public class ChannelController {
                        @RequestParam(value = "pageSize") Integer pageSize) {
         return null;
     }
+
+    @RequestMapping("/cash/add")
+    public Result addCash(@RequestParam("channelId") Integer channelId,
+                          @RequestParam("channelId") BigDecimal money){
+        return null;
+    }
+
 }
