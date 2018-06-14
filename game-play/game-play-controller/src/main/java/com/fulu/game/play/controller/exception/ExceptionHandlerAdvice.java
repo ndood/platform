@@ -45,7 +45,6 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 404错误
-     *
      * @param e
      * @return
      */
@@ -69,7 +68,6 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 业务错误,直接提示给用户
-     *
      * @param e
      * @return
      */
@@ -87,9 +85,10 @@ public class ExceptionHandlerAdvice {
      */
     @ExceptionHandler(OrderException.class)
     public Result orderException(OrderException e) {
-        log.error(e.getMessage(), e);
+        log.error("订单异常:orderNo:{},ex:{};", e.getOrderNo(),e.getMessage());
         return Result.error().msg(e.getMessage());
     }
+
 
     /**
      * 用户认证异常
@@ -126,21 +125,9 @@ public class ExceptionHandlerAdvice {
         return Result.error().msg("上传文件不能超过5M");
     }
 
-    /**
-     * 统一异常
-     *
-     * @param e
-     * @return
-     */
-    @ExceptionHandler(Exception.class)
-    public Result handleException(Exception e) {
-        log.error(e.getMessage(), e);
-        return Result.error().msg("服务器错误!");
-    }
 
     /**
-     * 统一异常
-     *
+     * 生成小程序码错误
      * @param e
      * @return
      */
@@ -148,6 +135,18 @@ public class ExceptionHandlerAdvice {
     public Result wxErrorException(WxErrorException e) {
         log.error(e.getMessage(), e);
         return Result.error().msg("生成小程序码错误");
+    }
+
+
+    /**
+     * 统一异常
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(Exception.class)
+    public Result handleException(Exception e) {
+        log.error(e.getMessage(), e);
+        return Result.error().msg("服务器错误!");
     }
 
 }

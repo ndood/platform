@@ -64,6 +64,9 @@ public class Order implements Serializable {
 	private Date payTime;
 	//订单完成时间
 	private Date completeTime;
+
+	private Date receivingTime;
+
 	//下单IP
 	private String orderIp;
 
