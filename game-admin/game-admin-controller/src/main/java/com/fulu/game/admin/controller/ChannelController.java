@@ -101,7 +101,7 @@ public class ChannelController {
      * @return
      */
     @PostMapping("/cash/add")
-    public Result addCash(@RequestParam("channelId") Integer channelId,
+    public Result addCash(@RequestParam("id") Integer channelId,
                           @RequestParam("money") BigDecimal money,
                           @RequestParam("remark") String remark) {
         log.info("调用渠道商加款接口，入参channelId={}，money={}，remark={}", channelId, money, remark);

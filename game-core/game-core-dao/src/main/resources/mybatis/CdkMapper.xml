@@ -66,6 +66,26 @@
         </where>
     </select>
 
+    <select id="listByParam" resultMap="CdkResultVOMap" parameterType="com.fulu.game.core.entity.vo.CdkVO">
+        SELECT
+        c.id,c.series,c.price,c.type,c.group_id,c.channel_id,c.category_id,c.is_use,c.create_time,c.update_time,
+        c.order_no,o.status
+        FROM t_cdk c
+        LEFT JOIN t_order o ON c.order_no = o.order_no
+        <where>
+            <if test="series != null">
+                and series = #{series}
+            </if>
+            <if test="groupId != null">
+                and group_id = #{groupId}
+            </if>
+            <if test="isUse != null">
+                and is_use = #{isUse}
+            </if>
+        </where>
+    </select>
+
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_cdk
         <where>
