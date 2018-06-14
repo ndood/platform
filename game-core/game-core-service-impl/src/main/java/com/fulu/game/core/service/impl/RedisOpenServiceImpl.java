@@ -21,6 +21,13 @@ public class RedisOpenServiceImpl {
      * 默认存活时间5分钟
      */
     private static final long TIME = 30 * 60;
+    /**
+     * 请求锁超时时间
+     */
+    private static final long TIME_OUT = 30000;
+
+    private static final String LOCKED ="LOCKED";
+
 
     /**
      * 获取某个key的值
@@ -161,6 +168,29 @@ public class RedisOpenServiceImpl {
      */
     public boolean hasKey(String key) {
         return redisTemplate.hasKey(key);
+    }
+
+    /**
+     * redis锁
+     * @param key
+     * @param expireTime
+     */
+    public boolean lock(String key,long expireTime) {
+        if (redisTemplate.opsForValue().setIfAbsent(key,LOCKED)) {
+            redisTemplate.expire(key, expireTime, TimeUnit.SECONDS);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 释放锁
+     * @param key
+     */
+    public void unlock(String key) {
+        // 释放锁
+        redisTemplate.delete(key);
+
     }
 
 

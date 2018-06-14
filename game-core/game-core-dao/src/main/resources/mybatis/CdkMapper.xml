@@ -37,6 +37,19 @@
         from t_cdk
     </select>
 
+    <select id="count" resultType="java.lang.Integer" parameterType="com.fulu.game.core.entity.vo.CdkVO">
+        select count(1)
+        from t_cdk
+        <where>
+            <if test="groupId != null">
+                and group_id = #{groupId}
+            </if>
+            <if test="isUse != null">
+                and is_use = #{isUse}
+            </if>
+        </where>
+    </select>
+
     <select id="findByParameter" resultMap="CdkResultMap" parameterType="com.fulu.game.core.entity.vo.CdkVO">
         SELECT
         <include refid="Base_Column_List"/>
@@ -66,6 +79,26 @@
         </where>
     </select>
 
+    <select id="listByParam" resultMap="CdkResultVOMap" parameterType="com.fulu.game.core.entity.vo.CdkVO">
+        SELECT
+        c.id,c.series,c.price,c.type,c.group_id,c.channel_id,c.category_id,c.is_use,c.create_time,c.update_time,
+        c.order_no,o.status
+        FROM t_cdk c
+        LEFT JOIN t_order o ON c.order_no = o.order_no
+        <where>
+            <if test="series != null">
+                and series = #{series}
+            </if>
+            <if test="groupId != null">
+                and group_id = #{groupId}
+            </if>
+            <if test="isUse != null">
+                and is_use = #{isUse}
+            </if>
+        </where>
+    </select>
+
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_cdk
         <where>
@@ -78,6 +111,26 @@
         t_cdk (series,category_id,price,type,group_id,channel_id,is_use,order_no,update_time,create_time)
         values
         (#{series},#{categoryId},#{price},#{type},#{groupId},#{channelId},#{isUse},#{orderNo},#{updateTime},#{createTime})
+    </insert>
+
+    <insert id="insertList" parameterType="java.util.List">
+        insert into
+        t_cdk (series,category_id,price,type,group_id,channel_id,is_use,order_no,update_time,create_time)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.series},
+            #{item.categoryId},
+            #{item.price},
+            #{item.type},
+            #{item.groupId},
+            #{item.channelId},
+            #{item.isUse},
+            #{item.orderNo},
+            #{item.updateTime},
+            #{item.createTime}
+            )
+        </foreach>
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Cdk">

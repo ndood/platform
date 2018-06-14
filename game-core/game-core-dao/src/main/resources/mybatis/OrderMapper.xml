@@ -24,13 +24,17 @@
         <result column="pay_time" property="payTime"/>
         <result column="complete_time" property="completeTime"/>
         <result column="order_ip" property="orderIp"/>
+        <result column="receiving_time" property="receivingTime"/>
     </resultMap>
 
     <resultMap id="OrderResultVOMap" type="com.fulu.game.core.entity.vo.OrderVO" extends="OrderResultMap">
     </resultMap>
 
+    <resultMap id="OrderResultMarketVOMap" type="com.fulu.game.core.entity.vo.MarketOrderVO" extends="OrderResultMap">
+    </resultMap>
+
     <sql id="Base_Column_List">
-        id,order_no,coupon_no,category_id,user_id,service_user_id,name,type,channel_id,remark,is_pay,status,commission_money,total_money,actual_money,coupon_money,create_time,update_time,pay_time,complete_time,order_ip
+        id,order_no,coupon_no,category_id,user_id,service_user_id,name,type,channel_id,remark,is_pay,status,commission_money,total_money,actual_money,coupon_money,create_time,update_time,pay_time,complete_time,order_ip,receiving_time
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="OrderResultMap">
@@ -104,6 +108,9 @@
             <if test="orderIp != null">
                 and order_ip = #{orderIp}
             </if>
+            <if test="receivingTime != null">
+                and receiving_time = #{receivingTime}
+            </if>
         </where>
     </select>
 
@@ -154,6 +161,9 @@
             <if test="orderIp != null">
                 and order_ip = #{orderIp}
             </if>
+            <if test="receivingTime != null">
+                and receiving_time = #{receivingTime}
+            </if>
         </where>
     </select>
 
@@ -199,8 +209,60 @@
             <if test="orderIp != null">
                 and order_ip = #{orderIp}
             </if>
+            <if test="receivingTime != null">
+                and receiving_time = #{receivingTime}
+            </if>
         </where>
     </select>
+
+
+
+    <select id="findMarketByParameter" resultMap="OrderResultMarketVOMap" parameterType="com.fulu.game.core.entity.vo.OrderVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_order
+        <where>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="serviceUserId != null">
+                and service_user_id = #{serviceUserId}
+            </if>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="channelId != null">
+                and channel_id = #{channelId}
+            </if>
+            <if test="isPay != null">
+                and is_pay = #{isPay}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="orderIp != null">
+                and order_ip = #{orderIp}
+            </if>
+            <if test="statusList != null">
+                and status in
+                <foreach collection="statusList" item="s" index="index" open="(" close=")" separator=",">
+                    #{s}
+                </foreach>
+            </if>
+            <if test="receivingTime != null">
+                and receiving_time = #{receivingTime}
+            </if>
+        </where>
+    </select>
+
+
+
 
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_order
@@ -211,9 +273,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Order">
         insert into
-        t_order (order_no,coupon_no,category_id,user_id,service_user_id,name,type,channel_id,remark,is_pay,status,commission_money,total_money,actual_money,coupon_money,create_time,update_time,pay_time,complete_time,order_ip)
+        t_order (order_no,coupon_no,category_id,user_id,service_user_id,name,type,channel_id,remark,is_pay,status,commission_money,total_money,actual_money,coupon_money,create_time,update_time,pay_time,complete_time,order_ip,receiving_time)
         values
-        (#{orderNo},#{couponNo},#{categoryId},#{userId},#{serviceUserId},#{name},#{type},#{channelId},#{remark},#{isPay},#{status},#{commissionMoney},#{totalMoney},#{actualMoney},#{couponMoney},#{createTime},#{updateTime},#{payTime},#{completeTime},#{orderIp})
+        (#{orderNo},#{couponNo},#{categoryId},#{userId},#{serviceUserId},#{name},#{type},#{channelId},#{remark},#{isPay},#{status},#{commissionMoney},#{totalMoney},#{actualMoney},#{couponMoney},#{createTime},#{updateTime},#{payTime},#{completeTime},#{orderIp},#{receivingTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Order">
@@ -284,7 +346,10 @@
                 complete_time = #{completeTime},
             </if>
             <if test="orderIp != null">
-                order_ip = #{orderIp}
+                order_ip = #{orderIp},
+            </if>
+            <if test="receivingTime != null">
+                receiving_time = #{receivingTime}
             </if>
         </set>
         <where>

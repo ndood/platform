@@ -6,6 +6,7 @@ import lombok.Getter;
 /**
  * 订单异常处理
  */
+@Getter
 public class OrderException  extends BizException{
 
 
@@ -17,20 +18,20 @@ public class OrderException  extends BizException{
     @AllArgsConstructor
     @Getter
     public enum ExceptionCode{
-        PRODUCT_NOT_EXIST(42001, "陪玩师正在调整该商品,请稍后再来下单!"),
-        PRODUCT_REVIEW_ING(42002, "该技能未审核通过,不允许操作!");
+        ORDER_NOT_EXIST(7001, "该订单不存在"),
+        ORDER_TYPE_MISMATCHING(7002, "该订单类型不匹配"),
+        ORDER_ALREADY_RECEIVE(7003, "该订单已经被接单");
         private int code;
         private String msg;
     }
 
 
-    public OrderException(ExceptionCode exceptionCode,String orderNo,String message) {
-        String msg = "["+orderNo+"]"+message;
-        this.message = msg;
+
+    public OrderException(ExceptionCode exceptionCode,String orderNo) {
+        this.exceptionCode = exceptionCode;
         this.orderNo = orderNo;
         this.code = exceptionCode.getCode();
         this.message = exceptionCode.getMsg();
-        this.exceptionCode = exceptionCode;
     }
 
 

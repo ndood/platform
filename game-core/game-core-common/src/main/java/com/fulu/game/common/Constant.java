@@ -15,6 +15,10 @@ public interface Constant {
     Long TIME_HOUR_TOW = 2 * 3600L;
 
     Long TIME_MINUTES_FIFTEEN = 15 * 60L;
+
+    Long TIME_HOUR_TWO = 2*60 * 60L;
+
+
     Long TIME_MINUTES_FIVE= 5 * 60L;
 
     //手机验证码限定次数和限定时间
@@ -38,4 +42,6 @@ public interface Constant {
     Integer TECH_AUTH_HEIGHT = 1206;
 
     String DEFAULT_CITY = "未设置";
+    Integer DEFAULT_CDK_CHANNELID = 1;
+    String DEFAULT_CDK_CHANNEL_NAME = "盛天";
 }

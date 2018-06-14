@@ -1,5 +1,6 @@
 package com.fulu.game.core.entity.vo;
 
+import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.core.entity.Cdk;
 import lombok.Data;
 
@@ -11,5 +12,12 @@ import lombok.Data;
  */
 @Data
 public class CdkVO extends Cdk {
+
+    private Integer status;
+    private String statusName;//订单状态中文名
+
+    public String getStatusName() {
+        return OrderStatusEnum.getMsgByStatus(status);
+    }
 
 }

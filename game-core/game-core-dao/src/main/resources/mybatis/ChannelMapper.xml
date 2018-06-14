@@ -46,6 +46,9 @@
             <if test="adminId != null">
                 and admin_id = #{adminId}
             </if>
+            <if test="name != null">
+                and name = #{name}
+            </if>
         </where>
     </select>
 

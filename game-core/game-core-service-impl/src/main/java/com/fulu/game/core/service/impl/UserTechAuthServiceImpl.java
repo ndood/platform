@@ -286,6 +286,16 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         return techAuthList;
     }
 
+    @Override
+    public List<Integer> findUserNormalCategoryIds(Integer userId) {
+        List<Integer> categoryIds = new ArrayList<>();
+        List<UserTechAuth> techAuthList = findUserNormalTechs(userId);
+        for(UserTechAuth techAuth :techAuthList){
+            categoryIds.add(techAuth.getCategoryId());
+        }
+        return categoryIds;
+    }
+
     /**
      * 查询用户段位信息
      * @param techAuthId
