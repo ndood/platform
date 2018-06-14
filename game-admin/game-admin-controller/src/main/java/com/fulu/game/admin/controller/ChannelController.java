@@ -89,9 +89,20 @@ public class ChannelController {
     @PostMapping("/list")
     public Result list(@RequestParam("pageNum") Integer pageNum,
                        @RequestParam("pageSize") Integer pageSize) {
-        //todo 异步统计接口
         PageInfo<Channel> resultPage = channelService.list(pageNum, pageSize);
         return Result.success().data(resultPage);
+    }
+
+    /**
+     * 统计总下单数+成功订单数+总消费金额
+     *
+     * @param groupId
+     * @return
+     */
+    @PostMapping("/stats")
+    public Result stats(@RequestParam("groupId") Integer groupId) {
+        //todo 渠道商统计
+        return Result.success().data(1);
     }
 
     /**

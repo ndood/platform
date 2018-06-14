@@ -1,16 +1,21 @@
 package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.enums.MoneyOperateTypeEnum;
+import com.fulu.game.common.exception.CashException;
+import com.fulu.game.common.exception.ChannelException;
 import com.fulu.game.common.exception.CommonException;
+import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.core.dao.ChannelCashDetailsDao;
 import com.fulu.game.core.dao.ChannelDao;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.Channel;
 import com.fulu.game.core.entity.ChannelCashDetails;
+import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.ChannelCashDetailsService;
 import com.fulu.game.core.service.ChannelService;
+import com.fulu.game.core.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +36,8 @@ public class ChannelCashDetailsServiceImpl extends AbsCommonService<ChannelCashD
     private AdminService adminService;
     @Autowired
     private ChannelService channelService;
+    @Autowired
+    private OrderService orderService;
 
     @Override
     public ICommonDao<ChannelCashDetails, Integer> getDao() {
@@ -45,7 +52,7 @@ public class ChannelCashDetailsServiceImpl extends AbsCommonService<ChannelCashD
         log.info("操作人id={}",adminId);
         Channel channel = channelService.findById(channelId);
         if (null == channel){
-            throw new CommonException(CommonException.ExceptionCode.RECORD_NOT_EXSISTS);
+            throw new ChannelException(ChannelException.ExceptionCode.RECORD_NOT_EXIST);
         }
         BigDecimal oldBalance = channel.getBalance();
         log.info("加款前渠道商余额balance={},加款金额money={}",oldBalance,money);
@@ -71,16 +78,91 @@ public class ChannelCashDetailsServiceImpl extends AbsCommonService<ChannelCashD
     }
 
     @Override
+    @Transactional
     public ChannelCashDetails cutCash(Integer channelId, BigDecimal money, String orderNo){
-        log.info("");
+        log.info("调用渠道商扣款接口，入参channelId={},money={},orderNo={}",channelId,money,orderNo);
+        log.info("=====开始校验参数=====");
+        Channel channel = channelService.findById(channelId);
+        if (null == channel){
+            log.info("渠道商记录不存在");
+            throw new ChannelException(ChannelException.ExceptionCode.RECORD_NOT_EXIST);
+        }
+        if (money.compareTo(BigDecimal.ZERO) == -1) {
+            throw new CashException(CashException.ExceptionCode.CASH_NEGATIVE_EXCEPTION);
+        }
+        Order order = orderService.findByOrderNo(orderNo);
+        if (null == order){
+            throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST,orderNo);
+        }
+        BigDecimal oldBalance = channel.getBalance();
+        log.info("扣款前渠道商余额balance={},订单金额money={}",oldBalance,money);
+        if (money.compareTo(oldBalance) == 1) {
+            log.error("渠道商扣款异常，余额不足");
+            throw new CashException(CashException.ExceptionCode.CASH_EXCEED_EXCEPTION);
+        }
+        log.info("=====校验参数结束=====");
 
-        return null;
+        BigDecimal newBalance = oldBalance.add(money.negate());
+        log.info("扣款后渠道商余额newBalance={}",newBalance);
+        ChannelCashDetails channelCD = new ChannelCashDetails();
+        channelCD.setChannelId(channelId);
+        channelCD.setAction(MoneyOperateTypeEnum.CHANNEL_CUT_CASH.getType());
+        channelCD.setMoney(money.negate());
+        channelCD.setSum(newBalance);
+        channelCD.setOrderNo(orderNo);
+        channelCD.setRemark("订单扣款");
+        channelCD.setCreateTime(new Date());
+        channelCashDetailsDao.create(channelCD);
+        log.info("扣款流水记录成功,流水id={}",channelCD.getId());
+
+        channel.setBalance(newBalance);
+        channel.setUpdateTime(new Date());
+        channelDao.update(channel);
+        log.info("更新渠道商余额成功,扣款结束");
+        return channelCD;
     }
 
     @Override
+    @Transactional
     public ChannelCashDetails refundCash(Integer channelId, BigDecimal money, String orderNo){
-        //todo 渠道商退款
-        return null;
+        Admin admin = adminService.getCurrentUser();
+        int adminId = admin.getId();
+        log.info("调用渠道商退款接口，操作人id={},入参channelId={},money={},orderNo={}",adminId,channelId,money,orderNo);
+        log.info("=====开始校验参数=====");
+        Channel channel = channelService.findById(channelId);
+        if (null == channel){
+            log.info("渠道商记录不存在");
+            throw new ChannelException(ChannelException.ExceptionCode.RECORD_NOT_EXIST);
+        }
+        if (money.compareTo(BigDecimal.ZERO) == -1) {
+            throw new CashException(CashException.ExceptionCode.CASH_NEGATIVE_EXCEPTION);
+        }
+        Order order = orderService.findByOrderNo(orderNo);
+        if (null == order){
+            throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST,orderNo);
+        }
+        log.info("=====校验参数结束=====");
+
+        BigDecimal oldBalance = channel.getBalance();
+        log.info("退款前渠道商余额balance={},退款money={}",oldBalance,money);
+        BigDecimal newBalance = oldBalance.add(money);
+        log.info("退款后渠道商余额newBalance={}",newBalance);
+        ChannelCashDetails channelCD = new ChannelCashDetails();
+        channelCD.setChannelId(channelId);
+        channelCD.setAction(MoneyOperateTypeEnum.CHANNEL_REFUND.getType());
+        channelCD.setMoney(money);
+        channelCD.setSum(newBalance);
+        channelCD.setOrderNo(orderNo);
+        channelCD.setRemark("订单退款");
+        channelCD.setCreateTime(new Date());
+        channelCashDetailsDao.create(channelCD);
+        log.info("退款流水记录成功,流水id={}",channelCD.getId());
+
+        channel.setBalance(newBalance);
+        channel.setUpdateTime(new Date());
+        channelDao.update(channel);
+        log.info("更新渠道商余额成功,退款结束");
+        return channelCD;
     }
 
 }
