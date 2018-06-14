@@ -76,4 +76,10 @@ public class ChannelCashDetailsServiceImpl extends AbsCommonService<ChannelCashD
         return null;
     }
 
+    @Override
+    public ChannelCashDetails refundCash(Integer channelId, BigDecimal money, String orderNo){
+        //todo 渠道商退款
+        return null;
+    }
+
 }
