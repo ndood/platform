@@ -34,6 +34,14 @@ public enum  OrderStatusGroupEnum {
     ADMIN_APPEALING("申诉中", "ADMIN", 26, new Integer[]{400}),
     ADMIN_COMPLETE("订单完成", "ADMIN", 27, new Integer[]{500, 410, 420, 501, 502, 600}),
 
+
+    MARKET_ALL("全部", "ADMIN", 30,  new Integer[]{210,220,300,500, 410, 420, 501, 502, 600}),
+    MARKET_WAIT_SERVICE("等待陪玩", "ADMIN", 31, new Integer[]{210}),
+    MARKET_SERVING("陪玩中", "ADMIN", 32, new Integer[]{220}),
+    MARKET_CHECK("等待验收", "ADMIN", 33, new Integer[]{300}),
+    MARKET_COMPLETE("订单完成", "ADMIN", 34, new Integer[]{500, 410, 420, 501, 502, 600}),
+
+
     ALL_NORMAL_COMPLETE("陪玩师成功完成订单", "ALL", 100, new Integer[]{500, 501, 502, 600});
 
 

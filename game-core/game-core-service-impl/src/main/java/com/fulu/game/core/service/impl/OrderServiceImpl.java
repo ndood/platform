@@ -9,6 +9,7 @@ import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.vo.MarketOrderVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
@@ -104,6 +105,32 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         }
         return new PageInfo<>(orderVOList);
     }
+
+    /**
+     * 集市订单列表
+     * @param pageNum
+     * @param pageSize
+     * @param categoryId
+     * @param statusArr
+     * @return
+     */
+    @Override
+    public PageInfo<MarketOrderVO> marketList(int pageNum, int pageSize, Integer categoryId, Integer[] statusArr) {
+        OrderVO params = new OrderVO();
+        params.setCategoryId(categoryId);
+        params.setStatusList(statusArr);
+        params.setType(OrderTypeEnum.MARKET.getType());
+        PageHelper.startPage(pageNum,pageSize,"status asc,create_time desc");
+        List<MarketOrderVO> marketOrderVOList = orderDao.findMarketByParameter(params);
+        for(MarketOrderVO marketOrderVO : marketOrderVOList){
+            Category category = categoryService.findById(marketOrderVO.getCategoryId());
+            marketOrderVO.setCategoryIcon(category.getIcon());
+            marketOrderVO.setStatusStr(OrderStatusEnum.getMsgByStatus(marketOrderVO.getStatus()));
+        }
+        return  new PageInfo<>(marketOrderVOList);
+    }
+
+
 
     @Override
     public OrderVO findUserOrderDetails(String orderNo){

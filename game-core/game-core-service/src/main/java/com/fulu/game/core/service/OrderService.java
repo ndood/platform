@@ -2,6 +2,7 @@ package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderMarketProduct;
+import com.fulu.game.core.entity.vo.MarketOrderVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.github.pagehelper.PageInfo;
 
@@ -37,6 +38,16 @@ public interface OrderService extends ICommonService<Order,Integer>{
      * @return
      */
     PageInfo<OrderVO> serverList(int pageNum, int pageSize, Integer categoryId, Integer[] statusArr);
+
+    /**
+     * 集市订单列表
+     * @param pageNum
+     * @param pageSize
+     * @param categoryId
+     * @param statusArr
+     * @return
+     */
+    PageInfo<MarketOrderVO> marketList(int pageNum, int pageSize, Integer categoryId, Integer[] statusArr);
 
     /**
      * 提交订单
