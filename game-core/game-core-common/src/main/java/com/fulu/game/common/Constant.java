@@ -38,4 +38,6 @@ public interface Constant {
     Integer TECH_AUTH_HEIGHT = 1206;
 
     String DEFAULT_CITY = "未设置";
+    Integer DEFAULT_CDK_CHANNELID = 1;
+    String DEFAULT_CDK_CHANNEL_NAME = "盛天";
 }

@@ -10,6 +10,7 @@ import com.fulu.game.core.service.ChannelService;
 import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,7 +34,7 @@ public class ChannelController {
      * @param name
      * @return
      */
-    @RequestMapping("/save")
+    @PostMapping("/save")
     public Result save(@RequestParam("name") String name) {
         log.info("调用新增渠道商接口，入参:name={}", name);
         //查重名
@@ -54,7 +55,7 @@ public class ChannelController {
      * @param name
      * @return
      */
-    @RequestMapping("/update")
+    @PostMapping("/update")
     public Result update(@RequestParam("id") Integer id, @RequestParam("name") String name) {
         //查重名
         ChannelVO channelVO = new ChannelVO();
@@ -72,7 +73,7 @@ public class ChannelController {
      *
      * @return
      */
-    @RequestMapping("/token/recreate")
+    @PostMapping("/token/recreate")
     public Result recreate(@RequestParam("id") Integer id) {
         log.info("调用token重生成接口，入参:id={}", id);
         String token = channelService.recreate(id);
@@ -84,7 +85,7 @@ public class ChannelController {
      *
      * @return
      */
-    @RequestMapping("/list")
+    @PostMapping("/list")
     public Result list(@RequestParam("pageNum") Integer pageNum,
                        @RequestParam("pageSize") Integer pageSize) {
         //todo 查询总订单+成功订单+总消费额
@@ -99,7 +100,7 @@ public class ChannelController {
      * @param remark
      * @return
      */
-    @RequestMapping("/cash/add")
+    @PostMapping("/cash/add")
     public Result addCash(@RequestParam("channelId") Integer channelId,
                           @RequestParam("money") BigDecimal money,
                           @RequestParam("remark") String remark) {

@@ -8,6 +8,7 @@ import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.CollectionUtil;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,7 +30,7 @@ public class RegistSourceController {
      * @return
      * @throws WxErrorException
      */
-    @RequestMapping("/create")
+    @PostMapping("/create")
     public Result create(@RequestParam("name") String name,
                          @RequestParam(value = "remark", required = false) String remark) throws WxErrorException {
 
@@ -44,7 +45,7 @@ public class RegistSourceController {
         return Result.success().data(rs).msg("添加成功");
     }
 
-    @RequestMapping("/update")
+    @PostMapping("/update")
     public Result update(@RequestParam("id") Integer id,
                          @RequestParam("name") String name,
                          @RequestParam(value = "remark", required = false) String remark) {
@@ -64,7 +65,7 @@ public class RegistSourceController {
      *
      * @return
      */
-    @RequestMapping("/list")
+    @PostMapping("/list")
     public Result list(@RequestParam("pageNum") Integer pageNum,
                        @RequestParam("pageSize") Integer pageSize) {
         PageInfo<RegistSourceVO> resultPage = rsService.listWithCount(pageNum, pageSize);

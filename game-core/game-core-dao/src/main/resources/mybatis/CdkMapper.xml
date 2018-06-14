@@ -80,6 +80,26 @@
         (#{series},#{categoryId},#{price},#{type},#{groupId},#{channelId},#{isUse},#{orderNo},#{updateTime},#{createTime})
     </insert>
 
+    <insert id="insertList" parameterType="java.util.List">
+        insert into
+        t_cdk (series,category_id,price,type,group_id,channel_id,is_use,order_no,update_time,create_time)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.series},
+            #{item.categoryId},
+            #{item.price},
+            #{item.type},
+            #{item.groupId},
+            #{item.channelId},
+            #{item.isUse},
+            #{item.orderNo},
+            #{item.updateTime},
+            #{item.createTime}
+            )
+        </foreach>
+    </insert>
+
     <update id="update" parameterType="com.fulu.game.core.entity.Cdk">
         update t_cdk
         <set>
