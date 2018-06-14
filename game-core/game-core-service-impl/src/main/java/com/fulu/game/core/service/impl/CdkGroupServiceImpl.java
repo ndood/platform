@@ -78,4 +78,14 @@ public class CdkGroupServiceImpl extends AbsCommonService<CdkGroup, Integer> imp
         return new PageInfo<>(list);
     }
 
+    @Override
+    public void abolish(Integer groupId){
+        Admin admin = adminService.getCurrentUser();
+        int adminId = admin.getId();
+        log.info("调用cdk批次废除接口，操作人id={},批次id={}",adminId,groupId);
+        CdkGroup cdkGroup = cdkGroupDao.findById(groupId);
+        cdkGroup.setStatus(false);
+        cdkGroupDao.update(cdkGroup);
+    }
+
 }

@@ -28,4 +28,10 @@ public interface CdkGroupService extends ICommonService<CdkGroup, Integer> {
      * @return
      */
     PageInfo<CdkGroup> list(Integer pageNum, Integer pageSize, String orderBy);
+
+    /**
+     * cdk批次废除
+     * @param groupId
+     */
+    void abolish(Integer groupId);
 }

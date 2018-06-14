@@ -41,6 +41,13 @@ public class CdkController {
         }
     }
 
+    @PostMapping("/group/abolish")
+    public Result groupList(@RequestParam("groupId") Integer groupId) {
+        //todo 废除后是否有其他操作
+        cdkGroupService.abolish(groupId);
+        return Result.success().msg("操作成功");
+    }
+
     /**
      * cdk列表
      *
