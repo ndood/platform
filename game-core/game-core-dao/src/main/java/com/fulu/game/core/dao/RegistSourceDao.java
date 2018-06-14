@@ -15,4 +15,6 @@ public interface RegistSourceDao extends ICommonDao<RegistSource, Integer> {
 
     List<RegistSource> findByParameter(RegistSourceVO registSourceVO);
 
+    List<RegistSourceVO> listWithCount();
+
 }

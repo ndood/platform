@@ -49,6 +49,22 @@
         </where>
     </select>
 
+    <select id="listWithCount" resultMap="RegistSourceResultVOMap"
+            parameterType="com.fulu.game.core.entity.vo.RegistSourceVO">
+        SELECT
+        rs.id,
+        rs.name,
+        rs.admin_id,
+        rs.remark,
+        rs.create_time,
+        rs.update_time,
+        COUNT( u.source_id ) AS count
+        FROM t_regist_source rs
+        LEFT JOIN t_user u ON rs.id = u.source_id
+        GROUP BY rs.id
+        ORDER BY count DESC
+    </select>
+
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.RegistSource">
         insert into
         t_regist_source (name,admin_id,remark,wxcode_url,create_time,update_time)
