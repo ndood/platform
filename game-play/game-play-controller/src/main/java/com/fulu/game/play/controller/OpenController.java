@@ -29,7 +29,16 @@ public class OpenController extends BaseController{
     private CdkService cdkService;
 
 
-
+    /**
+     * web页面CDK下单
+     * @param sessionKey
+     * @param series
+     * @param gameArea
+     * @param rolename
+     * @param mobile
+     * @param request
+     * @return
+     */
     @PostMapping(value = "/cdk/order")
     @ResponseBody
     public  Result marketCDKOrder(String sessionKey,
@@ -73,7 +82,7 @@ public class OpenController extends BaseController{
         Integer channelId = cdk.getChannelId();
         log.info("CDK下单:orderMarketProduct:{};channelId:{};remark:{};ip:{}",orderMarketProduct,channelId,remark,ip);
         orderService.submitMarketOrder(channelId,orderMarketProduct,remark.toString(),ip,series);
-        return Result.success();
+        return Result.success().msg("下单成功!");
     }
 
 
