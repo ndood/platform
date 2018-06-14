@@ -8,6 +8,8 @@ public class MarketOrderVO extends Order{
 
     private String categoryIcon;
 
+    private String categoryName;
+
     private String statusStr;
 
 }

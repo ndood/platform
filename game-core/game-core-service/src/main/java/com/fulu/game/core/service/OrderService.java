@@ -49,6 +49,14 @@ public interface OrderService extends ICommonService<Order,Integer>{
      */
     PageInfo<MarketOrderVO> marketList(int pageNum, int pageSize, Integer categoryId, Integer[] statusArr);
 
+
+    /**
+     * 集市订单抢单
+     * @param orderNo
+     * @return
+     */
+    Order marketReceiveOrder(String orderNo);
+
     /**
      * 提交订单
      * @param productId
@@ -66,7 +74,7 @@ public interface OrderService extends ICommonService<Order,Integer>{
      * @param orderIp
      * @return
      */
-    String submitMarketOrder(int channelId, OrderMarketProduct orderMarketProduct, String remark, String orderIp);
+    String submitMarketOrder(int channelId, OrderMarketProduct orderMarketProduct, String remark, String orderIp,String series);
 
     /**
      * 支付订单,订单回调的时候调用

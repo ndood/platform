@@ -32,18 +32,21 @@ public class OpenController extends BaseController{
 
     @PostMapping(value = "/cdk/order")
     @ResponseBody
-    public Result marketCDKOrder(String sessionKey,
+    public  Result marketCDKOrder(String sessionKey,
                                  String series,
                                  String gameArea,
                                  String rolename,
                                  String mobile,
                                  HttpServletRequest request){
+        log.info("CDK开始下单:series:{};sessionKey:{};gameArea:{};rolename:{};mobile:{}",series,sessionKey,gameArea,rolename,mobile);
         //todo 验证sessionKey
         Cdk cdk = cdkService.findBySeries(series);
         if(cdk==null){
+            log.error("CDK无效:series:{};sessionKey:{};gameArea:{};rolename:{};mobile:{}",series,sessionKey,gameArea,rolename,mobile);
             return Result.error().msg("无效的CDK");
         }
         if(cdk.getIsUse()){
+            log.error("CDK已经被使用:series:{};sessionKey:{};gameArea:{};rolename:{};mobile:{}",series,sessionKey,gameArea,rolename,mobile);
             return Result.error().msg("该CDK已经被使用过,无法重复使用!");
         }
         String ip = RequestUtil.getIpAdrress(request);
@@ -65,13 +68,15 @@ public class OpenController extends BaseController{
         orderMarketProduct.setProductName(productName.toString());
         //获取备注
         StringBuffer remark = new StringBuffer();
-        remark.append("手机号码:").append(mobile).append("|");
+        remark.append("手机号码:").append(mobile).append(";");
         remark.append("角色名:").append(rolename);
         Integer channelId = cdk.getChannelId();
         log.info("CDK下单:orderMarketProduct:{};channelId:{};remark:{};ip:{}",orderMarketProduct,channelId,remark,ip);
-        orderService.submitMarketOrder(channelId,orderMarketProduct,remark.toString(),ip);
+        orderService.submitMarketOrder(channelId,orderMarketProduct,remark.toString(),ip,series);
         return Result.success();
     }
+
+
 
 
 }

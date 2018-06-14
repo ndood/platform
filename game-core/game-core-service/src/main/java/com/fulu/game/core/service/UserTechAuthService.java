@@ -69,6 +69,12 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
     List<UserTechAuth> findUserNormalTechs(Integer userId);
 
     /**
+     * 查询用户认证技能的分类
+     * @param userId
+     * @return
+     */
+    List<Integer> findUserNormalCategoryIds(Integer userId);
+    /**
      * 查询用户段位信息
      * @param techAuthId
      * @return

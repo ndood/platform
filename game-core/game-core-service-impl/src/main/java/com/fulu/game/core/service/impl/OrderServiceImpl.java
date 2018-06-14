@@ -14,6 +14,7 @@ import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Objects;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ import com.fulu.game.core.dao.OrderDao;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -61,6 +63,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     private WxTemplateMsgService wxTemplateMsgService;
     @Autowired
     private OrderMarketProductService orderMarketProductService;
+    @Autowired
+    private CdkService cdkService;
 
 
     @Override
@@ -126,10 +130,38 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
             Category category = categoryService.findById(marketOrderVO.getCategoryId());
             marketOrderVO.setCategoryIcon(category.getIcon());
             marketOrderVO.setStatusStr(OrderStatusEnum.getMsgByStatus(marketOrderVO.getStatus()));
+            marketOrderVO.setRemark(null);
         }
         return  new PageInfo<>(marketOrderVOList);
     }
 
+
+    @Override
+    public Order marketReceiveOrder(String orderNo) {
+        User serviceUser = userService.getCurrentUser();
+        Order order = findByOrderNo(orderNo);
+        log.info("陪玩师抢单:userId:{};order:{}",serviceUser.getId(),order);
+        if(!OrderTypeEnum.MARKET.getType().equals(order.getType())){
+            throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING,order.getOrderNo());
+        }
+        if(order.getServiceUserId()!=null||!OrderStatusEnum.WAIT_SERVICE.getStatus().equals(order.getStatus())){
+            throw new OrderException(OrderException.ExceptionCode.ORDER_ALREADY_RECEIVE,order.getOrderNo());
+        }
+        try {
+            if(!redisOpenService.lock(RedisKeyEnum.MARKET_ORDER_RECEIVE_LOCK.generateKey(order.getOrderNo()),30)){
+                throw new OrderException(OrderException.ExceptionCode.ORDER_ALREADY_RECEIVE,order.getOrderNo());
+            }
+            order.setServiceUserId(serviceUser.getId());
+            order.setReceivingTime(new Date());
+            order.setStatus(OrderStatusEnum.SERVICING.getStatus());
+            order.setUpdateTime(new Date());
+            update(order);
+            log.info("抢单成功:userId:{};order:{}",serviceUser.getId(),order);
+        }finally {
+            redisOpenService.unlock(RedisKeyEnum.MARKET_ORDER_RECEIVE_LOCK.generateKey(order.getOrderNo()));
+        }
+        return order;
+    }
 
 
     @Override
@@ -167,14 +199,21 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         orderVO.setCategoryIcon(category.getIcon());
         orderVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderVO.getStatus()));
         orderVO.setCategoryName(category.getName());
-
-        //添加用户信息
-        User user= userService.findById(order.getUserId());
-        orderVO.setUserHeadUrl(user.getHeadPortraitsUrl());
-        orderVO.setUserNickName(user.getNickname());
-        //添加订单商品信息
-        OrderProduct orderProduct = orderProductService.findByOrderNo(orderNo);
-        orderVO.setOrderProduct(orderProduct);
+        //如果是集市订单则没有商品信息
+        if(Objects.equal(OrderTypeEnum.MARKET.getType(),orderVO.getType())){
+            List<Integer> visibleStatus = Arrays.asList(OrderStatusGroupEnum.MARKET_ORDER_REMARK_VISIBLE.getStatusList());
+            if(!visibleStatus.contains(order.getStatus())){
+                orderVO.setRemark("");
+            }
+        }else{
+            //添加用户信息
+            User user= userService.findById(order.getUserId());
+            orderVO.setUserHeadUrl(user.getHeadPortraitsUrl());
+            orderVO.setUserNickName(user.getNickname());
+            //添加订单商品信息
+            OrderProduct orderProduct = orderProductService.findByOrderNo(orderNo);
+            orderVO.setOrderProduct(orderProduct);
+        }
 
         return orderVO;
     }
@@ -243,6 +282,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setCommissionMoney(commissionMoney);
         order.setCreateTime(new Date());
         order.setUpdateTime(new Date());
+        order.setOrderIp(userIp);
         //使用优惠券
         Coupon coupon = null;
         if(StringUtils.isNotBlank(couponNo)){
@@ -303,7 +343,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     public String submitMarketOrder(int channelId,
                                     @Valid OrderMarketProduct orderMarketProduct,
                                     String remark,
-                                    String orderIp){
+                                    String orderIp,
+                                    String series){
         log.info("提交集市订单:channelId:{};orderMarketProduct:{};remark:{};orderIp:{}",channelId,orderMarketProduct,remark,orderIp);
         Category category = categoryService.findById(orderMarketProduct.getCategoryId());
         //计算订单总价格
@@ -336,8 +377,25 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         orderMarketProduct.setUpdateTime(new Date());
         orderMarketProduct.setOrderNo(order.getOrderNo());
         orderMarketProductService.create(orderMarketProduct);
-        //todo 更新cdkey使用状态
+        log.info("创建集市订单完成:order:{};",order);
+        //更新cdkey使用状态
+        Cdk cdk = cdkService.findBySeries(series);
+        if(cdk!=null){
+            cdk.setOrderNo(order.getOrderNo());
+            cdk.setIsUse(true);
+            cdk.setUpdateTime(new Date());
+            log.info("更新CDK使用状态cdk:{}",cdk);
+            cdkService.update(cdk);
+        }
+        //todo 渠道商扣款,平台流水
 
+
+        //把订单缓存到redis里面
+        try {
+            redisOpenService.hset(RedisKeyEnum.MARKET_ORDER.generateKey(order.getOrderNo()),BeanUtil.beanToMap(order),Constant.TIME_HOUR_TOW);
+        }catch (Exception e){
+            log.error("订单转map错误:order:{};msg:{};",order,e.getMessage());
+        }
         return order.getOrderNo();
     }
 
@@ -408,6 +466,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         }
         order.setStatus(OrderStatusEnum.SERVICING.getStatus());
         order.setUpdateTime(new Date());
+        order.setReceivingTime(new Date());
         update(order);
 
         OrderProduct orderProduct = orderProductService.findByOrderNo(orderNo);

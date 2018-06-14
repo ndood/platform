@@ -16,7 +16,9 @@ public enum RedisKeyEnum {
     WX_SESSION_KEY,//用户token
     SMS, //短信
     WX_TEMPLATE_MSG, //微信消息推送
-    BITSET_PUSH_MSG_HITS; //微信推送点击去重
+    BITSET_PUSH_MSG_HITS, //微信推送点击去重
+    MARKET_ORDER_RECEIVE_LOCK, //市场订单接单锁
+    MARKET_ORDER; //市场订单
 
     public static final String SPLIT = "-";
 
