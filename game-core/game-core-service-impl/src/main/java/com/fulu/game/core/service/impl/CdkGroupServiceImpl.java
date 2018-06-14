@@ -6,10 +6,13 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.Cdk;
 import com.fulu.game.core.entity.CdkGroup;
+import com.fulu.game.core.entity.vo.CdkGroupVO;
 import com.fulu.game.core.entity.vo.CdkVO;
 import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.CdkGroupService;
 import com.fulu.game.core.service.CdkService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,6 +68,12 @@ public class CdkGroupServiceImpl extends AbsCommonService<CdkGroup, Integer> imp
             success = false;
         }
         return success;
+    }
+
+    @Override
+    public PageInfo<CdkGroupVO> list(Integer pageNum, Integer pageSize, String orderBy){
+        PageHelper.startPage(pageNum,pageSize,orderBy);
+        return null;
     }
 
 }

@@ -20,4 +20,7 @@ public interface ChannelCashDetailsService extends ICommonService<ChannelCashDet
      * @return
      */
     ChannelCashDetails addCash(Integer channelId, BigDecimal money, String remark);
+
+    ChannelCashDetails cutCash(Integer channelId, BigDecimal money, String orderNo);
+
 }

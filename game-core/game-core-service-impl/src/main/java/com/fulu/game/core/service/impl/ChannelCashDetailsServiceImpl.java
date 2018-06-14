@@ -70,4 +70,10 @@ public class ChannelCashDetailsServiceImpl extends AbsCommonService<ChannelCashD
         return channelCD;
     }
 
+    @Override
+    public ChannelCashDetails cutCash(Integer channelId, BigDecimal money, String orderNo){
+        //todo 渠道商扣款
+        return null;
+    }
+
 }
