@@ -20,4 +20,6 @@ public interface CdkDao extends ICommonDao<Cdk, Integer> {
     int insertList(List<Cdk> cdkList);
 
     List<CdkVO> listByParam(CdkVO cdkVO);
+
+    int count(CdkVO cdkVO);
 }

@@ -37,6 +37,19 @@
         from t_cdk
     </select>
 
+    <select id="count" resultType="java.lang.Integer" parameterType="com.fulu.game.core.entity.vo.CdkVO">
+        select count(1)
+        from t_cdk
+        <where>
+            <if test="groupId != null">
+                and group_id = #{groupId}
+            </if>
+            <if test="isUse != null">
+                and is_use = #{isUse}
+            </if>
+        </where>
+    </select>
+
     <select id="findByParameter" resultMap="CdkResultMap" parameterType="com.fulu.game.core.entity.vo.CdkVO">
         SELECT
         <include refid="Base_Column_List"/>

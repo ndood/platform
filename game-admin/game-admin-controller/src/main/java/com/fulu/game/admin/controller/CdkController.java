@@ -2,7 +2,6 @@ package com.fulu.game.admin.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.CdkGroup;
-import com.fulu.game.core.entity.vo.CdkGroupVO;
 import com.fulu.game.core.entity.vo.CdkVO;
 import com.fulu.game.core.service.CdkGroupService;
 import com.fulu.game.core.service.CdkService;
@@ -44,6 +43,7 @@ public class CdkController {
 
     /**
      * cdk列表
+     *
      * @param pageNum
      * @param pageSize
      * @param series
@@ -60,15 +60,28 @@ public class CdkController {
 
     /**
      * cdk批次列表
+     *
      * @param pageNum
      * @param pageSize
      * @return
      */
     @PostMapping("/group/list")
     public Result groupList(@RequestParam("pageNum") Integer pageNum,
-                       @RequestParam("pageSize") Integer pageSize) {
+                            @RequestParam("pageSize") Integer pageSize) {
         String orderBy = "id desc";
-        PageInfo<CdkGroupVO> resultPage = cdkGroupService.list(pageNum, pageSize, orderBy);
+        PageInfo<CdkGroup> resultPage = cdkGroupService.list(pageNum, pageSize, orderBy);
         return Result.success().data(resultPage);
+    }
+
+    /**
+     * 统计已使用数量
+     *
+     * @param groupId
+     * @return
+     */
+    @PostMapping("/group/count")
+    public Result countGroupUse(@RequestParam("groupId") Integer groupId) {
+        int count = cdkService.count(groupId, true);
+        return Result.success().data(count);
     }
 }

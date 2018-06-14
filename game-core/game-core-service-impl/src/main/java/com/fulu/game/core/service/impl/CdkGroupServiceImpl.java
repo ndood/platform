@@ -71,9 +71,11 @@ public class CdkGroupServiceImpl extends AbsCommonService<CdkGroup, Integer> imp
     }
 
     @Override
-    public PageInfo<CdkGroupVO> list(Integer pageNum, Integer pageSize, String orderBy){
+    public PageInfo<CdkGroup> list(Integer pageNum, Integer pageSize, String orderBy){
         PageHelper.startPage(pageNum,pageSize,orderBy);
-        return null;
+        CdkGroupVO cdkGroupVO = new CdkGroupVO();
+        List<CdkGroup> list = cdkGroupDao.findByParameter(cdkGroupVO);
+        return new PageInfo<>(list);
     }
 
 }
