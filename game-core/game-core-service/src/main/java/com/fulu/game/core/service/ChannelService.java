@@ -1,8 +1,10 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Channel;
+import com.fulu.game.core.entity.ChannelCashDetails;
 import com.fulu.game.core.entity.vo.ChannelVO;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
