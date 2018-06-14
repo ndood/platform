@@ -1,6 +1,10 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.RegistSource;
+import com.fulu.game.core.entity.vo.RegistSourceVO;
+import me.chanjar.weixin.common.exception.WxErrorException;
+
+import java.util.List;
 
 /**
  * @author yanbiao
@@ -8,4 +12,7 @@ import com.fulu.game.core.entity.RegistSource;
  */
 public interface RegistSourceService extends ICommonService<RegistSource, Integer> {
 
+    RegistSource save(String name, String remark) throws WxErrorException;
+
+    List<RegistSource> findByParam(RegistSourceVO rsVO);
 }
