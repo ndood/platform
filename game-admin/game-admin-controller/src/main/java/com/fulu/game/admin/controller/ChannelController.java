@@ -7,6 +7,7 @@ import com.fulu.game.core.entity.ChannelCashDetails;
 import com.fulu.game.core.entity.vo.ChannelVO;
 import com.fulu.game.core.service.ChannelCashDetailsService;
 import com.fulu.game.core.service.ChannelService;
+import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,8 +89,9 @@ public class ChannelController {
     @PostMapping("/list")
     public Result list(@RequestParam("pageNum") Integer pageNum,
                        @RequestParam("pageSize") Integer pageSize) {
-        //todo 查询总订单+成功订单+总消费额
-        return null;
+        //todo 异步统计接口
+        PageInfo<Channel> resultPage = channelService.list(pageNum, pageSize);
+        return Result.success().data(resultPage);
     }
 
     /**

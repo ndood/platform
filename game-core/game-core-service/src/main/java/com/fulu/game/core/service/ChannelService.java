@@ -3,6 +3,7 @@ package com.fulu.game.core.service;
 import com.fulu.game.core.entity.Channel;
 import com.fulu.game.core.entity.ChannelCashDetails;
 import com.fulu.game.core.entity.vo.ChannelVO;
+import com.github.pagehelper.PageInfo;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -47,4 +48,11 @@ public interface ChannelService extends ICommonService<Channel, Integer> {
      */
     String recreate(Integer id);
 
+    /**
+     * 渠道商列表
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    PageInfo<Channel> list(Integer pageNum, Integer pageSize);
 }

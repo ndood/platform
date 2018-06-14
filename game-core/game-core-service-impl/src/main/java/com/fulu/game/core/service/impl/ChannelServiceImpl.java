@@ -10,6 +10,8 @@ import com.fulu.game.core.entity.Channel;
 import com.fulu.game.core.entity.vo.ChannelVO;
 import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.ChannelService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -92,6 +94,14 @@ public class ChannelServiceImpl extends AbsCommonService<Channel, Integer> imple
         channel.setUpdateTime(new Date());
         channelDao.update(channel);
         return channel;
+    }
+
+    @Override
+    public PageInfo<Channel> list(Integer pageNum, Integer pageSize){
+        PageHelper.startPage(pageNum,pageSize);
+        ChannelVO channelVO = new ChannelVO();
+        List<Channel> list = channelDao.findByParameter(channelVO);
+        return new PageInfo<>(list);
     }
 
 }
