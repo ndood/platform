@@ -17,4 +17,7 @@ public interface CdkDao extends ICommonDao<Cdk, Integer> {
 
     List<Cdk> findByParameter(CdkVO cdkVO);
 
+    int insertList(List<Cdk> cdkList);
+
+    List<CdkVO> listByParam(CdkVO cdkVO);
 }

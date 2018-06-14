@@ -1,6 +1,9 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Cdk;
+import com.fulu.game.core.entity.CdkGroup;
+import com.fulu.game.core.entity.vo.CdkVO;
+import com.github.pagehelper.PageInfo;
 
 /**
  * cdk记录表
@@ -10,6 +13,9 @@ import com.fulu.game.core.entity.Cdk;
  */
 public interface CdkService extends ICommonService<Cdk, Integer> {
 
-
     Cdk findBySeries(String series);
+
+    int insertList(CdkGroup cdkGroup);
+
+    PageInfo<CdkVO> list(Integer pageNum, Integer pageSize, String series, String orderBy);
 }

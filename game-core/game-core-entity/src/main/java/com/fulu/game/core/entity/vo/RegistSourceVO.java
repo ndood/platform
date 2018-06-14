@@ -10,4 +10,6 @@ import lombok.Data;
 @Data
 public class RegistSourceVO extends RegistSource {
 
+    private int count;
+
 }

@@ -1,6 +1,11 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.RegistSource;
+import com.fulu.game.core.entity.vo.RegistSourceVO;
+import com.github.pagehelper.PageInfo;
+import me.chanjar.weixin.common.exception.WxErrorException;
+
+import java.util.List;
 
 /**
  * @author yanbiao
@@ -8,4 +13,36 @@ import com.fulu.game.core.entity.RegistSource;
  */
 public interface RegistSourceService extends ICommonService<RegistSource, Integer> {
 
+    /**
+     * 新增注册来源
+     * @param name
+     * @param remark
+     * @return
+     * @throws WxErrorException
+     */
+    RegistSource save(String name, String remark) throws WxErrorException;
+
+    /**
+     * 修改注册来源
+     * @param id
+     * @param name
+     * @param remark
+     * @return
+     */
+    RegistSource update(Integer id,String name, String remark);
+
+    /**
+     * 参数查询
+     * @param rsVO
+     * @return
+     */
+    List<RegistSource> findByParam(RegistSourceVO rsVO);
+
+    /**
+     * 查询列表带统计结果
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    PageInfo<RegistSourceVO> listWithCount(Integer pageNum, Integer pageSize);
 }
