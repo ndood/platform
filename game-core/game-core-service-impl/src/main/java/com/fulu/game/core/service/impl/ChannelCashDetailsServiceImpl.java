@@ -12,10 +12,14 @@ import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.Channel;
 import com.fulu.game.core.entity.ChannelCashDetails;
 import com.fulu.game.core.entity.Order;
+import com.fulu.game.core.entity.vo.ChannelCashDetailsVO;
 import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.ChannelCashDetailsService;
 import com.fulu.game.core.service.ChannelService;
 import com.fulu.game.core.service.OrderService;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -87,7 +92,7 @@ public class ChannelCashDetailsServiceImpl extends AbsCommonService<ChannelCashD
             log.info("渠道商记录不存在");
             throw new ChannelException(ChannelException.ExceptionCode.RECORD_NOT_EXIST);
         }
-        if (money.compareTo(BigDecimal.ZERO) == -1) {
+        if (null == money || money.compareTo(BigDecimal.ZERO) == -1) {
             throw new CashException(CashException.ExceptionCode.CASH_NEGATIVE_EXCEPTION);
         }
         Order order = orderService.findByOrderNo(orderNo);
@@ -165,4 +170,17 @@ public class ChannelCashDetailsServiceImpl extends AbsCommonService<ChannelCashD
         return channelCD;
     }
 
+    @Override
+    public BigDecimal sumByChannelId(Integer channelId){
+        return channelCashDetailsDao.sumByChannelId(channelId);
+    }
+
+    @Override
+    public PageInfo<ChannelCashDetails> list(Integer pageNum, Integer pageSize){
+        PageHelper.startPage(pageNum,pageSize);
+        ChannelCashDetailsVO channelCDVO = new ChannelCashDetailsVO();
+        channelCDVO.setAction(MoneyOperateTypeEnum.CHANNEL_ADD_CASH.getType());
+        List<ChannelCashDetails> channelCashDetailsList = channelCashDetailsDao.findByParameter(channelCDVO);
+        return new PageInfo<>(channelCashDetailsList);
+    }
 }

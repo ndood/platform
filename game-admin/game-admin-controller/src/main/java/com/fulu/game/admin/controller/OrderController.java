@@ -1,7 +1,11 @@
 package com.fulu.game.admin.controller;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
+import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderReqVO;
@@ -11,9 +15,14 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -90,5 +99,23 @@ public class OrderController extends BaseController {
     public Result adminHandleRefundOrder(String orderNo) {
         OrderVO orderVO = orderService.adminHandleRefundOrder(orderNo);
         return Result.success().data(orderVO.getOrderNo()).msg("订单完成,退款给用户!");
+    }
+
+    /**
+     * 订单列表导出
+     *
+     * @param response
+     * @throws Exception
+     */
+    @RequestMapping("/export")
+    public void grantExport(HttpServletResponse response) throws Exception {
+        String title = "订单列表";
+        List<Order> userList = orderService.findAll();
+        ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, Order.class, userList);
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("content-Type", "application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));
+        workbook.write(response.getOutputStream());
     }
 }

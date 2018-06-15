@@ -1,5 +1,8 @@
 package com.fulu.game.admin.controller;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.ResultStatus;
 import com.fulu.game.common.exception.UserException;
@@ -13,12 +16,12 @@ import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 import java.util.List;
 
 @RestController
@@ -343,6 +346,33 @@ public class UserController extends BaseController {
             User newUser = userService.createNewUser(userVO);
             return Result.success().data(newUser).msg("新用户添加成功！");
         }
+    }
+
+    /**
+     * 用户/陪玩师列表导出
+     *
+     * @param response
+     * @param type
+     * @throws Exception
+     */
+    @RequestMapping("/export/{type}")
+    public void grantExport(HttpServletResponse response,
+                            @PathVariable(name = "type", required = true) Integer type) throws Exception {
+        String title;
+        List<User> userList;
+        if (1 == type) {
+            title = "所有用户列表";
+            userList = userService.findAll();
+        } else {
+            title = "陪玩师列表";
+            userList = userService.findAllServeUser();
+        }
+        ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, User.class, userList);
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("content-Type", "application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));
+        workbook.write(response.getOutputStream());
     }
 
 }

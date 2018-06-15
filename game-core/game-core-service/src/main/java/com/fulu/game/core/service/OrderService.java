@@ -230,4 +230,18 @@ public interface OrderService extends ICommonService<Order,Integer>{
      */
     Boolean isOldUser(Integer userId);
 
+    /**
+     * 统计渠道商总下单数
+     * @param channelId
+     * @return
+     */
+    int countByChannelId(Integer channelId);
+
+    /**
+     * 统计渠道商成功订单数
+     * @param channelId
+     * @return
+     */
+    int countByChannelIdSuccess(Integer channelId);
+
 }
