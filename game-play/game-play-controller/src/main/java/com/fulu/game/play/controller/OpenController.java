@@ -3,15 +3,20 @@ package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.entity.Cdk;
+import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderMarketProduct;
+import com.fulu.game.core.entity.vo.OrderMarketProductVO;
 import com.fulu.game.core.service.CdkService;
+import com.fulu.game.core.service.OrderMarketProductService;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.play.utils.RequestUtil;
 import com.google.common.base.Objects;
+import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +42,9 @@ public class OpenController extends BaseController{
     private CdkService cdkService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private OrderMarketProductService orderMarketProductService;
+
 
 
     /**
@@ -56,7 +64,12 @@ public class OpenController extends BaseController{
                                   String gameArea,
                                   @RequestParam(required = true)String rolename,
                                   @RequestParam(required = true)String mobile,
-                                 HttpServletRequest request){
+                                  HttpServletRequest request){
+
+        if(StringUtils.isBlank(series)){
+            return Result.error().msg("cdk不能为空!");
+        }
+
         String ip = RequestUtil.getIpAdrress(request);
         log.info("CDK开始下单:series:{};sessionKey:{};gameArea:{};rolename:{};mobile:{};ip:{};",series,sessionKey,gameArea,rolename,mobile,ip);
         //验证sessionKey
@@ -68,7 +81,10 @@ public class OpenController extends BaseController{
         if(!Objects.equal(storeSeries,series)){
             return Result.error().msg("页面停留时间过长,请刷新后再尝试!");
         }
-
+        //验证角色名和手机号
+        if(StringUtils.isBlank(rolename)||StringUtils.isBlank(mobile)){
+            return Result.error().msg("角色名和手机号不能为空!");
+        }
         //验证cdk
         Cdk cdk = cdkService.findBySeries(series);
         if(cdk==null){
@@ -100,8 +116,10 @@ public class OpenController extends BaseController{
         remark.append("手机号码:").append(mobile).append(";");
         remark.append("角色名:").append(rolename);
         Integer channelId = cdk.getChannelId();
-        log.info("CDK下单:orderMarketProduct:{};channelId:{};remark:{};ip:{}",orderMarketProduct,channelId,remark,ip);
+        log.info("CDK执行下单:orderMarketProduct:{};channelId:{};remark:{};ip:{}",orderMarketProduct,channelId,remark,ip);
         orderService.submitMarketOrder(channelId,orderMarketProduct,remark.toString(),ip,series);
+        //删除sessionKey
+        redisOpenService.delete(RedisKeyEnum.WRITER_SESSION_KEY.generateKey(sessionKey));
         return Result.success().msg("下单成功!");
     }
 
@@ -129,7 +147,29 @@ public class OpenController extends BaseController{
         return Result.success().data(data);
     }
 
-
+    /**
+     * CDK状态查询
+     * @param series
+     * @return
+     */
+    @PostMapping(value = "/cdk/query")
+    @ResponseBody
+    public Result cdKeyQuery(@RequestParam(required = true) String series){
+        Cdk cdk = cdkService.findBySeries(series);
+        if(cdk==null){
+            return Result.error().msg("无效的CDK");
+        }
+        if(!cdk.getIsUse()||cdk.getOrderNo()==null){
+            return Result.error().msg("该CDK还未被使用,无法查询!");
+        }
+        OrderMarketProduct orderMarketProduct =  orderMarketProductService.findByOrderNo(cdk.getOrderNo());
+        Order order = orderService.findByOrderNo(cdk.getOrderNo());
+        OrderMarketProductVO orderMarketProductVO = new OrderMarketProductVO();
+        BeanUtil.copyProperties(orderMarketProduct,orderMarketProductVO);
+        orderMarketProductVO.setSeries(series);
+        orderMarketProductVO.setStatusStr(OrderStatusEnum.getMsgByStatus(order.getStatus()));
+        return Result.success().data(orderMarketProductVO);
+    }
 
 
 

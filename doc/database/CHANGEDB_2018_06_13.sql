@@ -5,6 +5,10 @@ ALTER TABLE `t_order` ADD COLUMN `channel_id`  int(11) NULL COMMENT '渠道商ID
 ALTER TABLE `t_order` ADD COLUMN `order_ip`  varchar(128) NULL COMMENT '订单IP' AFTER `actual_money`;
 ALTER TABLE `t_order` ADD COLUMN `receiving_time`  varchar(128) NULL COMMENT '接单时间' AFTER `order_ip`;
 
+
+ALTER TABLE `t_order`  MODIFY COLUMN `user_id` int(11) NULL COMMENT '下单用户ID';
+ALTER TABLE `t_order` MODIFY COLUMN `service_user_id` int(11) NULL COMMENT '陪玩师用户ID';
+
 --同步之前的所有订单类型
 update `t_order` set type = 1;
 
@@ -102,6 +106,7 @@ CREATE TABLE `t_order_market_product` (
   `order_no` varchar(255) NOT NULL COMMENT '订单号',
   `category_id` int(11) DEFAULT NULL COMMENT '游戏分类ID',
   `product_name` varchar(255) DEFAULT NULL COMMENT '商品名称',
+  `type` varchar(255) DEFAULT NULL COMMENT '服务类型',
   `mobile` varchar(255) NOT NULL COMMENT '手机号',
   `game_area` varchar(255) DEFAULT NULL COMMENT '游戏区服',
   `rolename` varchar(255) DEFAULT NULL COMMENT '角色名',

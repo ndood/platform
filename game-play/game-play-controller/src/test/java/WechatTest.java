@@ -28,8 +28,8 @@ public class WechatTest {
 
     @Test
     public void test1(){
-        String id =WechatTemplateEnum.LEAVE_MSG.getType();
-        System.out.println(id);
+
+
     }
 
     @Test

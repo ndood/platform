@@ -7,6 +7,7 @@
         <result column="order_no" property="orderNo"/>
         <result column="category_id" property="categoryId"/>
         <result column="product_name" property="productName"/>
+        <result column="type" property="type"/>
         <result column="mobile" property="mobile"/>
         <result column="game_area" property="gameArea"/>
         <result column="rolename" property="rolename"/>
@@ -21,7 +22,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,order_no,category_id,product_name,mobile,game_area,rolename,price,amount,create_time,update_time    </sql>
+        id,order_no,category_id,product_name,type,mobile,game_area,rolename,price,amount,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="OrderMarketProductResultMap">
         select
@@ -52,6 +53,9 @@
             </if>
             <if test="productName != null">
                 and product_name = #{productName}
+            </if>
+            <if test="type != null">
+                and type = #{type}
             </if>
             <if test="mobile != null">
                 and mobile = #{mobile}
@@ -87,9 +91,9 @@
     <insert id="create" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.fulu.game.core.entity.OrderMarketProduct">
         insert into
-        t_order_market_product (order_no,category_id,product_name,mobile,game_area,rolename,price,amount,create_time,update_time)
+        t_order_market_product (order_no,category_id,product_name,type,mobile,game_area,rolename,price,amount,create_time,update_time)
         values
-        (#{orderNo},#{categoryId},#{productName},#{mobile},#{gameArea},#{rolename},#{price},#{amount},#{createTime},#{updateTime})
+        (#{orderNo},#{categoryId},#{productName},#{type},#{mobile},#{gameArea},#{rolename},#{price},#{amount},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.OrderMarketProduct">
@@ -106,6 +110,10 @@
 
             <if test="productName != null">
                 product_name = #{productName},
+            </if>
+
+            <if test="type != null">
+                type = #{type},
             </if>
 
             <if test="mobile != null">
