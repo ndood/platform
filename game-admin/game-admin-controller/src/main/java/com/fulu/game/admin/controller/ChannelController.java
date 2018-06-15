@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/channel")
@@ -101,8 +103,15 @@ public class ChannelController {
      */
     @PostMapping("/stats")
     public Result stats(@RequestParam("groupId") Integer groupId) {
-        //todo 渠道商统计
-        return Result.success().data(1);
+        int orderCount = 10;
+        int success = 8;
+        BigDecimal sum = new BigDecimal(599);
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put("groupId",groupId);
+        resultMap.put("orderCount",orderCount);
+        resultMap.put("success",success);
+        resultMap.put("sum",sum);
+        return Result.success().data(resultMap);
     }
 
     /**
