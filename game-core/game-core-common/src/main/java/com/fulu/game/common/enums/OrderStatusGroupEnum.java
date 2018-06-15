@@ -39,7 +39,7 @@ public enum OrderStatusGroupEnum {
     MARKET_WAIT_SERVICE("等待陪玩", "MARKET", 31, new Integer[]{210}),
     MARKET_SERVING("陪玩中", "MARKET", 32, new Integer[]{220}),
     MARKET_CHECK("等待验收", "MARKET", 33, new Integer[]{300}),
-    MARKET_COMPLETE("订单完成", "MARKET", 34, new Integer[]{500, 410, 420, 501, 502, 600}),
+    MARKET_COMPLETE("订单完成", "MARKET", 34, new Integer[]{500, 501, 502, 600}),
 
 
     MARKET_ORDER_REMARK_VISIBLE("接单者可见订单", "REMARK_VISIBLE", 200, new Integer[]{210, 220, 300}),
