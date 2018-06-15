@@ -5,8 +5,6 @@ ALTER TABLE `t_order` ADD COLUMN `channel_id`  int(11) NULL COMMENT '渠道商ID
 ALTER TABLE `t_order` ADD COLUMN `order_ip`  varchar(128) NULL COMMENT '订单IP' AFTER `actual_money`;
 ALTER TABLE `t_order` ADD COLUMN `receiving_time`  varchar(128) NULL COMMENT '接单时间' AFTER `order_ip`;
 
-
-
 --同步之前的所有订单类型
 update `t_order` set type = 1;
 
@@ -97,3 +95,19 @@ CREATE TABLE `t_regist_source`  (
   `update_time` datetime(0) NOT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`) USING BTREE
 ) COMMENT = '注册来源表';
+
+
+CREATE TABLE `t_order_market_product` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `order_no` varchar(255) NOT NULL COMMENT '订单号',
+  `category_id` int(11) DEFAULT NULL COMMENT '游戏分类ID',
+  `product_name` varchar(255) DEFAULT NULL COMMENT '商品名称',
+  `mobile` varchar(255) NOT NULL COMMENT '手机号',
+  `game_area` varchar(255) DEFAULT NULL COMMENT '游戏区服',
+  `rolename` varchar(255) DEFAULT NULL COMMENT '角色名',
+  `price` decimal(10,0) NOT NULL COMMENT '价格',
+  `amount` int(11) NOT NULL COMMENT '数量',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) COMMENT='集市订单商品表';
