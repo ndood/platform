@@ -138,6 +138,20 @@ public class ChannelController {
         return Result.success().data(channelCashDetails).msg("操作成功");
     }
 
+    /**
+     * 加款列表
+     *
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @PostMapping("/add/list")
+    public Result addList(@RequestParam("pageNum") Integer pageNum,
+                          @RequestParam("pageSize") Integer pageSize) {
+        PageInfo<ChannelCashDetails> resultPage = channelCDService.list(pageNum, pageSize);
+        return Result.success().data(resultPage).msg("查询成功");
+    }
+
     @PostMapping("/test/cut")
     public Result testCut(@RequestParam("channelId") Integer channelId,
                           @RequestParam("money") BigDecimal money,
@@ -148,8 +162,8 @@ public class ChannelController {
 
     @PostMapping("/test/refund")
     public Result testRefund(@RequestParam("channelId") Integer channelId,
-                          @RequestParam("money") BigDecimal money,
-                          @RequestParam("orderNo") String orderNo) {
+                             @RequestParam("money") BigDecimal money,
+                             @RequestParam("orderNo") String orderNo) {
         ChannelCashDetails channelCashDetails = channelCDService.refundCash(channelId, money, orderNo);
         return Result.success().data(channelCashDetails).msg("操作成功");
     }
