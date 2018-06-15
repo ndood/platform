@@ -5,6 +5,8 @@ import com.fulu.game.core.entity.CdkGroup;
 import com.fulu.game.core.entity.vo.CdkVO;
 import com.github.pagehelper.PageInfo;
 
+import java.util.List;
+
 /**
  * cdk记录表
  *
@@ -48,4 +50,11 @@ public interface CdkService extends ICommonService<Cdk, Integer> {
      * @return
      */
     int count(Integer groupId, Boolean b);
+
+    /**
+     * 条件查询列表
+     * @param cdkVO
+     * @return
+     */
+    List<Cdk> findByParam(CdkVO cdkVO);
 }

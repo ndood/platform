@@ -1,19 +1,24 @@
 package com.fulu.game.admin.controller;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.fulu.game.common.Result;
+import com.fulu.game.core.entity.Cdk;
 import com.fulu.game.core.entity.CdkGroup;
 import com.fulu.game.core.entity.vo.CdkVO;
 import com.fulu.game.core.service.CdkGroupService;
 import com.fulu.game.core.service.CdkService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.net.URLEncoder;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/cdk")
@@ -90,5 +95,27 @@ public class CdkController {
     public Result countGroupUse(@RequestParam("groupId") Integer groupId) {
         int count = cdkService.count(groupId, true);
         return Result.success().data(count);
+    }
+
+    /**
+     * cdk列表导出
+     *
+     * @param response
+     * @param groupId
+     * @throws Exception
+     */
+    @RequestMapping("/export/{groupId}")
+    public void grantExport(HttpServletResponse response,
+                            @PathVariable(name = "groupId", required = true) Integer groupId) throws Exception {
+        String title = "CDK列表";
+        CdkVO cdkVO = new CdkVO();
+        cdkVO.setGroupId(groupId);
+        List<Cdk> cdkList = cdkService.findByParam(cdkVO);
+        ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, Cdk.class, cdkList);
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("content-Type", "application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));
+        workbook.write(response.getOutputStream());
     }
 }
