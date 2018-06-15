@@ -237,15 +237,29 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         return  count(serverId,statusList,startTime,endTime);
     }
 
-
-
-
     @Override
     public int allOrderCount(Integer serverId) {
         Integer[] statusList = OrderStatusGroupEnum.ALL_NORMAL_COMPLETE.getStatusList();
         return  count(serverId,statusList,null,null);
     }
 
+    @Override
+    public int countByChannelId(Integer channelId) {
+        OrderVO orderVO = new OrderVO();
+        orderVO.setChannelId(channelId);
+        orderVO.setType(OrderTypeEnum.MARKET.getType());
+        return orderDao.countByParameter(orderVO);
+    }
+
+    @Override
+    public int countByChannelIdSuccess(Integer channelId){
+        Integer[] statusList = OrderStatusGroupEnum.ALL_NORMAL_COMPLETE.getStatusList();
+        OrderVO orderVO = new OrderVO();
+        orderVO.setChannelId(channelId);
+        orderVO.setType(OrderTypeEnum.MARKET.getType());
+        orderVO.setStatusList(statusList);
+        return orderDao.countByParameter(orderVO);
+    }
 
     @Override
     public OrderVO submit(int productId,

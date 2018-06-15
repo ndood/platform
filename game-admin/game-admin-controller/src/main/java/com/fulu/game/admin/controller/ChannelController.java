@@ -7,6 +7,7 @@ import com.fulu.game.core.entity.ChannelCashDetails;
 import com.fulu.game.core.entity.vo.ChannelVO;
 import com.fulu.game.core.service.ChannelCashDetailsService;
 import com.fulu.game.core.service.ChannelService;
+import com.fulu.game.core.service.OrderService;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,8 @@ public class ChannelController {
 
     @Autowired
     private ChannelService channelService;
+    @Autowired
+    private OrderService orderService;
     @Autowired
     private ChannelCashDetailsService channelCDService;
 
@@ -98,19 +101,19 @@ public class ChannelController {
     /**
      * 统计总下单数+成功订单数+总消费金额
      *
-     * @param groupId
+     * @param channelId
      * @return
      */
     @PostMapping("/stats")
-    public Result stats(@RequestParam("groupId") Integer groupId) {
-        int orderCount = 10;
-        int success = 8;
-        BigDecimal sum = new BigDecimal(599);
-        Map<String,Object> resultMap = new HashMap<>();
-        resultMap.put("groupId",groupId);
-        resultMap.put("orderCount",orderCount);
-        resultMap.put("success",success);
-        resultMap.put("sum",sum);
+    public Result stats(@RequestParam("channelId") Integer channelId) {
+        int orderCount = orderService.countByChannelId(channelId);
+        int success = orderService.countByChannelIdSuccess(channelId);
+        BigDecimal sum = channelCDService.sumByChannelId(channelId);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("channelId", channelId);
+        resultMap.put("orderCount", orderCount);
+        resultMap.put("success", success);
+        resultMap.put("sum", sum);
         return Result.success().data(resultMap);
     }
 
@@ -132,6 +135,22 @@ public class ChannelController {
             throw new CashException(CashException.ExceptionCode.CASH_NEGATIVE_EXCEPTION);
         }
         ChannelCashDetails channelCashDetails = channelCDService.addCash(channelId, money, remark);
+        return Result.success().data(channelCashDetails).msg("操作成功");
+    }
+
+    @PostMapping("/test/cut")
+    public Result testCut(@RequestParam("channelId") Integer channelId,
+                          @RequestParam("money") BigDecimal money,
+                          @RequestParam("orderNo") String orderNo) {
+        ChannelCashDetails channelCashDetails = channelCDService.cutCash(channelId, money, orderNo);
+        return Result.success().data(channelCashDetails).msg("操作成功");
+    }
+
+    @PostMapping("/test/refund")
+    public Result testRefund(@RequestParam("channelId") Integer channelId,
+                          @RequestParam("money") BigDecimal money,
+                          @RequestParam("orderNo") String orderNo) {
+        ChannelCashDetails channelCashDetails = channelCDService.refundCash(channelId, money, orderNo);
         return Result.success().data(channelCashDetails).msg("操作成功");
     }
 }

@@ -77,7 +77,7 @@ CREATE TABLE `t_channel_cash_details`  (
   `action` tinyint(1) NOT NULL COMMENT '加款:1,扣款:2,退款:3',
   `money` decimal(11, 2) NOT NULL COMMENT '本次金额',
   `sum` decimal(11, 2) NOT NULL COMMENT '当前余额',
-  `order_no` varchar(0) DEFAULT NULL COMMENT '订单号',
+  `order_no` varchar(128) DEFAULT NULL COMMENT '订单号',
   `remark` varchar(1000) DEFAULT NULL COMMENT '备注',
   `create_time` datetime(0) NOT NULL COMMENT '生成时间',
   PRIMARY KEY (`id`)

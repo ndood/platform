@@ -21,8 +21,24 @@ public interface ChannelCashDetailsService extends ICommonService<ChannelCashDet
      */
     ChannelCashDetails addCash(Integer channelId, BigDecimal money, String remark);
 
+    /**
+     * 渠道商下单扣款
+     * @param channelId
+     * @param money
+     * @param orderNo
+     * @return
+     */
     ChannelCashDetails cutCash(Integer channelId, BigDecimal money, String orderNo);
 
+    /**
+     * 订单退款
+     * @param channelId
+     * @param money
+     * @param orderNo
+     * @return
+     */
     ChannelCashDetails refundCash(Integer channelId, BigDecimal money, String orderNo);
+
+    BigDecimal sumByChannelId(Integer channelId);
 
 }

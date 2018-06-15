@@ -87,7 +87,7 @@ public class ChannelCashDetailsServiceImpl extends AbsCommonService<ChannelCashD
             log.info("渠道商记录不存在");
             throw new ChannelException(ChannelException.ExceptionCode.RECORD_NOT_EXIST);
         }
-        if (money.compareTo(BigDecimal.ZERO) == -1) {
+        if (null == money || money.compareTo(BigDecimal.ZERO) == -1) {
             throw new CashException(CashException.ExceptionCode.CASH_NEGATIVE_EXCEPTION);
         }
         Order order = orderService.findByOrderNo(orderNo);
@@ -165,4 +165,8 @@ public class ChannelCashDetailsServiceImpl extends AbsCommonService<ChannelCashD
         return channelCD;
     }
 
+    @Override
+    public BigDecimal sumByChannelId(Integer channelId){
+        return channelCashDetailsDao.sumByChannelId(channelId);
+    }
 }

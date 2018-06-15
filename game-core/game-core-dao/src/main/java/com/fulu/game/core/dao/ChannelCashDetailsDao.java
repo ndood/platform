@@ -4,6 +4,7 @@ import com.fulu.game.core.entity.ChannelCashDetails;
 import com.fulu.game.core.entity.vo.ChannelCashDetailsVO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -17,4 +18,5 @@ public interface ChannelCashDetailsDao extends ICommonDao<ChannelCashDetails, In
 
     List<ChannelCashDetails> findByParameter(ChannelCashDetailsVO channelCashDetailsVO);
 
+    BigDecimal sumByChannelId(Integer channelId);
 }
