@@ -189,4 +189,8 @@
             id = #{id}
         </where>
     </update>
+
+    <update id="abolish" parameterType="java.lang.Integer">
+        update t_cdk set enable = false,update_time = sysdate() where group_id = #{groupId} and is_use = false
+    </update>
 </mapper>

@@ -22,4 +22,6 @@ public interface CdkDao extends ICommonDao<Cdk, Integer> {
     List<CdkVO> listByParam(CdkVO cdkVO);
 
     int count(CdkVO cdkVO);
+
+    int abolish(Integer groupId);
 }

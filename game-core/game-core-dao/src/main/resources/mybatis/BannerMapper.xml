@@ -80,7 +80,7 @@
         update t_banner
         <set>
             <if test="disable != null">
-                disable = #{disable},
+                sort = #{disable},
             </if>
             <if test="sort != null">
                 sort = #{sort},
@@ -102,7 +102,7 @@
                 redirect_type = #{redirectType},
             </if>
 
-            <if test="redirectUrl != null">
+            <if test="redirectUrl != null || redirectUrl == null">
                 redirect_url = #{redirectUrl},
             </if>
 

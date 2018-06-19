@@ -46,6 +46,12 @@ public class CdkController {
         }
     }
 
+    /**
+     * cdk批次废除
+     *
+     * @param groupId
+     * @return
+     */
     @PostMapping("/group/abolish")
     public Result groupList(@RequestParam("groupId") Integer groupId) {
         //批次废除后批量更新对应的cdk的status

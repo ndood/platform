@@ -82,6 +82,12 @@ public class CdkGroupServiceImpl extends AbsCommonService<CdkGroup, Integer> imp
         CdkGroup cdkGroup = cdkGroupDao.findById(groupId);
         cdkGroup.setStatus(false);
         cdkGroupDao.update(cdkGroup);
+        //批量更新未使用的cdk的状态
+        log.info("=====批量废除cdk开始=====");
+        long start = System.currentTimeMillis();
+        int resultNum = cdkService.abolishList(groupId);
+        long end = System.currentTimeMillis();
+        log.info("批量废除cdk条数resultNum={},用时t={}", resultNum, end - start);
     }
 
 }
