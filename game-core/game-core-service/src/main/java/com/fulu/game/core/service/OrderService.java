@@ -105,6 +105,12 @@ public interface OrderService extends ICommonService<Order,Integer>{
     void systemCancelOrder(String orderNo);
 
     /**
+     * 管理员取消订单
+     * @param orderNo
+     */
+    void adminCancelOrder(String orderNo);
+
+    /**
      * 用户取消订单
      * @param orderNo
      * @return
@@ -112,11 +118,18 @@ public interface OrderService extends ICommonService<Order,Integer>{
     OrderVO userCancelOrder(String orderNo);
 
     /**
-     * 订单申诉
+     * 用户订单申诉
      * @param orderNo
      * @return
      */
     OrderVO userAppealOrder(String orderNo,String remark,String ... fileUrl);
+
+    /**
+     * 管理员订单申诉
+     * @param orderNo
+     * @return
+     */
+    OrderVO adminAppealOrder(String orderNo,String remark);
 
     /**
      * 订单验收

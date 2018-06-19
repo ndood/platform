@@ -47,12 +47,14 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal,Integer> im
         orderDeal.setUserId(userId);
         orderDeal.setCreateTime(new Date());
         create(orderDeal);
-        for(String url : fileUrls){
-            OrderDealFile orderDealFile = new OrderDealFile();
-            orderDealFile.setFileUrl(ossUtil.activateOssFile(url));
-            orderDealFile.setOrderDealId(orderDeal.getId());
-            orderDealFile.setCreateTime(new Date());
-            orderDealFileService.create(orderDealFile);
+        if(fileUrls!=null){
+            for(String url : fileUrls){
+                OrderDealFile orderDealFile = new OrderDealFile();
+                orderDealFile.setFileUrl(ossUtil.activateOssFile(url));
+                orderDealFile.setOrderDealId(orderDeal.getId());
+                orderDealFile.setCreateTime(new Date());
+                orderDealFileService.create(orderDealFile);
+            }
         }
     }
 

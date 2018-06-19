@@ -87,6 +87,9 @@ public class OpenController extends BaseController{
         }
         //验证cdk
         Cdk cdk = cdkService.findBySeries(series);
+        if(!cdk.getEnable()){
+            return Result.error().msg("该CDK已过期,无法使用!");
+        }
         if(cdk==null){
             log.error("CDK无效:series:{};sessionKey:{};gameArea:{};rolename:{};mobile:{};ip:{};",series,sessionKey,gameArea,rolename,mobile,ip);
             return Result.error().msg("无效的CDK");
@@ -104,7 +107,7 @@ public class OpenController extends BaseController{
         orderMarketProduct.setAmount(1);
         orderMarketProduct.setType(cdk.getType());
         //获取商品名
-        StringBuffer productName = new StringBuffer();
+        StringBuilder productName = new StringBuilder();
         productName.append(cdk.getType()).append("|");
         if(StringUtils.isNotBlank(gameArea)){
             productName.append(gameArea).append("|");
@@ -133,8 +136,12 @@ public class OpenController extends BaseController{
     @ResponseBody
     public Result findTypeByCdKey(@RequestParam(required = true) String series){
         Cdk cdk = cdkService.findBySeries(series);
+        //todo cdk废除提醒
         if(cdk==null){
             return Result.error().msg("无效的CDK");
+        }
+        if(!cdk.getEnable()){
+            return Result.error().msg("该CDK已过期,无法使用!");
         }
         if(cdk.getIsUse()){
             return Result.error().msg("该CDK已经被使用过,无法重复使用!");
