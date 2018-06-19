@@ -82,18 +82,18 @@ public class Order implements Serializable {
 
     //订单创建时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Excel(name = "创建时间", orderNum = "13", width = 35)
+    @Excel(name = "创建时间", exportFormat = "yyyy-MM-dd HH:mm:ss",orderNum = "13", width = 35)
     private Date createTime;
     //
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
     //订单支付时间
-    @Excel(name = "支付时间", orderNum = "14", width = 35)
+    @Excel(name = "支付时间", exportFormat = "yyyy-MM-dd HH:mm:ss",orderNum = "14", width = 35)
     private Date payTime;
     //订单完成时间
-    @Excel(name = "完成时间", orderNum = "15", width = 35)
+    @Excel(name = "完成时间", exportFormat = "yyyy-MM-dd HH:mm:ss",orderNum = "15", width = 35)
     private Date completeTime;
-    @Excel(name = "接单时间", orderNum = "16", width = 35)
+    @Excel(name = "接单时间", exportFormat = "yyyy-MM-dd HH:mm:ss",orderNum = "16", width = 35)
     private Date receivingTime;
     //下单IP
     private String orderIp;

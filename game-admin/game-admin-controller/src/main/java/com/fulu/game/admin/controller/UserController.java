@@ -18,10 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
@@ -358,8 +355,9 @@ public class UserController extends BaseController {
      * @param type
      * @throws Exception
      */
-    @RequestMapping("/export")
-    public void userExport(HttpServletResponse response, @RequestParam("type") Integer type) throws Exception {
+    @RequestMapping("/export/{type}")
+    public void userExport(HttpServletResponse response,
+                           @PathVariable(name = "type", required = true) Integer type) throws Exception {
         String title;
         List<User> userList;
         if (1 == type) {
