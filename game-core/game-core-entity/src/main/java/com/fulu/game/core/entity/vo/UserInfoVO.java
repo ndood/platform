@@ -1,5 +1,6 @@
 package com.fulu.game.core.entity.vo;
 
+import com.fulu.game.core.entity.Product;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -42,7 +43,7 @@ public class UserInfoVO {
     //陪玩师照片集
     private List<String> photos;
     private List<String> techs;
-
+    private List<Product> productList;
     private UserTechAuthVO userTechAuthVO;
 
 }
