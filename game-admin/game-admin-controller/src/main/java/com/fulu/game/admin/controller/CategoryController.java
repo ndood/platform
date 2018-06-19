@@ -9,6 +9,7 @@ import com.fulu.game.core.entity.vo.CategoryVO;
 import com.fulu.game.core.entity.vo.TagVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,7 @@ public class CategoryController extends BaseController {
     private SalesModeService salesModeService;
     @Autowired
     private OssUtil ossUtil;
+
     /**
      * 内容列表
      *
@@ -123,7 +125,7 @@ public class CategoryController extends BaseController {
                     tagService.update(tag);
                 }
             }
-            if(!origCategory.getIcon().equals(category.getIcon())){
+            if (origCategory.getIcon() != null && !origCategory.getIcon().equals(category.getIcon())) {
                 ossUtil.deleteFile(origCategory.getIcon());
             }
             category.setUpdateTime(new Date());
@@ -159,7 +161,7 @@ public class CategoryController extends BaseController {
                                   @RequestParam(required = true) String name,
                                   @RequestParam(required = false) BigDecimal price,
                                   @RequestParam(required = true) Integer rank) {
-        SalesMode salesMode =salesModeService.update(id,name,price,rank);
+        SalesMode salesMode = salesModeService.update(id, name, price, rank);
         return Result.success().msg("销售方式修改成功!").data(salesMode);
     }
 
@@ -187,7 +189,6 @@ public class CategoryController extends BaseController {
     }
 
 
-
     /**
      * 修改段位
      **/
@@ -200,11 +201,9 @@ public class CategoryController extends BaseController {
     }
 
 
-
-
-
     /**
      * 删除段位
+     *
      * @param id
      * @return
      */

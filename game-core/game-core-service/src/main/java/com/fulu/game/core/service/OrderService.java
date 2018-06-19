@@ -74,7 +74,7 @@ public interface OrderService extends ICommonService<Order,Integer>{
      * @param orderIp
      * @return
      */
-    String submitMarketOrder(int channelId, OrderMarketProduct orderMarketProduct, String remark, String orderIp,String series);
+    String submitMarketOrder(int channelId,OrderMarketProduct orderMarketProduct, String remark, String orderIp,String series);
 
     /**
      * 支付订单,订单回调的时候调用
@@ -102,7 +102,7 @@ public interface OrderService extends ICommonService<Order,Integer>{
      * @param orderNo
      * @return
      */
-    OrderVO systemCancelOrder(String orderNo);
+    void systemCancelOrder(String orderNo);
 
     /**
      * 用户取消订单
@@ -181,6 +181,13 @@ public interface OrderService extends ICommonService<Order,Integer>{
      * @return
      */
     List<Order> findByStatusList(Integer[] statusList);
+
+    /**
+     * 通过订单状态和类型查询订单
+     * @param statusList
+     * @return
+     */
+    List<Order> findByStatusListAndType(Integer[] statusList,int type);
 
     /**
      * 查找指定日期区间和状态的订单数

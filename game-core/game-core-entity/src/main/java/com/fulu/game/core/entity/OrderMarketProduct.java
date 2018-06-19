@@ -3,6 +3,9 @@ package com.fulu.game.core.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -21,29 +24,28 @@ public class OrderMarketProduct implements Serializable {
 	//
 	private Integer id;
 	//订单号
+	@JsonIgnore
 	private String orderNo;
 
 	private String type;
 	//游戏分类ID
-	@NotNull(message = "[游戏分类ID]字段不能为空")
 	private Integer categoryId;
 	//商品名称
-	@NotNull(message = "[商品名称]字段不能为空")
 	private String productName;
 	//手机号
-	@NotNull(message = "[手机号不能为空]字段不能为空")
 	private String mobile;
 	//角色名
 	private String rolename;
 
-	@NotNull(message = "[游戏区服]字段不能为空")
 	private String gameArea;
 	//价格
-	@NotNull(message = "[价格为空]字段不能为空")
+	@JsonIgnore
 	private BigDecimal price;
 	//数量
+	@JsonIgnore
 	private Integer amount;
 	//创建时间
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date createTime;
 	//
 	private Date updateTime;

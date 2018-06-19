@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -98,19 +99,25 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
         } else {
             throw new ServiceErrorException("推送类型指定错误!");
         }
-        StringBuffer lastPage = new StringBuffer(PagePathEnum.PUSH_PAGE.getPagePath())
-                .append("?redirect=")
-                .append(pushMsg.getPage())
-                .append("&pushId=")
-                .append(pushMsg.getId());
-        log.info("开始执行推送消息:userId:{};lastPage:{};pushMsg:{};", userIds, lastPage, pushMsg);
-        userIds.forEach((userId) -> {
-            wxTemplateMsgService.adminPushWxTemplateMsg(pushMsg.getId(), userId, lastPage.toString(), pushMsg.getContent());
-        });
-        pushMsg.setTotalNum(userIds.size());
-        pushMsg.setIsPushed(true);
-        pushMsg.setUpdateTime(new Date());
-        update(pushMsg);
+
+        try {
+            String lastPage = new StringBuffer(PagePathEnum.PUSH_PAGE.getPagePath())
+                    .append("?redirect=")
+                    .append(URLEncoder.encode(pushMsg.getPage(), "utf-8"))
+                    .append("&pushId=")
+                    .append(pushMsg.getId()).toString();
+            log.info("开始执行推送消息:userId:{};lastPage:{};pushMsg:{};", userIds, lastPage, pushMsg);
+            for (int userId : userIds) {
+                wxTemplateMsgService.adminPushWxTemplateMsg(pushMsg.getId(), userId, lastPage, pushMsg.getContent());
+            }
+            pushMsg.setTotalNum(userIds.size());
+            pushMsg.setIsPushed(true);
+            pushMsg.setUpdateTime(new Date());
+            update(pushMsg);
+        } catch (Exception e) {
+            log.error("消息推送urlencode exp", e);
+        }
+
     }
 
 

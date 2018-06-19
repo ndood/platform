@@ -25,6 +25,7 @@ import com.fulu.game.core.dao.OrderDao;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -65,7 +66,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
     private OrderMarketProductService orderMarketProductService;
     @Autowired
     private CdkService cdkService;
-
+    @Autowired
+    private ChannelCashDetailsService channelCashDetailsService;
 
     @Override
     public ICommonDao<Order, Integer> getDao() {
@@ -109,6 +111,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         }
         return new PageInfo<>(orderVOList);
     }
+
 
     /**
      * 集市订单列表
@@ -261,6 +264,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         return orderDao.countByParameter(orderVO);
     }
 
+
     @Override
     public OrderVO submit(int productId,
                           int num,
@@ -355,7 +359,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
      * @return
      */
     public String submitMarketOrder(int channelId,
-                                    @Valid OrderMarketProduct orderMarketProduct,
+                                    OrderMarketProduct orderMarketProduct,
                                     String remark,
                                     String orderIp,
                                     String series){
@@ -374,14 +378,13 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setOrderNo(generateOrderNo());
         order.setCategoryId(orderMarketProduct.getCategoryId());
         order.setRemark(remark);
-        order.setIsPay(true);
+        order.setIsPay(false);
         order.setType(OrderTypeEnum.MARKET.getType());
         order.setChannelId(channelId);
         order.setTotalMoney(totalMoney);
         order.setActualMoney(totalMoney);
-        order.setStatus(OrderStatusEnum.WAIT_SERVICE.getStatus());
+        order.setStatus(OrderStatusEnum.NON_PAYMENT.getStatus());
         order.setCommissionMoney(commissionMoney);
-        order.setPayTime(new Date());
         order.setCreateTime(new Date());
         order.setUpdateTime(new Date());
         order.setOrderIp(orderIp);
@@ -401,9 +404,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
             log.info("更新CDK使用状态cdk:{}",cdk);
             cdkService.update(cdk);
         }
-        //todo 渠道商扣款,平台流水
-
-
+        //订单支付,扣渠道商流水
+        payOrder(order.getOrderNo(),order.getActualMoney());
         //把订单缓存到redis里面
         try {
             redisOpenService.hset(RedisKeyEnum.MARKET_ORDER.generateKey(order.getOrderNo()),BeanUtil.beanToMap(order),Constant.TIME_HOUR_TOW);
@@ -446,20 +448,25 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setUpdateTime(new Date());
         order.setPayTime(new Date());
         update(order);
-        //记录订单流水
-        orderMoneyDetailsService.create(order.getOrderNo(),order.getUserId(), DetailsEnum.ORDER_PAY,orderMoney);
+
         //记录平台流水
         platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_PAY,order.getOrderNo(),order.getTotalMoney());
         if(order.getCouponNo()!=null){
             platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.COUPON_DEDUCTION,order.getOrderNo(),order.getCouponMoney().negate());
         }
-        //发送短信通知给陪玩师
-        User server = userService.findById(order.getServiceUserId());
-        SMSUtil.sendOrderReceivingRemind(server.getMobile(),order.getName());
-
-        User user = userService.findById(order.getUserId());
-        //推送通知陪玩师
-        wxTemplateMsgService.pushWechatTemplateMsg(server.getId(),WechatTemplateMsgEnum.ORDER_USER_PAY,user.getNickname(),order.getName());
+        //如果订单类型是渠道商则扣渠道商款,如果是平台订单则发送通知
+        if(OrderTypeEnum.MARKET.getType().equals(order.getType())){
+            channelCashDetailsService.cutCash(order.getChannelId(),order.getActualMoney(),order.getOrderNo());
+        }else{
+            //记录订单流水
+            orderMoneyDetailsService.create(order.getOrderNo(),order.getUserId(),DetailsEnum.ORDER_PAY,orderMoney);
+            //发送短信通知给陪玩师
+            User server = userService.findById(order.getServiceUserId());
+            SMSUtil.sendOrderReceivingRemind(server.getMobile(),order.getName());
+            User user = userService.findById(order.getUserId());
+            //推送通知陪玩师
+            wxTemplateMsgService.pushWechatTemplateMsg(server.getId(),WechatTemplateMsgEnum.ORDER_USER_PAY,user.getNickname(),order.getName());
+        }
 
         return orderConvertVo(order);
     }
@@ -482,7 +489,6 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         order.setUpdateTime(new Date());
         order.setReceivingTime(new Date());
         update(order);
-
         OrderProduct orderProduct = orderProductService.findByOrderNo(orderNo);
         //如果陪玩师开始接单缓存陪玩师开始服务状态 时间:商品数量*小时
         long expire = orderProduct.getAmount()*3600;
@@ -519,7 +525,7 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
 
 
     @Override
-    public OrderVO systemCancelOrder(String orderNo) {
+    public void systemCancelOrder(String orderNo) {
         log.info("系统取消订单orderNo:{}",orderNo);
         Order order =  findByOrderNo(orderNo);
         order.setStatus(OrderStatusEnum.SYSTEM_CLOSE.getStatus());
@@ -530,7 +536,6 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
             // 全额退款用户
             orderRefund(order.getOrderNo(),order.getUserId(),order.getActualMoney());
         }
-        return orderConvertVo(order);
     }
 
     /**
@@ -641,7 +646,6 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         return orderConvertVo(order);
     }
 
-
     /**
      * 系统完成订单
      * @param orderNo
@@ -696,10 +700,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         update(order);
         //订单分润
         shareProfit(order);
-
         wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(),WechatTemplateMsgEnum.ORDER_USER_APPEAL_COMPLETE);
         wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(),WechatTemplateMsgEnum.ORDER_SERVER_USER_APPEAL_COMPLETE);
-
         return orderConvertVo(order);
     }
 
@@ -764,16 +766,21 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         if(!order.getIsPay()){
             throw new OrderException(orderNo,"未支付订单不允许退款!");
         }
-        try {
-            payService.refund(orderNo,orderMoney);
-        }catch (Exception e){
-            log.error("退款失败{}",orderNo,e.getMessage());
-            throw new OrderException(orderNo,"订单退款失败!");
-        }
-        //记录订单流水
-        orderMoneyDetailsService.create(orderNo,userId,DetailsEnum.ORDER_USER_CANCEL,orderMoney.negate());
         //记录平台流水
         platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_REFUND,orderNo,orderMoney.negate());
+        //如果是集市订单则退款给渠道商,如果是平台订单则退款给用户
+        if(OrderTypeEnum.MARKET.equals(order.getType())){
+            channelCashDetailsService.refundCash(order.getChannelId(),order.getActualMoney(),order.getOrderNo());
+        }else{
+            try {
+                payService.refund(orderNo,orderMoney);
+            }catch (Exception e){
+                log.error("退款失败{}",orderNo,e.getMessage());
+                throw new OrderException(orderNo,"订单退款失败!");
+            }
+            //记录订单流水
+            orderMoneyDetailsService.create(orderNo,userId,DetailsEnum.ORDER_USER_CANCEL,orderMoney.negate());
+        }
 
     }
 
@@ -796,11 +803,24 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
 
 
     public List<Order> findByStatusList(Integer[] statusList){
-        OrderVO orderVO = new OrderVO();
-        orderVO.setStatusList(statusList);
-        return orderDao.findByParameter(orderVO);
+        if(statusList==null){
+            return new ArrayList<>();
+        }
+        OrderVO param = new OrderVO();
+        param.setStatusList(statusList);
+        return orderDao.findByParameter(param);
     }
 
+    @Override
+    public List<Order> findByStatusListAndType(Integer[] statusList, int type) {
+        if(statusList==null){
+            return new ArrayList<>();
+        }
+        OrderVO param = new OrderVO();
+        param.setStatusList(statusList);
+        param.setType(type);
+        return orderDao.findByParameter(param);
+    }
 
 
     /**
@@ -819,6 +839,9 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
 
 
     public Order findByOrderNo(String orderNo){
+        if(orderNo==null){
+            return null;
+        }
         OrderVO orderVO = new OrderVO();
         orderVO.setOrderNo(orderNo);
         List<Order> orderList =  orderDao.findByParameter(orderVO);

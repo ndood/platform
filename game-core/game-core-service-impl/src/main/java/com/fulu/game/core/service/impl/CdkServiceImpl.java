@@ -32,6 +32,9 @@ public class CdkServiceImpl extends AbsCommonService<Cdk, Integer> implements Cd
 
     @Override
     public Cdk findBySeries(String series) {
+        if(series==null){
+            return null;
+        }
         CdkVO param = new CdkVO();
         param.setSeries(series);
         List<Cdk> cdkList = cdkDao.findByParameter(param);
