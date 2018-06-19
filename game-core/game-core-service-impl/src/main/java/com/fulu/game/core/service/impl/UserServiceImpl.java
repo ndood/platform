@@ -58,6 +58,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public User findByMobile(String mobile) {
+        if(mobile==null){
+            return null;
+        }
         UserVO userVO = new UserVO();
         userVO.setMobile(mobile);
         List<User> users = userDao.findByParameter(userVO);
@@ -75,8 +78,12 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         return users;
     }
 
+
     @Override
     public User findByOpenId(String openId) {
+        if(openId==null){
+            return null;
+        }
         UserVO userVO = new UserVO();
         userVO.setOpenId(openId);
         List<User> users = userDao.findByParameter(userVO);
@@ -88,6 +95,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public User findByImId(String imId) {
+        if(imId==null){
+            return null;
+        }
         UserVO userVO = new UserVO();
         userVO.setImId(imId);
         List<User> userList = userDao.findByParameter(userVO);
@@ -96,6 +106,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         }
         return userList.get(0);
     }
+
 
     @Override
     public List<User> findByImIds(String imIds) {
