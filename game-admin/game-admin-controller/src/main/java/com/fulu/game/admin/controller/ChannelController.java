@@ -147,8 +147,9 @@ public class ChannelController {
      */
     @PostMapping("/add/list")
     public Result addList(@RequestParam("pageNum") Integer pageNum,
-                          @RequestParam("pageSize") Integer pageSize) {
-        PageInfo<ChannelCashDetails> resultPage = channelCDService.list(pageNum, pageSize);
+                          @RequestParam("pageSize") Integer pageSize,
+                          @RequestParam("channelId") Integer channelId) {
+        PageInfo<ChannelCashDetails> resultPage = channelCDService.list(pageNum, pageSize,channelId);
         return Result.success().data(resultPage).msg("查询成功");
     }
 

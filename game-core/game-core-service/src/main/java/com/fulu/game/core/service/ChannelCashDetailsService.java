@@ -53,5 +53,5 @@ public interface ChannelCashDetailsService extends ICommonService<ChannelCashDet
      * @param pageSize
      * @return
      */
-    PageInfo<ChannelCashDetails> list(Integer pageNum, Integer pageSize);
+    PageInfo<ChannelCashDetails> list(Integer pageNum, Integer pageSize,Integer channelId);
 }
