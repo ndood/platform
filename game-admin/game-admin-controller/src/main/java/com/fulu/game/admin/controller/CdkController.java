@@ -104,9 +104,8 @@ public class CdkController {
      * @param groupId
      * @throws Exception
      */
-    @RequestMapping("/export/{groupId}")
-    public void grantExport(HttpServletResponse response,
-                            @PathVariable(name = "groupId", required = true) Integer groupId) throws Exception {
+    @RequestMapping("/export")
+    public void cdkExport(HttpServletResponse response,@RequestParam("groupId") Integer groupId) throws Exception {
         String title = "CDK列表";
         CdkVO cdkVO = new CdkVO();
         cdkVO.setGroupId(groupId);

@@ -108,7 +108,7 @@ public class OrderController extends BaseController {
      * @throws Exception
      */
     @RequestMapping("/export")
-    public void grantExport(HttpServletResponse response) throws Exception {
+    public void orderExport(HttpServletResponse response) throws Exception {
         String title = "订单列表";
         List<Order> userList = orderService.findAll();
         ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
