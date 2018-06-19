@@ -80,7 +80,7 @@
         update t_banner
         <set>
             <if test="disable != null">
-                sort = #{disable},
+                disable = #{disable},
             </if>
             <if test="sort != null">
                 sort = #{sort},
