@@ -10,6 +10,7 @@ import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
+import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserComment;
 import com.fulu.game.core.entity.UserTechAuth;
@@ -17,10 +18,7 @@ import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.WxUserInfo;
-import com.fulu.game.core.service.UserCommentService;
-import com.fulu.game.core.service.UserInfoAuthService;
-import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.UserTechAuthService;
+import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +53,8 @@ public class UserController extends BaseController {
     private WxMaService wxMaService;
     @Autowired
     private OssUtil ossUtil;
+    @Autowired
+    private ProductService productService;
 
     @RequestMapping("tech/list")
     public Result userTechList() {
@@ -324,7 +324,7 @@ public class UserController extends BaseController {
                          @RequestParam("imId") String imId,
                          @RequestParam("imPsw") String imPsw,
                          @RequestParam(value = "errorMsg", required = false) String errorMsg) {
-        log.info("IM注册请求开始,请求参数 status={},imId={},imPsw={},errorMsg={}", status, imId,imPsw,errorMsg);
+        log.info("IM注册请求开始,请求参数 status={},imId={},imPsw={},errorMsg={}", status, imId, imPsw, errorMsg);
         int userId = userService.getCurrentUser().getId();
         if (status == 200) {
             User user = userService.findById(userId);
@@ -369,9 +369,16 @@ public class UserController extends BaseController {
         return Result.success().data(userList).msg("查询IM用户成功！");
     }
 
+    /**
+     * 聊天对象信息获取
+     * @param id
+     * @return
+     */
     @PostMapping("/chatwith/get")
     public Result chatWithGet(@RequestParam("id") Integer id) {
         UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(id, false, true, true, true);
+        List<Product> productList = productService.findByUserId(id);
+        userInfoVO.setProductList(productList);
         return Result.success().data(userInfoVO).msg("查询聊天对象信息成功！");
     }
 

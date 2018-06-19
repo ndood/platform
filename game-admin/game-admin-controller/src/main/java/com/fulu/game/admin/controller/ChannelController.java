@@ -133,7 +133,7 @@ public class ChannelController {
         log.info("调用渠道商加款接口，入参channelId={}，money={}，remark={}", channelId, money, remark);
         log.info("===开始数据校验===");
         if (money.compareTo(Constant.DEFAULT_CHANNEL_BALANCE) == -1) {
-            throw new CashException(CashException.ExceptionCode.CASH_LESS_EXCEPTION);
+            return Result.error().msg("最低加款1元");
         }
         ChannelCashDetails channelCashDetails = channelCDService.addCash(channelId, money, remark);
         return Result.success().data(channelCashDetails).msg("操作成功");
