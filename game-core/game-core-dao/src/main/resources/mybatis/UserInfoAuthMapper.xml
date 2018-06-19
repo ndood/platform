@@ -16,7 +16,8 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
-    <resultMap id="UserInfoAuthResultVOMap" type="com.fulu.game.core.entity.vo.UserInfoAuthVO" extends="UserInfoAuthResultMap">
+    <resultMap id="UserInfoAuthResultVOMap" type="com.fulu.game.core.entity.vo.UserInfoAuthVO"
+               extends="UserInfoAuthResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -36,6 +37,18 @@
         select
         <include refid="Base_Column_List"/>
         from t_user_info_auth
+    </select>
+
+    <select id="findByUserIds" resultMap="UserInfoAuthResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user_info_auth
+        <where>
+            user_id in
+            <foreach collection="userIds" item="userId" index="index" open="(" close=")" separator=",">
+                #{userId}
+            </foreach>
+        </where>
     </select>
 
     <select id="findByParameter" resultMap="UserInfoAuthResultMap"

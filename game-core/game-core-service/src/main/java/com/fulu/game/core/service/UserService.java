@@ -63,6 +63,13 @@ public interface UserService extends ICommonService<User, Integer> {
     List<User> findAllNormalUser();
 
     /**
+     * 通过UserId查询一批用户
+     * @param userIds
+     * @return
+     */
+    List<User> findByUserIds(List<Integer> userIds);
+
+    /**
      * 后台封禁用户（仅修改user表用户的状态）
      *
      * @param id

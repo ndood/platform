@@ -6,6 +6,11 @@ public interface WxTemplateMsgService {
 
 
      /**
+      * 推送集市订单
+      */
+     void pushMarketOrder(String orderNo);
+
+     /**
       * 通过枚举发送消息
       * @param userId
       * @param wechatTemplateMsgEnum

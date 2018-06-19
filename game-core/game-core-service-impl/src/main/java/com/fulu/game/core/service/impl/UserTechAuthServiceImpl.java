@@ -201,7 +201,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
     @Override
-    public List<UserTechAuth> findByStatusAndUserId(Integer userId, Integer status) {
+    public List<UserTechAuth> findByStatusAndUserId(int userId, Integer status) {
         UserTechAuthVO param = new UserTechAuthVO();
         param.setUserId(userId);
         param.setStatus(status);
@@ -309,6 +309,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         return null;
     }
 
+
     public void checkUserTechAuth(Integer techAuthId){
         UserTechAuth userTechAuth = findById(techAuthId);
         if(userTechAuth.getStatus().equals(TechAuthStatusEnum.AUTHENTICATION_ING.getType())){
@@ -323,14 +324,22 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
 
+    @Override
+    public List<UserTechAuth> findNormalByCategory(int categoryId) {
+        UserTechAuthVO param = new UserTechAuthVO();
+        param.setCategoryId(categoryId);
+        param.setStatus(TechAuthStatusEnum.NORMAL.getType());
+        return userTechAuthDao.findByParameter(param);
+    }
+
+
     /**
      * 通过用户Id查询用户技能认证信息
-     *
      * @param userId
      * @return
      */
     @Override
-    public List<UserTechAuth> findByUserId(Integer userId) {
+    public List<UserTechAuth> findByUserId(int userId) {
         UserTechAuthVO param = new UserTechAuthVO();
         param.setUserId(userId);
         List<UserTechAuth> userTechAuths = userTechAuthDao.findByParameter(param);

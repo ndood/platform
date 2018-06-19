@@ -5,6 +5,7 @@ import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -18,5 +19,8 @@ import java.util.List;
 public interface UserInfoAuthDao extends ICommonDao<UserInfoAuth,Integer>{
 
     List<UserInfoAuth> findByParameter(UserInfoAuthVO userInfoAuthVO);
+
+
+    List<UserInfoAuth> findByUserIds(@Param(value = "userIds") List<Integer> userIds);
 
 }

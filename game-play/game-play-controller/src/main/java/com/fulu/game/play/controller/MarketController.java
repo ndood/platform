@@ -1,9 +1,7 @@
 package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
-import com.fulu.game.common.enums.OrderStatusEnum;
-import com.fulu.game.common.enums.OrderStatusGroupEnum;
-import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.MarketOrderVO;
@@ -99,6 +97,9 @@ public class MarketController extends BaseController{
             throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST,order.getOrderNo());
         }
         User user = userService.getCurrentUser();
+        if (!UserInfoAuthStatusEnum.VERIFIED.getType().equals(user.getUserInfoAuth()) || !UserStatusEnum.NORMAL.getType().equals(user.getStatus())) {
+            return Result.error().msg("您没通过陪玩师认证,不能接单!");
+        }
         List<Integer> techAuthList = userTechAuthService.findUserNormalCategoryIds(user.getId());
         if(!techAuthList.contains(order.getCategoryId())){
             return Result.error().msg("您没有认证该游戏,不能接单!");

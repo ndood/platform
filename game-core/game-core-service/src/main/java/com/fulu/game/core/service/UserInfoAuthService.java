@@ -5,6 +5,8 @@ import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.github.pagehelper.PageInfo;
 
+import java.util.List;
+
 /**
  * 信息认证表
  * 
@@ -57,6 +59,9 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth,Integer
      * @return
      */
     UserInfoAuthVO findUserAuthInfoByUserId(int userId);
+
+
+    List<UserInfoAuth> findByUserIds(List<Integer> userIds);
 
     /**
      * 个人信息认证列表

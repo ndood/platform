@@ -14,7 +14,7 @@ update `t_order` set type = 1;
 
 
 
-ALTER TABLE `t_user_info_auth` ADD COLUMN `push_time_interval`  float(11,2) NULL COMMENT '推送时间间隔(0表示永不推送)' AFTER `main_pic_url`;
+ALTER TABLE `t_user_info_auth` ADD COLUMN `push_time_interval`  float(11,2) NULL DEFAULT 30 COMMENT '推送时间间隔(0表示永不推送)' AFTER `main_pic_url`;
 
 
 DROP TABLE IF EXISTS `t_cdk`;

@@ -66,12 +66,13 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         UserInfoAuthVO userInfoAuthVO = new UserInfoAuthVO();
         userInfoAuthVO.setUserId(userId);
         List<UserInfoAuth> userInfoAuthList = userInfoAuthDao.findByParameter(userInfoAuthVO);
-        if (!CollectionUtil.isEmpty(userInfoAuthList)) {
-            return userInfoAuthList.get(0);
-        } else {
+        if (CollectionUtil.isEmpty(userInfoAuthList)) {
             return null;
         }
+        return userInfoAuthList.get(0);
     }
+
+
 
     @Override
     public UserInfoAuthVO save(UserInfoAuthVO userInfoAuthVO) {
@@ -278,6 +279,15 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         List<TagVO> allPersonTagVos = findAllUserTag(userId, false);
         userInfoAuthVO.setGroupTags(allPersonTagVos);
         return userInfoAuthVO;
+    }
+
+
+    @Override
+    public List<UserInfoAuth> findByUserIds(List<Integer> userIds) {
+        if(userIds==null){
+            return new ArrayList<>();
+        }
+        return userInfoAuthDao.findByUserIds(userIds);
     }
 
     @Override

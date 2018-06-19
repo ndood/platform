@@ -134,6 +134,14 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         return users;
     }
 
+    @Override
+    public List<User> findByUserIds(List<Integer> userIds) {
+        if(userIds==null){
+            return new ArrayList<>();
+        }
+        return userDao.findByUserIds(userIds);
+    }
+
 
     @Override
     public void lock(int id) {

@@ -46,6 +46,18 @@
         </where>
     </select>
 
+    <select id="findByUserIds" parameterType="java.lang.Integer" resultMap="UserResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user
+        <where>
+            id in
+            <foreach collection="userIds" item="userId" index="index" open="(" close=")" separator=",">
+                #{userId}
+            </foreach>
+        </where>
+    </select>
+
     <select id="findAll" resultMap="UserResultMap">
         select
         <include refid="Base_Column_List"/>
