@@ -8,13 +8,15 @@ import lombok.Getter;
 public enum OrderStatusEnum {
 
     SYSTEM_CLOSE(100, "订单关闭"),//系统关闭订单
+    ADMIN_CLOSE(110, "订单关闭"),//管理员关闭订单
     USER_CANCEL(101, "订单关闭"),//用户取消订单
     SERVER_CANCEL(160, "订单关闭"),//陪玩师取消订单
     NON_PAYMENT(200, "待付款"),
     WAIT_SERVICE(210, "等待陪玩"),//已付款
     SERVICING(220, "陪玩中"),
     CHECK(300, "等待验收"),
-    APPEALING(400, "申诉中"),
+    APPEALING(400, "申诉中"), //用户申诉订单
+    APPEALING_ADMIN(401, "申诉中"), //管理员申诉订单
     ADMIN_REFUND(410, "申诉：全额退款"),//管理员退款用户
     ADMIN_NEGOTIATE(420, "申诉：协商处理"),//管理员处理订单部分退款
     COMPLETE(500, "待评价"),//用户验收订单

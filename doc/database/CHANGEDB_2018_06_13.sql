@@ -5,7 +5,6 @@ ALTER TABLE `t_order` ADD COLUMN `channel_id`  int(11) NULL COMMENT '渠道商ID
 ALTER TABLE `t_order` ADD COLUMN `order_ip`  varchar(128) NULL COMMENT '订单IP' AFTER `actual_money`;
 ALTER TABLE `t_order` ADD COLUMN `receiving_time`  varchar(128) NULL COMMENT '接单时间' AFTER `order_ip`;
 
-
 ALTER TABLE `t_order`  MODIFY COLUMN `user_id` int(11) NULL COMMENT '下单用户ID';
 ALTER TABLE `t_order` MODIFY COLUMN `service_user_id` int(11) NULL COMMENT '陪玩师用户ID';
 
@@ -13,8 +12,11 @@ ALTER TABLE `t_order` MODIFY COLUMN `service_user_id` int(11) NULL COMMENT '陪�
 update `t_order` set type = 1;
 
 
-
+-- 添加推送间隔字段
 ALTER TABLE `t_user_info_auth` ADD COLUMN `push_time_interval`  float(11,2) NULL DEFAULT 30 COMMENT '推送时间间隔(0表示永不推送)' AFTER `main_pic_url`;
+
+-- 修改管理员可以申诉订单，集市订单申诉后userId为空
+ALTER TABLE `t_order_deal` MODIFY COLUMN `user_id`  int(11) NULL AFTER `order_no`
 
 
 DROP TABLE IF EXISTS `t_cdk`;
@@ -27,7 +29,7 @@ CREATE TABLE `t_cdk`  (
   `channel_id` int(11) NOT NULL COMMENT '渠道商id',
   `category_id` int(11) NOT NULL COMMENT '游戏id',
   `is_use` tinyint(1) NOT NULL COMMENT '使用状态(0未使用，1已使用)',
-  `enable` tinyint(1) NOT NULL COMMENT '是否可用(0不可用，1可用)',
+  `enable` tinyint(1) NOT NULL DEFAULT 1 COMMENT '是否可用(0不可用，1可用)',
   `order_no` varchar(255) DEFAULT NULL COMMENT '使用订单号',
   `update_time` datetime(0) DEFAULT NULL COMMENT '使用时间',
   `create_time` datetime(0) NOT NULL COMMENT '生成时间',

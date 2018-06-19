@@ -18,6 +18,7 @@ import net.sf.json.JSONObject;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
@@ -31,7 +32,6 @@ public class OrderController extends BaseController {
 
     @Autowired
     private OrderService orderService;
-
     @Autowired
     private OrderProductService orderProductService;
 
@@ -42,8 +42,8 @@ public class OrderController extends BaseController {
      * @return
      */
     @RequestMapping("/list")
-    public Result list(Integer pageNum,
-                       Integer pageSize,
+    public Result list(@RequestParam(required = true) Integer pageNum,
+                       @RequestParam(required = true) Integer pageSize,
                        String orderBy,
                        OrderReqVO orderReqVO) {
         PageInfo<OrderResVO> orderList = orderProductService.list(orderReqVO, pageNum, pageSize, orderBy);
@@ -67,12 +67,11 @@ public class OrderController extends BaseController {
 
     /**
      * 管理员强制完成订单,协商处理
-     *
      * @param orderNo
      * @return
      */
     @RequestMapping(value = "/admin/negotiate")
-    public Result adminHandleNegotiateOrder(String orderNo) {
+    public Result adminHandleNegotiateOrder(@RequestParam(required = true)String orderNo) {
         OrderVO orderVO = orderService.adminHandleNegotiateOrder(orderNo);
         return Result.success().data(orderVO.getOrderNo()).msg("订单完成,协商处理!");
     }
@@ -84,22 +83,45 @@ public class OrderController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/admin/complete")
-    public Result adminHandleCompleteOrder(String orderNo) {
+    public Result adminHandleCompleteOrder(@RequestParam(required = true)String orderNo) {
         OrderVO orderVO = orderService.adminHandleCompleteOrder(orderNo);
         return Result.success().data(orderVO.getOrderNo()).msg("订单完成!");
     }
 
     /**
      * 管理员退款给用户
-     *
      * @param orderNo
      * @return
      */
     @RequestMapping(value = "/admin/refund")
-    public Result adminHandleRefundOrder(String orderNo) {
+    public Result adminHandleRefundOrder(@RequestParam(required = true)String orderNo) {
         OrderVO orderVO = orderService.adminHandleRefundOrder(orderNo);
         return Result.success().data(orderVO.getOrderNo()).msg("订单完成,退款给用户!");
     }
+
+    /**
+     * 管理员取消订单
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/admin/cancel")
+    public Result adminHandleCancelOrder(@RequestParam(required = true)String orderNo) {
+        orderService.adminCancelOrder(orderNo);
+        return Result.success().msg("取消订单成功!");
+    }
+
+     /**
+     * 管理员申诉订单
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/admin/appeal")
+    public Result adminHandleAppealOrder(@RequestParam(required = true)String orderNo,
+                                         @RequestParam(required = true)String remark) {
+        orderService.adminAppealOrder(orderNo,remark);
+        return Result.success().msg("订单申诉成功!");
+    }
+
 
     /**
      * 订单列表导出
