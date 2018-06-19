@@ -56,6 +56,7 @@
         rs.name,
         rs.admin_id,
         rs.remark,
+        rs.wxcode_url,
         rs.create_time,
         rs.update_time,
         COUNT( u.source_id ) AS count

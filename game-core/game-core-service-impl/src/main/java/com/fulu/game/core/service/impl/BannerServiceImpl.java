@@ -2,7 +2,6 @@ package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.exception.CommonException;
 import com.fulu.game.common.utils.OssUtil;
-import com.fulu.game.common.utils.TimeUtil;
 import com.fulu.game.core.dao.BannerDao;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Admin;
@@ -47,7 +46,7 @@ public class BannerServiceImpl extends AbsCommonService<Banner, Integer> impleme
         banner.setCreateTime(new Date());
         banner.setUpdateTime(banner.getCreateTime());
         bannerDao.create(banner);
-        log.info("{} 添加banner 操作，时间:{} ", admin.getName(), TimeUtil.defaultFormat(banner.getCreateTime()));
+        log.info("管理员id={}添加banner", admin.getId());
         return banner;
     }
 
@@ -58,7 +57,7 @@ public class BannerServiceImpl extends AbsCommonService<Banner, Integer> impleme
         if (null == banner) {
             throw new CommonException(CommonException.ExceptionCode.RECORD_NOT_EXSISTS);
         }
-        if(!bannerVO.getPicUrl().equals(banner.getPicUrl())){
+        if (!bannerVO.getPicUrl().equals(banner.getPicUrl())) {
             ossUtil.deleteFile(bannerVO.getPicUrl());
         }
         banner.setPicUrl(bannerVO.getPicUrl());
@@ -69,7 +68,7 @@ public class BannerServiceImpl extends AbsCommonService<Banner, Integer> impleme
         banner.setOperatorName(admin.getName());
         banner.setUpdateTime(new Date());
         bannerDao.update(banner);
-        log.info("{} 修改banner 操作，时间:{} ", admin.getName(), TimeUtil.defaultFormat(banner.getUpdateTime()));
+        log.info("管理员id={}修改banner", admin.getId());
         return banner;
     }
 
@@ -77,18 +76,18 @@ public class BannerServiceImpl extends AbsCommonService<Banner, Integer> impleme
     public void delete(Integer id) {
         Admin admin = adminService.getCurrentUser();
         bannerDao.deleteById(id);
-        log.info("{} 删除banner 操作，时间:{},bannerId= {} ", admin.getName(), TimeUtil.defaultFormat(new Date()), id);
+        log.info("管理员id={}删除banner,bannerId={}", admin.getId(), id);
     }
 
     @Override
-    public Banner disable(Integer id,Boolean disable){
+    public Banner disable(Integer id, Boolean disable) {
         Admin admin = adminService.getCurrentUser();
         Banner banner = bannerDao.findById(id);
         banner.setDisable(disable);
         banner.setUpdateTime(new Date());
         bannerDao.update(banner);
-        String operTpe = disable?"启用":"禁用";
-        log.info("{} {}banner 操作，时间:{},bannerId= {} ", admin.getName(), operTpe,TimeUtil.defaultFormat(banner.getUpdateTime()), id);
+        String operTpe = disable ? "启用" : "禁用";
+        log.info("管理员id={},{}banner,bannerId= {} ", admin.getId(), operTpe, id);
         return banner;
     }
 
@@ -100,7 +99,7 @@ public class BannerServiceImpl extends AbsCommonService<Banner, Integer> impleme
     }
 
     @Override
-    public List<Banner> findByParam(BannerVO bannerVO){
+    public List<Banner> findByParam(BannerVO bannerVO) {
         PageHelper.orderBy("sort DESC");
         return bannerDao.findByParameter(bannerVO);
     }
