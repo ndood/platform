@@ -27,6 +27,7 @@ CREATE TABLE `t_cdk`  (
   `channel_id` int(11) NOT NULL COMMENT '渠道商id',
   `category_id` int(11) NOT NULL COMMENT '游戏id',
   `is_use` tinyint(1) NOT NULL COMMENT '使用状态(0未使用，1已使用)',
+  `enable` tinyint(1) NOT NULL COMMENT '是否可用(0不可用，1可用)',
   `order_no` varchar(255) DEFAULT NULL COMMENT '使用订单号',
   `update_time` datetime(0) DEFAULT NULL COMMENT '使用时间',
   `create_time` datetime(0) NOT NULL COMMENT '生成时间',
