@@ -23,7 +23,7 @@ public class BannerVO extends Banner {
     private String picUrl;
     //跳转类型
     @NotNull(message = "跳转类型不能为空")
-    @Range(min = 1, max = 5, message = "跳转类型填写1-10的数字")
+    @Range(min = 0, max = 5, message = "跳转类型填写0-5的数字")
     private Integer redirectType;
     //跳转地址
     private String redirectUrl;

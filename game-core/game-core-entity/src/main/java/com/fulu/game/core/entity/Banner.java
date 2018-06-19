@@ -30,7 +30,7 @@ public class Banner implements Serializable {
     private String picUrl;
     //跳转类型
     private Integer redirectType;
-    //跳转地址
+    //跳转地址(0表示无1表示小程序内2表示url)
     private String redirectUrl;
     //生成时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
