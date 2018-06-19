@@ -37,6 +37,7 @@ public class SpringThreadPoolExecutor implements AsyncConfigurer {
         taskExecutor.initialize();
     }
 
+
     @PreDestroy
     public void destroy() {
         log.info("全局线程池注销");

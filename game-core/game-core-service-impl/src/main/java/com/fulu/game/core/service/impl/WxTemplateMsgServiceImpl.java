@@ -53,7 +53,6 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
 
     @Override
-    @Async
     public void pushMarketOrder(String orderNo) {
         Order order = orderService.findByOrderNo(orderNo);
         log.info("推送集市订单:order:{};",order);

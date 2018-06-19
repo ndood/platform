@@ -8,7 +8,7 @@ import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
-import com.fulu.game.core.entity.vo.searchVO.OrderReqVO;
+import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import com.fulu.game.core.service.OrderProductService;
 import com.fulu.game.core.service.OrderService;
 import com.github.pagehelper.PageInfo;
@@ -38,15 +38,15 @@ public class OrderController extends BaseController {
     /**
      * 管理员-订单列表
      *
-     * @param orderReqVO
+     * @param orderSearchVO
      * @return
      */
     @RequestMapping("/list")
     public Result list(@RequestParam(required = true) Integer pageNum,
                        @RequestParam(required = true) Integer pageSize,
                        String orderBy,
-                       OrderReqVO orderReqVO) {
-        PageInfo<OrderResVO> orderList = orderProductService.list(orderReqVO, pageNum, pageSize, orderBy);
+                       OrderSearchVO orderSearchVO) {
+        PageInfo<OrderResVO> orderList = orderProductService.list(orderSearchVO, pageNum, pageSize, orderBy);
         return Result.success().data(orderList).msg("查询列表成功！");
     }
 

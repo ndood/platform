@@ -9,7 +9,7 @@ import com.fulu.game.core.entity.OrderProduct;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderProductVO;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
-import com.fulu.game.core.entity.vo.searchVO.OrderReqVO;
+import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import com.fulu.game.core.service.OrderDealService;
 import com.fulu.game.core.service.OrderProductService;
 import com.github.pagehelper.PageHelper;
@@ -46,17 +46,17 @@ public class OrderProductServiceImpl extends AbsCommonService<OrderProduct, Inte
     }
 
     @Override
-    public PageInfo<OrderResVO> list(OrderReqVO orderReqVO, Integer pageNum, Integer pageSize, String orderBy) {
+    public PageInfo<OrderResVO> list(OrderSearchVO orderSearchVO, Integer pageNum, Integer pageSize, String orderBy) {
         if(StringUtils.isBlank(orderBy)){
             orderBy = "id DESC";
         }
         PageHelper.startPage(pageNum,pageSize, orderBy);
-        Integer status = orderReqVO.getStatus();
+        Integer status = orderSearchVO.getStatus();
         Integer[] statusList = OrderStatusGroupEnum.getByValue(status);
         if (null != statusList && statusList.length > 0) {
-            orderReqVO.setStatusList(statusList);
+            orderSearchVO.setStatusList(statusList);
         }
-        List<OrderResVO> list = orderProductDao.findByUnionParam(orderReqVO);
+        List<OrderResVO> list = orderProductDao.findByUnionParam(orderSearchVO);
         if (!CollectionUtil.isEmpty(list)){
             for(OrderResVO orderResVO:list){
                 OrderDealVO userOrderDealVO = orderDealService.findByUserAndOrderNo(orderResVO.getUserId(),orderResVO.getOrderNo());
