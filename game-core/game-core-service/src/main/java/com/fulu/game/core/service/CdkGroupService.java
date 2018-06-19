@@ -31,6 +31,7 @@ public interface CdkGroupService extends ICommonService<CdkGroup, Integer> {
 
     /**
      * cdk批次废除
+     *
      * @param groupId
      */
     void abolish(Integer groupId);

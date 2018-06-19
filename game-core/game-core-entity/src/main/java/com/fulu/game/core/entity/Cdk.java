@@ -46,11 +46,12 @@ public class Cdk implements Serializable {
     private String orderNo;
     //使用时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Excel(name = "使用时间", orderNum = "8", width = 35)
+    @Excel(name = "使用时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "8", width = 35)
     private Date updateTime;
     //生成时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Excel(name = "生成时间", orderNum = "9",width = 35)
+    @Excel(name = "生成时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "9", width = 35)
     private Date createTime;
-
+    //是否可用
+    private Boolean enable;
 }

@@ -32,7 +32,7 @@ public class CdkServiceImpl extends AbsCommonService<Cdk, Integer> implements Cd
 
     @Override
     public Cdk findBySeries(String series) {
-        if(series==null){
+        if (series == null) {
             return null;
         }
         CdkVO param = new CdkVO();
@@ -60,11 +60,17 @@ public class CdkServiceImpl extends AbsCommonService<Cdk, Integer> implements Cd
             cdk.setType(cdkGroup.getType());
             cdk.setPrice(cdkGroup.getPrice());
             cdk.setIsUse(false);
+            cdk.setEnable(true);
             cdk.setCreateTime(new Date());
             cdk.setUpdateTime(new Date());
             cdkList.add(cdk);
         }
         return cdkDao.insertList(cdkList);
+    }
+
+    @Override
+    public int abolishList(Integer groupId) {
+        return cdkDao.abolish(groupId);
     }
 
     @Override
@@ -86,7 +92,7 @@ public class CdkServiceImpl extends AbsCommonService<Cdk, Integer> implements Cd
     }
 
     @Override
-    public List<Cdk> findByParam(CdkVO cdkVO){
+    public List<Cdk> findByParam(CdkVO cdkVO) {
         return cdkDao.findByParameter(cdkVO);
     }
 }

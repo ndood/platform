@@ -76,11 +76,10 @@ public class User implements Serializable {
 
     //创建时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Excel(name = "注册时间", orderNum = "9", width = 35)
+    @Excel(name = "注册时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "9", width = 35)
     private Date createTime;
     //修改时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Excel(name = "修改时间", orderNum = "10", width = 35)
     private Date updateTime;
 
 }

@@ -88,8 +88,7 @@ public class GenIdUtil {
      * @return
      */
     public static String getCdkSeries() {
-        //todo 序列号生成策略待修改
-        return UUID.randomUUID().toString();
+        return UUID.randomUUID().toString().replace("-", "");
     }
 
 }

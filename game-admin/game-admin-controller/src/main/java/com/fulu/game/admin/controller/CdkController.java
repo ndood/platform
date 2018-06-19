@@ -46,9 +46,15 @@ public class CdkController {
         }
     }
 
+    /**
+     * cdk批次废除
+     *
+     * @param groupId
+     * @return
+     */
     @PostMapping("/group/abolish")
     public Result groupList(@RequestParam("groupId") Integer groupId) {
-        //todo 废除后是否有其他操作
+        //批次废除后批量更新对应的cdk的status
         cdkGroupService.abolish(groupId);
         return Result.success().msg("操作成功");
     }
@@ -104,8 +110,9 @@ public class CdkController {
      * @param groupId
      * @throws Exception
      */
-    @RequestMapping("/export")
-    public void cdkExport(HttpServletResponse response,@RequestParam("groupId") Integer groupId) throws Exception {
+    @RequestMapping("/export/{groupId}")
+    public void cdkExport(HttpServletResponse response,
+                          @PathVariable(name = "groupId", required = true) Integer groupId) throws Exception {
         String title = "CDK列表";
         CdkVO cdkVO = new CdkVO();
         cdkVO.setGroupId(groupId);

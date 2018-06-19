@@ -31,6 +31,8 @@ public interface Constant {
     BigDecimal DEFAULT_SCORE_AVG = new BigDecimal(4);
     //默认余额
     BigDecimal DEFAULT_BALANCE = new BigDecimal(0.00);
+    //渠道商默认加款金额
+    BigDecimal DEFAULT_CHANNEL_BALANCE = new BigDecimal(1.00);
     //默认认证通过需要的认可数
     Integer DEFAULT_APPROVE_COUNT = 5;
 

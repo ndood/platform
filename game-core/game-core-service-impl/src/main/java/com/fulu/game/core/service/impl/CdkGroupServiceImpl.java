@@ -4,10 +4,8 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.core.dao.CdkGroupDao;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Admin;
-import com.fulu.game.core.entity.Cdk;
 import com.fulu.game.core.entity.CdkGroup;
 import com.fulu.game.core.entity.vo.CdkGroupVO;
-import com.fulu.game.core.entity.vo.CdkVO;
 import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.CdkGroupService;
 import com.fulu.game.core.service.CdkService;
@@ -19,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -42,7 +39,6 @@ public class CdkGroupServiceImpl extends AbsCommonService<CdkGroup, Integer> imp
     @Override
     @Transactional
     public Boolean generate(CdkGroup cdkGroup) {
-        //todo 定制事物传播行为
         Boolean success = true;
         Admin admin = adminService.getCurrentUser();
         int adminId = admin.getId();
@@ -63,7 +59,7 @@ public class CdkGroupServiceImpl extends AbsCommonService<CdkGroup, Integer> imp
         long start = System.currentTimeMillis();
         int resultNum = cdkService.insertList(cdkGroup);
         long end = System.currentTimeMillis();
-        log.info("执行生成数量resultNum={},用时t={}",resultNum,end-start);
+        log.info("执行生成数量resultNum={},用时t={}", resultNum, end - start);
         if (resultNum != amount) {
             success = false;
         }
@@ -71,21 +67,27 @@ public class CdkGroupServiceImpl extends AbsCommonService<CdkGroup, Integer> imp
     }
 
     @Override
-    public PageInfo<CdkGroup> list(Integer pageNum, Integer pageSize, String orderBy){
-        PageHelper.startPage(pageNum,pageSize,orderBy);
+    public PageInfo<CdkGroup> list(Integer pageNum, Integer pageSize, String orderBy) {
+        PageHelper.startPage(pageNum, pageSize, orderBy);
         CdkGroupVO cdkGroupVO = new CdkGroupVO();
         List<CdkGroup> list = cdkGroupDao.findByParameter(cdkGroupVO);
         return new PageInfo<>(list);
     }
 
     @Override
-    public void abolish(Integer groupId){
+    public void abolish(Integer groupId) {
         Admin admin = adminService.getCurrentUser();
         int adminId = admin.getId();
-        log.info("调用cdk批次废除接口，操作人id={},批次id={}",adminId,groupId);
+        log.info("调用cdk批次废除接口，操作人id={},批次id={}", adminId, groupId);
         CdkGroup cdkGroup = cdkGroupDao.findById(groupId);
         cdkGroup.setStatus(false);
         cdkGroupDao.update(cdkGroup);
+        //批量更新未使用的cdk的状态
+        log.info("=====批量废除cdk开始=====");
+        long start = System.currentTimeMillis();
+        int resultNum = cdkService.abolishList(groupId);
+        long end = System.currentTimeMillis();
+        log.info("批量废除cdk条数resultNum={},用时t={}", resultNum, end - start);
     }
 
 }

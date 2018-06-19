@@ -1,5 +1,6 @@
 package com.fulu.game.admin.controller;
 
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.exception.CashException;
 import com.fulu.game.core.entity.Channel;
@@ -131,8 +132,8 @@ public class ChannelController {
                           @RequestParam("remark") String remark) {
         log.info("调用渠道商加款接口，入参channelId={}，money={}，remark={}", channelId, money, remark);
         log.info("===开始数据校验===");
-        if (money.compareTo(BigDecimal.ZERO) == -1) {
-            throw new CashException(CashException.ExceptionCode.CASH_NEGATIVE_EXCEPTION);
+        if (money.compareTo(Constant.DEFAULT_CHANNEL_BALANCE) == -1) {
+            throw new CashException(CashException.ExceptionCode.CASH_LESS_EXCEPTION);
         }
         ChannelCashDetails channelCashDetails = channelCDService.addCash(channelId, money, remark);
         return Result.success().data(channelCashDetails).msg("操作成功");

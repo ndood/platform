@@ -53,8 +53,17 @@ public interface CdkService extends ICommonService<Cdk, Integer> {
 
     /**
      * 条件查询列表
+     *
      * @param cdkVO
      * @return
      */
     List<Cdk> findByParam(CdkVO cdkVO);
+
+    /**
+     * 批量废除cdk(只废除未使用的)
+     *
+     * @param groupId
+     * @return
+     */
+    int abolishList(Integer groupId);
 }
