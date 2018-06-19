@@ -10,6 +10,7 @@
         <result column="wechat" property="wechat"/>
         <result column="is_reject_submit" property="isRejectSubmit"/>
         <result column="main_pic_url" property="mainPicUrl"/>
+        <result column="push_time_interval" property="pushTimeInterval"/>
         <result column="allow_export" property="allowExport"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
@@ -20,7 +21,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,mobile,qq,wechat,is_reject_submit,main_pic_url,allow_export,create_time,update_time    </sql>
+        id,user_id,mobile,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,create_time,update_time
+    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserInfoAuthResultMap">
         select
@@ -35,6 +37,18 @@
         select
         <include refid="Base_Column_List"/>
         from t_user_info_auth
+    </select>
+
+    <select id="findByUserIds" resultMap="UserInfoAuthResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user_info_auth
+        <where>
+            user_id in
+            <foreach collection="userIds" item="userId" index="index" open="(" close=")" separator=",">
+                #{userId}
+            </foreach>
+        </where>
     </select>
 
     <select id="findByParameter" resultMap="UserInfoAuthResultMap"
@@ -61,6 +75,9 @@
             <if test="mainPicUrl != null">
                 and main_pic_url = #{mainPicUrl}
             </if>
+            <if test="pushTimeInterval != null">
+                and push_time_interval = #{pushTimeInterval}
+            </if>
             <if test="startTime != null">
                 and update_time &gt;= #{startTime}
             </if>
@@ -79,9 +96,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserInfoAuth">
         insert into
-        t_user_info_auth (user_id,mobile,qq,wechat,is_reject_submit,main_pic_url,allow_export,create_time,update_time)
+        t_user_info_auth (user_id,mobile,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,create_time,update_time)
         values
-        (#{userId},#{mobile},#{qq},#{wechat},#{isRejectSubmit},#{mainPicUrl},#{allowExport},#{createTime},#{updateTime})
+        (#{userId},#{mobile},#{qq},#{wechat},#{isRejectSubmit},#{mainPicUrl},#{pushTimeInterval},#{allowExport},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.UserInfoAuth">
@@ -108,6 +125,9 @@
             </if>
             <if test="mainPicUrl != null">
                 main_pic_url = #{mainPicUrl},
+            </if>
+            <if test="pushTimeInterval != null">
+                push_time_interval = #{pushTimeInterval},
             </if>
             <if test="allowExport != null">
                 allow_export = #{allowExport},

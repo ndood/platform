@@ -74,6 +74,7 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
      * @return
      */
     List<Integer> findUserNormalCategoryIds(Integer userId);
+
     /**
      * 查询用户段位信息
      * @param techAuthId
@@ -81,18 +82,32 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
      */
     UserTechInfo findDanInfo(Integer techAuthId);
 
+    /**
+     * 查询用户所有技能
+     * @param userId
+     * @return
+     */
+    List<UserTechAuth> findByUserId(int userId);
 
-    List<UserTechAuth> findByUserId(Integer userId);
-
-
+    /**
+     * 检查用户技能认证状态
+     * @param techAuthId
+     */
     void checkUserTechAuth(Integer techAuthId);
+
+    /**
+     * 查询游戏分类通过的技能认证
+     * @param categoryId
+     * @return
+     */
+    List<UserTechAuth> findNormalByCategory(int categoryId);
 
     /**
      * 通过用户ID查询技能认证
      * @param userId
      * @return
      */
-    List<UserTechAuth> findByStatusAndUserId(Integer userId, Integer status);
+    List<UserTechAuth> findByStatusAndUserId(int userId, Integer status);
 
 
     PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize, String orderBy, UserTechAuthSearchVO userTechAuthSearchVO);

@@ -12,6 +12,11 @@ ALTER TABLE `t_order` MODIFY COLUMN `service_user_id` int(11) NULL COMMENT '陪�
 --同步之前的所有订单类型
 update `t_order` set type = 1;
 
+
+
+ALTER TABLE `t_user_info_auth` ADD COLUMN `push_time_interval`  float(11,2) NULL DEFAULT 30 COMMENT '推送时间间隔(0表示永不推送)' AFTER `main_pic_url`;
+
+
 DROP TABLE IF EXISTS `t_cdk`;
 CREATE TABLE `t_cdk`  (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
@@ -97,7 +102,7 @@ CREATE TABLE `t_regist_source`  (
   `wxcode_url` varchar(255) DEFAULT NULL COMMENT '小程序码url',
   `create_time` datetime(0) NOT NULL COMMENT '生成时间',
   `update_time` datetime(0) NOT NULL COMMENT '修改时间',
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USIN   BTREE
 ) COMMENT = '注册来源表';
 
 

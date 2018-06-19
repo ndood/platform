@@ -24,7 +24,9 @@ public enum WechatTemplateMsgEnum {
     ORDER_SYSTEM_USER_APPEAL_COMPLETE(PagePathEnum.USER_ORDER_LIST.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "该订单已协商处理完成,协商结果请咨询客服"),
     ORDER_SYSTEM_SERVER_APPEAL_COMPLETE(PagePathEnum.SERVICE_USER_ORDER_LIST.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "该订单已协商处理完成,协商结果请咨询客服"),
 
-    IM_MSG_PUSH(PagePathEnum.IM_MSG.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "{}:{}");
+    IM_MSG_PUSH(PagePathEnum.IM_MSG.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "{}:{}"),
+
+    MARKET_ORDER_PUSH(PagePathEnum.MARKET_ORDER_PAGE.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "有新的{}订单，快来看看吧");
 
     //跳转页面
     private String page;

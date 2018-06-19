@@ -62,16 +62,17 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         return userInfoAuthDao;
     }
 
-    public UserInfoAuth findByUserId(Integer userId) {
+    public UserInfoAuth findByUserId(int userId) {
         UserInfoAuthVO userInfoAuthVO = new UserInfoAuthVO();
         userInfoAuthVO.setUserId(userId);
         List<UserInfoAuth> userInfoAuthList = userInfoAuthDao.findByParameter(userInfoAuthVO);
-        if (!CollectionUtil.isEmpty(userInfoAuthList)) {
-            return userInfoAuthList.get(0);
-        } else {
+        if (CollectionUtil.isEmpty(userInfoAuthList)) {
             return null;
         }
+        return userInfoAuthList.get(0);
     }
+
+
 
     @Override
     public UserInfoAuthVO save(UserInfoAuthVO userInfoAuthVO) {
@@ -131,13 +132,12 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     /**
      * 认证信息驳回
-     *
      * @param id
      * @param reason
      * @return
      */
     @Override
-    public UserInfoAuth reject(Integer id, String reason) {
+    public UserInfoAuth reject(int id, String reason) {
         Admin admin = adminService.getCurrentUser();
         log.info("驳回用户个人认证信息:adminId:{};adminName:{};authInfoId:{},reason:{}", admin.getId(), admin.getName(), id, reason);
         //修改认证驳回状态
@@ -179,7 +179,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
      * @return
      */
     @Override
-    public UserInfoAuth unReject(Integer id) {
+    public UserInfoAuth unReject(int id) {
         Admin admin = adminService.getCurrentUser();
         log.info("清除用户认证信息驳回状态:adminId:{};adminName:{};authInfoId:{}", admin.getId(), admin.getName(), id);
         UserInfoAuth userInfoAuth = findById(id);
@@ -210,7 +210,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
      * @return
      */
     @Override
-    public UserInfoAuth freeze(Integer id, String reason) {
+    public UserInfoAuth freeze(int id, String reason) {
         Admin admin = adminService.getCurrentUser();
         log.info("冻结用户个人认证信息:adminId:{};adminName:{};authInfoId:{},reason:{}", admin.getId(), admin.getName(), id, reason);
         UserInfoAuth userInfoAuth = findById(id);
@@ -240,7 +240,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     }
 
     @Override
-    public UserInfoAuth unFreeze(Integer id) {
+    public UserInfoAuth unFreeze(int id) {
         Admin admin = adminService.getCurrentUser();
         log.info("解冻用户个人认证信息:adminId:{};adminName:{};authInfoId:{};", admin.getId(), admin.getName(), id);
         UserInfoAuth userInfoAuth = findById(id);
@@ -260,7 +260,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
 
     @Override
-    public UserInfoAuthVO findUserAuthInfoByUserId(Integer userId) {
+    public UserInfoAuthVO findUserAuthInfoByUserId(int userId) {
         User user = userService.findById(userId);
         UserInfoAuth userInfoAuth = findByUserId(userId);
         if (userInfoAuth == null) {
@@ -281,8 +281,17 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         return userInfoAuthVO;
     }
 
+
     @Override
-    public UserInfoVO findUserCardByUserId(Integer userId, Boolean hasPhotos, Boolean hasVoice, Boolean hasTags, Boolean hasTechs) {
+    public List<UserInfoAuth> findByUserIds(List<Integer> userIds) {
+        if(userIds==null){
+            return new ArrayList<>();
+        }
+        return userInfoAuthDao.findByUserIds(userIds);
+    }
+
+    @Override
+    public UserInfoVO findUserCardByUserId(int userId, Boolean hasPhotos, Boolean hasVoice, Boolean hasTags, Boolean hasTechs) {
         User user = userService.findById(userId);
         if (null == user) {
             log.error("用户不存在:{}", userId);
@@ -346,7 +355,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     }
 
     @Override
-    public UserInfoVO findUserTechCardByUserId(Integer techAuthId) {
+    public UserInfoVO findUserTechCardByUserId(int techAuthId) {
         //查询认证的技能
         UserInfoVO userInfo = new UserInfoVO();
         UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(techAuthId);
@@ -377,7 +386,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     }
 
     @Override
-    public UserInfoVO getSharePage(Integer techAuthId) {
+    public UserInfoVO getSharePage(int techAuthId) {
         UserInfoVO userInfo = new UserInfoVO();
         //查询认证的技能
         UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(techAuthId);
@@ -413,6 +422,23 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userInfo.setTags(tags);
         return userInfo;
     }
+
+
+    @Override
+    public void settingPushTimeInterval(float minute) {
+        //设置时间间隔
+        User user = userService.getCurrentUser();
+        UserInfoAuth userInfoAuth = findByUserId(user.getId());
+        if(userInfoAuth==null){
+            throw new UserAuthException(UserAuthException.ExceptionCode.NOT_EXIST_USER_AUTH);
+        }
+        userInfoAuth.setPushTimeInterval(minute);
+        userInfoAuth.setUpdateTime(new Date());
+        update(userInfoAuth);
+    }
+
+
+
 
     @Override
     public PageInfo<UserInfoAuthVO> list(Integer pageNum, Integer pageSize, String orderBy, String mobile, String startTime, String endTime) {
@@ -474,7 +500,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
      * @param userId
      * @return
      */
-    private List<TagVO> findAllUserTag(Integer userId, Boolean ignoreNotUser) {
+    private List<TagVO> findAllUserTag(int userId, Boolean ignoreNotUser) {
         List<Tag> allPersonTags = tagService.findAllPersonTags();
         List<TagVO> tagVOList = new ArrayList<>();
         Map<Integer, TagVO> tagVOMap = new HashMap<>();

@@ -406,6 +406,8 @@ public class OrderServiceImpl extends AbsCommonService<Order,Integer> implements
         }
         //订单支付,扣渠道商流水
         payOrder(order.getOrderNo(),order.getActualMoney());
+        //推送集市订单给对应陪玩师
+        wxTemplateMsgService.pushMarketOrder(order.getOrderNo());
         //把订单缓存到redis里面
         try {
             redisOpenService.hset(RedisKeyEnum.MARKET_ORDER.generateKey(order.getOrderNo()),BeanUtil.beanToMap(order),Constant.TIME_HOUR_TOW);

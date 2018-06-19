@@ -3,6 +3,7 @@ package com.fulu.game.core.dao;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -17,4 +18,6 @@ public interface UserDao extends ICommonDao<User,Integer>{
 
     List<User> findByParameter(UserVO userVO);
 
+
+    List<User> findByUserIds(@Param(value = "userIds") List<Integer> userIds);
 }

@@ -1,20 +1,12 @@
 package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
-import com.fulu.game.common.enums.OrderStatusEnum;
-import com.fulu.game.common.enums.OrderStatusGroupEnum;
-import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
-import com.fulu.game.core.entity.Category;
-import com.fulu.game.core.entity.Order;
-import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.UserTechAuth;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.MarketOrderVO;
 import com.fulu.game.core.entity.vo.OrderVO;
-import com.fulu.game.core.service.CategoryService;
-import com.fulu.game.core.service.OrderService;
-import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.UserTechAuthService;
+import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Objects;
@@ -46,6 +38,8 @@ public class MarketController extends BaseController{
     private UserTechAuthService userTechAuthService;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
 
 
     /**
@@ -103,6 +97,9 @@ public class MarketController extends BaseController{
             throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST,order.getOrderNo());
         }
         User user = userService.getCurrentUser();
+        if (!UserInfoAuthStatusEnum.VERIFIED.getType().equals(user.getUserInfoAuth()) || !UserStatusEnum.NORMAL.getType().equals(user.getStatus())) {
+            return Result.error().msg("您没通过陪玩师认证,不能接单!");
+        }
         List<Integer> techAuthList = userTechAuthService.findUserNormalCategoryIds(user.getId());
         if(!techAuthList.contains(order.getCategoryId())){
             return Result.error().msg("您没有认证该游戏,不能接单!");
@@ -141,6 +138,27 @@ public class MarketController extends BaseController{
     }
 
 
+    /**
+     * 设置推送时间间隔
+     * @return
+     */
+    @PostMapping(value = "setting/pushtime")
+    public Result settingPushTimeInterval(@RequestParam(required = true)Float minute){
+        userInfoAuthService.settingPushTimeInterval(minute);
+        return Result.success().msg("设置推送时间间隔成功!");
+    }
+
+
+    /**
+     * 获取用户推送时间间隔
+     * @return
+     */
+    @PostMapping(value = "setting/pushtime/get")
+    public Result getPushTimeInterval(){
+        User user = userService.getCurrentUser();
+        UserInfoAuth userInfoAuth =  userInfoAuthService.findByUserId(user.getId());
+        return Result.success().data(userInfoAuth.getPushTimeInterval());
+    }
 
 
 }

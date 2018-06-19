@@ -1,26 +1,21 @@
 package com.fulu.game.core.service.impl;
 
-import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import com.fulu.game.common.Constant;
-import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.enums.WechatTemplateEnum;
-import com.fulu.game.common.enums.WechatTemplateMsgEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ServiceErrorException;
-import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.WechatFormid;
-import com.fulu.game.core.entity.WxMaTemplateMessageVO;
-import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.WechatFormidService;
-import com.fulu.game.core.service.WxTemplateMsgService;
+import com.fulu.game.core.entity.*;
+import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.queue.PushMsgQueue;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.CollectionUtil;
 import com.xiaoleilu.hutool.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -37,6 +32,15 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
     private WechatFormidService wechatFormidService;
     @Autowired
     private PushMsgQueue pushMsgQueue;
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private UserTechAuthService userTechAuthService;
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
+
 
     private static final int LOCK_NUM = 10000;
     private List<Object> objects = new ArrayList<>(LOCK_NUM);
@@ -48,11 +52,54 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
     }
 
 
-    public void adminPushWxTemplateMsg(int pushId, int userId, String  page, String  content){
+    @Override
+    @Async
+    public void pushMarketOrder(String orderNo) {
+        Order order = orderService.findByOrderNo(orderNo);
+        log.info("推送集市订单:order:{};",order);
+        Category category = categoryService.findById(order.getCategoryId());
+        //查询所有符合推送条件的用户
+        List<UserTechAuth> userTechAuthList = userTechAuthService.findNormalByCategory(order.getCategoryId());
+        List<Integer> userIds = new ArrayList<>();
+        for (UserTechAuth userTechAuth : userTechAuthList) {
+            userIds.add(userTechAuth.getUserId());
+        }
+        List<User> userList = userService.findByUserIds(userIds);
+        for (User user : userList) {
+            if (!UserInfoAuthStatusEnum.VERIFIED.getType().equals(user.getUserInfoAuth()) || !UserStatusEnum.NORMAL.getType().equals(user.getStatus())) {
+                continue;
+            }
+            UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
+            //默认为30分钟
+            Float pushTimeInterval = userInfoAuth.getPushTimeInterval();
+            if(pushTimeInterval==null){
+                pushTimeInterval = 30F;
+            }
+            //数据库设置永不推送
+            if(pushTimeInterval.equals(0F)){
+                log.info("推送集市订单:用户设置永不推送:userInfoAuth:{}",userInfoAuth);
+                continue;
+            }
+            //时间间隔内已经推送过
+            if(redisOpenService.hasKey(RedisKeyEnum.MARKET_ORDER_IS_PUSH.generateKey(user.getId()))){
+               log.info("推送集市订单:该时间间隔内不能推送:userInfoAuth:{}",userInfoAuth);
+               continue;
+            }
+            //推送订单消息
+            pushWechatTemplateMsg(user.getId(),WechatTemplateMsgEnum.MARKET_ORDER_PUSH,category.getName());
+            Long expire = new BigDecimal(pushTimeInterval).multiply(new BigDecimal(60)).longValue();
+            redisOpenService.set(RedisKeyEnum.MARKET_ORDER_IS_PUSH.generateKey(user.getId()),orderNo,expire);
+            log.info("推送集市订单完成:userInfoAuth:{},order:{}",userInfoAuth,order);
+        }
+
+    }
+
+
+    public void adminPushWxTemplateMsg(int pushId, int userId, String page, String content) {
         String date = DateUtil.format(new Date(), "yyyy年MM月dd日 HH:mm");
         List<WxMaTemplateMessage.Data> dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", content),
-                                                                              new WxMaTemplateMessage.Data("keyword2", date));
-        pushWechatTemplateMsg(pushId,userId,page,WechatTemplateEnum.LEAVE_MSG,dataList);
+                new WxMaTemplateMessage.Data("keyword2", date));
+        pushWechatTemplateMsg(pushId, userId, page, WechatTemplateEnum.LEAVE_MSG, dataList);
     }
 
 
@@ -71,7 +118,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
                 break;
             default:
                 dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", content),
-                                                       new WxMaTemplateMessage.Data("keyword2", date));
+                        new WxMaTemplateMessage.Data("keyword2", date));
         }
         pushWechatTemplateMsg(null, userId, wechatTemplateMsgEnum.getPage(), wechatTemplateMsgEnum.getTemplateId(), dataList);
     }
@@ -87,11 +134,11 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
      * @param dataList
      * @return
      */
-    public void pushWechatTemplateMsg(Integer pushId,
-                                      Integer userId,
-                                      String page,
-                                      WechatTemplateEnum wechatTemplateEnum,
-                                      List<WxMaTemplateMessage.Data> dataList) {
+    private void pushWechatTemplateMsg(Integer pushId,
+                                       Integer userId,
+                                       String page,
+                                       WechatTemplateEnum wechatTemplateEnum,
+                                       List<WxMaTemplateMessage.Data> dataList) {
         User user = userService.findById(userId);
         String formId = getWechatUserFormId(user.getId());
         if (formId == null) {

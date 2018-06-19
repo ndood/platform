@@ -58,7 +58,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public User findByMobile(String mobile) {
-        if (null == mobile) {
+        if(mobile==null){
             return null;
         }
         UserVO userVO = new UserVO();
@@ -78,9 +78,10 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         return users;
     }
 
+
     @Override
     public User findByOpenId(String openId) {
-        if (null == openId) {
+        if(openId==null){
             return null;
         }
         UserVO userVO = new UserVO();
@@ -94,7 +95,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public User findByImId(String imId) {
-        if (null == imId) {
+        if(imId==null){
             return null;
         }
         UserVO userVO = new UserVO();
@@ -105,6 +106,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         }
         return userList.get(0);
     }
+
 
     @Override
     public List<User> findByImIds(String imIds) {
@@ -130,6 +132,14 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         param.setStatus(UserStatusEnum.NORMAL.getType());
         List<User> users = userDao.findByParameter(param);
         return users;
+    }
+
+    @Override
+    public List<User> findByUserIds(List<Integer> userIds) {
+        if(userIds==null){
+            return new ArrayList<>();
+        }
+        return userDao.findByUserIds(userIds);
     }
 
 
@@ -311,7 +321,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         for (String str : tagList) {
             tagStr += str + "、";
         }
-        if (!"".equals(tagStr)) {
+        if (!"".equals(tagStr)){
             tagStr = tagStr.substring(0, tagStr.length() - 1);
         }
         sb.append(tagStr);

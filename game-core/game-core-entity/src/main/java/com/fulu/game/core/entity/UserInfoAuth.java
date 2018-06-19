@@ -31,6 +31,8 @@ public class UserInfoAuth implements Serializable {
 	private Boolean isRejectSubmit;
 	//主图
 	private String mainPicUrl;
+	//推送时间间隔
+	private Float pushTimeInterval;
 	//是否允许导出
 	private Boolean allowExport;
 	//

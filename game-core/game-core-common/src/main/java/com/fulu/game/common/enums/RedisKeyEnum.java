@@ -19,7 +19,8 @@ public enum RedisKeyEnum {
     BITSET_PUSH_MSG_HITS, //微信推送点击去重
     MARKET_ORDER_RECEIVE_LOCK, //市场订单接单锁
     MARKET_ORDER, //市场订单
-    WRITER_SESSION_KEY; //写操作的sessionKey
+    WRITER_SESSION_KEY, //写操作的sessionKey
+    MARKET_ORDER_IS_PUSH; //判断集市订单是否推送过
 
     public static final String SPLIT = "-";
 
