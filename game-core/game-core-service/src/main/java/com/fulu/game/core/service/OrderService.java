@@ -4,6 +4,8 @@ import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderMarketProduct;
 import com.fulu.game.core.entity.vo.MarketOrderVO;
 import com.fulu.game.core.entity.vo.OrderVO;
+import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
+import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import com.github.pagehelper.PageInfo;
 
 import javax.validation.Valid;
@@ -17,6 +19,18 @@ import java.util.List;
  * @date 2018-04-25 18:27:54
  */
 public interface OrderService extends ICommonService<Order,Integer>{
+
+
+    /**
+     * 管理员订单列表
+     * @param orderSearchVO
+     * @param pageNum
+     * @param pageSize
+     * @param orderBy
+     * @return
+     */
+    PageInfo<OrderResVO> list(OrderSearchVO orderSearchVO, Integer pageNum, Integer pageSize, String orderBy);
+
 
 
     /**

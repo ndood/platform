@@ -33,6 +33,10 @@
     <resultMap id="OrderResultMarketVOMap" type="com.fulu.game.core.entity.vo.MarketOrderVO" extends="OrderResultMap">
     </resultMap>
 
+    <resultMap id="OrderResVOMap" type="com.fulu.game.core.entity.vo.responseVO.OrderResVO" extends="OrderResultMap">
+    </resultMap>
+
+
     <sql id="Base_Column_List">
         id,order_no,coupon_no,category_id,user_id,service_user_id,name,type,channel_id,remark,is_pay,status,commission_money,total_money,actual_money,coupon_money,create_time,update_time,pay_time,complete_time,order_ip,receiving_time
     </sql>
@@ -211,6 +215,43 @@
             </if>
             <if test="receivingTime != null">
                 and receiving_time = #{receivingTime}
+            </if>
+        </where>
+    </select>
+
+
+
+    <select id="list" resultMap="OrderResVOMap" parameterType="com.fulu.game.core.entity.vo.searchVO.OrderSearchVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_order
+        <where>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="channelId != null">
+                and channel_id = #{channelId}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="serviceUserId != null">
+                and user_id = #{serviceUserId}
+            </if>
+            <if test="statusList != null">
+                and o.status in
+                <foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="startTime != null">
+                and o.create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and o.create_time &lt;= #{endTime}
             </if>
         </where>
     </select>

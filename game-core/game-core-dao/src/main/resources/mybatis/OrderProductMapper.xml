@@ -17,27 +17,7 @@
     <resultMap id="OrderProductResultVOMap" type="com.fulu.game.core.entity.vo.OrderProductVO"
                extends="OrderProductResultMap">
     </resultMap>
-    <resultMap id="OrderResVOMap" type="com.fulu.game.core.entity.vo.responseVO.OrderResVO">
-        <id column="id" property="id"/>
-        <result column="order_no" property="orderNo"/>
-        <result column="status" property="status"/>
-        <result column="user_id" property="userId"/>
-        <result column="user_nickname" property="userNickname"/>
-        <result column="user_mobile" property="userMobile"/>
-        <result column="remark" property="remark"/>
-        <result column="product_name" property="productName"/>
-        <result column="price" property="price"/>
-        <result column="unit" property="unit"/>
-        <result column="amount" property="amount"/>
-        <result column="coupon_money" property="couponMoney"/>
-        <result column="actual_money" property="actualMoney"/>
-        <result column="total_money" property="totalMoney"/>
-        <result column="commission_money" property="commissionMoney"/>
-        <result column="server_user_id" property="serverUserId"/>
-        <result column="server_nickname" property="serverNickname"/>
-        <result column="server_mobile" property="serverMobile"/>
-        <result column="create_time" property="createTime"/>
-    </resultMap>
+
 
     <sql id="Base_Column_List">
         id,product_name,product_id,order_no,amount,unit,price,create_time,update_time    </sql>
@@ -68,60 +48,6 @@
             </if>
             <if test="orderNo != null">
                 and order_no = #{orderNo}
-            </if>
-        </where>
-    </select>
-
-    <select id="findByUnionParam" resultMap="OrderResVOMap" parameterType="com.fulu.game.core.entity.vo.searchVO.OrderSearchVO">
-        SELECT
-        op.id AS id,
-        op.order_no AS order_no,
-        o.status AS status,
-        o.user_id AS user_id,
-        u.nickname AS user_nickname,
-        u.mobile AS user_mobile,
-        o.remark AS remark,
-        p.product_name AS product_name,
-        p.price AS price,
-        p.unit AS unit,
-        op.amount AS amount,
-        o.coupon_money AS coupon_money,
-        o.actual_money AS actual_money,
-        o.total_money AS total_money,
-        o.commission_money AS commission_money,
-        o.create_time AS create_time,
-        p.user_id AS server_user_id,
-        u1.nickname AS server_nickname,
-        u1.mobile AS server_mobile
-        FROM t_order_product op
-        LEFT JOIN t_order o ON op.order_no = o.order_no
-        LEFT JOIN t_product p ON op.product_id = p.id
-        LEFT JOIN t_user u ON o.user_id = u.id
-        LEFT JOIN t_user u1 ON p.user_id = u1.id
-        <where>
-            <if test="categoryId != null">
-                and o.category_id = #{categoryId}
-            </if>
-            <if test="orderNo != null">
-                and op.order_no = #{orderNo}
-            </if>
-            <if test="channelId != null">
-                and op.channel_id = #{channelId}
-            </if>
-            <if test="userMobile != null">
-                and u.mobile = #{userMobile}
-            </if>
-            <if test="statusList != null">
-                and o.status in
-                <foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
-            </if>
-            <if test="startTime != null">
-                and o.create_time &gt;= #{startTime}
-            </if>
-            <if test="endTime != null">
-                and o.create_time &lt;= #{endTime}
             </if>
         </where>
     </select>

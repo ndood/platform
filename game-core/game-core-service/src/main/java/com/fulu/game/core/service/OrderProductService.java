@@ -14,5 +14,4 @@ public interface OrderProductService extends ICommonService<OrderProduct,Integer
 
     OrderProduct findByOrderNo(String orderNo);
 
-    PageInfo<OrderResVO> list(OrderSearchVO orderSearchVO, Integer pageNum, Integer pageSize, String orderBy);
 }

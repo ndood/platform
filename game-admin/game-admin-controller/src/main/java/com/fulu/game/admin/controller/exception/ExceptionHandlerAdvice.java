@@ -71,7 +71,7 @@ public class ExceptionHandlerAdvice {
      */
     @ExceptionHandler(ServiceErrorException.class)
     public Result  serviceErrorException(ServiceErrorException e){
-        log.error(e.getMessage(), e);
+        log.error("输入异常：{}", e.getMessage());
         return	Result.error().msg(e.getMessage());
     }
 

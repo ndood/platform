@@ -39,10 +39,8 @@ public class OrderMarketProduct implements Serializable {
 
 	private String gameArea;
 	//价格
-	@JsonIgnore
 	private BigDecimal price;
 	//数量
-	@JsonIgnore
 	private Integer amount;
 	//创建时间
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

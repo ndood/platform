@@ -46,7 +46,7 @@ public class OrderController extends BaseController {
                        @RequestParam(required = true) Integer pageSize,
                        String orderBy,
                        OrderSearchVO orderSearchVO) {
-        PageInfo<OrderResVO> orderList = orderProductService.list(orderSearchVO, pageNum, pageSize, orderBy);
+        PageInfo<OrderResVO> orderList = orderService.list(orderSearchVO, pageNum, pageSize, orderBy);
         return Result.success().data(orderList).msg("查询列表成功！");
     }
 

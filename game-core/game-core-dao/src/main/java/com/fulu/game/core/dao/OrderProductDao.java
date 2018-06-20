@@ -19,5 +19,4 @@ public interface OrderProductDao extends ICommonDao<OrderProduct, Integer> {
 
     List<OrderProduct> findByParameter(OrderProductVO orderProductVO);
 
-    List<OrderResVO> findByUnionParam(OrderSearchVO orderSearchVO);
 }
