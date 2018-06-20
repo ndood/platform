@@ -39,6 +39,9 @@ public class CdkController {
     @PostMapping("/group/create")
     public Result create(@Valid CdkGroup cdkGroup) {
         Boolean success = cdkGroupService.generate(cdkGroup);
+        if(null == cdkGroup.getChannelId()){
+            return Result.error().msg("渠道商id为空");
+        }
         if (success) {
             return Result.success().msg("cdk生成成功");
         } else {

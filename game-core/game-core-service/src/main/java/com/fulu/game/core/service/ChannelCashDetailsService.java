@@ -54,4 +54,13 @@ public interface ChannelCashDetailsService extends ICommonService<ChannelCashDet
      * @return
      */
     PageInfo<ChannelCashDetails> list(Integer pageNum, Integer pageSize,Integer channelId);
+
+    /**
+     * 管理员撤销部分金额(对渠道商扣款)
+     * @param channelId
+     * @param money
+     * @param remark
+     * @return
+     */
+    ChannelCashDetails cancelCash(Integer channelId, BigDecimal money, String remark);
 }

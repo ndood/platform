@@ -13,7 +13,8 @@ public enum MoneyOperateTypeEnum implements TypeEnum<Integer>{
 
     CHANNEL_ADD_CASH(1, "渠道商加款"),
     CHANNEL_CUT_CASH(2, "渠道商扣款"),
-    CHANNEL_REFUND(3, "渠道商退款");
+    CHANNEL_REFUND(3, "渠道商退款"),
+    CHANNEL_ADMIN_CUT(4, "管理员扣款");
 
     private Integer type;
     private String msg;
