@@ -86,7 +86,7 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(OrderException.class)
     public Result orderException(OrderException e) {
         log.error("订单异常:orderNo:{},ex:{};", e.getOrderNo(),e.getMessage());
-        return Result.error().msg(e.getMessage());
+        return Result.error().data("errcode",e.getCode()).msg(e.getMessage());
     }
 
 

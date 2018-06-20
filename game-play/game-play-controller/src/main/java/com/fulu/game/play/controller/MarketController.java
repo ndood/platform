@@ -96,13 +96,13 @@ public class MarketController extends BaseController{
         if(order==null){
             throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST,order.getOrderNo());
         }
-        User user = userService.getCurrentUser();
+        User user = userService.findById(userService.getCurrentUser().getId());
         if (!UserInfoAuthStatusEnum.VERIFIED.getType().equals(user.getUserInfoAuth()) && !UserStatusEnum.NORMAL.getType().equals(user.getStatus())) {
-            return Result.error().msg("您没通过陪玩师认证,不能接单!");
+            throw new OrderException(OrderException.ExceptionCode.ORDER_USER_NOT_VERIFIED,order.getOrderNo());
         }
         List<Integer> techAuthList = userTechAuthService.findUserNormalCategoryIds(user.getId());
         if(!techAuthList.contains(order.getCategoryId())){
-            return Result.error().msg("您没有认证该游戏,不能接单!");
+            throw new OrderException(OrderException.ExceptionCode.ORDER_USER_NOT_HAS_TECH,order.getOrderNo());
         }
         orderService.marketReceiveOrder(order.getOrderNo());
         return Result.success().data(orderNo).msg("接单成功!");
