@@ -97,8 +97,8 @@ public class ChannelServiceImpl extends AbsCommonService<Channel, Integer> imple
     }
 
     @Override
-    public PageInfo<Channel> list(Integer pageNum, Integer pageSize){
-        PageHelper.startPage(pageNum,pageSize);
+    public PageInfo<Channel> list(Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
         ChannelVO channelVO = new ChannelVO();
         List<Channel> list = channelDao.findByParameter(channelVO);
         return new PageInfo<>(list);

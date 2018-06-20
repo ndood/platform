@@ -1,4 +1,4 @@
-package com.fulu.game.play.controller;
+package com.fulu.game.admin.controller;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import com.fulu.game.common.Result;
@@ -52,7 +52,6 @@ public class WxCodeController {
         } else {
             return Result.error().msg("获取小程序码失败！");
         }
-
     }
 
 }
