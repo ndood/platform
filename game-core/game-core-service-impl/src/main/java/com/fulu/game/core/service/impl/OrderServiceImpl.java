@@ -649,7 +649,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         Admin admin = adminService.getCurrentUser();
         log.info("管理员申诉订单:orderNo:{};remark:{};admin:{};", orderNo, remark, admin);
         Order order = findByOrderNo(orderNo);
-        userService.isCurrentUser(order.getUserId());
         if (!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())
              && !order.getStatus().equals(OrderStatusEnum.CHECK.getStatus())
              && !order.getStatus().equals(OrderStatusEnum.NON_PAYMENT.getStatus())) {
