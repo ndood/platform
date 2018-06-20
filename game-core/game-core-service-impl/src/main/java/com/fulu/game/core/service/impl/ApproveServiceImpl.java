@@ -11,10 +11,7 @@ import com.fulu.game.core.entity.Approve;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.vo.ApproveVO;
-import com.fulu.game.core.service.ApproveService;
-import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.UserTechAuthService;
-import com.fulu.game.core.service.WxTemplateMsgService;
+import com.fulu.game.core.service.*;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +35,9 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
     private WxTemplateMsgService wxTemplateMsgService;
 
     @Autowired
+    private ProductService productService;
+
+    @Autowired
     private ApproveDao approveDao;
 
     @Override
@@ -46,7 +46,7 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
     }
 
     @Override
-    public ApproveVO save(Integer techAuthId) {
+    public synchronized ApproveVO save(Integer techAuthId) {
         log.info("====好友认可接口执行====入参技能id:{}", techAuthId);
         UserTechAuth userTechAuth = utaService.findById(techAuthId);
         if (null == userTechAuth) {
@@ -60,39 +60,47 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
         log.info("技能申请者id:{}", techOwnerId);
         paramVO.setTechOwnerId(techOwnerId);
         User user = userService.getCurrentUser();
-        log.info("认可人id:{}", user.getId());
-        if (user.getId() == techOwnerId) {
+        int userId = user.getId();
+        log.info("认可人id:{}", userId);
+        if (userId == techOwnerId) {
             throw new ApproveException(ApproveException.ExceptionCode.CANNOT_APPROVE_SELF);
         }
-        paramVO.setUserId(user.getId());
+        paramVO.setUserId(userId);
         List<Approve> list = approveDao.findByParameter(paramVO);
         if (!CollectionUtil.isEmpty(list)) {
             throw new ApproveException(ApproveException.ExceptionCode.APPROVE_DUPLICATE);
         }
         Approve approve = new Approve();
         approve.setTechAuthId(techAuthId);
-        approve.setUserId(user.getId());
+        approve.setUserId(userId);
         approve.setTechOwnerId(techOwnerId);
         approve.setCreateTime(new Date());
         approveDao.create(approve);
         log.info("生成认可记录成功");
+
         int currentCount = userTechAuth.getApproveCount();
         int newApproveCount = currentCount + 1;
         int requireCount = newApproveCount < Constant.DEFAULT_APPROVE_COUNT ? Constant.DEFAULT_APPROVE_COUNT - newApproveCount : 0;
         userTechAuth.setApproveCount(newApproveCount);
         int techStatus;
+        WechatTemplateMsgEnum wechatTemplateMsgEnum;
         if (newApproveCount >= Constant.DEFAULT_APPROVE_COUNT) {
-            utaService.update(userTechAuth);
-            log.info("更新t_user_tech_auth表,当前认可数:{}", newApproveCount);
-            utaService.pass(techAuthId);
             techStatus = TechAuthStatusEnum.NORMAL.getType();
+            wechatTemplateMsgEnum = WechatTemplateMsgEnum.TECH_AUTH_AUDIT_SUCCESS;
         } else {
-            userTechAuth.setStatus(TechAuthStatusEnum.AUTHENTICATION_ING.getType());
-            utaService.update(userTechAuth);
-            log.info("更新t_user_tech_auth表,当前认可数:{}", newApproveCount);
-            wxTemplateMsgService.pushWechatTemplateMsg(userTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_ING, user.getNickname(), String.valueOf(requireCount));
+            techStatus = TechAuthStatusEnum.AUTHENTICATION_ING.getType();
+            wechatTemplateMsgEnum = WechatTemplateMsgEnum.TECH_AUTH_AUDIT_ING;
+        }
+        userTechAuth.setStatus(techStatus);
+        utaService.update(userTechAuth);
+        log.info("更新t_user_tech_auth表,当前认可数:{}", newApproveCount);
+        if (techStatus == TechAuthStatusEnum.NORMAL.getType()) {
+            wxTemplateMsgService.pushWechatTemplateMsg(techOwnerId, wechatTemplateMsgEnum, user.getNickname(), String.valueOf(requireCount));
             log.info("好友认可-调用发送通知接口完成");
-            techStatus = userTechAuth.getStatus();
+            productService.recoverProductDelFlagByTechAuthId(techAuthId);
+        } else {
+            wxTemplateMsgService.pushWechatTemplateMsg(techOwnerId, wechatTemplateMsgEnum);
+            log.info("好友认可-调用发送通知接口完成");
         }
         ApproveVO responseVO = new ApproveVO();
         BeanUtil.copyProperties(approve, responseVO);
