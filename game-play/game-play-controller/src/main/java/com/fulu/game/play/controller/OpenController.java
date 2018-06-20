@@ -175,6 +175,8 @@ public class OpenController extends BaseController{
         BeanUtil.copyProperties(orderMarketProduct,orderMarketProductVO);
         orderMarketProductVO.setSeries(series);
         orderMarketProductVO.setStatusStr(OrderStatusEnum.getMsgByStatus(order.getStatus()));
+        orderMarketProductVO.setPrice(null);
+        orderMarketProductVO.setAmount(null);
         return Result.success().data(orderMarketProductVO);
     }
 

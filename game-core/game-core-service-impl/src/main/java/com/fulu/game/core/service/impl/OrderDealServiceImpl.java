@@ -60,6 +60,9 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal,Integer> im
 
     @Override
     public OrderDealVO findByUserAndOrderNo(Integer userId, String orderNo){
+        if(userId==null){
+            return null;
+        }
         OrderDealVO param = new OrderDealVO();
         param.setUserId(userId);
         param.setOrderNo(orderNo);

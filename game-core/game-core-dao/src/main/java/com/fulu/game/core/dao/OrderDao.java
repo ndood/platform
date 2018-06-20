@@ -3,6 +3,8 @@ package com.fulu.game.core.dao;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.vo.MarketOrderVO;
 import com.fulu.game.core.entity.vo.OrderVO;
+import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
+import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -26,4 +28,8 @@ public interface OrderDao extends ICommonDao<Order, Integer> {
     Order findByOrderNo(String orderNo);
 
     List<MarketOrderVO> findMarketByParameter(OrderVO orderVO);
+
+
+    List<OrderResVO> list(OrderSearchVO orderSearchVO);
+
 }

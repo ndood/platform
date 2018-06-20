@@ -1,10 +1,8 @@
 package com.fulu.game.core.service.impl;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.OrderProductDao;
-import com.fulu.game.core.entity.OrderDealFile;
 import com.fulu.game.core.entity.OrderProduct;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderProductVO;
@@ -18,7 +16,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service("orderProductService")
@@ -26,8 +23,7 @@ public class OrderProductServiceImpl extends AbsCommonService<OrderProduct, Inte
 
     @Autowired
     private OrderProductDao orderProductDao;
-    @Autowired
-    private OrderDealService orderDealService;
+
 
     @Override
     public ICommonDao<OrderProduct, Integer> getDao() {
@@ -45,43 +41,5 @@ public class OrderProductServiceImpl extends AbsCommonService<OrderProduct, Inte
         return orderProductList.get(0);
     }
 
-    @Override
-    public PageInfo<OrderResVO> list(OrderSearchVO orderSearchVO, Integer pageNum, Integer pageSize, String orderBy) {
-        if(StringUtils.isBlank(orderBy)){
-            orderBy = "id DESC";
-        }
-        PageHelper.startPage(pageNum,pageSize, orderBy);
-        Integer status = orderSearchVO.getStatus();
-        Integer[] statusList = OrderStatusGroupEnum.getByValue(status);
-        if (null != statusList && statusList.length > 0) {
-            orderSearchVO.setStatusList(statusList);
-        }
-        List<OrderResVO> list = orderProductDao.findByUnionParam(orderSearchVO);
-        if (!CollectionUtil.isEmpty(list)){
-            for(OrderResVO orderResVO:list){
-                OrderDealVO userOrderDealVO = orderDealService.findByUserAndOrderNo(orderResVO.getUserId(),orderResVO.getOrderNo());
-                List<String> userOrderDealFileList = getOrderDealFileStrList(userOrderDealVO);
-                orderResVO.setUserOrderDealFileList(userOrderDealFileList);
-                OrderDealVO ServerOrderDealVO = orderDealService.findByUserAndOrderNo(orderResVO.getServerUserId(),orderResVO.getOrderNo());
-                List<String> serverOrderDealFileList = getOrderDealFileStrList(ServerOrderDealVO);
-                orderResVO.setServerOrderDealFileList(serverOrderDealFileList);
-            }
-        }
-        return new PageInfo(list);
-    }
 
-    private List<String> getOrderDealFileStrList(OrderDealVO orderDealVO){
-        if (null ==orderDealVO){
-            return new ArrayList<>();
-        }
-        List<OrderDealFile> orderDealFileList = orderDealVO.getOrderDealFileList();
-        if (CollectionUtil.isEmpty(orderDealFileList)){
-            return new ArrayList<>();
-        }
-        List<String> list = new ArrayList<>();
-        for (OrderDealFile orderDealFile:orderDealFileList) {
-            list.add(orderDealFile.getFileUrl());
-        }
-        return list;
-    }
 }

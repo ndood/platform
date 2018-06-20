@@ -11,7 +11,10 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.MarketOrderVO;
+import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderVO;
+import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
+import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -72,6 +75,56 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     public ICommonDao<Order, Integer> getDao() {
         return orderDao;
     }
+
+
+
+    @Override
+    public PageInfo<OrderResVO> list(OrderSearchVO orderSearchVO, Integer pageNum, Integer pageSize, String orderBy) {
+        if (StringUtils.isBlank(orderBy)) {
+            orderBy = "id DESC";
+        }
+        if(orderSearchVO.getUserMobile()!=null){
+            User user = userService.findByMobile(orderSearchVO.getUserMobile());
+            if(user==null){
+                throw new ServiceErrorException("用户手机号输入错误!");
+            }
+            orderSearchVO.setUserId(user.getId());
+        }
+        if(orderSearchVO.getServiceUserMobile()!=null){
+            User user = userService.findByMobile(orderSearchVO.getServiceUserMobile());
+            if(user==null){
+                throw new ServiceErrorException("陪玩师手机号输入错误!");
+            }
+            orderSearchVO.setServiceUserId(user.getId());
+        }
+        PageHelper.startPage(pageNum, pageSize, orderBy);
+        Integer status = orderSearchVO.getStatus();
+        Integer[] statusList = OrderStatusGroupEnum.getByValue(status);
+        if (null != statusList && statusList.length > 0) {
+            orderSearchVO.setStatusList(statusList);
+        }
+        List<OrderResVO> list = orderDao.list(orderSearchVO);
+        for (OrderResVO orderResVO : list) {
+            //添加订单投诉和验证信息
+            OrderDealVO userOrderDealVO = orderDealService.findByUserAndOrderNo(orderResVO.getUserId(), orderResVO.getOrderNo());
+            orderResVO.setUserOrderDeal(userOrderDealVO);
+            OrderDealVO serviceUserOrderDealVO = orderDealService.findByUserAndOrderNo(orderResVO.getServiceUserId(), orderResVO.getOrderNo());
+            orderResVO.setServerOrderDeal(serviceUserOrderDealVO);
+            //添加用户和陪玩师信息
+            User user = userService.findById(orderResVO.getUserId());
+            orderResVO.setUser(user);
+            User serviceUser = userService.findById(orderResVO.getServiceUserId());
+            orderResVO.setServerUser(serviceUser);
+            //添加订单商品信息
+            OrderProduct orderProduct = orderProductService.findByOrderNo(orderResVO.getOrderNo());
+            orderResVO.setOrderProduct(orderProduct);
+            OrderMarketProduct orderMarketProduct = orderMarketProductService.findByOrderNo(orderResVO.getOrderNo());
+            orderResVO.setOrderMarketProduct(orderMarketProduct);
+        }
+        return new PageInfo(list);
+    }
+
+
 
     @Override
     public PageInfo<OrderVO> userList(int pageNum, int pageSize, Integer categoryId, Integer[] statusArr) {
@@ -605,7 +658,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 用户申诉订单
-     *
      * @param orderNo
      * @param remark
      * @param fileUrl
@@ -628,10 +680,11 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         deleteAlreadyService(order.getServiceUserId());
         //添加申诉文件
         orderDealService.create(orderNo, order.getUserId(), OrderDealTypeEnum.APPEAL.getType(), remark, fileUrl);
-
         //推送通知给双方
-        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_USER_APPEAL);
-        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_SERVER_USER_APPEAL);
+        if(order.getUserId()!=null){
+            wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_USER_APPEAL);
+        }
+        wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_SERVER_USER_APPEAL);
         return orderConvertVo(order);
     }
 
@@ -662,7 +715,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         //添加申诉文本
         orderDealService.create(orderNo, order.getUserId(), OrderDealTypeEnum.APPEAL.getType(), remark);
         //推送通知给打手
-        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_SERVER_USER_APPEAL);
+        wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_SERVER_USER_APPEAL);
         return orderConvertVo(order);
     }
 
@@ -689,8 +742,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         //添加验收文件
         orderDealService.create(orderNo, order.getServiceUserId(), OrderDealTypeEnum.CHECK.getType(), remark, fileUrl);
         deleteAlreadyService(order.getServiceUserId());
-
-        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_SERVER_USER_CHECK, order.getName());
+        if(order.getUserId()!=null){
+            wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_SERVER_USER_CHECK, order.getName());
+        }
         return orderConvertVo(order);
     }
 
@@ -774,7 +828,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         update(order);
         //订单分润
         shareProfit(order);
-        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_USER_APPEAL_COMPLETE);
+        if(order.getUserId()!=null){
+            wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_USER_APPEAL_COMPLETE);
+        }
         wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_SERVER_USER_APPEAL_COMPLETE);
         return orderConvertVo(order);
     }
@@ -800,7 +856,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         if (order.getIsPay()) {
             orderRefund(order);
         }
-        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_USER_APPEAL_REFUND);
+        if(order.getUserId()!=null){
+            wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_USER_APPEAL_REFUND);
+        }
         wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_SERVER_USER_APPEAL_REFUND);
         return orderConvertVo(order);
     }
@@ -825,8 +883,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setCompleteTime(new Date());
         order.setCommissionMoney(order.getTotalMoney());
         update(order);
-        //订单协商,全部金额记录平台流水
-        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_SYSTEM_USER_APPEAL_COMPLETE);
+        if(order.getUserId()!=null){
+            wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_SYSTEM_USER_APPEAL_COMPLETE);
+        }
         wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_SYSTEM_SERVER_APPEAL_COMPLETE);
         return orderConvertVo(order);
     }

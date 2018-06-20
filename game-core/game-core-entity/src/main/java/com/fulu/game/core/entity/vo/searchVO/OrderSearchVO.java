@@ -11,7 +11,12 @@ public class OrderSearchVO {
 
     private String orderNo;//订单号
     private Integer channelId; //渠道商ID
+
+    private Integer userId; //用户ID
+    private Integer serviceUserId; //陪玩师ID
     private String userMobile;//玩家用户手机号
+    private String serviceUserMobile;//陪玩师用户手机号
+
     private Integer status;//订单状态
     private Integer categoryId;//游戏id（内容id）
     private String startTime;

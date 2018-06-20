@@ -2,47 +2,38 @@ package com.fulu.game.core.entity.vo.responseVO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fulu.game.common.enums.OrderStatusEnum;
+import com.fulu.game.core.entity.Order;
+import com.fulu.game.core.entity.OrderMarketProduct;
+import com.fulu.game.core.entity.OrderProduct;
+import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.MarketOrderVO;
 import com.fulu.game.core.entity.vo.OrderDealVO;
+import com.fulu.game.core.entity.vo.OrderMarketProductVO;
+import com.fulu.game.core.entity.vo.OrderProductVO;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 /**
- * @author
- * 2018.4.29
+ * @author 2018.4.29
  * 管理员订单列表查询结果VO
  */
 @Data
-public class OrderResVO {
-    private Integer id;//订单id
-    private String orderNo;//订单编号
-    private Integer status;//订单状态
-    private String statusName;//订单状态中文名
-    private Integer userId;//玩家id
-    private String userNickname;//玩家昵称
-    private String userMobile;//玩家手机号
-    private String remark;//陪玩要求
-    private String productName;//商品名称
-    private BigDecimal price;//单价
-    private String unit;//单位
-    private Integer amount;//商品个数
-    private BigDecimal totalMoney;//总额
-    private BigDecimal commissionMoney;//佣金
-    private Integer serverUserId;//打手id
-    private String serverNickname;//打手昵称
-    private String serverMobile;//打手手机号
-    private String actualMoney;
-    private String couponMoney;
+public class OrderResVO extends Order{
 
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private Date createTime;
-    private List<String> userOrderDealFileList;//订单存在异议截图
-    private List<String> serverOrderDealFileList;//订单提交验收截图
-    public String getStatusName(){
-        return OrderStatusEnum.getMsgByStatus(status);
-    }
+    private User user;//玩家
+    private User serverUser;//陪玩师
+
+    private OrderDealVO userOrderDeal;//订单存在异议信息
+    private OrderDealVO serverOrderDeal;//订单提交验收信息
+
+    private OrderProduct orderProduct; //订单商品
+
+    private OrderMarketProduct orderMarketProduct; //集市订单商品
+
+    private String statusStr;
+
 
 }
