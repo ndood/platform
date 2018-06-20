@@ -107,9 +107,7 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
                     .append("&pushId=")
                     .append(pushMsg.getId()).toString();
             log.info("开始执行推送消息:userId:{};lastPage:{};pushMsg:{};", userIds, lastPage, pushMsg);
-            for (int userId : userIds) {
-                wxTemplateMsgService.adminPushWxTemplateMsg(pushMsg.getId(), userId, lastPage, pushMsg.getContent());
-            }
+            wxTemplateMsgService.adminPushWxTemplateMsg(pushMsg.getId(), userIds, lastPage, pushMsg.getContent());
             pushMsg.setTotalNum(userIds.size());
             pushMsg.setIsPushed(true);
             pushMsg.setUpdateTime(new Date());

@@ -97,15 +97,15 @@ public class MarketController extends BaseController{
             throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST,order.getOrderNo());
         }
         User user = userService.findById(userService.getCurrentUser().getId());
-        if (!UserInfoAuthStatusEnum.VERIFIED.getType().equals(user.getUserInfoAuth()) && !UserStatusEnum.NORMAL.getType().equals(user.getStatus())) {
+        if (!UserInfoAuthStatusEnum.VERIFIED.getType().equals(user.getUserInfoAuth()) || !UserStatusEnum.NORMAL.getType().equals(user.getStatus())) {
             throw new OrderException(OrderException.ExceptionCode.ORDER_USER_NOT_VERIFIED,order.getOrderNo());
         }
         List<Integer> techAuthList = userTechAuthService.findUserNormalCategoryIds(user.getId());
         if(!techAuthList.contains(order.getCategoryId())){
             throw new OrderException(OrderException.ExceptionCode.ORDER_USER_NOT_HAS_TECH,order.getOrderNo());
         }
-        orderService.marketReceiveOrder(order.getOrderNo());
-        return Result.success().data(orderNo).msg("接单成功!");
+        order = orderService.marketReceiveOrder(order.getOrderNo());
+        return Result.success().data(order).msg("接单成功!");
     }
 
 

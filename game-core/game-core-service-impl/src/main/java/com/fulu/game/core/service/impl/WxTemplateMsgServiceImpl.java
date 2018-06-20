@@ -5,6 +5,7 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.vo.WechatFormidVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.queue.PushMsgQueue;
 import com.xiaoleilu.hutool.date.DateUtil;
@@ -12,7 +13,6 @@ import com.xiaoleilu.hutool.util.CollectionUtil;
 import com.xiaoleilu.hutool.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -51,7 +51,10 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
         }
     }
 
-
+    /**
+     * 推送集市订单通知
+     * @param orderNo
+     */
     @Override
     public void pushMarketOrder(String orderNo) {
         Order order = orderService.findByOrderNo(orderNo);
@@ -93,15 +96,27 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
     }
 
-
-    public void adminPushWxTemplateMsg(int pushId, int userId, String page, String content) {
+    /**
+     * 管理员推送自定义通知
+     * @param pushId
+     * @param userIds
+     * @param page
+     * @param content
+     */
+    public void adminPushWxTemplateMsg(int pushId, List<Integer> userIds, String page, String content) {
         String date = DateUtil.format(new Date(), "yyyy年MM月dd日 HH:mm");
         List<WxMaTemplateMessage.Data> dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", content),
                 new WxMaTemplateMessage.Data("keyword2", date));
-        pushWechatTemplateMsg(pushId, userId, page, WechatTemplateEnum.LEAVE_MSG, dataList);
+        addTemplateMsg2Queue(pushId, userIds, page, WechatTemplateEnum.LEAVE_MSG, dataList);
     }
 
 
+    /**
+     * 通用模板推送消息
+     * @param userId
+     * @param wechatTemplateMsgEnum
+     * @param replaces
+     */
     @Override
     public void pushWechatTemplateMsg(int userId, WechatTemplateMsgEnum wechatTemplateMsgEnum, String... replaces) {
         String content = wechatTemplateMsgEnum.getContent();
@@ -119,41 +134,17 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
                 dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", content),
                         new WxMaTemplateMessage.Data("keyword2", date));
         }
-        pushWechatTemplateMsg(null, userId, wechatTemplateMsgEnum.getPage(), wechatTemplateMsgEnum.getTemplateId(), dataList);
+        addTemplateMsg2Queue(null, userId, wechatTemplateMsgEnum.getPage(), wechatTemplateMsgEnum.getTemplateId(), dataList);
     }
 
 
     /**
-     * 写入队列推送消息
-     *
-     * @param pushId
-     * @param userId
-     * @param page
-     * @param wechatTemplateEnum
-     * @param dataList
+     * 推送IM消息通知
+     * @param content
+     * @param acceptImId 接收者IMid
+     * @param imId  发送者IMid
      * @return
      */
-    private void pushWechatTemplateMsg(Integer pushId,
-                                       Integer userId,
-                                       String page,
-                                       WechatTemplateEnum wechatTemplateEnum,
-                                       List<WxMaTemplateMessage.Data> dataList) {
-        User user = userService.findById(userId);
-        String formId = getWechatUserFormId(user.getId());
-        if (formId == null) {
-            log.error("formId为null,无法给用户推送消息。userId:{};page:{};templateId:{};content:{}", userId, page, wechatTemplateEnum.getType(), dataList);
-            return;
-        }
-        WxMaTemplateMessage wxMaTemplateMessage = new WxMaTemplateMessage();
-        wxMaTemplateMessage.setTemplateId(wechatTemplateEnum.getType());
-        wxMaTemplateMessage.setToUser(user.getOpenId());
-        wxMaTemplateMessage.setPage(page);
-        wxMaTemplateMessage.setFormId(formId);
-        wxMaTemplateMessage.setData(dataList);
-        pushMsgQueue.addTemplateMessage(new WxMaTemplateMessageVO(pushId, wxMaTemplateMessage));
-    }
-
-
     @Override
     public String pushIMWxTemplateMsg(String content,
                                       String acceptImId,
@@ -175,9 +166,67 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
         return "消息推送成功!";
     }
 
+
+    /**
+     * 批量写入推送模板消息
+     * @param pushId
+     * @param userIds
+     * @param page
+     * @param wechatTemplateEnum
+     * @param dataList
+     */
+    private void addTemplateMsg2Queue(Integer pushId,
+                                      List<Integer> userIds,
+                                      String page,
+                                      WechatTemplateEnum wechatTemplateEnum,
+                                      List<WxMaTemplateMessage.Data> dataList){
+        List<WechatFormidVO> wechatFormidVOList =wechatFormidService.findByUserId(userIds);
+        for(WechatFormidVO wechatFormidVO : wechatFormidVOList){
+            WxMaTemplateMessage wxMaTemplateMessage = new WxMaTemplateMessage();
+            wxMaTemplateMessage.setTemplateId(wechatTemplateEnum.getType());
+            wxMaTemplateMessage.setToUser(wechatFormidVO.getOpenId());
+            wxMaTemplateMessage.setPage(page);
+            wxMaTemplateMessage.setFormId(wechatFormidVO.getFormId());
+            wxMaTemplateMessage.setData(dataList);
+            pushMsgQueue.addTemplateMessage(new WxMaTemplateMessageVO(pushId, wxMaTemplateMessage));
+            wechatFormidService.deleteById(wechatFormidVO.getId());
+        }
+    }
+
+
+
+    /**
+     * 写入队列推送消息
+     * @param pushId
+     * @param userId
+     * @param page
+     * @param wechatTemplateEnum
+     * @param dataList
+     * @return
+     */
+    private void addTemplateMsg2Queue(Integer pushId,
+                                      Integer userId,
+                                      String page,
+                                      WechatTemplateEnum wechatTemplateEnum,
+                                      List<WxMaTemplateMessage.Data> dataList) {
+        User user = userService.findById(userId);
+        String formId = getWechatUserFormId(user.getId());
+        if (formId == null) {
+            log.error("formId为null,无法给用户推送消息。userId:{};page:{};templateId:{};content:{}", userId, page, wechatTemplateEnum.getType(), dataList);
+            return;
+        }
+        WxMaTemplateMessage wxMaTemplateMessage = new WxMaTemplateMessage();
+        wxMaTemplateMessage.setTemplateId(wechatTemplateEnum.getType());
+        wxMaTemplateMessage.setToUser(user.getOpenId());
+        wxMaTemplateMessage.setPage(page);
+        wxMaTemplateMessage.setFormId(formId);
+        wxMaTemplateMessage.setData(dataList);
+        pushMsgQueue.addTemplateMessage(new WxMaTemplateMessageVO(pushId, wxMaTemplateMessage));
+    }
+
+
     /**
      * 获取用户formId
-     *
      * @param userId
      * @return
      */

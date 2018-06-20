@@ -7,6 +7,8 @@ import com.fulu.game.core.dao.WechatFormidDao;
 import com.fulu.game.core.entity.WechatFormid;
 import com.fulu.game.core.entity.vo.WechatFormidVO;
 import com.fulu.game.core.service.WechatFormidService;
+import com.github.pagehelper.PageHelper;
+import com.xiaoleilu.hutool.date.DateField;
 import com.xiaoleilu.hutool.date.DateUnit;
 import com.xiaoleilu.hutool.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -67,6 +69,23 @@ public class WechatFormidServiceImpl extends AbsCommonService<WechatFormid, Inte
                 deleteById(w.getId());
             }
         }
+    }
+
+    @Override
+    public List<WechatFormidVO> findByUserId(List<Integer> userIds) {
+        //删除表里面过期的formId
+        Date date = DateUtil.offset(new Date(), DateField.HOUR,(-24*7)+1);
+        wechatFormidDao.deleteByExpireTime(date);
+        List<WechatFormidVO> result = new ArrayList<>();
+        for(int i=0;;i++){
+            PageHelper.startPage(0,100);
+            List<WechatFormidVO> wechatFormidVOS = wechatFormidDao.findByUserIds(userIds);
+            result.addAll(wechatFormidVOS);
+            if(wechatFormidVOS.isEmpty()){
+                break;
+            }
+        }
+        return result;
     }
 
 }

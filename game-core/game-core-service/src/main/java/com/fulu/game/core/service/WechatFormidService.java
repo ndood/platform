@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.WechatFormid;
+import com.fulu.game.core.entity.vo.WechatFormidVO;
 
 import java.util.List;
 
@@ -18,4 +19,6 @@ public interface WechatFormidService extends ICommonService<WechatFormid,Integer
     List<WechatFormid> findInSevenDaysFormIdByUser(Integer userId);
 
     void  deleteNotAvailableFormIds(WechatFormid ... wechatFormid);
+
+    List<WechatFormidVO> findByUserId(List<Integer> userIds);
 }
