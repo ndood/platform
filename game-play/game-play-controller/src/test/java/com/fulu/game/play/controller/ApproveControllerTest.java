@@ -29,7 +29,7 @@ public class ApproveControllerTest {
         CyclicBarrier cyclicBarrier = new CyclicBarrier(count);
         ExecutorService executorService = Executors.newFixedThreadPool(count);
         for (int i = 0; i < count; i++) {
-            executorService.execute(new Task(cyclicBarrier,approveService));
+            executorService.execute(new Task(cyclicBarrier, approveService));
         }
         executorService.shutdown();
         while (!executorService.isTerminated()) {
@@ -45,7 +45,7 @@ public class ApproveControllerTest {
         private CyclicBarrier cyclicBarrier;
         private ApproveService as;
 
-        public Task(CyclicBarrier cyclicBarrier,ApproveService approveService) {
+        public Task(CyclicBarrier cyclicBarrier, ApproveService approveService) {
             this.cyclicBarrier = cyclicBarrier;
             this.as = approveService;
         }

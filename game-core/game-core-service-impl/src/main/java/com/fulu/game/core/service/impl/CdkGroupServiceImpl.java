@@ -49,7 +49,6 @@ public class CdkGroupServiceImpl extends AbsCommonService<CdkGroup, Integer> imp
         log.info("调用cdk生成接口，操作人id={},游戏id={}，类型type={},数量amount={},单价price={}", adminId, categoryId, type, amount, price);
         cdkGroup.setAdminId(adminId);
         cdkGroup.setAdminName(admin.getName());
-        cdkGroup.setChannelId(Constant.DEFAULT_CDK_CHANNELID);
         cdkGroup.setChannelName(Constant.DEFAULT_CDK_CHANNEL_NAME);
         cdkGroup.setStatus(true);//默认启用状态
         cdkGroup.setCreateTime(new Date());

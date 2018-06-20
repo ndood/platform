@@ -132,10 +132,37 @@ public class ChannelController {
                           @RequestParam("remark") String remark) {
         log.info("调用渠道商加款接口，入参channelId={}，money={}，remark={}", channelId, money, remark);
         log.info("===开始数据校验===");
-        if (money.compareTo(Constant.DEFAULT_CHANNEL_BALANCE) == -1) {
-            return Result.error().msg("最低加款1元");
+        if (money.compareTo(Constant.DEFAULT_CHANNEL_BALANCE_MIN) == -1) {
+            return Result.error().msg("最低加款"+Constant.DEFAULT_CHANNEL_BALANCE_MIN+"元");
+        }
+        if (money.compareTo(Constant.DEFAULT_CHANNEL_BALANCE_MAX) == 1) {
+            return Result.error().msg("最高加款"+Constant.DEFAULT_CHANNEL_BALANCE_MAX+"元");
         }
         ChannelCashDetails channelCashDetails = channelCDService.addCash(channelId, money, remark);
+        return Result.success().data(channelCashDetails).msg("操作成功");
+    }
+
+    /**
+     * 撤销部分款
+     *
+     * @param channelId
+     * @param money
+     * @param remark
+     * @return
+     */
+    @PostMapping("/cash/cancel")
+    public Result cutCash(@RequestParam("id") Integer channelId,
+                          @RequestParam("money") BigDecimal money,
+                          @RequestParam("remark") String remark) {
+        log.info("调用渠道商扣款接口，入参channelId={}，money={}，remark={}", channelId, money, remark);
+        log.info("===开始数据校验===");
+        if (money.compareTo(Constant.DEFAULT_CHANNEL_BALANCE_MIN) == -1) {
+            return Result.error().msg("最低扣款"+Constant.DEFAULT_CHANNEL_BALANCE_MIN+"元");
+        }
+        if (money.compareTo(Constant.DEFAULT_CHANNEL_BALANCE_MAX) == 1) {
+            return Result.error().msg("最高扣款"+Constant.DEFAULT_CHANNEL_BALANCE_MAX+"元");
+        }
+        ChannelCashDetails channelCashDetails = channelCDService.cancelCash(channelId, money, remark);
         return Result.success().data(channelCashDetails).msg("操作成功");
     }
 

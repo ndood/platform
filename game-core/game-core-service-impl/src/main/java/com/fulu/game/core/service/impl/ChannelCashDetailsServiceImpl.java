@@ -3,7 +3,6 @@ package com.fulu.game.core.service.impl;
 import com.fulu.game.common.enums.MoneyOperateTypeEnum;
 import com.fulu.game.common.exception.CashException;
 import com.fulu.game.common.exception.ChannelException;
-import com.fulu.game.common.exception.CommonException;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.core.dao.ChannelCashDetailsDao;
 import com.fulu.game.core.dao.ChannelDao;
@@ -17,7 +16,6 @@ import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.ChannelCashDetailsService;
 import com.fulu.game.core.service.ChannelService;
 import com.fulu.game.core.service.OrderService;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -84,6 +82,43 @@ public class ChannelCashDetailsServiceImpl extends AbsCommonService<ChannelCashD
 
     @Override
     @Transactional
+    public ChannelCashDetails cancelCash(Integer channelId, BigDecimal money, String remark){
+        Admin admin = adminService.getCurrentUser();
+        int adminId = admin.getId();
+        log.info("操作人id={}",adminId);
+        Channel channel = channelService.findById(channelId);
+        if (null == channel){
+            throw new ChannelException(ChannelException.ExceptionCode.RECORD_NOT_EXIST);
+        }
+        BigDecimal oldBalance = channel.getBalance();
+        log.info("扣款前渠道商余额balance={},扣款金额money={}",oldBalance,money);
+        if (money.compareTo(oldBalance) == 1) {
+            log.error("管理员扣款异常，余额不足");
+            throw new CashException(CashException.ExceptionCode.CASH_CUT_EXCEPTION);
+        }
+        BigDecimal newBalance = oldBalance.add(money.negate());
+        log.info("扣款后渠道商余额newBalance={}",newBalance);
+        ChannelCashDetails channelCD = new ChannelCashDetails();
+        channelCD.setAdminId(adminId);
+        channelCD.setAdminName(admin.getName());
+        channelCD.setChannelId(channelId);
+        channelCD.setAction(MoneyOperateTypeEnum.CHANNEL_ADMIN_CUT.getType());
+        channelCD.setMoney(money.negate());
+        channelCD.setSum(newBalance);
+        channelCD.setRemark(remark);
+        channelCD.setCreateTime(new Date());
+        channelCashDetailsDao.create(channelCD);
+        log.info("扣款流水记录成功,流水id={}",channelCD.getId());
+
+        channel.setBalance(newBalance);
+        channel.setUpdateTime(new Date());
+        channelDao.update(channel);
+        log.info("更新渠道商余额成功,扣款结束");
+        return channelCD;
+    }
+
+    @Override
+    @Transactional
     public ChannelCashDetails cutCash(Integer channelId, BigDecimal money, String orderNo){
         log.info("调用渠道商扣款接口，入参channelId={},money={},orderNo={}",channelId,money,orderNo);
         log.info("=====开始校验参数=====");
@@ -103,7 +138,7 @@ public class ChannelCashDetailsServiceImpl extends AbsCommonService<ChannelCashD
         log.info("扣款前渠道商余额balance={},订单金额money={}",oldBalance,money);
         if (money.compareTo(oldBalance) == 1) {
             log.error("渠道商扣款异常，余额不足");
-            throw new CashException(CashException.ExceptionCode.CASH_EXCEED_EXCEPTION);
+            throw new CashException(CashException.ExceptionCode.CASH_CUT_EXCEPTION);
         }
         log.info("=====校验参数结束=====");
 

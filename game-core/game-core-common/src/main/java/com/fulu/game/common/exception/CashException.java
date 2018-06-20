@@ -16,7 +16,8 @@ public class CashException extends BizException {
     @Getter
     public enum ExceptionCode {
         CASH_NEGATIVE_EXCEPTION(30001, "金额小于0"),
-        CASH_EXCEED_EXCEPTION(30002, "提款金额超出余额");
+        CASH_EXCEED_EXCEPTION(30002, "提款金额超出余额"),
+        CASH_CUT_EXCEPTION(30003, "扣款金额超出余额");
         private int code;
         private String msg;
     }
