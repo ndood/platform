@@ -106,7 +106,7 @@
                 and op.order_no = #{orderNo}
             </if>
             <if test="channelId != null">
-                and op.channel_id = #{channelId}
+                and o.channel_id = #{channelId}
             </if>
             <if test="userMobile != null">
                 and u.mobile = #{userMobile}
