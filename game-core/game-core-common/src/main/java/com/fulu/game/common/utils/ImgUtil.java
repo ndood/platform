@@ -85,9 +85,8 @@ public class ImgUtil {
         //画昵称
         Graphics2D g_nickname = image.createGraphics();
         String nickname = cardImg.getNickname();
-        drawNickname(g_nickname, new Color(20, 25, 28), FONT_32, nickname, xGap, nickname_top + SIZE_32);
+        int nicknameLen = drawNickname(g_nickname, new Color(20, 25, 28), FONT_32, nickname, xGap, nickname_top + SIZE_32);
         g_nickname.setFont(FONT_32);//处理完表情符后恢复字体
-        int nicknameLen = getContentLength(nickname, g_nickname);
         //画性别和年龄
         String genderAndAge = getGenderAndAge(cardImg.getGender(), cardImg.getAge());
         Color genderColor = getGenderColor(cardImg.getGender());
@@ -127,8 +126,7 @@ public class ImgUtil {
         //小程序码和文案
         drawImage(cardImg.getCodeUrl(), xGap, wxcode_top, wxcodeWidth, wxcodeWidth);
         Graphics2D g_share = image.createGraphics();
-        drawNickname(g_share, new Color(20, 25, 28), FONT_32, nickname, xGap + wxcodeWidth + 39, wxcode_top + wxcodeWidth / 2);
-        int nameLen = getContentLength(nickname, g_share);
+        int nameLen = drawNickname(g_share, new Color(20, 25, 28), FONT_32, nickname, xGap + wxcodeWidth + 39, wxcode_top + wxcodeWidth / 2);
         String shareTitle = cardImg.getShareTitle();
         drawString(g_share, new Color(20, 25, 28), FONT_32, shareTitle, xGap + wxcodeWidth + 39 + nameLen, wxcode_top + wxcodeWidth / 2);
         String shareContent = cardImg.getShareContent();
@@ -190,8 +188,7 @@ public class ImgUtil {
         int x_start = xGap;
         String nickname = cardImg.getNickname();
         Graphics2D g_nickname = image.createGraphics();
-        drawNickname(g_nickname, new Color(20, 25, 28), FONT_32, nickname, x_start, name_top + H_nickname);
-        int nameLen = getContentLength(nickname, g_nickname);
+        int nameLen = drawNickname(g_nickname, new Color(20, 25, 28), FONT_32, nickname, x_start, name_top + H_nickname);
         x_start += nameLen + xGap0;
         //画性别+年龄
         String genderAndAge = getGenderAndAge(cardImg.getGender(), cardImg.getAge());
@@ -388,12 +385,13 @@ public class ImgUtil {
     /**
      * 画昵称单独处理
      */
-    private void drawNickname(Graphics2D g, Color color, Font font, String str, int x, int y) {
+    private int drawNickname(Graphics2D g, Color color, Font font, String str, int x, int y) {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setColor(color);
         if (!EmojiTools.containsEmoji(str)) {
             g.setFont(font);
             g.drawString(str, x, y);
+            return getContentLength(str,g);
         } else {
             int start = x;
             java.util.List<String> list = EmojiTools.splitEmoji(str);
@@ -406,8 +404,8 @@ public class ImgUtil {
                 g.drawString(list.get(i), start, y);
                 start += getContentLength(list.get(i), g);
             }
+            return start-x;
         }
-
     }
 
     /**
