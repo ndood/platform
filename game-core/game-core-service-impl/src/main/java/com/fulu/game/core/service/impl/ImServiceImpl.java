@@ -52,12 +52,33 @@ public class ImServiceImpl implements ImService {
     }
 
     /**
+     * 用户批量注册
+     *
+     * @param users
+     */
+    @Override
+    public void registUsers(List<ImUser> users) {
+        String token = imUtil.getImToken();
+        if (null == token) {
+            token = getToken();
+        }
+        String Authorization = "Bearer " + token;
+        Map headerMap = new HashMap();
+        headerMap.put("Authorization", Authorization);
+        headerMap.put("Accept", "application/json");
+        headerMap.put("Content-Type", "application/json");
+        String userUrl = imUtil.getUserUrl();
+        String body = getUserJsonStr(users);
+        String jsonResult = HttpUtils.post(userUrl, body, headerMap);
+    }
+
+    /**
      * users返回串解析成VO
      *
      * @param resultStr
      * @return
      */
-    public ImUserVo handleUsers(String resultStr) {
+    private ImUserVo handleUsers(String resultStr) {
         ImUserVo imUserVo = new ImUserVo();
         JSONObject resultJo = new JSONObject(resultStr);
         String nextCursor = resultJo.getStr("cursor");
@@ -72,6 +93,24 @@ public class ImServiceImpl implements ImService {
         }
         imUserVo.setImUserList(userList);
         return imUserVo;
+    }
+
+    /**
+     * 组装待注册的用户信息为JSON
+     * 分配imid 和 psw
+     *
+     * @param userList
+     * @return
+     */
+    private String getUserJsonStr(List<ImUser> userList) {
+        JSONArray ja = new JSONArray();
+        for (ImUser user : userList) {
+            JSONObject jo = new JSONObject();
+            jo.put("username", user.getUsername());
+            jo.put("password", user.getImPsw());
+            ja.add(jo);
+        }
+        return ja.toString();
     }
 
 }

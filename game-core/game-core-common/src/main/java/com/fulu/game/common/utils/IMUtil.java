@@ -13,6 +13,10 @@ public class IMUtil {
 
     private String imToken;
 
+    /**
+     * 请求token的url拼接
+     * @return
+     */
     public String getTokenUrl() {
         StringBuilder sb = new StringBuilder();
         sb.append(configProperties.getIm().getUrlPrefix())
@@ -25,6 +29,10 @@ public class IMUtil {
         return sb.toString();
     }
 
+    /**
+     * 请求user的url拼接
+     * @return
+     */
     public String getUserUrl() {
         StringBuilder sb = new StringBuilder();
         sb.append(configProperties.getIm().getUrlPrefix())

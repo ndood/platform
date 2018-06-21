@@ -26,10 +26,10 @@ public class ImRegistController {
     @RequestMapping("/regist")
     public void regist() {
         List<ImUser> list = userService.findImNullUser();
-        for(int i=0;;){
+        //环信限流批量注册数每次20个
+        for(int i=0;i<=20;i++){
 
         }
-        //todo 批量注册IMID每次20个
 
     }
     private void bind(List<ImUser> list){
