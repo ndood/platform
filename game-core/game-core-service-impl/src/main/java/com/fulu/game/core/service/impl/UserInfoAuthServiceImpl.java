@@ -1,7 +1,10 @@
 package com.fulu.game.core.service.impl;
 
 
-import com.fulu.game.common.enums.*;
+import com.fulu.game.common.enums.FileTypeEnum;
+import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
+import com.fulu.game.common.enums.UserInfoFileTypeEnum;
+import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
@@ -56,7 +59,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     private OssUtil ossUtil;
 
 
-
     @Override
     public ICommonDao<UserInfoAuth, Integer> getDao() {
         return userInfoAuthDao;
@@ -73,18 +75,17 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     }
 
 
-
     @Override
     public UserInfoAuthVO save(UserInfoAuthVO userInfoAuthVO) {
-        log.info("保存用户认证信息:userInfoAuthVO:{}",userInfoAuthVO);
+        log.info("保存用户认证信息:userInfoAuthVO:{}", userInfoAuthVO);
 
         //更新用户信息
         User user = userService.findById(userInfoAuthVO.getUserId());
         //如果是用户冻结状态给错误提示
-        if(user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())){
+        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
             throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE);
         }
-        if(userInfoAuthVO.getMobile()==null){
+        if (userInfoAuthVO.getMobile() == null) {
             userInfoAuthVO.setMobile(user.getMobile());
         }
         user.setHeadPortraitsUrl(userInfoAuthVO.getHeadUrl());
@@ -113,7 +114,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             update(userInfoAuth);
             //同步恢复用户正确技能的商品状态
             List<UserTechAuth> userTechAuthList = userTechAuthService.findUserNormalTechs(userInfoAuth.getUserId());
-            for(UserTechAuth userTechAuth : userTechAuthList){
+            for (UserTechAuth userTechAuth : userTechAuthList) {
                 productService.recoverProductDelFlagByTechAuthId(userTechAuth.getId());
             }
         }
@@ -122,16 +123,17 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         //添加用户认证写真图片
         createUserAuthPortrait(userInfoAuthVO.getPortraitUrls(), userInfoAuth.getId());
         //添加语音介绍
-        createUserAuthVoice(userInfoAuthVO.getVoiceUrl(), userInfoAuth.getId(),userInfoAuthVO.getDuration());
+        createUserAuthVoice(userInfoAuthVO.getVoiceUrl(), userInfoAuth.getId(), userInfoAuthVO.getDuration());
         //添加用户信息标签
         createUserInfoTags(userInfoAuthVO.getTags(), user.getId());
         //更新用户商品索引的信息
-        productService.updateUserProductIndex(user.getId(),Boolean.FALSE);
+        productService.updateUserProductIndex(user.getId(), Boolean.FALSE);
         return userInfoAuthVO;
     }
 
     /**
      * 认证信息驳回
+     *
      * @param id
      * @param reason
      * @return
@@ -142,7 +144,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         log.info("驳回用户个人认证信息:adminId:{};adminName:{};authInfoId:{},reason:{}", admin.getId(), admin.getName(), id, reason);
         //修改认证驳回状态
         UserInfoAuth userInfoAuth = findById(id);
-        if(userInfoAuth==null){
+        if (userInfoAuth == null) {
             throw new UserAuthException(UserAuthException.ExceptionCode.NOT_EXIST_USER_AUTH);
         }
 
@@ -151,7 +153,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         //修改用户表认证状态信息
         User user = userService.findById(userInfoAuth.getUserId());
         //如果是用户冻结状态给错误提示
-        if(user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())){
+        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
             throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE_ADMIN);
         }
         user.setUserInfoAuth(UserInfoAuthStatusEnum.NOT_PERFECT.getType());
@@ -175,6 +177,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     /**
      * 清楚驳回记录状态
+     *
      * @param id
      * @return
      */
@@ -188,7 +191,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         //修改用户表认证状态信息
         User user = userService.findById(userInfoAuth.getUserId());
         //如果是用户冻结状态给错误提示
-        if(user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())){
+        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
             throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE_ADMIN);
         }
         user.setUserInfoAuth(UserInfoAuthStatusEnum.VERIFIED.getType());
@@ -196,7 +199,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
         //同步恢复用户正确技能的商品状态
         List<UserTechAuth> userTechAuthList = userTechAuthService.findUserNormalTechs(userInfoAuth.getUserId());
-        for(UserTechAuth userTechAuth : userTechAuthList){
+        for (UserTechAuth userTechAuth : userTechAuthList) {
             productService.recoverProductDelFlagByTechAuthId(userTechAuth.getId());
         }
         return userInfoAuth;
@@ -214,7 +217,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         Admin admin = adminService.getCurrentUser();
         log.info("冻结用户个人认证信息:adminId:{};adminName:{};authInfoId:{},reason:{}", admin.getId(), admin.getName(), id, reason);
         UserInfoAuth userInfoAuth = findById(id);
-        if(userInfoAuth==null){
+        if (userInfoAuth == null) {
             throw new UserAuthException(UserAuthException.ExceptionCode.NOT_EXIST_USER_AUTH);
         }
         //修改用户表认证状态信息
@@ -251,7 +254,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userService.update(user);
         //同步恢复用户正确技能的商品状态
         List<UserTechAuth> userTechAuthList = userTechAuthService.findUserNormalTechs(userInfoAuth.getUserId());
-        for(UserTechAuth userTechAuth : userTechAuthList){
+        for (UserTechAuth userTechAuth : userTechAuthList) {
             productService.recoverProductDelFlagByTechAuthId(userTechAuth.getId());
         }
 
@@ -284,7 +287,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     @Override
     public List<UserInfoAuth> findByUserIds(List<Integer> userIds) {
-        if(userIds==null){
+        if (userIds == null) {
             return new ArrayList<>();
         }
         return userInfoAuthDao.findByUserIds(userIds);
@@ -359,7 +362,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         //查询认证的技能
         UserInfoVO userInfo = new UserInfoVO();
         UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(techAuthId);
-        if(null == userTechAuthVO){
+        if (null == userTechAuthVO) {
             throw new UserException(UserException.ExceptionCode.TECH_AUTH_NOT_EXIST_EXCEPTION);
         }
         Integer userId = userTechAuthVO.getUserId();
@@ -429,15 +432,13 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         //设置时间间隔
         User user = userService.getCurrentUser();
         UserInfoAuth userInfoAuth = findByUserId(user.getId());
-        if(userInfoAuth==null){
+        if (userInfoAuth == null) {
             throw new UserAuthException(UserAuthException.ExceptionCode.NOT_EXIST_USER_AUTH);
         }
         userInfoAuth.setPushTimeInterval(minute);
         userInfoAuth.setUpdateTime(new Date());
         update(userInfoAuth);
     }
-
-
 
 
     @Override
@@ -568,16 +569,16 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
 
     private void createUserInfoFile(Integer userId, String fileUrl, String name, Integer type) {
-        List<UserInfoFile> idCardFileList =  userInfoFileService.findByUserIdAndType(userId,type);
+        List<UserInfoFile> idCardFileList = userInfoFileService.findByUserIdAndType(userId, type);
         boolean flag = true;
-        for(UserInfoFile file : idCardFileList){
-            if(file.getUrl().contains(fileUrl)){
+        for (UserInfoFile file : idCardFileList) {
+            if (file.getUrl().contains(fileUrl)) {
                 flag = false;
-            }else{
+            } else {
                 userInfoFileService.deleteFile(file);
             }
         }
-        if(flag){
+        if (flag) {
             UserInfoFile userInfoFile = new UserInfoFile();
             userInfoFile.setName(name);
             userInfoFile.setUrl(ossUtil.activateOssFile(fileUrl));
@@ -590,23 +591,24 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     /**
      * 添加用户写真图集
+     *
      * @param portraitUrls
      * @param userInfoAuthId
      */
     public void createUserAuthPortrait(String[] portraitUrls, Integer userInfoAuthId) {
-        if (portraitUrls==null||portraitUrls.length==0) {
+        if (portraitUrls == null || portraitUrls.length == 0) {
             return;
         }
         //激活所有写真URL
         List<String> portraitUrlList = Arrays.asList(portraitUrls);
-        for (int i = 0; i < portraitUrlList.size(); i++){
-            portraitUrlList.set(i,ossUtil.activateOssFile(portraitUrlList.get(i)));
+        for (int i = 0; i < portraitUrlList.size(); i++) {
+            portraitUrlList.set(i, ossUtil.activateOssFile(portraitUrlList.get(i)));
         }
-        List<UserInfoAuthFile> picFiles =userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthId, FileTypeEnum.PIC.getType());
+        List<UserInfoAuthFile> picFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthId, FileTypeEnum.PIC.getType());
         List<String> dbFilesUrlList = new ArrayList<>();
-        for(UserInfoAuthFile file : picFiles){
+        for (UserInfoAuthFile file : picFiles) {
             dbFilesUrlList.add(file.getUrl());
-            if(!portraitUrlList.contains(file.getUrl())){
+            if (!portraitUrlList.contains(file.getUrl())) {
                 userInfoAuthFileService.deleteFile(file);
             }
         }
@@ -615,10 +617,10 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userInfoAuth.setId(userInfoAuthId);
         userInfoAuth.setMainPicUrl(portraitUrlList.get(0));
         update(userInfoAuth);
-        //添加多余的图片
+        //添加其余的图片
         for (int i = 0; i < portraitUrlList.size(); i++) {
             String portraitUrl = portraitUrlList.get(i);
-            if(!dbFilesUrlList.contains(portraitUrl)){
+            if (!dbFilesUrlList.contains(portraitUrl)) {
                 UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
                 userInfoAuthFile.setUrl(portraitUrl);
                 userInfoAuthFile.setInfoAuthId(userInfoAuthId);
@@ -633,23 +635,24 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     /**
      * 添加用户认证声音
+     *
      * @param voiceUrl
      * @param userInfoAuthId
      */
-    public void createUserAuthVoice(String voiceUrl, Integer userInfoAuthId,Integer duration) {
+    public void createUserAuthVoice(String voiceUrl, Integer userInfoAuthId, Integer duration) {
         if (voiceUrl == null) {
             return;
         }
         List<UserInfoAuthFile> voiceFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthId, FileTypeEnum.VOICE.getType());
         boolean flag = true;
-        for(UserInfoAuthFile file : voiceFiles){
-            if(file.getUrl().contains(voiceUrl)){
+        for (UserInfoAuthFile file : voiceFiles) {
+            if (file.getUrl().contains(voiceUrl)) {
                 flag = false;
-            }else{
+            } else {
                 userInfoAuthFileService.deleteFile(file);
             }
         }
-        if(flag){
+        if (flag) {
             UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
             userInfoAuthFile.setUrl(ossUtil.activateOssFile(voiceUrl));
             userInfoAuthFile.setDuration(duration);

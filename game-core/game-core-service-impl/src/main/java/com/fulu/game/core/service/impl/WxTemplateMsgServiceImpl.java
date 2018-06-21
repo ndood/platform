@@ -182,6 +182,9 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
                                       WechatTemplateEnum wechatTemplateEnum,
                                       List<WxMaTemplateMessage.Data> dataList){
         List<WechatFormidVO> wechatFormidVOList =wechatFormidService.findByUserId(userIds);
+        if(wechatFormidVOList.isEmpty()){
+            log.error("推送用户没有可用的formId,userIds:{};",userIds);
+        }
         List<String> formIds = new ArrayList<>();
         for(WechatFormidVO wechatFormidVO : wechatFormidVOList){
             WxMaTemplateMessage wxMaTemplateMessage = new WxMaTemplateMessage();

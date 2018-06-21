@@ -128,7 +128,7 @@
     <delete id="deleteById" parameterType="java.lang.Integer">
         update t_product
         <set>
-            del_flag = TRUE
+            del_flag = TRUE , status = FALSE
         </set>
         <where>
             id = #{id}
