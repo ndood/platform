@@ -18,6 +18,11 @@ public interface UserDao extends ICommonDao<User,Integer>{
 
     List<User> findByParameter(UserVO userVO);
 
+    int countByParameter(UserVO userVO);
 
     List<User> findByUserIds(@Param(value = "userIds") List<Integer> userIds);
+
+
+
+
 }

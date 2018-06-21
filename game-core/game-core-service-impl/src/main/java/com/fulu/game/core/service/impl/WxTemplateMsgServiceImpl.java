@@ -13,6 +13,7 @@ import com.xiaoleilu.hutool.util.CollectionUtil;
 import com.xiaoleilu.hutool.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -175,12 +176,13 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
      * @param wechatTemplateEnum
      * @param dataList
      */
-    private void addTemplateMsg2Queue(Integer pushId,
+    private synchronized void addTemplateMsg2Queue(Integer pushId,
                                       List<Integer> userIds,
                                       String page,
                                       WechatTemplateEnum wechatTemplateEnum,
                                       List<WxMaTemplateMessage.Data> dataList){
         List<WechatFormidVO> wechatFormidVOList =wechatFormidService.findByUserId(userIds);
+        List<String> formIds = new ArrayList<>();
         for(WechatFormidVO wechatFormidVO : wechatFormidVOList){
             WxMaTemplateMessage wxMaTemplateMessage = new WxMaTemplateMessage();
             wxMaTemplateMessage.setTemplateId(wechatTemplateEnum.getType());
@@ -189,8 +191,9 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
             wxMaTemplateMessage.setFormId(wechatFormidVO.getFormId());
             wxMaTemplateMessage.setData(dataList);
             pushMsgQueue.addTemplateMessage(new WxMaTemplateMessageVO(pushId, wxMaTemplateMessage));
-            wechatFormidService.deleteById(wechatFormidVO.getId());
+            formIds.add(wechatFormidVO.getFormId());
         }
+        wechatFormidService.deleteFormIds(formIds.toArray(new String[]{}));
     }
 
 

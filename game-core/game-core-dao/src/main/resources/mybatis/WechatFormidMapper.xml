@@ -46,19 +46,22 @@
             FROM
             t_wechat_formid f
             LEFT JOIN `t_user` u ON f.user_id = u.id
-            <if test="userIds != null">
                 <where>
-                    f.`user_id` IN
-                    <foreach collection="userIds" index="index" item="userId" open="(" separator="," close=")">
-                        #{userId}
-                    </foreach>
+                    <if test="userIds == null">
+                        u.`status` = 1
+                    </if>
+                    <if test="userIds != null">
+                        AND  f.`user_id` IN
+                        <foreach collection="userIds" index="index" item="userId" open="(" separator="," close=")">
+                            #{userId}
+                        </foreach>
+                    </if>
                 </where>
-            </if>
             ORDER BY
             create_time ASC
         ) a
-        GROUP BY
-        a.user_id
+        GROUP BY a.user_id
+        LIMIT #{offset},#{size}
     </select>
 
 
@@ -84,6 +87,16 @@
         delete from t_wechat_formid
         <where>
             id = #{id}
+        </where>
+    </delete>
+
+    <delete id="deleteFormIds" >
+        delete from t_wechat_formid
+        <where>
+            form_id in
+            <foreach collection="formIds" index="index" item="formId" open="(" separator="," close=")">
+                #{formId}
+            </foreach>
         </where>
     </delete>
 

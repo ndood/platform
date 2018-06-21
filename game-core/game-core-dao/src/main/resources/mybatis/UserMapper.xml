@@ -108,6 +108,50 @@
         </where>
     </select>
 
+    <select id="countByParameter" resultType="java.lang.Integer" parameterType="com.fulu.game.core.entity.vo.UserVO">
+        SELECT
+         COUNT(1)
+        FROM t_user
+        <where>
+            <if test="id != null">
+                id = #{id}
+            </if>
+            <if test="openId != null">
+                open_id = #{openId}
+            </if>
+            <if test="mobile != null">
+                and mobile = #{mobile}
+            </if>
+            <if test="nickname != null">
+                and nickname LIKE CONCAT('%', #{nickname},'%')
+            </if>
+            <if test="idcard != null">
+                and idcard = #{idcard}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="userInfoAuth != null">
+                and user_info_auth = #{userInfoAuth}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="imId != null">
+                and im_id = #{imId}
+            </if>
+            <if test="startTime != null">
+                and create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime}
+            </if>
+            <if test="sourceId != null">
+                and source_id = #{sourceId}
+            </if>
+        </where>
+    </select>
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_user
         <where>

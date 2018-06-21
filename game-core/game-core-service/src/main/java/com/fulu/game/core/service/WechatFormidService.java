@@ -20,5 +20,14 @@ public interface WechatFormidService extends ICommonService<WechatFormid,Integer
 
     void  deleteNotAvailableFormIds(WechatFormid ... wechatFormid);
 
+
+    /**
+     * 批量查询用户的formID和openId
+     * @param userIds  用户ID列表,如果为NULL则查询全部用户的formId
+     * @return
+     */
     List<WechatFormidVO> findByUserId(List<Integer> userIds);
+
+
+    void deleteFormIds(String... fromIds);
 }

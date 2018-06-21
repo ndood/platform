@@ -5,6 +5,7 @@ import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
+import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.dao.ICommonDao;
@@ -70,6 +71,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     private CdkService cdkService;
     @Autowired
     private ChannelCashDetailsService channelCashDetailsService;
+
+    @Autowired
+    private SpringThreadPoolExecutor springThreadPoolExecutor;
 
     @Override
     public ICommonDao<Order, Integer> getDao() {
@@ -462,8 +466,14 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         }
         //订单支付,扣渠道商流水
         payOrder(order.getOrderNo(), order.getActualMoney());
+
         //推送集市订单给对应陪玩师
-        wxTemplateMsgService.pushMarketOrder(order.getOrderNo());
+        springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                wxTemplateMsgService.pushMarketOrder(order.getOrderNo());
+            }
+        });
         //把订单缓存到redis里面
         try {
             redisOpenService.hset(RedisKeyEnum.MARKET_ORDER.generateKey(order.getOrderNo()), BeanUtil.beanToMap(order), Constant.TIME_HOUR_TOW);
