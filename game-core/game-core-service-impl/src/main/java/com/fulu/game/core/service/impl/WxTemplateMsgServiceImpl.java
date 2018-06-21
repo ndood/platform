@@ -54,11 +54,10 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
     /**
      * 推送集市订单通知
-     * @param orderNo
+     * @param order
      */
     @Override
-    public void pushMarketOrder(String orderNo) {
-        Order order = orderService.findByOrderNo(orderNo);
+    public void pushMarketOrder(Order order) {
         log.info("推送集市订单:order:{};",order);
         Category category = categoryService.findById(order.getCategoryId());
         //查询所有符合推送条件的用户
@@ -66,6 +65,10 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
         List<Integer> userIds = new ArrayList<>();
         for (UserTechAuth userTechAuth : userTechAuthList) {
             userIds.add(userTechAuth.getUserId());
+        }
+        if(userIds.isEmpty()){
+            log.info("推送集市订单通知失败:没有符合条件的用户!");
+            return;
         }
         List<User> userList = userService.findByUserIds(userIds);
         for (User user : userList) {
@@ -91,7 +94,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
             //推送订单消息
             pushWechatTemplateMsg(user.getId(),WechatTemplateMsgEnum.MARKET_ORDER_PUSH,category.getName());
             Long expire = new BigDecimal(pushTimeInterval).multiply(new BigDecimal(60)).longValue();
-            redisOpenService.set(RedisKeyEnum.MARKET_ORDER_IS_PUSH.generateKey(user.getId()),orderNo,expire);
+            redisOpenService.set(RedisKeyEnum.MARKET_ORDER_IS_PUSH.generateKey(user.getId()),order.getOrderNo(),expire);
             log.info("推送集市订单完成:userInfoAuth:{},order:{}",userInfoAuth,order);
         }
 

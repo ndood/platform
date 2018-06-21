@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
+import com.fulu.game.core.entity.Order;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ public interface WxTemplateMsgService {
      /**
       * 推送集市订单
       */
-     void pushMarketOrder(String orderNo);
+     void pushMarketOrder(Order order);
 
      /**
       * 通过枚举发送消息

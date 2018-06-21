@@ -469,9 +469,10 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
             @Override
             public void run() {
-                wxTemplateMsgService.pushMarketOrder(order.getOrderNo());
+                wxTemplateMsgService.pushMarketOrder(order);
             }
         });
+
         //把订单缓存到redis里面
         try {
             redisOpenService.hset(RedisKeyEnum.MARKET_ORDER.generateKey(order.getOrderNo()), BeanUtil.beanToMap(order), Constant.TIME_HOUR_TOW);
