@@ -26,6 +26,5 @@ public interface UserDao extends ICommonDao<User,Integer>{
     List<ImUser> findImNullUser();
 
 
-
-
+    List<ImUser> findImNullUser();
 }
