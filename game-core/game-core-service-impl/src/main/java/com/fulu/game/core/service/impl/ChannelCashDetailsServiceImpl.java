@@ -218,7 +218,6 @@ public class ChannelCashDetailsServiceImpl extends AbsCommonService<ChannelCashD
     public PageInfo<ChannelCashDetails> list(Integer pageNum, Integer pageSize, Integer channelId) {
         PageHelper.startPage(pageNum, pageSize);
         ChannelCashDetailsVO channelCDVO = new ChannelCashDetailsVO();
-        channelCDVO.setAction(MoneyOperateTypeEnum.CHANNEL_ADD_CASH.getType());
         channelCDVO.setChannelId(channelId);
         List<ChannelCashDetails> channelCashDetailsList = channelCashDetailsDao.findByParameter(channelCDVO);
         return new PageInfo<>(channelCashDetailsList);
