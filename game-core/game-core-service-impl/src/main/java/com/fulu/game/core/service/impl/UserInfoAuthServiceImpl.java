@@ -88,7 +88,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         if (userInfoAuthVO.getMobile() == null) {
             userInfoAuthVO.setMobile(user.getMobile());
         }
-        user.setHeadPortraitsUrl(userInfoAuthVO.getHeadUrl());
+        user.setHeadPortraitsUrl(ossUtil.activateOssFile(userInfoAuthVO.getHeadUrl()));
         user.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
         user.setIdcard(userInfoAuthVO.getIdCard());
         user.setRealname(userInfoAuthVO.getRealname());
