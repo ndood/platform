@@ -132,6 +132,14 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
+    public Integer countAllNormalUser() {
+        UserVO param = new UserVO();
+        param.setStatus(UserStatusEnum.NORMAL.getType());
+        int count = userDao.countByParameter(param);
+        return count;
+    }
+
+    @Override
     public List<User> findByUserIds(List<Integer> userIds) {
         if (userIds == null) {
             return new ArrayList<>();

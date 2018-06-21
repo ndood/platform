@@ -1,5 +1,6 @@
 package com.fulu.game.core.dao;
 
+import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.SalesMode;
 import com.fulu.game.core.entity.vo.ProductShowCaseVO;
@@ -28,4 +29,10 @@ public interface ProductDao extends ICommonDao<Product,Integer>{
     int recoverProductDelFlagByTechAuthId(Integer techAuthId);
 
     int updateProductSalesModel(SalesMode salesMode);
+
+    /**
+     * 修改游戏分类更新商品
+     * @param category
+     */
+    void updateByCategory(Category category);
 }

@@ -11,6 +11,7 @@
 
     <resultMap id="WechatFormidResultVOMap" type="com.fulu.game.core.entity.vo.WechatFormidVO"
                extends="WechatFormidResultMap">
+        <result column="open_id" property="openId"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -30,6 +31,39 @@
         <include refid="Base_Column_List"/>
         from t_wechat_formid
     </select>
+
+    <select id="findByUserIds" resultMap="WechatFormidResultVOMap">
+        SELECT
+        a.id,a.user_id,a.form_id,a.open_id,a.create_time
+        FROM
+        (
+            SELECT
+            f.id,
+            f.user_id,
+            f.form_id,
+            f.create_time,
+            u.`open_id`
+            FROM
+            t_wechat_formid f
+            LEFT JOIN `t_user` u ON f.user_id = u.id
+                <where>
+                    <if test="userIds == null">
+                        u.`status` = 1
+                    </if>
+                    <if test="userIds != null">
+                        AND  f.`user_id` IN
+                        <foreach collection="userIds" index="index" item="userId" open="(" separator="," close=")">
+                            #{userId}
+                        </foreach>
+                    </if>
+                </where>
+            ORDER BY
+            create_time ASC
+        ) a
+        GROUP BY a.user_id
+        LIMIT #{offset},#{size}
+    </select>
+
 
     <select id="findByParameter" resultMap="WechatFormidResultMap"
             parameterType="com.fulu.game.core.entity.vo.WechatFormidVO">
@@ -53,6 +87,23 @@
         delete from t_wechat_formid
         <where>
             id = #{id}
+        </where>
+    </delete>
+
+    <delete id="deleteFormIds" >
+        delete from t_wechat_formid
+        <where>
+            form_id in
+            <foreach collection="formIds" index="index" item="formId" open="(" separator="," close=")">
+                #{formId}
+            </foreach>
+        </where>
+    </delete>
+
+    <delete id="deleteByExpireTime">
+        delete from t_wechat_formid
+        <where>
+            create_time &lt;= #{expireTime}
         </where>
     </delete>
 

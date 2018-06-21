@@ -77,13 +77,12 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
 
     private void exePushTask(PushMsg pushMsg) {
         log.info("开始推送微信消息:pushMsg:{};", pushMsg);
-        List<Integer> userIds = new ArrayList<>();
+        List<Integer> userIds = null;
+        Integer count = 0;
         if (PushMsgTypeEnum.ALL_USER.getType().equals(pushMsg.getType())) {
-            List<User> userList = userService.findAllNormalUser();
-            for (User user : userList) {
-                userIds.add(user.getId());
-            }
+            count = userService.countAllNormalUser();
         } else if (PushMsgTypeEnum.ASSIGN_USERID.getType().equals(pushMsg.getType())) {
+            userIds = new ArrayList<>();
             try {
                 String[] userArr = pushMsg.getPushIds().split(",");
                 if (userArr.length == 0) {
@@ -92,6 +91,7 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
                 for (int i = 0; i < userArr.length; i++) {
                     userIds.add(Integer.valueOf(userArr[i]));
                 }
+                count = userIds.size();
             } catch (Exception e) {
                 log.error("指定用户推送错误:", e);
                 throw new ServiceErrorException("指定用户输入错误!");
@@ -106,11 +106,9 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
                     .append(URLEncoder.encode(pushMsg.getPage(), "utf-8"))
                     .append("&pushId=")
                     .append(pushMsg.getId()).toString();
-            log.info("开始执行推送消息:userId:{};lastPage:{};pushMsg:{};", userIds, lastPage, pushMsg);
-            for (int userId : userIds) {
-                wxTemplateMsgService.adminPushWxTemplateMsg(pushMsg.getId(), userId, lastPage, pushMsg.getContent());
-            }
-            pushMsg.setTotalNum(userIds.size());
+            log.info("开始执行推送消息:userId:{};lastPage:{};pushMsg:{};", userIds==null?"全体用户":userIds, lastPage, pushMsg);
+            wxTemplateMsgService.adminPushWxTemplateMsg(pushMsg.getId(), userIds, lastPage, pushMsg.getContent());
+            pushMsg.setTotalNum(count);
             pushMsg.setIsPushed(true);
             pushMsg.setUpdateTime(new Date());
             update(pushMsg);

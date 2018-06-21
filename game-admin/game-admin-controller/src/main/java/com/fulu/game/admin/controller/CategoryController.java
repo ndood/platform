@@ -11,6 +11,7 @@ import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,6 +37,8 @@ public class CategoryController extends BaseController {
     private SalesModeService salesModeService;
     @Autowired
     private OssUtil ossUtil;
+    @Autowired
+    private ProductService productService;
 
     /**
      * 内容列表
@@ -130,6 +133,8 @@ public class CategoryController extends BaseController {
             }
             category.setUpdateTime(new Date());
             categoryService.update(category);
+            //同步更新商品表的冗余数据
+            productService.updateByCategory(category);
         }
         return Result.success().data(category).msg("内容修改成功!");
     }

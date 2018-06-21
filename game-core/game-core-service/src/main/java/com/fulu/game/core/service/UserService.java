@@ -64,6 +64,12 @@ public interface UserService extends ICommonService<User, Integer> {
     List<User> findAllNormalUser();
 
     /**
+     * 查询所有正常用户的数量
+     * @return
+     */
+    Integer countAllNormalUser();
+
+    /**
      * 通过UserId查询一批用户
      *
      * @param userIds

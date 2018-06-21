@@ -116,10 +116,11 @@ public class OpenController extends BaseController{
         orderMarketProduct.setProductName(productName.toString());
         //获取备注
         StringBuffer remark = new StringBuffer();
-        remark.append("手机号码:").append(mobile).append(";");
-        remark.append("角色名:").append(rolename);
+        //请联系用户手机：“手机参数”进行陪玩；玩家角色昵称为：“角色名”
+        remark.append("请联系用户手机：").append(mobile).append("进行陪玩；");
+        remark.append("玩家角色昵称为：").append(rolename);
         Integer channelId = cdk.getChannelId();
-        log.info("CDK执行下单:orderMarketProduct:{};channelId:{};remark:{};ip:{}",orderMarketProduct,channelId,remark,ip);
+        log.info("验证CDK可以下单:orderMarketProduct:{};channelId:{};remark:{};ip:{}",orderMarketProduct,channelId,remark,ip);
         orderService.submitMarketOrder(channelId,orderMarketProduct,remark.toString(),ip,series);
         //删除sessionKey
         redisOpenService.delete(RedisKeyEnum.WRITER_SESSION_KEY.generateKey(sessionKey));

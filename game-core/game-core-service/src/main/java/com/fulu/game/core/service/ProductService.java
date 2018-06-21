@@ -1,5 +1,6 @@
 package com.fulu.game.core.service;
 
+import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.SalesMode;
 import com.fulu.game.core.entity.vo.ProductShowCaseVO;
@@ -40,6 +41,9 @@ public interface ProductService extends ICommonService<Product,Integer>{
      */
     Product update(Integer id,Integer techAuthId,BigDecimal price,Integer unitId);
 
+
+    void updateByCategory(Category category);
+
     /**
      * 查看用户开始接单状态
      * @return
@@ -69,7 +73,7 @@ public interface ProductService extends ICommonService<Product,Integer>{
     /**
      * 更新用户所有商品索引
      * @param userId
-     * @param updateTime  是否要更新商品接单时间
+     * @param needUpdateTime  是否要更新商品接单时间
      */
     void updateUserProductIndex(Integer userId, Boolean needUpdateTime);
 

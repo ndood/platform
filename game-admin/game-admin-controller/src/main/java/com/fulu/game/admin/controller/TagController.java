@@ -67,7 +67,6 @@ public class TagController extends BaseController {
 
     /**
      * 创建标签组
-     *
      * @param name
      * @return
      */
@@ -76,6 +75,9 @@ public class TagController extends BaseController {
                                String name,
                                Integer sort,
                                Integer most) {
+        if(most!=null&&most<0){
+            return Result.error().msg("最大可选标签数不能小于0!");
+        }
         Tag tag = new Tag();
         tag.setId(id);
         tag.setName(name);

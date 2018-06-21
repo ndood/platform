@@ -154,6 +154,12 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return product;
     }
 
+
+    @Override
+    public void updateByCategory(Category category) {
+        productDao.updateByCategory(category);
+    }
+
     /**
      * 激活或者取消激活商品
      * @param id
