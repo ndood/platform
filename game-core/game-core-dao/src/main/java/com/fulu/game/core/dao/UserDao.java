@@ -1,5 +1,6 @@
 package com.fulu.game.core.dao;
 
+import com.fulu.game.core.entity.ImUser;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -21,6 +22,8 @@ public interface UserDao extends ICommonDao<User,Integer>{
     int countByParameter(UserVO userVO);
 
     List<User> findByUserIds(@Param(value = "userIds") List<Integer> userIds);
+
+    List<ImUser> findImNullUser();
 
 
 

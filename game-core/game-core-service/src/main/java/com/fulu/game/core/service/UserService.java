@@ -1,5 +1,6 @@
 package com.fulu.game.core.service;
 
+import com.fulu.game.core.entity.ImUser;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.github.pagehelper.PageInfo;
@@ -70,6 +71,7 @@ public interface UserService extends ICommonService<User, Integer> {
 
     /**
      * 通过UserId查询一批用户
+     *
      * @param userIds
      * @return
      */
@@ -165,5 +167,17 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param userId
      */
     void checkUserInfoAuthStatus(Integer userId);
+
+    /**
+     * 查询imid为空的用户
+     * @return
+     */
+    List<ImUser> findImNullUser();
+
+    /**
+     * 绑定im信息
+     * @param imUser
+     */
+    void bindIm(ImUser imUser);
 
 }

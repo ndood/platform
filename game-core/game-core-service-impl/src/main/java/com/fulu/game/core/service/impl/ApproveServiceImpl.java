@@ -46,61 +46,55 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
     }
 
     @Override
-    public synchronized ApproveVO save(Integer techAuthId) {
+    public ApproveVO save(Integer techAuthId) {
         log.info("====好友认可接口执行====入参技能id:{}", techAuthId);
-        UserTechAuth userTechAuth = utaService.findById(techAuthId);
-        if (null == userTechAuth) {
-            throw new UserException(UserException.ExceptionCode.TECH_AUTH_NOT_EXIST_EXCEPTION);
-        }
-        if (userTechAuth.getStatus().intValue() == TechAuthStatusEnum.FREEZE.getType().intValue()) {
-            throw new ApproveException(ApproveException.ExceptionCode.APPROVE_FREEZE);
-        }
-        ApproveVO paramVO = new ApproveVO();
-        int techOwnerId = userTechAuth.getUserId();
-        log.info("技能申请者id:{}", techOwnerId);
-        paramVO.setTechOwnerId(techOwnerId);
         User user = userService.getCurrentUser();
         int userId = user.getId();
-        log.info("认可人id:{}", userId);
-        if (userId == techOwnerId) {
-            throw new ApproveException(ApproveException.ExceptionCode.CANNOT_APPROVE_SELF);
+        int techOwnerId;
+        int techStatus;
+        int newApproveCount;
+        //查询和更新位置需同步
+        synchronized (this) {
+            UserTechAuth userTechAuth = utaService.findById(techAuthId);
+            if (null == userTechAuth) {
+                throw new UserException(UserException.ExceptionCode.TECH_AUTH_NOT_EXIST_EXCEPTION);
+            }
+            if (userTechAuth.getStatus().intValue() == TechAuthStatusEnum.FREEZE.getType().intValue()) {
+                throw new ApproveException(ApproveException.ExceptionCode.APPROVE_FREEZE);
+            }
+            techOwnerId = userTechAuth.getUserId();
+            log.info("技能申请者id:{},认可人id:{}", techOwnerId, userId);
+            if (userId == techOwnerId) {
+                throw new ApproveException(ApproveException.ExceptionCode.CANNOT_APPROVE_SELF);
+            }
+            ApproveVO paramVO = new ApproveVO();
+            paramVO.setTechOwnerId(techOwnerId);
+            paramVO.setUserId(userId);
+            List<Approve> list = approveDao.findByParameter(paramVO);
+            if (!CollectionUtil.isEmpty(list)) {
+                throw new ApproveException(ApproveException.ExceptionCode.APPROVE_DUPLICATE);
+            }
+            newApproveCount = userTechAuth.getApproveCount() + 1;
+            userTechAuth.setApproveCount(newApproveCount);
+            techStatus = newApproveCount >= Constant.DEFAULT_APPROVE_COUNT ? TechAuthStatusEnum.NORMAL.getType() : TechAuthStatusEnum.AUTHENTICATION_ING.getType();
+            userTechAuth.setStatus(techStatus);
+            utaService.update(userTechAuth);
+            log.info("更新t_user_tech_auth表,当前认可数:{}", newApproveCount);
         }
-        paramVO.setUserId(userId);
-        List<Approve> list = approveDao.findByParameter(paramVO);
-        if (!CollectionUtil.isEmpty(list)) {
-            throw new ApproveException(ApproveException.ExceptionCode.APPROVE_DUPLICATE);
-        }
+
         Approve approve = new Approve();
         approve.setTechAuthId(techAuthId);
         approve.setUserId(userId);
         approve.setTechOwnerId(techOwnerId);
         approve.setCreateTime(new Date());
         approveDao.create(approve);
-        log.info("生成认可记录成功");
-
-        int currentCount = userTechAuth.getApproveCount();
-        int newApproveCount = currentCount + 1;
+        log.info("生成认可记录完成");
         int requireCount = newApproveCount < Constant.DEFAULT_APPROVE_COUNT ? Constant.DEFAULT_APPROVE_COUNT - newApproveCount : 0;
-        userTechAuth.setApproveCount(newApproveCount);
-        int techStatus;
-        WechatTemplateMsgEnum wechatTemplateMsgEnum;
-        if (newApproveCount >= Constant.DEFAULT_APPROVE_COUNT) {
-            techStatus = TechAuthStatusEnum.NORMAL.getType();
-            wechatTemplateMsgEnum = WechatTemplateMsgEnum.TECH_AUTH_AUDIT_SUCCESS;
-        } else {
-            techStatus = TechAuthStatusEnum.AUTHENTICATION_ING.getType();
-            wechatTemplateMsgEnum = WechatTemplateMsgEnum.TECH_AUTH_AUDIT_ING;
-        }
-        userTechAuth.setStatus(techStatus);
-        utaService.update(userTechAuth);
-        log.info("更新t_user_tech_auth表,当前认可数:{}", newApproveCount);
         if (techStatus == TechAuthStatusEnum.NORMAL.getType()) {
-            wxTemplateMsgService.pushWechatTemplateMsg(techOwnerId, wechatTemplateMsgEnum, user.getNickname(), String.valueOf(requireCount));
-            log.info("好友认可-调用发送通知接口完成");
+            wxTemplateMsgService.pushWechatTemplateMsg(techOwnerId, WechatTemplateMsgEnum.TECH_AUTH_AUDIT_SUCCESS);
             productService.recoverProductDelFlagByTechAuthId(techAuthId);
         } else {
-            wxTemplateMsgService.pushWechatTemplateMsg(techOwnerId, wechatTemplateMsgEnum);
-            log.info("好友认可-调用发送通知接口完成");
+            wxTemplateMsgService.pushWechatTemplateMsg(techOwnerId, WechatTemplateMsgEnum.TECH_AUTH_AUDIT_ING, user.getNickname(), String.valueOf(requireCount));
         }
         ApproveVO responseVO = new ApproveVO();
         BeanUtil.copyProperties(approve, responseVO);
