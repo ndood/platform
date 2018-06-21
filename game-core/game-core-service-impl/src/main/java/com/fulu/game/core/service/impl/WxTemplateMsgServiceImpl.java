@@ -42,10 +42,8 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
     @Autowired
     private UserInfoAuthService userInfoAuthService;
 
-
     private static final int LOCK_NUM = 10000;
     private List<Object> objects = new ArrayList<>(LOCK_NUM);
-
     {
         for (Integer i = 0; i < LOCK_NUM; i++) {
             objects.add(i);
@@ -67,7 +65,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
             userIds.add(userTechAuth.getUserId());
         }
         if(userIds.isEmpty()){
-            log.info("推送集市订单通知失败:没有符合条件的用户!");
+            log.error("推送集市订单通知失败:没有符合条件的用户!");
             return;
         }
         List<User> userList = userService.findByUserIds(userIds);
