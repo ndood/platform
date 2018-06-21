@@ -34,6 +34,9 @@
     <resultMap id="UserResultVOMap" type="com.fulu.game.core.entity.vo.UserVO" extends="UserResultMap">
     </resultMap>
 
+    <resultMap id="ImUserMap" type="com.fulu.game.core.entity.ImUser">
+    </resultMap>
+
     <sql id="Base_Column_List">
         id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,city,province,country,score_avg,constellation,birth,age,im_id,im_psw,source_id </sql>
 
@@ -220,4 +223,8 @@
             id = #{id}
         </where>
     </update>
+
+    <select id="findImNullUser" resultMap="ImUserMap">
+        SELECT id AS userId,im_id AS username,im_psw as imPsw from t_user WHERE im_id IS NULL OR im_id = ''
+    </select>
 </mapper>

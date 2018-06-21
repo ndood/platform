@@ -11,10 +11,7 @@ import com.fulu.game.common.utils.ImgUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserDao;
-import com.fulu.game.core.entity.Admin;
-import com.fulu.game.core.entity.Sharing;
-import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.UserInfoAuth;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
@@ -58,7 +55,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public User findByMobile(String mobile) {
-        if(mobile==null){
+        if (mobile == null) {
             return null;
         }
         UserVO userVO = new UserVO();
@@ -81,7 +78,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public User findByOpenId(String openId) {
-        if(openId==null){
+        if (openId == null) {
             return null;
         }
         UserVO userVO = new UserVO();
@@ -95,7 +92,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public User findByImId(String imId) {
-        if(imId==null){
+        if (imId == null) {
             return null;
         }
         UserVO userVO = new UserVO();
@@ -136,7 +133,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public List<User> findByUserIds(List<Integer> userIds) {
-        if(userIds==null){
+        if (userIds == null) {
             return new ArrayList<>();
         }
         return userDao.findByUserIds(userIds);
@@ -321,7 +318,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         for (String str : tagList) {
             tagStr += str + "、";
         }
-        if (!"".equals(tagStr)){
+        if (!"".equals(tagStr)) {
             tagStr = tagStr.substring(0, tagStr.length() - 1);
         }
         sb.append(tagStr);
@@ -416,6 +413,11 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
                 .mainTech(mainTechMap)
                 .secTech(secTechMap)
                 .build();
+    }
+
+    @Override
+    public List<ImUser> findImNullUser() {
+        return userDao.findImNullUser();
     }
 
 }
