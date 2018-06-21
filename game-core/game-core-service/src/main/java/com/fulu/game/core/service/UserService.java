@@ -168,4 +168,10 @@ public interface UserService extends ICommonService<User, Integer> {
      */
     List<ImUser> findImNullUser();
 
+    /**
+     * 绑定im信息
+     * @param imUser
+     */
+    void bindIm(ImUser imUser);
+
 }

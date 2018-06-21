@@ -420,4 +420,16 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         return userDao.findImNullUser();
     }
 
+    @Override
+    public void bindIm(ImUser imUser){
+        if (null == imUser || null == imUser.getUserId()){
+            return;
+        }
+        User user = userDao.findById(imUser.getUserId());
+        user.setImId(imUser.getUsername());
+        user.setImPsw(imUser.getImPsw());
+        user.setUpdateTime(new Date());
+        userDao.update(user);
+    }
+
 }
