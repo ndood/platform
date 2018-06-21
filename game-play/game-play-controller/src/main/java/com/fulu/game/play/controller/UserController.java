@@ -326,14 +326,19 @@ public class UserController extends BaseController {
                          @RequestParam(value = "errorMsg", required = false) String errorMsg) {
         log.info("IM注册请求开始,请求参数 status={},imId={},imPsw={},errorMsg={}", status, imId, imPsw, errorMsg);
         int userId = userService.getCurrentUser().getId();
+        log.info("缓存中用户id={}",userId);
         if (status == 200) {
             User user = userService.findById(userId);
+            if (null == user){
+                log.info("当前用户id={}查询数据库不存在，无法绑定",userId);
+                throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+            }
             user.setImId(imId);
             user.setImPsw(imPsw);
             user.setUpdateTime(new Date());
             userService.update(user);
             userService.updateRedisUser(user);
-            log.info("用户{}绑定IM信息成功", user.getId());
+            log.info("用户{}绑定IM信息成功", userId);
         } else if (status == 500) {
             log.error("用户:{}绑定IM失败,失败原因:{}", userId, errorMsg);
             return Result.error(ResultStatus.IM_REGIST_FAIL).msg("IM用户注册失败！");
