@@ -60,6 +60,9 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
         log.info("技能申请者id:{}", techOwnerId);
         paramVO.setTechOwnerId(techOwnerId);
         User user = userService.getCurrentUser();
+//        User user = new User();
+//        user.setId(1);
+//        user.setNickname("aa");
         int userId = user.getId();
         log.info("认可人id:{}", userId);
         if (userId == techOwnerId) {

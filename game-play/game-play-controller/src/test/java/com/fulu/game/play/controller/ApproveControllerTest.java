@@ -28,6 +28,7 @@ public class ApproveControllerTest {
         int count = 100;
         CyclicBarrier cyclicBarrier = new CyclicBarrier(count);
         ExecutorService executorService = Executors.newFixedThreadPool(count);
+        long start = System.currentTimeMillis();
         for (int i = 0; i < count; i++) {
             executorService.execute(new Task(cyclicBarrier, approveService));
         }
@@ -39,6 +40,8 @@ public class ApproveControllerTest {
                 e.printStackTrace();
             }
         }
+        long end = System.currentTimeMillis();
+        System.out.print("=========="+(end-start));
     }
 
     public class Task implements Runnable {
