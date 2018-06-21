@@ -326,11 +326,11 @@ public class UserController extends BaseController {
                          @RequestParam(value = "errorMsg", required = false) String errorMsg) {
         log.info("IM注册请求开始,请求参数 status={},imId={},imPsw={},errorMsg={}", status, imId, imPsw, errorMsg);
         int userId = userService.getCurrentUser().getId();
-        log.info("缓存中用户id={}",userId);
+        log.info("缓存中用户id={}", userId);
         if (status == 200) {
             User user = userService.findById(userId);
-            if (null == user){
-                log.info("当前用户id={}查询数据库不存在，无法绑定",userId);
+            if (null == user) {
+                log.info("当前用户id={}查询数据库不存在，无法绑定", userId);
                 throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
             }
             user.setImId(imId);
@@ -376,6 +376,7 @@ public class UserController extends BaseController {
 
     /**
      * 聊天对象信息获取
+     *
      * @param id
      * @return
      */
