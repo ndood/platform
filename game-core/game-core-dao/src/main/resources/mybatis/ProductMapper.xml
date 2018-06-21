@@ -205,6 +205,21 @@
         </where>
     </update>
 
+    <update id="updateByCategory" parameterType="com.fulu.game.core.entity.Category">
+        update t_product
+        <set>
+            <if test="name != null">
+                product_name = #{name},
+            </if>
+            <if test="icon != null">
+                category_icon = #{icon}
+            </if>
+        </set>
+        <where>
+            category_id = #{id}
+        </where>
+    </update>
+
     <update id="updateProductSalesModel" parameterType="com.fulu.game.core.entity.SalesMode">
         update t_product
         <set>

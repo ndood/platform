@@ -193,7 +193,9 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
             pushMsgQueue.addTemplateMessage(new WxMaTemplateMessageVO(pushId, wxMaTemplateMessage));
             formIds.add(wechatFormidVO.getFormId());
         }
-        wechatFormidService.deleteFormIds(formIds.toArray(new String[]{}));
+        if(formIds.size()>0){
+            wechatFormidService.deleteFormIds(formIds.toArray(new String[]{}));
+        }
     }
 
 
