@@ -3,6 +3,7 @@ package com.fulu.game.admin.controller;
 import com.fulu.game.core.entity.ImUser;
 import com.fulu.game.core.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
@@ -17,10 +18,13 @@ public class ImRegistController {
     @Autowired
     private UserService userService;
 
-    public void imRegistAndBind() {
+    @RequestMapping("/regist")
+    public void regist() {
         List<ImUser> list = userService.findImNullUser();
-        //todo 批量注册IMID
-        //todo 绑定到user中
+        //todo 批量注册IMID每次20个
 
+    }
+    private void bind(List<ImUser> list){
+        //todo 绑定到user中
     }
 }
