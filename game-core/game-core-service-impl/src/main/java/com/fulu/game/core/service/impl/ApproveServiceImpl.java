@@ -49,9 +49,6 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
     public ApproveVO save(Integer techAuthId) {
         log.info("====好友认可接口执行====入参技能id:{}", techAuthId);
         User user = userService.getCurrentUser();
-//        User user = new User();
-//        user.setId(1);
-//        user.setNickname("aa");
         int userId = user.getId();
         int techOwnerId;
         int techStatus;
