@@ -37,10 +37,6 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
     private UserTechAuthService userTechAuthService;
     @Autowired
     private CategoryService categoryService;
-    @Autowired
-    private UserInfoAuthService userInfoAuthService;
-    @Autowired
-    private OrderService orderService;
 
     private static final int LOCK_NUM = 10000;
     private List<Object> objects = new ArrayList<>(LOCK_NUM);
