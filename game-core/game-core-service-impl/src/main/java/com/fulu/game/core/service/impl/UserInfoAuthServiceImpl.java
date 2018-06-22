@@ -604,23 +604,23 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         for (int i = 0; i < portraitUrlList.size(); i++) {
             portraitUrlList.set(i, ossUtil.activateOssFile(portraitUrlList.get(i)));
         }
-        List<UserInfoAuthFile> picFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthId, FileTypeEnum.PIC.getType());
-        List<String> dbFilesUrlList = new ArrayList<>();
-        for (UserInfoAuthFile file : picFiles) {
-            dbFilesUrlList.add(file.getUrl());
-            if (!portraitUrlList.contains(file.getUrl())) {
-                userInfoAuthFileService.deleteFile(file);
-            }
-        }
         //添加第一张写真图作为主图保存
         UserInfoAuth userInfoAuth = new UserInfoAuth();
         userInfoAuth.setId(userInfoAuthId);
         userInfoAuth.setMainPicUrl(portraitUrlList.get(0));
         update(userInfoAuth);
-        //添加其余的图片
-        for (int i = 0; i < portraitUrlList.size(); i++) {
-            String portraitUrl = portraitUrlList.get(i);
-            if (!dbFilesUrlList.contains(portraitUrl)) {
+        List<UserInfoAuthFile> dbPicFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthId, FileTypeEnum.PIC.getType());
+        Iterator<UserInfoAuthFile> dbIt = dbPicFiles.iterator();
+        while (dbIt.hasNext()){
+            UserInfoAuthFile file = dbIt.next();
+            if(!portraitUrlList.contains(file.getUrl())){
+                userInfoAuthFileService.deleteFile(file);
+                dbIt.remove();
+            }
+        }
+        if (CollectionUtil.isEmpty(dbPicFiles)) {
+            for (int i = 0; i < portraitUrlList.size(); i++) {
+                String portraitUrl = portraitUrlList.get(i);
                 UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
                 userInfoAuthFile.setUrl(portraitUrl);
                 userInfoAuthFile.setInfoAuthId(userInfoAuthId);
@@ -628,6 +628,24 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
                 userInfoAuthFile.setCreateTime(new Date());
                 userInfoAuthFile.setType(FileTypeEnum.PIC.getType());
                 userInfoAuthFileService.create(userInfoAuthFile);
+            }
+        }else{
+            for(int i=0;i<portraitUrlList.size();i++){
+                try {
+                    UserInfoAuthFile file = dbPicFiles.get(i);
+                    if(!Objects.equals(file.getUrl(),portraitUrlList.get(i))){
+                        file.setUrl(portraitUrlList.get(i));
+                        userInfoAuthFileService.update(file);
+                    }
+                }catch (IndexOutOfBoundsException e){
+                    UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
+                    userInfoAuthFile.setUrl(portraitUrlList.get(i));
+                    userInfoAuthFile.setInfoAuthId(userInfoAuthId);
+                    userInfoAuthFile.setName("写真" + (i + 1));
+                    userInfoAuthFile.setCreateTime(new Date());
+                    userInfoAuthFile.setType(FileTypeEnum.PIC.getType());
+                    userInfoAuthFileService.create(userInfoAuthFile);
+                }
             }
         }
     }
