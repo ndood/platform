@@ -12,8 +12,7 @@ import lombok.Data;
 @Data
 public class UserVO extends User {
 
-    private String startTime;
-    private String endTime;
+    //推送时间间隔
+    private Float pushTimeInterval;
 
-    private String sessionKey;
 }

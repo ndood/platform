@@ -5,6 +5,7 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.WechatFormidVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.queue.PushMsgQueue;
@@ -69,32 +70,32 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
             log.error("推送集市订单通知失败:没有符合条件的用户!");
             return;
         }
-        List<User> userList = userService.findByUserIds(userIds);
-        for (User user : userList) {
+
+        List<UserVO> userList = userService.findVOByUserIds(userIds);
+        for (UserVO user : userList) {
             if (!UserInfoAuthStatusEnum.VERIFIED.getType().equals(user.getUserInfoAuth()) || !UserStatusEnum.NORMAL.getType().equals(user.getStatus())) {
                 continue;
             }
-            UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
             //默认为30分钟
-            Float pushTimeInterval = userInfoAuth.getPushTimeInterval();
+            Float pushTimeInterval = user.getPushTimeInterval();
             if (pushTimeInterval == null) {
                 pushTimeInterval = 30F;
             }
             //数据库设置永不推送
             if (pushTimeInterval.equals(0F)) {
-                log.info("推送集市订单:用户设置永不推送:userInfoAuth:{}", userInfoAuth);
+                log.info("推送集市订单:用户设置永不推送:user:{}", user);
                 continue;
             }
             //时间间隔内已经推送过
             if (redisOpenService.hasKey(RedisKeyEnum.MARKET_ORDER_IS_PUSH.generateKey(user.getId()))) {
-                log.info("推送集市订单:该时间间隔内不能推送:userInfoAuth:{}", userInfoAuth);
+                log.info("推送集市订单:该时间间隔内不能推送:user:{}", user);
                 continue;
             }
             //推送订单消息
             pushWechatTemplateMsg(user.getId(), WechatTemplateMsgEnum.MARKET_ORDER_PUSH, category.getName());
             Long expire = new BigDecimal(pushTimeInterval).multiply(new BigDecimal(60)).longValue();
             redisOpenService.set(RedisKeyEnum.MARKET_ORDER_IS_PUSH.generateKey(user.getId()), order.getOrderNo(), expire);
-            log.info("推送集市订单完成:userInfoAuth:{},order:{}", userInfoAuth, order);
+            log.info("推送集市订单完成:userInfoAuth:{},order:{}", user, order);
         }
 
     }

@@ -440,4 +440,12 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         userDao.update(user);
     }
 
+    @Override
+    public List<UserVO> findVOByUserIds(List<Integer> userIds) {
+        if(CollectionUtil.isEmpty(userIds)){
+            return new ArrayList<>();
+        }
+        return userDao.findUserVOByUserIds(userIds);
+    }
+
 }

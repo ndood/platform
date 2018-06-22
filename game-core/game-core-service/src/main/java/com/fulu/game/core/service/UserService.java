@@ -180,4 +180,6 @@ public interface UserService extends ICommonService<User, Integer> {
      */
     void bindIm(ImUser imUser);
 
+
+    List<UserVO> findVOByUserIds(List<Integer> userIds);
 }

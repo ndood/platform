@@ -21,7 +21,19 @@ public interface UserDao extends ICommonDao<User,Integer>{
 
     int countByParameter(UserVO userVO);
 
+    /**
+     * 批量查询用户
+     * @param userIds
+     * @return
+     */
     List<User> findByUserIds(@Param(value = "userIds") List<Integer> userIds);
 
     List<ImUser> findImNullUser();
+
+    /**
+     * 查询userVo,vo包含用户推送间隔字段
+     * @param userIds
+     * @return
+     */
+    List<UserVO> findUserVOByUserIds(@Param(value = "userIds")List<Integer> userIds);
 }
