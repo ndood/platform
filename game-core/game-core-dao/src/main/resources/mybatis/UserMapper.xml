@@ -41,7 +41,7 @@
     <sql id="Base_Column_List">
         id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,city,province,country,score_avg,constellation,birth,age,im_id,im_psw,source_id </sql>
 
-    <select id="findUserVOByUserIds"  resultMap="UserResultMap">
+    <select id="findUserVOByUserIds"  resultMap="UserResultVOMap">
      SELECT
         u.*,
         uia.push_time_interval
