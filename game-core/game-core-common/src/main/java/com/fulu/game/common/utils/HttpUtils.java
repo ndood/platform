@@ -2,6 +2,7 @@ package com.fulu.game.common.utils;
 
 
 import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
 
 import java.util.Map;
 
@@ -70,5 +71,12 @@ public class HttpUtils {
                 .body(body)
                 .execute()
                 .body();
+    }
+
+    public static HttpResponse post1(String url, String body , Map header) {
+        return HttpRequest.post(url)
+                .addHeaders(header)
+                .body(body)
+                .execute();
     }
 }
