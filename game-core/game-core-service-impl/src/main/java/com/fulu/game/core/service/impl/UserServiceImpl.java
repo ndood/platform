@@ -256,13 +256,15 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             log.error("技能认证分享-未上传主图");
             throw new UserException(UserException.ExceptionCode.MAINPHOTO_NOT_EXIST_EXCEPTION);
         }
+        int gender = GenderEnum.MALE.getType() == userInfoVO.getGender() ? userInfoVO.getGender() : GenderEnum.LADY.getType();
+        userInfoVO.setGender(gender);
         //查询文案信息
         SharingVO sharingVO = new SharingVO();
         sharingVO.setShareType(ShareTypeEnum.TECH_AUTH.getType());
-        sharingVO.setGender(null == userInfoVO.getGender() ? GenderEnum.ASEXUALITY.getType() : userInfoVO.getGender());
+        sharingVO.setGender(gender);
         sharingVO.setStatus(true);
         List<Sharing> shareList = sharingService.findByParam(sharingVO);
-        String shareContent = "";
+        String shareContent;
         if (!CollectionUtil.isEmpty(shareList)) {
             shareContent = shareList.get(0).getContent();
             if (StringUtils.isEmpty(shareContent)) {
@@ -291,13 +293,15 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             log.error("技能认证分享-未上传主图");
             throw new UserException(UserException.ExceptionCode.MAINPHOTO_NOT_EXIST_EXCEPTION);
         }
+        int gender = GenderEnum.MALE.getType() == userInfoVO.getGender() ? userInfoVO.getGender() : GenderEnum.LADY.getType();
+        userInfoVO.setGender(gender);
         //查询文案信息
         SharingVO sharingVO = new SharingVO();
         sharingVO.setShareType(ShareTypeEnum.ORDER_SET.getType());
-        sharingVO.setGender(productDetailsVO.getUserInfo().getGender());
+        sharingVO.setGender(gender);
         sharingVO.setStatus(true);
         List<Sharing> shareList = sharingService.findByParam(sharingVO);
-        String shareStr = "";
+        String shareStr;
         if (!CollectionUtil.isEmpty(shareList)) {
             shareStr = shareList.get(0).getContent();
             if (StringUtils.isEmpty(shareStr)) {
@@ -330,8 +334,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             tagStr = tagStr.substring(0, tagStr.length() - 1);
         }
         sb.append(tagStr);
-        String title = "";
-        String content = "";
+        String title;
+        String content;
         try {
             JSONObject jo = new JSONObject(shareContent);
             title = jo.getStr("title");
@@ -341,7 +345,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         }
         return ImgUtil.CardImg.builder()
                 .nickname(null == userInfoVO.getNickName() ? "陪玩师" : userInfoVO.getNickName())
-                .gender(null == userInfoVO.getGender() ? GenderEnum.ASEXUALITY.getType() : userInfoVO.getGender())
+                .gender(userInfoVO.getGender())
                 .age(userInfoVO.getAge())
                 .techStr(sb.toString())
                 .mainPicUrl(userInfoVO.getMainPhotoUrl())
@@ -410,7 +414,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         }
         return ImgUtil.CardImg.builder()
                 .nickname(null == userInfoVO.getNickName() ? "陪玩师" : userInfoVO.getNickName())
-                .gender(null == userInfoVO.getGender() ? GenderEnum.ASEXUALITY.getType() : userInfoVO.getGender())
+                .gender(userInfoVO.getGender())
                 .age(userInfoVO.getAge())
                 .city(null == userInfoVO.getCity() ? Constant.DEFAULT_CITY : userInfoVO.getCity())
                 .mainPicUrl(userInfoVO.getMainPhotoUrl())
@@ -429,8 +433,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public void bindIm(ImUser imUser){
-        if (null == imUser || null == imUser.getUserId()){
+    public void bindIm(ImUser imUser) {
+        if (null == imUser || null == imUser.getUserId()) {
             return;
         }
         User user = userDao.findById(imUser.getUserId());
