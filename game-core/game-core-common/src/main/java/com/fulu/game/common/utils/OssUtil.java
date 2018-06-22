@@ -143,6 +143,7 @@ public class OssUtil {
         try {
             url = new URL(fileUrl);
         } catch (Exception e) {
+            log.error("fileUrl:{}",fileUrl);
             throw new SystemException(SystemException.ExceptionCode.URL_PATH_ERROR);
         }
         return url.getPath().substring(1);

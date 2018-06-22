@@ -34,13 +34,13 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
     @Autowired
     private PushMsgQueue pushMsgQueue;
     @Autowired
-    private OrderService orderService;
-    @Autowired
     private UserTechAuthService userTechAuthService;
     @Autowired
     private CategoryService categoryService;
     @Autowired
     private UserInfoAuthService userInfoAuthService;
+    @Autowired
+    private OrderService orderService;
 
     private static final int LOCK_NUM = 10000;
     private List<Object> objects = new ArrayList<>(LOCK_NUM);
@@ -55,7 +55,8 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
      * @param order
      */
     @Override
-    public void pushMarketOrder(Order order) {
+    public void pushMarketOrder(String orderNo) {
+        Order order = orderService.findByOrderNo(orderNo);
         log.info("推送集市订单:order:{};",order);
         Category category = categoryService.findById(order.getCategoryId());
         //查询所有符合推送条件的用户

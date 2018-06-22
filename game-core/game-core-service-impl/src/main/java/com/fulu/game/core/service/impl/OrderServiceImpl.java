@@ -345,6 +345,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         //创建订单
         Order order = new Order();
         order.setName(product.getProductName() + " " + num + "*" + product.getUnit());
+        order.setType(OrderTypeEnum.PLATFORM.getType());
         order.setOrderNo(generateOrderNo());
         order.setUserId(user.getId());
         order.setServiceUserId(product.getUserId());
@@ -469,7 +470,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
             @Override
             public void run() {
-                wxTemplateMsgService.pushMarketOrder(order);
+                wxTemplateMsgService.pushMarketOrder(order.getOrderNo());
             }
         });
 

@@ -110,13 +110,13 @@ public class ExceptionHandlerAdvice {
      */
     @ExceptionHandler(BizException.class)
     public Result BizException(BizException e) {
-        log.error("业务异常:"+e.getMessage(), e);
+        log.error("业务异常:", e);
         return Result.error().msg(e.getMessage()).data("errcode", e.getCode());
     }
 
     /**
      * 上传文件过大异常
-     * @param ex
+     * @param e
      * @return
      */
     @ExceptionHandler(MultipartException.class)
