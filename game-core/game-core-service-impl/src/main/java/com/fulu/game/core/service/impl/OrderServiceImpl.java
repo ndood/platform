@@ -470,7 +470,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
             @Override
             public void run() {
-                wxTemplateMsgService.pushMarketOrder(order.getOrderNo());
+                wxTemplateMsgService.pushMarketOrder(order);
             }
         });
 

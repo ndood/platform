@@ -13,7 +13,6 @@ import com.xiaoleilu.hutool.util.CollectionUtil;
 import com.xiaoleilu.hutool.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -44,6 +43,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
     private static final int LOCK_NUM = 10000;
     private List<Object> objects = new ArrayList<>(LOCK_NUM);
+
     {
         for (Integer i = 0; i < LOCK_NUM; i++) {
             objects.add(i);
@@ -52,12 +52,12 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
     /**
      * 推送集市订单通知
+     *
      * @param order
      */
     @Override
-    public void pushMarketOrder(String orderNo) {
-        Order order = orderService.findByOrderNo(orderNo);
-        log.info("推送集市订单:order:{};",order);
+    public void pushMarketOrder(Order order) {
+        log.info("推送集市订单:order:{};",  order);
         Category category = categoryService.findById(order.getCategoryId());
         //查询所有符合推送条件的用户
         List<UserTechAuth> userTechAuthList = userTechAuthService.findNormalByCategory(order.getCategoryId());
@@ -65,7 +65,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
         for (UserTechAuth userTechAuth : userTechAuthList) {
             userIds.add(userTechAuth.getUserId());
         }
-        if(userIds.isEmpty()){
+        if (userIds.isEmpty()) {
             log.error("推送集市订单通知失败:没有符合条件的用户!");
             return;
         }
@@ -77,30 +77,31 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
             UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
             //默认为30分钟
             Float pushTimeInterval = userInfoAuth.getPushTimeInterval();
-            if(pushTimeInterval==null){
+            if (pushTimeInterval == null) {
                 pushTimeInterval = 30F;
             }
             //数据库设置永不推送
-            if(pushTimeInterval.equals(0F)){
-                log.info("推送集市订单:用户设置永不推送:userInfoAuth:{}",userInfoAuth);
+            if (pushTimeInterval.equals(0F)) {
+                log.info("推送集市订单:用户设置永不推送:userInfoAuth:{}", userInfoAuth);
                 continue;
             }
             //时间间隔内已经推送过
-            if(redisOpenService.hasKey(RedisKeyEnum.MARKET_ORDER_IS_PUSH.generateKey(user.getId()))){
-               log.info("推送集市订单:该时间间隔内不能推送:userInfoAuth:{}",userInfoAuth);
-               continue;
+            if (redisOpenService.hasKey(RedisKeyEnum.MARKET_ORDER_IS_PUSH.generateKey(user.getId()))) {
+                log.info("推送集市订单:该时间间隔内不能推送:userInfoAuth:{}", userInfoAuth);
+                continue;
             }
             //推送订单消息
-            pushWechatTemplateMsg(user.getId(),WechatTemplateMsgEnum.MARKET_ORDER_PUSH,category.getName());
+            pushWechatTemplateMsg(user.getId(), WechatTemplateMsgEnum.MARKET_ORDER_PUSH, category.getName());
             Long expire = new BigDecimal(pushTimeInterval).multiply(new BigDecimal(60)).longValue();
-            redisOpenService.set(RedisKeyEnum.MARKET_ORDER_IS_PUSH.generateKey(user.getId()),order.getOrderNo(),expire);
-            log.info("推送集市订单完成:userInfoAuth:{},order:{}",userInfoAuth,order);
+            redisOpenService.set(RedisKeyEnum.MARKET_ORDER_IS_PUSH.generateKey(user.getId()), order.getOrderNo(), expire);
+            log.info("推送集市订单完成:userInfoAuth:{},order:{}", userInfoAuth, order);
         }
 
     }
 
     /**
      * 管理员推送自定义通知
+     *
      * @param pushId
      * @param userIds
      * @param page
@@ -116,6 +117,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
     /**
      * 通用模板推送消息
+     *
      * @param userId
      * @param wechatTemplateMsgEnum
      * @param replaces
@@ -143,9 +145,10 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
     /**
      * 推送IM消息通知
+     *
      * @param content
      * @param acceptImId 接收者IMid
-     * @param imId  发送者IMid
+     * @param imId       发送者IMid
      * @return
      */
     @Override
@@ -172,6 +175,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
     /**
      * 批量写入推送模板消息
+     *
      * @param pushId
      * @param userIds
      * @param page
@@ -179,16 +183,16 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
      * @param dataList
      */
     private synchronized void addTemplateMsg2Queue(Integer pushId,
-                                      List<Integer> userIds,
-                                      String page,
-                                      WechatTemplateEnum wechatTemplateEnum,
-                                      List<WxMaTemplateMessage.Data> dataList){
-        List<WechatFormidVO> wechatFormidVOList =wechatFormidService.findByUserId(userIds);
-        if(wechatFormidVOList.isEmpty()){
-            log.error("推送用户没有可用的formId,userIds:{};",userIds);
+                                                   List<Integer> userIds,
+                                                   String page,
+                                                   WechatTemplateEnum wechatTemplateEnum,
+                                                   List<WxMaTemplateMessage.Data> dataList) {
+        List<WechatFormidVO> wechatFormidVOList = wechatFormidService.findByUserId(userIds);
+        if (wechatFormidVOList.isEmpty()) {
+            log.error("推送用户没有可用的formId,userIds:{};", userIds);
         }
         List<String> formIds = new ArrayList<>();
-        for(WechatFormidVO wechatFormidVO : wechatFormidVOList){
+        for (WechatFormidVO wechatFormidVO : wechatFormidVOList) {
             WxMaTemplateMessage wxMaTemplateMessage = new WxMaTemplateMessage();
             wxMaTemplateMessage.setTemplateId(wechatTemplateEnum.getType());
             wxMaTemplateMessage.setToUser(wechatFormidVO.getOpenId());
@@ -198,15 +202,15 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
             pushMsgQueue.addTemplateMessage(new WxMaTemplateMessageVO(pushId, wxMaTemplateMessage));
             formIds.add(wechatFormidVO.getFormId());
         }
-        if(formIds.size()>0){
+        if (formIds.size() > 0) {
             wechatFormidService.deleteFormIds(formIds.toArray(new String[]{}));
         }
     }
 
 
-
     /**
      * 写入队列推送消息
+     *
      * @param pushId
      * @param userId
      * @param page
@@ -237,6 +241,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
     /**
      * 获取用户formId
+     *
      * @param userId
      * @return
      */
