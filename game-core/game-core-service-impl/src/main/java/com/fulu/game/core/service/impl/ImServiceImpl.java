@@ -7,9 +7,11 @@ import com.fulu.game.common.utils.IMUtil;
 import com.fulu.game.core.entity.ImUser;
 import com.fulu.game.core.entity.vo.ImUserVo;
 import com.fulu.game.core.service.ImService;
+import com.xiaoleilu.hutool.util.CollectionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service("imService")
@@ -57,7 +59,10 @@ public class ImServiceImpl implements ImService {
      * @param users
      */
     @Override
-    public void registUsers(List<ImUser> users) {
+    public List<ImUser> registUsers(List<ImUser> users) {
+        if (CollectionUtil.isEmpty(users)){
+            return null;
+        }
         String token = imUtil.getImToken();
         if (null == token) {
             token = getToken();
@@ -69,7 +74,12 @@ public class ImServiceImpl implements ImService {
         headerMap.put("Content-Type", "application/json");
         String userUrl = imUtil.getUserUrl();
         String body = getUserJsonStr(users);
-        String jsonResult = HttpUtils.post(userUrl, body, headerMap);
+        int status = HttpUtils.post1(userUrl, body, headerMap).getStatus();
+        if (status == 200){
+            return users;
+        }else{
+            return null;
+        }
     }
 
     /**
@@ -106,8 +116,12 @@ public class ImServiceImpl implements ImService {
         JSONArray ja = new JSONArray();
         for (ImUser user : userList) {
             JSONObject jo = new JSONObject();
-            jo.put("username", user.getUsername());
-            jo.put("password", user.getImPsw());
+            String imId = user.getUserId() + "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()).replace("-", "");
+            String imPsw = IMUtil.generatePsw();
+            user.setUsername(imId);
+            user.setImPsw(imPsw);
+            jo.put("username", imId);
+            jo.put("password", imPsw);
             ja.add(jo);
         }
         return ja.toString();

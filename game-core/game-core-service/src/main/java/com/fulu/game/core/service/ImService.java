@@ -25,5 +25,5 @@ public interface ImService {
      * 批量注册im用户
      * @param users
      */
-    void registUsers(List<ImUser> users);
+    List<ImUser> registUsers(List<ImUser> users);
 }
