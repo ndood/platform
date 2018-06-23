@@ -32,10 +32,28 @@
     </resultMap>
 
     <resultMap id="UserResultVOMap" type="com.fulu.game.core.entity.vo.UserVO" extends="UserResultMap">
+        <result column="push_time_interval" property="pushTimeInterval"/>
+    </resultMap>
+
+    <resultMap id="ImUserMap" type="com.fulu.game.core.entity.ImUser">
     </resultMap>
 
     <sql id="Base_Column_List">
         id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,city,province,country,score_avg,constellation,birth,age,im_id,im_psw,source_id </sql>
+
+    <select id="findUserVOByUserIds"  resultMap="UserResultVOMap">
+     SELECT
+        u.*,
+        uia.push_time_interval
+     FROM
+        t_user u
+     LEFT JOIN t_user_info_auth uia ON u.id = uia.user_id
+     WHERE
+	    u.id in
+        <foreach collection="userIds" item="userId" index="index" open="(" close=")" separator=",">
+            #{userId}
+        </foreach>
+    </select>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserResultMap">
         select
@@ -67,6 +85,50 @@
     <select id="findByParameter" resultMap="UserResultMap" parameterType="com.fulu.game.core.entity.vo.UserVO">
         SELECT
         <include refid="Base_Column_List"/>
+        FROM t_user
+        <where>
+            <if test="id != null">
+                id = #{id}
+            </if>
+            <if test="openId != null">
+                open_id = #{openId}
+            </if>
+            <if test="mobile != null">
+                and mobile = #{mobile}
+            </if>
+            <if test="nickname != null">
+                and nickname LIKE CONCAT('%', #{nickname},'%')
+            </if>
+            <if test="idcard != null">
+                and idcard = #{idcard}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="userInfoAuth != null">
+                and user_info_auth = #{userInfoAuth}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="imId != null">
+                and im_id = #{imId}
+            </if>
+            <if test="startTime != null">
+                and create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime}
+            </if>
+            <if test="sourceId != null">
+                and source_id = #{sourceId}
+            </if>
+        </where>
+    </select>
+
+    <select id="countByParameter" resultType="java.lang.Integer" parameterType="com.fulu.game.core.entity.vo.UserVO">
+        SELECT
+        COUNT(1)
         FROM t_user
         <where>
             <if test="id != null">
@@ -220,4 +282,8 @@
             id = #{id}
         </where>
     </update>
+
+    <select id="findImNullUser" resultMap="ImUserMap">
+        SELECT id AS userId,im_id AS username,im_psw as imPsw from t_user WHERE im_id IS NULL OR im_id = ''
+    </select>
 </mapper>

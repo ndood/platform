@@ -5,6 +5,7 @@ import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
+import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.dao.ICommonDao;
@@ -71,11 +72,13 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     @Autowired
     private ChannelCashDetailsService channelCashDetailsService;
 
+    @Autowired
+    private SpringThreadPoolExecutor springThreadPoolExecutor;
+
     @Override
     public ICommonDao<Order, Integer> getDao() {
         return orderDao;
     }
-
 
 
     @Override
@@ -83,16 +86,16 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         if (StringUtils.isBlank(orderBy)) {
             orderBy = "id DESC";
         }
-        if(orderSearchVO.getUserMobile()!=null){
+        if (orderSearchVO.getUserMobile() != null) {
             User user = userService.findByMobile(orderSearchVO.getUserMobile());
-            if(user==null){
+            if (user == null) {
                 throw new ServiceErrorException("用户手机号输入错误!");
             }
             orderSearchVO.setUserId(user.getId());
         }
-        if(orderSearchVO.getServiceUserMobile()!=null){
+        if (orderSearchVO.getServiceUserMobile() != null) {
             User user = userService.findByMobile(orderSearchVO.getServiceUserMobile());
-            if(user==null){
+            if (user == null) {
                 throw new ServiceErrorException("陪玩师手机号输入错误!");
             }
             orderSearchVO.setServiceUserId(user.getId());
@@ -120,10 +123,11 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             orderResVO.setOrderProduct(orderProduct);
             OrderMarketProduct orderMarketProduct = orderMarketProductService.findByOrderNo(orderResVO.getOrderNo());
             orderResVO.setOrderMarketProduct(orderMarketProduct);
+            //添加订单状态
+            orderResVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderResVO.getStatus()));
         }
         return new PageInfo(list);
     }
-
 
 
     @Override
@@ -341,6 +345,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         //创建订单
         Order order = new Order();
         order.setName(product.getProductName() + " " + num + "*" + product.getUnit());
+        order.setType(OrderTypeEnum.PLATFORM.getType());
         order.setOrderNo(generateOrderNo());
         order.setUserId(user.getId());
         order.setServiceUserId(product.getUserId());
@@ -460,8 +465,15 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         }
         //订单支付,扣渠道商流水
         payOrder(order.getOrderNo(), order.getActualMoney());
+
         //推送集市订单给对应陪玩师
-        wxTemplateMsgService.pushMarketOrder(order.getOrderNo());
+        springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                wxTemplateMsgService.pushMarketOrder(order);
+            }
+        });
+
         //把订单缓存到redis里面
         try {
             redisOpenService.hset(RedisKeyEnum.MARKET_ORDER.generateKey(order.getOrderNo()), BeanUtil.beanToMap(order), Constant.TIME_HOUR_TOW);
@@ -542,7 +554,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         userService.isCurrentUser(order.getServiceUserId());
         //只有等待陪玩和已支付的订单才能开始陪玩
         if (!order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus()) || !order.getIsPay()) {
-            throw new OrderException(order.getOrderNo(), "订单未支付或者状态不是等待陪玩!");
+            throw new OrderException(order.getOrderNo(), "订单未支付不能等待陪玩!");
         }
         order.setStatus(OrderStatusEnum.SERVICING.getStatus());
         order.setUpdateTime(new Date());
@@ -584,13 +596,16 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 系统取消订单
-     *
      * @param orderNo
      */
     @Override
     public void systemCancelOrder(String orderNo) {
         log.info("系统取消订单orderNo:{}", orderNo);
         Order order = findByOrderNo(orderNo);
+        if (!order.getStatus().equals(OrderStatusEnum.NON_PAYMENT.getStatus())
+                && !order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())) {
+            throw new OrderException(order.getOrderNo(), "只有等待陪玩和未支付的订单才能取消!");
+        }
         order.setStatus(OrderStatusEnum.SYSTEM_CLOSE.getStatus());
         order.setUpdateTime(new Date());
         order.setCompleteTime(new Date());
@@ -599,7 +614,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         if (order.getIsPay()) {
             orderRefund(order);
         }
-
     }
 
 
@@ -614,7 +628,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         log.info("管理员取消订单orderNo:{};admin:{};", orderNo, admin);
         Order order = findByOrderNo(orderNo);
         if (!order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())
-                && !order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())) {
+                && !order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())
+                && !order.getStatus().equals(OrderStatusEnum.NON_PAYMENT.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有陪玩中和等待陪玩的订单才能取消!");
         }
         order.setStatus(OrderStatusEnum.ADMIN_CLOSE.getStatus());
@@ -658,6 +673,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 用户申诉订单
+     *
      * @param orderNo
      * @param remark
      * @param fileUrl
@@ -681,7 +697,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         //添加申诉文件
         orderDealService.create(orderNo, order.getUserId(), OrderDealTypeEnum.APPEAL.getType(), remark, fileUrl);
         //推送通知给双方
-        if(order.getUserId()!=null){
+        if (order.getUserId() != null) {
             wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_USER_APPEAL);
         }
         wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_SERVER_USER_APPEAL);
@@ -703,8 +719,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         log.info("管理员申诉订单:orderNo:{};remark:{};admin:{};", orderNo, remark, admin);
         Order order = findByOrderNo(orderNo);
         if (!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())
-             && !order.getStatus().equals(OrderStatusEnum.CHECK.getStatus())
-             && !order.getStatus().equals(OrderStatusEnum.NON_PAYMENT.getStatus())) {
+                && !order.getStatus().equals(OrderStatusEnum.CHECK.getStatus())
+                && !order.getStatus().equals(OrderStatusEnum.NON_PAYMENT.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有陪玩中和等待验收的订单才能申诉!");
         }
         order.setStatus(OrderStatusEnum.APPEALING_ADMIN.getStatus());
@@ -742,7 +758,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         //添加验收文件
         orderDealService.create(orderNo, order.getServiceUserId(), OrderDealTypeEnum.CHECK.getType(), remark, fileUrl);
         deleteAlreadyService(order.getServiceUserId());
-        if(order.getUserId()!=null){
+        if (order.getUserId() != null) {
             wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_SERVER_USER_CHECK, order.getName());
         }
         return orderConvertVo(order);
@@ -780,6 +796,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     @Override
     public OrderVO systemCompleteOrder(String orderNo) {
         log.info("系统完成订单orderNo:{}", orderNo);
+
         Order order = findByOrderNo(orderNo);
         if (!order.getStatus().equals(OrderStatusEnum.CHECK.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有待验收订单才能验收!");
@@ -828,7 +845,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         update(order);
         //订单分润
         shareProfit(order);
-        if(order.getUserId()!=null){
+        if (order.getUserId() != null) {
             wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_USER_APPEAL_COMPLETE);
         }
         wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_SERVER_USER_APPEAL_COMPLETE);
@@ -856,7 +873,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         if (order.getIsPay()) {
             orderRefund(order);
         }
-        if(order.getUserId()!=null){
+        if (order.getUserId() != null) {
             wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_USER_APPEAL_REFUND);
         }
         wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_SERVER_USER_APPEAL_REFUND);
@@ -883,7 +900,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setCompleteTime(new Date());
         order.setCommissionMoney(order.getTotalMoney());
         update(order);
-        if(order.getUserId()!=null){
+        if (order.getUserId() != null) {
             wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_SYSTEM_USER_APPEAL_COMPLETE);
         }
         wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_SYSTEM_SERVER_APPEAL_COMPLETE);

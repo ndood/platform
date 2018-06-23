@@ -11,10 +11,7 @@ import com.fulu.game.common.utils.ImgUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserDao;
-import com.fulu.game.core.entity.Admin;
-import com.fulu.game.core.entity.Sharing;
-import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.UserInfoAuth;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
@@ -58,7 +55,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public User findByMobile(String mobile) {
-        if(mobile==null){
+        if (mobile == null) {
             return null;
         }
         UserVO userVO = new UserVO();
@@ -81,7 +78,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public User findByOpenId(String openId) {
-        if(openId==null){
+        if (openId == null) {
             return null;
         }
         UserVO userVO = new UserVO();
@@ -95,7 +92,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public User findByImId(String imId) {
-        if(imId==null){
+        if (imId == null) {
             return null;
         }
         UserVO userVO = new UserVO();
@@ -135,8 +132,16 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
+    public Integer countAllNormalUser() {
+        UserVO param = new UserVO();
+        param.setStatus(UserStatusEnum.NORMAL.getType());
+        int count = userDao.countByParameter(param);
+        return count;
+    }
+
+    @Override
     public List<User> findByUserIds(List<Integer> userIds) {
-        if(userIds==null){
+        if (userIds == null) {
             return new ArrayList<>();
         }
         return userDao.findByUserIds(userIds);
@@ -251,13 +256,15 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             log.error("技能认证分享-未上传主图");
             throw new UserException(UserException.ExceptionCode.MAINPHOTO_NOT_EXIST_EXCEPTION);
         }
+        int gender = GenderEnum.MALE.getType() == userInfoVO.getGender() ? userInfoVO.getGender() : GenderEnum.LADY.getType();
+        userInfoVO.setGender(gender);
         //查询文案信息
         SharingVO sharingVO = new SharingVO();
         sharingVO.setShareType(ShareTypeEnum.TECH_AUTH.getType());
-        sharingVO.setGender(null == userInfoVO.getGender() ? GenderEnum.ASEXUALITY.getType() : userInfoVO.getGender());
+        sharingVO.setGender(gender);
         sharingVO.setStatus(true);
         List<Sharing> shareList = sharingService.findByParam(sharingVO);
-        String shareContent = "";
+        String shareContent;
         if (!CollectionUtil.isEmpty(shareList)) {
             shareContent = shareList.get(0).getContent();
             if (StringUtils.isEmpty(shareContent)) {
@@ -286,13 +293,15 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             log.error("技能认证分享-未上传主图");
             throw new UserException(UserException.ExceptionCode.MAINPHOTO_NOT_EXIST_EXCEPTION);
         }
+        int gender = GenderEnum.MALE.getType() == userInfoVO.getGender() ? userInfoVO.getGender() : GenderEnum.LADY.getType();
+        userInfoVO.setGender(gender);
         //查询文案信息
         SharingVO sharingVO = new SharingVO();
         sharingVO.setShareType(ShareTypeEnum.ORDER_SET.getType());
-        sharingVO.setGender(productDetailsVO.getUserInfo().getGender());
+        sharingVO.setGender(gender);
         sharingVO.setStatus(true);
         List<Sharing> shareList = sharingService.findByParam(sharingVO);
-        String shareStr = "";
+        String shareStr;
         if (!CollectionUtil.isEmpty(shareList)) {
             shareStr = shareList.get(0).getContent();
             if (StringUtils.isEmpty(shareStr)) {
@@ -321,12 +330,12 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         for (String str : tagList) {
             tagStr += str + "、";
         }
-        if (!"".equals(tagStr)){
+        if (!"".equals(tagStr)) {
             tagStr = tagStr.substring(0, tagStr.length() - 1);
         }
         sb.append(tagStr);
-        String title = "";
-        String content = "";
+        String title;
+        String content;
         try {
             JSONObject jo = new JSONObject(shareContent);
             title = jo.getStr("title");
@@ -336,7 +345,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         }
         return ImgUtil.CardImg.builder()
                 .nickname(null == userInfoVO.getNickName() ? "陪玩师" : userInfoVO.getNickName())
-                .gender(null == userInfoVO.getGender() ? GenderEnum.ASEXUALITY.getType() : userInfoVO.getGender())
+                .gender(userInfoVO.getGender())
                 .age(userInfoVO.getAge())
                 .techStr(sb.toString())
                 .mainPicUrl(userInfoVO.getMainPhotoUrl())
@@ -405,7 +414,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         }
         return ImgUtil.CardImg.builder()
                 .nickname(null == userInfoVO.getNickName() ? "陪玩师" : userInfoVO.getNickName())
-                .gender(null == userInfoVO.getGender() ? GenderEnum.ASEXUALITY.getType() : userInfoVO.getGender())
+                .gender(userInfoVO.getGender())
                 .age(userInfoVO.getAge())
                 .city(null == userInfoVO.getCity() ? Constant.DEFAULT_CITY : userInfoVO.getCity())
                 .mainPicUrl(userInfoVO.getMainPhotoUrl())
@@ -416,6 +425,31 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
                 .mainTech(mainTechMap)
                 .secTech(secTechMap)
                 .build();
+    }
+
+    @Override
+    public List<ImUser> findImNullUser() {
+        return userDao.findImNullUser();
+    }
+
+    @Override
+    public void bindIm(ImUser imUser) {
+        if (null == imUser || null == imUser.getUserId()) {
+            return;
+        }
+        User user = userDao.findById(imUser.getUserId());
+        user.setImId(imUser.getUsername());
+        user.setImPsw(imUser.getImPsw());
+        user.setUpdateTime(new Date());
+        userDao.update(user);
+    }
+
+    @Override
+    public List<UserVO> findVOByUserIds(List<Integer> userIds) {
+        if(CollectionUtil.isEmpty(userIds)){
+            return new ArrayList<>();
+        }
+        return userDao.findUserVOByUserIds(userIds);
     }
 
 }

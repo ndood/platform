@@ -7,6 +7,8 @@ import com.fulu.game.core.dao.WechatFormidDao;
 import com.fulu.game.core.entity.WechatFormid;
 import com.fulu.game.core.entity.vo.WechatFormidVO;
 import com.fulu.game.core.service.WechatFormidService;
+import com.github.pagehelper.PageHelper;
+import com.xiaoleilu.hutool.date.DateField;
 import com.xiaoleilu.hutool.date.DateUnit;
 import com.xiaoleilu.hutool.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -60,6 +63,7 @@ public class WechatFormidServiceImpl extends AbsCommonService<WechatFormid, Inte
     }
 
 
+
     public void deleteNotAvailableFormIds(WechatFormid... wechatFormid) {
         if (wechatFormid.length > 0) {
             for (WechatFormid w : wechatFormid) {
@@ -67,6 +71,30 @@ public class WechatFormidServiceImpl extends AbsCommonService<WechatFormid, Inte
                 deleteById(w.getId());
             }
         }
+    }
+
+
+
+    @Override
+    public List<WechatFormidVO> findByUserId(List<Integer> userIds) {
+        //删除表里面过期的formId
+        Date date = DateUtil.offset(new Date(), DateField.HOUR,(-24*7)+1);
+        wechatFormidDao.deleteByExpireTime(date);
+        List<WechatFormidVO> result = new ArrayList<>();
+        for(int i=0;;i=+1000){
+            List<WechatFormidVO> wechatFormidVOS = wechatFormidDao.findByUserIds(userIds,i,1000);
+            result.addAll(wechatFormidVOS);
+            if(wechatFormidVOS.isEmpty()){
+                break;
+            }
+        }
+        return result;
+    }
+
+
+    @Override
+    public void deleteFormIds(String... fromIds) {
+        wechatFormidDao.deleteFormIds(Arrays.asList(fromIds));
     }
 
 }

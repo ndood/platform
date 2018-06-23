@@ -33,6 +33,8 @@ public class OrderResVO extends Order{
 
     private OrderMarketProduct orderMarketProduct; //集市订单商品
 
+    private BigDecimal commissionMoney;
+
     private String statusStr;
 
 

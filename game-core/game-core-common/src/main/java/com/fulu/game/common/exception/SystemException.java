@@ -14,7 +14,7 @@ public class SystemException  extends RuntimeException{
     @AllArgsConstructor
     @Getter
     public enum ExceptionCode{
-        URL_PATH_ERROR(7002, "url路径错误!");
+        URL_PATH_ERROR(1002, "url路径错误!");
         private int code;
         private String msg;
     }

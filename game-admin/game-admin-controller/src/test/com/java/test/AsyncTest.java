@@ -23,17 +23,15 @@ public class AsyncTest {
 
     @Autowired
     private Task task;
-    @Autowired
-    private CouponGroupService couponGroupService;
 
 
 
     @Test
     public void test1()throws Exception{
-        String dateStr = "2018-04-07 00:00:00";
-        Date date = DateUtil.parse(dateStr);
-        Long  result = DateUtil.between(new Date(),date, DateUnit.DAY);
-        System.out.println(result);
+        task.doTaskOne();
+        task.doTaskTwo();
+        task.doTaskThree();
+        System.in.read();
     }
 
 }

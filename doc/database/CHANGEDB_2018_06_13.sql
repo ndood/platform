@@ -105,7 +105,7 @@ CREATE TABLE `t_regist_source`  (
   `wxcode_url` varchar(255) DEFAULT NULL COMMENT '小程序码url',
   `create_time` datetime(0) NOT NULL COMMENT '生成时间',
   `update_time` datetime(0) NOT NULL COMMENT '修改时间',
-  PRIMARY KEY (`id`) USIN   BTREE
+  PRIMARY KEY (`id`)
 ) COMMENT = '注册来源表';
 
 

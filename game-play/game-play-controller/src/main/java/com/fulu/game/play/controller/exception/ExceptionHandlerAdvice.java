@@ -86,7 +86,7 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(OrderException.class)
     public Result orderException(OrderException e) {
         log.error("订单异常:orderNo:{},ex:{};", e.getOrderNo(),e.getMessage());
-        return Result.error().msg(e.getMessage());
+        return Result.error().data("errcode",e.getCode()).msg(e.getMessage());
     }
 
 
@@ -110,13 +110,13 @@ public class ExceptionHandlerAdvice {
      */
     @ExceptionHandler(BizException.class)
     public Result BizException(BizException e) {
-        log.error("业务异常:"+e.getMessage(), e);
+        log.error("业务异常:", e);
         return Result.error().msg(e.getMessage()).data("errcode", e.getCode());
     }
 
     /**
      * 上传文件过大异常
-     * @param ex
+     * @param e
      * @return
      */
     @ExceptionHandler(MultipartException.class)

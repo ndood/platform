@@ -38,7 +38,7 @@
     </select>
 
     <select id="sumByChannelId" resultType="java.math.BigDecimal" parameterType="java.lang.Integer">
-        select sum(money) FROM t_channel_cash_details WHERE channel_id = #{channelId} AND action in(2,3)
+        select IFNULL(sum(money),0) FROM t_channel_cash_details WHERE channel_id = #{channelId} AND action in(2,3)
     </select>
 
     <select id="findByParameter" resultMap="ChannelCashDetailsResultMap"

@@ -91,10 +91,10 @@ public class ApproveServiceImpl extends AbsCommonService<Approve, Integer> imple
         log.info("生成认可记录完成");
         int requireCount = newApproveCount < Constant.DEFAULT_APPROVE_COUNT ? Constant.DEFAULT_APPROVE_COUNT - newApproveCount : 0;
         if (techStatus == TechAuthStatusEnum.NORMAL.getType()) {
-            wxTemplateMsgService.pushWechatTemplateMsg(techOwnerId, WechatTemplateMsgEnum.TECH_AUTH_AUDIT_SUCCESS, user.getNickname(), String.valueOf(requireCount));
+            wxTemplateMsgService.pushWechatTemplateMsg(techOwnerId, WechatTemplateMsgEnum.TECH_AUTH_AUDIT_SUCCESS);
             productService.recoverProductDelFlagByTechAuthId(techAuthId);
         } else {
-            wxTemplateMsgService.pushWechatTemplateMsg(techOwnerId, WechatTemplateMsgEnum.TECH_AUTH_AUDIT_ING);
+            wxTemplateMsgService.pushWechatTemplateMsg(techOwnerId, WechatTemplateMsgEnum.TECH_AUTH_AUDIT_ING, user.getNickname(), String.valueOf(requireCount));
         }
         ApproveVO responseVO = new ApproveVO();
         BeanUtil.copyProperties(approve, responseVO);
