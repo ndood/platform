@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -57,8 +58,8 @@ public class BannerServiceImpl extends AbsCommonService<Banner, Integer> impleme
         if (null == banner) {
             throw new CommonException(CommonException.ExceptionCode.RECORD_NOT_EXSISTS);
         }
-        if (!bannerVO.getPicUrl().equals(banner.getPicUrl())) {
-            ossUtil.deleteFile(bannerVO.getPicUrl());
+        if (!Objects.equals(bannerVO.getPicUrl(),banner.getPicUrl())) {
+            ossUtil.deleteFile(banner.getPicUrl());
         }
         banner.setPicUrl(bannerVO.getPicUrl());
         banner.setRedirectUrl(bannerVO.getRedirectUrl());
