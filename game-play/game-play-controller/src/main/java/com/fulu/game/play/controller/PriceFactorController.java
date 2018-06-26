@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/v1/factor")
@@ -27,7 +29,12 @@ public class PriceFactorController extends BaseController{
         if(priceFactor==null){
             return Result.success().data(1);
         }
-        return Result.success().data(priceFactor.getFactor());
+        BigDecimal factor= priceFactor.getFactor();
+        String[] categoryIds =  priceFactor.getCategoryIds().split(",");
+        Map<String,Object> result = new HashMap<>();
+        result.put("factor",factor);
+        result.put("categoryIds",categoryIds);
+        return Result.success().data(result);
     }
 
 

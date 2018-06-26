@@ -77,9 +77,9 @@ public class OrderController extends BaseController {
                               @RequestParam(required = true) Integer num,
                               String couponNo,
                               String remark){
-
-
-        return Result.success();
+        String ip = RequestUtil.getIpAdrress(request);
+        String  orderNum = orderService.pilotSubmit(productId,num,remark,couponNo,ip);
+        return Result.success().data(orderNum).msg("创建订单成功!");
     }
 
 

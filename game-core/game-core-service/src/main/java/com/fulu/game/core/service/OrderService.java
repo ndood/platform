@@ -89,7 +89,7 @@ public interface OrderService extends ICommonService<Order,Integer>{
      * @param userIp
      * @return
      */
-    OrderVO pilotSubmit(int productId,int num,String remark,String couponNo,String userIp);
+    String pilotSubmit(int productId,int num,String remark,String couponNo,String userIp);
 
     /**
      * 提交集市订单

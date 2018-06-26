@@ -73,6 +73,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     private ChannelCashDetailsService channelCashDetailsService;
     @Autowired
     private PriceFactorService priceFactorService;
+    @Autowired
+    private PilotOrderService pilotOrderService;
 
 
     @Autowired
@@ -410,9 +412,17 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return orderVO;
     }
 
-
+    /**
+     * 领航订单
+     * @param productId
+     * @param num
+     * @param remark
+     * @param couponNo
+     * @param userIp
+     * @return
+     */
     @Override
-    public OrderVO pilotSubmit(int productId, int num, String remark, String couponNo, String userIp) {
+    public String pilotSubmit(int productId, int num, String remark, String couponNo, String userIp) {
         log.info("领航用户提交订单productId:{};num:{};remark:{};couponNo:{};userIp:{};", productId, num, remark,couponNo,userIp);
         User user = userService.getCurrentUser();
         Product product = productService.findById(productId);
@@ -495,18 +505,22 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         orderProduct.setCreateTime(new Date());
         orderProduct.setUpdateTime(new Date());
         orderProductService.create(orderProduct);
-        OrderVO orderVO = new OrderVO();
-        BeanUtil.copyProperties(order, orderVO);
-        orderVO.setOrderProduct(orderProduct);
-        return orderVO;
+
+        //新建领航订单数据
+        PilotOrder pilotOrder = new PilotOrder();
+        BeanUtil.copyProperties(order,pilotOrder);
+        pilotOrder.setProductNum(orderProduct.getAmount());
+        pilotOrder.setProductPrice(product.getPrice());
+        pilotOrder.setPilotProductPrice(product.getPrice().multiply(priceFactor.getFactor()));
+        pilotOrder.setTotalMoney(totalMoney);
+        pilotOrder.setPilotTotalMoney(pilotTotalMoney);
+        pilotOrder.setSpreadMoney(pilotTotalMoney.subtract(totalMoney));
+        pilotOrder.setIsComplete(false);
+        pilotOrderService.create(pilotOrder);
+
+        return order.getOrderNo();
 
     }
-
-
-
-
-
-
 
 
     /**
@@ -919,6 +933,11 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
      */
     public void shareProfit(Order order) {
         BigDecimal serverMoney = order.getTotalMoney().subtract(order.getCommissionMoney());
+        //如果是领航订单则用原始的订单金额给打手分润
+        PilotOrder pilotOrder = pilotOrderService.findByOrderNo(order.getOrderNo());
+        if(pilotOrder!=null){
+            serverMoney = pilotOrder.getTotalMoney().subtract(order.getCommissionMoney());
+        }
         //记录用户加零钱
         moneyDetailsService.orderSave(serverMoney, order.getServiceUserId(), order.getOrderNo());
         //平台记录支付打手流水

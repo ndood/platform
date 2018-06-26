@@ -60,13 +60,12 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         User user = userService.getCurrentUser();
         log.info("创建接单方式:userId:{};techAuthId:{};price:{};unitId:{}", user.getId(), techAuthId, price, unitId);
         UserTechAuth userTechAuth = userTechAuthService.findById(techAuthId);
-        userService.isCurrentUser(userTechAuth.getUserId());
         if (userTechAuth == null) {
             throw new ServiceErrorException("不能设置该技能接单!");
         }
+        userService.isCurrentUser(userTechAuth.getUserId());
         //检查用户技能状态
         userTechAuthService.checkUserTechAuth(techAuthId);
-
         //检查用户认证的状态
         userService.checkUserInfoAuthStatus(user.getId());
 
@@ -113,12 +112,13 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             throw new ServiceErrorException("在线技能不允许修改!");
         }
         Product product = findById(id);
-        userService.isCurrentUser(product.getUserId());
-        //检查用户认证的状态
-        userService.checkUserInfoAuthStatus(product.getUserId());
         if(product==null){
             throw new ProductException(ProductException.ExceptionCode.PRODUCT_REVIEW_ING);
         }
+        userService.isCurrentUser(product.getUserId());
+        //检查用户认证的状态
+        userService.checkUserInfoAuthStatus(product.getUserId());
+
         if (techAuthId != null) {
             if (!product.getTechAuthId().equals(techAuthId)) {
                 List<Product> products = findProductByUserAndSalesMode(product.getUserId(), techAuthId, unitId);

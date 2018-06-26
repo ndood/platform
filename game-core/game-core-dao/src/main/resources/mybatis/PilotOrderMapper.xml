@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.PilotOrderDao">
+    <resultMap id="PilotOrderResultMap" type="com.fulu.game.core.entity.PilotOrder">
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="name" property="name"/>
+        <result column="coupon_no" property="couponNo"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="user_id" property="userId"/>
+        <result column="service_user_id" property="serviceUserId"/>
+        <result column="remark" property="remark"/>
+        <result column="product_num" property="productNum"/>
+        <result column="product_price" property="productPrice"/>
+        <result column="pilot_product_price" property="pilotProductPrice"/>
+        <result column="total_money" property="totalMoney"/>
+        <result column="pilot_total_money" property="pilotTotalMoney"/>
+        <result column="spread_money" property="spreadMoney"/>
+        <result column="is_complete" property="isComplete"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="PilotOrderResultVOMap" type="com.fulu.game.core.entity.vo.PilotOrderVO"
+               extends="PilotOrderResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,order_no,name,coupon_no,category_id,user_id,service_user_id,remark,product_num,product_price,pilot_product_price,total_money,pilot_total_money,spread_money,is_complete,create_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="PilotOrderResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_pilot_order
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="PilotOrderResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_pilot_order
+    </select>
+
+    <select id="findByParameter" resultMap="PilotOrderResultMap"
+            parameterType="com.fulu.game.core.entity.vo.PilotOrderVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_pilot_order
+        <where>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="couponNo != null">
+                and coupon_no = #{couponNo}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="serviceUserId != null">
+                and service_user_id = #{serviceUserId}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <if test="productNum != null">
+                and product_num = #{productNum}
+            </if>
+            <if test="productPrice != null">
+                and product_price = #{productPrice}
+            </if>
+            <if test="pilotProductPrice != null">
+                and pilot_product_price = #{pilotProductPrice}
+            </if>
+            <if test="totalMoney != null">
+                and total_money = #{totalMoney}
+            </if>
+            <if test="pilotTotalMoney != null">
+                and pilot_total_money = #{pilotTotalMoney}
+            </if>
+            <if test="spreadMoney != null">
+                and spread_money = #{spreadMoney}
+            </if>
+            <if test="isComplete != null">
+                and is_complete = #{isComplete}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_pilot_order
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.PilotOrder">
+        insert into
+        t_pilot_order (order_no,name,coupon_no,category_id,user_id,service_user_id,remark,product_num,product_price,pilot_product_price,total_money,pilot_total_money,spread_money,is_complete,create_time)
+        values
+        (#{orderNo},#{name},#{couponNo},#{categoryId},#{userId},#{serviceUserId},#{remark},#{productNum},#{productPrice},#{pilotProductPrice},#{totalMoney},#{pilotTotalMoney},#{spreadMoney},#{isComplete},#{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.PilotOrder">
+        update t_pilot_order
+        <set>
+
+            <if test="orderNo != null">
+                order_no = #{orderNo},
+            </if>
+
+            <if test="name != null">
+                name = #{name},
+            </if>
+
+            <if test="couponNo != null">
+                coupon_no = #{couponNo},
+            </if>
+
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="serviceUserId != null">
+                service_user_id = #{serviceUserId},
+            </if>
+
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+
+            <if test="productNum != null">
+                product_num = #{productNum},
+            </if>
+
+            <if test="productPrice != null">
+                product_price = #{productPrice},
+            </if>
+
+            <if test="pilotProductPrice != null">
+                pilot_product_price = #{pilotProductPrice},
+            </if>
+
+            <if test="totalMoney != null">
+                total_money = #{totalMoney},
+            </if>
+
+            <if test="pilotTotalMoney != null">
+                pilot_total_money = #{pilotTotalMoney},
+            </if>
+
+            <if test="spreadMoney != null">
+                spread_money = #{spreadMoney},
+            </if>
+
+            <if test="isComplete != null">
+                is_complete = #{isComplete},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

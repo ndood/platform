@@ -5,6 +5,7 @@
     <resultMap id="PriceFactorResultMap" type="com.fulu.game.core.entity.PriceFactor">
         <id column="id" property="id"/>
         <result column="factor" property="factor"/>
+        <result column="category_ids" property="categoryIds"/>
         <result column="admin_id" property="adminId"/>
         <result column="admin_name" property="adminName"/>
         <result column="create_time" property="createTime"/>
@@ -15,7 +16,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,factor,admin_id,admin_name,create_time    </sql>
+        id,factor,category_ids,admin_id,admin_name,create_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="PriceFactorResultMap">
         select
@@ -41,6 +42,9 @@
             <if test="factor != null">
                 and factor = #{factor}
             </if>
+            <if test="categoryIds != null">
+                and category_ids = #{categoryIds}
+            </if>
             <if test="adminId != null">
                 and admin_id = #{adminId}
             </if>
@@ -62,9 +66,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.PriceFactor">
         insert into
-        t_price_factor (factor,admin_id,admin_name,create_time)
+        t_price_factor (factor,category_ids,admin_id,admin_name,create_time)
         values
-        (#{factor},#{adminId},#{adminName},#{createTime})
+        (#{factor},#{categoryIds},#{adminId},#{adminName},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.PriceFactor">
@@ -73,6 +77,10 @@
 
             <if test="factor != null">
                 factor = #{factor},
+            </if>
+
+            <if test="categoryIds != null">
+                category_ids = #{categoryIds},
             </if>
 
             <if test="adminId != null">

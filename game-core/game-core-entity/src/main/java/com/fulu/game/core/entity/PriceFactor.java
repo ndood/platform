@@ -10,7 +10,7 @@ import lombok.Data;
  * 价格系数表
  * 
  * @author wangbin
- * @date 2018-06-25 18:07:42
+ * @date 2018-06-26 14:30:55
  */
 @Data
 public class PriceFactor implements Serializable {
@@ -20,6 +20,8 @@ public class PriceFactor implements Serializable {
 	private Integer id;
 	//价格系数
 	private BigDecimal factor;
+	//
+	private String categoryIds;
 	//
 	private Integer adminId;
 	//
