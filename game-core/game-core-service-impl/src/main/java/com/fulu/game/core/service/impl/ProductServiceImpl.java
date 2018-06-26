@@ -157,6 +157,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     @Override
     public void updateByCategory(Category category) {
+        if(category.getName()==null&&category.getIcon()==null){
+            return;
+        }
         productDao.updateByCategory(category);
     }
 
