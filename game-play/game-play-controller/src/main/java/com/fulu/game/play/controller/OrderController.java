@@ -71,6 +71,19 @@ public class OrderController extends BaseController {
     }
 
 
+    @RequestMapping(value = "pilot/submit")
+    public Result pilotSubmit(@RequestParam(required = true) Integer productId,
+                              HttpServletRequest request,
+                              @RequestParam(required = true) Integer num,
+                              String couponNo,
+                              String remark){
+
+
+        return Result.success();
+    }
+
+
+
     /**
      * 订单支付接口
      *

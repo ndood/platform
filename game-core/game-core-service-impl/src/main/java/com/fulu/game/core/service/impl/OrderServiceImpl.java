@@ -71,6 +71,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     private CdkService cdkService;
     @Autowired
     private ChannelCashDetailsService channelCashDetailsService;
+    @Autowired
+    private PriceFactorService priceFactorService;
+
 
     @Autowired
     private SpringThreadPoolExecutor springThreadPoolExecutor;
@@ -406,6 +409,104 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         orderVO.setOrderProduct(orderProduct);
         return orderVO;
     }
+
+
+    @Override
+    public OrderVO pilotSubmit(int productId, int num, String remark, String couponNo, String userIp) {
+        log.info("领航用户提交订单productId:{};num:{};remark:{};couponNo:{};userIp:{};", productId, num, remark,couponNo,userIp);
+        User user = userService.getCurrentUser();
+        Product product = productService.findById(productId);
+        if (product == null) {
+            throw new ProductException(ProductException.ExceptionCode.PRODUCT_NOT_EXIST);
+        }
+        Category category = categoryService.findById(product.getCategoryId());
+        //计算订单总价格
+        BigDecimal totalMoney = product.getPrice().multiply(new BigDecimal(num));
+
+
+        //计算单笔订单佣金
+        BigDecimal commissionMoney = totalMoney.multiply(category.getCharges());
+        if (commissionMoney.compareTo(totalMoney) > 0) {
+            throw new OrderException(category.getName(), "订单错误,佣金比订单总价高!");
+        }
+        //计算领航订单金额
+        PriceFactor priceFactor =  priceFactorService.findByNewPriceFactor();
+        BigDecimal pilotTotalMoney = priceFactor.getFactor().multiply(totalMoney);
+
+        //创建订单
+        Order order = new Order();
+        order.setName(product.getProductName() + " " + num + "*" + product.getUnit());
+        order.setType(OrderTypeEnum.PLATFORM.getType());
+        order.setOrderNo(generateOrderNo());
+        order.setUserId(user.getId());
+        order.setServiceUserId(product.getUserId());
+        order.setCategoryId(product.getCategoryId());
+        order.setRemark(remark);
+        order.setIsPay(false);
+        order.setTotalMoney(pilotTotalMoney);
+        order.setActualMoney(pilotTotalMoney);
+        order.setStatus(OrderStatusEnum.NON_PAYMENT.getStatus());
+        order.setCommissionMoney(commissionMoney);
+        order.setCreateTime(new Date());
+        order.setUpdateTime(new Date());
+        order.setOrderIp(userIp);
+
+        if (order.getUserId().equals(order.getServiceUserId())) {
+            throw new ServiceErrorException("不能给自己下单哦!");
+        }
+        //使用优惠券
+        Coupon coupon = null;
+        if (StringUtils.isNotBlank(couponNo)) {
+            coupon = getCoupon(couponNo);
+            if (coupon == null) {
+                throw new ServiceErrorException("该优惠券不能使用!");
+            }
+            order.setCouponNo(coupon.getCouponNo());
+            order.setCouponMoney(coupon.getDeduction());
+            //判断优惠券金额是否大于订单总额
+            if (coupon.getDeduction().compareTo(order.getTotalMoney()) >= 0) {
+                order.setActualMoney(new BigDecimal(0));
+                order.setCouponMoney(order.getTotalMoney());
+            } else {
+                BigDecimal actualMoney = order.getTotalMoney().subtract(coupon.getDeduction());
+                order.setActualMoney(actualMoney);
+            }
+        }
+
+        //创建订单
+        create(order);
+        //更新优惠券使用状态
+        if (coupon != null) {
+            coupon.setOrderNo(order.getOrderNo());
+            coupon.setIsUse(true);
+            coupon.setUseTime(new Date());
+            coupon.setUseIp(userIp);
+            couponService.update(coupon);
+        }
+
+        //创建订单商品
+        OrderProduct orderProduct = new OrderProduct();
+        orderProduct.setOrderNo(order.getOrderNo());
+        orderProduct.setAmount(num);
+        orderProduct.setUnit(product.getUnit());
+        orderProduct.setPrice(product.getPrice().multiply(priceFactor.getFactor()));
+        orderProduct.setProductId(product.getId());
+        orderProduct.setProductName(order.getName());
+        orderProduct.setCreateTime(new Date());
+        orderProduct.setUpdateTime(new Date());
+        orderProductService.create(orderProduct);
+        OrderVO orderVO = new OrderVO();
+        BeanUtil.copyProperties(order, orderVO);
+        orderVO.setOrderProduct(orderProduct);
+        return orderVO;
+
+    }
+
+
+
+
+
+
 
 
     /**
