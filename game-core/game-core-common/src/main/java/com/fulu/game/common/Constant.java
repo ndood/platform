@@ -12,11 +12,11 @@ public interface Constant {
     Long VERIFYCODE_CACHE_TIME_DEV = 5 * 60L;
     Long VERIFYCODE_CACHE_TIME_DEP = 1 * 60L;
 
-    Long TIME_HOUR_TOW = 2 * 3600L;
-
     Long TIME_MINUTES_FIFTEEN = 15 * 60L;
 
     Long TIME_HOUR_TWO = 2*60 * 60L;
+
+    Long TIME_HOUR_FIVE = 5*60 * 60L;
 
 
     Long TIME_MINUTES_FIVE= 5 * 60L;

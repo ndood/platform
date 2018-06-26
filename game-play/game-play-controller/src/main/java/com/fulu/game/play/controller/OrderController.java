@@ -2,11 +2,14 @@ package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
+import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.exception.SystemException;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.play.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +37,8 @@ public class OrderController extends BaseController {
     private PayService payService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
 
     /**
      * 查询陪玩是否是服务状态
@@ -64,11 +69,26 @@ public class OrderController extends BaseController {
                          HttpServletRequest request,
                          @RequestParam(required = true) Integer num,
                          String couponNo,
+                         String sessionkey,
                          String remark) {
-        String ip = RequestUtil.getIpAdrress(request);
-        OrderVO orderVO = orderService.submit(productId, num, remark, couponNo, ip);
-        return Result.success().data(orderVO.getOrderNo()).msg("创建订单成功!");
+        User user = userService.getCurrentUser();
+        if(sessionkey!=null){
+            if(!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))){
+                log.error("验证sessionkey错误:productId:{};num:{};couponNo:{};sessionkey:{};remark:{};userId:{}",productId,num,couponNo,sessionkey,remark,user.getId());
+                throw new SystemException(SystemException.ExceptionCode.NO_FORM_TOKEN_ERROR);
+            }
+        }
+        try {
+            String ip = RequestUtil.getIpAdrress(request);
+            OrderVO orderVO = orderService.submit(productId, num, remark, couponNo, ip);
+            return Result.success().data(orderVO.getOrderNo()).msg("创建订单成功!");
+        }finally {
+            if(sessionkey!=null){
+                redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));
+            }
+        }
     }
+
 
 
     @RequestMapping(value = "pilot/submit")
@@ -76,17 +96,25 @@ public class OrderController extends BaseController {
                               HttpServletRequest request,
                               @RequestParam(required = true) Integer num,
                               String couponNo,
+                              @RequestParam(required = true) String sessionkey,
                               String remark){
+        User user = userService.getCurrentUser();
+        if(!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))){
+            log.error("验证sessionkey错误:productId:{};num:{};couponNo:{};sessionkey:{};remark:{};userId:{}",productId,num,couponNo,sessionkey,remark,user.getId());
+            throw new SystemException(SystemException.ExceptionCode.NO_FORM_TOKEN_ERROR);
+        };
         String ip = RequestUtil.getIpAdrress(request);
-        String  orderNum = orderService.pilotSubmit(productId,num,remark,couponNo,ip);
-        return Result.success().data(orderNum).msg("创建订单成功!");
+        try {
+            String  orderNum = orderService.pilotSubmit(productId,num,remark,couponNo,ip);
+            return Result.success().data(orderNum).msg("创建订单成功!");
+        }finally {
+            redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));
+        }
     }
-
 
 
     /**
      * 订单支付接口
-     *
      * @param orderNo
      * @return
      */

@@ -591,7 +591,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
         //把订单缓存到redis里面
         try {
-            redisOpenService.hset(RedisKeyEnum.MARKET_ORDER.generateKey(order.getOrderNo()), BeanUtil.beanToMap(order), Constant.TIME_HOUR_TOW);
+            redisOpenService.hset(RedisKeyEnum.MARKET_ORDER.generateKey(order.getOrderNo()), BeanUtil.beanToMap(order), Constant.TIME_HOUR_TWO);
         } catch (Exception e) {
             log.error("订单转map错误:order:{};msg:{};", order, e.getMessage());
         }
@@ -937,7 +937,10 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         PilotOrder pilotOrder = pilotOrderService.findByOrderNo(order.getOrderNo());
         if(pilotOrder!=null){
             serverMoney = pilotOrder.getTotalMoney().subtract(order.getCommissionMoney());
+            pilotOrder.setIsComplete(true);
+            pilotOrderService.update(pilotOrder);
         }
+
         //记录用户加零钱
         moneyDetailsService.orderSave(serverMoney, order.getServiceUserId(), order.getOrderNo());
         //平台记录支付打手流水
@@ -947,7 +950,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 管理员强制完成订单 (打款给打手)
-     *
      * @param orderNo
      * @return
      */

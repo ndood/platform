@@ -26,5 +26,6 @@ CREATE TABLE `t_pilot_order` (
   `spread_money` decimal(11,2) NOT NULL,
   `is_complete` bit(1) NOT NULL DEFAULT b'0' COMMENT '该订单是否完成',
   `create_time` datetime NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `order_no` (`order_no`) USING BTREE
 ) COMMENT='领航订单表';
