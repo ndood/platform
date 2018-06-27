@@ -22,8 +22,16 @@
         <result column="create_time" property="createTime"/>
     </resultMap>
 
-    <resultMap id="PilotOrderResultVOMap" type="com.fulu.game.core.entity.vo.PilotOrderVO"
-               extends="PilotOrderResultMap">
+    <resultMap id="PilotOrderResultVOMap" type="com.fulu.game.core.entity.vo.PilotOrderVO" extends="PilotOrderResultMap">
+        <result column="complete_time" property="completeTime"/>
+        <result column="price" property="price"/>
+        <result column="unit" property="unit"/>
+        <result column="amount" property="amount"/>
+        <result column="actual_money" property="actualMoney"/>
+        <result column="total_money" property="totalMoney"/>
+        <result column="server_money" property="serverMoney"/>
+        <result column="commission_money" property="commissionMoney"/>
+        <result column="create_time" property="createTime"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -43,6 +51,51 @@
         <include refid="Base_Column_List"/>
         from t_pilot_order
     </select>
+
+
+    <select id="findVoList" resultMap="PilotOrderResultVOMap">
+        SELECT
+            po.id,
+            o.complete_time,
+            po.order_no,
+            po.name,
+            po.coupon_no,
+            po.category_id,
+            po.user_id,
+            po.service_user_id,
+            po.remark,
+            po.pilot_product_price,
+            po.pilot_total_money,
+            po.factor,
+            op.price,
+            op.unit,
+            op.amount,
+            o.actual_money,
+            o.total_money,
+            o.server_money,
+            po.product_price,
+            o.commission_money,
+            po.spread_money,
+            po.factor,
+            po.is_complete,
+            o.create_time
+        FROM
+            t_pilot_order po
+        LEFT JOIN t_order o ON po.order_no = o.order_no
+        LEFT JOIN t_order_product op ON op.order_no = po.order_no
+        <where>
+            <if test="orderNo !=null">
+               and po.order_no = #{orderNo}
+            </if>
+            <if test="startTime != null">
+                and o.create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and o.create_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
 
     <select id="findByParameter" resultMap="PilotOrderResultMap"
             parameterType="com.fulu.game.core.entity.vo.PilotOrderVO">

@@ -5,6 +5,7 @@ import com.fulu.game.core.entity.vo.PilotOrderVO;
 
 import java.util.List;
 
+import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -17,5 +18,8 @@ import org.apache.ibatis.annotations.Mapper;
 public interface PilotOrderDao extends ICommonDao<PilotOrder,Integer>{
 
     List<PilotOrder> findByParameter(PilotOrderVO pilotOrderVO);
+
+    List<PilotOrderVO> findVoList(OrderSearchVO orderSearchVO);
+
 
 }

@@ -3,6 +3,10 @@ package com.fulu.game.core.service.impl;
 
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.vo.PilotOrderVO;
+import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +23,22 @@ public class PilotOrderServiceImpl extends AbsCommonService<PilotOrder,Integer> 
 
     @Autowired
 	private PilotOrderDao pilotOrderDao;
+
+
+
+
+    public PageInfo<PilotOrderVO> findVoList(int pageNum,
+                                             int pageSize,
+                                             String orderBy,
+                                             OrderSearchVO orderSearchVO){
+        if (StringUtils.isBlank(orderBy)) {
+            orderBy = "create_time DESC";
+        }
+        PageHelper.startPage(pageNum, pageSize, orderBy);
+        List<PilotOrderVO> list = pilotOrderDao.findVoList(orderSearchVO);
+        return new PageInfo(list);
+    }
+
 
 
 
