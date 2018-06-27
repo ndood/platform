@@ -17,6 +17,7 @@
         <result column="total_money" property="totalMoney"/>
         <result column="pilot_total_money" property="pilotTotalMoney"/>
         <result column="spread_money" property="spreadMoney"/>
+        <result column="factor" property="factor"/>
         <result column="is_complete" property="isComplete"/>
         <result column="create_time" property="createTime"/>
     </resultMap>
@@ -26,7 +27,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,order_no,name,coupon_no,category_id,user_id,service_user_id,remark,product_num,product_price,pilot_product_price,total_money,pilot_total_money,spread_money,is_complete,create_time    </sql>
+        id,order_no,name,coupon_no,category_id,user_id,service_user_id,remark,product_num,product_price,pilot_product_price,total_money,pilot_total_money,spread_money,factor,is_complete,create_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="PilotOrderResultMap">
         select
@@ -106,9 +107,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.PilotOrder">
         insert into
-        t_pilot_order (order_no,name,coupon_no,category_id,user_id,service_user_id,remark,product_num,product_price,pilot_product_price,total_money,pilot_total_money,spread_money,is_complete,create_time)
+        t_pilot_order (order_no,name,coupon_no,category_id,user_id,service_user_id,remark,product_num,product_price,pilot_product_price,total_money,pilot_total_money,spread_money,factor,is_complete,create_time)
         values
-        (#{orderNo},#{name},#{couponNo},#{categoryId},#{userId},#{serviceUserId},#{remark},#{productNum},#{productPrice},#{pilotProductPrice},#{totalMoney},#{pilotTotalMoney},#{spreadMoney},#{isComplete},#{createTime})
+        (#{orderNo},#{name},#{couponNo},#{categoryId},#{userId},#{serviceUserId},#{remark},#{productNum},#{productPrice},#{pilotProductPrice},#{totalMoney},#{pilotTotalMoney},#{spreadMoney},#{factor},#{isComplete},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.PilotOrder">
@@ -162,11 +163,12 @@
             <if test="pilotTotalMoney != null">
                 pilot_total_money = #{pilotTotalMoney},
             </if>
-
             <if test="spreadMoney != null">
                 spread_money = #{spreadMoney},
             </if>
-
+            <if test="factor != null">
+                factor = #{factor},
+            </if>
             <if test="isComplete != null">
                 is_complete = #{isComplete},
             </if>

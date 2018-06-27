@@ -67,35 +67,39 @@ public class Order implements Serializable {
     //实付金额
     @Excel(name = "实付金额", orderNum = "8", width = 15)
     private BigDecimal actualMoney;
+
+    @Excel(name = "支付陪玩师金额", orderNum = "9", width = 15)
+    private BigDecimal serverMoney;
+
     //优惠券金额
-    @Excel(name = "优惠券金额", orderNum = "9", width = 15)
+    @Excel(name = "优惠券金额", orderNum = "10", width = 15)
     private BigDecimal couponMoney;
     //是否支付(1:已支付,2:未支付)
     @JsonIgnore
-    @Excel(name = "支付状态", orderNum = "10", replace = {"已支付_true", "未支付_false"}, width = 15)
+    @Excel(name = "支付状态", orderNum = "11", replace = {"已支付_true", "未支付_false"}, width = 15)
     private Boolean isPay;
     //佣金
     @JsonIgnore
-    @Excel(name = "佣金", orderNum = "11", width = 15)
+    @Excel(name = "佣金", orderNum = "12", width = 15)
     private BigDecimal commissionMoney;
     //订单总额
-    @Excel(name = "订单总额", orderNum = "12", width = 15)
+    @Excel(name = "订单总额", orderNum = "13", width = 15)
     private BigDecimal totalMoney;
 
     //订单创建时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Excel(name = "创建时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "13", width = 35)
+    @Excel(name = "创建时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "14", width = 35)
     private Date createTime;
     //
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
     //订单支付时间
-    @Excel(name = "支付时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "14", width = 35)
+    @Excel(name = "支付时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "15", width = 35)
     private Date payTime;
     //订单完成时间
-    @Excel(name = "完成时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "15", width = 35)
+    @Excel(name = "完成时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "16", width = 35)
     private Date completeTime;
-    @Excel(name = "接单时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "16", width = 35)
+    @Excel(name = "接单时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "17", width = 35)
     private Date receivingTime;
     //下单IP
     private String orderIp;

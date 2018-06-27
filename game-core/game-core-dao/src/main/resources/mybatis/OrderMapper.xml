@@ -18,6 +18,7 @@
         <result column="commission_money" property="commissionMoney"/>
         <result column="total_money" property="totalMoney"/>
         <result column="actual_money" property="actualMoney"/>
+        <result column="server_money" property="serverMoney"/>
         <result column="coupon_money" property="couponMoney"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
@@ -38,7 +39,7 @@
 
 
     <sql id="Base_Column_List">
-        id,order_no,coupon_no,category_id,user_id,service_user_id,name,type,channel_id,remark,is_pay,status,commission_money,total_money,actual_money,coupon_money,create_time,update_time,pay_time,complete_time,order_ip,receiving_time
+        id,order_no,coupon_no,category_id,user_id,service_user_id,name,type,channel_id,remark,is_pay,status,commission_money,total_money,actual_money,server_money,coupon_money,create_time,update_time,pay_time,complete_time,order_ip,receiving_time
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="OrderResultMap">
@@ -314,9 +315,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Order">
         insert into
-        t_order (order_no,coupon_no,category_id,user_id,service_user_id,name,type,channel_id,remark,is_pay,status,commission_money,total_money,actual_money,coupon_money,create_time,update_time,pay_time,complete_time,order_ip,receiving_time)
+        t_order (order_no,coupon_no,category_id,user_id,service_user_id,name,type,channel_id,remark,is_pay,status,commission_money,total_money,actual_money,server_money,coupon_money,create_time,update_time,pay_time,complete_time,order_ip,receiving_time)
         values
-        (#{orderNo},#{couponNo},#{categoryId},#{userId},#{serviceUserId},#{name},#{type},#{channelId},#{remark},#{isPay},#{status},#{commissionMoney},#{totalMoney},#{actualMoney},#{couponMoney},#{createTime},#{updateTime},#{payTime},#{completeTime},#{orderIp},#{receivingTime})
+        (#{orderNo},#{couponNo},#{categoryId},#{userId},#{serviceUserId},#{name},#{type},#{channelId},#{remark},#{isPay},#{status},#{commissionMoney},#{totalMoney},#{actualMoney},#{serverMoney},#{couponMoney},#{createTime},#{updateTime},#{payTime},#{completeTime},#{orderIp},#{receivingTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Order">
@@ -370,6 +371,9 @@
             </if>
             <if test="actualMoney != null">
                 actual_money = #{actualMoney},
+            </if>
+            <if test="serverMoney != null">
+                server_money = #{serverMoney},
             </if>
             <if test="couponMoney != null">
                 coupon_money = #{couponMoney},

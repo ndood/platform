@@ -29,3 +29,10 @@ CREATE TABLE `t_pilot_order` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `order_no` (`order_no`) USING BTREE
 ) COMMENT='领航订单表';
+
+--添加支付陪玩师金额字段
+ALTER TABLE `t_order`
+ADD COLUMN `server_money`  decimal(11,2) NULL COMMENT '支付陪玩师金额' AFTER `actual_money`;
+
+ALTER TABLE `t_pilot_order`
+ADD COLUMN `factor`  decimal(11,2) NULL DEFAULT NULL COMMENT '费率' AFTER `spread_money`

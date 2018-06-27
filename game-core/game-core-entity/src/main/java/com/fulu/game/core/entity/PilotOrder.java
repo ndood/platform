@@ -44,6 +44,8 @@ public class PilotOrder implements Serializable {
 	private BigDecimal pilotTotalMoney;
 	//
 	private BigDecimal spreadMoney;
+	//系数
+	private BigDecimal factor;
 	//该订单是否完成
 	private Boolean isComplete;
 	//

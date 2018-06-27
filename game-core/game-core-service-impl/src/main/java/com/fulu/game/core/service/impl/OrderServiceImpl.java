@@ -347,6 +347,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         if (commissionMoney.compareTo(totalMoney) > 0) {
             throw new OrderException(category.getName(), "订单错误,佣金比订单总价高!");
         }
+
+        BigDecimal serverMoney = totalMoney.subtract(commissionMoney);
+
         //创建订单
         Order order = new Order();
         order.setName(product.getProductName() + " " + num + "*" + product.getUnit());
@@ -359,6 +362,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setIsPay(false);
         order.setTotalMoney(totalMoney);
         order.setActualMoney(totalMoney);
+        order.setServerMoney(serverMoney);
         order.setStatus(OrderStatusEnum.NON_PAYMENT.getStatus());
         order.setCommissionMoney(commissionMoney);
         order.setCreateTime(new Date());
@@ -433,12 +437,15 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         //计算订单总价格
         BigDecimal totalMoney = product.getPrice().multiply(new BigDecimal(num));
 
-
         //计算单笔订单佣金
         BigDecimal commissionMoney = totalMoney.multiply(category.getCharges());
         if (commissionMoney.compareTo(totalMoney) > 0) {
             throw new OrderException(category.getName(), "订单错误,佣金比订单总价高!");
         }
+        //支付打手金额
+        BigDecimal serverMoney = totalMoney.subtract(commissionMoney);
+
+
         //计算领航订单金额
         PriceFactor priceFactor =  priceFactorService.findByNewPriceFactor();
         BigDecimal pilotTotalMoney = priceFactor.getFactor().multiply(totalMoney);
@@ -450,6 +457,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setOrderNo(generateOrderNo());
         order.setUserId(user.getId());
         order.setServiceUserId(product.getUserId());
+        order.setServerMoney(serverMoney);
         order.setCategoryId(product.getCategoryId());
         order.setRemark(remark);
         order.setIsPay(false);
@@ -512,14 +520,13 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         pilotOrder.setProductNum(orderProduct.getAmount());
         pilotOrder.setProductPrice(product.getPrice());
         pilotOrder.setPilotProductPrice(product.getPrice().multiply(priceFactor.getFactor()));
+        pilotOrder.setFactor(priceFactor.getFactor());
         pilotOrder.setTotalMoney(totalMoney);
         pilotOrder.setPilotTotalMoney(pilotTotalMoney);
         pilotOrder.setSpreadMoney(pilotTotalMoney.subtract(totalMoney));
         pilotOrder.setIsComplete(false);
         pilotOrderService.create(pilotOrder);
-
         return order.getOrderNo();
-
     }
 
 
@@ -546,6 +553,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         if (commissionMoney.compareTo(totalMoney) > 0) {
             throw new OrderException(category.getName(), "订单错误,佣金比订单总价高!");
         }
+
+        BigDecimal serverMoney = totalMoney.subtract(commissionMoney);
+
         //创建订单
         Order order = new Order();
         order.setName(orderMarketProduct.getProductName());
@@ -556,6 +566,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setType(OrderTypeEnum.MARKET.getType());
         order.setChannelId(channelId);
         order.setTotalMoney(totalMoney);
+        order.setServerMoney(serverMoney);
         order.setActualMoney(totalMoney);
         order.setStatus(OrderStatusEnum.NON_PAYMENT.getStatus());
         order.setCommissionMoney(commissionMoney);
@@ -788,7 +799,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 用户申诉订单
-     *
      * @param orderNo
      * @param remark
      * @param fileUrl
@@ -904,7 +914,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 系统完成订单
-     *
      * @param orderNo
      * @return
      */
@@ -940,7 +949,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             pilotOrder.setIsComplete(true);
             pilotOrderService.update(pilotOrder);
         }
-
         //记录用户加零钱
         moneyDetailsService.orderSave(serverMoney, order.getServiceUserId(), order.getOrderNo());
         //平台记录支付打手流水

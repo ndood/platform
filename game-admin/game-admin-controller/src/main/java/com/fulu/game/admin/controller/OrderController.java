@@ -32,8 +32,6 @@ public class OrderController extends BaseController {
 
     @Autowired
     private OrderService orderService;
-    @Autowired
-    private OrderProductService orderProductService;
 
     /**
      * 管理员-订单列表
@@ -76,6 +74,11 @@ public class OrderController extends BaseController {
         OrderVO orderVO = orderService.adminHandleNegotiateOrder(orderNo);
         return Result.success().data(orderVO.getOrderNo()).msg("订单完成,协商处理!");
     }
+
+
+
+
+
 
     /**
      * 管理员强制完成订单
