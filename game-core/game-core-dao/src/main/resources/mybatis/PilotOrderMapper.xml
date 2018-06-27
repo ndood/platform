@@ -97,6 +97,19 @@
     </select>
 
 
+    <select id="amountOfProfit" resultType="java.math.BigDecimal">
+        SELECT sum(spread_money) FROM t_pilot_order
+        <where>
+            is_complete = true
+            <if test="startTime != null">
+                and create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
     <select id="findByParameter" resultMap="PilotOrderResultMap"
             parameterType="com.fulu.game.core.entity.vo.PilotOrderVO">
         SELECT
@@ -234,4 +247,6 @@
             id = #{id}
         </where>
     </update>
+
+
 </mapper>

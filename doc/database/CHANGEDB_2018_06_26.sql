@@ -36,3 +36,6 @@ ADD COLUMN `server_money`  decimal(11,2) NULL COMMENT '支付陪玩师金额' AF
 
 ALTER TABLE `t_pilot_order`
 ADD COLUMN `factor`  decimal(11,2) NULL DEFAULT NULL COMMENT '费率' AFTER `spread_money`
+
+--同步之前打手收益为空的数据
+UPDATE `t_order` set `server_money` = `total_money` - `commission_money`

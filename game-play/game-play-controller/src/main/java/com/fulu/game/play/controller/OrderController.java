@@ -42,7 +42,6 @@ public class OrderController extends BaseController {
 
     /**
      * 查询陪玩是否是服务状态
-     *
      * @param productId
      * @return
      */
@@ -56,9 +55,9 @@ public class OrderController extends BaseController {
         return Result.success().msg("陪玩师空闲状态!");
     }
 
+
     /**
      * 提交订单
-     *
      * @param productId
      * @param num
      * @param remark

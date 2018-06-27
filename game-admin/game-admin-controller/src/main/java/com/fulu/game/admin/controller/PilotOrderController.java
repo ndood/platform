@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/pilotorder")
@@ -26,6 +29,14 @@ public class PilotOrderController extends BaseController {
                        OrderSearchVO orderSearchVO) {
         PageInfo pageInfo = pilotOrderService.findVoList(pageNum,pageSize,orderBy,orderSearchVO);
         return Result.success().data(pageInfo).msg("查询列表成功！");
+    }
+
+
+    @RequestMapping("/amount")
+    public Result amountOfProfit(Date startTime,
+                                 Date endTime){
+        BigDecimal amount = pilotOrderService.amountOfProfit(startTime,endTime);
+        return Result.success().data(amount);
     }
 
 

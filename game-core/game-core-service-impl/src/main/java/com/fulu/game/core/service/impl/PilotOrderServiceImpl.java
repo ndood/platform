@@ -15,6 +15,8 @@ import com.fulu.game.core.dao.PilotOrderDao;
 import com.fulu.game.core.entity.PilotOrder;
 import com.fulu.game.core.service.PilotOrderService;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 
@@ -23,9 +25,6 @@ public class PilotOrderServiceImpl extends AbsCommonService<PilotOrder,Integer> 
 
     @Autowired
 	private PilotOrderDao pilotOrderDao;
-
-
-
 
     public PageInfo<PilotOrderVO> findVoList(int pageNum,
                                              int pageSize,
@@ -40,6 +39,11 @@ public class PilotOrderServiceImpl extends AbsCommonService<PilotOrder,Integer> 
     }
 
 
+    @Override
+    public BigDecimal amountOfProfit(Date startTime, Date endTime) {
+        BigDecimal amount = pilotOrderDao.amountOfProfit(startTime,endTime);
+        return amount;
+    }
 
 
     @Override
@@ -54,7 +58,7 @@ public class PilotOrderServiceImpl extends AbsCommonService<PilotOrder,Integer> 
         }
         PilotOrderVO param = new PilotOrderVO();
         param.setOrderNo(orderNo);
-        List<PilotOrder> pilotOrderList =    pilotOrderDao.findByParameter(param);
+        List<PilotOrder> pilotOrderList = pilotOrderDao.findByParameter(param);
         if(pilotOrderList.isEmpty()){
             return null;
         }
