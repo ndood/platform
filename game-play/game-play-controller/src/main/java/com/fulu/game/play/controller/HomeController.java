@@ -26,7 +26,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @Slf4j
@@ -97,14 +99,14 @@ public class HomeController {
             subject.login(playUserToken);
             User cachedUser = userService.getCurrentUser();
             User user = userService.findById(cachedUser.getId());
-            JSONObject jo = new JSONObject();
+            Map<String,Object> jo = new HashMap<>();
             jo.put("token", SubjectUtil.getToken());
             jo.put("type", user.getType());
-            if (StringUtils.isEmpty(user.getMobile())) {
-                return Result.newUser().data(jo).msg("登录成功，请绑定手机号！");
-            } else {
-                return Result.success().data(jo).msg("登录成功!");
-            }
+            jo.put("userId",user.getId());
+            jo.put("imId",user.getImId());
+            jo.put("imPsw",user.getImPsw());
+            jo.put("status",user.getStatus());
+            return Result.success().data(jo).msg("登录成功!");
         } catch (AuthenticationException e) {
             log.error("验证登录异常，异常信息:", e);
             return Result.noLogin().msg("用户验证信息错误！");
@@ -124,9 +126,13 @@ public class HomeController {
             subject.login(playUserToken);
             User cachedUser = (User) SubjectUtil.getCurrentUser();
             User user = userService.findById(cachedUser.getId());
-            JSONObject jo = new JSONObject();
+            Map<String,Object> jo = new HashMap<>();
             jo.put("token", SubjectUtil.getToken());
             jo.put("type", user.getType());
+            jo.put("userId",user.getId());
+            jo.put("imId",user.getImId());
+            jo.put("imPsw",user.getImPsw());
+            jo.put("status",user.getStatus());
             if (StringUtils.isEmpty(user.getMobile())) {
                 return Result.newUser().data(jo).msg("测试登录成功，请绑定手机号！");
             } else {

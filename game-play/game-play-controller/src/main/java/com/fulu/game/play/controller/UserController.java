@@ -181,7 +181,6 @@ public class UserController extends BaseController {
 
     /**
      * 保存微信信息
-     *
      * @param wxUserInfo
      * @return
      */
@@ -208,6 +207,7 @@ public class UserController extends BaseController {
         }
         user.setUpdateTime(new Date());
         userService.update(user);
+        userService.updateRedisUser(user);
         return Result.success().data(user);
     }
 
