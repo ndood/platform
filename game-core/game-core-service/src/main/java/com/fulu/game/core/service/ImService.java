@@ -26,4 +26,8 @@ public interface ImService {
      * @param users
      */
     List<ImUser> registUsers(List<ImUser> users);
+
+
+
+    ImUser registerUser(String imId, String imPsw);
 }

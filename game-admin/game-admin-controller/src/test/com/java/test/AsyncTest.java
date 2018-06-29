@@ -3,7 +3,9 @@ package com.java.test;
 import com.fulu.game.admin.AdminApplication;
 import com.fulu.game.admin.Task;
 import com.fulu.game.core.entity.CouponGroup;
+import com.fulu.game.core.entity.ImUser;
 import com.fulu.game.core.service.CouponGroupService;
+import com.fulu.game.core.service.ImService;
 import com.xiaoleilu.hutool.date.DateUnit;
 import com.xiaoleilu.hutool.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -22,16 +24,16 @@ import java.util.Date;
 public class AsyncTest {
 
     @Autowired
-    private Task task;
+    private ImService imService;
 
 
 
     @Test
     public void test1()throws Exception{
-        task.doTaskOne();
-        task.doTaskTwo();
-        task.doTaskThree();
-        System.in.read();
+        String imId = "s87_20180629";
+        String imPwd = "123456";
+        ImUser imUser =imService.registerUser(imId,imPwd);
+        System.out.println(imUser);
     }
 
 }

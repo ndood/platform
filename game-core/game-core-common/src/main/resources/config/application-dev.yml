@@ -50,12 +50,12 @@ config:
       notifyUrl: http://z3tfsd.natappfree.cc/wechat/pay/callback
     im:
       urlPrefix: http://a1.easemob.com
-      appKey: 1183180421228734#game-play
+      appKey: 1183180421228734#game-test
       orgName: 1183180421228734
-      appName: game-play
+      appName: game-test
       grantType: client_credentials
-      clientId: YXA6551G4EUpEei2mrPeTNnjmw
-      clientSecret: YXA6kyYNbvkZ7zVGFR9cMq-w9Hs1hyI
+      clientId: YXA67o9ZMFQyEeiSanPw4Ca2Vg
+      clientSecret: YXA6R8db_J-6177rU6lJAu7ci2C_X-U
     elasticsearch:
       host: http://10.0.3.105:9200
       readTimeout: 10000

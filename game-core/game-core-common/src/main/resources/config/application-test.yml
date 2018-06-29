@@ -48,6 +48,14 @@ config:
       keyPath: /data/cert/apiclient_cert.p12
       tradeType: JSAPI
       notifyUrl: http://t-api-play.wzpeilian.com/wechat/pay/callback
+    im:
+      urlPrefix: http://a1.easemob.com
+      appKey: 1183180421228734#game-test
+      orgName: 1183180421228734
+      appName: game-test
+      grantType: client_credentials
+      clientId: YXA67o9ZMFQyEeiSanPw4Ca2Vg
+      clientSecret: YXA6R8db_J-6177rU6lJAu7ci2C_X-U
     elasticsearch:
       host: http://es-cn-4590mggyt00026uid.elasticsearch.aliyuncs.com:9200
       readTimeout: 10000

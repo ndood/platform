@@ -189,7 +189,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         user.setCreateTime(new Date());
         user.setUpdateTime(new Date());
         userDao.create(user);
-        SubjectUtil.setCurrentUser(user);
         return user;
     }
 
@@ -446,7 +445,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public List<UserVO> findVOByUserIds(List<Integer> userIds) {
-        if(CollectionUtil.isEmpty(userIds)){
+        if (CollectionUtil.isEmpty(userIds)) {
             return new ArrayList<>();
         }
         return userDao.findUserVOByUserIds(userIds);
