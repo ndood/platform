@@ -1,0 +1,1 @@
+ALTER TABLE t_cdk_group ADD COLUMN remark VARCHAR(255) DEFAULT NULL COMMENT "备注" AFTER channel_name

@@ -13,6 +13,7 @@
         <result column="admin_name" property="adminName"/>
         <result column="channel_id" property="channelId"/>
         <result column="channel_name" property="channelName"/>
+        <result column="remark" property="remark"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
     </resultMap>
@@ -21,7 +22,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,type,category_id,status,price,amount,admin_id,admin_name,channel_id,channel_name,create_time,update_time    </sql>
+        id,type,category_id,status,price,amount,admin_id,admin_name,channel_id,channel_name,remark,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="CdkGroupResultMap">
         select
@@ -64,9 +65,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.CdkGroup">
         insert into
-        t_cdk_group (type,category_id,status,price,amount,admin_id,admin_name,channel_id,channel_name,create_time,update_time)
+        t_cdk_group (type,category_id,status,price,amount,admin_id,admin_name,channel_id,channel_name,remark,create_time,update_time)
         values
-        (#{type},#{categoryId},#{status},#{price},#{amount},#{adminId},#{adminName},#{channelId},#{channelName},#{createTime},#{updateTime})
+        (#{type},#{categoryId},#{status},#{price},#{amount},#{adminId},#{adminName},#{channelId},#{channelName},#{remark},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.CdkGroup">
@@ -107,6 +108,10 @@
 
             <if test="channelName != null">
                 channel_name = #{channelName},
+            </if>
+
+            <if test="remark != null">
+                remark = #{remark},
             </if>
 
             <if test="createTime != null">
