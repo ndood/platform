@@ -30,7 +30,6 @@ public class GlobalController extends BaseController{
     private UserService userService;
 
 
-
     @PostMapping(value = "upload")
     public Result upload(@RequestParam("file") MultipartFile file,String name)throws Exception{
         String fileName =  ossUtil.uploadFile(file.getInputStream(),file.getOriginalFilename());

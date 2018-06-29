@@ -9,6 +9,7 @@ import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.WechatFormidVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.queue.PushMsgQueue;
+import com.xiaoleilu.hutool.date.DateField;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.CollectionUtil;
 import com.xiaoleilu.hutool.util.StrUtil;
@@ -184,23 +185,28 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
                                                    String page,
                                                    WechatTemplateEnum wechatTemplateEnum,
                                                    List<WxMaTemplateMessage.Data> dataList) {
-        List<WechatFormidVO> wechatFormidVOList = wechatFormidService.findByUserId(userIds);
-        if (wechatFormidVOList.isEmpty()) {
-            log.error("推送用户没有可用的formId,userIds:{};", userIds);
-        }
-        List<String> formIds = new ArrayList<>();
-        for (WechatFormidVO wechatFormidVO : wechatFormidVOList) {
-            WxMaTemplateMessage wxMaTemplateMessage = new WxMaTemplateMessage();
-            wxMaTemplateMessage.setTemplateId(wechatTemplateEnum.getType());
-            wxMaTemplateMessage.setToUser(wechatFormidVO.getOpenId());
-            wxMaTemplateMessage.setPage(page);
-            wxMaTemplateMessage.setFormId(wechatFormidVO.getFormId());
-            wxMaTemplateMessage.setData(dataList);
-            pushMsgQueue.addTemplateMessage(new WxMaTemplateMessageVO(pushId, wxMaTemplateMessage));
-            formIds.add(wechatFormidVO.getFormId());
-        }
-        if (formIds.size() > 0) {
-            wechatFormidService.deleteFormIds(formIds.toArray(new String[]{}));
+        //删除表里面过期的formId
+        Date date = DateUtil.offset(new Date(), DateField.HOUR,(-24*7)+1);
+        wechatFormidService.deleteByExpireTime(date);
+        for(int i=0;;i=+1000){
+            List<WechatFormidVO> wechatFormidVOS = wechatFormidService.findByUserIds(userIds,i,1000);
+            if(wechatFormidVOS.isEmpty()){
+                break;
+            }
+            List<String> formIds = new ArrayList<>();
+            for (WechatFormidVO wechatFormidVO : wechatFormidVOS) {
+                WxMaTemplateMessage wxMaTemplateMessage = new WxMaTemplateMessage();
+                wxMaTemplateMessage.setTemplateId(wechatTemplateEnum.getType());
+                wxMaTemplateMessage.setToUser(wechatFormidVO.getOpenId());
+                wxMaTemplateMessage.setPage(page);
+                wxMaTemplateMessage.setFormId(wechatFormidVO.getFormId());
+                wxMaTemplateMessage.setData(dataList);
+                pushMsgQueue.addTemplateMessage(new WxMaTemplateMessageVO(pushId, wxMaTemplateMessage));
+                formIds.add(wechatFormidVO.getFormId());
+            }
+            if (formIds.size() > 0) {
+                wechatFormidService.deleteFormIds(formIds.toArray(new String[]{}));
+            }
         }
     }
 
