@@ -10,12 +10,13 @@ import java.util.List;
 
 /**
  * 用户表
+ *
  * @author wangbin
  * @email ${email}
  * @date 2018-04-20 11:12:12
  */
 @Mapper
-public interface UserDao extends ICommonDao<User,Integer>{
+public interface UserDao extends ICommonDao<User, Integer> {
 
     List<User> findByParameter(UserVO userVO);
 
@@ -23,6 +24,7 @@ public interface UserDao extends ICommonDao<User,Integer>{
 
     /**
      * 批量查询用户
+     *
      * @param userIds
      * @return
      */
@@ -32,8 +34,11 @@ public interface UserDao extends ICommonDao<User,Integer>{
 
     /**
      * 查询userVo,vo包含用户推送间隔字段
+     *
      * @param userIds
      * @return
      */
-    List<UserVO> findUserVOByUserIds(@Param(value = "userIds")List<Integer> userIds);
+    List<UserVO> findUserVOByUserIds(@Param(value = "userIds") List<Integer> userIds);
+
+    List<UserVO> findBySearch(UserVO userVO);
 }

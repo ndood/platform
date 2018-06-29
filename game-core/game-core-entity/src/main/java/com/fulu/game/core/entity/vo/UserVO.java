@@ -20,5 +20,7 @@ public class UserVO extends User {
     private Date startTime;
 
     private Date endTime;
+    //注册来源名
+    private String sourceName;
 
 }

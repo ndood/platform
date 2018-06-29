@@ -11,6 +11,7 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserInfoAuthReject;
 import com.fulu.game.core.entity.UserTechAuthReject;
 import com.fulu.game.core.entity.vo.*;
+import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
@@ -54,10 +55,8 @@ public class UserController extends BaseController {
     @PostMapping(value = "/info-auth/list")
     public Result userInfoAuthList(@RequestParam("pageNum") Integer pageNum,
                                    @RequestParam("pageSize") Integer pageSize,
-                                   @RequestParam(value = "startTime", required = false) String startTime,
-                                   @RequestParam(value = "endTime", required = false) String endTime,
-                                   @RequestParam(value = "mobile", required = false) String mobile) {
-        PageInfo<UserInfoAuthVO> pageInfo = userInfoAuthService.list(pageNum, pageSize, null, mobile, startTime, endTime);
+                                   UserInfoAuthSearchVO userInfoAuthSearchVO) {
+        PageInfo<UserInfoAuthVO> pageInfo = userInfoAuthService.list(pageNum, pageSize, userInfoAuthSearchVO);
         return Result.success().data(pageInfo);
     }
 
@@ -328,11 +327,16 @@ public class UserController extends BaseController {
     public Result list(UserVO userVO,
                        @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                        @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
-        PageInfo<User> userList = userService.list(userVO, pageNum, pageSize);
+        PageInfo<UserVO> userList = userService.list(userVO, pageNum, pageSize);
         return Result.success().data(userList).msg("查询用户列表成功！");
     }
 
-
+    /**
+     * 添加用户
+     *
+     * @param userVO
+     * @return
+     */
     @PostMapping("/save")
     public Result save(UserVO userVO) {
         if (StringUtils.isEmpty(userVO.getMobile())) {

@@ -65,6 +65,7 @@ public interface UserService extends ICommonService<User, Integer> {
 
     /**
      * 查询所有正常用户的数量
+     *
      * @return
      */
     Integer countAllNormalUser();
@@ -99,7 +100,7 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param pageSize
      * @return
      */
-    PageInfo<User> list(UserVO userVO, Integer pageNum, Integer pageSize);
+    PageInfo<UserVO> list(UserVO userVO, Integer pageNum, Integer pageSize);
 
     /**
      * 新增用户
@@ -115,7 +116,7 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param openId
      * @return
      */
-    User createNewUser(String openId, Integer sourceId);
+    User createNewUser(String openId, Integer sourceId, String host);
 
     /**
      * 获取当前登录用户
@@ -170,12 +171,14 @@ public interface UserService extends ICommonService<User, Integer> {
 
     /**
      * 查询imid为空的用户
+     *
      * @return
      */
     List<ImUser> findImNullUser();
 
     /**
      * 绑定im信息
+     *
      * @param imUser
      */
     void bindIm(ImUser imUser);

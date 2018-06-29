@@ -73,6 +73,9 @@ public class User implements Serializable {
     private String imPsw;
     @Excel(name = "来源Id", orderNum = "8", width = 15)
     private Integer sourceId;
+    private String registIp;
+    private String loginIp;
+    private Date loginTime;
 
     //创建时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

@@ -181,6 +181,7 @@ public class UserController extends BaseController {
 
     /**
      * 保存微信信息
+     *
      * @param wxUserInfo
      * @return
      */
@@ -242,6 +243,9 @@ public class UserController extends BaseController {
             if (mobileUser.getOpenId() != null) {
                 return Result.error().msg("该手机号已经被绑定！");
             } else {
+                // todo 测试后台添加的用户进去注册
+                mobileUser.setRegistIp(currentUser.getRegistIp());
+
                 mobileUser.setOpenId(currentUser.getOpenId());
                 mobileUser.setUpdateTime(new Date());
                 userService.update(mobileUser);

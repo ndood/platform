@@ -171,9 +171,10 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public PageInfo<User> list(UserVO userVO, Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize, "create_time DESC");
-        List<User> list = userDao.findByParameter(userVO);
+    public PageInfo<UserVO> list(UserVO userVO, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize, "u.create_time DESC");
+        //List<User> list = userDao.findByParameter(userVO);
+        List<UserVO> list = userDao.findBySearch(userVO);
         return new PageInfo(list);
     }
 
@@ -194,8 +195,11 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public User createNewUser(String openId, Integer sourceId) {
+    public User createNewUser(String openId, Integer sourceId, String host) {
         UserVO user = new UserVO();
+        user.setRegistIp(host);
+        user.setLoginIp(host);
+        user.setLoginTime(new Date());
         user.setSourceId(sourceId);
         user.setOpenId(openId);
         return createNewUser(user);
@@ -446,7 +450,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public List<UserVO> findVOByUserIds(List<Integer> userIds) {
-        if(CollectionUtil.isEmpty(userIds)){
+        if (CollectionUtil.isEmpty(userIds)) {
             return new ArrayList<>();
         }
         return userDao.findUserVOByUserIds(userIds);

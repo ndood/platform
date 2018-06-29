@@ -4,6 +4,7 @@ import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +28,8 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
 
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private UserService userService;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -47,6 +51,11 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
         String dBOpenId = user.getOpenId();
         //登录成功保存token和用户信息到redis
         if (paramOpenId.equals(dBOpenId)) {
+            //todo 测试登录ip和时间
+            user.setLoginIp(userToken.getHost());
+            user.setLoginTime(new Date());
+            userService.update(user);
+            
             Map<String, Object> userMap = new HashMap<>();
             userMap = BeanUtil.beanToMap(user);
             String gToken = GenIdUtil.GetToken();

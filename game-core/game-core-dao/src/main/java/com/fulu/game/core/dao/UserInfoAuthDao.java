@@ -2,8 +2,7 @@ package com.fulu.game.core.dao;
 
 import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
-
-
+import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -11,15 +10,16 @@ import java.util.List;
 
 /**
  * 信息认证表
+ *
  * @author wangbin
- * @email ${email}
  * @date 2018-04-20 11:12:13
  */
 @Mapper
-public interface UserInfoAuthDao extends ICommonDao<UserInfoAuth,Integer>{
+public interface UserInfoAuthDao extends ICommonDao<UserInfoAuth, Integer> {
 
     List<UserInfoAuth> findByParameter(UserInfoAuthVO userInfoAuthVO);
 
+    List<UserInfoAuth> findBySearchVO(UserInfoAuthSearchVO userInfoAuthSearchVO);
 
     List<UserInfoAuth> findByUserIds(@Param(value = "userIds") List<Integer> userIds);
 

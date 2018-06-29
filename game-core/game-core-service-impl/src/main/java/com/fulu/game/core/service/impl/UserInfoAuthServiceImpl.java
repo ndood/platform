@@ -15,6 +15,7 @@ import com.fulu.game.core.entity.vo.TagVO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
+import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -22,7 +23,6 @@ import com.xiaoleilu.hutool.util.BeanUtil;
 import com.xiaoleilu.hutool.util.CollectionUtil;
 import com.xiaoleilu.hutool.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -443,18 +443,10 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
 
     @Override
-    public PageInfo<UserInfoAuthVO> list(Integer pageNum, Integer pageSize, String orderBy, String mobile, String startTime, String endTime) {
-        if (StringUtils.isBlank(orderBy)) {
-            orderBy = "update_time desc";
-        }
+    public PageInfo<UserInfoAuthVO> list(Integer pageNum, Integer pageSize, UserInfoAuthSearchVO userInfoAuthSearchVO) {
         List<UserInfoAuthVO> userInfoAuthVOList = new ArrayList<>();
-        PageHelper.startPage(pageNum, pageSize, orderBy);
-        //List<UserInfoAuth> userInfoAuths = findAll();
-        UserInfoAuthVO requestVo = new UserInfoAuthVO();
-        requestVo.setMobile(mobile);
-        requestVo.setStartTime(startTime);
-        requestVo.setEndTime(endTime);
-        List<UserInfoAuth> userInfoAuths = userInfoAuthDao.findByParameter(requestVo);
+        PageHelper.startPage(pageNum, pageSize, userInfoAuthSearchVO.getOrderBy());
+        List<UserInfoAuth> userInfoAuths = userInfoAuthDao.findBySearchVO(userInfoAuthSearchVO);
         for (UserInfoAuth userInfoAuth : userInfoAuths) {
             UserInfoAuthVO userInfoAuthVO = new UserInfoAuthVO();
             BeanUtil.copyProperties(userInfoAuth, userInfoAuthVO);
@@ -612,9 +604,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         update(userInfoAuth);
         List<UserInfoAuthFile> dbPicFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthId, FileTypeEnum.PIC.getType());
         Iterator<UserInfoAuthFile> dbIt = dbPicFiles.iterator();
-        while (dbIt.hasNext()){
+        while (dbIt.hasNext()) {
             UserInfoAuthFile file = dbIt.next();
-            if(!portraitUrlList.contains(file.getUrl())){
+            if (!portraitUrlList.contains(file.getUrl())) {
                 userInfoAuthFileService.deleteFile(file);
                 dbIt.remove();
             }
@@ -630,15 +622,15 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
                 userInfoAuthFile.setType(FileTypeEnum.PIC.getType());
                 userInfoAuthFileService.create(userInfoAuthFile);
             }
-        }else{
-            for(int i=0;i<portraitUrlList.size();i++){
+        } else {
+            for (int i = 0; i < portraitUrlList.size(); i++) {
                 try {
                     UserInfoAuthFile file = dbPicFiles.get(i);
-                    if(!Objects.equals(file.getUrl(),portraitUrlList.get(i))){
+                    if (!Objects.equals(file.getUrl(), portraitUrlList.get(i))) {
                         file.setUrl(portraitUrlList.get(i));
                         userInfoAuthFileService.update(file);
                     }
-                }catch (IndexOutOfBoundsException e){
+                } catch (IndexOutOfBoundsException e) {
                     UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
                     userInfoAuthFile.setUrl(portraitUrlList.get(i));
                     userInfoAuthFile.setInfoAuthId(userInfoAuthId);
