@@ -4,14 +4,12 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
-import org.apache.tomcat.util.http.fileupload.FileUploadBase;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 
 @ControllerAdvice
@@ -45,13 +43,14 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 404错误
+     *
      * @param e
      * @return
      */
     @ExceptionHandler(org.springframework.web.servlet.NoHandlerFoundException.class)
     public Result noHandlerFoundException(org.springframework.web.servlet.NoHandlerFoundException e) {
         log.error(e.getMessage(), e);
-        return Result.error().msg("没找找到页面");
+        return Result.error().msg("未找到对应页面");
     }
 
     /**
@@ -68,6 +67,7 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 业务错误,直接提示给用户
+     *
      * @param e
      * @return
      */
@@ -85,13 +85,13 @@ public class ExceptionHandlerAdvice {
      */
     @ExceptionHandler(OrderException.class)
     public Result orderException(OrderException e) {
-        log.error("订单异常:orderNo:{},ex:{};", e.getOrderNo(),e.getMessage());
-        return Result.error().data("errcode",e.getCode()).msg(e.getMessage());
+        log.error("订单异常:orderNo:{},ex:{};", e.getOrderNo(), e.getMessage());
+        return Result.error().data("errcode", e.getCode()).msg(e.getMessage());
     }
-
 
     /**
      * 用户认证异常
+     *
      * @param e
      * @return
      */
@@ -101,10 +101,9 @@ public class ExceptionHandlerAdvice {
         return Result.error().msg(e.getMessage()).data("errcode", e.getCode());
     }
 
-
-
     /**
      * 业务异常的父类
+     *
      * @param e
      * @return
      */
@@ -116,6 +115,7 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 上传文件过大异常
+     *
      * @param e
      * @return
      */
@@ -125,9 +125,9 @@ public class ExceptionHandlerAdvice {
         return Result.error().msg("上传文件不能超过5M");
     }
 
-
     /**
      * 生成小程序码错误
+     *
      * @param e
      * @return
      */
@@ -139,6 +139,7 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 生成小程序码错误
+     *
      * @param e
      * @return
      */
@@ -148,9 +149,9 @@ public class ExceptionHandlerAdvice {
         return Result.error(e.getCode()).msg(e.getMessage());
     }
 
-
     /**
      * 统一异常
+     *
      * @param e
      * @return
      */
