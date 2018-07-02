@@ -45,15 +45,15 @@
     <sql id="Base_Column_List">
         id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,city,province,country,score_avg,constellation,birth,age,im_id,im_psw,source_id,regist_ip,login_ip,login_time </sql>
 
-    <select id="findUserVOByUserIds"  resultMap="UserResultVOMap">
-     SELECT
+    <select id="findUserVOByUserIds" resultMap="UserResultVOMap">
+        SELECT
         u.*,
         uia.push_time_interval
-     FROM
+        FROM
         t_user u
-     LEFT JOIN t_user_info_auth uia ON u.id = uia.user_id
-     WHERE
-	    u.id in
+        LEFT JOIN t_user_info_auth uia ON u.id = uia.user_id
+        WHERE
+        u.id in
         <foreach collection="userIds" item="userId" index="index" open="(" close=")" separator=",">
             #{userId}
         </foreach>

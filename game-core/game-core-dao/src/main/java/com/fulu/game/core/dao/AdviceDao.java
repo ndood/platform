@@ -17,4 +17,5 @@ public interface AdviceDao extends ICommonDao<Advice, Integer> {
 
     List<Advice> findByParameter(AdviceVO adviceVO);
 
+    List<AdviceVO> listByParam(AdviceVO adviceVO);
 }

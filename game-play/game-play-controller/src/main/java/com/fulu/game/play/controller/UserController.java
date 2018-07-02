@@ -10,10 +10,7 @@ import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
-import com.fulu.game.core.entity.Product;
-import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.UserComment;
-import com.fulu.game.core.entity.UserTechAuth;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
@@ -479,10 +476,13 @@ public class UserController extends BaseController {
 
     @PostMapping("/advice/add")
     public Result addAdvice(@RequestParam("content") String content,
-                            @RequestParam("contact") String contact,
-                            @RequestParam("advicePicUrls") String[] advicePicUrls) {
-        adviceService.addAdvice(content, contact, advicePicUrls);
-        return Result.success().msg("提交成功");
+                            @RequestParam(value = "contact",required = false) String contact,
+                            @RequestParam(value = "advicePicUrls",required = false) String[] advicePicUrls) {
+        if (content == null){
+            return Result.error().msg("请填写建议内容");
+        }
+        Advice advice = adviceService.addAdvice(content, contact, advicePicUrls);
+        return Result.success().data(advice).msg("提交成功");
     }
 
 

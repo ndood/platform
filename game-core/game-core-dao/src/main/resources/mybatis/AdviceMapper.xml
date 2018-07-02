@@ -60,6 +60,33 @@
         </where>
     </select>
 
+    <select id="listByParam" resultMap="AdviceResultVOMap" parameterType="com.fulu.game.core.entity.vo.AdviceVO">
+        SELECT a.*,GROUP_CONCAT( af.url ) as urls
+        FROM t_advice a
+        LEFT JOIN t_advice_file af ON a.id = af.advice_id
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="nickname != null">
+                and nickname LIKE CONCAT ('%', #{nickname},'%')
+            </if>
+            <if test="contact != null">
+                and contact LIKE CONCAT ('%', #{contact},'%')
+            </if>
+            <if test="startTime != null">
+                and create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime}
+            </if>
+        </where>
+        GROUP BY a.id
+    </select>
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_advice
         <where>

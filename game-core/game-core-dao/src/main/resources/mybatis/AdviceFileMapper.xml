@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.AdviceFileDao">
+    <resultMap id="AdviceFileResultMap" type="com.fulu.game.core.entity.AdviceFile">
+        <id column="id" property="id"/>
+        <result column="advice_id" property="adviceId"/>
+        <result column="url" property="url"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="AdviceFileResultVOMap" type="com.fulu.game.core.entity.vo.AdviceFileVO"
+               extends="AdviceFileResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,advice_id,url,create_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="AdviceFileResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_advice_file
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="AdviceFileResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_advice_file
+    </select>
+
+    <select id="findByParameter" resultMap="AdviceFileResultMap"
+            parameterType="com.fulu.game.core.entity.vo.AdviceFileVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_advice_file
+        <where>
+            <if test="adviceId != null">
+                and advice_id = #{adviceId}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_advice_file
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.AdviceFile">
+        insert into
+        t_advice_file (advice_id,url,create_time)
+        values
+        (#{adviceId},#{url},#{createTime})
+    </insert>
+
+    <insert id="insertList" parameterType="java.util.List">
+        insert into
+        t_advice_file (advice_id,url,create_time)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.adviceId},
+            #{item.url},
+            #{item.createTime}
+            )
+        </foreach>
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.AdviceFile">
+        update t_advice_file
+        <set>
+
+            <if test="adviceId != null">
+                advice_id = #{adviceId},
+            </if>
+
+            <if test="url != null">
+                url = #{url},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

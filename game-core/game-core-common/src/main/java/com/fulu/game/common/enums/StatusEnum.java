@@ -5,11 +5,11 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum StatusEnum implements TypeEnum<String>{
+public enum StatusEnum implements TypeEnum<Integer> {
 
-    ADVICE_WAIT(0,"待处理"),
-    ADVICE_MARKED(1,"标记"),
-    ADVICE_SOLVED(2,"已处理");
+    ADVICE_WAIT(0, "待处理"),
+    ADVICE_MARKED(1, "标记"),
+    ADVICE_SOLVED(2, "已处理");
 
     private Integer type;
     private String msg;
