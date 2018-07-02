@@ -3,6 +3,7 @@ package com.fulu.game.core.entity.vo;
 import com.fulu.game.core.entity.User;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -22,5 +23,8 @@ public class UserVO extends User {
     private Date endTime;
     //注册来源名
     private String sourceName;
+
+    private BigDecimal paySum;
+    private Integer orderCount;
 
 }

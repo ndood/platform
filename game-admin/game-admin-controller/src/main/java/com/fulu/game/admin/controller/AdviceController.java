@@ -37,8 +37,8 @@ public class AdviceController {
      * @return
      */
     @PostMapping("/list")
-    public Result list(@RequestParam("pageNum") Integer pageNum,
-                       @RequestParam("pageSize") Integer pageSize,
+    public Result list(@RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+                       @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
                        AdviceVO adviceVO) {
         PageInfo<AdviceVO> page = adviceService.list(pageNum, pageSize, adviceVO);
         return Result.success().data(page).msg("查询成功");

@@ -37,6 +37,8 @@
     <resultMap id="UserResultVOMap" type="com.fulu.game.core.entity.vo.UserVO" extends="UserResultMap">
         <result column="push_time_interval" property="pushTimeInterval"/>
         <result column="source_name" property="sourceName"/>
+        <result column="pay_sum" property="paySum"/>
+        <result column="order_count" property="orderCount"/>
     </resultMap>
 
     <resultMap id="ImUserMap" type="com.fulu.game.core.entity.ImUser">
@@ -133,9 +135,14 @@
     <select id="findBySearch" resultMap="UserResultVOMap" parameterType="com.fulu.game.core.entity.vo.UserVO">
         SELECT
         u.*,
-        rs.`name` as source_name
-        FROM t_user u
+        rs.name AS source_name,
+        IFNULL(sum(o.actual_money),0) AS pay_sum,
+        count(o.user_id) AS order_count
+        FROM
+        t_user u
         LEFT JOIN t_regist_source rs ON u.source_id = rs.id
+        LEFT JOIN (SELECT user_id,actual_money FROM t_order WHERE status &gt;=500 AND status &lt;= 600) o ON
+        u.id=o.user_id
         <where>
             <if test="id != null">
                 u.id = #{id}
@@ -155,8 +162,8 @@
             <if test="endTime != null">
                 and u.create_time &lt;= #{endTime}
             </if>
-
         </where>
+        GROUP BY u.id
     </select>
 
     <select id="countByParameter" resultType="java.lang.Integer" parameterType="com.fulu.game.core.entity.vo.UserVO">
