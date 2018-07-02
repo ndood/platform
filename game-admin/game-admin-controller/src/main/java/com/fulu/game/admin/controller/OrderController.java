@@ -32,12 +32,9 @@ public class OrderController extends BaseController {
 
     @Autowired
     private OrderService orderService;
-    @Autowired
-    private OrderProductService orderProductService;
 
     /**
      * 管理员-订单列表
-     *
      * @param orderSearchVO
      * @return
      */

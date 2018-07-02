@@ -10,10 +10,7 @@ import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
-import com.fulu.game.core.entity.Product;
-import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.UserComment;
-import com.fulu.game.core.entity.UserTechAuth;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
@@ -55,6 +52,8 @@ public class UserController extends BaseController {
     private OssUtil ossUtil;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private ImService imService;
 
     @RequestMapping("tech/list")
     public Result userTechList() {
@@ -181,7 +180,6 @@ public class UserController extends BaseController {
 
     /**
      * 保存微信信息
-     *
      * @param wxUserInfo
      * @return
      */
@@ -208,6 +206,7 @@ public class UserController extends BaseController {
         }
         user.setUpdateTime(new Date());
         userService.update(user);
+        userService.updateRedisUser(user);
         return Result.success().data(user);
     }
 
@@ -320,30 +319,38 @@ public class UserController extends BaseController {
 
 
     @PostMapping("/im/save")
-    public Result imSave(@RequestParam("status") int status,
+    public Result imSave(@RequestParam("status") Integer status,
                          @RequestParam("imId") String imId,
                          @RequestParam("imPsw") String imPsw,
                          @RequestParam(value = "errorMsg", required = false) String errorMsg) {
-        log.info("IM注册请求开始,请求参数 status={},imId={},imPsw={},errorMsg={}", status, imId, imPsw, errorMsg);
-        int userId = userService.getCurrentUser().getId();
-        log.info("缓存中用户id={}", userId);
+        User user = userService.findById(userService.getCurrentUser().getId());
+        if (null == user) {
+            log.info("当前用户id={}查询数据库不存在，无法绑定", userService.getCurrentUser().getId());
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+        log.info("IM注册请求开始,请求参数status:{},user:{},imId={},imPsw={},errorMsg={}", user,status, imId, imPsw, errorMsg);
+        if(user.getImId()!=null){
+            log.info("用户IM信息已经存在:user:{};",user);
+            return Result.success().data(user).msg("已存在IM账号");
+        }
         if (status == 200) {
-            User user = userService.findById(userId);
-            if (null == user) {
-                log.info("当前用户id={}查询数据库不存在，无法绑定", userId);
-                throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
-            }
             user.setImId(imId);
             user.setImPsw(imPsw);
             user.setUpdateTime(new Date());
             userService.update(user);
             userService.updateRedisUser(user);
-            log.info("用户{}绑定IM信息成功", userId);
+            log.info("用户:{}绑定IM信息成功:user:{};", user.getId(),user);
         } else if (status == 500) {
-            log.error("用户:{}绑定IM失败,失败原因:{}", userId, errorMsg);
-            return Result.error(ResultStatus.IM_REGIST_FAIL).msg("IM用户注册失败！");
+            String newIMId = "s"+imId;
+            ImUser imUser = imService.registerUser(newIMId,imPsw);
+            user.setImId(imUser.getUsername());
+            user.setImPsw(imUser.getImPsw());
+            user.setUpdateTime(new Date());
+            userService.update(user);
+            userService.updateRedisUser(user);
+            log.error("用户:{}绑定IM失败,失败原因:{}", user, errorMsg);
         }
-        return Result.success().msg("IM用户信息保存成功！");
+        return Result.success().data(user).msg("IM用户信息保存成功！");
     }
 
     /**

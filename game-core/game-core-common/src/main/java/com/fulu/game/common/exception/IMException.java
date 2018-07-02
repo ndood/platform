@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-public class SystemException  extends RuntimeException{
+public class IMException extends BizException{
+
 
     private ExceptionCode exceptionCode;
 
@@ -14,12 +15,12 @@ public class SystemException  extends RuntimeException{
     @AllArgsConstructor
     @Getter
     public enum ExceptionCode{
-        NO_FORM_TOKEN_ERROR(503, "页面超时,需要重新刷新页面后再尝试!");
+        IM_REGISTER_FAIL(8001, "聊天暂时功能不可用,请联系客服!");
         private int code;
         private String msg;
     }
 
-    public SystemException(ExceptionCode exceptionCode) {
+    public IMException(ExceptionCode exceptionCode) {
         super();
         this.code = exceptionCode.getCode();
         this.message = exceptionCode.getMsg();

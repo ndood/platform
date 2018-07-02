@@ -81,6 +81,17 @@ public interface OrderService extends ICommonService<Order,Integer>{
     OrderVO submit(int productId,int num,String remark,String couponNo,String userIp);
 
     /**
+     * 领航网吧订单提交
+     * @param productId
+     * @param num
+     * @param remark
+     * @param couponNo
+     * @param userIp
+     * @return
+     */
+    String pilotSubmit(int productId,int num,String remark,String couponNo,String userIp);
+
+    /**
      * 提交集市订单
      * @param channelId
      * @param orderMarketProduct

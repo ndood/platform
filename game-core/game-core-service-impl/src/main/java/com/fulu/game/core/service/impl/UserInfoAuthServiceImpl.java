@@ -109,6 +109,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             }
             userInfoAuth.setIsRejectSubmit(false);
             userInfoAuth.setCreateTime(new Date());
+            userInfoAuth.setPushTimeInterval(30F);
             create(userInfoAuth);
         } else {
             update(userInfoAuth);

@@ -74,22 +74,18 @@ public class WechatFormidServiceImpl extends AbsCommonService<WechatFormid, Inte
     }
 
 
-
-    @Override
-    public List<WechatFormidVO> findByUserId(List<Integer> userIds) {
-        //删除表里面过期的formId
-        Date date = DateUtil.offset(new Date(), DateField.HOUR,(-24*7)+1);
-        wechatFormidDao.deleteByExpireTime(date);
-        List<WechatFormidVO> result = new ArrayList<>();
-        for(int i=0;;i=+1000){
-            List<WechatFormidVO> wechatFormidVOS = wechatFormidDao.findByUserIds(userIds,i,1000);
-            result.addAll(wechatFormidVOS);
-            if(wechatFormidVOS.isEmpty()){
-                break;
-            }
-        }
-        return result;
+    public List<WechatFormidVO> findByUserIds(List<Integer> userIds,
+                                              int offset,
+                                              int size){
+        List<WechatFormidVO> wechatFormidVOS = wechatFormidDao.findByUserIds(userIds,offset,size);
+        return wechatFormidVOS;
     }
+
+
+    public void deleteByExpireTime(Date date){
+        wechatFormidDao.deleteByExpireTime(date);
+    }
+
 
 
     @Override

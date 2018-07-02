@@ -3,6 +3,8 @@ package com.fulu.game.core.entity.vo;
 import com.fulu.game.core.entity.User;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * 用户表
  *
@@ -12,8 +14,11 @@ import lombok.Data;
 @Data
 public class UserVO extends User {
 
-    private String startTime;
-    private String endTime;
+    //推送时间间隔
+    private Float pushTimeInterval;
 
-    private String sessionKey;
+    private Date startTime;
+
+    private Date endTime;
+
 }

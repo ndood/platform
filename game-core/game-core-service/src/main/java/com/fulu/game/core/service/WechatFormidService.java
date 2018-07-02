@@ -3,6 +3,7 @@ package com.fulu.game.core.service;
 import com.fulu.game.core.entity.WechatFormid;
 import com.fulu.game.core.entity.vo.WechatFormidVO;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -20,13 +21,20 @@ public interface WechatFormidService extends ICommonService<WechatFormid,Integer
 
     void  deleteNotAvailableFormIds(WechatFormid ... wechatFormid);
 
-
     /**
-     * 批量查询用户的formID和openId
-     * @param userIds  用户ID列表,如果为NULL则查询全部用户的formId
+     * 分页查询formID
+     * @param userIds
+     * @param offset
+     * @param size
      * @return
      */
-    List<WechatFormidVO> findByUserId(List<Integer> userIds);
+    List<WechatFormidVO> findByUserIds(List<Integer> userIds, int offset, int size);
+
+    /**
+     * 删除过期的formID
+     * @param date
+     */
+    void deleteByExpireTime(Date date);
 
 
     void deleteFormIds(String... fromIds);

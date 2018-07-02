@@ -2,6 +2,7 @@ package com.fulu.game.common.utils;
 
 
 import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
 
 import java.util.Map;
 
@@ -21,18 +22,17 @@ public class HttpUtils {
      * @return
      */
     public static String get(String url, Map paramMap) {
-        return get(url, paramMap, null);
+        return get(url, paramMap, null).body();
     }
 
     /**
      * 简单post
-     *
      * @param url
      * @param paramMap
      * @return
      */
     public static String post(String url, Map paramMap) {
-        return post(url, paramMap, null);
+        return post(url, paramMap, null).body();
     }
 
     /**
@@ -42,11 +42,11 @@ public class HttpUtils {
      * @param paramMap
      * @return
      */
-    public static String get(String url, Map paramMap, Map header) {
+    public static HttpResponse get(String url, Map paramMap, Map header) {
         return HttpRequest.get(url)
                 .addHeaders(header)
                 .form(paramMap)
-                .execute().body();
+                .execute();
     }
 
     /**
@@ -56,19 +56,19 @@ public class HttpUtils {
      * @param paramMap
      * @return
      */
-    public static String post(String url, Map paramMap, Map header) {
+    public static HttpResponse post(String url, Map paramMap, Map header) {
         return HttpRequest.post(url)
                 .addHeaders(header)
                 .form(paramMap)
-                .execute()
-                .body();
+                .execute();
+
     }
 
-    public static String post(String url, String body , Map header) {
+
+    public static HttpResponse post(String url, String body , Map header) {
         return HttpRequest.post(url)
                 .addHeaders(header)
                 .body(body)
-                .execute()
-                .body();
+                .execute();
     }
 }

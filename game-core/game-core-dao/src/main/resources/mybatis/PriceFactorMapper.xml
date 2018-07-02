@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.PriceFactorDao">
+    <resultMap id="PriceFactorResultMap" type="com.fulu.game.core.entity.PriceFactor">
+        <id column="id" property="id"/>
+        <result column="factor" property="factor"/>
+        <result column="category_ids" property="categoryIds"/>
+        <result column="admin_id" property="adminId"/>
+        <result column="admin_name" property="adminName"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="PriceFactorResultVOMap" type="com.fulu.game.core.entity.vo.PriceFactorVO"
+               extends="PriceFactorResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,factor,category_ids,admin_id,admin_name,create_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="PriceFactorResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_price_factor
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="PriceFactorResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_price_factor
+    </select>
+
+    <select id="findByParameter" resultMap="PriceFactorResultMap"
+            parameterType="com.fulu.game.core.entity.vo.PriceFactorVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_price_factor
+        <where>
+            <if test="factor != null">
+                and factor = #{factor}
+            </if>
+            <if test="categoryIds != null">
+                and category_ids = #{categoryIds}
+            </if>
+            <if test="adminId != null">
+                and admin_id = #{adminId}
+            </if>
+            <if test="adminName != null">
+                and admin_name = #{adminName}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_price_factor
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.PriceFactor">
+        insert into
+        t_price_factor (factor,category_ids,admin_id,admin_name,create_time)
+        values
+        (#{factor},#{categoryIds},#{adminId},#{adminName},#{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.PriceFactor">
+        update t_price_factor
+        <set>
+
+            <if test="factor != null">
+                factor = #{factor},
+            </if>
+
+            <if test="categoryIds != null">
+                category_ids = #{categoryIds},
+            </if>
+
+            <if test="adminId != null">
+                admin_id = #{adminId},
+            </if>
+
+            <if test="adminName != null">
+                admin_name = #{adminName},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

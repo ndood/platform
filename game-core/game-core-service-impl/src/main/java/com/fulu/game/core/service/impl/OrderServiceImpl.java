@@ -71,6 +71,11 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     private CdkService cdkService;
     @Autowired
     private ChannelCashDetailsService channelCashDetailsService;
+    @Autowired
+    private PriceFactorService priceFactorService;
+    @Autowired
+    private PilotOrderService pilotOrderService;
+
 
     @Autowired
     private SpringThreadPoolExecutor springThreadPoolExecutor;
@@ -342,6 +347,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         if (commissionMoney.compareTo(totalMoney) > 0) {
             throw new OrderException(category.getName(), "订单错误,佣金比订单总价高!");
         }
+
+        BigDecimal serverMoney = totalMoney.subtract(commissionMoney);
+
         //创建订单
         Order order = new Order();
         order.setName(product.getProductName() + " " + num + "*" + product.getUnit());
@@ -354,6 +362,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setIsPay(false);
         order.setTotalMoney(totalMoney);
         order.setActualMoney(totalMoney);
+        order.setServerMoney(serverMoney);
         order.setStatus(OrderStatusEnum.NON_PAYMENT.getStatus());
         order.setCommissionMoney(commissionMoney);
         order.setCreateTime(new Date());
@@ -407,6 +416,119 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return orderVO;
     }
 
+    /**
+     * 领航订单
+     * @param productId
+     * @param num
+     * @param remark
+     * @param couponNo
+     * @param userIp
+     * @return
+     */
+    @Override
+    public String pilotSubmit(int productId, int num, String remark, String couponNo, String userIp) {
+        log.info("领航用户提交订单productId:{};num:{};remark:{};couponNo:{};userIp:{};", productId, num, remark,couponNo,userIp);
+        User user = userService.getCurrentUser();
+        Product product = productService.findById(productId);
+        if (product == null) {
+            throw new ProductException(ProductException.ExceptionCode.PRODUCT_NOT_EXIST);
+        }
+        Category category = categoryService.findById(product.getCategoryId());
+        //计算订单总价格
+        BigDecimal totalMoney = product.getPrice().multiply(new BigDecimal(num));
+
+        //计算单笔订单佣金
+        BigDecimal commissionMoney = totalMoney.multiply(category.getCharges());
+        if (commissionMoney.compareTo(totalMoney) > 0) {
+            throw new OrderException(category.getName(), "订单错误,佣金比订单总价高!");
+        }
+        //支付打手金额
+        BigDecimal serverMoney = totalMoney.subtract(commissionMoney);
+
+
+        //计算领航订单金额
+        PriceFactor priceFactor =  priceFactorService.findByNewPriceFactor();
+        BigDecimal pilotTotalMoney = priceFactor.getFactor().multiply(totalMoney);
+
+        //创建订单
+        Order order = new Order();
+        order.setName(product.getProductName() + " " + num + "*" + product.getUnit());
+        order.setType(OrderTypeEnum.PLATFORM.getType());
+        order.setOrderNo(generateOrderNo());
+        order.setUserId(user.getId());
+        order.setServiceUserId(product.getUserId());
+        order.setServerMoney(serverMoney);
+        order.setCategoryId(product.getCategoryId());
+        order.setRemark(remark);
+        order.setIsPay(false);
+        order.setTotalMoney(pilotTotalMoney);
+        order.setActualMoney(pilotTotalMoney);
+        order.setStatus(OrderStatusEnum.NON_PAYMENT.getStatus());
+        order.setCommissionMoney(commissionMoney);
+        order.setCreateTime(new Date());
+        order.setUpdateTime(new Date());
+        order.setOrderIp(userIp);
+
+        if (order.getUserId().equals(order.getServiceUserId())) {
+            throw new ServiceErrorException("不能给自己下单哦!");
+        }
+        //使用优惠券
+        Coupon coupon = null;
+        if (StringUtils.isNotBlank(couponNo)) {
+            coupon = getCoupon(couponNo);
+            if (coupon == null) {
+                throw new ServiceErrorException("该优惠券不能使用!");
+            }
+            order.setCouponNo(coupon.getCouponNo());
+            order.setCouponMoney(coupon.getDeduction());
+            //判断优惠券金额是否大于订单总额
+            if (coupon.getDeduction().compareTo(order.getTotalMoney()) >= 0) {
+                order.setActualMoney(new BigDecimal(0));
+                order.setCouponMoney(order.getTotalMoney());
+            } else {
+                BigDecimal actualMoney = order.getTotalMoney().subtract(coupon.getDeduction());
+                order.setActualMoney(actualMoney);
+            }
+        }
+
+        //创建订单
+        create(order);
+        //更新优惠券使用状态
+        if (coupon != null) {
+            coupon.setOrderNo(order.getOrderNo());
+            coupon.setIsUse(true);
+            coupon.setUseTime(new Date());
+            coupon.setUseIp(userIp);
+            couponService.update(coupon);
+        }
+
+        //创建订单商品
+        OrderProduct orderProduct = new OrderProduct();
+        orderProduct.setOrderNo(order.getOrderNo());
+        orderProduct.setAmount(num);
+        orderProduct.setUnit(product.getUnit());
+        orderProduct.setPrice(product.getPrice().multiply(priceFactor.getFactor()));
+        orderProduct.setProductId(product.getId());
+        orderProduct.setProductName(order.getName());
+        orderProduct.setCreateTime(new Date());
+        orderProduct.setUpdateTime(new Date());
+        orderProductService.create(orderProduct);
+
+        //新建领航订单数据
+        PilotOrder pilotOrder = new PilotOrder();
+        BeanUtil.copyProperties(order,pilotOrder);
+        pilotOrder.setProductNum(orderProduct.getAmount());
+        pilotOrder.setProductPrice(product.getPrice());
+        pilotOrder.setPilotProductPrice(product.getPrice().multiply(priceFactor.getFactor()));
+        pilotOrder.setFactor(priceFactor.getFactor());
+        pilotOrder.setTotalMoney(totalMoney);
+        pilotOrder.setPilotTotalMoney(pilotTotalMoney);
+        pilotOrder.setSpreadMoney(pilotTotalMoney.subtract(totalMoney));
+        pilotOrder.setIsComplete(false);
+        pilotOrderService.create(pilotOrder);
+        return order.getOrderNo();
+    }
+
 
     /**
      * 提交集市订单
@@ -431,6 +553,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         if (commissionMoney.compareTo(totalMoney) > 0) {
             throw new OrderException(category.getName(), "订单错误,佣金比订单总价高!");
         }
+
+        BigDecimal serverMoney = totalMoney.subtract(commissionMoney);
+
         //创建订单
         Order order = new Order();
         order.setName(orderMarketProduct.getProductName());
@@ -441,6 +566,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setType(OrderTypeEnum.MARKET.getType());
         order.setChannelId(channelId);
         order.setTotalMoney(totalMoney);
+        order.setServerMoney(serverMoney);
         order.setActualMoney(totalMoney);
         order.setStatus(OrderStatusEnum.NON_PAYMENT.getStatus());
         order.setCommissionMoney(commissionMoney);
@@ -470,13 +596,13 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
             @Override
             public void run() {
-                wxTemplateMsgService.pushMarketOrder(order.getOrderNo());
+                wxTemplateMsgService.pushMarketOrder(order);
             }
         });
 
         //把订单缓存到redis里面
         try {
-            redisOpenService.hset(RedisKeyEnum.MARKET_ORDER.generateKey(order.getOrderNo()), BeanUtil.beanToMap(order), Constant.TIME_HOUR_TOW);
+            redisOpenService.hset(RedisKeyEnum.MARKET_ORDER.generateKey(order.getOrderNo()), BeanUtil.beanToMap(order), Constant.TIME_HOUR_TWO);
         } catch (Exception e) {
             log.error("订单转map错误:order:{};msg:{};", order, e.getMessage());
         }
@@ -673,7 +799,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 用户申诉订单
-     *
      * @param orderNo
      * @param remark
      * @param fileUrl
@@ -789,7 +914,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 系统完成订单
-     *
      * @param orderNo
      * @return
      */
@@ -818,6 +942,13 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
      */
     public void shareProfit(Order order) {
         BigDecimal serverMoney = order.getTotalMoney().subtract(order.getCommissionMoney());
+        //如果是领航订单则用原始的订单金额给打手分润
+        PilotOrder pilotOrder = pilotOrderService.findByOrderNo(order.getOrderNo());
+        if(pilotOrder!=null){
+            serverMoney = pilotOrder.getTotalMoney().subtract(order.getCommissionMoney());
+            pilotOrder.setIsComplete(true);
+            pilotOrderService.update(pilotOrder);
+        }
         //记录用户加零钱
         moneyDetailsService.orderSave(serverMoney, order.getServiceUserId(), order.getOrderNo());
         //平台记录支付打手流水
@@ -827,7 +958,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 管理员强制完成订单 (打款给打手)
-     *
      * @param orderNo
      * @return
      */

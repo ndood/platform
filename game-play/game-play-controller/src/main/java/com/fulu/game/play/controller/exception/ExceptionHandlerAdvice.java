@@ -137,6 +137,17 @@ public class ExceptionHandlerAdvice {
         return Result.error().msg("生成小程序码错误");
     }
 
+    /**
+     * 生成小程序码错误
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(SystemException.class)
+    public Result handleSystemException(SystemException e) {
+        log.error("系统异常:{}", e.getMessage());
+        return Result.error(e.getCode()).msg(e.getMessage());
+    }
+
 
     /**
      * 统一异常

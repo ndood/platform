@@ -5,6 +5,7 @@ import com.aliyun.oss.model.CannedAccessControlList;
 import com.aliyun.oss.model.DeleteObjectsRequest;
 import com.aliyun.oss.model.DeleteObjectsResult;
 import com.aliyun.oss.model.PutObjectRequest;
+import com.fulu.game.common.UploadException;
 import com.fulu.game.common.exception.SystemException;
 import com.fulu.game.common.properties.Config;
 import com.xiaoleilu.hutool.date.DateUtil;
@@ -144,7 +145,7 @@ public class OssUtil {
             url = new URL(fileUrl);
         } catch (Exception e) {
             log.error("fileUrl:{}",fileUrl);
-            throw new SystemException(SystemException.ExceptionCode.URL_PATH_ERROR);
+            throw new UploadException(UploadException.ExceptionCode.URL_PATH_ERROR);
         }
         return url.getPath().substring(1);
     }

@@ -334,19 +334,12 @@ public class ImgUtil {
      * @return
      */
     private String getGenderAndAge(Integer gender, Integer age) {
-        if (GenderEnum.ASEXUALITY.getType() == gender || GenderEnum.MALE.getType() == gender) {
-            return GenderEnum.SYMBOL_MALE.getMsg() + (null == age ? "未设置" : age);
-        } else {
-            return GenderEnum.SYMBOL_LADY.getMsg() + (null == age ? "未设置" : age);
-        }
+        return (GenderEnum.MALE.getType() == gender ? GenderEnum.SYMBOL_MALE.getMsg() : GenderEnum.SYMBOL_LADY.getMsg()) +
+                (null == age ? "保密" : age);
     }
 
     private Color getGenderColor(Integer gender) {
-        if (gender.intValue() == GenderEnum.LADY.getType()) {
-            return FEMALE_COLOR;
-        } else {
-            return MALE_COLOR;
-        }
+        return (GenderEnum.MALE.getType() == gender ? MALE_COLOR : FEMALE_COLOR);
     }
 
     private void drawRect(Graphics2D g, Color c, int x, int y, int width, int height) {
@@ -391,7 +384,7 @@ public class ImgUtil {
         if (!EmojiTools.containsEmoji(str)) {
             g.setFont(font);
             g.drawString(str, x, y);
-            return getContentLength(str,g);
+            return getContentLength(str, g);
         } else {
             int start = x;
             java.util.List<String> list = EmojiTools.splitEmoji(str);
@@ -404,7 +397,7 @@ public class ImgUtil {
                 g.drawString(list.get(i), start, y);
                 start += getContentLength(list.get(i), g);
             }
-            return start-x;
+            return start - x;
         }
     }
 

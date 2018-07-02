@@ -10,11 +10,12 @@ public class IMUtil {
 
     @Autowired
     private Config configProperties;
-
     private String imToken;
+    private final int PSW_LENGTH = 6;
 
     /**
      * 请求token的url拼接
+     *
      * @return
      */
     public String getTokenUrl() {
@@ -31,6 +32,7 @@ public class IMUtil {
 
     /**
      * 请求user的url拼接
+     *
      * @return
      */
     public String getUserUrl() {
@@ -51,6 +53,28 @@ public class IMUtil {
         jo.addProperty("client_id", configProperties.getIm().getClientId());
         jo.addProperty("client_secret", configProperties.getIm().getClientSecret());
         return jo.toString();
+    }
+
+    /**
+     * 生成随机密码
+     *
+     * @return
+     */
+    public static String generatePsw() {
+        String code = "";
+        String model = "0123456789abcdefghijklmnopqrstuvwxyz";
+        char[] m = model.toCharArray();
+        for (int j = 0; j < 6; j++) {
+            char c = m[(int) (Math.random() * 36)];
+            // 保证六位随机数之间没有重复的
+            if (code.contains(String.valueOf(c))) {
+                j--;
+                continue;
+            }
+            code = code + c;
+        }
+        return code;
+
     }
 
     public void setImToken(String token) {
