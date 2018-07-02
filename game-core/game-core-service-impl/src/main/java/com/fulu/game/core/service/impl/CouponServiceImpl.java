@@ -98,12 +98,12 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         User user = userService.getCurrentUser();
         CouponVO couponVO = new CouponVO();
         couponVO.setIsUse(isUse);
-        couponVO.setOverdue(overdue);
         couponVO.setUserId(user.getId());
-        String orderBy = null;
+        String orderBy;
         if (isUse) {
             orderBy = "use_time desc";
         } else {
+            couponVO.setOverdue(overdue);
             orderBy = "receive_time desc";
         }
         //已過期的必須是未使用的

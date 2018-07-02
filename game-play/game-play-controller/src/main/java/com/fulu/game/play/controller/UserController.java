@@ -55,6 +55,8 @@ public class UserController extends BaseController {
     private OssUtil ossUtil;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private AdviceService adviceService;
 
     @RequestMapping("tech/list")
     public Result userTechList() {
@@ -474,5 +476,14 @@ public class UserController extends BaseController {
         String techCardUrl = userService.getTechShareCard(scene, productId);
         return Result.success().data("techCardUrl", techCardUrl);
     }
+
+    @PostMapping("/advice/add")
+    public Result addAdvice(@RequestParam("content") String content,
+                            @RequestParam("contact") String contact,
+                            @RequestParam("advicePicUrls") String[] advicePicUrls) {
+        adviceService.addAdvice(content, contact, advicePicUrls);
+        return Result.success().msg("提交成功");
+    }
+
 
 }
