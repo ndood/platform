@@ -8,6 +8,7 @@ import com.fulu.game.core.entity.UserInfoAuthFile;
 import com.fulu.game.core.entity.UserInfoFile;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -78,6 +79,10 @@ public class UserInfoAuthVO extends UserInfoAuth {
     @JsonIgnore
     private String endTime;
 
+    //总服务金额
+    private BigDecimal moneySum;
+    //总单数
+    private Integer orderCount;
 
     public String getUserInfoAuthStr() {
         return UserInfoAuthStatusEnum.getMsgByType(getUserInfoAuth());

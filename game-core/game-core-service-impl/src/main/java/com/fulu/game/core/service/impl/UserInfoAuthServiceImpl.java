@@ -450,16 +450,12 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         for (UserInfoAuth userInfoAuth : userInfoAuths) {
             UserInfoAuthVO userInfoAuthVO = new UserInfoAuthVO();
             BeanUtil.copyProperties(userInfoAuth, userInfoAuthVO);
-            User user = userService.findById(userInfoAuthVO.getUserId());
-            userInfoAuthVO.setUserInfoAuth(user.getUserInfoAuth());
-
-            copyUserInfo2InfoAuthVo(user, userInfoAuthVO);
             //查询身份证信息
-            List<UserInfoFile> userInfoFileList = userInfoFileService.findByUserId(user.getId());
+            List<UserInfoFile> userInfoFileList = userInfoFileService.findByUserId(userInfoAuthVO.getUserId());
             userInfoAuthVO.setIdCardList(userInfoFileList);
             //查询写真信息和声音
             copyAuthFile2InfoAuthVo(userInfoAuthVO);
-            List<TagVO> allPersonTagVos = findAllUserTag(user.getId(), true);
+            List<TagVO> allPersonTagVos = findAllUserTag(userInfoAuthVO.getUserId(), true);
             userInfoAuthVO.setGroupTags(allPersonTagVos);
 
             userInfoAuthVOList.add(userInfoAuthVO);

@@ -18,6 +18,15 @@
 
     <resultMap id="UserInfoAuthResultVOMap" type="com.fulu.game.core.entity.vo.UserInfoAuthVO"
                extends="UserInfoAuthResultMap">
+        <result column="money_sum" property="moneySum"/>
+        <result column="order_count" property="orderCount"/>
+        <result column="user_info_auth" property="userInfoAuth"/>
+        <result column="head_portraits_url" property="headUrl"/>
+        <result column="idcard" property="idCard"/>
+        <result column="gender" property="gender"/>
+        <result column="realname" property="realname"/>
+        <result column="age" property="age"/>
+        <result column="nickname" property="nickname"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -87,28 +96,43 @@
         </where>
     </select>
 
-    <select id="findBySearchVO" resultMap="UserInfoAuthResultMap"
+    <select id="findBySearchVO" resultMap="UserInfoAuthResultVOMap"
             parameterType="com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO">
         SELECT
-        <include refid="Base_Column_List"/>
-        FROM t_user_info_auth
+        uia.*,
+        u.user_info_auth,
+        u.head_portraits_url,
+        u.idcard,
+        u.gender,
+        u.realname,
+        u.age,
+        u.nickname,
+        IFNULL( sum( o.actual_money ), 0 ) AS money_sum,
+        count( o.user_id ) AS order_count
+        FROM
+        t_user_info_auth uia
+        LEFT JOIN t_user u ON uia.user_id = u.id
+        LEFT JOIN ( SELECT user_id, actual_money FROM t_order WHERE STATUS &gt;= 500 AND STATUS &lt;= 600 ) o ON
+        uia.user_id = o.user_id
         <where>
             <if test="userId != null">
-                and user_id = #{userId}
+                and uia.user_id = #{userId}
             </if>
             <if test="mobile != null">
-                and mobile = #{mobile}
+                and uia.mobile = #{mobile}
             </if>
             <if test="nickname != null">
-                and nickname LIKE CONCAT('%', #{nickname},'%')
+                and u.nickname LIKE CONCAT('%', #{nickname},'%')
             </if>
             <if test="startTime != null">
-                and update_time &gt;= #{startTime}
+                and uia.update_time &gt;= #{startTime}
             </if>
             <if test="endTime != null">
-                and update_time &lt;= #{endTime}
+                and uia.update_time &lt;= #{endTime}
             </if>
         </where>
+        GROUP BY
+        uia.id
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">
