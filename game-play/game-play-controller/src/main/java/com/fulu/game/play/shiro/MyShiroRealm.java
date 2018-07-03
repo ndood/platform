@@ -56,7 +56,5 @@ public class MyShiroRealm extends AuthorizingRealm {
             log.info("创建openId为{}的用户", openId);
         }
         return new SimpleAuthenticationInfo(user, user.getOpenId(), getName());
-
     }
-
 }

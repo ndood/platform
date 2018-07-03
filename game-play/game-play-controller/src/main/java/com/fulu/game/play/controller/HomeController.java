@@ -16,7 +16,6 @@ import com.fulu.game.play.shiro.PlayUserToken;
 import com.fulu.game.play.utils.RequestUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import com.xiaoleilu.hutool.util.CollectionUtil;
-import com.xiaoleilu.hutool.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import org.apache.commons.lang.StringUtils;
@@ -40,10 +39,8 @@ public class HomeController {
     private WxMaService wxService;
     @Autowired
     private UserService userService;
-
     @Autowired
     private SysConfigService sysConfigService;
-
     @Autowired
     private BannerService bannerService;
 
@@ -103,9 +100,9 @@ public class HomeController {
         try {
             subject.login(playUserToken);
             User user = userService.getCurrentUser();
-            Map<String,Object> result = BeanUtil.beanToMap(user);
+            Map<String, Object> result = BeanUtil.beanToMap(user);
             result.put("token", SubjectUtil.getToken());
-            result.put("userId",user.getId());
+            result.put("userId", user.getId());
             return Result.success().data(result).msg("登录成功!");
         } catch (AuthenticationException e) {
             log.error("验证登录异常，异常信息:", e);
@@ -116,19 +113,20 @@ public class HomeController {
         }
     }
 
-
     @RequestMapping(value = "/test/login", method = RequestMethod.POST)
     @ResponseBody
-    public Result testLogin(String openId, @RequestParam(value = "sourceId", required = false) Integer sourceId) {
+    public Result testLogin(String openId, @RequestParam(value = "sourceId", required = false) Integer sourceId, HttpServletRequest request) {
         log.info("==调用/test/login方法==");
         PlayUserToken playUserToken = new PlayUserToken(openId, "", sourceId);
+        String ip = RequestUtil.getIpAdrress(request);
+        playUserToken.setHost(ip);
         Subject subject = SecurityUtils.getSubject();
         try {
             subject.login(playUserToken);
             User user = userService.getCurrentUser();
-            Map<String,Object> result = BeanUtil.beanToMap(user);
+            Map<String, Object> result = BeanUtil.beanToMap(user);
             result.put("token", SubjectUtil.getToken());
-            result.put("userId",user.getId());
+            result.put("userId", user.getId());
             return Result.success().data(result).msg("测试登录成功!");
         } catch (AuthenticationException e) {
             return Result.noLogin().msg("测试登录用户验证信息错误！");
@@ -137,6 +135,4 @@ public class HomeController {
             return Result.error().msg("测试登陆异常！");
         }
     }
-
-
 }
