@@ -237,13 +237,12 @@ public class UserController extends BaseController {
         if (openIdUser != null && openIdUser.getMobile() != null) {
             return Result.error().msg("已经绑定过手机号！");
         }
-        User newUser = null;
+        User newUser;
         User mobileUser = userService.findByMobile(mobile);
         if (mobileUser != null) {
             if (mobileUser.getOpenId() != null) {
                 return Result.error().msg("该手机号已经被绑定！");
             } else {
-                // todo 测试后台添加的用户进去注册
                 mobileUser.setRegistIp(currentUser.getRegistIp());
 
                 mobileUser.setOpenId(currentUser.getOpenId());
