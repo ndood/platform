@@ -25,13 +25,12 @@ public class ExceptionHandlerAdvice {
      */
     @ExceptionHandler(DuplicateKeyException.class)
     public Result handleDuplicateKeyException(DuplicateKeyException e) {
-        log.error(e.getMessage(), e);
-        return Result.error().msg("数据库中已存在该记录");
+        log.error("SQL异常", e);
+        return Result.error().msg("服务器错误!");
     }
 
     /**
      * SQL执行错误
-     *
      * @param e
      * @return
      */
@@ -67,7 +66,6 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 业务错误,直接提示给用户
-     *
      * @param e
      * @return
      */
@@ -91,25 +89,23 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 用户认证异常
-     *
      * @param e
      * @return
      */
     @ExceptionHandler(UserAuthException.class)
     public Result handleUserAuthException(UserAuthException e) {
-        log.error(e.getMessage(), e);
+        log.error("用户认证异常:{}", e.getMessage());
         return Result.error().msg(e.getMessage()).data("errcode", e.getCode());
     }
 
     /**
      * 业务异常的父类
-     *
      * @param e
      * @return
      */
     @ExceptionHandler(BizException.class)
     public Result BizException(BizException e) {
-        log.error("业务异常:", e);
+        log.error("业务异常:{}", e.getMessage());
         return Result.error().msg(e.getMessage()).data("errcode", e.getCode());
     }
 
@@ -127,7 +123,6 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 生成小程序码错误
-     *
      * @param e
      * @return
      */
@@ -138,8 +133,7 @@ public class ExceptionHandlerAdvice {
     }
 
     /**
-     * 生成小程序码错误
-     *
+     * 系统异常
      * @param e
      * @return
      */
@@ -151,7 +145,6 @@ public class ExceptionHandlerAdvice {
 
     /**
      * 统一异常
-     *
      * @param e
      * @return
      */
