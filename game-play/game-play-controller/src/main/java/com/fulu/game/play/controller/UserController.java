@@ -4,16 +4,12 @@ import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
-import com.fulu.game.common.ResultStatus;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
-import com.fulu.game.core.entity.Product;
-import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.UserComment;
-import com.fulu.game.core.entity.UserTechAuth;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
@@ -337,9 +333,9 @@ public class UserController extends BaseController {
             log.info("当前用户id={}查询数据库不存在，无法绑定", userService.getCurrentUser().getId());
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
-        log.info("IM注册请求开始,请求参数status:{},user:{},imId={},imPsw={},errorMsg={}", user,status, imId, imPsw, errorMsg);
-        if(user.getImId()!=null){
-            log.info("用户IM信息已经存在:user:{};",user);
+        log.info("IM注册请求开始,请求参数status:{},user:{},imId={},imPsw={},errorMsg={}", user, status, imId, imPsw, errorMsg);
+        if (user.getImId() != null) {
+            log.info("用户IM信息已经存在:user:{};", user);
             return Result.success().data(user).msg("已存在IM账号");
         }
         if (status == 200) {
@@ -348,10 +344,10 @@ public class UserController extends BaseController {
             user.setUpdateTime(new Date());
             userService.update(user);
             userService.updateRedisUser(user);
-            log.info("用户:{}绑定IM信息成功:user:{};", user.getId(),user);
+            log.info("用户:{}绑定IM信息成功:user:{};", user.getId(), user);
         } else if (status == 500) {
-            String newIMId = "s"+imId;
-            ImUser imUser = imService.registerUser(newIMId,imPsw);
+            String newIMId = "s" + imId;
+            ImUser imUser = imService.registerUser(newIMId, imPsw);
             user.setImId(imUser.getUsername());
             user.setImPsw(imUser.getImPsw());
             user.setUpdateTime(new Date());
@@ -489,9 +485,9 @@ public class UserController extends BaseController {
 
     @PostMapping("/advice/add")
     public Result addAdvice(@RequestParam("content") String content,
-                            @RequestParam(value = "contact",required = false) String contact,
-                            @RequestParam(value = "advicePicUrls",required = false) String[] advicePicUrls) {
-        if (content == null){
+                            @RequestParam(value = "contact", required = false) String contact,
+                            @RequestParam(value = "advicePicUrls", required = false) String[] advicePicUrls) {
+        if (content == null) {
             return Result.error().msg("请填写建议内容");
         }
         Advice advice = adviceService.addAdvice(content, contact, advicePicUrls);

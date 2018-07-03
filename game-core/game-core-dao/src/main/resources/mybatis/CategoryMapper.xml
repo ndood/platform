@@ -7,7 +7,7 @@
         <result column="pid" property="pid"/>
         <result column="tag_id" property="tagId"/>
         <result column="icon" property="icon"/>
-        <result column="icon_index" property="indexIcon"/>
+        <result column="index_icon" property="indexIcon"/>
         <result column="name" property="name"/>
         <result column="status" property="status"/>
         <result column="sort" property="sort"/>
@@ -18,7 +18,7 @@
 
 
     <sql id="Base_Column_List">
-        id,pid,tag_id,icon,icon_index,name,status,sort,charges,create_time,update_time
+        id,pid,tag_id,icon,index_icon,name,status,sort,charges,create_time,update_time
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="CategoryResultMap">
@@ -50,8 +50,8 @@
             <if test="icon != null">
                 and icon = #{icon}
             </if>
-            <if test="iconIndex != null">
-                and icon_index = #{iconIndex}
+            <if test="indexIcon != null">
+                and index_icon = #{indexIcon}
             </if>
             <if test="name != null">
                 and name = #{name}
@@ -83,9 +83,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Category">
         insert into
-        t_category (pid,tag_id,icon,icon_index,name,status,sort,charges,create_time,update_time)
+        t_category (pid,tag_id,icon,index_icon,name,status,sort,charges,create_time,update_time)
         values
-        (#{pid},#{tagId},#{icon},#{iconIndex},#{name},#{status},#{sort},#{charges},#{createTime},#{updateTime})
+        (#{pid},#{tagId},#{icon},#{indexIcon},#{name},#{status},#{sort},#{charges},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Category">
@@ -102,8 +102,8 @@
             <if test="icon != null">
                 icon = #{icon},
             </if>
-            <if test="iconIndex != null">
-                icon_index = #{iconIndex},
+            <if test="indexIcon != null">
+                index_icon = #{indexIcon},
             </if>
             <if test="name != null">
                 name = #{name},
