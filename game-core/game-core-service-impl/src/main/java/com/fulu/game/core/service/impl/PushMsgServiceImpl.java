@@ -78,7 +78,7 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
     private void exePushTask(PushMsg pushMsg) {
         log.info("开始推送微信消息:pushMsg:{};", pushMsg);
         List<Integer> userIds = null;
-        Integer count = 0;
+        int count;
         if (PushMsgTypeEnum.ALL_USER.getType().equals(pushMsg.getType())) {
             count = userService.countAllNormalUser();
         } else if (PushMsgTypeEnum.ASSIGN_USERID.getType().equals(pushMsg.getType())) {
@@ -107,7 +107,11 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
                     .append("&pushId=")
                     .append(pushMsg.getId()).toString();
             log.info("开始执行推送消息:userId:{};lastPage:{};pushMsg:{};", userIds == null ? "全体用户" : userIds, lastPage, pushMsg);
+            long startTime = System.currentTimeMillis();
             wxTemplateMsgService.adminPushWxTemplateMsg(pushMsg.getId(), userIds, lastPage, pushMsg.getContent());
+            long endTime = System.currentTimeMillis();
+            log.info("pushTask:{}执行wxTemplateMsgService.adminPushWxTemplateMsg方法耗时:{}",pushMsg.getId(),endTime-startTime);
+
             pushMsg.setTotalNum(count);
             pushMsg.setIsPushed(true);
             pushMsg.setUpdateTime(new Date());

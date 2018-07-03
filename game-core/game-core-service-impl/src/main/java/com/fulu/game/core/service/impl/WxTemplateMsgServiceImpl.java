@@ -174,7 +174,6 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
     /**
      * 批量写入推送模板消息
-     *
      * @param pushId
      * @param userIds
      * @param page
@@ -187,12 +186,18 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
                                                    WechatTemplateEnum wechatTemplateEnum,
                                                    List<WxMaTemplateMessage.Data> dataList) {
         //删除表里面过期的formId
+        long startTime = System.currentTimeMillis();
         Date date = DateUtil.offset(new Date(), DateField.HOUR, (-24 * 7) + 1);
         wechatFormidService.deleteByExpireTime(date);
+        long endTime = System.currentTimeMillis();
+        log.info("pushTask:{}执行wechatFormidService.deleteByExpireTime方法耗时:{}",pushId,endTime-startTime);
         for (int i = 0; ; i = +1000) {
             List<WechatFormidVO> wechatFormidVOS = null;
             try {
+                long findStartTime = System.currentTimeMillis();
                 wechatFormidVOS = wechatFormidService.findByUserIds(userIds, i, 1000);
+                long findEndTime = System.currentTimeMillis();
+                log.info("pushTask:{}执行wechatFormidService.findByUserIds:{}",pushId,findEndTime-findStartTime);
                 if (wechatFormidVOS.isEmpty()) {
                     break;
                 }
@@ -208,7 +213,10 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
                     formIds.add(wechatFormidVO.getFormId());
                 }
                 if (formIds.size() > 0) {
+                    long delStartTime = System.currentTimeMillis();
                     wechatFormidService.deleteFormIds(formIds.toArray(new String[]{}));
+                    long delEndTime = System.currentTimeMillis();
+                    log.info("pushTask:{}执行wechatFormidService.deleteFormIds方法耗时:{}",pushId,delEndTime-delStartTime);
                 }
             } catch (Exception e) {
                 log.error("批量写入推送模板消息异常wechatFormidVOS:{}", wechatFormidVOS);
