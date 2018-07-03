@@ -240,7 +240,7 @@
                 and user_id = #{userId}
             </if>
             <if test="serviceUserId != null">
-                and user_id = #{serviceUserId}
+                and service_user_id = #{serviceUserId}
             </if>
             <if test="statusList != null">
                 and status in
