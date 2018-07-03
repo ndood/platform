@@ -10,5 +10,5 @@ public class UserInfoAuthSearchVO {
     private String mobile;
     private String startTime;
     private String endTime;
-    private String orderBy = "update_time desc";
+    private String orderBy = "uia.update_time desc";
 }
