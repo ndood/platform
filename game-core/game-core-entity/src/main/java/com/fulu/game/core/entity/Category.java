@@ -24,6 +24,8 @@ public class Category implements Serializable {
 	private Integer tagId;
 	//图标
 	private String icon;
+	//首页图标
+	private String indexIcon;
 	//游戏名称
 	private String name;
 	//状态(1激活,0失效)

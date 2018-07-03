@@ -3,6 +3,7 @@ package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.enums.CategoryParentEnum;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
+import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.CategoryDao;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
@@ -16,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -32,6 +35,10 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
     private TagService tagService;
     @Autowired
     private SalesModeService salesModeService;
+    @Autowired
+    private OssUtil ossUtil;
+    @Autowired
+    private ProductService productService;
 
     @Override
     public ICommonDao<Category, Integer> getDao() {
@@ -89,6 +96,38 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
     @Override
     public List<Category> findAllAccompanyPlayCategory() {
         return findByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType(), true);
+    }
+
+
+    @Override
+    public Category save(CategoryVO categoryVO) {
+        Category category = new Category();
+        BeanUtil.copyProperties(categoryVO,category);
+        if(category.getId()==null){
+            category.setPid(CategoryParentEnum.ACCOMPANY_PLAY.getType());
+            category.setCreateTime(new Date());
+            category.setUpdateTime(new Date());
+            create(category);
+        }else{
+            Category origCategory = findById(categoryVO.getId());
+            if(categoryVO.getMost()!=null&&origCategory.getTagId()!=null){
+                Tag tag = new Tag();
+                tag.setId(origCategory.getTagId());
+                tag.setMost(categoryVO.getMost());
+                tagService.update(tag);
+            }
+            if(!Objects.equals(origCategory.getIcon(),category.getIcon())){
+                ossUtil.deleteFile(origCategory.getIcon());
+            }
+            if(!Objects.equals(origCategory.getIndexIcon(),category.getIndexIcon())){
+                ossUtil.deleteFile(origCategory.getIndexIcon());
+            }
+            category.setUpdateTime(new Date());
+            update(category);
+            //同步更新商品表的冗余数据
+            productService.updateByCategory(category);
+        }
+        return category;
     }
 
 

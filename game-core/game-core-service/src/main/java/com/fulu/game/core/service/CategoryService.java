@@ -28,5 +28,5 @@ public interface CategoryService extends ICommonService<Category,Integer>{
 
      List<Category> findAllAccompanyPlayCategory();
 
-
+     Category save(CategoryVO categoryVO);
 }

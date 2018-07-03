@@ -121,6 +121,9 @@ public class OssUtil {
      * @param fileUrl
      */
     public void deleteFile(String... fileUrl) {
+        if(fileUrl==null){
+            return;
+        }
         String endpoint = configProperties.getOss().getEndpoint();
         String bucketName = configProperties.getOss().getBucketName();
         OSSClient ossClient = new OSSClient(endpoint, configProperties.getOss().getAccessKeyId(), configProperties.getOss().getAccessKeySecret());

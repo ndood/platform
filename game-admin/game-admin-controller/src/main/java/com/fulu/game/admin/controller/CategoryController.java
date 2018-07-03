@@ -40,9 +40,12 @@ public class CategoryController extends BaseController {
     @Autowired
     private ProductService productService;
 
+
+
+
+
     /**
      * 内容列表
-     *
      * @param pageNum
      * @param pageSize
      * @return
@@ -90,52 +93,19 @@ public class CategoryController extends BaseController {
         return Result.success().data(categoryVO);
     }
 
+
     /**
      * 保存内容
-     *
      * @return
      */
     @PostMapping(value = "/save")
-    public Result save(Integer sort,
-                       String name,
-                       Boolean status,
-                       BigDecimal charges,
-                       String icon,
-                       Integer id,
-                       Integer most) {
-        Category category = new Category();
-        category.setName(name);
-        category.setSort(sort);
-        category.setStatus(status);
-        if (charges != null) {
-            category.setCharges(charges.divide(new BigDecimal(100)));
+    public Result save(CategoryVO categoryVO) {
+        if (categoryVO.getCharges()!= null) {
+            categoryVO.setCharges(categoryVO.getCharges().divide(new BigDecimal(100)));
         }
-        category.setIcon(ossUtil.activateOssFile(icon));
-        category.setId(id);
-        if (category.getId() == null) {
-            category.setPid(CategoryParentEnum.ACCOMPANY_PLAY.getType());
-            category.setCreateTime(new Date());
-            category.setUpdateTime(new Date());
-            categoryService.create(category);
-            return Result.success().data(category).msg("内容创建成功!");
-        } else {
-            Category origCategory = categoryService.findById(id);
-            if (most != null) {
-                if (origCategory.getTagId() != null) {
-                    Tag tag = new Tag();
-                    tag.setId(origCategory.getTagId());
-                    tag.setMost(most);
-                    tagService.update(tag);
-                }
-            }
-            if (origCategory.getIcon() != null && !origCategory.getIcon().equals(category.getIcon())) {
-                ossUtil.deleteFile(origCategory.getIcon());
-            }
-            category.setUpdateTime(new Date());
-            categoryService.update(category);
-            //同步更新商品表的冗余数据
-            productService.updateByCategory(category);
-        }
+        categoryVO.setIcon(ossUtil.activateOssFile(categoryVO.getIcon()));
+        categoryVO.setIndexIcon(ossUtil.activateOssFile(categoryVO.getIndexIcon()));
+        Category category =   categoryService.save(categoryVO);
         return Result.success().data(category).msg("内容修改成功!");
     }
 
