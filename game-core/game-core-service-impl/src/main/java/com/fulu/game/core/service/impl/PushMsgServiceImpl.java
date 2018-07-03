@@ -106,7 +106,7 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
                     .append(URLEncoder.encode(pushMsg.getPage(), "utf-8"))
                     .append("&pushId=")
                     .append(pushMsg.getId()).toString();
-            log.info("开始执行推送消息:userId:{};lastPage:{};pushMsg:{};", userIds==null?"全体用户":userIds, lastPage, pushMsg);
+            log.info("开始执行推送消息:userId:{};lastPage:{};pushMsg:{};", userIds == null ? "全体用户" : userIds, lastPage, pushMsg);
             wxTemplateMsgService.adminPushWxTemplateMsg(pushMsg.getId(), userIds, lastPage, pushMsg.getContent());
             pushMsg.setTotalNum(count);
             pushMsg.setIsPushed(true);
@@ -121,7 +121,7 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
 
     @Override
     public void appointPush(PushMsg pushMsg) {
-        if (pushMsg.getTouchTime() == null) {
+        if (pushMsg == null || pushMsg.getTouchTime() == null) {
             return;
         }
         if (!pushMsg.getIsPushed() && pushMsg.getTouchTime().before(new Date())) {

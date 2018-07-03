@@ -36,6 +36,7 @@ public class User implements Serializable {
     //密码
     @JsonIgnore
     private String password;
+
     //密码盐
     @JsonIgnore
     private String salt;
@@ -84,5 +85,7 @@ public class User implements Serializable {
     //修改时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
+
+
 
 }

@@ -12,8 +12,6 @@ import com.fulu.game.core.entity.vo.CouponVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.xiaoleilu.hutool.date.DateUnit;
-import com.xiaoleilu.hutool.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,11 +59,11 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
 
     @Override
     public List<Coupon> availableCouponList(Integer userId) {
-        List<Coupon> couponList =couponDao.findByAvailable(userId);
-        List<Coupon>  availableCouponList = new ArrayList<>();
+        List<Coupon> couponList = couponDao.findByAvailable(userId);
+        List<Coupon> availableCouponList = new ArrayList<>();
         availableCouponList.addAll(couponList);
-        for(Coupon coupon :couponList){
-            if(orderService.isOldUser(userId)&&coupon.getIsNewUser()){
+        for (Coupon coupon : couponList) {
+            if (orderService.isOldUser(userId) && coupon.getIsNewUser()) {
                 availableCouponList.remove(coupon);
             }
         }
@@ -74,20 +72,20 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
 
     @Override
     public Boolean couponIsAvailable(Coupon coupon) {
-        if(coupon.getIsUse()){
-            log.error("优惠券使用错误:已经使用:{}",coupon.getCouponNo());
+        if (coupon.getIsUse()) {
+            log.error("优惠券使用错误:已经使用:{}", coupon.getCouponNo());
             return false;
         }
-        if(new Date().before(coupon.getStartUsefulTime())){
-            log.error("优惠券使用错误:使用时间未到:{}",coupon.getCouponNo());
+        if (new Date().before(coupon.getStartUsefulTime())) {
+            log.error("优惠券使用错误:使用时间未到:{}", coupon.getCouponNo());
             return false;
         }
-        if(new Date().after(coupon.getEndUsefulTime())){
-            log.error("优惠券使用错误:过期:{}",coupon.getCouponNo());
+        if (new Date().after(coupon.getEndUsefulTime())) {
+            log.error("优惠券使用错误:过期:{}", coupon.getCouponNo());
             return false;
         }
-        if(orderService.isOldUser(coupon.getUserId())&&coupon.getIsNewUser()){
-            log.error("优惠券使用错误:不能使用新用户专享券:{}",coupon.getCouponNo());
+        if (orderService.isOldUser(coupon.getUserId()) && coupon.getIsNewUser()) {
+            log.error("优惠券使用错误:不能使用新用户专享券:{}", coupon.getCouponNo());
             return false;
         }
         return true;
@@ -128,6 +126,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
 
     /**
      * 查看优惠券领取数量
+     *
      * @param couponGroupId
      * @return
      */
@@ -139,6 +138,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
 
     /**
      * 查看优惠券首次领取数量
+     *
      * @param couponGroupId
      * @return
      */
@@ -150,9 +150,9 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
     }
 
 
-
     /**
      * 用户领取优惠券
+     *
      * @param redeemCode
      * @param userId
      * @param receiveTime
@@ -165,21 +165,22 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
                                  Integer userId,
                                  Date receiveTime,
                                  String receiveIp) {
-        log.info("领取或发放优惠券:redeemCode:{},userId:{},receiveTime:{},receiveIp:{}",redeemCode,userId,receiveTime,receiveIp);
+        log.info("领取或发放优惠券:redeemCode:{},userId:{},receiveTime:{},receiveIp:{}", redeemCode, userId, receiveTime, receiveIp);
         CouponGroup couponGroup = couponGroupService.findByRedeemCode(redeemCode);
         if (couponGroup == null) {
             throw new CouponException(CouponException.ExceptionCode.REDEEMCODE_ERROR);
         }
-        return generateCoupon(couponGroup, userId,receiveTime,receiveIp);
+        return generateCoupon(couponGroup, userId, receiveTime, receiveIp);
     }
 
 
     /**
      * 给用户发放优惠券
+     *
      * @param couponGroup
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    Coupon generateCoupon(CouponGroup couponGroup, Integer userId,Date receiveTime,String receiveIp) throws CouponException {
+    Coupon generateCoupon(CouponGroup couponGroup, Integer userId, Date receiveTime, String receiveIp) throws CouponException {
         Integer couponCount = countByCouponGroup(couponGroup.getId());
         if (couponCount >= couponGroup.getAmount()) {
             throw new CouponException(CouponException.ExceptionCode.BROUGHT_OUT);
@@ -193,7 +194,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
             throw new CouponException(CouponException.ExceptionCode.NEWUSER_RECEIVE);
         }
         //过期的优惠券不能兑换
-        if (new Date().after(couponGroup.getEndUsefulTime())){
+        if (new Date().after(couponGroup.getEndUsefulTime())) {
             throw new CouponException(CouponException.ExceptionCode.OVERDUE);
         }
         String couponNo = generateCouponNo();
@@ -214,19 +215,19 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         coupon.setIsFirstReceive(true);
         //判断是否是首次领取
         Integer countUser = countByUser(userId);
-        if(countUser>0){
+        if (countUser > 0) {
             coupon.setIsFirstReceive(false);
         }
         create(coupon);
-        log.info("生成优惠券:coupon:{}",coupon);
+        log.info("生成优惠券:coupon:{}", coupon);
 
         //发放优惠券通知
-        wxTemplateMsgService.pushWechatTemplateMsg(coupon.getUserId(), WechatTemplateMsgEnum.GRANT_COUPON,coupon.getDeduction().toString());
+        wxTemplateMsgService.pushWechatTemplateMsg(coupon.getUserId(), WechatTemplateMsgEnum.GRANT_COUPON, coupon.getDeduction().toString());
         return coupon;
     }
 
     @Override
-    public List<Coupon> findByCouponGroup(int couponGroupId){
+    public List<Coupon> findByCouponGroup(int couponGroupId) {
         CouponVO param = new CouponVO();
         param.setCouponGroupId(couponGroupId);
         List<Coupon> list = couponDao.findByParameter(param);
@@ -235,11 +236,11 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
 
 
     @Override
-    public Coupon findByCouponNo(String couponNo){
+    public Coupon findByCouponNo(String couponNo) {
         CouponVO param = new CouponVO();
         param.setCouponNo(couponNo);
         List<Coupon> list = couponDao.findByParameter(param);
-        if(list.isEmpty()){
+        if (list.isEmpty()) {
             return null;
         }
         return list.get(0);
@@ -248,14 +249,14 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
 
     /**
      * 生成优惠券编码
+     *
      * @return
      */
-    private String generateCouponNo(){
+    private String generateCouponNo() {
         String couponNo = GenIdUtil.GetCouponNo();
-        if(findByCouponNo(couponNo)==null){
+        if (findByCouponNo(couponNo) == null) {
             return couponNo;
-        }
-        else{
+        } else {
             return generateCouponNo();
         }
     }

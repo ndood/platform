@@ -190,7 +190,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         user.setCreateTime(new Date());
         user.setUpdateTime(new Date());
         userDao.create(user);
-        SubjectUtil.setCurrentUser(user);
         return user;
     }
 

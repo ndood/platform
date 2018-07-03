@@ -55,7 +55,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
      */
     @Override
     public void pushMarketOrder(Order order) {
-        log.info("推送集市订单:order:{};",  order);
+        log.info("推送集市订单:order:{};", order);
         Category category = categoryService.findById(order.getCategoryId());
         //查询所有符合推送条件的用户
         List<UserTechAuth> userTechAuthList = userTechAuthService.findNormalByCategory(order.getCategoryId());
@@ -143,6 +143,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
     /**
      * 推送IM消息通知
+     *
      * @param content
      * @param acceptImId 接收者IMid
      * @param imId       发送者IMid
@@ -157,7 +158,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
         }
         User acceptUser = userService.findByImId(acceptImId);
         if (acceptUser == null || acceptUser.getOpenId() == null) {
-            log.error("acceptImId为:{}",acceptImId);
+            log.error("acceptImId为:{}", acceptImId);
             throw new ServiceErrorException("AcceptIM不存在!");
         }
         User sendUser = userService.findByImId(imId);
@@ -186,27 +187,34 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
                                                    WechatTemplateEnum wechatTemplateEnum,
                                                    List<WxMaTemplateMessage.Data> dataList) {
         //删除表里面过期的formId
-        Date date = DateUtil.offset(new Date(), DateField.HOUR,(-24*7)+1);
+        Date date = DateUtil.offset(new Date(), DateField.HOUR, (-24 * 7) + 1);
         wechatFormidService.deleteByExpireTime(date);
-        for(int i=0;;i=+1000){
-            List<WechatFormidVO> wechatFormidVOS = wechatFormidService.findByUserIds(userIds,i,1000);
-            if(wechatFormidVOS.isEmpty()){
-                break;
+        for (int i = 0; ; i = +1000) {
+            List<WechatFormidVO> wechatFormidVOS = null;
+            try {
+                wechatFormidVOS = wechatFormidService.findByUserIds(userIds, i, 1000);
+                if (wechatFormidVOS.isEmpty()) {
+                    break;
+                }
+                List<String> formIds = new ArrayList<>();
+                for (WechatFormidVO wechatFormidVO : wechatFormidVOS) {
+                    WxMaTemplateMessage wxMaTemplateMessage = new WxMaTemplateMessage();
+                    wxMaTemplateMessage.setTemplateId(wechatTemplateEnum.getType());
+                    wxMaTemplateMessage.setToUser(wechatFormidVO.getOpenId());
+                    wxMaTemplateMessage.setPage(page);
+                    wxMaTemplateMessage.setFormId(wechatFormidVO.getFormId());
+                    wxMaTemplateMessage.setData(dataList);
+                    pushMsgQueue.addTemplateMessage(new WxMaTemplateMessageVO(pushId, wxMaTemplateMessage));
+                    formIds.add(wechatFormidVO.getFormId());
+                }
+                if (formIds.size() > 0) {
+                    wechatFormidService.deleteFormIds(formIds.toArray(new String[]{}));
+                }
+            } catch (Exception e) {
+                log.error("批量写入推送模板消息异常wechatFormidVOS:{}", wechatFormidVOS);
+                log.error("批量写入推送模板消息异常", e);
             }
-            List<String> formIds = new ArrayList<>();
-            for (WechatFormidVO wechatFormidVO : wechatFormidVOS) {
-                WxMaTemplateMessage wxMaTemplateMessage = new WxMaTemplateMessage();
-                wxMaTemplateMessage.setTemplateId(wechatTemplateEnum.getType());
-                wxMaTemplateMessage.setToUser(wechatFormidVO.getOpenId());
-                wxMaTemplateMessage.setPage(page);
-                wxMaTemplateMessage.setFormId(wechatFormidVO.getFormId());
-                wxMaTemplateMessage.setData(dataList);
-                pushMsgQueue.addTemplateMessage(new WxMaTemplateMessageVO(pushId, wxMaTemplateMessage));
-                formIds.add(wechatFormidVO.getFormId());
-            }
-            if (formIds.size() > 0) {
-                wechatFormidService.deleteFormIds(formIds.toArray(new String[]{}));
-            }
+
         }
     }
 

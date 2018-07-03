@@ -13,10 +13,11 @@ import com.fulu.game.core.service.BannerService;
 import com.fulu.game.core.service.SysConfigService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.play.shiro.PlayUserToken;
+import com.xiaoleilu.hutool.util.BeanUtil;
 import com.xiaoleilu.hutool.util.CollectionUtil;
+import com.xiaoleilu.hutool.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
-import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -26,7 +27,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -97,16 +97,11 @@ public class HomeController {
         //2.提交认证和凭据给身份验证系统
         try {
             subject.login(playUserToken);
-            User cachedUser = userService.getCurrentUser();
-            User user = userService.findById(cachedUser.getId());
-            Map<String,Object> jo = new HashMap<>();
-            jo.put("token", SubjectUtil.getToken());
-            jo.put("type", user.getType());
-            jo.put("userId",user.getId());
-            jo.put("imId",user.getImId());
-            jo.put("imPsw",user.getImPsw());
-            jo.put("status",user.getStatus());
-            return Result.success().data(jo).msg("登录成功!");
+            User user = userService.getCurrentUser();
+            Map<String,Object> result = BeanUtil.beanToMap(user);
+            result.put("token", SubjectUtil.getToken());
+            result.put("userId",user.getId());
+            return Result.success().data(result).msg("登录成功!");
         } catch (AuthenticationException e) {
             log.error("验证登录异常，异常信息:", e);
             return Result.noLogin().msg("用户验证信息错误！");
@@ -116,6 +111,7 @@ public class HomeController {
         }
     }
 
+
     @RequestMapping(value = "/test/login", method = RequestMethod.POST)
     @ResponseBody
     public Result testLogin(String openId, @RequestParam(value = "sourceId", required = false) Integer sourceId) {
@@ -124,20 +120,11 @@ public class HomeController {
         Subject subject = SecurityUtils.getSubject();
         try {
             subject.login(playUserToken);
-            User cachedUser = (User) SubjectUtil.getCurrentUser();
-            User user = userService.findById(cachedUser.getId());
-            Map<String,Object> jo = new HashMap<>();
-            jo.put("token", SubjectUtil.getToken());
-            jo.put("type", user.getType());
-            jo.put("userId",user.getId());
-            jo.put("imId",user.getImId());
-            jo.put("imPsw",user.getImPsw());
-            jo.put("status",user.getStatus());
-            if (StringUtils.isEmpty(user.getMobile())) {
-                return Result.newUser().data(jo).msg("测试登录成功，请绑定手机号！");
-            } else {
-                return Result.success().data(jo).msg("测试登录成功!");
-            }
+            User user = userService.getCurrentUser();
+            Map<String,Object> result = BeanUtil.beanToMap(user);
+            result.put("token", SubjectUtil.getToken());
+            result.put("userId",user.getId());
+            return Result.success().data(result).msg("测试登录成功!");
         } catch (AuthenticationException e) {
             return Result.noLogin().msg("测试登录用户验证信息错误！");
         } catch (Exception e) {
