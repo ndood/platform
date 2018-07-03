@@ -51,11 +51,10 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
         String dBOpenId = user.getOpenId();
         //登录成功保存token和用户信息到redis
         if (paramOpenId.equals(dBOpenId)) {
-            //todo 测试登录ip和时间
+            //匹配完毕更新新的登录时间和IP
             user.setLoginIp(userToken.getHost());
             user.setLoginTime(new Date());
             userService.update(user);
-            
             Map<String, Object> userMap = new HashMap<>();
             userMap = BeanUtil.beanToMap(user);
             String gToken = GenIdUtil.GetToken();

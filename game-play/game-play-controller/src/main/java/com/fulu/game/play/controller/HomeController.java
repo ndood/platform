@@ -13,6 +13,7 @@ import com.fulu.game.core.service.BannerService;
 import com.fulu.game.core.service.SysConfigService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.play.shiro.PlayUserToken;
+import com.fulu.game.play.utils.RequestUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import com.xiaoleilu.hutool.util.CollectionUtil;
 import com.xiaoleilu.hutool.util.ObjectUtil;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +87,8 @@ public class HomeController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
     public Result login(@RequestParam("code") String code,
-                        @RequestParam(value = "sourceId", required = false) Integer sourceId) throws WxErrorException {
+                        @RequestParam(value = "sourceId", required = false) Integer sourceId,
+                        HttpServletRequest request) throws WxErrorException {
         if (StringUtils.isBlank(code)) {
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
@@ -93,6 +96,8 @@ public class HomeController {
         String openId = session.getOpenid();
         //1.认证和凭据的token
         PlayUserToken playUserToken = new PlayUserToken(openId, session.getSessionKey(), sourceId);
+        String ip = RequestUtil.getIpAdrress(request);
+        playUserToken.setHost(ip);
         Subject subject = SecurityUtils.getSubject();
         //2.提交认证和凭据给身份验证系统
         try {

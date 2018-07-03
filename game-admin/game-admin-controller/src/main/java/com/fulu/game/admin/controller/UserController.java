@@ -339,17 +339,18 @@ public class UserController extends BaseController {
      */
     @PostMapping("/save")
     public Result save(UserVO userVO) {
-        if (StringUtils.isEmpty(userVO.getMobile())) {
-            throw new UserException(UserException.ExceptionCode.IllEGAL_MOBILE_EXCEPTION);
-        }
-        //判断手机号是否已注册成用户
-        User user = userService.findByMobile(userVO.getMobile());
-        if (user != null) {
-            return Result.error(ResultStatus.MOBILE_DUPLICATE).msg("手机号已注册");
-        } else {
-            User newUser = userService.createNewUser(userVO);
-            return Result.success().data(newUser).msg("新用户添加成功！");
-        }
+//        if (StringUtils.isEmpty(userVO.getMobile())) {
+//            throw new UserException(UserException.ExceptionCode.IllEGAL_MOBILE_EXCEPTION);
+//        }
+//        //判断手机号是否已注册成用户
+//        User user = userService.findByMobile(userVO.getMobile());
+//        if (user != null) {
+//            return Result.error(ResultStatus.MOBILE_DUPLICATE).msg("手机号已注册");
+//        } else {
+//            User newUser = userService.createNewUser(userVO);
+//            return Result.success().data(newUser).msg("新用户添加成功！");
+//        }
+        return Result.error().msg("后台添加用户功能暂时关闭");
     }
 
     /**

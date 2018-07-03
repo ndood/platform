@@ -44,7 +44,6 @@ public class MyShiroRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) {
         PlayUserToken playUserToken = (PlayUserToken) token;
-        String host = playUserToken.getHost();
         String openId = playUserToken.getOpenId();
         Integer sourceId = playUserToken.getSourceId();
         User user = userService.findByOpenId(openId);
@@ -52,6 +51,7 @@ public class MyShiroRealm extends AuthorizingRealm {
             log.info("openId为{} 的用户已存在", openId);
         } else {
             //新创建的用户记录注册的ip
+            String host = playUserToken.getHost();
             user = userService.createNewUser(openId, sourceId, host);
             log.info("创建openId为{}的用户", openId);
         }
