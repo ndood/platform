@@ -50,17 +50,14 @@ public class MyShiroRealm extends AuthorizingRealm {
         if (admin == null) {
             throw new UnknownAccountException();
         }
-
 //        if(Boolean.TRUE.equals(admin.getLocked())){
 //            throw new LockedAccountException();
 //        }
-
         String password = admin.getPassword();
         String salt = admin.getSalt();
 
         admin.setPassword(null);
         admin.setSalt(null);
-
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
                 admin, //用户对象
                 password, //密码
@@ -69,5 +66,4 @@ public class MyShiroRealm extends AuthorizingRealm {
         );
         return authenticationInfo;
     }
-
 }

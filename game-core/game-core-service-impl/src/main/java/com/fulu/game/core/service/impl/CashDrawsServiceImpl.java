@@ -120,12 +120,12 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
     @Override
     public CashDraws draw(Integer cashId, String comment) {
         Admin admin = adminService.getCurrentUser();
-        log.info("调用打款接口,入参cashId:{},操作人:{}",cashId,admin.getId());
+        log.info("调用打款接口,入参cashId:{},操作人:{}", cashId, admin.getId());
         CashDraws cashDraws = findById(cashId);
         if (null == cashDraws) {
             return null;
         }
-        cashDraws.setOperator(admin.getUsername());
+        cashDraws.setOperator(admin.getName());
         cashDraws.setComment(comment);
         cashDraws.setCashStatus(CashProcessStatusEnum.DONE.getType());//修改为已处理状态
         cashDraws.setCashNo(null);//订单处理号暂做保留

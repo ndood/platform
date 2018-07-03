@@ -73,6 +73,7 @@ public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher
             redisOpenService.hset(RedisKeyEnum.ADMIN_TOKEN.generateKey(genToken), adminMap);
             log.info("登录成功生成token：{}", genToken);
             SubjectUtil.setToken(genToken);
+            SubjectUtil.setCurrentUser(admin);
             return true;
         }
         return false;
