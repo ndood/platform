@@ -21,7 +21,7 @@ public class MoneyDetails implements Serializable {
     private Integer id;
     //操作者id(用户或管理员)
     private Integer operatorId;
-    //对象id(对谁加宽或者提款)
+    //对象id(对谁加款或者提款)
     private Integer targetId;
     //金额(默认0.00)
     private BigDecimal money;

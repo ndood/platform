@@ -70,7 +70,7 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
     @Override
     public MoneyDetails save(MoneyDetailsVO moneyDetailsVO) {
         Admin admin = adminService.getCurrentUser();
-        log.info("调用管理员加零钱接口，管理员id:{}",admin.getId());
+        log.info("调用管理员加零钱接口，管理员id:{}", admin.getId());
         User user = userService.findByMobile(moneyDetailsVO.getMobile());
         if (null == user) {
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
@@ -78,7 +78,7 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         //加钱之前该用户的零钱
         BigDecimal balance = user.getBalance();
         BigDecimal newBalance = balance.add(moneyDetailsVO.getMoney());
-        log.info("当前余额:{},加零钱金额:{}",balance,moneyDetailsVO.getMoney());
+        log.info("当前余额:{},加零钱金额:{}", balance, moneyDetailsVO.getMoney());
         MoneyDetails moneyDetails = new MoneyDetails();
         BeanUtil.copyProperties(moneyDetailsVO, moneyDetails);
         moneyDetails.setSum(newBalance);
@@ -89,9 +89,9 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         moneyDetailsDao.create(moneyDetails);
         user.setBalance(newBalance);
         userService.update(user);
-        log.info("更新用户余额完成，加零钱后余额:{}",user.getBalance());
+        log.info("更新用户余额完成，加零钱后余额:{}", user.getBalance());
         //计入平台支出流水
-        platformMoneyDetailsService.createSmallChangeDetails(moneyDetails.getRemark(),user.getId(),moneyDetails.getMoney().negate());
+        platformMoneyDetailsService.createSmallChangeDetails(moneyDetails.getRemark(), user.getId(), moneyDetails.getMoney().negate());
         log.info("调用平台支出流水接口执行结束");
         return moneyDetails;
     }
@@ -106,7 +106,7 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
      */
     @Override
     public MoneyDetails orderSave(BigDecimal money, Integer targetId, String orderNo) {
-        log.info("调用陪玩订单完成生成提现记录接口，入参金额money:{},入账人id:{},订单号:{}",money,targetId,orderNo);
+        log.info("调用陪玩订单完成生成提现记录接口，入参金额money:{},入账人id:{},订单号:{}", money, targetId, orderNo);
         if (money.compareTo(BigDecimal.ZERO) == -1) {
             throw new CashException(CashException.ExceptionCode.CASH_NEGATIVE_EXCEPTION);
         }
@@ -139,10 +139,9 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
 
     @Override
     public List<MoneyDetails> findUserMoneyByAction(Integer targetId, Date startTime, Date endTime) {
-        List<Integer> actionList = Lists.newArrayList(MoneyOperateTypeEnum.ORDER_COMPLETE.getType(),MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType());
-        return moneyDetailsDao.findUserMoneyByAction(targetId,actionList,startTime,endTime);
+        List<Integer> actionList = Lists.newArrayList(MoneyOperateTypeEnum.ORDER_COMPLETE.getType(), MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType());
+        return moneyDetailsDao.findUserMoneyByAction(targetId, actionList, startTime, endTime);
     }
-
 
     @Override
     public BigDecimal weekIncome(Integer targetId) {
@@ -156,5 +155,11 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         return sum;
     }
 
+    @Override
+    public PageInfo<MoneyDetails> listUserDetails(MoneyDetailsVO moneyDetailsVO, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize, "create_time desc");
+        List<MoneyDetails> list = moneyDetailsDao.findByParameter(moneyDetailsVO);
+        return new PageInfo<>(list);
+    }
 
 }

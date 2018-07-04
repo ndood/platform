@@ -12,7 +12,10 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 
@@ -28,37 +31,55 @@ public class MoneyDetailsController {
 
     /**
      * 管理员-查询-加零钱列表
+     *
      * @param moneyDetailsVO
      * @param pageSize
      * @param pageNum
      * @return
      */
     @PostMapping("/list")
-    public Result list( MoneyDetailsVO moneyDetailsVO,
+    public Result list(MoneyDetailsVO moneyDetailsVO,
                        @RequestParam("pageSize") Integer pageSize,
-                       @RequestParam("pageNum") Integer pageNum){
-        PageInfo<MoneyDetailsVO> list = moneyDetailsService.listByAdmin(moneyDetailsVO,pageSize,pageNum);
+                       @RequestParam("pageNum") Integer pageNum) {
+        PageInfo<MoneyDetailsVO> list = moneyDetailsService.listByAdmin(moneyDetailsVO, pageSize, pageNum);
         return Result.success().data(list).msg("查询列表成功！");
     }
 
     /**
      * 管理员-加零钱
+     *
      * @param moneyDetailsVO
      * @return
      */
     @PostMapping("/save")
-    public Result save( MoneyDetailsVO moneyDetailsVO){
-        if (moneyDetailsVO.getMoney().compareTo(BigDecimal.ZERO)==-1){
+    public Result save(MoneyDetailsVO moneyDetailsVO) {
+        if (moneyDetailsVO.getMoney().compareTo(BigDecimal.ZERO) == -1) {
             throw new CashException(CashException.ExceptionCode.CASH_NEGATIVE_EXCEPTION);
         }
         User user = userService.findByMobile(moneyDetailsVO.getMobile());
-        if (user==null){
+        if (user == null) {
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
-        if (StringUtils.isEmpty(user.getOpenId())){
+        if (StringUtils.isEmpty(user.getOpenId())) {
             return Result.error().msg("该用户尚未绑定微信！");
         }
         MoneyDetails moneyDetails = moneyDetailsService.save(moneyDetailsVO);
         return Result.success().data(moneyDetails).msg("操作成功！");
+    }
+
+    /**
+     * 用户账户明细
+     *
+     * @return 列表
+     */
+    @PostMapping("/user")
+    public Result listUserDetails(MoneyDetailsVO moneyDetailsVO,
+                                  @RequestParam("pageNum") Integer pageNum,
+                                  @RequestParam("pageSize") Integer pageSize) {
+        if (moneyDetailsVO.getTargetId() == null) {
+            return Result.error().msg("用户id参数为空");
+        }
+        PageInfo<MoneyDetails> list = moneyDetailsService.listUserDetails(moneyDetailsVO, pageNum, pageSize);
+        return Result.success().data(list);
     }
 }
