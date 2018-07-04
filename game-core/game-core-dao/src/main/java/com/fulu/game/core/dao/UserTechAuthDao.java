@@ -1,5 +1,6 @@
 package com.fulu.game.core.dao;
 
+import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
 
@@ -20,4 +21,6 @@ public interface UserTechAuthDao extends ICommonDao<UserTechAuth,Integer>{
     List<UserTechAuth> findByParameter(UserTechAuthVO userTechAuthVO);
 
     List<UserTechAuth> search(UserTechAuthSearchVO userTechAuthSearchVO);
+
+    int updateByCategory(Category category);
 }

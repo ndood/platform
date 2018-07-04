@@ -209,6 +209,14 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
     @Override
+    public void updateByCategory(Category category) {
+        if(category.getName()==null){
+            return;
+        }
+        userTechAuthDao.updateByCategory(category);
+    }
+
+    @Override
     public PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize, String orderBy, UserTechAuthSearchVO userTechAuthSearchVO) {
         if (StringUtils.isBlank(orderBy)) {
             orderBy = "update_time desc";

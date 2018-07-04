@@ -37,8 +37,7 @@ public class CategoryController extends BaseController {
     private SalesModeService salesModeService;
     @Autowired
     private OssUtil ossUtil;
-    @Autowired
-    private ProductService productService;
+
 
 
 
