@@ -39,6 +39,8 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
     private OssUtil ossUtil;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private UserTechAuthService userTechAuthService;
 
     @Override
     public ICommonDao<Category, Integer> getDao() {
@@ -126,6 +128,7 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
             update(category);
             //同步更新商品表的冗余数据
             productService.updateByCategory(category);
+            userTechAuthService.updateByCategory(category);
         }
         return category;
     }

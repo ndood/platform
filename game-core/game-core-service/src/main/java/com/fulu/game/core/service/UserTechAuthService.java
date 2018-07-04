@@ -1,5 +1,6 @@
 package com.fulu.game.core.service;
 
+import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.UserTechInfo;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
@@ -108,6 +109,9 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
      * @return
      */
     List<UserTechAuth> findByStatusAndUserId(int userId, Integer status);
+
+
+    void updateByCategory(Category category);
 
 
     PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize, String orderBy, UserTechAuthSearchVO userTechAuthSearchVO);

@@ -110,6 +110,18 @@
         (#{categoryId},#{userId},#{categoryName},#{mobile},#{gradePicUrl},#{description},#{status},#{createTime},#{updateTime},#{approveCount})
     </insert>
 
+    <update id="updateByCategory" parameterType="com.fulu.game.core.entity.Category">
+        update t_user_tech_auth
+        <set>
+            <if test="name != null">
+                category_name = #{name}
+            </if>
+        </set>
+        <where>
+            category_id = #{id}
+        </where>
+    </update>
+
     <update id="update" parameterType="com.fulu.game.core.entity.UserTechAuth">
         update t_user_tech_auth
         <set>
