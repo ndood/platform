@@ -157,10 +157,10 @@
                 and rs.name LIKE CONCAT('%', #{sourceName},'%')
             </if>
             <if test="startTime != null">
-                and u.create_time &gt;= #{startTime}
+                and u.login_time &gt;= #{startTime}
             </if>
             <if test="endTime != null">
-                and u.create_time &lt;= #{endTime}
+                and u.login_time &lt;= #{endTime}
             </if>
         </where>
         GROUP BY u.id
