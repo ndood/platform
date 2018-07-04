@@ -89,7 +89,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         moneyDetails.setOperatorId(user.getId());
         moneyDetails.setTargetId(user.getId());
         moneyDetails.setAction(MoneyOperateTypeEnum.USER_DRAW_CASH.getType());
-        moneyDetails.setMoney(money);
+        moneyDetails.setMoney(money.negate());
         moneyDetails.setSum(newBalance);
         moneyDetails.setCashId(cashDraws.getCashId());
         moneyDetails.setCreateTime(new Date());
