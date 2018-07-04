@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/moneyDetails")
-public class MoneyDetailsController {
+public class MoneyDetailsController extends BaseController{
     @Autowired
     private MoneyDetailsService moneyDetailsService;
 
