@@ -9,5 +9,6 @@ public class UserTechAuthSearchVO {
     private String mobile;
     private String startTime;
     private String endTime;
+    private Integer categoryId;
 
 }

@@ -12,13 +12,12 @@ import java.util.Date;
  * @date 2018-04-25 14:59:54
  */
 @Data
-public class MoneyDetailsVO  extends MoneyDetails {
+public class MoneyDetailsVO extends MoneyDetails {
 
     private String mobile;
     private String nickname;
     private Integer cashStatus;
 
     private Date startTime;
-
     private Date endTime;
 }

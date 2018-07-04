@@ -75,21 +75,22 @@
 
     <select id="search" resultMap="UserTechAuthResultMap"
             parameterType="com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO">
-        SELECT
-        <include refid="Base_Column_List"/>
-        FROM t_user_tech_auth
+        SELECT uta.* FROM t_user_tech_auth uta LEFT JOIN t_user u ON uta.user_id = u.id
         <where>
             <if test="mobile != null">
-                and mobile = #{mobile}
+                and uta.mobile = #{mobile}
+            </if>
+            <if test="categoryId != null">
+                and uta.category_id = #{categoryId}
             </if>
             <if test="nickname != null">
-                and user_id in (SELECT id FROM t_user u WHERE u.nickname like CONCAT('%',#{nickname},'%'))
+                and u.nickname like CONCAT('%',#{nickname},'%')
             </if>
             <if test="startTime != null">
-                and update_time &gt;= #{startTime}
+                and uta.update_time &gt;= #{startTime}
             </if>
             <if test="endTime != null">
-                and update_time &lt;= #{endTime}
+                and uta.update_time &lt;= #{endTime}
             </if>
         </where>
     </select>

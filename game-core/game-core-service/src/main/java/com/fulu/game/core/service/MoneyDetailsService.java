@@ -48,4 +48,9 @@ public interface MoneyDetailsService extends ICommonService<MoneyDetails, Intege
     List<MoneyDetails> findUserMoneyByAction(Integer targetId, Date startTime, Date endTime);
 
     BigDecimal weekIncome(Integer targetId);
+
+    /**
+     * 管理员查看用户账户流水明细
+     */
+    PageInfo<MoneyDetails> listUserDetails(MoneyDetailsVO moneyDetailsVO, Integer pageNum, Integer pageSize);
 }

@@ -3,33 +3,35 @@
 
 <mapper namespace="com.fulu.game.core.dao.MoneyDetailsDao">
     <resultMap id="MoneyDetailsResultMap" type="com.fulu.game.core.entity.MoneyDetails">
-        <id column="id"  property="id" />
-        <result column="operator_id"  property="operatorId" />
-        <result column="target_id"  property="targetId" />
-        <result column="money"  property="money" />
-        <result column="action"  property="action" />
-        <result column="cash_id"  property="cashId" />
-        <result column="sum"  property="sum" />
-        <result column="remark"  property="remark" />
-        <result column="create_time"  property="createTime" />
+        <id column="id" property="id"/>
+        <result column="operator_id" property="operatorId"/>
+        <result column="target_id" property="targetId"/>
+        <result column="money" property="money"/>
+        <result column="action" property="action"/>
+        <result column="cash_id" property="cashId"/>
+        <result column="sum" property="sum"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
     </resultMap>
 
-    <resultMap id="MoneyDetailsResultVOMap" type="com.fulu.game.core.entity.vo.MoneyDetailsVO" extends="MoneyDetailsResultMap">
-        <result column="mobile"  property="mobile" />
-        <result column="nickname"  property="nickname" />
-        <result column="cash_status"  property="cashStatus" />
+    <resultMap id="MoneyDetailsResultVOMap" type="com.fulu.game.core.entity.vo.MoneyDetailsVO"
+               extends="MoneyDetailsResultMap">
+        <result column="mobile" property="mobile"/>
+        <result column="nickname" property="nickname"/>
+        <result column="cash_status" property="cashStatus"/>
     </resultMap>
 
-    <select id="findByAdmin" resultMap="MoneyDetailsResultVOMap" parameterType="com.fulu.game.core.entity.vo.MoneyDetailsVO">
+    <select id="findByAdmin" resultMap="MoneyDetailsResultVOMap"
+            parameterType="com.fulu.game.core.entity.vo.MoneyDetailsVO">
         SELECT
-        tmd.id           AS id,
-        tmd.operator_id  AS operator_id,
-        tmd.target_id    AS target_id,
-        tmd.money        AS money,
-        tmd.create_time  AS create_time,
-        tmd.remark       AS remark,
-        tu.nickname      AS nickname,
-        tu.mobile        AS mobile
+        tmd.id AS id,
+        tmd.operator_id AS operator_id,
+        tmd.target_id AS target_id,
+        tmd.money AS money,
+        tmd.create_time AS create_time,
+        tmd.remark AS remark,
+        tu.nickname AS nickname,
+        tu.mobile AS mobile
         FROM t_money_details tmd LEFT JOIN t_user tu ON tmd.target_id = tu.id
         <where>
             <if test="id != null">and tmd.id = #{id}</if>
@@ -38,16 +40,17 @@
         </where>
     </select>
 
-    <select id="findByUser" resultMap="MoneyDetailsResultVOMap" parameterType="com.fulu.game.core.entity.vo.MoneyDetailsVO">
+    <select id="findByUser" resultMap="MoneyDetailsResultVOMap"
+            parameterType="com.fulu.game.core.entity.vo.MoneyDetailsVO">
         SELECT
-        tmd.create_time  AS create_time,
-        tmd.money        AS money,
-        tmd.sum          AS sum,
-        tmd.action       AS action,
-        tcd.cash_status  AS cash_status
+        tmd.create_time AS create_time,
+        tmd.money AS money,
+        tmd.sum AS sum,
+        tmd.action AS action,
+        tcd.cash_status AS cash_status
         FROM t_money_details tmd LEFT JOIN t_cash_draws tcd ON tmd.cash_id = tcd.cash_id
         <where>
-            <if test="targetId != null"> tmd.target_id = #{targetId}</if>
+            <if test="targetId != null">tmd.target_id = #{targetId}</if>
         </where>
     </select>
 
@@ -57,20 +60,21 @@
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="MoneyDetailsResultMap">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from t_money_details
         <where>
-        id = #{id}
+            id = #{id}
         </where>
     </select>
 
-    <select id="findAll"  resultMap="MoneyDetailsResultMap">
+    <select id="findAll" resultMap="MoneyDetailsResultMap">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from t_money_details
     </select>
 
-    <select id="findByParameter" resultMap="MoneyDetailsResultMap" parameterType="com.fulu.game.core.entity.vo.MoneyDetailsVO">
+    <select id="findByParameter" resultMap="MoneyDetailsResultMap"
+            parameterType="com.fulu.game.core.entity.vo.MoneyDetailsVO">
         SELECT
         <include refid="Base_Column_List"/>
         FROM t_money_details
@@ -96,7 +100,6 @@
         </where>
     </select>
 
-
     <select id="findUserMoneyByAction" resultMap="MoneyDetailsResultMap">
         SELECT
         <include refid="Base_Column_List"/>
@@ -119,8 +122,6 @@
             </if>
         </where>
     </select>
-
-
 
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_money_details
