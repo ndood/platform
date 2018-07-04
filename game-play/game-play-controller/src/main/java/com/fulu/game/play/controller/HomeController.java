@@ -100,6 +100,8 @@ public class HomeController {
         try {
             subject.login(playUserToken);
             User user = userService.getCurrentUser();
+            user.setOpenId(null);
+            user.setBalance(null);
             Map<String, Object> result = BeanUtil.beanToMap(user);
             result.put("token", SubjectUtil.getToken());
             result.put("userId", user.getId());
