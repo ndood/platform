@@ -108,12 +108,12 @@
         u.age,
         u.nickname,
         IFNULL( sum( o.actual_money ), 0 ) AS money_sum,
-        count( o.user_id ) AS order_count
+        count( o.service_user_id ) AS order_count
         FROM
         t_user_info_auth uia
         LEFT JOIN t_user u ON uia.user_id = u.id
-        LEFT JOIN ( SELECT user_id, actual_money FROM t_order WHERE STATUS &gt;= 500 AND STATUS &lt;= 600 ) o ON
-        uia.user_id = o.user_id
+        LEFT JOIN ( SELECT service_user_id, actual_money FROM t_order WHERE STATUS &gt;= 500 AND STATUS &lt;= 600 ) o ON
+        uia.user_id = o.service_user_id
         <where>
             <if test="userId != null">
                 and uia.user_id = #{userId}
