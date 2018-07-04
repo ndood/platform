@@ -27,6 +27,9 @@ public class ProductTop implements Serializable {
 	private Boolean status;
 	//排序
 	private Integer sort;
+
+	//备注
+	private String remark;
 	//
 	private Integer adminId;
 	//

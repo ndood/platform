@@ -37,6 +37,8 @@ public class CategoryController extends BaseController{
     private TagService tagService;
     @Autowired
     private TechValueService techValueService;
+
+
     /**
      * 查询所有陪玩业务
       * @return
@@ -44,6 +46,11 @@ public class CategoryController extends BaseController{
     @PostMapping(value = "all")
     public Result list(){
         List<Category> categoryList = categoryService.findAllAccompanyPlayCategory();
+        for(Category category:categoryList){
+            if(category.getIndexIcon()!=null){
+                category.setIcon(category.getIndexIcon());
+            }
+        }
         return Result.success().data(categoryList);
     }
 
@@ -117,8 +124,6 @@ public class CategoryController extends BaseController{
         List<TechValue> techValueList = techValueService.findByTechAttrId(techAttr.getId());
         return Result.success().data(techValueList);
     }
-
-
 
 
 }

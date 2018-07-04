@@ -9,6 +9,7 @@
         <result column="mobile" property="mobile"/>
         <result column="status" property="status"/>
         <result column="sort" property="sort"/>
+        <result column="remark" property="remark"/>
         <result column="admin_id" property="adminId"/>
         <result column="admin_name" property="adminName"/>
         <result column="create_time" property="createTime"/>
@@ -20,7 +21,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,category_id,user_id,mobile,status,sort,admin_id,admin_name,create_time,update_time    </sql>
+        id,category_id,user_id,mobile,status,sort,remark,admin_id,admin_name,create_time,update_time
+    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="ProductTopResultMap">
         select
@@ -76,6 +78,9 @@
             <if test="sort != null">
                 and sort = #{sort}
             </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
             <if test="adminId != null">
                 and admin_id = #{adminId}
             </if>
@@ -100,9 +105,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.ProductTop">
         insert into
-        t_product_top (category_id,user_id,mobile,status,sort,admin_id,admin_name,create_time,update_time)
+        t_product_top (category_id,user_id,mobile,status,sort,remark,admin_id,admin_name,create_time,update_time)
         values
-        (#{categoryId},#{userId},#{mobile},#{status},#{sort},#{adminId},#{adminName},#{createTime},#{updateTime})
+        (#{categoryId},#{userId},#{mobile},#{status},#{sort},#{remark},#{adminId},#{adminName},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.ProductTop">
@@ -127,6 +132,10 @@
 
             <if test="sort != null">
                 sort = #{sort},
+            </if>
+
+            <if test="remark != null">
+                remark = #{remark},
             </if>
 
             <if test="adminId != null">
