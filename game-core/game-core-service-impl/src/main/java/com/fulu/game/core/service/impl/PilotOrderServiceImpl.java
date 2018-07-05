@@ -2,8 +2,10 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.vo.PilotOrderVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
+import com.fulu.game.core.service.AdminService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +27,10 @@ public class PilotOrderServiceImpl extends AbsCommonService<PilotOrder,Integer> 
 
     @Autowired
 	private PilotOrderDao pilotOrderDao;
+    @Autowired
+    private AdminService adminService;
 
+    @Override
     public PageInfo<PilotOrderVO> findVoList(int pageNum,
                                              int pageSize,
                                              String orderBy,
@@ -65,5 +70,20 @@ public class PilotOrderServiceImpl extends AbsCommonService<PilotOrder,Integer> 
         return pilotOrderList.get(0);
     }
 
+    @Override
+    public boolean alterAdminRemark(Integer orderId, String adminRemark) {
+        Admin admin = adminService.getCurrentUser();
 
+        PilotOrder pilotOrder = new PilotOrder();
+        pilotOrder.setId(orderId);
+        pilotOrder.setUpdateTime(new Date());
+        pilotOrder.setAdminRemark(adminRemark);
+        pilotOrder.setAdminId(admin.getId());
+        pilotOrder.setAdminName(admin.getName());
+        Integer result = pilotOrderDao.update(pilotOrder);
+        if(result <= 0) {
+            return false;
+        }
+        return true;
+    }
 }

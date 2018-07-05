@@ -32,6 +32,8 @@ public class PilotOrder implements Serializable {
 	private Integer serviceUserId;
 	//
 	private String remark;
+	//
+	private String adminRemark;
 	//商品数量
 	private Integer productNum;
 	//商品原始价格
@@ -48,7 +50,13 @@ public class PilotOrder implements Serializable {
 	private BigDecimal factor;
 	//该订单是否完成
 	private Boolean isComplete;
+	//管理员ID
+	private Integer adminId;
+	//管理员名称
+	private String adminName;
 	//
 	private Date createTime;
+	//
+	private Date updateTime;
 
 }
