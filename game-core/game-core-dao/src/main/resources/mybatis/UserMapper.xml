@@ -150,6 +150,9 @@
             <if test="mobile != null">
                 and u.mobile = #{mobile}
             </if>
+            <if test="type != null">
+                and u.type = #{type}
+            </if>
             <if test="nickname != null">
                 and u.nickname LIKE CONCAT('%', #{nickname},'%')
             </if>

@@ -22,4 +22,8 @@ public class OrderSearchVO {
     private String startTime;
     private String endTime;
     private Integer[] statusList;
+    //接单间隔左范围默认为1
+    private Integer ltInterval;
+    //接单间隔右范围
+    private Integer gtInterval = 0;
 }

@@ -1,5 +1,6 @@
 package com.fulu.game.core.entity.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fulu.game.core.entity.User;
 import lombok.Data;
 
@@ -26,5 +27,8 @@ public class UserVO extends User {
 
     private BigDecimal paySum;
     private Integer orderCount;
+
+    @JsonIgnore
+    private String orderBy = "u.create_time desc";
 
 }
