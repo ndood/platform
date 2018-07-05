@@ -80,6 +80,19 @@ public class PilotOrderController extends BaseController {
     }
 
     /**
+     * 打款流水列表
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @PostMapping("/detailsList")
+    public Result pilotorderDetailsList(@RequestParam Integer pageNum,
+                                         @RequestParam Integer pageSize) {
+        PageInfo pageInfo = pilotOrderDetailsService.findDetailsList(pageNum, pageSize);
+        return Result.success().data(pageInfo).msg("查询列表成功！");
+    }
+
+    /**
      * 对领航订单进行打款
      * @param money
      * @param remark

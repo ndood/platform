@@ -1,6 +1,8 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.PilotOrderDetails;
+import com.fulu.game.core.entity.vo.PilotOrderDetailsVO;
+import com.github.pagehelper.PageInfo;
 
 import java.math.BigDecimal;
 
@@ -21,5 +23,13 @@ public interface PilotOrderDetailsService extends ICommonService<PilotOrderDetai
      * @return
      */
     boolean remit(BigDecimal money, String remark);
+
+    /**
+     * 打款流水列表
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    PageInfo<PilotOrderDetailsVO> findDetailsList(Integer pageNum, Integer pageSize);
 	
 }
