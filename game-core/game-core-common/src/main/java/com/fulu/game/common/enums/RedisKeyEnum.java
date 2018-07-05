@@ -21,7 +21,8 @@ public enum RedisKeyEnum {
     MARKET_ORDER, //市场订单
     WRITER_SESSION_KEY, //写操作的sessionKey
     MARKET_ORDER_IS_PUSH, //判断集市订单是否推送过
-    GLOBAL_FORM_TOKEN; //表单验证token
+    GLOBAL_FORM_TOKEN, //表单验证token
+    USER_ONLINE_KEY; //表单验证token
 
     public static final String SPLIT = "-";
 
