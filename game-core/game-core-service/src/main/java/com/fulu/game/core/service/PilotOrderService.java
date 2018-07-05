@@ -26,4 +26,12 @@ public interface PilotOrderService extends ICommonService<PilotOrder, Integer> {
 
 
     BigDecimal amountOfProfit(Date startTime,Date endTime);
+
+    /**
+     * 修改备注（管理员备注）
+     * @param orderId
+     * @param adminRemark
+     * @return
+     */
+    boolean alterAdminRemark(Integer orderId, String adminRemark);
 }

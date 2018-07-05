@@ -11,6 +11,7 @@
         <result column="user_id" property="userId"/>
         <result column="service_user_id" property="serviceUserId"/>
         <result column="remark" property="remark"/>
+        <result column="admin_remark"  property="adminRemark" />
         <result column="product_num" property="productNum"/>
         <result column="product_price" property="productPrice"/>
         <result column="pilot_product_price" property="pilotProductPrice"/>
@@ -19,7 +20,10 @@
         <result column="spread_money" property="spreadMoney"/>
         <result column="factor" property="factor"/>
         <result column="is_complete" property="isComplete"/>
+        <result column="admin_id"  property="adminId" />
+        <result column="admin_name"  property="adminName" />
         <result column="create_time" property="createTime"/>
+        <result column="update_time"  property="updateTime" />
     </resultMap>
 
     <resultMap id="PilotOrderResultVOMap" type="com.fulu.game.core.entity.vo.PilotOrderVO" extends="PilotOrderResultMap">
@@ -35,7 +39,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,order_no,name,coupon_no,category_id,user_id,service_user_id,remark,product_num,product_price,pilot_product_price,total_money,pilot_total_money,spread_money,factor,is_complete,create_time    </sql>
+        id,order_no,name,coupon_no,category_id,user_id,service_user_id,remark,admin_remark,product_num,product_price,pilot_product_price,total_money,pilot_total_money,spread_money,factor,is_complete,admin_id,admin_name,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="PilotOrderResultMap">
         select
@@ -55,37 +59,38 @@
 
     <select id="findVoList" resultMap="PilotOrderResultVOMap">
         SELECT
-            po.id,
-            o.complete_time,
-            po.order_no,
-            po.name,
-            po.coupon_no,
-            po.category_id,
-            po.user_id,
-            po.service_user_id,
-            po.remark,
-            po.pilot_product_price,
-            po.pilot_total_money,
-            po.factor,
-            op.price,
-            op.unit,
-            op.amount,
-            o.actual_money,
-            o.total_money,
-            o.server_money,
-            po.product_price,
-            o.commission_money,
-            po.spread_money,
-            po.factor,
-            po.is_complete,
-            o.create_time
+        po.id,
+        o.complete_time,
+        po.order_no,
+        po.name,
+        po.coupon_no,
+        po.category_id,
+        po.user_id,
+        po.service_user_id,
+        po.remark,
+        po.admin_remark,
+        po.pilot_product_price,
+        po.pilot_total_money,
+        po.factor,
+        op.price,
+        op.unit,
+        op.amount,
+        o.actual_money,
+        o.total_money,
+        o.server_money,
+        po.product_price,
+        o.commission_money,
+        po.spread_money,
+        po.factor,
+        po.is_complete,
+        o.create_time
         FROM
-            t_pilot_order po
+        t_pilot_order po
         LEFT JOIN t_order o ON po.order_no = o.order_no
         LEFT JOIN t_order_product op ON op.order_no = po.order_no
         <where>
             <if test="orderNo !=null">
-               and po.order_no = #{orderNo}
+                and po.order_no = #{orderNo}
             </if>
             <if test="startTime != null">
                 and o.create_time &gt;= #{startTime}
@@ -137,6 +142,9 @@
             <if test="remark != null">
                 and remark = #{remark}
             </if>
+            <if test="adminRemark != null">
+                and admin_remark = #{adminRemark}
+            </if>
             <if test="productNum != null">
                 and product_num = #{productNum}
             </if>
@@ -158,8 +166,17 @@
             <if test="isComplete != null">
                 and is_complete = #{isComplete}
             </if>
+            <if test="adminId != null">
+                and admin_id = #{adminId}
+            </if>
+            <if test="adminName != null">
+                and admin_name = #{adminName}
+            </if>
             <if test="createTime != null">
                 and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
             </if>
         </where>
     </select>
@@ -173,9 +190,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.PilotOrder">
         insert into
-        t_pilot_order (order_no,name,coupon_no,category_id,user_id,service_user_id,remark,product_num,product_price,pilot_product_price,total_money,pilot_total_money,spread_money,factor,is_complete,create_time)
+        t_pilot_order (order_no,name,coupon_no,category_id,user_id,service_user_id,remark,admin_remark,product_num,product_price,pilot_product_price,total_money,pilot_total_money,spread_money,factor,is_complete,admin_id,admin_name,create_time,update_time)
         values
-        (#{orderNo},#{name},#{couponNo},#{categoryId},#{userId},#{serviceUserId},#{remark},#{productNum},#{productPrice},#{pilotProductPrice},#{totalMoney},#{pilotTotalMoney},#{spreadMoney},#{factor},#{isComplete},#{createTime})
+        (#{orderNo},#{name},#{couponNo},#{categoryId},#{userId},#{serviceUserId},#{remark},#{adminRemark},#{productNum},#{productPrice},#{pilotProductPrice},#{totalMoney},#{pilotTotalMoney},#{spreadMoney},#{factor},#{isComplete},#{adminId},#{adminName},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.PilotOrder">
@@ -210,6 +227,10 @@
                 remark = #{remark},
             </if>
 
+            <if test="adminRemark != null">
+                admin_remark = #{adminRemark},
+            </if>
+
             <if test="productNum != null">
                 product_num = #{productNum},
             </if>
@@ -238,9 +259,18 @@
             <if test="isComplete != null">
                 is_complete = #{isComplete},
             </if>
+            <if test="adminId != null">
+                admin_id = #{adminId},
+            </if>
+            <if test="adminName != null">
+                admin_name = #{adminName},
+            </if>
 
             <if test="createTime != null">
                 create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
             </if>
         </set>
         <where>
