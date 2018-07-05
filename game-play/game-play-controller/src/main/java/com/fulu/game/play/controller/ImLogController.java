@@ -34,8 +34,10 @@ public class ImLogController extends BaseController{
     public Result userOnline(@RequestParam(required = true) Boolean active){
         User user = userService.getCurrentUser();
         if(active){
+            log.info("userId:{}用户上线了!",user.getId());
             redisOpenService.set(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()),user.getType()+"");
         }else{
+            log.info("userId:{}用户下线了!",user.getId());
             redisOpenService.delete(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()));
         }
         return Result.success();

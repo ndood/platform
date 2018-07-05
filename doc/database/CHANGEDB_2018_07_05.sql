@@ -18,4 +18,4 @@ CREATE TABLE `t_pilot_order_details` (
   `admin_name` varchar(256) NOT NULL COMMENT '管理员名称',
   `create_time` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COMMENT='领航订单打款流水表';
+) COMMENT='领航订单打款流水表';
