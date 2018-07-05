@@ -7,6 +7,7 @@ import com.github.pagehelper.PageInfo;
 import me.chanjar.weixin.common.exception.WxErrorException;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,6 +32,13 @@ public interface UserService extends ICommonService<User, Integer> {
      * @return
      */
     List<User> findAllServeUser();
+
+    /**
+     * 根据用户类型和登录时间查询
+     *
+     * @return
+     */
+    List<User> findByLoginTime(Integer userType, Date startTime, Date endTime);
 
     /**
      * 根据openId查询user

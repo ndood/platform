@@ -41,4 +41,6 @@ public interface UserDao extends ICommonDao<User, Integer> {
     List<UserVO> findUserVOByUserIds(@Param(value = "userIds") List<Integer> userIds);
 
     List<UserVO> findBySearch(UserVO userVO);
+
+    List<User> findByExportParam(UserVO userVO);
 }

@@ -4,8 +4,7 @@ import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.fulu.game.common.Result;
-import com.fulu.game.common.ResultStatus;
-import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserInfoAuthReject;
@@ -16,13 +15,13 @@ import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -362,16 +361,28 @@ public class UserController extends BaseController {
      */
     @RequestMapping("/export/{type}")
     public void userExport(HttpServletResponse response,
-                           @PathVariable(name = "type", required = true) Integer type) throws Exception {
+                           @PathVariable(name = "type", required = true) Integer type,
+                           @RequestParam(value = "startTime", required = false) Date startTime,
+                           @RequestParam(value = "endTime", required = false) Date endTime) throws Exception {
+        Integer userType = null;
         String title;
         List<User> userList;
-        if (1 == type) {
-            title = "所有用户列表";
-            userList = userService.findAll();
-        } else {
-            title = "陪玩师列表";
-            userList = userService.findAllServeUser();
+        switch (type) {
+            case 0:
+                title = "所有用户列表";
+                break;
+            case 1:
+                title = "普通玩家列表";
+                userType = UserTypeEnum.GENERAL_USER.getType();
+                break;
+            case 2:
+                title = "陪玩师列表";
+                userType = UserTypeEnum.ACCOMPANY_PLAYER.getType();
+                break;
+            default:
+                title = "所有用户列表";
         }
+        userList = userService.findByLoginTime(userType, startTime, endTime);
         ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
         Workbook workbook = ExcelExportUtil.exportExcel(exportParams, User.class, userList);
         response.setCharacterEncoding("UTF-8");

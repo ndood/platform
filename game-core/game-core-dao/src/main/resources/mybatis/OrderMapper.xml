@@ -242,17 +242,23 @@
             <if test="serviceUserId != null">
                 and service_user_id = #{serviceUserId}
             </if>
-            <if test="statusList != null">
-                and status in
-                <foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
-            </if>
             <if test="startTime != null">
                 and create_time &gt;= #{startTime}
             </if>
             <if test="endTime != null">
                 and create_time &lt;= #{endTime}
+            </if>
+            <if test="gtInterval != null">
+                and TIMESTAMPDIFF(SECOND,create_time,receiving_time) &gt;= #{gtInterval}
+            </if>
+            <if test="ltInterval != null">
+                and TIMESTAMPDIFF(SECOND,create_time,receiving_time) &lt;= #{ltInterval}
+            </if>
+            <if test="statusList != null">
+                and status in
+                <foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
             </if>
         </where>
     </select>
