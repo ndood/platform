@@ -63,6 +63,12 @@ public class Result implements Serializable {
         return result;
     }
 
+    public static Result accessDeny() {
+        Result result = new Result();
+        result.setStatus(ResultStatus.ACCESS_DENY);
+        return result;
+    }
+
     public static Result newUser() {
         Result result = new Result();
         result.setStatus(ResultStatus.NEWUSER);

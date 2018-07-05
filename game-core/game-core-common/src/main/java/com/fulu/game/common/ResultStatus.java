@@ -28,4 +28,7 @@ public class ResultStatus {
     //IM用户注册失败
     public static Integer IM_REGIST_FAIL= 203;
 
+    //无接口调用权限
+    public static Integer ACCESS_DENY = 403;
+
 }

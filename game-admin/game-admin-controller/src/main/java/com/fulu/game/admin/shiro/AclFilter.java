@@ -1,9 +1,11 @@
 package com.fulu.game.admin.shiro;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.AdminStatus;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Admin;
+import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,8 @@ public class AclFilter extends AccessControlFilter {
 
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private AdminService adminService;
 
     @Override
     protected boolean isAccessAllowed(ServletRequest request,
@@ -36,28 +40,36 @@ public class AclFilter extends AccessControlFilter {
     protected boolean onAccessDenied(ServletRequest request,
                                      ServletResponse response) throws Exception {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        if("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())){
+        if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
             return true;
         }
         String token = httpRequest.getHeader("token");
         Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.ADMIN_TOKEN.generateKey(token));
+        String returnMsg = null;
         // 没有登录授权 且没有记住我
         if (MapUtils.isEmpty(map)) {
             log.info("验证登录失败token：{}", token);
-            // 没有登录
+            returnMsg = JSONObject.fromObject(Result.noLogin()).toString();
+        } else {//检查账号是否已失效
+            Integer id = Integer.valueOf(String.valueOf(map.get("id")));
+            Admin admin = adminService.findById(id);
+            if (admin == null || admin.getStatus().equals(AdminStatus.DISABLE.getType())) {
+                log.info("账号已失效，请联系管理员");
+                returnMsg = JSONObject.fromObject(Result.accessDeny().msg("账号已失效,请联系管理员")).toString();
+            }
+        }
+        if (returnMsg != null) {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             httpResponse.setCharacterEncoding("UTF-8");
             httpResponse.setContentType("application/json; charset=utf-8");
             httpResponse.setHeader("Access-Control-Allow-Origin", "*");
-
             PrintWriter out = null;
-
-            try{
+            try {
                 out = httpResponse.getWriter();
-                out.append(JSONObject.fromObject(Result.noLogin()).toString());
-            }catch(IOException e){
+                out.append(returnMsg);
+            } catch (IOException e) {
                 e.printStackTrace();
-            }finally {
+            } finally {
                 if (out != null) {
                     out.close();
                 }
@@ -66,7 +78,6 @@ public class AclFilter extends AccessControlFilter {
         }
         //再存5分钟，保证会话时长
         redisOpenService.hset(RedisKeyEnum.ADMIN_TOKEN.generateKey(token), map);
-
         //已登录的，就保存该token从redis查到的用户信息
         Admin admin = BeanUtil.mapToBean(map, Admin.class, true);
         SubjectUtil.setCurrentUser(admin);

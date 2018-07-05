@@ -21,4 +21,5 @@ public interface AdminService extends ICommonService<Admin,Integer>{
 
     Admin getCurrentUser();
 
+    void lock(Integer adminId);
 }
