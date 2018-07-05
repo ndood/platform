@@ -29,6 +29,6 @@ public class UserVO extends User {
     private Integer orderCount;
 
     @JsonIgnore
-    private String orderBy = "u.create_time desc";
+    private String orderBy;
 
 }

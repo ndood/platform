@@ -23,6 +23,7 @@ import com.xiaoleilu.hutool.util.BeanUtil;
 import com.xiaoleilu.hutool.util.CollectionUtil;
 import com.xiaoleilu.hutool.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -445,7 +446,13 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     @Override
     public PageInfo<UserInfoAuthVO> list(Integer pageNum, Integer pageSize, UserInfoAuthSearchVO userInfoAuthSearchVO) {
         List<UserInfoAuthVO> userInfoAuthVOList = new ArrayList<>();
-        PageHelper.startPage(pageNum, pageSize, userInfoAuthSearchVO.getOrderBy());
+        String orderBy;
+        if (StringUtils.isBlank(userInfoAuthSearchVO.getOrderBy())) {
+            orderBy = "uia.update_time desc";
+        } else {
+            orderBy = userInfoAuthSearchVO.getOrderBy();
+        }
+        PageHelper.startPage(pageNum, pageSize, orderBy);
         List<UserInfoAuth> userInfoAuths = userInfoAuthDao.findBySearchVO(userInfoAuthSearchVO);
         for (UserInfoAuth userInfoAuth : userInfoAuths) {
             UserInfoAuthVO userInfoAuthVO = new UserInfoAuthVO();

@@ -75,6 +75,15 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         return users;
     }
 
+    @Override
+    public List<User> findByLoginTime(Integer userType, Date startTime, Date endTime) {
+        UserVO userVO = new UserVO();
+        userVO.setType(userType);
+        userVO.setStartTime(startTime);
+        userVO.setEndTime(endTime);
+        return userDao.findByExportParam(userVO);
+    }
+
 
     @Override
     public User findByOpenId(String openId) {
@@ -172,7 +181,13 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public PageInfo<UserVO> list(UserVO userVO, Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize, userVO.getOrderBy());
+        String orderBy;
+        if (StringUtils.isBlank(userVO.getOrderBy())) {
+            orderBy = "u.create_time desc";
+        } else {
+            orderBy = userVO.getOrderBy();
+        }
+        PageHelper.startPage(pageNum, pageSize, orderBy);
         List<UserVO> list = userDao.findBySearch(userVO);
         return new PageInfo(list);
     }

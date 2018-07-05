@@ -132,6 +132,23 @@
         </where>
     </select>
 
+    <select id="findByExportParam" resultMap="UserResultMap" parameterType="com.fulu.game.core.entity.vo.UserVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_user
+        <where>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="startTime != null">
+                and login_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and login_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
     <select id="findBySearch" resultMap="UserResultVOMap" parameterType="com.fulu.game.core.entity.vo.UserVO">
         SELECT
         u.*,
