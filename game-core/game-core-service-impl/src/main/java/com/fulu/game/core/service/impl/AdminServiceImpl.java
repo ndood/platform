@@ -13,6 +13,7 @@ import com.fulu.game.core.service.AdminService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.CollectionUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service("adminService")
+@Slf4j
 public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implements AdminService {
 
     @Autowired
@@ -75,6 +77,25 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
         PageHelper.startPage(pageNum, pageSize, "create_time DESC");
         List<Admin> list = adminDao.findByParameter(adminVO);
         return new PageInfo(list);
+    }
+
+    @Override
+    public void lock(Integer adminId) {
+        Admin currentAdmin = getCurrentUser();
+        log.info("调用禁用管理员接口，操作人adminId={},禁用对象id={}", currentAdmin.getId(), adminId);
+        if (AdminStatus.DISABLE.getType().equals(currentAdmin.getStatus())) {
+            throw new UserException(UserException.ExceptionCode.LOCK_DENY_EXCEPTION);
+        }
+        Admin admin = adminDao.findById(adminId);
+        if (admin == null){
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+        if (currentAdmin.getId().equals(admin.getId())) {
+            throw new UserException(UserException.ExceptionCode.LOCK_SELF_EXCEPTION);
+        }
+        admin.setStatus(AdminStatus.DISABLE.getType());
+        admin.setUpdateTime(new Date());
+        adminDao.update(admin);
     }
 
     @Override

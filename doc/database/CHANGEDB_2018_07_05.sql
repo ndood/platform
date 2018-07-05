@@ -1,8 +1,8 @@
 -- t_pilot_order表增加四个字段：admin_id、admin_name、update_time、admin_remark
-ALTER TABLE `t_pilot_order` ADD COLUMN `admin_remark` varchar(512) DEFAULT NULL COMMENT '管理员备注';
-ALTER TABLE `t_pilot_order` ADD COLUMN `admin_id` int(11) NOT NULL COMMENT '管理员ID';
-ALTER TABLE `t_pilot_order` ADD COLUMN `admin_name` varchar(256) NOT NULL COMMENT '管理员名称';
-ALTER TABLE `t_pilot_order` ADD COLUMN `update_time` datetime DEFAULT NULL;
+ALTER TABLE `t_pilot_order` ADD COLUMN `admin_remark` varchar(512) DEFAULT NULL COMMENT '管理员备注' after `factor`;
+ALTER TABLE `t_pilot_order` ADD COLUMN `admin_name` varchar(256) NOT NULL COMMENT '管理员名称' after `factor`;
+ALTER TABLE `t_pilot_order` ADD COLUMN `admin_id` int(11) NOT NULL COMMENT '管理员ID' after `factor`;
+ALTER TABLE `t_pilot_order` ADD COLUMN `update_time` datetime DEFAULT NULL after `is_complete`;
 
 -- ----------------------------
 -- Table structure for t_pilot_order_details

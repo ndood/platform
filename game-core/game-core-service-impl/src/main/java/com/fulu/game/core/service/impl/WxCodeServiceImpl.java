@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 @Service
 public class WxCodeServiceImpl implements WxCodeService {
@@ -29,6 +30,7 @@ public class WxCodeServiceImpl implements WxCodeService {
      * @throws WxErrorException
      */
     @RequestMapping("/create")
+    @Override
     public String create(String scene, String page) throws WxErrorException {
         File file = wxMaService.getQrcodeService().createWxCodeLimit(scene, page);
         //先上传到阿里云，返回图片地址
@@ -36,13 +38,14 @@ public class WxCodeServiceImpl implements WxCodeService {
         if (!file.exists()) {
             return null;
         }
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(file);
+        try (FileInputStream fis = new FileInputStream(file)) {
+            String fileName = file.getName();
+            return ossUtil.uploadFile(fis, fileName);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+        } catch (IOException e1) {
+            e1.printStackTrace();
         }
-        String fileName = file.getName();
-        return ossUtil.uploadFile(fis, fileName);
+        return null;
     }
 }
