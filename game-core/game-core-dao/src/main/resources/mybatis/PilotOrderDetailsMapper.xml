@@ -6,6 +6,7 @@
                                     <id column="id"  property="id" />
                                             <result column="remark"  property="remark" />
                                             <result column="money"  property="money" />
+                                            <result column="left_amount"  property="leftAmount" />
                                             <result column="sum"  property="sum" />
                                             <result column="admin_id"  property="adminId" />
                                             <result column="admin_name"  property="adminName" />
@@ -16,7 +17,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,remark,money,sum,admin_id,admin_name,create_time    </sql>
+        id,remark,money,left_amount,sum,admin_id,admin_name,create_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="PilotOrderDetailsResultMap">
         select
@@ -44,6 +45,9 @@
                                                                 <if test="money != null">
                        and money = #{money}
                     </if>
+                    <if test="leftAmount != null">
+                        and left_amount = #{leftAmount}
+                    </if>
                                                                 <if test="sum != null">
                        and sum = #{sum}
                     </if>
@@ -68,9 +72,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.PilotOrderDetails">
         insert into
-        t_pilot_order_details (remark,money,sum,admin_id,admin_name,create_time)
+        t_pilot_order_details (remark,money,left_amount,sum,admin_id,admin_name,create_time)
         values
-        (#{remark},#{money},#{sum},#{adminId},#{adminName},#{createTime})
+        (#{remark},#{money},#{leftAmount},#{sum},#{adminId},#{adminName},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.PilotOrderDetails">
@@ -83,6 +87,9 @@
                                             
                     <if test="money != null">
                         money = #{money},
+                    </if>
+                    <if test="leftAmount != null">
+                        left_amount = #{leftAmount},
                     </if>
                                             
                     <if test="sum != null">
@@ -107,9 +114,9 @@
     </update>
 
     <!-- 查询最近一笔打款记录的sum值 -->
-    <select id="findLastRecordSum" resultType="BigDecimal">
+    <select id="findLastRecord" resultType="com.fulu.game.core.entity.PilotOrderDetails">
         SELECT
-            sum
+            *
         FROM
             t_pilot_order_details
         ORDER BY

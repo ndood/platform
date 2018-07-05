@@ -2,11 +2,9 @@ package com.fulu.game.core.dao;
 
 import com.fulu.game.core.entity.PilotOrderDetails;
 import com.fulu.game.core.entity.vo.PilotOrderDetailsVO;
-
-import java.math.BigDecimal;
-import java.util.List;
-
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * 领航订单流水表
@@ -23,6 +21,5 @@ public interface PilotOrderDetailsDao extends ICommonDao<PilotOrderDetails,Integ
      * 找到最近一条表记录
      * @return
      */
-    BigDecimal findLastRecordSum();
-
+    PilotOrderDetails findLastRecord();
 }

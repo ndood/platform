@@ -22,6 +22,8 @@ public class PilotOrderDetails implements Serializable {
 	private String remark;
 	//本次金额
 	private BigDecimal money;
+	//剩余金额
+	private BigDecimal leftAmount;
 	//总金额
 	private BigDecimal sum;
 	//管理员ID
