@@ -37,7 +37,6 @@
     <resultMap id="OrderResVOMap" type="com.fulu.game.core.entity.vo.responseVO.OrderResVO" extends="OrderResultMap">
     </resultMap>
 
-
     <sql id="Base_Column_List">
         id,order_no,coupon_no,category_id,user_id,service_user_id,name,type,channel_id,remark,is_pay,status,commission_money,total_money,actual_money,server_money,coupon_money,create_time,update_time,pay_time,complete_time,order_ip,receiving_time
     </sql>
@@ -68,7 +67,7 @@
 
     <select id="countByParameter" resultType="java.lang.Integer" parameterType="com.fulu.game.core.entity.vo.OrderVO">
         SELECT
-          count(1)
+        count(1)
         FROM t_order
         <where>
             <if test="orderNo != null">
@@ -172,7 +171,6 @@
         </where>
     </select>
 
-
     <select id="findVOByParameter" resultMap="OrderResultVOMap" parameterType="com.fulu.game.core.entity.vo.OrderVO">
         SELECT
         <include refid="Base_Column_List"/>
@@ -220,8 +218,6 @@
         </where>
     </select>
 
-
-
     <select id="list" resultMap="OrderResVOMap" parameterType="com.fulu.game.core.entity.vo.searchVO.OrderSearchVO">
         SELECT
         <include refid="Base_Column_List"/>
@@ -263,9 +259,38 @@
         </where>
     </select>
 
+    <select id="findBySearchVO" resultMap="OrderResultMap"
+            parameterType="com.fulu.game.core.entity.vo.searchVO.OrderSearchVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_order
+        <where>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="startTime != null">
+                and create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime}
+            </if>
+            <if test="gtInterval != null">
+                and TIMESTAMPDIFF(SECOND,create_time,receiving_time) &gt;= #{gtInterval}
+            </if>
+            <if test="ltInterval != null">
+                and TIMESTAMPDIFF(SECOND,create_time,receiving_time) &lt;= #{ltInterval}
+            </if>
+            <if test="statusList != null">
+                and status in
+                <foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
 
-
-    <select id="findMarketByParameter" resultMap="OrderResultMarketVOMap" parameterType="com.fulu.game.core.entity.vo.OrderVO">
+    <select id="findMarketByParameter" resultMap="OrderResultMarketVOMap"
+            parameterType="com.fulu.game.core.entity.vo.OrderVO">
         SELECT
         <include refid="Base_Column_List"/>
         FROM t_order
@@ -308,9 +333,6 @@
             </if>
         </where>
     </select>
-
-
-
 
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_order

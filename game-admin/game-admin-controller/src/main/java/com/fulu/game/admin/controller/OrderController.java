@@ -9,7 +9,6 @@ import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
-import com.fulu.game.core.service.OrderProductService;
 import com.fulu.game.core.service.OrderService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +34,7 @@ public class OrderController extends BaseController {
 
     /**
      * 管理员-订单列表
+     *
      * @param orderSearchVO
      * @return
      */
@@ -65,11 +65,12 @@ public class OrderController extends BaseController {
 
     /**
      * 管理员强制完成订单,协商处理
+     *
      * @param orderNo
      * @return
      */
     @RequestMapping(value = "/admin/negotiate")
-    public Result adminHandleNegotiateOrder(@RequestParam(required = true)String orderNo) {
+    public Result adminHandleNegotiateOrder(@RequestParam(required = true) String orderNo) {
         OrderVO orderVO = orderService.adminHandleNegotiateOrder(orderNo);
         return Result.success().data(orderVO.getOrderNo()).msg("订单完成,协商处理!");
     }
@@ -81,42 +82,45 @@ public class OrderController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/admin/complete")
-    public Result adminHandleCompleteOrder(@RequestParam(required = true)String orderNo) {
+    public Result adminHandleCompleteOrder(@RequestParam(required = true) String orderNo) {
         OrderVO orderVO = orderService.adminHandleCompleteOrder(orderNo);
         return Result.success().data(orderVO.getOrderNo()).msg("订单完成!");
     }
 
     /**
      * 管理员退款给用户
+     *
      * @param orderNo
      * @return
      */
     @RequestMapping(value = "/admin/refund")
-    public Result adminHandleRefundOrder(@RequestParam(required = true)String orderNo) {
+    public Result adminHandleRefundOrder(@RequestParam(required = true) String orderNo) {
         OrderVO orderVO = orderService.adminHandleRefundOrder(orderNo);
         return Result.success().data(orderVO.getOrderNo()).msg("订单完成,退款给用户!");
     }
 
     /**
      * 管理员取消订单
+     *
      * @param orderNo
      * @return
      */
     @RequestMapping(value = "/admin/cancel")
-    public Result adminHandleCancelOrder(@RequestParam(required = true)String orderNo) {
+    public Result adminHandleCancelOrder(@RequestParam(required = true) String orderNo) {
         orderService.adminCancelOrder(orderNo);
         return Result.success().msg("取消订单成功!");
     }
 
-     /**
+    /**
      * 管理员申诉订单
+     *
      * @param orderNo
      * @return
      */
     @RequestMapping(value = "/admin/appeal")
-    public Result adminHandleAppealOrder(@RequestParam(required = true)String orderNo,
-                                         @RequestParam(required = true)String remark) {
-        orderService.adminAppealOrder(orderNo,remark);
+    public Result adminHandleAppealOrder(@RequestParam(required = true) String orderNo,
+                                         @RequestParam(required = true) String remark) {
+        orderService.adminAppealOrder(orderNo, remark);
         return Result.success().msg("订单申诉成功!");
     }
 
@@ -128,9 +132,10 @@ public class OrderController extends BaseController {
      * @throws Exception
      */
     @RequestMapping("/export")
-    public void orderExport(HttpServletResponse response) throws Exception {
+    public void orderExport(HttpServletResponse response,
+                            OrderSearchVO orderSearchVO) throws Exception {
         String title = "订单列表";
-        List<Order> userList = orderService.findAll();
+        List<Order> userList = orderService.findBySearchVO(orderSearchVO);
         ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
         Workbook workbook = ExcelExportUtil.exportExcel(exportParams, Order.class, userList);
         response.setCharacterEncoding("UTF-8");

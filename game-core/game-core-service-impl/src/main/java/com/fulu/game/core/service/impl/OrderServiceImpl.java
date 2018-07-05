@@ -173,7 +173,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return new PageInfo<>(orderVOList);
     }
 
-
     /**
      * 集市订单列表
      *
@@ -326,7 +325,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return orderDao.countByParameter(orderVO);
     }
 
-
     @Override
     public OrderVO submit(int productId,
                           int num,
@@ -418,6 +416,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 领航订单
+     *
      * @param productId
      * @param num
      * @param remark
@@ -427,7 +426,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
      */
     @Override
     public String pilotSubmit(int productId, int num, String remark, String couponNo, String userIp) {
-        log.info("领航用户提交订单productId:{};num:{};remark:{};couponNo:{};userIp:{};", productId, num, remark,couponNo,userIp);
+        log.info("领航用户提交订单productId:{};num:{};remark:{};couponNo:{};userIp:{};", productId, num, remark, couponNo, userIp);
         User user = userService.getCurrentUser();
         Product product = productService.findById(productId);
         if (product == null) {
@@ -447,7 +446,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
 
         //计算领航订单金额
-        PriceFactor priceFactor =  priceFactorService.findByNewPriceFactor();
+        PriceFactor priceFactor = priceFactorService.findByNewPriceFactor();
         BigDecimal pilotTotalMoney = priceFactor.getFactor().multiply(totalMoney);
 
         //创建订单
@@ -516,7 +515,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
         //新建领航订单数据
         PilotOrder pilotOrder = new PilotOrder();
-        BeanUtil.copyProperties(order,pilotOrder);
+        BeanUtil.copyProperties(order, pilotOrder);
         pilotOrder.setProductNum(orderProduct.getAmount());
         pilotOrder.setProductPrice(product.getPrice());
         pilotOrder.setPilotProductPrice(product.getPrice().multiply(priceFactor.getFactor()));
@@ -528,7 +527,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         pilotOrderService.create(pilotOrder);
         return order.getOrderNo();
     }
-
 
     /**
      * 提交集市订单
@@ -625,7 +623,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return coupon;
     }
 
-
     /**
      * 订单支付
      *
@@ -666,7 +663,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return orderConvertVo(order);
     }
 
-
     /**
      * 陪玩师接单
      *
@@ -691,7 +687,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         redisOpenService.set(RedisKeyEnum.USER_ORDER_ALREADY_SERVICE_KEY.generateKey(order.getServiceUserId()), order.getOrderNo(), expire);
         return orderConvertVo(order);
     }
-
 
     /**
      * 陪玩师取消订单
@@ -721,6 +716,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 系统取消订单
+     *
      * @param orderNo
      */
     @Override
@@ -740,7 +736,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             orderRefund(order);
         }
     }
-
 
     /**
      * 管理员取消订单
@@ -768,7 +763,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     }
 
-
     /**
      * 用户取消订单
      *
@@ -795,9 +789,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return orderConvertVo(order);
     }
 
-
     /**
      * 用户申诉订单
+     *
      * @param orderNo
      * @param remark
      * @param fileUrl
@@ -827,7 +821,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_SERVER_USER_APPEAL);
         return orderConvertVo(order);
     }
-
 
     /**
      * 管理员申诉订单
@@ -913,6 +906,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 系统完成订单
+     *
      * @param orderNo
      * @return
      */
@@ -943,7 +937,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         BigDecimal serverMoney = order.getTotalMoney().subtract(order.getCommissionMoney());
         //如果是领航订单则用原始的订单金额给打手分润
         PilotOrder pilotOrder = pilotOrderService.findByOrderNo(order.getOrderNo());
-        if(pilotOrder!=null){
+        if (pilotOrder != null) {
             serverMoney = pilotOrder.getTotalMoney().subtract(order.getCommissionMoney());
             pilotOrder.setIsComplete(true);
             pilotOrderService.update(pilotOrder);
@@ -957,6 +951,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 管理员强制完成订单 (打款给打手)
+     *
      * @param orderNo
      * @return
      */
@@ -1082,7 +1077,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         redisOpenService.delete(RedisKeyEnum.USER_ORDER_ALREADY_SERVICE_KEY.generateKey(serverId));
     }
 
-
     public List<Order> findByStatusList(Integer[] statusList) {
         if (statusList == null) {
             return new ArrayList<>();
@@ -1090,6 +1084,16 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         OrderVO param = new OrderVO();
         param.setStatusList(statusList);
         return orderDao.findByParameter(param);
+    }
+
+    @Override
+    public List<Order> findBySearchVO(OrderSearchVO orderSearchVO) {
+        Integer status = orderSearchVO.getStatus();
+        Integer[] statusList = OrderStatusGroupEnum.getByValue(status);
+        if (null != statusList && statusList.length > 0) {
+            orderSearchVO.setStatusList(statusList);
+        }
+        return orderDao.findBySearchVO(orderSearchVO);
     }
 
     @Override
@@ -1102,7 +1106,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         param.setType(type);
         return orderDao.findByParameter(param);
     }
-
 
     /**
      * 生成订单号
@@ -1118,7 +1121,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         }
     }
 
-
     public Order findByOrderNo(String orderNo) {
         if (orderNo == null) {
             return null;
@@ -1132,14 +1134,12 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return orderList.get(0);
     }
 
-
     @Override
     public Boolean isOldUser(Integer userId) {
         OrderVO orderVO = new OrderVO();
         orderVO.setUserId(userId);
         return orderDao.countByParameter(orderVO) > 0;
     }
-
 
     private OrderVO orderConvertVo(Order order) {
         OrderVO orderVO = new OrderVO();
