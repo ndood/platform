@@ -19,3 +19,6 @@ CREATE TABLE `t_pilot_order_details` (
   `create_time` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COMMENT='领航订单打款流水表';
+
+-- t_pilot_order_details表增加字段：left_amount
+ALTER TABLE `t_pilot_order_details` ADD COLUMN `left_amount` decimal(11,2) DEFAULT NULL COMMENT '剩余金额' after 'money';
