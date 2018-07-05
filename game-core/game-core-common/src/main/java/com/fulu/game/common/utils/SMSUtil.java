@@ -5,6 +5,8 @@ import com.fulu.game.common.enums.SMSTemplateEnum;
 import com.xiaoleilu.hutool.util.RandomUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Date;
+
 
 @Slf4j
 public class SMSUtil {
@@ -44,6 +46,17 @@ public class SMSUtil {
      */
     public static Boolean sendOrderReceivingRemind(String mobile,String orderName){
         return sendSMS(mobile,SMSTemplateEnum.ORDER_RECEIVING_REMIND,orderName);
+    }
+
+    /**
+     * 发送留言通知短信
+     * @param mobile
+     * @param msg
+     * @param date
+     * @return
+     */
+    public static Boolean sendLeaveInform(String mobile, String msg, String date){
+        return sendSMS(mobile,SMSTemplateEnum.SENDLEAVE_INFORM,msg,date);
     }
 
 }

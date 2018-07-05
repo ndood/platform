@@ -18,13 +18,10 @@ public class RedisOpenServiceImpl {
     private RedisTemplate redisTemplate;
 
     /**
-     * 默认存活时间5分钟
+     * 默认存活时间30分钟
      */
     private static final long TIME = 30 * 60;
-    /**
-     * 请求锁超时时间
-     */
-    private static final long TIME_OUT = 30000;
+
 
     private static final String LOCKED ="LOCKED";
 

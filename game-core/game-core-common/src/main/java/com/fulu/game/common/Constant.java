@@ -14,6 +14,8 @@ public interface Constant {
 
     Long TIME_MINUTES_FIFTEEN = 15 * 60L;
 
+    Long TIME_MINUTES_FIFE = 5 * 60L;
+
     Long TIME_HOUR_TWO = 2*60 * 60L;
 
     Long TIME_HOUR_FIVE = 5*60 * 60L;
