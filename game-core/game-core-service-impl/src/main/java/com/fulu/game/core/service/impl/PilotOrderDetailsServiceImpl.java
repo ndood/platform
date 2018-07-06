@@ -44,29 +44,25 @@ public class PilotOrderDetailsServiceImpl extends AbsCommonService<PilotOrderDet
         details.setAdminName(admin.getName());
         details.setCreateTime(new Date());
 
-        //计算打款总额sum
-        BigDecimal lastSum;
-        BigDecimal leftAmount;
+        //已打款总额sum
+        BigDecimal remitSum;
+        //获取领航订单获利总金额
+        BigDecimal leftAmount = pilotOrderService.amountOfProfit(null, null);
         PilotOrderDetails lastOrderDetails = pilotOrderDetailsDao.findLastRecord();
         if(lastOrderDetails == null) {
-            lastSum = BigDecimal.ZERO;
-            //获取领航账户余额
-            leftAmount = pilotOrderService.amountOfProfit(null, null);
-            if(leftAmount.compareTo(money) >= 0) {
-                details.setLeftAmount(leftAmount.subtract(money));
-            }else {
-                return false;
-            }
+            remitSum = BigDecimal.ZERO;
         }else {
-            lastSum = lastOrderDetails.getSum();
-            leftAmount = lastOrderDetails.getLeftAmount();
-            if(leftAmount.compareTo(money) >= 0) {
-                details.setLeftAmount(leftAmount.subtract(money));
-            }else {
-                return false;
-            }
+            remitSum = lastOrderDetails.getSum();
         }
-        details.setSum(lastSum.add(money));
+
+        leftAmount = leftAmount.subtract(remitSum);
+        if(leftAmount.compareTo(money) >= 0) {
+            details.setLeftAmount(leftAmount.subtract(money));
+        }else {
+            return false;
+        }
+
+        details.setSum(remitSum.add(money));
         int result = pilotOrderDetailsDao.create(details);
         if(result <= 0) {
             return false;

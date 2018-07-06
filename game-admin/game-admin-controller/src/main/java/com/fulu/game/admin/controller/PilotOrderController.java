@@ -100,6 +100,10 @@ public class PilotOrderController extends BaseController {
      */
     @PostMapping("/remit")
     public Result remit(@RequestParam BigDecimal money, @RequestParam String remark) {
+        if(money.compareTo(BigDecimal.ZERO) <= 0) {
+            return Result.error().msg("打款金额非法");
+        }
+
         boolean flag = pilotOrderDetailsService.remit(money, remark);
         if(!flag) {
             return Result.error().msg("打款失败");
