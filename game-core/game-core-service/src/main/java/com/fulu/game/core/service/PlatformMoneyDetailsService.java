@@ -4,6 +4,7 @@ import com.fulu.game.common.enums.PlatFormMoneyTypeEnum;
 import com.fulu.game.core.entity.PlatformMoneyDetails;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 /**
@@ -31,4 +32,7 @@ public interface PlatformMoneyDetailsService{
      * @return
      */
     PlatformMoneyDetails createSmallChangeDetails(String remark,Integer userId,BigDecimal money);
+
+
+    List<PlatformMoneyDetails> findByOrderNo(String orderNo);
 }

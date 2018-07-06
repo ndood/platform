@@ -32,6 +32,15 @@
         from t_platform_money_details
     </select>
 
+    <select id="findByOrderNo" resultMap="PlatformMoneyDetailsResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_platform_money_details
+        <where>
+            `remark` LIKE  CONCAT('%', #{orderNo},'%')
+        </where>
+    </select>
+
     <select id="findLastMoneyDetails" resultMap="PlatformMoneyDetailsResultMap">
         select
         <include refid="Base_Column_List"/>

@@ -6,6 +6,7 @@ import com.fulu.game.core.entity.vo.PlatformMoneyDetailsVO;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 平台流水表
@@ -20,4 +21,7 @@ public interface PlatformMoneyDetailsDao extends ICommonDao<PlatformMoneyDetails
 
 
     PlatformMoneyDetails findLastMoneyDetails();
+
+
+    List<PlatformMoneyDetails> findByOrderNo(@Param(value = "orderNo") String orderNo);
 }

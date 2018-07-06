@@ -55,8 +55,8 @@ public class SMSUtil {
      * @param date
      * @return
      */
-    public static Boolean sendLeaveInform(String mobile, String msg, String date){
-        return sendSMS(mobile,SMSTemplateEnum.SENDLEAVE_INFORM,msg,date);
+    public static Boolean sendLeaveInform(String mobile, String msg, String date,String url){
+        return sendSMS(mobile,SMSTemplateEnum.SENDLEAVE_INFORM,msg,date,url);
     }
 
 }

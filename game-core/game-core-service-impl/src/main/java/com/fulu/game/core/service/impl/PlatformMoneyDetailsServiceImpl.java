@@ -51,6 +51,11 @@ public class PlatformMoneyDetailsServiceImpl implements PlatformMoneyDetailsServ
         return createPlatformMoneyDetails(remarkResult,money);
     }
 
+    @Override
+    public List<PlatformMoneyDetails> findByOrderNo(String orderNo) {
+        return platformMoneyDetailsDao.findByOrderNo(orderNo);
+    }
+
     @Transactional
     protected synchronized PlatformMoneyDetails createPlatformMoneyDetails(String remark,BigDecimal money){
         PlatformMoneyDetails lastMoneyDetails = platformMoneyDetailsDao.findLastMoneyDetails();

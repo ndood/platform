@@ -28,6 +28,8 @@ public interface Constant {
     Integer MOBILE_CODE_SEND_TIMES_DEP = 3;
     Long MOBILE_CACHE_TIME_DEV = 30 * 60L;
 
+    String WEIXN_JUMP_URL = "https://t-open.wzpeilian.com/pc/weixin.html ";
+
 
     //默认评价分
     BigDecimal DEFAULT_SCORE_AVG = new BigDecimal(4);
