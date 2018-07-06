@@ -25,5 +25,5 @@ public class OrderSearchVO {
     //接单间隔左范围默认为1
     private Integer ltInterval;
     //接单间隔右范围
-    private Integer gtInterval = 0;
+    private Integer gtInterval ;
 }
