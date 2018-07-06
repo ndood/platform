@@ -120,7 +120,7 @@ public class PilotOrderController extends BaseController {
     @PostMapping("/leftAmount")
     public Result leftAmount() {
         BigDecimal leftAmount = pilotOrderDetailsService.leftAmount();
-        Map<String, BigDecimal> map = new HashMap<>(1);
+        Map<String, BigDecimal> map = new HashMap<>(2);
         map.put("leftAmount", leftAmount);
         return Result.success().data(map);
     }
