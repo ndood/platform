@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @Description: 领航订单Controller
@@ -109,5 +111,17 @@ public class PilotOrderController extends BaseController {
             return Result.error().msg("打款失败");
         }
         return Result.success().msg("打款成功");
+    }
+
+    /**
+     * 获取领航账户余额
+     * @return
+     */
+    @PostMapping("/leftAmount")
+    public Result leftAmount() {
+        BigDecimal leftAmount = pilotOrderDetailsService.leftAmount();
+        Map<String, BigDecimal> map = new HashMap<>(1);
+        map.put("leftAmount", leftAmount);
+        return Result.success().data(map);
     }
 }

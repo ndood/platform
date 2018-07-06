@@ -47,7 +47,7 @@ public class PilotOrderDetailsServiceImpl extends AbsCommonService<PilotOrderDet
         //已打款总额sum
         BigDecimal remitSum;
         //获取领航订单获利总金额
-        BigDecimal leftAmount = pilotOrderService.amountOfProfit(null, null);
+        BigDecimal totalProfit = pilotOrderService.amountOfProfit(null, null);
         PilotOrderDetails lastOrderDetails = pilotOrderDetailsDao.findLastRecord();
         if(lastOrderDetails == null) {
             remitSum = BigDecimal.ZERO;
@@ -55,9 +55,12 @@ public class PilotOrderDetailsServiceImpl extends AbsCommonService<PilotOrderDet
             remitSum = lastOrderDetails.getSum();
         }
 
-        leftAmount = leftAmount.subtract(remitSum);
-        if(leftAmount.compareTo(money) >= 0) {
-            details.setLeftAmount(leftAmount.subtract(money));
+        totalProfit = totalProfit.subtract(remitSum);
+        if(totalProfit.compareTo(BigDecimal.ZERO) <= 0) {
+            return false;
+        }
+        if(totalProfit.compareTo(money) >= 0) {
+            details.setLeftAmount(totalProfit.subtract(money));
         }else {
             return false;
         }
@@ -76,5 +79,17 @@ public class PilotOrderDetailsServiceImpl extends AbsCommonService<PilotOrderDet
         PageHelper.startPage(pageNum, pageSize, orderBy);
         List<PilotOrderDetails> list = pilotOrderDetailsDao.findAll();
         return new PageInfo(list);
+    }
+
+    @Override
+    public BigDecimal leftAmount() {
+        //获取领航订单获利总金额
+        BigDecimal totalProfit = pilotOrderService.amountOfProfit(null, null);
+        PilotOrderDetails lastOrderDetails = pilotOrderDetailsDao.findLastRecord();
+        if(lastOrderDetails == null) {
+            return totalProfit;
+        }else {
+            return lastOrderDetails.getLeftAmount();
+        }
     }
 }

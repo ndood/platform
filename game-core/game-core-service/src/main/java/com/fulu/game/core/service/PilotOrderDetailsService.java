@@ -31,5 +31,11 @@ public interface PilotOrderDetailsService extends ICommonService<PilotOrderDetai
      * @return
      */
     PageInfo<PilotOrderDetailsVO> findDetailsList(Integer pageNum, Integer pageSize);
+
+    /**
+     * 获取领航账户余额
+     * @return
+     */
+    BigDecimal leftAmount();
 	
 }
