@@ -7,7 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum TechAttrTypeEnum implements TypeEnum<Integer>{
 
-    DAN(2,"段位");
+    DAN(2,"段位"),
+    AREA(3,"大区");
 
     private Integer type;
     private String msg;

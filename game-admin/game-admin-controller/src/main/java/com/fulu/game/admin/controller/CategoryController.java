@@ -9,9 +9,7 @@ import com.fulu.game.core.entity.vo.CategoryVO;
 import com.fulu.game.core.entity.vo.TagVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -162,29 +160,58 @@ public class CategoryController extends BaseController {
         return Result.success().msg("段位创建成功!").data(techValue);
     }
 
+    /**
+     * 创建大区
+     */
+    @PostMapping(value = "/area/create")
+    public Result areaCreate(@RequestParam(required = true) Integer categoryId,
+                             @RequestParam(required = true) String name,
+                             @RequestParam(required = true) Integer rank){
+        TechValue techValue = techValueService.createDan(categoryId, name, rank);
+        return Result.success().msg("游戏大区创建成功!").data(techValue);
+    }
+
 
     /**
      * 修改段位
      **/
     @PostMapping(value = "/dan/update")
+    @Deprecated
     public Result danUpdate(@RequestParam(required = true) Integer id,
                             @RequestParam(required = true) String name,
                             @RequestParam(required = true) Integer rank) {
-        TechValue techValue = techValueService.updateDan(id, name, rank);
+        TechValue techValue = techValueService.updateAttrVal(id, name, rank);
         return Result.success().msg("段位修改成功!").data(techValue);
     }
 
-
     /**
      * 删除段位
-     *
-     * @param id
-     * @return
      */
     @PostMapping(value = "/dan/delete")
+    @Deprecated
     public Result danDelete(@RequestParam(required = true) Integer id) {
         techValueService.deleteById(id);
         return Result.success().msg("段位删除成功!");
+    }
+
+    /**
+     * 修改动态属性
+     **/
+    @PostMapping(value = "/attr/update")
+    public Result attrUpdate(@RequestParam(required = true) Integer id,
+                            @RequestParam(required = true) String name,
+                            @RequestParam(required = true) Integer rank) {
+        TechValue techValue = techValueService.updateAttrVal(id, name, rank);
+        return Result.success().msg("修改成功!").data(techValue);
+    }
+
+    /**
+     * 删除动态属性
+     */
+    @PostMapping(value = "/attr/delete")
+    public Result attrDelete(@RequestParam(required = true) Integer id) {
+        techValueService.deleteById(id);
+        return Result.success().msg("删除成功!");
     }
 
 
