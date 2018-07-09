@@ -108,7 +108,7 @@ public class PilotOrderController extends BaseController {
 
         boolean flag = pilotOrderDetailsService.remit(money, remark);
         if(!flag) {
-            return Result.error().msg("打款失败");
+            return Result.error().msg("账户余额不足");
         }
         return Result.success().msg("打款成功");
     }
