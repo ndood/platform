@@ -25,7 +25,24 @@ public interface TechValueService extends ICommonService<TechValue,Integer>{
       */
      TechValue createDan(Integer categoryId,String danName,Integer rank);
 
-     TechValue updateDan(Integer id,String danName,Integer rank);
+     /**
+      * 修改段位
+      * @param id
+      * @param danName
+      * @param rank
+      * @return
+      */
+     TechValue updateAttrVal(Integer id, String danName, Integer rank);
+     /**
+      * 创建大区
+      * @param categoryId
+      * @param danName
+      * @param rank
+      * @return
+      */
+     TechValue createArea(Integer categoryId,String danName,Integer rank);
+
+
 
 
      List<TechValue> findByTechAttrId(Integer attrId);

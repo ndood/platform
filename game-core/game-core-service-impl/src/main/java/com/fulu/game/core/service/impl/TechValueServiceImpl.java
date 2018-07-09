@@ -70,7 +70,7 @@ public class TechValueServiceImpl extends AbsCommonService<TechValue,Integer> im
     }
 
     @Override
-    public TechValue updateDan(Integer id, String danName, Integer rank) {
+    public TechValue updateAttrVal(Integer id, String danName, Integer rank) {
         TechValue techValue =findById(id);
         techValue.setName(danName);
         techValue.setRank(rank);
@@ -78,6 +78,33 @@ public class TechValueServiceImpl extends AbsCommonService<TechValue,Integer> im
         userTechInfoService.updateUserTechInfoByTechValue(techValue);
         return techValue;
     }
+
+    @Override
+    public TechValue createArea(Integer categoryId, String danName, Integer rank) {
+        Category category = categoryService.findById(categoryId);
+        TechAttr techAttr =techAttrService.findByCategoryAndType(categoryId,TechAttrTypeEnum.AREA.getType());
+        if(techAttr==null){
+            techAttr = new TechAttr();
+            techAttr.setCategoryId(category.getId());
+            techAttr.setName("大区");
+            techAttr.setType(TechAttrTypeEnum.AREA.getType());
+            techAttr.setStatus(true);
+            techAttr.setCreateTime(new Date());
+            techAttr.setUpdateTime(new Date());
+            techAttrService.create(techAttr);
+        }
+        TechValue techValue = new TechValue();
+        techValue.setTechAttrId(techAttr.getId());
+        techValue.setName(danName);
+        techValue.setRank(rank);
+        techValue.setStatus(false);
+        techValue.setCreateTime(new Date());
+        techValue.setUpdateTime(new Date());
+        create(techValue);
+        return techValue;
+    }
+
+
 
     @Override
     public List<TechValue> findByTechAttrId(Integer attrId) {
