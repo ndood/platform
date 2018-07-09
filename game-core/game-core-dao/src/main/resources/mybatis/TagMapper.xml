@@ -5,6 +5,7 @@
     <resultMap id="TagResultMap" type="com.fulu.game.core.entity.Tag">
         <id column="id" property="id"/>
         <result column="pid" property="pid"/>
+        <result column="category_id"  property="categoryId" />
         <result column="name" property="name"/>
         <result column="gender" property="gender"/>
         <result column="type" property="type"/>
@@ -18,7 +19,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,pid,name,gender,type,sort,most,create_time,update_time    </sql>
+        id,pid,category_id,name,gender,type,sort,most,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="TagResultMap">
         select
@@ -42,6 +43,9 @@
         <where>
             <if test="pid != null">
                 and pid = #{pid}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
             </if>
             <if test="name != null">
                 and name = #{name}
@@ -79,7 +83,7 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Tag">
         insert into
-        t_tag (pid,name,gender,type,sort,most,create_time,update_time)
+        t_tag (pid,category_id,name,gender,type,sort,most,create_time,update_time)
         values
         (#{pid},#{name},#{gender},#{type},#{sort},#{most},#{createTime},#{updateTime})
     </insert>
@@ -90,6 +94,10 @@
 
             <if test="pid != null">
                 pid = #{pid},
+            </if>
+
+            <if test="categoryId != null">
+                category_id = #{categoryId},
             </if>
 
             <if test="name != null">

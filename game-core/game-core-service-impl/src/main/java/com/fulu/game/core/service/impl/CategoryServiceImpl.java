@@ -6,17 +6,21 @@ import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.CategoryDao;
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.dao.TagDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.CategoryVO;
+import com.fulu.game.core.entity.vo.TagVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -27,6 +31,8 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
 
     @Autowired
     private CategoryDao categoryDao;
+    @Autowired
+    private TagDao tagDao;
     @Autowired
     private TechAttrService techAttrService;
     @Autowired
@@ -85,12 +91,40 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
             }
         }
         //查询游戏标签
-        if (category.getTagId() != null) {
-            Tag parentTag = tagService.findById(category.getTagId());
-            categoryVO.setMost(parentTag.getMost());
-            List<Tag> tagList = tagService.findByPid(category.getTagId());
-            categoryVO.setTagList(tagList);
+//        if (category.getTagId() != null) {
+//            Tag parentTag = tagService.findById(category.getTagId());
+//            categoryVO.setMost(parentTag.getMost());
+//            List<Tag> tagList = tagService.findByPid(category.getTagId());
+//            categoryVO.setTagList(tagList);
+//        }
+
+        //查询游戏标签
+        TagVO tagVO = new TagVO();
+        tagVO.setCategoryId(id);
+        List<Tag> pTagList = tagDao.findByParameter(tagVO);
+        List<TagVO> tagVOList = new ArrayList<>();
+
+        if(CollectionUtils.isEmpty(pTagList)) {
+            return categoryVO;
         }
+        for(Tag pTag : pTagList) {
+            TagVO vo = new TagVO();
+            BeanUtil.copyProperties(pTag, vo);
+
+            //查询子标签
+            List<Tag> sonTags = tagService.findByPid(pTag.getId());
+            List<TagVO> sonTagVOList = new ArrayList<>();
+            if(CollectionUtils.isNotEmpty(sonTags)) {
+                for(Tag meta : sonTags) {
+                    TagVO vo1 = new TagVO();
+                    BeanUtil.copyProperties(meta, vo1);
+                    sonTagVOList.add(vo1);
+                }
+            }
+            vo.setSonTags(sonTagVOList);
+            tagVOList.add(vo);
+        }
+        categoryVO.setTagVOList(tagVOList);
         return categoryVO;
     }
 

@@ -6,9 +6,6 @@ import com.fulu.game.core.entity.Tag;
 import com.fulu.game.core.entity.TechValue;
 import lombok.Data;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 
@@ -28,4 +25,6 @@ public class CategoryVO extends Category {
     private List<Tag> tagList;
     //最多标签数
     private Integer most;
+
+    private List<TagVO> tagVOList;
 }

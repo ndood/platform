@@ -7,18 +7,20 @@ import lombok.Data;
 
 /**
  * 标签表
- * 
+ *
  * @author wangbin
  * @date 2018-04-18 16:29:26
  */
 @Data
 public class Tag implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	//
 	private Integer id;
 	//父类id（根目录0）
 	private Integer pid;
+	//分类ID
+	private Integer categoryId;
 	//标签名称
 	private String name;
 	//类型
