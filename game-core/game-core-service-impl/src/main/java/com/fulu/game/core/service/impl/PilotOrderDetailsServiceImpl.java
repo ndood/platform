@@ -89,7 +89,11 @@ public class PilotOrderDetailsServiceImpl extends AbsCommonService<PilotOrderDet
         if(lastOrderDetails == null) {
             return totalProfit;
         }else {
-            return lastOrderDetails.getLeftAmount();
+            int result = totalProfit.subtract(lastOrderDetails.getSum()).compareTo(BigDecimal.ZERO);
+            if(result <= 0) {
+                return BigDecimal.ZERO;
+            }
+            return totalProfit.subtract(lastOrderDetails.getSum());
         }
     }
 }
