@@ -36,7 +36,9 @@ web端: https://pro.modao.cc/app/KmU8Jxs1hdjFFFBxDUe4Ub0VdD7CmaI#screen=s65673F5
 小程序: https://pro.modao.cc/app/mrPTRYlOxs8Qa0klbJgxRxcWqXS8pqx#screen=s70BC2B2BE61527492612284
 后台: https://pro.modao.cc/app/EYDCaeIYIhVhzWDpWvc05fhuqA8lEiR#screen=s6BF69721481529460169103 
 
-
+### 陪玩师审核认证、下单优化
+前端：https://pro.modao.cc/app/pXbKqGa8AZZZPhHCX168kIVl4TiC7lI
+后台：https://pro.modao.cc/app/CaoYOOGUwrv2hx6SXIUiaZKdDA50dse
 
 ##订单状态
 |订单状态|状态注释|

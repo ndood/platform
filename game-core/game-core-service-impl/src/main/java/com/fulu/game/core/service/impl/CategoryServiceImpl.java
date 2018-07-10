@@ -84,6 +84,13 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
                 categoryVO.setDanList(danList);
             }
         }
+        //查询游戏大区
+        for (TechAttr techAttr : techAttrList) {
+            if (TechAttrTypeEnum.AREA.getType().equals(techAttr.getType())) {
+                List<TechValue> areaList = techValueService.findByTechAttrId(techAttr.getId());
+                categoryVO.setAreaList(areaList);
+            }
+        }
         //查询游戏标签
         if (category.getTagId() != null) {
             Tag parentTag = tagService.findById(category.getTagId());

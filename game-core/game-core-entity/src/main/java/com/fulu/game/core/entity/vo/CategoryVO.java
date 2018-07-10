@@ -25,6 +25,8 @@ public class CategoryVO extends Category {
 
     private List<TechValue> danList;
 
+    private List<TechValue> areaList;
+
     private List<Tag> tagList;
     //最多标签数
     private Integer most;
