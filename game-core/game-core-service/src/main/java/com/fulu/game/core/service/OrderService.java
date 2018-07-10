@@ -80,7 +80,8 @@ public interface OrderService extends ICommonService<Order, Integer> {
      * @param remark
      * @return
      */
-    OrderVO submit(int productId, int num, String remark, String couponNo, String userIp);
+    OrderVO submit(int productId, int num, String remark, String couponNo, String userIp, Integer contactType,
+                   String contactInfo);
 
     /**
      * 领航网吧订单提交

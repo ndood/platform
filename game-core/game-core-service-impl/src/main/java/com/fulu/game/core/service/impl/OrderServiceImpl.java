@@ -330,7 +330,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
                           int num,
                           String remark,
                           String couponNo,
-                          String userIp) {
+                          String userIp,
+                          Integer contactType,
+                          String contactInfo) {
         log.info("用户提交订单productId:{},num:{},remark:{}", productId, num, remark);
         User user = userService.getCurrentUser();
         Product product = productService.findById(productId);
@@ -366,6 +368,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setCreateTime(new Date());
         order.setUpdateTime(new Date());
         order.setOrderIp(userIp);
+        order.setContactType(contactType);
+        order.setContactInfo(contactInfo);
         //使用优惠券
         Coupon coupon = null;
         if (StringUtils.isNotBlank(couponNo)) {

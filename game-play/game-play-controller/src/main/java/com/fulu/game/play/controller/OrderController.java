@@ -55,12 +55,16 @@ public class OrderController extends BaseController {
         return Result.success().msg("陪玩师空闲状态!");
     }
 
-
     /**
      * 提交订单
      * @param productId
+     * @param request
      * @param num
+     * @param couponNo
+     * @param sessionkey
      * @param remark
+     * @param contactType
+     * @param contactInfo
      * @return
      */
     @RequestMapping(value = "submit")
@@ -69,7 +73,9 @@ public class OrderController extends BaseController {
                          @RequestParam(required = true) Integer num,
                          String couponNo,
                          String sessionkey,
-                         String remark) {
+                         String remark,
+                         Integer contactType,
+                         String contactInfo) {
         User user = userService.getCurrentUser();
         if(sessionkey!=null){
             if(!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))){
@@ -79,7 +85,7 @@ public class OrderController extends BaseController {
         }
         try {
             String ip = RequestUtil.getIpAdrress(request);
-            OrderVO orderVO = orderService.submit(productId, num, remark, couponNo, ip);
+            OrderVO orderVO = orderService.submit(productId, num, remark, couponNo, ip, contactType, contactInfo);
             return Result.success().data(orderVO.getOrderNo()).msg("创建订单成功!");
         }finally {
             if(sessionkey!=null){

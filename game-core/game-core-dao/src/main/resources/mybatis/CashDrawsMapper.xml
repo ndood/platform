@@ -45,11 +45,53 @@
         <include refid="Base_Column_List"/>
         FROM t_cash_draws
         <where>
-            <if test="userId != null">and user_id = #{userId}</if>
-            <if test="mobile != null">and mobile = #{mobile}</if>
-            <if test="cashStatus != null">and cash_status = #{cashStatus}</if>
-            <if test="nickname != null">and nickname like CONCAT('%', #{nickname},'%')</if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="mobile != null">
+                and mobile = #{mobile}
+            </if>
+            <if test="cashStatus != null">
+                and cash_status = #{cashStatus}
+            </if>
+            <if test="nickname != null">
+                and nickname like CONCAT('%', #{nickname},'%')
+            </if>
+            <if test="createStartTime != null">
+                and create_time <![CDATA[>=]]> #{createStartTime}
+            </if>
+            <if test="createEndTime != null">
+                and create_time <![CDATA[<=]]> #{createEndTime}
+            </if>
         </where>
+    </select>
+
+    <select id="findListOrderByCreateTime" resultMap="CashDrawsResultMap"
+            parameterType="com.fulu.game.core.entity.vo.CashDrawsVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_cash_draws
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="mobile != null">
+                and mobile = #{mobile}
+            </if>
+            <if test="cashStatus != null">
+                and cash_status = #{cashStatus}
+            </if>
+            <if test="nickname != null">
+                and nickname like CONCAT('%', #{nickname},'%')
+            </if>
+            <if test="createStartTime != null">
+                and create_time <![CDATA[>=]]> #{createStartTime}
+            </if>
+            <if test="createEndTime != null">
+                and create_time <![CDATA[<=]]> #{createEndTime}
+            </if>
+        </where>
+        order by create_time desc
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">

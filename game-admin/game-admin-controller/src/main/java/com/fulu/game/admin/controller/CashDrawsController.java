@@ -1,13 +1,24 @@
 package com.fulu.game.admin.controller;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.CashDraws;
 import com.fulu.game.core.entity.vo.CashDrawsVO;
 import com.fulu.game.core.service.CashDrawsService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
+import java.util.List;
 
 /**
  * yanbiao
@@ -32,6 +43,26 @@ public class CashDrawsController extends BaseController{
                        @RequestParam("pageSize") Integer pageSize){
         PageInfo<CashDraws> cashDrawsList = cashDrawsService.list(cashDrawsVO,pageNum,pageSize);
         return Result.success().data(cashDrawsList).msg("查询列表成功！");
+    }
+
+    /**
+     * 提现申请单导出
+     *
+     * @param response
+     * @throws Exception
+     */
+    @RequestMapping("/export")
+    public void orderExport(HttpServletResponse response,
+                            CashDrawsVO cashDrawsVO) throws Exception {
+        String title = "提现申请单列表";
+        List<CashDraws> cashDrawsList = cashDrawsService.list(cashDrawsVO);
+        ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, CashDraws.class, cashDrawsList);
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("content-Type", "application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));
+        workbook.write(response.getOutputStream());
+        workbook.close();
     }
 
     /**
