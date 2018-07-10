@@ -87,12 +87,6 @@
             <if test="pushTimeInterval != null">
                 and push_time_interval = #{pushTimeInterval}
             </if>
-            <if test="startTime != null">
-                and update_time &gt;= #{startTime}
-            </if>
-            <if test="endTime != null">
-                and update_time &lt;= #{endTime}
-            </if>
         </where>
     </select>
 

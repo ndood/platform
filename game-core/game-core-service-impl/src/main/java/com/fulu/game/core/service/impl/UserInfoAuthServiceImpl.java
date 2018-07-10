@@ -110,6 +110,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             userInfoAuth.setIsRejectSubmit(false);
             userInfoAuth.setCreateTime(new Date());
             userInfoAuth.setPushTimeInterval(30F);
+            userInfoAuth.setAllowExport(true);
             create(userInfoAuth);
         }else {
             update(userInfoAuth);
@@ -120,7 +121,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         createUserAuthVoice(userInfoAuthTO.getVoiceUrl(), userInfoAuth.getId(), userInfoAuthTO.getDuration());
         //添加用户信息标签
         createUserInfoTags(userInfoAuthTO.getTags(), user.getId());
-
         return userInfoAuth;
     }
 

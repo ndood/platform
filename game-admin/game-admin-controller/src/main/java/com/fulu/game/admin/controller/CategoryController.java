@@ -163,7 +163,7 @@ public class CategoryController extends BaseController {
     public Result areaCreate(@RequestParam(required = true) Integer categoryId,
                              @RequestParam(required = true) String name,
                              @RequestParam(required = true) Integer rank){
-        TechValue techValue = techValueService.createArea  (categoryId, name, rank);
+        TechValue techValue = techValueService.createArea(categoryId, name, rank);
         return Result.success().msg("游戏大区创建成功!").data(techValue);
     }
 

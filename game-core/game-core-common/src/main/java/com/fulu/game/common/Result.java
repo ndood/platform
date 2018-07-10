@@ -60,6 +60,7 @@ public class Result implements Serializable {
     public static Result noLogin() {
         Result result = new Result();
         result.setStatus(ResultStatus.NOLOGIN);
+        result.setMsg("登录状态已失效,请重新登录!");
         return result;
     }
 
