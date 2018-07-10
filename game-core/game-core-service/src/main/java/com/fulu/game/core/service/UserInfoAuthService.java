@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.UserInfoAuth;
+import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
@@ -17,7 +18,13 @@ import java.util.List;
  */
 public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Integer> {
 
-    UserInfoAuthVO save(UserInfoAuthVO userInfoAuthVO);
+
+    /**
+     * 保存用户认证个人信息
+     * @param userInfoAuthTO
+     * @return
+     */
+    UserInfoAuth save(UserInfoAuthTO userInfoAuthTO);
 
     /**
      * 通过用户ID查询用户认证信息
@@ -66,7 +73,7 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
      * @param userId
      * @return
      */
-    UserInfoAuthVO findUserAuthInfoByUserId(int userId);
+    UserInfoAuthVO findUserInfoAuthByUserId(int userId);
 
 
     List<UserInfoAuth> findByUserIds(List<Integer> userIds);

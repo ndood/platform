@@ -11,6 +11,7 @@ import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserInfoAuthDao;
 import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.vo.TagVO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.UserInfoVO;
@@ -76,66 +77,55 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     }
 
 
-    @Override
-    public UserInfoAuthVO save(UserInfoAuthVO userInfoAuthVO) {
-        log.info("保存用户认证信息:userInfoAuthVO:{}", userInfoAuthVO);
 
-        //更新用户信息
-        User user = userService.findById(userInfoAuthVO.getUserId());
-        //如果是用户冻结状态给错误提示
+    /**
+     * 保存用户认证的个人信息
+     * @param userInfoAuthTO
+     * @return
+     */
+    @Override
+    public UserInfoAuth save(UserInfoAuthTO userInfoAuthTO) {
+        log.info("保存用户认证信息:UserInfoAuthTO:{}", userInfoAuthTO);
+        User user = userService.findById(userInfoAuthTO.getUserId());
         if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
             throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE);
         }
-        if (userInfoAuthVO.getMobile() == null) {
-            userInfoAuthVO.setMobile(user.getMobile());
+        if (userInfoAuthTO.getMobile() == null) {
+            userInfoAuthTO.setMobile(user.getMobile());
         }
-        user.setHeadPortraitsUrl(ossUtil.activateOssFile(userInfoAuthVO.getHeadUrl()));
         user.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
-        user.setIdcard(userInfoAuthVO.getIdCard());
-        user.setRealname(userInfoAuthVO.getRealname());
-        user.setGender(userInfoAuthVO.getGender());
-        user.setUserInfoAuth(UserInfoAuthStatusEnum.VERIFIED.getType());
+        user.setGender(userInfoAuthTO.getGender());
+        user.setUserInfoAuth(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType());
+        user.setUpdateTime(new Date());
         userService.update(user);
-        //忽略为null的属性
-        BeanUtil.CopyOptions copyOptions = BeanUtil.CopyOptions.create();
-        copyOptions.setIgnoreNullValue(true);
-        //添加认证信息
+        //修改认证信息
         UserInfoAuth userInfoAuth = new UserInfoAuth();
-        BeanUtil.copyProperties(userInfoAuthVO, userInfoAuth, copyOptions);
+        BeanUtil.copyProperties(userInfoAuthTO, userInfoAuth);
         userInfoAuth.setUpdateTime(new Date());
         if (userInfoAuth.getId() == null) {
-            UserInfoAuth userAuth = findByUserId(user.getId());
-            if (userAuth != null) {
+            UserInfoAuth existUserAuth = findByUserId(user.getId());
+            if (existUserAuth != null) {
                 throw new UserAuthException(UserAuthException.ExceptionCode.EXIST_USER_AUTH);
             }
             userInfoAuth.setIsRejectSubmit(false);
             userInfoAuth.setCreateTime(new Date());
             userInfoAuth.setPushTimeInterval(30F);
             create(userInfoAuth);
-        } else {
+        }else {
             update(userInfoAuth);
-            //同步恢复用户正确技能的商品状态
-            List<UserTechAuth> userTechAuthList = userTechAuthService.findUserNormalTechs(userInfoAuth.getUserId());
-            for (UserTechAuth userTechAuth : userTechAuthList) {
-                productService.recoverProductDelFlagByTechAuthId(userTechAuth.getId());
-            }
         }
-        //添加认证身份证文件
-        createUserIdCard(user.getId(), userInfoAuthVO.getIdCardHeadUrl(), userInfoAuthVO.getIdCardEmblemUrl(), userInfoAuthVO.getIdCardHandUrl());
         //添加用户认证写真图片
-        createUserAuthPortrait(userInfoAuthVO.getPortraitUrls(), userInfoAuth.getId());
+        createUserAuthPortrait(userInfoAuthTO.getPortraitUrls(), userInfoAuth.getId());
         //添加语音介绍
-        createUserAuthVoice(userInfoAuthVO.getVoiceUrl(), userInfoAuth.getId(), userInfoAuthVO.getDuration());
+        createUserAuthVoice(userInfoAuthTO.getVoiceUrl(), userInfoAuth.getId(), userInfoAuthTO.getDuration());
         //添加用户信息标签
-        createUserInfoTags(userInfoAuthVO.getTags(), user.getId());
-        //更新用户商品索引的信息
-        productService.updateUserProductIndex(user.getId(), Boolean.FALSE);
-        return userInfoAuthVO;
+        createUserInfoTags(userInfoAuthTO.getTags(), user.getId());
+
+        return userInfoAuth;
     }
 
     /**
      * 认证信息驳回
-     *
      * @param id
      * @param reason
      * @return
@@ -265,7 +255,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
 
     @Override
-    public UserInfoAuthVO findUserAuthInfoByUserId(int userId) {
+    public UserInfoAuthVO findUserInfoAuthByUserId(int userId) {
         User user = userService.findById(userId);
         UserInfoAuth userInfoAuth = findByUserId(userId);
         if (userInfoAuth == null) {
@@ -274,13 +264,13 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         }
         UserInfoAuthVO userInfoAuthVO = new UserInfoAuthVO();
         BeanUtil.copyProperties(userInfoAuth, userInfoAuthVO);
-        copyUserInfo2InfoAuthVo(user, userInfoAuthVO);
-        userInfoAuthVO.setRealMobile(user.getMobile());
-        //查询身份证信息
-        List<UserInfoFile> userInfoFileList = userInfoFileService.findByUserId(userId);
-        userInfoAuthVO.setIdCardList(userInfoFileList);
+        userInfoAuthVO.setNickname(user.getNickname());
+        userInfoAuthVO.setAge(user.getAge());
+        userInfoAuthVO.setGender(user.getGender());
+        userInfoAuthVO.setUserInfoAuth(user.getUserInfoAuth());
         //查询写真信息和声音
-        copyAuthFile2InfoAuthVo(userInfoAuthVO);
+        findUserPortraitsAndVoices(userInfoAuthVO);
+        //查询用户所有标签
         List<TagVO> allPersonTagVos = findAllUserTag(userId, false);
         userInfoAuthVO.setGroupTags(allPersonTagVos);
         return userInfoAuthVO;
@@ -457,14 +447,10 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         for (UserInfoAuth userInfoAuth : userInfoAuths) {
             UserInfoAuthVO userInfoAuthVO = new UserInfoAuthVO();
             BeanUtil.copyProperties(userInfoAuth, userInfoAuthVO);
-            //查询身份证信息
-            List<UserInfoFile> userInfoFileList = userInfoFileService.findByUserId(userInfoAuthVO.getUserId());
-            userInfoAuthVO.setIdCardList(userInfoFileList);
             //查询写真信息和声音
-            copyAuthFile2InfoAuthVo(userInfoAuthVO);
+            findUserPortraitsAndVoices(userInfoAuthVO);
             List<TagVO> allPersonTagVos = findAllUserTag(userInfoAuthVO.getUserId(), true);
             userInfoAuthVO.setGroupTags(allPersonTagVos);
-
             userInfoAuthVOList.add(userInfoAuthVO);
         }
         PageInfo page = new PageInfo(userInfoAuths);
@@ -472,7 +458,12 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         return page;
     }
 
-    private void copyAuthFile2InfoAuthVo(UserInfoAuthVO userInfoAuthVO) {
+
+    /**
+     * 查询用户写真和声音
+     * @param userInfoAuthVO
+     */
+    private void findUserPortraitsAndVoices(UserInfoAuthVO userInfoAuthVO) {
         if (userInfoAuthVO.getId() != null) {
             List<UserInfoAuthFile> portraitFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthVO.getId(), FileTypeEnum.PIC.getType());
             userInfoAuthVO.setPortraitList(portraitFiles);
@@ -482,14 +473,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     }
 
 
-    private void copyUserInfo2InfoAuthVo(User user, UserInfoAuthVO userInfoAuthVO) {
-        userInfoAuthVO.setHeadUrl(user.getHeadPortraitsUrl());
-        userInfoAuthVO.setIdCard(user.getIdcard());
-        userInfoAuthVO.setGender(user.getGender());
-        userInfoAuthVO.setRealname(user.getRealname());
-        userInfoAuthVO.setAge(user.getAge());
-        userInfoAuthVO.setNickname(user.getNickname());
-    }
 
     /**
      * 查询用户信息所有标签
@@ -521,7 +504,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
                     } else {
                         tagVOMap.get(tag.getPid()).getSonTags().add(sonTag);
                     }
-
                 }
             }
         }
@@ -545,7 +527,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     /**
      * 添加用户身份文件
-     *
      * @param userId
      * @param idCardHeadUrl
      * @param idCardEmblemUrl
@@ -585,9 +566,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         }
     }
 
+
     /**
      * 添加用户写真图集
-     *
      * @param portraitUrls
      * @param userInfoAuthId
      */
@@ -600,11 +581,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         for (int i = 0; i < portraitUrlList.size(); i++) {
             portraitUrlList.set(i, ossUtil.activateOssFile(portraitUrlList.get(i)));
         }
-        //添加第一张写真图作为主图保存
-        UserInfoAuth userInfoAuth = new UserInfoAuth();
-        userInfoAuth.setId(userInfoAuthId);
-        userInfoAuth.setMainPicUrl(portraitUrlList.get(0));
-        update(userInfoAuth);
         List<UserInfoAuthFile> dbPicFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthId, FileTypeEnum.PIC.getType());
         Iterator<UserInfoAuthFile> dbIt = dbPicFiles.iterator();
         while (dbIt.hasNext()) {

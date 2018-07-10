@@ -5,6 +5,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
 import com.fulu.game.core.service.*;
@@ -37,21 +38,22 @@ public class AuthController extends BaseController {
     @Autowired
     private UserTechAuthRejectService userTechAuthRejectService;
 
-     /**
-     * 保存认证信息
-     * @param userInfoAuthVO
+
+    /**
+     * 新保存陪玩师资料接口
+     * @param userInfoAuthTO
      * @return
      */
     @PostMapping(value = "/user-info/save")
-    public Result userAuthSave(UserInfoAuthVO userInfoAuthVO) {
+    public Result save(UserInfoAuthTO userInfoAuthTO){
         User user = userService.getCurrentUser();
-        if(userInfoAuthVO.getId()!=null){
-            UserInfoAuth userInfoAuth = userInfoAuthService.findById(userInfoAuthVO.getId());
+        if(userInfoAuthTO.getId()!=null){
+            UserInfoAuth userInfoAuth = userInfoAuthService.findById(userInfoAuthTO.getId());
             userService.isCurrentUser(userInfoAuth.getUserId());
         }
-        userInfoAuthVO.setUserId(user.getId());
-        userInfoAuthService.save(userInfoAuthVO);
-        return Result.success().data(userInfoAuthVO.getId()).msg("认证信息保存成功!");
+        userInfoAuthTO.setUserId(user.getId());
+        UserInfoAuth userInfoAuth =  userInfoAuthService.save(userInfoAuthTO);
+        return Result.success().data(userInfoAuth.getId()).msg("个人资料保存成功!");
     }
 
 
@@ -62,7 +64,7 @@ public class AuthController extends BaseController {
     @PostMapping(value = "/user-info/query")
     public Result userAuthQuery() {
         User user = userService.getCurrentUser();
-        UserInfoAuthVO userInfoAuthVO = userInfoAuthService.findUserAuthInfoByUserId(user.getId());
+        UserInfoAuthVO userInfoAuthVO = userInfoAuthService.findUserInfoAuthByUserId(user.getId());
         return Result.success().data(userInfoAuthVO);
     }
 

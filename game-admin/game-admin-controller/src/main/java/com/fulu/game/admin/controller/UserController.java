@@ -9,6 +9,7 @@ import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserInfoAuthReject;
 import com.fulu.game.core.entity.UserTechAuthReject;
+import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
@@ -66,9 +67,9 @@ public class UserController extends BaseController {
      * @return
      */
     @PostMapping(value = "/info-auth/save")
-    public Result userInfoAuthCreate(UserInfoAuthVO userInfoAuthVO) {
-        userInfoAuthService.save(userInfoAuthVO);
-        return Result.success().data(userInfoAuthVO);
+    public Result userInfoAuthCreate(UserInfoAuthTO userInfoAuthTO) {
+        userInfoAuthService.save(userInfoAuthTO);
+        return Result.success().data(userInfoAuthTO);
     }
 
 
@@ -168,7 +169,7 @@ public class UserController extends BaseController {
      */
     @PostMapping(value = "/info-auth/query")
     public Result userAuthInfo(@RequestParam(required = false, name = "userId") Integer userId) {
-        UserInfoAuthVO userInfoAuthVO = userInfoAuthService.findUserAuthInfoByUserId(userId);
+        UserInfoAuthVO userInfoAuthVO = userInfoAuthService.findUserInfoAuthByUserId(userId);
         return Result.success().data(userInfoAuthVO);
     }
 
