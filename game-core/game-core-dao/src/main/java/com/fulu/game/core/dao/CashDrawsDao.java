@@ -16,4 +16,5 @@ public interface CashDrawsDao extends ICommonDao<CashDraws,Integer>{
 
     List<CashDraws> findByParameter(CashDrawsVO cashDrawsVO);
 
+    List<CashDraws> findListOrderByCreateTime(CashDrawsVO cashDrawsVO);
 }

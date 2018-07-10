@@ -110,6 +110,13 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         return new PageInfo(list);
     }
 
+    @Override
+    public List<CashDraws> list(CashDrawsVO cashDrawsVO) {
+        List<CashDraws> list = cashDrawsDao.findListOrderByCreateTime(cashDrawsVO);
+        return list;
+    }
+
+
     /**
      * 管理员-打款
      *
