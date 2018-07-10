@@ -78,10 +78,10 @@ public class OrderController extends BaseController {
                          String contactInfo) {
         User user = userService.getCurrentUser();
         if(sessionkey!=null){
-//            if(!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))){
-//                log.error("验证sessionkey错误:productId:{};num:{};couponNo:{};sessionkey:{};remark:{};userId:{}",productId,num,couponNo,sessionkey,remark,user.getId());
-//                throw new SystemException(SystemException.ExceptionCode.NO_FORM_TOKEN_ERROR);
-//            }
+            if(!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))){
+                log.error("验证sessionkey错误:productId:{};num:{};couponNo:{};sessionkey:{};remark:{};userId:{}",productId,num,couponNo,sessionkey,remark,user.getId());
+                throw new SystemException(SystemException.ExceptionCode.NO_FORM_TOKEN_ERROR);
+            }
         }
         try {
             String ip = RequestUtil.getIpAdrress(request);
