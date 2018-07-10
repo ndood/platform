@@ -64,6 +64,14 @@ public class Order implements Serializable {
             "申诉：订单完成_502",
             "已评价_600"}, width = 15)
     private Integer status;
+
+    //联系方式类型(1：手机号，2：QQ号，3：微信号)
+    @Excel(name = "联系方式类型", orderNum = "18", width = 15)
+    private Integer contactType;
+    //联系方式
+    @Excel(name = "联系方式", orderNum = "19", width = 15)
+    private String contactInfo;
+
     //实付金额
     @Excel(name = "实付金额", orderNum = "8", width = 15)
     private BigDecimal actualMoney;
