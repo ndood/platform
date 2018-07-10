@@ -26,5 +26,5 @@ public class CategoryVO extends Category {
     //最多标签数
     private Integer most;
 
-    private List<TagVO> tagVOList;
+    private List<TagVO> groupTags;
 }

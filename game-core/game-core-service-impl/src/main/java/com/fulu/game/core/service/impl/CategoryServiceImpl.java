@@ -124,7 +124,7 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
             vo.setSonTags(sonTagVOList);
             tagVOList.add(vo);
         }
-        categoryVO.setTagVOList(tagVOList);
+        categoryVO.setGroupTags(tagVOList);
         return categoryVO;
     }
 
