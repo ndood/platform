@@ -16,7 +16,7 @@ import java.util.List;
 public interface TagService extends ICommonService<Tag,Integer>{
 
 
-    Tag create(Integer categoryId, String tagName);
+    Tag create(Integer categoryId, Integer pid, String tagName);
 
     Tag update(Integer id, String tagName,Integer gender);
 
@@ -38,4 +38,11 @@ public interface TagService extends ICommonService<Tag,Integer>{
      * @return
      */
     TagVO  findTagsByTagPid(Integer tagPid);
+
+    /**
+     * 内容管理-删除标签组（和相关子标签）
+     * @param tag
+     * @return
+     */
+    Boolean delGroupTag(Tag tag);
 }

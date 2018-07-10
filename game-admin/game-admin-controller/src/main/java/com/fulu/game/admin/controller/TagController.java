@@ -47,15 +47,116 @@ public class TagController extends BaseController {
     /**
      * 创建内容标签
      * @param categoryId
+     * @param pid
      * @param name
      * @return
      */
-    @PostMapping(value = "/category/create")
-    public Result createCategoryTag(Integer categoryId,
-                                    String name) {
-        Tag tag = tagService.create(categoryId, name);
-        return Result.success().data(tag).msg("添加游戏标签成功!");
+//    @PostMapping(value = "/category/create")
+//    public Result createCategoryTag(Integer categoryId,
+//                                    Integer pid,
+//                                    String name) {
+//        Tag tag = tagService.create(categoryId, pid, name);
+//        return Result.success().data(tag).msg("添加游戏标签成功!");
+//    }
+
+    /**
+     * 内容管理-创建/修改标签组
+     * @param id
+     * @param categoryId
+     * @param name
+     * @param sort
+     * @param most
+     * @return
+     */
+    @PostMapping(value = "/group-tag/save")
+    public Result createGroupTag(Integer id,
+                                 Integer categoryId,
+                                 String name,
+                                 Integer sort,
+                                 Integer most) {
+        if(most!=null&&most<0){
+            return Result.error().msg("最大可选标签数不能小于0!");
+        }
+        Tag tag = new Tag();
+        tag.setId(id);
+        tag.setName(name);
+        tag.setType(TagTypeEnum.GAME.getType());
+        tag.setGender(GenderEnum.ASEXUALITY.getType());
+        tag.setPid(Constant.DEF_PID);
+        tag.setUpdateTime(new Date());
+        tag.setMost(most);
+        tag.setSort(sort);
+        tag.setCategoryId(categoryId);
+        if (tag.getId() == null) {
+            tag.setCreateTime(new Date());
+            tagService.create(tag);
+            return Result.success().data(tag).msg("内容管理-标签组创建成功!");
+        } else {
+            tagService.update(tag);
+            return Result.success().data(tag).msg("内容管理-标签组修改成功!");
+        }
     }
+
+    /**
+     * 内容管理-删除标签组（和相关子标签）
+     * @param tag (id: 标签组id值)
+     * @return
+     */
+    @PostMapping(value = "/group-tag/del")
+    public Result delGroupTag(Tag tag) {
+        boolean flag = tagService.delGroupTag(tag);
+        if(!flag) {
+            return Result.error().msg("删除失败");
+        }
+        return Result.success().msg("删除成功");
+    }
+
+    /**
+     * 内容管理-创建/修改子标签
+     * @param id
+     * @param name
+     * @param sort
+     * @param pid
+     * @return
+     */
+    @PostMapping(value = "/son-tag/create")
+    public Result createSonTag(Integer id,
+                               String name,
+                               Integer sort,
+                               Integer pid) {
+            Tag tag = new Tag();
+            tag.setId(id);
+            tag.setType(TagTypeEnum.GAME.getType());
+            tag.setName(name);
+            tag.setGender(GenderEnum.ASEXUALITY.getType());
+            tag.setSort(sort);
+            tag.setPid(pid);
+            tag.setUpdateTime(new Date());
+            if (tag.getId() == null) {
+                tag.setCreateTime(new Date());
+                tagService.create(tag);
+                return Result.success().data(tag).msg("内容管理-子标签创建成功!");
+            } else {
+                tagService.update(tag);
+                return Result.success().data(tag).msg("内容管理-子标签修改成功!");
+            }
+    }
+
+    /**
+     * 内容管理-删除子标签
+     * @param tag
+     * @return
+     */
+    @PostMapping(value = "/son-tag/del")
+    public Result delSonTag(Tag tag) {
+        int result = tagService.deleteById(tag.getId());
+        if(result <= 0) {
+            return Result.error().msg("删除失败，子标签不存在");
+        }else {
+            return Result.success().msg("删除成功");
+        }
+    }
+
 
     @PostMapping(value = "/update")
     public Result updateCategoryTag(Integer id,

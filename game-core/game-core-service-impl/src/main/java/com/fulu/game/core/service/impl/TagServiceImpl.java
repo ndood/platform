@@ -13,6 +13,8 @@ import com.fulu.game.core.service.TechTagService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
+import com.xiaoleilu.hutool.util.CollectionUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -23,8 +25,8 @@ import com.fulu.game.core.entity.Tag;
 import com.fulu.game.core.service.TagService;
 
 
-
 @Service
+@Slf4j
 public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements TagService {
 
     @Autowired
@@ -67,26 +69,34 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
     }
 
     @Override
-    public Tag create(Integer categoryId, String tagName) {
+    public Tag create(Integer categoryId, Integer pid, String tagName) {
         Category category = categoryService.findById(categoryId);
-        //该游戏没有没有标签组
-        if(category.getTagId()==null){
-            Tag parentTag = new Tag();
+
+        TagVO vo = new TagVO();
+        vo.setCategoryId(categoryId);
+        List<Tag> tagList = tagDao.findByParameter(vo);
+        //该游戏没有标签组
+        Tag parentTag = new Tag();
+        if(CollectionUtil.isEmpty(tagList)){
             parentTag.setName(tagName);
             parentTag.setGender(GenderEnum.ASEXUALITY.getType());
             parentTag.setPid(Constant.DEF_PID);
             parentTag.setType(TagTypeEnum.GAME.getType());
             parentTag.setCreateTime(new Date());
             parentTag.setUpdateTime(new Date());
-            parentTag.setName(category.getName()+"标签组");
+            parentTag.setName(category.getName() + "标签组");
+            parentTag.setCategoryId(categoryId);
             create(parentTag);
-            category.setTagId(parentTag.getId());
             category.setUpdateTime(new Date());
             categoryService.update(category);
         }
         Tag tag = new Tag();
         tag.setName(tagName);
-        tag.setPid(category.getTagId());
+        if(parentTag.getId() == null) {
+            tag.setPid(pid);
+        }else {
+            tag.setPid(parentTag.getId());
+        }
         tag.setType(TagTypeEnum.GAME.getType());
         tag.setCreateTime(new Date());
         tag.setUpdateTime(new Date());
@@ -126,5 +136,15 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
         return tagDao.findByParameter(tagVO);
     }
 
-
+    @Override
+    public Boolean delGroupTag(Tag tag) {
+        try {
+            tagDao.deleteById(tag.getId());
+            tagDao.deleteByPid(tag.getId());
+        }catch (Exception e) {
+            log.error("内容管理-删除标签组（和相关子标签）出错");
+            return false;
+        }
+        return true;
+    }
 }

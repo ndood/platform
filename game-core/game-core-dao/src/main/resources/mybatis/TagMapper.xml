@@ -80,6 +80,13 @@
         </where>
     </delete>
 
+    <delete id="deleteByPid" parameterType="java.lang.Integer">
+        delete from t_tag
+        <where>
+            pid = #{pid}
+        </where>
+    </delete>
+
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Tag">
         insert into
