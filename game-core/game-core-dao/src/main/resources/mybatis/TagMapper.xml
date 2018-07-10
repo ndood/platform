@@ -85,7 +85,7 @@
         insert into
         t_tag (pid,category_id,name,gender,type,sort,most,create_time,update_time)
         values
-        (#{pid},#{name},#{gender},#{type},#{sort},#{most},#{createTime},#{updateTime})
+        (#{pid},#{categoryId},#{name},#{gender},#{type},#{sort},#{most},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Tag">
