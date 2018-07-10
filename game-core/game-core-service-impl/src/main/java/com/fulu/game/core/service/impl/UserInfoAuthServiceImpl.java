@@ -124,6 +124,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         return userInfoAuth;
     }
 
+
+
     /**
      * 认证信息驳回
      * @param id
