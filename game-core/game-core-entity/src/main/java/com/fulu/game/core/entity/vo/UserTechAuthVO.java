@@ -21,38 +21,19 @@ import java.util.List;
 @Data
 public class UserTechAuthVO  extends UserTechAuth {
 
-    /**
-     * 技能认证标签
-     */
-    private Integer[] tagIds;
 
-    /**
-     * 段位ID
-     */
-    private Integer danId;
-
-    /**
-     * 标签列表
-     */
+    //原来标签列表(待废弃)
     private List<TechTag> tagList;
-
-    /**
-     * 段位信息
-     */
+    //段位信息(待废弃)
     private UserTechInfo danInfo;
-
     //不通过原因
     private String reason;
-    /**
-     * 游戏信息
-     */
+    //游戏信息
     private Category category;
-
+    //还需要好友认证数量(待废弃)
     private Integer requireCount;
-
     //认证状态文字
     private String statusStr;
-
     //认证数显示
     private String approveCountStr;
 
@@ -61,29 +42,17 @@ public class UserTechAuthVO  extends UserTechAuth {
     private Integer gender;
 
 
+    private List<TagVO> groupTags;
+
+    private List<TechAttrVO> groupAttrs;
+
+
     public String getStatusStr() {
-        return TechAuthStatusEnum.getMsgByType(getStatus())+authSuffix();
+        return TechAuthStatusEnum.getMsgByType(getStatus());
     }
 
     public void setStatusStr(String statusStr) {
         this.statusStr = statusStr;
     }
 
-    private String authSuffix(){
-        if(TechAuthStatusEnum.NORMAL.getType().equals(getStatus())){
-            if(Constant.DEFAULT_APPROVE_COUNT.equals(getApproveCount())){
-                return "(好友通过)";
-            }else{
-                return "(管理员通过)";
-            }
-        }
-        if(TechAuthStatusEnum.AUTHENTICATION_ING.getType().equals(getStatus())){
-            return new StringBuilder().append("(")
-                                      .append(getApproveCount()==null?0:getApproveCount()).append("/")
-                                      .append(Constant.DEFAULT_APPROVE_COUNT)
-                                      .append(")").toString() ;
-
-        }
-        return "";
-    }
 }

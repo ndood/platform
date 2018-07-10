@@ -22,7 +22,7 @@ public interface TagService extends ICommonService<Tag,Integer>{
 
     PageInfo<Tag> parentList(Integer pageNum, Integer pageSize);
 
-    List<Tag> findByPid(Integer tagPid);
+    List<Tag> findByPid(int tagPid);
 
 
 
@@ -31,6 +31,13 @@ public interface TagService extends ICommonService<Tag,Integer>{
      * @return
      */
     List<Tag> findAllPersonTags();
+
+    /**
+     * 查询所有游戏标签
+     * @param categoryId
+     * @return
+     */
+    List<Tag> findAllCategoryTags(int categoryId);
 
     /**
      * 查询标签组和子标签

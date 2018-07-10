@@ -273,7 +273,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         //查询写真信息和声音
         findUserPortraitsAndVoices(userInfoAuthVO);
         //查询用户所有标签
-        List<TagVO> allPersonTagVos = findAllUserTag(userId, false);
+        List<TagVO> allPersonTagVos = findAllUserTagSelected(userId, false);
         userInfoAuthVO.setGroupTags(allPersonTagVos);
         return userInfoAuthVO;
     }
@@ -451,7 +451,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             BeanUtil.copyProperties(userInfoAuth, userInfoAuthVO);
             //查询写真信息和声音
             findUserPortraitsAndVoices(userInfoAuthVO);
-            List<TagVO> allPersonTagVos = findAllUserTag(userInfoAuthVO.getUserId(), true);
+            List<TagVO> allPersonTagVos = findAllUserTagSelected(userInfoAuthVO.getUserId(), true);
             userInfoAuthVO.setGroupTags(allPersonTagVos);
             userInfoAuthVOList.add(userInfoAuthVO);
         }
@@ -478,11 +478,10 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     /**
      * 查询用户信息所有标签
-     *
      * @param userId
      * @return
      */
-    private List<TagVO> findAllUserTag(int userId, Boolean ignoreNotUser) {
+    private List<TagVO> findAllUserTagSelected(int userId, Boolean ignoreNotUser) {
         List<Tag> allPersonTags = tagService.findAllPersonTags();
         List<TagVO> tagVOList = new ArrayList<>();
         Map<Integer, TagVO> tagVOMap = new HashMap<>();
@@ -514,7 +513,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     /**
      * 判断一个标签是否是用户选择的标签
-     *
      * @return
      */
     private Boolean isUserTag(Integer userId, Tag tag) {

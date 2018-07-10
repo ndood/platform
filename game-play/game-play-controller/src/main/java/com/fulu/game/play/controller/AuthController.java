@@ -6,6 +6,7 @@ import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
+import com.fulu.game.core.entity.to.UserTechAuthTO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
 import com.fulu.game.core.service.*;
@@ -133,21 +134,21 @@ public class AuthController extends BaseController {
 
     /**
      * 保存用户技能认证信息
-     * @param userTechAuthVO
+     * @param userTechAuthTO
      * @return
      */
     @PostMapping(value = "/tech-info/save")
-    public Result techAuthSave(UserTechAuthVO userTechAuthVO) {
+    public Result techAuthSave(UserTechAuthTO userTechAuthTO) {
         User user = userService.getCurrentUser();
         //验证用户的认证信息
         userService.checkUserInfoAuthStatus(user.getId());
-        if(userTechAuthVO.getId()!=null){
-            UserTechAuth userTechAuth = userTechAuthService.findById(userTechAuthVO.getId());
+        if(userTechAuthTO.getId()!=null){
+            UserTechAuth userTechAuth = userTechAuthService.findById(userTechAuthTO.getId());
             userService.isCurrentUser(userTechAuth.getUserId());
         }
-        userTechAuthVO.setUserId(user.getId());
-        userTechAuthService.save(userTechAuthVO);
-        return Result.success().data(userTechAuthVO);
+        userTechAuthTO.setUserId(user.getId());
+        userTechAuthService.save(userTechAuthTO);
+        return Result.success().data(userTechAuthTO);
     }
 
 

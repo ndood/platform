@@ -52,6 +52,15 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
     }
 
 
+
+    public List<Tag> findAllCategoryTags(int categoryId){
+        TagVO tagVO = new TagVO();
+        tagVO.setType(TagTypeEnum.GAME.getType());
+        tagVO.setCategoryId(categoryId);
+        return tagDao.findByParameter(tagVO);
+    }
+
+
     @Override
     public TagVO findTagsByTagPid(Integer tagPid) {
         Tag tag = findById(tagPid);
@@ -130,7 +139,7 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
 
 
     @Override
-    public List<Tag> findByPid(Integer tagPid) {
+    public List<Tag> findByPid(int tagPid) {
         TagVO tagVO = new TagVO();
         tagVO.setPid(tagPid);
         return tagDao.findByParameter(tagVO);

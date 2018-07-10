@@ -7,6 +7,7 @@ import com.fulu.game.core.entity.vo.UserTechInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +35,9 @@ public class UserTechInfoServiceImpl extends AbsCommonService<UserTechInfo,Integ
     }
 
     public List<UserTechInfo> findByTechAuthId(Integer techAuthId){
+        if(techAuthId==null){
+            return new ArrayList<>();
+        }
         UserTechInfoVO userTechInfoVO = new UserTechInfoVO();
         userTechInfoVO.setTechAuthId(techAuthId);
         return userTechInfoDao.findByParameter(userTechInfoVO);
@@ -43,4 +47,6 @@ public class UserTechInfoServiceImpl extends AbsCommonService<UserTechInfo,Integ
     public int updateUserTechInfoByTechValue(TechValue techValue) {
         return userTechInfoDao.updateUserTechInfoByTechValue(techValue);
     }
+
+
 }

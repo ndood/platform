@@ -1,29 +1,32 @@
 package com.fulu.game.core.service.impl;
 
-import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
+import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserTechAuthDao;
 import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.to.UserTechAuthTO;
+import com.fulu.game.core.entity.vo.TagVO;
+import com.fulu.game.core.entity.vo.TechAttrVO;
+import com.fulu.game.core.entity.vo.TechValueVO;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
 import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
+import com.xiaoleilu.hutool.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -63,51 +66,51 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         return userTechAuthDao;
     }
 
+
+
     @Override
-    public UserTechAuthVO save(UserTechAuthVO userTechAuthVO) {
-        log.info("修改认证技能:userTechAuthVO:{}",userTechAuthVO);
-        User user = userService.findById(userTechAuthVO.getUserId());
-        Category category = categoryService.findById(userTechAuthVO.getCategoryId());
-        userTechAuthVO.setStatus(TechAuthStatusEnum.AUTHENTICATION_ING.getType());
-        userTechAuthVO.setMobile(user.getMobile());
-        userTechAuthVO.setGradePicUrl(ossUtil.activateOssFile(userTechAuthVO.getGradePicUrl()));
-        userTechAuthVO.setCategoryName(category.getName());
-        userTechAuthVO.setUpdateTime(new Date());
-        userTechAuthVO.setApproveCount(0);
-        if (userTechAuthVO.getId() == null) {
+    public UserTechAuthTO save(UserTechAuthTO userTechAuthTO) {
+        log.info("修改认证技能:userTechAuthVO:{}",userTechAuthTO);
+        User user = userService.getCurrentUser();
+        Category category = categoryService.findById(userTechAuthTO.getCategoryId());
+        userTechAuthTO.setStatus(TechAuthStatusEnum.AUTHENTICATION_ING.getType());
+        userTechAuthTO.setMobile(user.getMobile());
+        userTechAuthTO.setGradePicUrl(ossUtil.activateOssFile(userTechAuthTO.getGradePicUrl()));
+        userTechAuthTO.setCategoryName(category.getName());
+        userTechAuthTO.setUpdateTime(new Date());
+        if (userTechAuthTO.getId() == null){
             //查询是否有重复技能
-            List<UserTechAuth> userTechAuths = findByCategoryAndUser(userTechAuthVO.getCategoryId(), userTechAuthVO.getUserId());
-            if (userTechAuths.size() > 0) {
+            List<UserTechAuth> userTechAuthes = findByCategoryAndUser(userTechAuthTO.getCategoryId(), userTechAuthTO.getUserId());
+            if (userTechAuthes.size() > 0) {
                 throw new ServiceErrorException("不能添加重复的技能!");
             }
-            userTechAuthVO.setCreateTime(new Date());
-            create(userTechAuthVO);
-        } else {
-            UserTechAuth oldUserTechAuth = findById(userTechAuthVO.getId());
+            userTechAuthTO.setCreateTime(new Date());
+            create(userTechAuthTO);
+        }else {
+            UserTechAuth oldUserTechAuth = findById(userTechAuthTO.getId());
             if(oldUserTechAuth.getStatus().equals(TechAuthStatusEnum.FREEZE.getType())){
                 throw new  UserAuthException(UserAuthException.ExceptionCode.USER_TECH_FREEZE);
             }
-            if (!oldUserTechAuth.getId().equals(userTechAuthVO.getId())) {
+            if (!oldUserTechAuth.getId().equals(userTechAuthTO.getId())) {
                 //查询是否有重复技能
-                List<UserTechAuth> userTechAuths = findByCategoryAndUser(userTechAuthVO.getCategoryId(), userTechAuthVO.getUserId());
+                List<UserTechAuth> userTechAuths = findByCategoryAndUser(userTechAuthTO.getCategoryId(), userTechAuthTO.getUserId());
                 if (userTechAuths.size() > 0) {
                     throw new ServiceErrorException("不能添加重复的技能!");
                 }
             }
-            //重置技能好友认证状态
-            approveService.resetApproveStatusAndUpdate(userTechAuthVO);
-            if(!oldUserTechAuth.getGradePicUrl().equals(userTechAuthVO.getGradePicUrl())){
-                ossUtil.deleteFile(oldUserTechAuth.getGradePicUrl());
-            }
             //删除重新认证的商品
-            productService.deleteProductByTech(userTechAuthVO.getId());
+            productService.deleteProductByTech(userTechAuthTO.getId());
         }
         //创建技能标签关联
-        createTechTag(userTechAuthVO.getId(), userTechAuthVO.getTagIds());
+        saveTechTag(userTechAuthTO.getId(), userTechAuthTO.getTagIds());
         //创建游戏段位
-        createTechDan(userTechAuthVO.getId(), userTechAuthVO.getCategoryId(), userTechAuthVO.getDanId());
-        return userTechAuthVO;
+        saveTechAttr(userTechAuthTO);
+        return userTechAuthTO;
     }
+
+
+
+
 
     @Override
     public UserTechAuth reject(Integer id, String reason) {
@@ -237,7 +240,6 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
             User user = userService.findById(userTechAuthVO.getUserId());
             userTechAuthVO.setNickname(user.getNickname());
             userTechAuthVO.setGender(user.getGender());
-
             userTechAuthVOList.add(userTechAuthVO);
         }
         PageInfo page = new PageInfo(userTechAuths);
@@ -260,8 +262,6 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         if (userTechAuth == null) {
             return null;
         }
-        Integer approveCount = userTechAuth.getApproveCount();
-        Integer requireCount = approveCount < 5 ? Constant.DEFAULT_APPROVE_COUNT - approveCount : 0;
         UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
         BeanUtil.copyProperties(userTechAuth, userTechAuthVO);
         //审核不通过原因
@@ -269,9 +269,6 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         if(techAuthReject!=null){
             userTechAuthVO.setReason(techAuthReject.getReason());
         }
-
-        userTechAuthVO.setRequireCount(requireCount);
-
         //查询用户所有技能标签
         List<TechTag> techTagList = findTechTags(userTechAuth.getId());
         userTechAuthVO.setTagList(techTagList);
@@ -281,7 +278,79 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         //查询该技能对应的游戏信息
         Category category = categoryService.findById(userTechAuthVO.getCategoryId());
         userTechAuthVO.setCategory(category);
+        //游戏标签组
+        List<TagVO> groupTags = findAllCategoryTagSelected(userTechAuth.getCategoryId(),userTechAuth.getId());
+        userTechAuthVO.setGroupTags(groupTags);
+        //段位和大区
+        List<TechAttrVO> groupAttrs = findAllCategoryAttrSelected(userTechAuth.getCategoryId(),userTechAuth.getId());
+        userTechAuthVO.setGroupAttrs(groupAttrs);
+
         return userTechAuthVO;
+    }
+
+
+
+    private List<TechAttrVO> findAllCategoryAttrSelected(int categoryId, int userTechAuthId){
+        List<TechAttr> techAttrList = techAttrService.findByCategory(categoryId);
+        List<UserTechInfo> userTechInfoList = userTechInfoService.findByTechAuthId(userTechAuthId);
+        List<TechAttrVO> techAttrVOList = new ArrayList<>();
+        for(TechAttr techAttr : techAttrList){
+            TechAttrVO techAttrVO = new TechAttrVO();
+            BeanUtil.copyProperties(techAttr, techAttrVO);
+            List<TechValue> techValueList = techValueService.findByTechAttrId(techAttrVO.getId());
+            List<TechValueVO> techValueVOList = CollectionUtil.copyNewCollections(techValueList, TechValueVO.class);
+            for(TechValueVO techValueVO : techValueVOList){
+                if(isUserSelectTechValue(userTechInfoList,techValueVO)){
+                    techValueVO.setSelected(true);
+                }else{
+                    techValueVO.setSelected(false);
+                }
+            }
+            techAttrVO.setTechValueVOList(techValueVOList);
+            techAttrVOList.add(techAttrVO);
+        }
+
+        return techAttrVOList;
+    }
+
+
+
+    private List<TagVO> findAllCategoryTagSelected(int categoryId, int userTechAuthId) {
+        List<TechTag> techTagList = techTagService.findByTechAuthId(userTechAuthId);
+        List<Tag> categoryTags = tagService.findAllCategoryTags(categoryId);
+        List<TagVO> groupTags = CollectionUtil.copyNewCollections(categoryTags,TagVO.class);
+        for(TagVO groupTag : groupTags){
+           List<Tag> sonTags = tagService.findByPid(groupTag.getId());
+           List<TagVO> sonTagVos = CollectionUtil.copyNewCollections(sonTags,TagVO.class);
+           for(TagVO sonTag : sonTagVos){
+               if(isUserSelectTechTag(techTagList,sonTag)){
+                   sonTag.setSelected(true);
+               }else{
+                   sonTag.setSelected(false);
+               }
+           }
+            groupTag.setSonTags(sonTagVos);
+        }
+        return groupTags;
+    }
+
+
+    private Boolean isUserSelectTechTag(List<TechTag> techTagList, Tag tag) {
+        for (TechTag techTag : techTagList) {
+            if (techTag.getTagId().equals(tag.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Boolean isUserSelectTechValue(List<UserTechInfo> userTechInfoList, TechValue techValue) {
+        for (UserTechInfo userTechInfo : userTechInfoList) {
+            if (userTechInfo.getTechValueId().equals(techValue.getId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -372,12 +441,20 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
      * @param techAuthId
      * @param tags
      */
-    private void createTechTag(Integer techAuthId, Integer[] tags) {
+    private void saveTechTag(Integer techAuthId, Integer[] tags) {
         if (tags == null) {
             return;
         }
-        techTagService.deleteByTechAuthId(techAuthId);
-        for (Integer tagId : tags) {
+        List<TechTag> techTagList = techTagService.findByTechAuthId(techAuthId);
+        List<Integer> tagList = Arrays.asList(tags);
+        for(TechTag techTag : techTagList){
+            if(!tagList.contains(techTag.getId())){
+                techTagService.deleteById(techTag.getId());
+            }else {
+                tagList.remove(techTag.getTagId());
+            }
+        }
+        for (Integer tagId : tagList) {
             Tag tag = tagService.findById(tagId);
             TechTag techTag = new TechTag();
             techTag.setTagId(tagId);
@@ -389,20 +466,22 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         }
     }
 
+
+
+
     /**
      * 创建用户游戏段位
-     *
      * @param techAuthId
      * @param categoryId
-     * @param dan
+     * @param attrId
      */
-    private void createTechDan(Integer techAuthId, Integer categoryId, Integer dan) {
-        if (dan == null) {
+    private void saveTechAttr(Integer techAuthId, Integer categoryId, Integer attrId) {
+        if (attrId == null) {
             return;
         }
         userTechInfoService.deleteByTechAuthId(techAuthId);
         TechAttr techAttr = techAttrService.findByCategoryAndType(categoryId, TechAttrTypeEnum.DAN.getType());
-        TechValue techValue = techValueService.findById(dan);
+        TechValue techValue = techValueService.findById(attrId);
         UserTechInfo userTechInfo = new UserTechInfo();
         userTechInfo.setTechAttrId(techAttr.getId());
         userTechInfo.setAttr(techAttr.getName());
@@ -414,6 +493,45 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechInfo.setCreateTime(new Date());
         userTechInfo.setUpdateTime(new Date());
         userTechInfoService.create(userTechInfo);
+    }
+
+
+    private void saveTechAttr(UserTechAuthTO userTechAuthTO) {
+        if(userTechAuthTO.getAttrId()==null&&userTechAuthTO.getDanId()==null){
+            return;
+        }
+        if(userTechAuthTO.getAttrId()==null&&userTechAuthTO.getDanId()!=null){
+            saveTechAttr(userTechAuthTO.getId(),userTechAuthTO.getCategoryId(),userTechAuthTO.getDanId());
+            return;
+        }
+        //
+        List<Integer> attrIds = Arrays.asList(userTechAuthTO.getAttrId());
+        List<UserTechInfo> userTechInfos =  userTechInfoService.findByTechAuthId(userTechAuthTO.getId());
+        for(UserTechInfo userTechInfo :userTechInfos){
+            if(!attrIds.contains(userTechInfo.getTechValueId())){
+                userTechInfoService.deleteById(userTechInfo.getId());
+            }else{
+                attrIds.remove(userTechInfo.getTechValueId());
+            }
+        }
+
+        for(Integer attrId : attrIds){
+            TechValue techValue = techValueService.findById(attrId);
+            TechAttr techAttr = techAttrService.findById(techValue.getTechAttrId());
+            UserTechInfo userTechInfo = new UserTechInfo();
+            userTechInfo.setTechAttrId(techAttr.getId());
+            userTechInfo.setAttr(techAttr.getName());
+            userTechInfo.setTechAuthId(userTechAuthTO.getId());
+            userTechInfo.setTechValueId(techValue.getId());
+            userTechInfo.setValue(techValue.getName());
+            userTechInfo.setRank(techValue.getRank());
+            userTechInfo.setStatus(true);
+            userTechInfo.setCreateTime(new Date());
+            userTechInfo.setUpdateTime(new Date());
+            userTechInfoService.create(userTechInfo);
+        }
+
+
     }
 
 

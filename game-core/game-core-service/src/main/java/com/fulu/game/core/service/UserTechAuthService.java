@@ -3,6 +3,7 @@ package com.fulu.game.core.service;
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.UserTechInfo;
+import com.fulu.game.core.entity.to.UserTechAuthTO;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
 import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
 import com.github.pagehelper.PageInfo;
@@ -18,13 +19,13 @@ import java.util.List;
  */
 public interface UserTechAuthService extends ICommonService<UserTechAuth, Integer> {
 
+
     /**
-     * 保存用户技能
-     * @param userTechAuthVO
+     * 添加和修改技能认证信息
+     * @param userTechAuthTO
      * @return
      */
-    UserTechAuthVO save(UserTechAuthVO userTechAuthVO);
-
+    UserTechAuthTO save(UserTechAuthTO userTechAuthTO);
     /**
      * 驳回用户技能认证
      * @param id

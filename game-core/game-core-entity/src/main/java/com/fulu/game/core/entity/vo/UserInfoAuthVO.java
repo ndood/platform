@@ -25,7 +25,14 @@ public class UserInfoAuthVO extends UserInfoAuth {
 
     private Integer age;
 
+    private String headUrl;
+
     private Integer userInfoAuth;
+
+    //总服务金额
+    private BigDecimal moneySum;
+    //总单数
+    private Integer orderCount;
 
     private String userInfoAuthStr;
 
@@ -39,10 +46,7 @@ public class UserInfoAuthVO extends UserInfoAuth {
 
     private String remark;
 
-    //总服务金额
-    private BigDecimal moneySum;
-    //总单数
-    private Integer orderCount;
+
 
 
 

@@ -10,6 +10,7 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserInfoAuthReject;
 import com.fulu.game.core.entity.UserTechAuthReject;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
+import com.fulu.game.core.entity.to.UserTechAuthTO;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
@@ -191,14 +192,13 @@ public class UserController extends BaseController {
 
     /**
      * 用户技能认证信息添加和修改
-     *
-     * @param userTechAuthVO
+     * @param userTechAuthTO
      * @return
      */
     @PostMapping(value = "/tech-auth/save")
-    public Result techAuthSave(UserTechAuthVO userTechAuthVO) {
-        userTechAuthService.save(userTechAuthVO);
-        return Result.success().data(userTechAuthVO);
+    public Result techAuthSave(UserTechAuthTO userTechAuthTO) {
+        userTechAuthService.save(userTechAuthTO);
+        return Result.success().data(userTechAuthTO);
     }
 
     /**
