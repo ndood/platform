@@ -7,6 +7,7 @@ import com.fulu.game.core.entity.vo.TechTagVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +37,9 @@ public class TechTagServiceImpl extends AbsCommonService<TechTag,Integer> implem
 
     @Override
     public List<TechTag> findByTechAuthId(Integer techAuthId) {
+        if(techAuthId==null){
+            return new ArrayList<>();
+        }
         TechTagVO techTagVO = new TechTagVO();
         techTagVO.setTechAuthId(techAuthId);
         List<TechTag>  techTagList =   techTagDao.findByParameter(techTagVO);

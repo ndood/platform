@@ -11,6 +11,8 @@ public class UserInfoAuthTO extends UserInfoAuth {
 
     //性别
     private Integer gender;
+
+    private String constellation;
     //年龄
     private String age;
     //个人写真

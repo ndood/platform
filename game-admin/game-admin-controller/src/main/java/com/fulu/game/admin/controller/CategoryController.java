@@ -30,8 +30,6 @@ public class CategoryController extends BaseController {
     @Autowired
     private TechAttrService techAttrService;
     @Autowired
-    private TagService tagService;
-    @Autowired
     private SalesModeService salesModeService;
     @Autowired
     private OssUtil ossUtil;

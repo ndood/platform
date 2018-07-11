@@ -19,6 +19,7 @@ import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.sun.org.apache.regexp.internal.RE;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import com.xiaoleilu.hutool.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -386,8 +387,11 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
      */
     public UserTechInfo findDanInfo(Integer techAuthId) {
         List<UserTechInfo> userTechInfoList = userTechInfoService.findByTechAuthId(techAuthId);
-        if (!userTechInfoList.isEmpty()) {
-            return userTechInfoList.get(0);
+        for(UserTechInfo techInfo : userTechInfoList){
+            TechAttr techAttr = techAttrService.findById(techInfo.getTechAttrId());
+            if(techAttr.getType().equals(TechAttrTypeEnum.DAN.getType())){
+                return techInfo;
+            }
         }
         return null;
     }

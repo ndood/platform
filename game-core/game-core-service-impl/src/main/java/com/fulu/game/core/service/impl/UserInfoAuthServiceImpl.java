@@ -95,6 +95,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         }
         user.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
         user.setGender(userInfoAuthTO.getGender());
+        user.setConstellation(userInfoAuthTO.getConstellation());
         user.setUserInfoAuth(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType());
         user.setUpdateTime(new Date());
         userService.update(user);
@@ -163,7 +164,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userInfoAuthReject.setUserInfoAuthId(id);
         userInfoAuthReject.setCreateTime(new Date());
         userInfoAuthRejectService.create(userInfoAuthReject);
-
         //同步下架用户该技能商品
         productService.deleteProductByUser(userInfoAuth.getUserId());
         return userInfoAuth;

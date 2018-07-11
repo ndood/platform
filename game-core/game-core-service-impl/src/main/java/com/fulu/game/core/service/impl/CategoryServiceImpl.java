@@ -47,12 +47,10 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
     private ProductService productService;
     @Autowired
     private UserTechAuthService userTechAuthService;
-
     @Override
     public ICommonDao<Category, Integer> getDao() {
         return categoryDao;
     }
-
     @Override
     public PageInfo<Category> list(int pageNum, int pageSize) {
         return list(pageNum, pageSize, true, null);
@@ -153,12 +151,6 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
             create(category);
         }else{
             Category origCategory = findById(categoryVO.getId());
-            if(categoryVO.getMost()!=null&&origCategory.getTagId()!=null){
-                Tag tag = new Tag();
-                tag.setId(origCategory.getTagId());
-                tag.setMost(categoryVO.getMost());
-                tagService.update(tag);
-            }
             if(!Objects.equals(origCategory.getIcon(),category.getIcon())){
                 ossUtil.deleteFile(origCategory.getIcon());
             }
