@@ -450,13 +450,10 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
                                          Integer pageSize,
                                          UserInfoAuthSearchVO userInfoAuthSearchVO) {
         List<UserInfoAuthVO> userInfoAuthVOList = new ArrayList<>();
-        String orderBy;
         if (StringUtils.isBlank(userInfoAuthSearchVO.getOrderBy())) {
-            orderBy = "uia.update_time desc";
-        } else {
-            orderBy = userInfoAuthSearchVO.getOrderBy();
+            userInfoAuthSearchVO.setOrderBy("uia.update_time desc");
         }
-        PageHelper.startPage(pageNum, pageSize, orderBy);
+        PageHelper.startPage(pageNum, pageSize, userInfoAuthSearchVO.getOrderBy());
         List<UserInfoAuth> userInfoAuths = userInfoAuthDao.findBySearchVO(userInfoAuthSearchVO);
         for (UserInfoAuth userInfoAuth : userInfoAuths) {
             UserInfoAuthVO userInfoAuthVO = new UserInfoAuthVO();

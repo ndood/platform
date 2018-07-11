@@ -125,12 +125,14 @@
                 and u.user_info_auth = #{userInfoAuth}
             </if>
             <if test="startAge != null">
-                and u.age &gt;= #{u.age}
+                and u.age &gt;= #{startAge}
             </if>
             <if test="endAge != null">
-                and u.age &lt;= #{u.age}
+                and u.age &lt;= #{endAge}
             </if>
         </where>
+        GROUP BY
+        uia.id
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">

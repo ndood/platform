@@ -1,5 +1,6 @@
 package com.fulu.game.core.service.impl;
 
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
@@ -246,7 +247,6 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
             //查找用户段位和大区
             List<TechAttrVO> groupAttrs = findAllCategoryAttrSelected(userTechAuth.getCategoryId(),userTechAuth.getId(),Boolean.TRUE);
             userTechAuthVO.setGroupAttrs(groupAttrs);
-
             userTechAuthVOList.add(userTechAuthVO);
         }
         PageInfo page = new PageInfo(userTechAuths);
@@ -274,6 +274,9 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
             userTechAuth.setCategoryId(categoryId);
         }
         UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
+        Integer approveCount = userTechAuth.getApproveCount();
+        Integer requireCount = approveCount < 5 ? Constant.DEFAULT_APPROVE_COUNT - approveCount : 0;
+        userTechAuthVO.setRequireCount(requireCount);
         BeanUtil.copyProperties(userTechAuth, userTechAuthVO);
         //审核不通过原因
         UserTechAuthReject techAuthReject =userTechAuthRejectService.findLastRecordByTechAuth(userTechAuth.getId(),userTechAuth.getStatus());
@@ -299,8 +302,6 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         return userTechAuthVO;
     }
 
-
-
     private List<TechAttrVO> findAllCategoryAttrSelected(int categoryId, Integer userTechAuthId,Boolean ignoreNotUser){
         List<TechAttr> techAttrList = techAttrService.findByCategory(categoryId);
         List<UserTechInfo> userTechInfoList = userTechInfoService.findByTechAuthId(userTechAuthId);
@@ -313,24 +314,20 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
             ListIterator<TechValueVO> techValueVOListIt =  techValueVOList.listIterator();
             while (techValueVOListIt.hasNext()){
                 TechValueVO techValueVO = techValueVOListIt.next();
-                if(ignoreNotUser){
-                    techValueVOListIt.remove();
+                if(isUserSelectTechValue(userTechInfoList,techValueVO)){
+                    techValueVO.setSelected(true);
                 }else{
-                    if(isUserSelectTechValue(userTechInfoList,techValueVO)){
-                        techValueVO.setSelected(true);
-                    }else{
-                        techValueVO.setSelected(false);
+                    techValueVO.setSelected(false);
+                    if(ignoreNotUser){
+                        techValueVOListIt.remove();
                     }
                 }
             }
             techAttrVO.setTechValueVOList(techValueVOList);
             techAttrVOList.add(techAttrVO);
         }
-
         return techAttrVOList;
     }
-
-
 
     private List<TagVO> findAllCategoryTagSelected(int categoryId, Integer userTechAuthId,Boolean ignoreNotUser) {
         List<TechTag> techTagList = techTagService.findByTechAuthId(userTechAuthId);
@@ -342,14 +339,11 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
            Iterator<TagVO> sonTagVosIt = sonTagVos.iterator();
            while (sonTagVosIt.hasNext()){
                TagVO sonTag = sonTagVosIt.next();
-               if(ignoreNotUser){
-                   sonTagVosIt.remove();
+               if(isUserSelectTechTag(techTagList,sonTag)){
+                   sonTag.setSelected(true);
                }else{
-                   if(isUserSelectTechTag(techTagList,sonTag)){
-                       sonTag.setSelected(true);
-                   }else{
-                       sonTag.setSelected(false);
-                   }
+                   sonTag.setSelected(false);
+                   sonTagVosIt.remove();
                }
            }
            groupTag.setSonTags(sonTagVos);
@@ -472,7 +466,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
             return;
         }
         List<TechTag> techTagList = techTagService.findByTechAuthId(techAuthId);
-        List<Integer> tagList = Arrays.asList(tags);
+        List<Integer> tagList = new ArrayList<>(Arrays.asList(tags));
         for(TechTag techTag : techTagList){
             if(!tagList.contains(techTag.getId())){
                 techTagService.deleteById(techTag.getId());
@@ -531,12 +525,14 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
             return;
         }
         //
-        List<Integer> attrIds = Arrays.asList(userTechAuthTO.getAttrId());
+        List<Integer> attrIds = new ArrayList<>(Arrays.asList(userTechAuthTO.getAttrId()));
         List<UserTechInfo> userTechInfos =  userTechInfoService.findByTechAuthId(userTechAuthTO.getId());
         for(UserTechInfo userTechInfo :userTechInfos){
             if(!attrIds.contains(userTechInfo.getTechValueId())){
                 userTechInfoService.deleteById(userTechInfo.getId());
             }else{
+                log.info("attrIds:{}",attrIds);
+                log.info("userTechInfo:{}",userTechInfo);
                 attrIds.remove(userTechInfo.getTechValueId());
             }
         }
