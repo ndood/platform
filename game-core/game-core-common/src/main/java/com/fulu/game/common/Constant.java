@@ -51,4 +51,10 @@ public interface Constant {
 
     String DEFAULT_CITY = "未设置";
     String DEFAULT_CDK_CHANNEL_NAME = "盛天";
+
+    /**
+     * 提现申请的提醒文案
+     */
+    String CASH_DRAWS_NEXT_TUESDAY_TIPS = "提现金额将在下周二到达您的支付宝账户，请耐心等待";
+    String CASH_DRAWS_NEXT_FRIDAY_TIPS = "提现金额将在下周五到达您的支付宝账户，请耐心等待";
 }

@@ -15,7 +15,7 @@ import java.util.List;
 @Transactional
 public interface CashDrawsService extends ICommonService<CashDraws,Integer>{
 
-    CashDraws save(CashDrawsVO cashDrawsVO);
+    CashDrawsVO save(CashDrawsVO cashDrawsVO);
 
     PageInfo<CashDraws> list(CashDrawsVO cashDrawsVO,Integer pageNum, Integer pageSize);
 
