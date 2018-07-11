@@ -51,7 +51,7 @@ public class TechValueServiceImpl extends AbsCommonService<TechValue,Integer> im
         if(techAttr==null){
             techAttr = new TechAttr();
             techAttr.setCategoryId(category.getId());
-            techAttr.setName(category.getName()+"段位");
+            techAttr.setName("实力");
             techAttr.setType(TechAttrTypeEnum.DAN.getType());
             techAttr.setStatus(true);
             techAttr.setCreateTime(new Date());

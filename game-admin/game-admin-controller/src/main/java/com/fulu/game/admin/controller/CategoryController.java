@@ -105,7 +105,6 @@ public class CategoryController extends BaseController {
 
     /**
      * 创建销售方式
-     *
      * @return
      */
     @PostMapping(value = "/salesmode/create")
@@ -123,6 +122,8 @@ public class CategoryController extends BaseController {
         salesModeService.create(salesMode);
         return Result.success().msg("销售方式创建成功!").data(salesMode);
     }
+
+
 
     @PostMapping(value = "/salesmode/update")
     public Result salesModeUpdate(@RequestParam(required = true) Integer id,
@@ -145,6 +146,7 @@ public class CategoryController extends BaseController {
         return Result.success().msg("销售方式删除成功!");
     }
 
+
     /**
      * 创建段位
      **/
@@ -155,6 +157,7 @@ public class CategoryController extends BaseController {
         TechValue techValue = techValueService.createDan(categoryId, name, rank);
         return Result.success().msg("段位创建成功!").data(techValue);
     }
+
 
     /**
      * 创建大区
@@ -213,7 +216,6 @@ public class CategoryController extends BaseController {
 
     /**
      * 查询游戏所有标签
-     *
      * @param categoryId
      * @return
      */
@@ -229,7 +231,6 @@ public class CategoryController extends BaseController {
 
     /**
      * 查询游戏所有段位
-     *
      * @return
      */
     @PostMapping(value = "/dan/list")
