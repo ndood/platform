@@ -1,6 +1,5 @@
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
-import com.fulu.game.common.enums.WechatTemplateEnum;
 import com.fulu.game.core.service.PayService;
 import com.fulu.game.play.PlayApplication;
 import com.github.binarywang.wxpay.service.WxPayService;

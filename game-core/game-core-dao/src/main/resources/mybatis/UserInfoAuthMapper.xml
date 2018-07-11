@@ -87,15 +87,12 @@
         </where>
     </select>
 
-    <select id="findBySearchVO" resultMap="UserInfoAuthResultVOMap"
-            parameterType="com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO">
+    <select id="findBySearchVO" resultMap="UserInfoAuthResultVOMap" parameterType="com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO">
         SELECT
         uia.*,
         u.user_info_auth,
         u.head_portraits_url,
-        u.idcard,
         u.gender,
-        u.realname,
         u.age,
         u.nickname,
         IFNULL( sum( o.total_money ), 0 ) AS money_sum,
@@ -121,9 +118,19 @@
             <if test="endTime != null">
                 and uia.update_time &lt;= #{endTime}
             </if>
+            <if test="gender != null">
+                and u.gender = #{gender}
+            </if>
+            <if test="userInfoAuth != null">
+                and u.user_info_auth = #{userInfoAuth}
+            </if>
+            <if test="startAge != null">
+                and u.age &gt;= #{u.age}
+            </if>
+            <if test="endAge != null">
+                and u.age &lt;= #{u.age}
+            </if>
         </where>
-        GROUP BY
-        uia.id
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">

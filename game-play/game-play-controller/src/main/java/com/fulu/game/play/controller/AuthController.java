@@ -125,9 +125,12 @@ public class AuthController extends BaseController {
      * @return
      */
     @PostMapping(value = "/tech-info/query")
-    public Result techAuthQuery(@RequestParam(required = true) Integer id) {
-        UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(id);
-        userService.isCurrentUser(userTechAuthVO.getUserId());
+    public Result techAuthQuery(Integer id,
+                                Integer categoryId) {
+        UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(id,categoryId);
+        if(userTechAuthVO.getUserId()!=null){
+            userService.isCurrentUser(userTechAuthVO.getUserId());
+        }
         return Result.success().data(userTechAuthVO);
     }
 

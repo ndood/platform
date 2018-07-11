@@ -12,9 +12,11 @@ public class UserInfoAuthTO extends UserInfoAuth {
     //性别
     private Integer gender;
 
+    private String birth;
+
     private String constellation;
     //年龄
-    private String age;
+    private Integer age;
     //个人写真
     private String[] portraitUrls;
     //声音URL

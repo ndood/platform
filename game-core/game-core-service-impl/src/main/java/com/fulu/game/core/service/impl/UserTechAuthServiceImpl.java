@@ -19,9 +19,7 @@ import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.sun.org.apache.regexp.internal.RE;
 import com.xiaoleilu.hutool.util.BeanUtil;
-import com.xiaoleilu.hutool.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -227,26 +225,27 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
     @Override
-    public PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize, String orderBy, UserTechAuthSearchVO userTechAuthSearchVO) {
-        if (StringUtils.isBlank(orderBy)) {
-            orderBy = "update_time desc";
+    public PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize, UserTechAuthSearchVO userTechAuthSearchVO) {
+        if (StringUtils.isBlank(userTechAuthSearchVO.getOrderBy())) {
+            userTechAuthSearchVO.setOrderBy("update_time desc");
         }
-        PageHelper.startPage(pageNum, pageSize, orderBy);
+        PageHelper.startPage(pageNum, pageSize, userTechAuthSearchVO.getOrderBy());
         List<UserTechAuth> userTechAuths = userTechAuthDao.search(userTechAuthSearchVO);
         List<UserTechAuthVO> userTechAuthVOList = new ArrayList<>();
         for (UserTechAuth userTechAuth : userTechAuths) {
             UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
             BeanUtil.copyProperties(userTechAuth, userTechAuthVO);
-            //用户段位信息
-            UserTechInfo userTechInfo = findDanInfo(userTechAuthVO.getId());
-            userTechAuthVO.setDanInfo(userTechInfo);
-            //用户技能标签
-            List<TechTag> techTagList = findTechTags(userTechAuthVO.getId());
-            userTechAuthVO.setTagList(techTagList);
             //查找用户基础信息
             User user = userService.findById(userTechAuthVO.getUserId());
             userTechAuthVO.setNickname(user.getNickname());
             userTechAuthVO.setGender(user.getGender());
+            //查找用户技能标签
+            List<TagVO> groupTags = findAllCategoryTagSelected(userTechAuth.getCategoryId(),userTechAuth.getId(),Boolean.TRUE);
+            userTechAuthVO.setGroupTags(groupTags);
+            //查找用户段位和大区
+            List<TechAttrVO> groupAttrs = findAllCategoryAttrSelected(userTechAuth.getCategoryId(),userTechAuth.getId(),Boolean.TRUE);
+            userTechAuthVO.setGroupAttrs(groupAttrs);
+
             userTechAuthVOList.add(userTechAuthVO);
         }
         PageInfo page = new PageInfo(userTechAuths);
@@ -264,10 +263,14 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
 
     @Override
-    public UserTechAuthVO findTechAuthVOById(Integer id) {
+    public UserTechAuthVO findTechAuthVOById(Integer id,Integer categoryId) {
         UserTechAuth userTechAuth = findById(id);
         if (userTechAuth == null) {
-            return null;
+            if(categoryId==null){
+                throw new ServiceErrorException("没有选择游戏!");
+            }
+            userTechAuth = new UserTechAuth();
+            userTechAuth.setCategoryId(categoryId);
         }
         UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
         BeanUtil.copyProperties(userTechAuth, userTechAuthVO);
@@ -277,7 +280,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
             userTechAuthVO.setReason(techAuthReject.getReason());
         }
         //查询用户所有技能标签
-        List<TechTag> techTagList = findTechTags(userTechAuth.getId());
+        List<TechTag> techTagList = findTechTags(userTechAuthVO.getId());
         userTechAuthVO.setTagList(techTagList);
         //查询技能的段位信息
         UserTechInfo danInfo = findDanInfo(userTechAuthVO.getId());
@@ -286,10 +289,10 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         Category category = categoryService.findById(userTechAuthVO.getCategoryId());
         userTechAuthVO.setCategory(category);
         //游戏标签组
-        List<TagVO> groupTags = findAllCategoryTagSelected(userTechAuth.getCategoryId(),userTechAuth.getId());
+        List<TagVO> groupTags = findAllCategoryTagSelected(userTechAuthVO.getCategoryId(),userTechAuthVO.getId(),Boolean.FALSE);
         userTechAuthVO.setGroupTags(groupTags);
         //段位和大区
-        List<TechAttrVO> groupAttrs = findAllCategoryAttrSelected(userTechAuth.getCategoryId(),userTechAuth.getId());
+        List<TechAttrVO> groupAttrs = findAllCategoryAttrSelected(userTechAuthVO.getCategoryId(),userTechAuthVO.getId(),Boolean.FALSE);
         userTechAuthVO.setGroupAttrs(groupAttrs);
 
         return userTechAuthVO;
@@ -297,7 +300,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
 
 
-    private List<TechAttrVO> findAllCategoryAttrSelected(int categoryId, int userTechAuthId){
+    private List<TechAttrVO> findAllCategoryAttrSelected(int categoryId, Integer userTechAuthId,Boolean ignoreNotUser){
         List<TechAttr> techAttrList = techAttrService.findByCategory(categoryId);
         List<UserTechInfo> userTechInfoList = userTechInfoService.findByTechAuthId(userTechAuthId);
         List<TechAttrVO> techAttrVOList = new ArrayList<>();
@@ -306,11 +309,17 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
             BeanUtil.copyProperties(techAttr, techAttrVO);
             List<TechValue> techValueList = techValueService.findByTechAttrId(techAttrVO.getId());
             List<TechValueVO> techValueVOList = CollectionUtil.copyNewCollections(techValueList, TechValueVO.class);
-            for(TechValueVO techValueVO : techValueVOList){
-                if(isUserSelectTechValue(userTechInfoList,techValueVO)){
-                    techValueVO.setSelected(true);
+            ListIterator<TechValueVO> techValueVOListIt =  techValueVOList.listIterator();
+            while (techValueVOListIt.hasNext()){
+                TechValueVO techValueVO = techValueVOListIt.next();
+                if(ignoreNotUser){
+                    techValueVOList.remove(techValueVO);
                 }else{
-                    techValueVO.setSelected(false);
+                    if(isUserSelectTechValue(userTechInfoList,techValueVO)){
+                        techValueVO.setSelected(true);
+                    }else{
+                        techValueVO.setSelected(false);
+                    }
                 }
             }
             techAttrVO.setTechValueVOList(techValueVOList);
@@ -322,21 +331,27 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
 
 
-    private List<TagVO> findAllCategoryTagSelected(int categoryId, int userTechAuthId) {
+    private List<TagVO> findAllCategoryTagSelected(int categoryId, Integer userTechAuthId,Boolean ignoreNotUser) {
         List<TechTag> techTagList = techTagService.findByTechAuthId(userTechAuthId);
         List<Tag> categoryTags = tagService.findAllCategoryTags(categoryId);
         List<TagVO> groupTags = CollectionUtil.copyNewCollections(categoryTags,TagVO.class);
         for(TagVO groupTag : groupTags){
            List<Tag> sonTags = tagService.findByPid(groupTag.getId());
            List<TagVO> sonTagVos = CollectionUtil.copyNewCollections(sonTags,TagVO.class);
-           for(TagVO sonTag : sonTagVos){
-               if(isUserSelectTechTag(techTagList,sonTag)){
-                   sonTag.setSelected(true);
+           ListIterator<TagVO> sonTagVosIt = sonTagVos.listIterator();
+           while (sonTagVosIt.hasNext()){
+               TagVO sonTag = sonTagVosIt.next();
+               if(ignoreNotUser){
+                   sonTagVos.remove(sonTag);
                }else{
-                   sonTag.setSelected(false);
+                   if(isUserSelectTechTag(techTagList,sonTag)){
+                       sonTag.setSelected(true);
+                   }else{
+                       sonTag.setSelected(false);
+                   }
                }
            }
-            groupTag.setSonTags(sonTagVos);
+           groupTag.setSonTags(sonTagVos);
         }
         return groupTags;
     }

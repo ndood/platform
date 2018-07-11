@@ -95,6 +95,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         }
         user.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
         user.setGender(userInfoAuthTO.getGender());
+        user.setAge(userInfoAuthTO.getAge());
+        user.setBirth(userInfoAuthTO.getBirth());
         user.setConstellation(userInfoAuthTO.getConstellation());
         user.setUserInfoAuth(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType());
         user.setUpdateTime(new Date());
@@ -269,6 +271,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userInfoAuthVO.setNickname(user.getNickname());
         userInfoAuthVO.setAge(user.getAge());
         userInfoAuthVO.setGender(user.getGender());
+        userInfoAuthVO.setConstellation(user.getConstellation());
+        userInfoAuthVO.setBirth(user.getBirth());
         userInfoAuthVO.setUserInfoAuth(user.getUserInfoAuth());
         //查询写真信息和声音
         findUserPortraitsAndVoices(userInfoAuthVO);
@@ -286,6 +290,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         }
         return userInfoAuthDao.findByUserIds(userIds);
     }
+
+
 
     @Override
     public UserInfoVO findUserCardByUserId(int userId, Boolean hasPhotos, Boolean hasVoice, Boolean hasTags, Boolean hasTechs) {
@@ -355,7 +361,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     public UserInfoVO findUserTechCardByUserId(int techAuthId) {
         //查询认证的技能
         UserInfoVO userInfo = new UserInfoVO();
-        UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(techAuthId);
+        UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(techAuthId,null);
         if (null == userTechAuthVO) {
             throw new UserException(UserException.ExceptionCode.TECH_AUTH_NOT_EXIST_EXCEPTION);
         }
@@ -386,7 +392,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     public UserInfoVO getSharePage(int techAuthId) {
         UserInfoVO userInfo = new UserInfoVO();
         //查询认证的技能
-        UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(techAuthId);
+        UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(techAuthId,null);
         userInfo.setUserTechAuthVO(userTechAuthVO);
         Integer userId = userTechAuthVO.getUserId();
         //陪玩师个人信息
@@ -436,7 +442,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
 
     @Override
-    public PageInfo<UserInfoAuthVO> list(Integer pageNum, Integer pageSize, UserInfoAuthSearchVO userInfoAuthSearchVO) {
+    public PageInfo<UserInfoAuthVO> list(Integer pageNum,
+                                         Integer pageSize,
+                                         UserInfoAuthSearchVO userInfoAuthSearchVO) {
         List<UserInfoAuthVO> userInfoAuthVOList = new ArrayList<>();
         String orderBy;
         if (StringUtils.isBlank(userInfoAuthSearchVO.getOrderBy())) {
@@ -451,8 +459,12 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             BeanUtil.copyProperties(userInfoAuth, userInfoAuthVO);
             //查询写真信息和声音
             findUserPortraitsAndVoices(userInfoAuthVO);
-            List<TagVO> allPersonTagVos = findAllUserTagSelected(userInfoAuthVO.getUserId(), true);
+            List<TagVO> allPersonTagVos = findAllUserTagSelected(userInfoAuthVO.getUserId(), Boolean.TRUE);
             userInfoAuthVO.setGroupTags(allPersonTagVos);
+            //查询用户认证的所有技能
+            List<UserTechAuth> userTechAuthList = userTechAuthService.findByUserId(userInfoAuth.getUserId());
+            userInfoAuthVO.setUserTechAuthList(userTechAuthList);
+
             userInfoAuthVOList.add(userInfoAuthVO);
         }
         PageInfo page = new PageInfo(userInfoAuths);

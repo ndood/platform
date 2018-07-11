@@ -11,4 +11,5 @@ public class UserTechAuthSearchVO {
     private String endTime;
     private Integer categoryId;
 
+    private String orderBy;
 }

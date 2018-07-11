@@ -4,6 +4,7 @@ package com.fulu.game.core.entity.vo;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
 import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.UserInfoAuthFile;
+import com.fulu.game.core.entity.UserTechAuth;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -23,6 +24,10 @@ public class UserInfoAuthVO extends UserInfoAuth {
 
     private Integer gender;
 
+    private String birth;
+
+    private String constellation;
+
     private Integer age;
 
     private String headUrl;
@@ -33,7 +38,7 @@ public class UserInfoAuthVO extends UserInfoAuth {
     private BigDecimal moneySum;
     //总单数
     private Integer orderCount;
-
+    //审核状态
     private String userInfoAuthStr;
 
     //写真文件
@@ -46,8 +51,7 @@ public class UserInfoAuthVO extends UserInfoAuth {
 
     private String remark;
 
-
-
+    private List<UserTechAuth> userTechAuthList;
 
 
     public String getUserInfoAuthStr() {

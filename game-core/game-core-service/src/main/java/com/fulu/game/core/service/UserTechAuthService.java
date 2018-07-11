@@ -61,7 +61,7 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
      * @param id
      * @return
      */
-    UserTechAuthVO findTechAuthVOById(Integer id);
+    UserTechAuthVO findTechAuthVOById(Integer id,Integer categoryId);
 
     /**
      * 查询用户正常可用的技能
@@ -115,6 +115,6 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
     void updateByCategory(Category category);
 
 
-    PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize, String orderBy, UserTechAuthSearchVO userTechAuthSearchVO);
+    PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize, UserTechAuthSearchVO userTechAuthSearchVO);
 
 }

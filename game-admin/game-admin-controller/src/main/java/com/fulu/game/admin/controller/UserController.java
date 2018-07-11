@@ -48,7 +48,6 @@ public class UserController extends BaseController {
 
     /**
      * 用户认证信息列表
-     *
      * @param pageNum
      * @param pageSize
      * @return
@@ -276,7 +275,7 @@ public class UserController extends BaseController {
     public Result techAuthList(@RequestParam("pageNum") Integer pageNum,
                                @RequestParam("pageSize") Integer pageSize,
                                UserTechAuthSearchVO userTechAuthSearchVO) {
-        PageInfo<UserTechAuthVO> page = userTechAuthService.list(pageNum, pageSize, null, userTechAuthSearchVO);
+        PageInfo<UserTechAuthVO> page = userTechAuthService.list(pageNum, pageSize,  userTechAuthSearchVO);
         return Result.success().data(page);
     }
 
@@ -287,8 +286,8 @@ public class UserController extends BaseController {
      * @return
      */
     @PostMapping(value = "/tech-auth/query")
-    public Result techAuthInfo(@RequestParam(required = true) Integer id) {
-        UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(id);
+    public Result techAuthInfo(Integer id) {
+        UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(id,null);
         return Result.success().data(userTechAuthVO);
     }
 
