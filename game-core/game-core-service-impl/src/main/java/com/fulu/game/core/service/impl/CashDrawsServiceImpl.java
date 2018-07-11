@@ -1,5 +1,6 @@
 package com.fulu.game.core.service.impl;
 
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.CashProcessStatusEnum;
 import com.fulu.game.common.enums.MoneyOperateTypeEnum;
 import com.fulu.game.common.exception.CashException;
@@ -17,6 +18,8 @@ import com.fulu.game.core.service.MoneyDetailsService;
 import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.xiaoleilu.hutool.date.DateUtil;
+import com.xiaoleilu.hutool.date.Week;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +58,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
      * @return
      */
     @Override
-    public CashDraws save(CashDrawsVO cashDrawsVO) {
+    public CashDrawsVO save(CashDrawsVO cashDrawsVO) {
         log.info("====调用提现申请接口====");
         User user = userService.getCurrentUser();
         if (null == user) {
@@ -100,7 +103,25 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         log.info("更新用户余额");
         userService.updateRedisUser(user);
         log.info("更新redisUser");
-        return cashDraws;
+
+        CashDrawsVO vo = new CashDrawsVO();
+        BeanUtil.copyProperties(cashDraws , vo);
+        vo.setTips(getCashDrawsTips());
+        return vo;
+    }
+
+    /**
+     * 根据提现时间获取提醒文案
+     * 注：每周二、周五进行打款（周二办理周四-周日的提现申请，周五办理周一到周三的提现申请）
+     * @return
+     */
+    public String getCashDrawsTips() {
+        int weekInt = DateUtil.thisDayOfWeekEnum().getValue();
+        boolean flag = weekInt >= Week.MONDAY.getValue() && weekInt <= Week.WEDNESDAY.getValue();
+        if(flag) {
+            return Constant.CASH_DRAWS_NEXT_FRIDAY_TIPS;
+        }
+        return Constant.CASH_DRAWS_NEXT_TUESDAY_TIPS;
     }
 
     @Override

@@ -21,4 +21,9 @@ public class CashDrawsVO extends CashDraws {
      * 申请结束时间
      */
     private Date createEndTime;
+
+    /**
+     * 提现申请的提醒文案
+     */
+    private String tips;
 }
