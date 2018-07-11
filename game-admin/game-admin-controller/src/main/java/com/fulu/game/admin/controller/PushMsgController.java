@@ -42,7 +42,10 @@ public class PushMsgController extends BaseController{
                 return Result.error().msg("推送日期不能小于当前日期!");
             }
         }
+        long startTime = System.currentTimeMillis();
         pushMsgService.push(pushMsgVO);
+        long endTime = System.currentTimeMillis();
+        log.info("pushmsg.push方法耗时:{}",endTime-startTime);
         return Result.success();
     }
 
