@@ -93,6 +93,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         if (userInfoAuthTO.getMobile() == null) {
             userInfoAuthTO.setMobile(user.getMobile());
         }
+        if(userInfoAuthTO.getHeadUrl()!=null){
+            user.setHeadPortraitsUrl(ossUtil.activateOssFile(userInfoAuthTO.getHeadUrl()));
+        }
         user.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
         user.setGender(userInfoAuthTO.getGender());
         user.setAge(userInfoAuthTO.getAge());
@@ -270,6 +273,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         BeanUtil.copyProperties(userInfoAuth, userInfoAuthVO);
         userInfoAuthVO.setNickname(user.getNickname());
         userInfoAuthVO.setAge(user.getAge());
+        userInfoAuthVO.setHeadUrl(user.getHeadPortraitsUrl());
         userInfoAuthVO.setGender(user.getGender());
         userInfoAuthVO.setConstellation(user.getConstellation());
         userInfoAuthVO.setBirth(user.getBirth());

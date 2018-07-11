@@ -77,6 +77,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuthTO.setGradePicUrl(ossUtil.activateOssFile(userTechAuthTO.getGradePicUrl()));
         userTechAuthTO.setCategoryName(category.getName());
         userTechAuthTO.setUpdateTime(new Date());
+        userTechAuthTO.setApproveCount(0);
         if (userTechAuthTO.getId() == null){
             //查询是否有重复技能
             List<UserTechAuth> userTechAuthes = findByCategoryAndUser(userTechAuthTO.getCategoryId(), userTechAuthTO.getUserId());
@@ -313,7 +314,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
             while (techValueVOListIt.hasNext()){
                 TechValueVO techValueVO = techValueVOListIt.next();
                 if(ignoreNotUser){
-                    techValueVOList.remove(techValueVO);
+                    techValueVOListIt.remove();
                 }else{
                     if(isUserSelectTechValue(userTechInfoList,techValueVO)){
                         techValueVO.setSelected(true);
@@ -338,11 +339,11 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         for(TagVO groupTag : groupTags){
            List<Tag> sonTags = tagService.findByPid(groupTag.getId());
            List<TagVO> sonTagVos = CollectionUtil.copyNewCollections(sonTags,TagVO.class);
-           ListIterator<TagVO> sonTagVosIt = sonTagVos.listIterator();
+           Iterator<TagVO> sonTagVosIt = sonTagVos.iterator();
            while (sonTagVosIt.hasNext()){
                TagVO sonTag = sonTagVosIt.next();
                if(ignoreNotUser){
-                   sonTagVos.remove(sonTag);
+                   sonTagVosIt.remove();
                }else{
                    if(isUserSelectTechTag(techTagList,sonTag)){
                        sonTag.setSelected(true);

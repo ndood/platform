@@ -1,7 +1,6 @@
 package com.fulu.game.core.entity.vo;
 
 
-import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.TechTag;
@@ -40,6 +39,7 @@ public class UserTechAuthVO  extends UserTechAuth {
     private String nickname;
 
     private Integer gender;
+
 
 
     private List<TagVO> groupTags;
