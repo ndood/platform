@@ -540,7 +540,6 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
                 attrIds.remove(userTechInfo.getTechValueId());
             }
         }
-
         for(Integer attrId : attrIds){
             TechValue techValue = techValueService.findById(attrId);
             TechAttr techAttr = techAttrService.findById(techValue.getTechAttrId());
