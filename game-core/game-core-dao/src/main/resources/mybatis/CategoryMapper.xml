@@ -5,7 +5,6 @@
     <resultMap id="CategoryResultMap" type="com.fulu.game.core.entity.Category">
         <id column="id" property="id"/>
         <result column="pid" property="pid"/>
-        <result column="tag_id" property="tagId"/>
         <result column="icon" property="icon"/>
         <result column="index_icon" property="indexIcon"/>
         <result column="name" property="name"/>
@@ -18,7 +17,7 @@
 
 
     <sql id="Base_Column_List">
-        id,pid,tag_id,icon,index_icon,name,status,sort,charges,create_time,update_time
+        id,pid,icon,index_icon,name,status,sort,charges,create_time,update_time
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="CategoryResultMap">
@@ -43,9 +42,6 @@
         <where>
             <if test="pid != null">
                 and pid = #{pid}
-            </if>
-            <if test="tagId != null">
-                and tag_id = #{tagId}
             </if>
             <if test="icon != null">
                 and icon = #{icon}
@@ -83,9 +79,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Category">
         insert into
-        t_category (pid,tag_id,icon,index_icon,name,status,sort,charges,create_time,update_time)
+        t_category (pid,icon,index_icon,name,status,sort,charges,create_time,update_time)
         values
-        (#{pid},#{tagId},#{icon},#{indexIcon},#{name},#{status},#{sort},#{charges},#{createTime},#{updateTime})
+        (#{pid},#{icon},#{indexIcon},#{name},#{status},#{sort},#{charges},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Category">
@@ -94,10 +90,6 @@
 
             <if test="pid != null">
                 pid = #{pid},
-            </if>
-
-            <if test="tagId != null">
-                tag_id = #{tagId},
             </if>
             <if test="icon != null">
                 icon = #{icon},

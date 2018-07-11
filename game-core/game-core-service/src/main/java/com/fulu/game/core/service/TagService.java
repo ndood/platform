@@ -24,7 +24,7 @@ public interface TagService extends ICommonService<Tag,Integer>{
 
     List<Tag> findByPid(int tagPid);
 
-
+    List<Tag> findGroupTagByCategoryId(int categoryId);
 
     /**
      * 查询所有个人标签
@@ -45,6 +45,13 @@ public interface TagService extends ICommonService<Tag,Integer>{
      * @return
      */
     TagVO  findTagsByTagPid(Integer tagPid);
+
+    /**
+     * 兼容老接口的category标签查询
+     * @param categoryId
+     * @return
+     */
+    TagVO  oldFindTagsByCategoryId(Integer categoryId);
 
     /**
      * 内容管理-删除标签组（和相关子标签）

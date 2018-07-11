@@ -98,8 +98,14 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
                     throw new ServiceErrorException("不能添加重复的技能!");
                 }
             }
+            //重置技能好友认证状态
+            approveService.resetApproveStatusAndUpdate(userTechAuthTO);
+            if(!oldUserTechAuth.getGradePicUrl().equals(userTechAuthTO.getGradePicUrl())){
+                ossUtil.deleteFile(oldUserTechAuth.getGradePicUrl());
+            }
             //删除重新认证的商品
             productService.deleteProductByTech(userTechAuthTO.getId());
+            //删除重新认证的商品
         }
         //创建技能标签关联
         saveTechTag(userTechAuthTO.getId(), userTechAuthTO.getTagIds());

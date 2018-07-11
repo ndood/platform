@@ -20,8 +20,6 @@ public class Category implements Serializable {
 	private Integer id;
 	//父ID
 	private Integer pid;
-	//标签组ID
-	private Integer tagId;
 	//图标
 	private String icon;
 	//首页图标

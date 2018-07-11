@@ -51,6 +51,11 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
         return tagDao.findByParameter(tagVO);
     }
 
+    public List<Tag> findGroupTagByCategoryId(int categoryId){
+        TagVO param = new TagVO();
+        param.setCategoryId(categoryId);
+        return tagDao.findByParameter(param);
+    }
 
 
     public List<Tag> findAllCategoryTags(int categoryId){
@@ -75,6 +80,16 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
         }
         tagVO.setSonTags(sonTagVoList);
         return tagVO;
+    }
+
+    @Override
+    @Deprecated
+    public TagVO oldFindTagsByCategoryId(Integer categoryId) {
+        List<Tag> tagList = findGroupTagByCategoryId(categoryId);
+        if(tagList.isEmpty()){
+            return null;
+        }
+        return findTagsByTagPid(tagList.get(0).getId());
     }
 
     @Override

@@ -215,21 +215,6 @@ public class CategoryController extends BaseController {
 
 
     /**
-     * 查询游戏所有标签
-     * @param categoryId
-     * @return
-     */
-    @PostMapping(value = "/tag/list")
-    public Result techTags(@RequestParam(required = true) Integer categoryId) {
-        Category category = categoryService.findById(categoryId);
-        if (category.getTagId() == null) {
-            return Result.error().msg("该游戏没有设置标签!");
-        }
-        TagVO tagVO = tagService.findTagsByTagPid(category.getTagId());
-        return Result.success().data(tagVO);
-    }
-
-    /**
      * 查询游戏所有段位
      * @return
      */

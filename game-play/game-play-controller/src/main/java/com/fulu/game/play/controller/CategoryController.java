@@ -103,11 +103,10 @@ public class CategoryController extends BaseController{
      */
     @PostMapping(value = "/tag/list")
     public Result techTags(@RequestParam(required = true) Integer categoryId) {
-        Category category = categoryService.findById(categoryId);
-        if (category.getTagId() == null) {
+        TagVO tagVO = tagService.oldFindTagsByCategoryId(categoryId);
+        if (tagVO == null) {
             return Result.error().msg("该游戏没有设置标签!");
         }
-        TagVO tagVO = tagService.findTagsByTagPid(category.getTagId());
         return Result.success().data(tagVO);
     }
 
