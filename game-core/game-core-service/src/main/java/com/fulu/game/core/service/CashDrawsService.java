@@ -22,4 +22,6 @@ public interface CashDrawsService extends ICommonService<CashDraws,Integer>{
     List<CashDraws> list(CashDrawsVO cashDrawsVO);
 
     CashDraws draw(Integer cashId, String comment);
+
+    boolean refuse(Integer cashId, String comment);
 }

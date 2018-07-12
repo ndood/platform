@@ -78,5 +78,21 @@ public class CashDrawsController extends BaseController{
         }
         return Result.success().data(cashDraws).msg("打款成功！");
     }
+
+    /**
+     * 管理员-拒绝打款
+     * @param cashId
+     * @param comment
+     * @return
+     */
+    @PostMapping("/refuse")
+    public Result refuse(@RequestParam("cashId") Integer cashId,
+                       @RequestParam(name="comment",required = false) String comment){
+        boolean flag = cashDrawsService.refuse(cashId, comment);
+        if (!flag){
+            return Result.error().msg("操作失败，订单不存在");
+        }
+        return Result.success().msg("操作成功");
+    }
 }
 

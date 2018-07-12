@@ -162,4 +162,42 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         return cashDraws;
     }
 
+    @Override
+    public boolean refuse(Integer cashId, String comment) {
+        Admin admin = adminService.getCurrentUser();
+        log.info("调用拒绝打款接口,入参cashId:{},操作人:{}", cashId, admin.getId());
+        CashDraws cashDraws = findById(cashId);
+        if (null == cashDraws) {
+            return false;
+        }
+        cashDraws.setOperator(admin.getName());
+        cashDraws.setComment(comment);
+        //修改为"已拒绝"状态
+        cashDraws.setCashStatus(CashProcessStatusEnum.REFUSE.getType());
+        cashDraws.setProcessTime(new Date());
+        cashDrawsDao.update(cashDraws);
+
+        //返款
+        User user = userService.findById(cashDraws.getUserId());
+        BigDecimal balance = user.getBalance();
+        log.info("管理员拒绝打款前，用户账户余额:{}", balance);
+        balance = balance.add(cashDraws.getMoney());
+        log.info("管理员拒绝打款后，用户账户余额:{}", balance);
+
+        MoneyDetails moneyDetails = new MoneyDetails();
+        moneyDetails.setOperatorId(admin.getId());
+        moneyDetails.setAction(MoneyOperateTypeEnum.ADMIN_REFUSE_REMIT.getType());
+        moneyDetails.setTargetId(cashDraws.getUserId());
+        moneyDetails.setSum(balance);
+        moneyDetails.setMoney(cashDraws.getMoney());
+        moneyDetails.setCashId(cashId);
+        moneyDetails.setRemark(comment);
+        moneyDetails.setCreateTime(new Date());
+        mdService.create(moneyDetails);
+
+        user.setBalance(balance);
+        user.setUpdateTime(new Date());
+        userService.update(user);
+        return true;
+    }
 }
