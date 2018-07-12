@@ -13,6 +13,9 @@ public enum WechatTemplateMsgEnum {
 
     GRANT_COUPON(PagePathEnum.COUPON_LIST.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "恭喜你,获得一张{}元优惠券"),
 
+    USER_AUTH_INFO_PASS(PagePathEnum.SERVICE_USER_VERIFY.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "您提交申请的陪玩师个人资料已经审核通过，快去玩耍接单吧!"),
+    USER_AUTH_INFO_REJECT(PagePathEnum.SERVICE_USER_VERIFY.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "您提交的陪玩师个人资料申请被驳回，理由：{}"),
+
     ORDER_USER_PAY(PagePathEnum.SERVICE_USER_ORDER_LIST.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "{}向您下单{},快快去赚钱"), //用户付款
     ORDER_SERVER_USER_CHECK(PagePathEnum.USER_ORDER_LIST.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "您的{}订单已完成,请前往验收"), //打手验收订单
     ORDER_USER_APPEAL(PagePathEnum.USER_ORDER_LIST.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "您的订单已成功申诉,客服正在处理,请耐心等待"),//用户申诉订单

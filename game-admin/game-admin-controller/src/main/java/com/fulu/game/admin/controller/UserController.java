@@ -133,7 +133,7 @@ public class UserController extends BaseController {
      */
     @PostMapping(value = "/info-auth/unreject")
     public Result userInfoAuthUnReject(@RequestParam(required = true) Integer id) {
-        userInfoAuthService.unReject(id);
+        userInfoAuthService.pass(id);
         return Result.success().msg("认证信息认证通过!");
     }
 

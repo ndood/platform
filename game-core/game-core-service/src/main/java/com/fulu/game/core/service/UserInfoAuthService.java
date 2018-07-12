@@ -48,7 +48,7 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
      * @param id
      * @return
      */
-    UserInfoAuth unReject(int id);
+    UserInfoAuth pass(int id);
 
     /**
      * 冻结用户认证信息

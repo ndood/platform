@@ -1,10 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
-import com.fulu.game.common.enums.FileTypeEnum;
-import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
-import com.fulu.game.common.enums.UserInfoFileTypeEnum;
-import com.fulu.game.common.enums.UserTypeEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
@@ -59,7 +56,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     private ProductService productService;
     @Autowired
     private OssUtil ossUtil;
-
+    @Autowired
+    private WxTemplateMsgService wxTemplateMsgService;
 
     @Override
     public ICommonDao<UserInfoAuth, Integer> getDao() {
@@ -127,6 +125,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         createUserAuthVoice(userInfoAuthTO.getVoiceUrl(), userInfoAuth.getId(), userInfoAuthTO.getDuration());
         //添加用户信息标签
         createUserInfoTags(userInfoAuthTO.getTags(), user.getId());
+
+        //同步下架用户该技能商品
+        productService.deleteProductByUser(userInfoAuth.getUserId());
         return userInfoAuth;
     }
 
@@ -171,17 +172,19 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userInfoAuthRejectService.create(userInfoAuthReject);
         //同步下架用户该技能商品
         productService.deleteProductByUser(userInfoAuth.getUserId());
+
+        //给用户推送通知
+        wxTemplateMsgService.pushWechatTemplateMsg(user.getId(), WechatTemplateMsgEnum.USER_AUTH_INFO_REJECT);
         return userInfoAuth;
     }
 
     /**
-     * 清楚驳回记录状态
-     *
+     * 技能审核通过
      * @param id
      * @return
      */
     @Override
-    public UserInfoAuth unReject(int id) {
+    public UserInfoAuth pass(int id) {
         Admin admin = adminService.getCurrentUser();
         log.info("清除用户认证信息驳回状态:adminId:{};adminName:{};authInfoId:{}", admin.getId(), admin.getName(), id);
         UserInfoAuth userInfoAuth = findById(id);
@@ -201,6 +204,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         for (UserTechAuth userTechAuth : userTechAuthList) {
             productService.recoverProductDelFlagByTechAuthId(userTechAuth.getId());
         }
+        //给用户推送通知
+        wxTemplateMsgService.pushWechatTemplateMsg(user.getId(), WechatTemplateMsgEnum.USER_AUTH_INFO_PASS);
         return userInfoAuth;
     }
 
