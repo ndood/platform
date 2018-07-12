@@ -21,7 +21,6 @@ public class UserAuthException extends BizException{
         USER_TECH_NO_AUTHENTICATION(41001, "该技能未认证通过不能操作接单方式。"),
         USER_TECH_AUTHENTICATION_ING(41002, "该技能在认证中不能操作接单方式。"),
         USER_TECH_FREEZE(41003, "该技能被冻结,不能继续操作。");
-
         private int code;
         private String msg;
     }

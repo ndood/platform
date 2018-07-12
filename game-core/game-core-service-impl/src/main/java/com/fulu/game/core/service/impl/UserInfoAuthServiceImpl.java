@@ -94,7 +94,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         if(userInfoAuthTO.getHeadUrl()!=null){
             user.setHeadPortraitsUrl(ossUtil.activateOssFile(userInfoAuthTO.getHeadUrl()));
         }
-        user.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
         user.setGender(userInfoAuthTO.getGender());
         user.setAge(userInfoAuthTO.getAge());
         user.setBirth(userInfoAuthTO.getBirth());
@@ -197,6 +196,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE_ADMIN);
         }
         user.setUserInfoAuth(UserInfoAuthStatusEnum.VERIFIED.getType());
+        user.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
         userService.update(user);
 
         //同步恢复用户正确技能的商品状态

@@ -2,6 +2,7 @@ package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.core.entity.*;
@@ -144,7 +145,7 @@ public class AuthController extends BaseController {
     public Result techAuthSave(UserTechAuthTO userTechAuthTO) {
         User user = userService.getCurrentUser();
         //验证用户的认证信息
-        userService.checkUserInfoAuthStatus(user.getId());
+        userService.checkUserInfoAuthStatus(user.getId(),UserInfoAuthStatusEnum.ALREADY_PERFECT.getType());
         if(userTechAuthTO.getId()!=null){
             UserTechAuth userTechAuth = userTechAuthService.findById(userTechAuthTO.getId());
             userService.isCurrentUser(userTechAuth.getUserId());
