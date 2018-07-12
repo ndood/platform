@@ -3,6 +3,7 @@ package com.fulu.game.play.controller;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.PicExampleEnum;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Banner;
@@ -55,7 +56,6 @@ public class HomeController {
 
     /**
      * 初始化加载系统配置
-     *
      * @return
      */
     @RequestMapping(value = "/sys/config", method = RequestMethod.POST)
@@ -78,7 +78,6 @@ public class HomeController {
 
     /**
      * 小程序提交参数code
-     *
      * @return
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -114,6 +113,7 @@ public class HomeController {
             return Result.error().msg("登陆异常！");
         }
     }
+
 
     @RequestMapping(value = "/test/login", method = RequestMethod.POST)
     @ResponseBody

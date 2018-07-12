@@ -347,7 +347,9 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
                    sonTag.setSelected(true);
                }else{
                    sonTag.setSelected(false);
-                   sonTagVosIt.remove();
+                   if(ignoreNotUser){
+                       sonTagVosIt.remove();
+                   }
                }
            }
            groupTag.setSonTags(sonTagVos);

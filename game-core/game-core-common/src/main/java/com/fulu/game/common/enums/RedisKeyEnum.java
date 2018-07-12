@@ -40,7 +40,6 @@ public enum RedisKeyEnum {
 
     /**
      * 获取环境定义的前缀
-     *
      * @return
      */
     private String getEvnPrefix() {
