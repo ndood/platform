@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.exception.CashException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.PilotOrderDetailsDao;
 import com.fulu.game.core.entity.Admin;
@@ -11,6 +12,7 @@ import com.fulu.game.core.service.PilotOrderDetailsService;
 import com.fulu.game.core.service.PilotOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,7 @@ import java.util.List;
 
 
 @Service
+@Slf4j
 public class PilotOrderDetailsServiceImpl extends AbsCommonService<PilotOrderDetails,Integer> implements PilotOrderDetailsService {
 
     @Autowired
@@ -68,7 +71,8 @@ public class PilotOrderDetailsServiceImpl extends AbsCommonService<PilotOrderDet
         details.setSum(remitSum.add(money));
         int result = pilotOrderDetailsDao.create(details);
         if(result <= 0) {
-            return false;
+            log.error("领航订单打款异常，数据库插入失败");
+            throw new CashException(CashException.ExceptionCode.CASH_REMIT_FAIL_EXCEPTION);
         }
         return true;
     }
@@ -89,7 +93,11 @@ public class PilotOrderDetailsServiceImpl extends AbsCommonService<PilotOrderDet
         if(lastOrderDetails == null) {
             return totalProfit;
         }else {
-            return lastOrderDetails.getLeftAmount();
+            int result = totalProfit.subtract(lastOrderDetails.getSum()).compareTo(BigDecimal.ZERO);
+            if(result <= 0) {
+                return BigDecimal.ZERO;
+            }
+            return totalProfit.subtract(lastOrderDetails.getSum());
         }
     }
 }

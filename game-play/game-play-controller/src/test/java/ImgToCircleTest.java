@@ -13,6 +13,10 @@ import java.net.URL;
  */
 public class ImgToCircleTest {
 
+    /**
+     * 绘制圆形图片
+     * @throws IOException
+     */
     public static void circle() throws IOException {
         String url = "http://test-game-play.oss-cn-hangzhou.aliyuncs.com/2018/5/7/84b0f75c8429460fa3e131d2c403c9cf.png";
         BufferedImage srcImg0 = ImageIO.read(new URL(url));

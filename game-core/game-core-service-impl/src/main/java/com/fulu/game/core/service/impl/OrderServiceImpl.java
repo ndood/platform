@@ -534,7 +534,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 提交集市订单
-     *
      * @param channelId
      * @param orderMarketProduct
      * @param remark
@@ -1129,13 +1128,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         if (orderNo == null) {
             return null;
         }
-        OrderVO orderVO = new OrderVO();
-        orderVO.setOrderNo(orderNo);
-        List<Order> orderList = orderDao.findByParameter(orderVO);
-        if (orderList.isEmpty()) {
-            return null;
-        }
-        return orderList.get(0);
+        Order order = orderDao.findByOrderNo(orderNo);
+        return order;
     }
 
     @Override
