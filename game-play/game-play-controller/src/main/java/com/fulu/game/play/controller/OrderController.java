@@ -102,7 +102,9 @@ public class OrderController extends BaseController {
                               @RequestParam(required = true) Integer num,
                               String couponNo,
                               @RequestParam(required = true) String sessionkey,
-                              String remark){
+                              String remark,
+                              Integer contactType,
+                              String contactInfo){
         User user = userService.getCurrentUser();
         if(!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))){
             log.error("验证sessionkey错误:productId:{};num:{};couponNo:{};sessionkey:{};remark:{};userId:{}",productId,num,couponNo,sessionkey,remark,user.getId());
@@ -110,7 +112,7 @@ public class OrderController extends BaseController {
         };
         String ip = RequestUtil.getIpAdrress(request);
         try {
-            String  orderNum = orderService.pilotSubmit(productId,num,remark,couponNo,ip);
+            String  orderNum = orderService.pilotSubmit(productId, num, remark, couponNo, ip, contactType, contactInfo);
             return Result.success().data(orderNum).msg("创建订单成功!");
         }finally {
             redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));

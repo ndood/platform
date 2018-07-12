@@ -429,7 +429,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
      * @return
      */
     @Override
-    public String pilotSubmit(int productId, int num, String remark, String couponNo, String userIp) {
+    public String pilotSubmit(int productId, int num, String remark, String couponNo, String userIp,
+                              Integer contactType, String contactInfo) {
         log.info("领航用户提交订单productId:{};num:{};remark:{};couponNo:{};userIp:{};", productId, num, remark, couponNo, userIp);
         User user = userService.getCurrentUser();
         Product product = productService.findById(productId);
@@ -471,6 +472,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setCreateTime(new Date());
         order.setUpdateTime(new Date());
         order.setOrderIp(userIp);
+        order.setContactType(contactType);
+        order.setContactInfo(contactInfo);
 
         if (order.getUserId().equals(order.getServiceUserId())) {
             throw new ServiceErrorException("不能给自己下单哦!");
