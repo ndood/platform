@@ -274,14 +274,18 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
             userTechAuth.setCategoryId(categoryId);
         }
         UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
-        Integer approveCount = userTechAuth.getApproveCount();
-        Integer requireCount = approveCount < 5 ? Constant.DEFAULT_APPROVE_COUNT - approveCount : 0;
-        userTechAuthVO.setRequireCount(requireCount);
         BeanUtil.copyProperties(userTechAuth, userTechAuthVO);
-        //审核不通过原因
-        UserTechAuthReject techAuthReject =userTechAuthRejectService.findLastRecordByTechAuth(userTechAuth.getId(),userTechAuth.getStatus());
-        if(techAuthReject!=null){
-            userTechAuthVO.setReason(techAuthReject.getReason());
+        if(userTechAuthVO.getId()!=null){
+            Integer approveCount = userTechAuth.getApproveCount();
+            Integer requireCount = approveCount < 5 ? Constant.DEFAULT_APPROVE_COUNT - approveCount : 0;
+            userTechAuthVO.setRequireCount(requireCount);
+            //审核不通过原因
+            UserTechAuthReject techAuthReject =userTechAuthRejectService.findLastRecordByTechAuth(userTechAuthVO.getId(),userTechAuthVO.getStatus());
+            if(techAuthReject!=null){
+                userTechAuthVO.setReason(techAuthReject.getReason());
+            }
+        }else{
+            userTechAuthVO.setRequireCount(Constant.DEFAULT_APPROVE_COUNT);
         }
         //查询用户所有技能标签
         List<TechTag> techTagList = findTechTags(userTechAuthVO.getId());
