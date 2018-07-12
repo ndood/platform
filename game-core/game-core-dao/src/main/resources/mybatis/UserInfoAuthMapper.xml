@@ -96,7 +96,8 @@
         u.age,
         u.nickname,
         IFNULL( sum( o.total_money ), 0 ) AS money_sum,
-        count( o.service_user_id ) AS order_count
+        count( o.service_user_id ) AS order_count,
+        (select count(1) from t_user_tech_auth tuta where tuta.user_id = uia.user_id) AS tech_auth_count
         FROM
         t_user_info_auth uia
         LEFT JOIN t_user u ON uia.user_id = u.id
