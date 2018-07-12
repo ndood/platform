@@ -92,6 +92,9 @@
             <if test="endTime != null">
                 and uta.update_time &lt;= #{endTime}
             </if>
+            <if test="status != null">
+                and uta.status = #{status}
+            </if>
         </where>
     </select>
 

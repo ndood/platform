@@ -14,6 +14,7 @@ public class UserAuthException extends BizException{
     public enum ExceptionCode{
         NOT_EXIST_USER_AUTH(40000, "未认证个人信息,不能操作!"),
         EXIST_USER_AUTH(40001, "个人信息已认证过,不能重复认证!"),
+        SERVICE_USER_AUTHING(40004, "您的个人信息还在审核中，审核通过后则可设置接单方式。"),
         SERVICE_USER_REJECT(40002, "您的个人信息暂未认证通过，通过后则可设置接单方式。"),
         SERVICE_USER_FREEZE(40003, "您当前的陪玩身份已被冻结,如有异议请联系管理员。"),
         SERVICE_USER_FREEZE_ADMIN(40003, "当前陪玩师身份为冻结状态,不能操作!"),

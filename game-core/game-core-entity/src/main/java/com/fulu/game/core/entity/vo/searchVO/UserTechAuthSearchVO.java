@@ -10,6 +10,6 @@ public class UserTechAuthSearchVO {
     private String startTime;
     private String endTime;
     private Integer categoryId;
-
+    private Integer status;
     private String orderBy;
 }

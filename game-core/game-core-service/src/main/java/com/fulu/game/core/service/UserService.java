@@ -175,7 +175,7 @@ public interface UserService extends ICommonService<User, Integer> {
      *
      * @param userId
      */
-    void checkUserInfoAuthStatus(Integer userId);
+    void checkUserInfoAuthStatus(Integer userId,Integer ... ignoreAuthStatus);
 
     /**
      * 查询imid为空的用户

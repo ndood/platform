@@ -544,6 +544,9 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         }
         for(Integer attrId : attrIds){
             TechValue techValue = techValueService.findById(attrId);
+            if(techValue==null){
+                throw new ServiceErrorException("大区不存在,请重新选择!");
+            }
             TechAttr techAttr = techAttrService.findById(techValue.getTechAttrId());
             UserTechInfo userTechInfo = new UserTechInfo();
             userTechInfo.setTechAttrId(techAttr.getId());
