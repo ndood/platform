@@ -106,6 +106,7 @@ public class UserController extends BaseController {
         user.setNickname(userVO.getNickname());
         user.setHeadPortraitsUrl(ossUtil.activateOssFile(userVO.getHeadPortraitsUrl()));
         userService.update(user);
+        userService.updateRedisUser(user);
         user.setIdcard(null);
         user.setRealname(null);
         return Result.success().data(user).msg("个人信息设置成功！");
@@ -171,6 +172,7 @@ public class UserController extends BaseController {
         user.setMobile(phoneNoInfo.getPurePhoneNumber());
         user.setUpdateTime(new Date());
         userService.update(user);
+        userService.updateRedisUser(user);
         log.info("获取用户微信手机号,更新后用户信息:{};手机号:{};", user, user.getMobile());
         return Result.success().data(user);
 
@@ -206,6 +208,7 @@ public class UserController extends BaseController {
         }
         user.setUpdateTime(new Date());
         userService.update(user);
+        userService.updateRedisUser(user);
         return Result.success().data(user);
     }
 
@@ -253,6 +256,7 @@ public class UserController extends BaseController {
             openIdUser.setUpdateTime(new Date());
             userService.update(openIdUser);
             newUser = openIdUser;
+            userService.updateRedisUser(newUser);
         }
         return Result.success().data(newUser).msg("手机号绑定成功！");
     }
@@ -313,6 +317,7 @@ public class UserController extends BaseController {
             userService.update(openIdUser);
             newUser = openIdUser;
         }
+        userService.updateRedisUser(newUser);
         return Result.success().data(newUser).msg("手机号绑定成功！");
     }
 
@@ -337,6 +342,7 @@ public class UserController extends BaseController {
             user.setImPsw(imPsw);
             user.setUpdateTime(new Date());
             userService.update(user);
+            userService.updateRedisUser(user);
             log.info("用户:{}绑定IM信息成功:user:{};", user.getId(), user);
         } else if (status == 500) {
             String newIMId = "s" + imId;
@@ -345,6 +351,7 @@ public class UserController extends BaseController {
             user.setImPsw(imUser.getImPsw());
             user.setUpdateTime(new Date());
             userService.update(user);
+            userService.updateRedisUser(user);
             log.error("用户:{}绑定IM失败,失败原因:{}", user, errorMsg);
         }
         return Result.success().data(user).msg("IM用户信息保存成功！");

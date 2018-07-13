@@ -237,7 +237,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         return user;
     }
 
-    private void updateRedisUser(User user) {
+    public void updateRedisUser(User user) {
         String token = SubjectUtil.getToken();
         Map<String, Object> userMap = new HashMap<String, Object>();
         userMap = BeanUtil.beanToMap(user);
@@ -312,11 +312,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         return shareCardUrl;
     }
 
-    public int update(User user){
-        int result = userDao.update(user);
-        updateRedisUser(user);
-        return result;
-    }
+
 
 
     @Override

@@ -86,6 +86,9 @@ public interface UserService extends ICommonService<User, Integer> {
      */
     List<User> findByUserIds(List<Integer> userIds);
 
+
+    void updateRedisUser(User user);
+
     /**
      * 后台封禁用户（仅修改user表用户的状态）
      *
@@ -193,8 +196,6 @@ public interface UserService extends ICommonService<User, Integer> {
     void bindIm(ImUser imUser);
 
 
-
-    int update(User user);
 
 
 

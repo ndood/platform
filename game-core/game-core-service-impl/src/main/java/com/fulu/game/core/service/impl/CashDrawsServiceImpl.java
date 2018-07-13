@@ -101,6 +101,8 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         user.setBalance(newBalance);
         userService.update(user);
         log.info("更新用户余额");
+        userService.updateRedisUser(user);
+        log.info("更新redisUser");
         CashDrawsVO vo = new CashDrawsVO();
         BeanUtil.copyProperties(cashDraws , vo);
         vo.setTips(getCashDrawsTips());
