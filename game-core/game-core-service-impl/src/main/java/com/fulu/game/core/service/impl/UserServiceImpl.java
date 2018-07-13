@@ -360,8 +360,10 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         StringBuilder sb = new StringBuilder();
         sb.append(userInfoVO.getUserTechAuthVO().getCategoryName());
         sb.append("陪玩｜");
-        sb.append("段位:");
-        sb.append(userInfoVO.getUserTechAuthVO().getDanInfo().getValue()).append("｜");
+        if(userInfoVO.getUserTechAuthVO().getDanInfo()!=null){
+            sb.append("段位:");
+            sb.append(userInfoVO.getUserTechAuthVO().getDanInfo().getValue()).append("｜");
+        }
         sb.append("标签:");
         String tagStr = "";
         List<String> tagList = userInfoVO.getTags();
