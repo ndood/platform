@@ -229,12 +229,21 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         }
     }
 
-    public void updateRedisUser(User user) {
+    public User updateUserIpAndLastTime(String ip) {
+        User user = getCurrentUser();
+        user.setLoginIp(ip);
+        user.setLoginTime(new Date());
+        update(user);
+        return user;
+    }
+
+    private void updateRedisUser(User user) {
         String token = SubjectUtil.getToken();
         Map<String, Object> userMap = new HashMap<String, Object>();
         userMap = BeanUtil.beanToMap(user);
         redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token), userMap);
     }
+
 
     @Override
     public Boolean isCurrentUser(Integer userId) {
@@ -269,7 +278,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public String getTechAuthCard(Integer techAuthId, String scene) throws WxErrorException, IOException {
-
         UserInfoVO userInfoVO = userInfoAuthService.findUserTechCardByUserId(techAuthId);
         if (null == userInfoVO) {
             log.error("技能认证分享-查不到该用户信息");
@@ -303,6 +311,13 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         String shareCardUrl = imgUtil.createTechAuth(cardImg);
         return shareCardUrl;
     }
+
+    public int update(User user){
+        int result = userDao.update(user);
+        updateRedisUser(user);
+        return result;
+    }
+
 
     @Override
     public String getTechShareCard(String scene, Integer productId) throws WxErrorException, IOException {

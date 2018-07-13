@@ -134,11 +134,12 @@ public interface UserService extends ICommonService<User, Integer> {
     User getCurrentUser();
 
     /**
-     * 更新当前用户缓存信息
-     *
-     * @param user
+     * 更新用户最后登录时间和IP
+     * @param ip
+     * @return
      */
-    void updateRedisUser(User user);
+    User updateUserIpAndLastTime(String ip);
+
 
     /**
      * 判断是否是当前用户
@@ -190,6 +191,11 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param imUser
      */
     void bindIm(ImUser imUser);
+
+
+
+    int update(User user);
+
 
 
     List<UserVO> findVOByUserIds(List<Integer> userIds);

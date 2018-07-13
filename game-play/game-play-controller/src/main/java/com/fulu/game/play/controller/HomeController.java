@@ -3,7 +3,6 @@ package com.fulu.game.play.controller;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.fulu.game.common.Result;
-import com.fulu.game.common.enums.PicExampleEnum;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Banner;
@@ -99,6 +98,7 @@ public class HomeController {
         try {
             subject.login(playUserToken);
             User user = userService.getCurrentUser();
+            userService.updateUserIpAndLastTime(ip);
             user.setOpenId(null);
             user.setBalance(null);
             Map<String, Object> result = BeanUtil.beanToMap(user);
