@@ -31,13 +31,13 @@ public class ImLogController extends BaseController{
 
 
     @PostMapping(value = "online")
-    public Result userOnline(@RequestParam(required = true) Boolean active){
+    public Result userOnline(@RequestParam(required = true) Boolean active,String version){
         User user = userService.getCurrentUser();
         if(active){
-            log.info("userId:{}用户上线了!",user.getId());
+            log.info("userId:{}用户上线了!;version:{}",user.getId(),version);
             redisOpenService.set(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()),user.getType()+"");
         }else{
-            log.info("userId:{}用户下线了!",user.getId());
+            log.info("userId:{}用户下线了!version:{}",user.getId(),version);
             redisOpenService.delete(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()));
         }
         return Result.success();

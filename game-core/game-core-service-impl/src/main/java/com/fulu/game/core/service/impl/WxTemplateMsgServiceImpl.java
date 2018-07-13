@@ -180,13 +180,14 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
             throw new ServiceErrorException("IM不存在!");
         }
         String timeStr = redisOpenService.get(RedisKeyEnum.WX_TEMPLATE_MSG.generateKey(imId + "|" + acceptImId));
-        int time = timeStr == null ? 0 : Integer.valueOf(timeStr);
+        int time = (timeStr == null ? 0 : Integer.valueOf(timeStr));
         if (time >= 10) {
             return "推送次数太多不能推送!";
         }
         pushWechatTemplateMsg(acceptUser.getId(), WechatTemplateMsgEnum.IM_MSG_PUSH, sendUser.getNickname(), content);
+        time+=1;
         //推送状态缓存两个小时
-        redisOpenService.set(RedisKeyEnum.WX_TEMPLATE_MSG.generateKey(imId + "|" + acceptImId), (time++) + "", Constant.TIME_MINUTES_FIFE);
+        redisOpenService.set(RedisKeyEnum.WX_TEMPLATE_MSG.generateKey(imId + "|" + acceptImId), time + "", Constant.TIME_MINUTES_FIFE);
 
         return "消息推送成功!";
     }

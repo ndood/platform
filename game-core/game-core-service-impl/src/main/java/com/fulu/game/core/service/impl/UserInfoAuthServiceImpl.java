@@ -91,9 +91,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         if (userInfoAuthTO.getMobile() == null) {
             userInfoAuthTO.setMobile(user.getMobile());
         }
-        if(userInfoAuthTO.getHeadUrl()!=null){
-            user.setHeadPortraitsUrl(ossUtil.activateOssFile(userInfoAuthTO.getHeadUrl()));
-        }
         user.setGender(userInfoAuthTO.getGender());
         user.setAge(userInfoAuthTO.getAge());
         user.setBirth(userInfoAuthTO.getBirth());
