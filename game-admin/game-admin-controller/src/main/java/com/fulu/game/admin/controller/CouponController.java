@@ -172,6 +172,7 @@ public class CouponController extends BaseController {
         response.setHeader("content-Type", "application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));
         workbook.write(response.getOutputStream());
+        workbook.close();
     }
 
     /**
