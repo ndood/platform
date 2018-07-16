@@ -39,6 +39,8 @@ public class Order implements Serializable {
     //陪玩师用户ID
     @Excel(name = "陪玩师ID", orderNum = "5", width = 10)
     private Integer serviceUserId;
+
+
     //订单游戏分类
     private Integer categoryId;
     //订单名称
@@ -86,6 +88,9 @@ public class Order implements Serializable {
     @JsonIgnore
     @Excel(name = "支付状态", orderNum = "11", replace = {"已支付_true", "未支付_false"}, width = 15)
     private Boolean isPay;
+
+    private Boolean isPayCallback;
+
     //佣金
     @JsonIgnore
     @Excel(name = "佣金", orderNum = "12", width = 15)
@@ -93,7 +98,8 @@ public class Order implements Serializable {
     //订单总额
     @Excel(name = "订单总额", orderNum = "13", width = 15)
     private BigDecimal totalMoney;
-
+    //佣金比例
+    private BigDecimal charges;
     //订单创建时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @Excel(name = "创建时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "14", width = 35)

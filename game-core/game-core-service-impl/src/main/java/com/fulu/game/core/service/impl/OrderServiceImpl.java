@@ -325,6 +325,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return orderDao.countByParameter(orderVO);
     }
 
+
+
     @Override
     public OrderVO submit(int productId,
                           int num,
@@ -342,13 +344,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         Category category = categoryService.findById(product.getCategoryId());
         //计算订单总价格
         BigDecimal totalMoney = product.getPrice().multiply(new BigDecimal(num));
-        //计算单笔订单佣金
-        BigDecimal commissionMoney = totalMoney.multiply(category.getCharges());
-        if (commissionMoney.compareTo(totalMoney) > 0) {
-            throw new OrderException(category.getName(), "订单错误,佣金比订单总价高!");
-        }
-
-        BigDecimal serverMoney = totalMoney.subtract(commissionMoney);
 
         //创建订单
         Order order = new Order();
@@ -362,9 +357,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setIsPay(false);
         order.setTotalMoney(totalMoney);
         order.setActualMoney(totalMoney);
-        order.setServerMoney(serverMoney);
         order.setStatus(OrderStatusEnum.NON_PAYMENT.getStatus());
-        order.setCommissionMoney(commissionMoney);
         order.setCreateTime(new Date());
         order.setUpdateTime(new Date());
         order.setOrderIp(userIp);
