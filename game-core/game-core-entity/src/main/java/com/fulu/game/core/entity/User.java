@@ -66,6 +66,8 @@ public class User implements Serializable {
     private String openId;
     //综合得星评分数
     private BigDecimal scoreAvg;
+    //用户总积分
+    private Integer scoreSum;
     //注册ip
     private String registIp;
     //登录ip
