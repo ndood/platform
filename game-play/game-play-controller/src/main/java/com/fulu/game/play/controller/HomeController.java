@@ -3,6 +3,7 @@ package com.fulu.game.play.controller;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.UserScoreEnum;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Banner;
@@ -12,6 +13,7 @@ import com.fulu.game.core.entity.vo.BannerVO;
 import com.fulu.game.core.service.BannerService;
 import com.fulu.game.core.service.SysConfigService;
 import com.fulu.game.core.service.UserService;
+import com.fulu.game.play.aop.UserScore;
 import com.fulu.game.play.shiro.PlayUserToken;
 import com.fulu.game.play.utils.RequestUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
@@ -117,6 +119,7 @@ public class HomeController {
 
     @RequestMapping(value = "/test/login", method = RequestMethod.POST)
     @ResponseBody
+    @UserScore(type = UserScoreEnum.USER_LOGIN)
     public Result testLogin(String openId, @RequestParam(value = "sourceId", required = false) Integer sourceId, HttpServletRequest request) {
         log.info("==调用/test/login方法==");
         PlayUserToken playUserToken = new PlayUserToken(openId, "", sourceId);

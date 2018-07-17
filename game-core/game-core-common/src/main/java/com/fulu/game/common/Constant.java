@@ -57,4 +57,18 @@ public interface Constant {
      */
     String CASH_DRAWS_NEXT_TUESDAY_TIPS = "提现金额将在下周二到达您的支付宝账户，请耐心等待";
     String CASH_DRAWS_NEXT_FRIDAY_TIPS = "提现金额将在下周五到达您的支付宝账户，请耐心等待";
+
+    /**
+     * 用户积分策略--start
+     */
+
+    /**
+     * 登录
+     */
+    String USER_LOGIN = "用户登录";
+
+    /**
+     * 用户积分策略--end
+     */
+
 }

@@ -43,4 +43,9 @@ public interface UserDao extends ICommonDao<User, Integer> {
     List<UserVO> findBySearch(UserVO userVO);
 
     List<User> findByExportParam(UserVO userVO);
+
+    /**
+     * 根据userId获取用户积分
+     */
+    Integer findUserScoreByUpdate(Integer userId);
 }

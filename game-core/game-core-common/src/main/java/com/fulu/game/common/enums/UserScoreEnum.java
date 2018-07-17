@@ -1,5 +1,6 @@
 package com.fulu.game.common.enums;
 
+import com.fulu.game.common.Constant;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,12 +11,10 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum ScoreEnum{
+public enum UserScoreEnum {
 
-    ADD_LOGIN(1, "用户登录加分"),
-    ADD_GOOD_COMMENT(2, "用户好评加分"),
-    MINUS_BAD_COMMENT(-1, "用户差评扣分");
+    USER_LOGIN(Constant.USER_LOGIN, 1);
 
-    private Integer score;
     private String description;
+    private Integer score;
 }
