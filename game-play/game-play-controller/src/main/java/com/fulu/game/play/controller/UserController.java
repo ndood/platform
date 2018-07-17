@@ -5,6 +5,7 @@ import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.UserScoreEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.common.utils.SMSUtil;
@@ -16,6 +17,7 @@ import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.WxUserInfo;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.play.aop.UserScore;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
@@ -405,6 +407,7 @@ public class UserController extends BaseController {
      * @return
      */
     @RequestMapping("/comment/save")
+    @UserScore(type = UserScoreEnum.USER_COMMENT)
     public Result save(UserCommentVO commentVO) {
         commentService.save(commentVO);
         return Result.success().msg("添加成功！");

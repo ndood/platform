@@ -24,6 +24,7 @@
         <result column="province" property="province"/>
         <result column="country" property="country"/>
         <result column="score_avg" property="scoreAvg"/>
+        <result column="user_score"  property="userScore" />
         <result column="constellation" property="constellation"/>
         <result column="birth" property="birth"/>
         <result column="im_id" property="imId"/>
@@ -45,7 +46,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,city,province,country,score_avg,constellation,birth,age,im_id,im_psw,source_id,regist_ip,login_ip,login_time </sql>
+        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,city,province,country,score_avg,user_score,constellation,birth,age,im_id,im_psw,source_id,regist_ip,login_ip,login_time </sql>
 
     <select id="findUserVOByUserIds" resultMap="UserResultVOMap">
         SELECT
@@ -128,6 +129,9 @@
             </if>
             <if test="sourceId != null">
                 and source_id = #{sourceId}
+            </if>
+            <if test="userScore != null">
+                and user_score = #{userScore}
             </if>
         </where>
     </select>
@@ -239,9 +243,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.User">
         insert into
-        t_user (mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,city,province,country,score_avg,constellation,birth,im_id,im_psw,source_id,regist_ip,login_ip,login_time)
+        t_user (mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,city,province,country,score_avg,user_score,constellation,birth,im_id,im_psw,source_id,regist_ip,login_ip,login_time)
         values
-        (#{mobile},#{nickname},#{gender},#{headPortraitsUrl},#{password},#{salt},#{realname},#{idcard},#{type},#{userInfoAuth},#{balance},#{status},#{createTime},#{updateTime},#{openId},#{city},#{province},#{country},#{scoreAvg},#{constellation},#{birth},#{imId},#{imPsw},#{sourceId},#{registIp},#{loginIp},#{loginTime})
+        (#{mobile},#{nickname},#{gender},#{headPortraitsUrl},#{password},#{salt},#{realname},#{idcard},#{type},#{userInfoAuth},#{balance},#{status},#{createTime},#{updateTime},#{openId},#{city},#{province},#{country},#{scoreAvg},#{userScore},#{constellation},#{birth},#{imId},#{imPsw},#{sourceId},#{registIp},#{loginIp},#{loginTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.User">
@@ -311,6 +315,9 @@
             <if test="scoreAvg != null">
                 score_avg = #{scoreAvg},
             </if>
+            <if test="userScore != null">
+                user_score = #{userScore},
+            </if>
             <if test="constellation != null">
                 constellation = #{constellation},
             </if>
@@ -354,5 +361,14 @@
 
     <select id="findImNullUser" resultMap="ImUserMap">
         SELECT id AS userId,im_id AS username,im_psw as imPsw from t_user WHERE im_id IS NULL OR im_id = ''
+    </select>
+
+    <select id="findUserScoreByUpdate" parameterType="Integer" resultType="Integer">
+        SELECT
+            user_score
+        FROM
+            t_user
+        WHERE
+            id = #{userId} FOR UPDATE;
     </select>
 </mapper>

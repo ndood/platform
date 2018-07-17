@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.UserScoreDetailsDao">
+    <resultMap id="UserScoreDetailsResultMap" type="com.fulu.game.core.entity.UserScoreDetails">
+                                    <id column="id"  property="id" />
+                                            <result column="user_id"  property="userId" />
+                                            <result column="score"  property="score" />
+                                            <result column="description"  property="description" />
+                                            <result column="remark"  property="remark" />
+                                            <result column="create_time"  property="createTime" />
+                        </resultMap>
+
+    <resultMap id="UserScoreDetailsResultVOMap" type="com.fulu.game.core.entity.vo.UserScoreDetailsVO" extends="UserScoreDetailsResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,score,description,remark,create_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="UserScoreDetailsResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_user_score_details
+        <where>
+        id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll"  resultMap="UserScoreDetailsResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_user_score_details
+    </select>
+
+    <select id="findByParameter" resultMap="UserScoreDetailsResultMap" parameterType="com.fulu.game.core.entity.vo.UserScoreDetailsVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_user_score_details
+        <where>
+                                                                            <if test="userId != null">
+                       and user_id = #{userId}
+                    </if>
+                                                                <if test="score != null">
+                       and score = #{score}
+                    </if>
+                                                                <if test="description != null">
+                       and description = #{description}
+                    </if>
+                                                                <if test="remark != null">
+                       and remark = #{remark}
+                    </if>
+                                                                <if test="createTime != null">
+                       and create_time = #{createTime}
+                    </if>
+                                    </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_user_score_details
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserScoreDetails">
+        insert into
+        t_user_score_details (user_id,score,description,remark,create_time)
+        values
+        (#{userId},#{score},#{description},#{remark},#{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.UserScoreDetails">
+        update t_user_score_details
+        <set>
+                                                        
+                    <if test="userId != null">
+                        user_id = #{userId},
+                    </if>
+                                            
+                    <if test="score != null">
+                        score = #{score},
+                    </if>
+                                            
+                    <if test="description != null">
+                        description = #{description},
+                    </if>
+                                            
+                    <if test="remark != null">
+                        remark = #{remark},
+                    </if>
+                                            
+                    <if test="createTime != null">
+                        create_time = #{createTime},
+                    </if>
+                                    </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

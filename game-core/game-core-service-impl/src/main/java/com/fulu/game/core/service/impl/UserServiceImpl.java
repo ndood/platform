@@ -488,4 +488,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         return userDao.findUserVOByUserIds(userIds);
     }
 
+    @Override
+    public Integer findUserScoreByUpdate(Integer userId) {
+        return userDao.findUserScoreByUpdate(userId);
+    }
 }

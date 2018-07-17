@@ -200,4 +200,11 @@ public interface UserService extends ICommonService<User, Integer> {
 
 
     List<UserVO> findVOByUserIds(List<Integer> userIds);
+
+    /**
+     * 根据userId获取用户积分(已避免脏读)
+     * @param userId
+     * @return
+     */
+    Integer findUserScoreByUpdate(Integer userId);
 }

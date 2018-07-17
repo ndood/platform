@@ -53,8 +53,66 @@ public interface Constant {
     String DEFAULT_CDK_CHANNEL_NAME = "盛天";
 
     /**
+     * 24小时
+     */
+    Long ONE_DAY = 24 * 60 * 60L;
+
+    /**
+     * IM延迟回复--已计算对应用户积分
+     */
+    String IM_DELAY_CALCULATED = "0";
+
+    /**
      * 提现申请的提醒文案
      */
     String CASH_DRAWS_NEXT_TUESDAY_TIPS = "提现金额将在下周二到达您的支付宝账户，请耐心等待";
     String CASH_DRAWS_NEXT_FRIDAY_TIPS = "提现金额将在下周五到达您的支付宝账户，请耐心等待";
+
+    /**
+     * 用户积分策略--start
+     */
+
+    /**
+     * 登录
+     */
+    String USER_LOGIN = "用户登录";
+
+    String IM_REPLY = "陪玩师回复IM消息";
+
+    String ACCEPT_ORDER = "订单接单";
+
+    String USER_COMMENT = "用户评价";
+
+    String FULL_RESTITUTION = "全额赔偿给用户";
+
+    String CONFER = "协商";
+
+    String IM_REPLY_DELAY_0_TO_5 = "0到5分钟回复IM";
+    String IM_REPLY_DELAY_5_TO_60 = "5到60分钟回复IM";
+    String IM_REPLY_DELAY_60_TO_120 = "60到120分钟回复IM";
+    String IM_REPLY_DELAY_120_TO_360 = "120到360分钟回复IM";
+    String IM_REPLY_DELAY_360_TO_1440 = "360到1440分钟回复IM";
+    String IM_REPLY_DELAY_LONGGER_1440 = "1440分钟后回复IM";
+
+    /**
+     * 陪玩师接单
+     */
+    String ACCEPT_ORDER_DELAY_30_TO_60 = "30到60分钟内接单";
+    String ACCEPT_ORDER_DELAY_60_TO_360 = "60到360分钟内接单";
+    String ACCEPT_ORDER_DELAY_360_TO_1440 = "360到1440分钟内接单";
+    String ACCEPT_ORDER_DELAY_LONGGER_1440 = "1440分钟后接单";
+
+    /**
+     * 用户评价
+     */
+    String USER_COMMENT_1_STAR = "用户评价1颗星";
+    String USER_COMMENT_2_STAR = "用户评价2颗星";
+    String USER_COMMENT_3_STAR = "用户评价3颗星";
+    String USER_COMMENT_4_STAR = "用户评价4颗星";
+    String USER_COMMENT_5_STAR = "用户评价5颗星";
+
+
+    /**
+     * 用户积分策略--end
+     */
 }
