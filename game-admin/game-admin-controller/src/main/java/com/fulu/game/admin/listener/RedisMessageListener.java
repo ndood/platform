@@ -34,6 +34,7 @@ public class RedisMessageListener implements MessageListener {
             productService.updateUserProductIndex(userId,false);
         }
 
+
     }
 
 

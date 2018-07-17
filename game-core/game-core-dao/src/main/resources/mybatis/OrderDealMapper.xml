@@ -5,9 +5,13 @@
     <resultMap id="OrderDealResultMap" type="com.fulu.game.core.entity.OrderDeal">
         <id column="id" property="id"/>
         <result column="order_no" property="orderNo"/>
+        <result column="title" property="title"/>
         <result column="user_id" property="userId"/>
         <result column="type" property="type"/>
         <result column="remark" property="remark"/>
+        <result column="order_status" property="orderStatus"/>
+        <result column="refund_money" property="refundMoney"/>
+        <result column="is_valid" property="isValid"/>
         <result column="create_time" property="createTime"/>
     </resultMap>
 
@@ -15,7 +19,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,order_no,user_id,type,remark,create_time    </sql>
+        id,order_no,title,user_id,type,remark,order_status,refund_money,is_valid,create_time
+    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="OrderDealResultMap">
         select
@@ -41,6 +46,9 @@
             <if test="orderNo != null">
                 and order_no = #{orderNo}
             </if>
+            <if test="title != null">
+                and title = #{title}
+            </if>
             <if test="userId != null">
                 and user_id = #{userId}
             </if>
@@ -49,6 +57,15 @@
             </if>
             <if test="remark != null">
                 and remark = #{remark}
+            </if>
+            <if test="orderStatus != null">
+                and order_status = #{orderStatus}
+            </if>
+            <if test="refundMoney != null">
+                and refund_money = #{refundMoney}
+            </if>
+            <if test="isValid != null">
+                and is_valid = #{isValid}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime}
@@ -65,9 +82,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.OrderDeal">
         insert into
-        t_order_deal (order_no,user_id,type,remark,create_time)
+        t_order_deal (order_no,title,user_id,type,remark,order_status,refund_money,is_valid,create_time)
         values
-        (#{orderNo},#{userId},#{type},#{remark},#{createTime})
+        (#{orderNo},#{title},#{userId},#{type},#{remark},#{orderStatus},#{refundMoney},#{isValid},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.OrderDeal">
@@ -76,6 +93,10 @@
 
             <if test="orderNo != null">
                 order_no = #{orderNo},
+            </if>
+
+            <if test="title != null">
+                title = #{title},
             </if>
 
             <if test="userId != null">
@@ -88,6 +109,18 @@
 
             <if test="remark != null">
                 remark = #{remark},
+            </if>
+
+            <if test="orderStatus != null">
+                order_status = #{orderStatus},
+            </if>
+
+            <if test="refundMoney != null">
+                refund_money = #{refundMoney},
+            </if>
+
+            <if test="isValid != null">
+                is_valid = #{isValid},
             </if>
 
             <if test="createTime != null">

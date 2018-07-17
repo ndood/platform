@@ -28,10 +28,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
+import static com.fulu.game.common.enums.OrderStatusEnum.NON_PAYMENT;
 
 @Service
 @Slf4j
@@ -54,8 +53,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     @Autowired
     private UserService userService;
     @Autowired
-    private MoneyDetailsService moneyDetailsService;
-    @Autowired
     private PlatformMoneyDetailsService platformMoneyDetailsService;
     @Autowired
     private PayService payService;
@@ -75,11 +72,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     private PriceFactorService priceFactorService;
     @Autowired
     private PilotOrderService pilotOrderService;
-
-
     @Autowired
     private SpringThreadPoolExecutor springThreadPoolExecutor;
-
     @Override
     public ICommonDao<Order, Integer> getDao() {
         return orderDao;
@@ -328,7 +322,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
 
     @Override
-    public OrderVO submit(int productId,
+    public String submit(int productId,
                           int num,
                           String remark,
                           String couponNo,
@@ -344,7 +338,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         Category category = categoryService.findById(product.getCategoryId());
         //计算订单总价格
         BigDecimal totalMoney = product.getPrice().multiply(new BigDecimal(num));
-
         //创建订单
         Order order = new Order();
         order.setName(product.getProductName() + " " + num + "*" + product.getUnit());
@@ -357,28 +350,19 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setIsPay(false);
         order.setTotalMoney(totalMoney);
         order.setActualMoney(totalMoney);
-        order.setStatus(OrderStatusEnum.NON_PAYMENT.getStatus());
+        order.setStatus(NON_PAYMENT.getStatus());
         order.setCreateTime(new Date());
         order.setUpdateTime(new Date());
         order.setOrderIp(userIp);
+        order.setCharges(category.getCharges());
         order.setContactType(contactType);
         order.setContactInfo(contactInfo);
         //使用优惠券
         Coupon coupon = null;
         if (StringUtils.isNotBlank(couponNo)) {
-            coupon = getCoupon(couponNo);
+            coupon = useCouponForOrder(couponNo,order);
             if (coupon == null) {
                 throw new ServiceErrorException("该优惠券不能使用!");
-            }
-            order.setCouponNo(coupon.getCouponNo());
-            order.setCouponMoney(coupon.getDeduction());
-            //判断优惠券金额是否大于订单总额
-            if (coupon.getDeduction().compareTo(order.getTotalMoney()) >= 0) {
-                order.setActualMoney(new BigDecimal(0));
-                order.setCouponMoney(order.getTotalMoney());
-            } else {
-                BigDecimal actualMoney = order.getTotalMoney().subtract(coupon.getDeduction());
-                order.setActualMoney(actualMoney);
             }
         }
         if (order.getUserId().equals(order.getServiceUserId())) {
@@ -388,28 +372,18 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         create(order);
         //更新优惠券使用状态
         if (coupon != null) {
-            coupon.setOrderNo(order.getOrderNo());
-            coupon.setIsUse(true);
-            coupon.setUseTime(new Date());
-            coupon.setUseIp(userIp);
-            couponService.update(coupon);
+            couponService.updateCouponUseStatus(order.getOrderNo(),userIp,coupon);
         }
         //创建订单商品
-        OrderProduct orderProduct = new OrderProduct();
-        orderProduct.setOrderNo(order.getOrderNo());
-        orderProduct.setAmount(num);
-        orderProduct.setUnit(product.getUnit());
-        orderProduct.setPrice(product.getPrice());
-        orderProduct.setProductId(product.getId());
-        orderProduct.setProductName(order.getName());
-        orderProduct.setCreateTime(new Date());
-        orderProduct.setUpdateTime(new Date());
-        orderProductService.create(orderProduct);
-        OrderVO orderVO = new OrderVO();
-        BeanUtil.copyProperties(order, orderVO);
-        orderVO.setOrderProduct(orderProduct);
-        return orderVO;
+        orderProductService.create(order,product,num);
+        //计算订单状态倒计时24小时
+        setOrderCountDown(order,24F);
+        return order.getOrderNo();
     }
+
+
+
+
 
     /**
      * 领航订单
@@ -433,16 +407,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         Category category = categoryService.findById(product.getCategoryId());
         //计算订单总价格
         BigDecimal totalMoney = product.getPrice().multiply(new BigDecimal(num));
-
-        //计算单笔订单佣金
-        BigDecimal commissionMoney = totalMoney.multiply(category.getCharges());
-        if (commissionMoney.compareTo(totalMoney) > 0) {
-            throw new OrderException(category.getName(), "订单错误,佣金比订单总价高!");
-        }
-        //支付打手金额
-        BigDecimal serverMoney = totalMoney.subtract(commissionMoney);
-
-
         //计算领航订单金额
         PriceFactor priceFactor = priceFactorService.findByNewPriceFactor();
         BigDecimal pilotTotalMoney = priceFactor.getFactor().multiply(totalMoney);
@@ -454,65 +418,37 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setOrderNo(generateOrderNo());
         order.setUserId(user.getId());
         order.setServiceUserId(product.getUserId());
-        order.setServerMoney(serverMoney);
         order.setCategoryId(product.getCategoryId());
         order.setRemark(remark);
         order.setIsPay(false);
         order.setTotalMoney(pilotTotalMoney);
         order.setActualMoney(pilotTotalMoney);
-        order.setStatus(OrderStatusEnum.NON_PAYMENT.getStatus());
-        order.setCommissionMoney(commissionMoney);
+        order.setCharges(category.getCharges());
+        order.setStatus(NON_PAYMENT.getStatus());
         order.setCreateTime(new Date());
         order.setUpdateTime(new Date());
         order.setOrderIp(userIp);
         order.setContactType(contactType);
         order.setContactInfo(contactInfo);
-
         if (order.getUserId().equals(order.getServiceUserId())) {
             throw new ServiceErrorException("不能给自己下单哦!");
         }
         //使用优惠券
         Coupon coupon = null;
         if (StringUtils.isNotBlank(couponNo)) {
-            coupon = getCoupon(couponNo);
+            coupon = useCouponForOrder(couponNo,order);
             if (coupon == null) {
                 throw new ServiceErrorException("该优惠券不能使用!");
             }
-            order.setCouponNo(coupon.getCouponNo());
-            order.setCouponMoney(coupon.getDeduction());
-            //判断优惠券金额是否大于订单总额
-            if (coupon.getDeduction().compareTo(order.getTotalMoney()) >= 0) {
-                order.setActualMoney(new BigDecimal(0));
-                order.setCouponMoney(order.getTotalMoney());
-            } else {
-                BigDecimal actualMoney = order.getTotalMoney().subtract(coupon.getDeduction());
-                order.setActualMoney(actualMoney);
-            }
         }
-
         //创建订单
         create(order);
         //更新优惠券使用状态
         if (coupon != null) {
-            coupon.setOrderNo(order.getOrderNo());
-            coupon.setIsUse(true);
-            coupon.setUseTime(new Date());
-            coupon.setUseIp(userIp);
-            couponService.update(coupon);
+            couponService.updateCouponUseStatus(order.getOrderNo(),userIp,coupon);
         }
-
         //创建订单商品
-        OrderProduct orderProduct = new OrderProduct();
-        orderProduct.setOrderNo(order.getOrderNo());
-        orderProduct.setAmount(num);
-        orderProduct.setUnit(product.getUnit());
-        orderProduct.setPrice(product.getPrice().multiply(priceFactor.getFactor()));
-        orderProduct.setProductId(product.getId());
-        orderProduct.setProductName(order.getName());
-        orderProduct.setCreateTime(new Date());
-        orderProduct.setUpdateTime(new Date());
-        orderProductService.create(orderProduct);
-
+        OrderProduct orderProduct = orderProductService.create(order,product,num);
         //新建领航订单数据
         PilotOrder pilotOrder = new PilotOrder();
         BeanUtil.copyProperties(order, pilotOrder);
@@ -525,6 +461,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         pilotOrder.setSpreadMoney(pilotTotalMoney.subtract(totalMoney));
         pilotOrder.setIsComplete(false);
         pilotOrderService.create(pilotOrder);
+        //计算订单状态倒计时24小时
+        setOrderCountDown(order,24F);
         return order.getOrderNo();
     }
 
@@ -545,14 +483,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         Category category = categoryService.findById(orderMarketProduct.getCategoryId());
         //计算订单总价格
         BigDecimal totalMoney = orderMarketProduct.getPrice().multiply(new BigDecimal(orderMarketProduct.getAmount()));
-        //计算单笔订单佣金
-        BigDecimal commissionMoney = totalMoney.multiply(category.getCharges());
-        if (commissionMoney.compareTo(totalMoney) > 0) {
-            throw new OrderException(category.getName(), "订单错误,佣金比订单总价高!");
-        }
-
-        BigDecimal serverMoney = totalMoney.subtract(commissionMoney);
-
         //创建订单
         Order order = new Order();
         order.setName(orderMarketProduct.getProductName());
@@ -563,11 +493,10 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setType(OrderTypeEnum.MARKET.getType());
         order.setChannelId(channelId);
         order.setTotalMoney(totalMoney);
-        order.setServerMoney(serverMoney);
         order.setActualMoney(totalMoney);
-        order.setStatus(OrderStatusEnum.NON_PAYMENT.getStatus());
-        order.setCommissionMoney(commissionMoney);
+        order.setStatus(NON_PAYMENT.getStatus());
         order.setCreateTime(new Date());
+        order.setCharges(category.getCharges());
         order.setUpdateTime(new Date());
         order.setOrderIp(orderIp);
         create(order);
@@ -596,7 +525,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
                 wxTemplateMsgService.pushMarketOrder(order);
             }
         });
-
         //把订单缓存到redis里面
         try {
             redisOpenService.hset(RedisKeyEnum.MARKET_ORDER.generateKey(order.getOrderNo()), BeanUtil.beanToMap(order), Constant.TIME_HOUR_TWO);
@@ -606,18 +534,29 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return order.getOrderNo();
     }
 
+
+
     /**
      * 使用优惠券
-     *
      * @return
      */
-    public Coupon getCoupon(String couponCode) {
+    public Coupon useCouponForOrder(String couponCode,Order order) {
         Coupon coupon = couponService.findByCouponNo(couponCode);
         //判断是否是自己的优惠券
         userService.isCurrentUser(coupon.getUserId());
         //判断该优惠券是否可用
         if (!couponService.couponIsAvailable(coupon)) {
             return null;
+        }
+        order.setCouponNo(coupon.getCouponNo());
+        order.setCouponMoney(coupon.getDeduction());
+        //判断优惠券金额是否大于订单总额
+        if (coupon.getDeduction().compareTo(order.getTotalMoney()) >= 0) {
+            order.setActualMoney(new BigDecimal(0));
+            order.setCouponMoney(order.getTotalMoney());
+        } else {
+            BigDecimal actualMoney = order.getTotalMoney().subtract(coupon.getDeduction());
+            order.setActualMoney(actualMoney);
         }
         return coupon;
     }
@@ -664,32 +603,150 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 陪玩师接单
-     *
      * @return
      */
     @Override
-    public OrderVO serverReceiveOrder(String orderNo) {
+    public String serverReceiveOrder(String orderNo) {
         log.info("陪玩师接单orderNo:{}", orderNo);
         Order order = findByOrderNo(orderNo);
         userService.isCurrentUser(order.getServiceUserId());
         //只有等待陪玩和已支付的订单才能开始陪玩
         if (!order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus()) || !order.getIsPay()) {
-            throw new OrderException(order.getOrderNo(), "订单未支付不能等待陪玩!");
+            throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES,orderNo);
+        }
+        order.setStatus(OrderStatusEnum.ALREADY_RECEIVING.getStatus());
+        order.setUpdateTime(new Date());
+        order.setReceivingTime(new Date());
+        update(order);
+        //计算订单状态倒计时24小时
+        setOrderCountDown(order,24F);
+        return order.getOrderNo();
+    }
+
+
+    /**
+     * 陪玩师开始服务
+     * @param orderNo
+     * @return
+     */
+    @Override
+    public String serverStartServeOrder(String orderNo) {
+        log.info("陪玩师接单orderNo:{}", orderNo);
+        Order order = findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getServiceUserId());
+        if (!order.getStatus().equals(OrderStatusEnum.ALREADY_RECEIVING.getStatus())) {
+            throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES,orderNo);
         }
         order.setStatus(OrderStatusEnum.SERVICING.getStatus());
         order.setUpdateTime(new Date());
         order.setReceivingTime(new Date());
         update(order);
-        OrderProduct orderProduct = orderProductService.findByOrderNo(orderNo);
-        //如果陪玩师开始接单缓存陪玩师开始服务状态 时间:商品数量*小时
-        long expire = orderProduct.getAmount() * 3600;
-        redisOpenService.set(RedisKeyEnum.USER_ORDER_ALREADY_SERVICE_KEY.generateKey(order.getServiceUserId()), order.getOrderNo(), expire);
-        return orderConvertVo(order);
+        return order.getOrderNo();
+    }
+
+
+    /**
+     * 申请协商处理
+     * @param orderNo
+     * @param refundMoney
+     * @param remark
+     * @param fileUrls
+     * @return
+     */
+    @Override
+    public String userConsultOrder(String orderNo, BigDecimal refundMoney, String remark, String[] fileUrls) {
+        log.info("用户申诉订单orderNo:{}", orderNo);
+        Order order = findByOrderNo(orderNo);
+        if(refundMoney==null){
+            throw new OrderException(orderNo,"协商处理金额不能为空!");
+        }
+        String refundType = "";
+        if(refundMoney.compareTo(order.getActualMoney())>0){
+            throw new OrderException(orderNo,"协商处理金额不能大于订单支付金额!");
+        }
+        if(refundMoney.compareTo(order.getActualMoney())==0){
+            refundType = "全部退款";
+        }else{
+            refundType = "部分退款";
+        }
+
+        User user = userService.getCurrentUser();
+        userService.isCurrentUser(order.getUserId());
+        if (!order.getStatus().equals(OrderStatusEnum.ALREADY_RECEIVING.getStatus())&&
+            !order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())&&
+            !order.getStatus().equals(OrderStatusEnum.CHECK.getStatus())) {
+            throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES,orderNo);
+        }
+        order.setStatus(OrderStatusEnum.CONSULTING.getStatus());
+        order.setUpdateTime(new Date());
+        order.setReceivingTime(new Date());
+        update(order);
+        String title = "发起了协商-"+refundType+" ￥"+refundMoney.toPlainString();
+        orderDealService.create(order,title,refundMoney,user.getId(),remark,fileUrls);
+        //倒计时24小时后处理
+        setOrderCountDown(order,24F);
+
+        return order.getOrderNo();
     }
 
     /**
+     * 拒绝协商处理
+     * @param orderNo
+     * @param orderDealId
+     * @param remark
+     * @param fileUrls
+     * @return
+     */
+    @Override
+    public String serverRejectConsultOrder(String orderNo,
+                                           int orderDealId,
+                                           String remark,
+                                           String[] fileUrls) {
+        log.info("拒绝协商处理订单orderNo:{}", orderNo);
+        Order order = findByOrderNo(orderNo);
+        OrderDeal orderDeal = orderDealService.findById(orderDealId);
+        if(orderDeal==null||!order.getOrderNo().equals(orderDeal.getOrderNo())){
+            throw new OrderException(orderNo,"拒绝协商订单不匹配!");
+        }
+        User user = userService.getCurrentUser();
+        userService.isCurrentUser(order.getUserId());
+        if (!order.getStatus().equals(OrderStatusEnum.CONSULTING.getStatus())) {
+            throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES,orderNo);
+        }
+        order.setStatus(OrderStatusEnum.CONSULT_REJECT.getStatus());
+        order.setUpdateTime(new Date());
+        order.setReceivingTime(new Date());
+        update(order);
+        String title = "拒绝了协商";
+        orderDealService.create(order,title,orderDeal.getRefundMoney(),user.getId(),remark,fileUrls);
+        //倒计时24小时后处理
+        setOrderCountDown(order,24F);
+        return order.getOrderNo();
+    }
+
+
+    @Override
+    public String cancelConsultOrder(String orderNo, int orderDealId) {
+        log.info("取消协商处理订单orderNo:{}", orderNo);
+        Order order = findByOrderNo(orderNo);
+        OrderDeal orderDeal = orderDealService.findById(orderDealId);
+        if(orderDeal==null||!order.getOrderNo().equals(orderDeal.getOrderNo())){
+            throw new OrderException(orderNo,"拒绝协商订单不匹配!");
+        }
+        order.setStatus(orderDeal.getOrderStatus());
+        order.setUpdateTime(new Date());
+        order.setReceivingTime(new Date());
+        update(order);
+
+
+        return order.getOrderNo();
+    }
+
+
+
+
+    /**
      * 陪玩师取消订单
-     *
      * @param orderNo
      * @return
      */
@@ -698,9 +755,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         log.info("陪玩师取消订单orderNo:{}", orderNo);
         Order order = findByOrderNo(orderNo);
         userService.isCurrentUser(order.getServiceUserId());
-        if (!order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())
-                && !order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())) {
-            throw new OrderException(order.getOrderNo(), "只有陪玩中和等待陪玩的订单才能取消!");
+        if (!order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())) {
+            throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES,orderNo);
         }
         order.setStatus(OrderStatusEnum.SERVER_CANCEL.getStatus());
         order.setUpdateTime(new Date());
@@ -722,7 +778,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     public void systemCancelOrder(String orderNo) {
         log.info("系统取消订单orderNo:{}", orderNo);
         Order order = findByOrderNo(orderNo);
-        if (!order.getStatus().equals(OrderStatusEnum.NON_PAYMENT.getStatus())
+        if (!order.getStatus().equals(NON_PAYMENT.getStatus())
                 && !order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有等待陪玩和未支付的订单才能取消!");
         }
@@ -738,7 +794,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 管理员取消订单
-     *
      * @param orderNo
      */
     @Override
@@ -748,7 +803,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         Order order = findByOrderNo(orderNo);
         if (!order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())
                 && !order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())
-                && !order.getStatus().equals(OrderStatusEnum.NON_PAYMENT.getStatus())) {
+                && !order.getStatus().equals(NON_PAYMENT.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有陪玩中和等待陪玩的订单才能取消!");
         }
         order.setStatus(OrderStatusEnum.ADMIN_CLOSE.getStatus());
@@ -773,7 +828,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         log.info("用户取消订单orderNo:{}", orderNo);
         Order order = findByOrderNo(orderNo);
         userService.isCurrentUser(order.getUserId());
-        if (!order.getStatus().equals(OrderStatusEnum.NON_PAYMENT.getStatus())
+        if (!order.getStatus().equals(NON_PAYMENT.getStatus())
                 && !order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有等待陪玩和未支付的订单才能取消!");
         }
@@ -790,7 +845,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 用户申诉订单
-     *
      * @param orderNo
      * @param remark
      * @param fileUrl
@@ -823,7 +877,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 管理员申诉订单
-     *
      * @param orderNo
      * @param remark
      * @return
@@ -836,7 +889,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         Order order = findByOrderNo(orderNo);
         if (!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())
                 && !order.getStatus().equals(OrderStatusEnum.CHECK.getStatus())
-                && !order.getStatus().equals(OrderStatusEnum.NON_PAYMENT.getStatus())) {
+                && !order.getStatus().equals(NON_PAYMENT.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有陪玩中和等待验收的订单才能申诉!");
         }
         order.setStatus(OrderStatusEnum.APPEALING_ADMIN.getStatus());
@@ -854,7 +907,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 打手提交验收订单
-     *
      * @param orderNo
      * @param remark
      * @param fileUrl
@@ -905,7 +957,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 系统完成订单
-     *
      * @param orderNo
      * @return
      */
@@ -933,18 +984,19 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
      * @param order
      */
     public void shareProfit(Order order) {
-        BigDecimal serverMoney = order.getTotalMoney().subtract(order.getCommissionMoney());
-        //如果是领航订单则用原始的订单金额给打手分润
-        PilotOrder pilotOrder = pilotOrderService.findByOrderNo(order.getOrderNo());
-        if (pilotOrder != null) {
-            serverMoney = pilotOrder.getTotalMoney().subtract(order.getCommissionMoney());
-            pilotOrder.setIsComplete(true);
-            pilotOrderService.update(pilotOrder);
-        }
-        //记录用户加零钱
-        moneyDetailsService.orderSave(serverMoney, order.getServiceUserId(), order.getOrderNo());
-        //平台记录支付打手流水
-        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_SHARE_PROFIT, order.getOrderNo(), serverMoney.negate());
+        //todo 重新做分润
+//        BigDecimal serverMoney = order.getTotalMoney().subtract(order.getCommissionMoney());
+//        //如果是领航订单则用原始的订单金额给打手分润
+//        PilotOrder pilotOrder = pilotOrderService.findByOrderNo(order.getOrderNo());
+//        if (pilotOrder != null) {
+//            serverMoney = pilotOrder.getTotalMoney().subtract(order.getCommissionMoney());
+//            pilotOrder.setIsComplete(true);
+//            pilotOrderService.update(pilotOrder);
+//        }
+//        //记录用户加零钱
+//        moneyDetailsService.orderSave(serverMoney, order.getServiceUserId(), order.getOrderNo());
+//        //平台记录支付打手流水
+//        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_SHARE_PROFIT, order.getOrderNo(), serverMoney.negate());
     }
 
 
@@ -1021,7 +1073,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setStatus(OrderStatusEnum.ADMIN_NEGOTIATE.getStatus());
         order.setUpdateTime(new Date());
         order.setCompleteTime(new Date());
-        order.setCommissionMoney(order.getTotalMoney());
         update(order);
         if (order.getUserId() != null) {
             wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_SYSTEM_USER_APPEAL_COMPLETE);
@@ -1056,6 +1107,21 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         }
 
     }
+
+    /**
+     * 更新订单状态倒计时
+     * @return
+     */
+    public Map<String,Object> setOrderCountDown(Order order, float hour){
+        Map<String,Object> store = new HashMap<>();
+        store.put("orderNo",order.getOrderNo());
+        store.put("status",order.getStatus());
+        store.put("hour",hour);
+        store.put("startTime",new Date().getTime());
+        redisOpenService.hset(RedisKeyEnum.ORDER_STATUS_COUNTDOWN.generateKey(order.getOrderNo()),store,(long)(hour*3600));
+        return store;
+    }
+
 
     /**
      * 陪玩师是否已经在服务用户

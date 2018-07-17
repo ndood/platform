@@ -26,11 +26,11 @@ public class RedisListenerConfig {
 
     @Bean
     RedisMessageListenerContainer container(MessageListenerAdapter listenerAdapter) {
-        log.info("注册rediskey监听:database:{}",redisDatabase);
-        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(redisTemplate.getConnectionFactory());
-        container.addMessageListener(listenerAdapter, new PatternTopic("__keyevent@"+redisDatabase+"__:expired"));
-        return container;
+            log.info("注册rediskey监听:database:{}",redisDatabase);
+            RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+            container.setConnectionFactory(redisTemplate.getConnectionFactory());
+            container.addMessageListener(listenerAdapter, new PatternTopic("__keyevent@"+redisDatabase+"__:expired"));
+            return container;
     }
 
     @Bean

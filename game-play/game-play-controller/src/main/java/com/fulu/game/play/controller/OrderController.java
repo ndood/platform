@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -83,8 +86,8 @@ public class OrderController extends BaseController {
         }
         try {
             String ip = RequestUtil.getIpAdrress(request);
-            OrderVO orderVO = orderService.submit(productId, num, remark, couponNo, ip, contactType, contactInfo);
-            return Result.success().data(orderVO.getOrderNo()).msg("创建订单成功!");
+            String orderNo = orderService.submit(productId, num, remark, couponNo, ip, contactType, contactInfo);
+            return Result.success().data(orderNo).msg("创建订单成功!");
         }finally {
             redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));
         }
@@ -108,11 +111,28 @@ public class OrderController extends BaseController {
         };
         String ip = RequestUtil.getIpAdrress(request);
         try {
-            String  orderNum = orderService.pilotSubmit(productId, num, remark, couponNo, ip, contactType, contactInfo);
-            return Result.success().data(orderNum).msg("创建订单成功!");
+            String  orderNo = orderService.pilotSubmit(productId, num, remark, couponNo, ip, contactType, contactInfo);
+            return Result.success().data(orderNo).msg("创建订单成功!");
         }finally {
             redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));
         }
+    }
+
+    /**
+     * 订单状态倒计时
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "countdown")
+    public Result orderCountDownTime(@RequestParam(required = true)String orderNo){
+        Map<String, Object> store = redisOpenService.hget(RedisKeyEnum.ORDER_STATUS_COUNTDOWN.generateKey(orderNo));
+        if(store==null){
+            store = new HashMap<>();
+            store.put("hour",0);
+            store.put("startTime",new Date().getTime());
+        }
+        store.put("currentTime",new Date());
+        return Result.success().data(store);
     }
 
 
@@ -182,7 +202,6 @@ public class OrderController extends BaseController {
 
     /**
      * 打手订单列表
-     *
      * @return
      */
     @RequestMapping(value = "/server/list")
@@ -200,7 +219,6 @@ public class OrderController extends BaseController {
 
     /**
      * 用户取消订单
-     *
      * @param orderNo
      * @return
      */
@@ -212,7 +230,6 @@ public class OrderController extends BaseController {
 
     /**
      * 用户申诉订单
-     *
      * @param orderNo
      * @param remark
      * @param fileUrl
@@ -226,22 +243,51 @@ public class OrderController extends BaseController {
         return Result.success().data(orderVO).msg("订单申诉成功!");
     }
 
+
+    /**
+     * 用户协商订单
+     * @return
+     */
+    @RequestMapping(value = "/user/consult")
+    public Result consult(@RequestParam(required = true) String orderNo,
+                          BigDecimal refundMoney,
+                          String remark,
+                          @RequestParam(required = true) String[] fileUrl){
+
+        return Result.success();
+    }
+
+
+
     /**
      * 陪玩师接收订单
-     *
      * @param orderNo
      * @return
      */
     @RequestMapping(value = "/server/receive")
     public Result serverReceiveOrder(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = orderService.serverReceiveOrder(orderNo);
-        return Result.success().data(orderVO).msg("接单成功!");
+        orderService.serverReceiveOrder(orderNo);
+        return Result.success().data(orderNo).msg("接单成功!");
+    }
+
+
+
+
+
+    /**
+     * 陪玩师开始服务
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/server/start-serve")
+    public Result startServerOrder(@RequestParam(required = true) String orderNo) {
+        orderService.serverReceiveOrder(orderNo);
+        return Result.success().data(orderNo).msg("接单成功!");
     }
 
 
     /**
      * 用户验收订单
-     *
      * @param orderNo
      * @return
      */
@@ -254,7 +300,6 @@ public class OrderController extends BaseController {
 
     /**
      * 陪玩师取消订单
-     *
      * @param orderNo
      * @return
      */
@@ -293,7 +338,6 @@ public class OrderController extends BaseController {
 
     /**
      * 查看陪玩师的验收截图
-     *
      * @param orderNo
      * @return
      */
@@ -305,7 +349,6 @@ public class OrderController extends BaseController {
 
     /**
      * 用户订单详情页
-     *
      * @param orderNo
      * @return
      */

@@ -156,7 +156,6 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
     /**
      * 推送IM消息通知
-     *
      * @param content
      * @param acceptImId 接收者IMid
      * @param imId       发送者IMid

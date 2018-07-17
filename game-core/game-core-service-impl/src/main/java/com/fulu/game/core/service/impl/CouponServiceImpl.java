@@ -113,8 +113,19 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         return new PageInfo<>(couponList);
     }
 
-    public List<Coupon> findByUserReceive(Integer couponGroupId, Integer userId) {
+    public List<Coupon> findByUserReceive(Integer couponGroupId,Integer userId) {
         return couponDao.findByUserReceive(couponGroupId, userId);
+    }
+
+
+
+    @Override
+    public int updateCouponUseStatus(String orderNo,String userIp,Coupon coupon) {
+        coupon.setOrderNo(orderNo);
+        coupon.setIsUse(true);
+        coupon.setUseTime(new Date());
+        coupon.setUseIp(userIp);
+        return update(coupon);
     }
 
 

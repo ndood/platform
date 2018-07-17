@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.enums.OrderDealTypeEnum;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Order;
@@ -17,6 +18,7 @@ import com.fulu.game.core.dao.OrderDealDao;
 import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.service.OrderDealService;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -39,7 +41,8 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal,Integer> im
     }
 
     @Override
-    public void create(String orderNo, Integer userId,Integer type, String remark, String... fileUrls) {
+    public void create(String orderNo,
+                       Integer userId,Integer type, String remark, String... fileUrls) {
         OrderDeal orderDeal = new OrderDeal();
         orderDeal.setOrderNo(orderNo);
         orderDeal.setType(type);
@@ -57,6 +60,36 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal,Integer> im
             }
         }
     }
+
+
+    public void create(Order order,
+                       String title,
+                       BigDecimal refundMoney,
+                       int userId,
+                       String remark,
+                       String[] fileUrls){
+        OrderDeal orderDeal = new OrderDeal();
+        orderDeal.setOrderNo(order.getOrderNo());
+        orderDeal.setOrderStatus(order.getStatus());
+        orderDeal.setUserId(userId);
+        orderDeal.setRemark(remark);
+        orderDeal.setTitle(title);
+        orderDeal.setRefundMoney(refundMoney);
+        orderDeal.setIsValid(true);
+        orderDeal.setType(OrderDealTypeEnum.CONSULT.getType());
+        create(orderDeal);
+
+        if(fileUrls!=null){
+            for(String url : fileUrls){
+                OrderDealFile orderDealFile = new OrderDealFile();
+                orderDealFile.setFileUrl(ossUtil.activateOssFile(url));
+                orderDealFile.setOrderDealId(orderDeal.getId());
+                orderDealFile.setCreateTime(new Date());
+                orderDealFileService.create(orderDealFile);
+            }
+        }
+    }
+
 
     @Override
     public OrderDealVO findByUserAndOrderNo(Integer userId, String orderNo){

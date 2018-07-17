@@ -48,8 +48,11 @@ public interface CouponService extends ICommonService<Coupon, Integer> {
      */
     List<Coupon> findByUserReceive(Integer couponGroupId, Integer userId);
 
-
-
+    /**
+     * 更新优惠券使用状态
+     * @return
+     */
+    int updateCouponUseStatus(String orderNo,String userIp,Coupon coupon);
     /**
      * 通过优惠券兑换码发放优惠券
      * @param redeemCode

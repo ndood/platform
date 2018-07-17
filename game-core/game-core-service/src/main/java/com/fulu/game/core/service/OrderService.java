@@ -80,7 +80,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
      * @param remark
      * @return
      */
-    OrderVO submit(int productId, int num, String remark, String couponNo, String userIp, Integer contactType,
+    String submit(int productId, int num, String remark, String couponNo, String userIp, Integer contactType,
                    String contactInfo);
 
     /**
@@ -121,7 +121,42 @@ public interface OrderService extends ICommonService<Order, Integer> {
      * @param orderNo
      * @return
      */
-    OrderVO serverReceiveOrder(String orderNo);
+    String serverReceiveOrder(String orderNo);
+
+    /**
+     * 陪玩师开始服务
+     * @param orderNo
+     * @return
+     */
+    String serverStartServeOrder(String orderNo);
+
+
+    /**
+     * 用户协商订单
+     * @param orderNo
+     * @return
+     */
+    String userConsultOrder(String orderNo, BigDecimal refundMoney, String remark, String[] fileUrl);
+
+    /**
+     * 陪玩师拒绝协商订单
+     * @param orderNo
+     * @param remark
+     * @param fileUrls
+     * @return
+     */
+    String serverRejectConsultOrder(String orderNo, int orderDealId, String remark, String[] fileUrls);
+
+
+    /**
+     * 取消协商
+     * @param orderNo
+     * @param orderDealId
+     * @return
+     */
+    String cancelConsultOrder(String orderNo, int orderDealId);
+
+
 
     /**
      * 陪玩师取消订单
@@ -161,6 +196,10 @@ public interface OrderService extends ICommonService<Order, Integer> {
      * @return
      */
     OrderVO userAppealOrder(String orderNo, String remark, String... fileUrl);
+
+
+
+
 
     /**
      * 管理员订单申诉

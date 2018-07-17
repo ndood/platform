@@ -530,9 +530,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         List<Product> showIndexProducts = getShowIndexProduct(products);
         for (Product product : products) {
             if (showIndexProducts.contains(product)) {
-                saveProductIndex(product, true);
+                saveProductIndex(product, Boolean.TRUE);
             } else {
-                saveProductIndex(product, false);
+                saveProductIndex(product, Boolean.FALSE);
             }
         }
     }

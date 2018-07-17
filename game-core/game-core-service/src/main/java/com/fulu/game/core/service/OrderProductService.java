@@ -1,6 +1,8 @@
 package com.fulu.game.core.service;
 
+import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderProduct;
+import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import com.github.pagehelper.PageInfo;
@@ -13,5 +15,8 @@ import com.github.pagehelper.PageInfo;
 public interface OrderProductService extends ICommonService<OrderProduct,Integer>{
 
     OrderProduct findByOrderNo(String orderNo);
+
+
+    OrderProduct create(Order order, Product product, int num);
 
 }

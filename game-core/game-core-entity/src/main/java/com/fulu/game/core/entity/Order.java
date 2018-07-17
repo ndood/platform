@@ -40,7 +40,6 @@ public class Order implements Serializable {
     @Excel(name = "陪玩师ID", orderNum = "5", width = 10)
     private Integer serviceUserId;
 
-
     //订单游戏分类
     private Integer categoryId;
     //订单名称
@@ -78,9 +77,6 @@ public class Order implements Serializable {
     @Excel(name = "实付金额", orderNum = "8", width = 15)
     private BigDecimal actualMoney;
 
-    @Excel(name = "支付陪玩师金额", orderNum = "9", width = 15)
-    private BigDecimal serverMoney;
-
     //优惠券金额
     @Excel(name = "优惠券金额", orderNum = "10", width = 15)
     private BigDecimal couponMoney;
@@ -91,10 +87,6 @@ public class Order implements Serializable {
 
     private Boolean isPayCallback;
 
-    //佣金
-    @JsonIgnore
-    @Excel(name = "佣金", orderNum = "12", width = 15)
-    private BigDecimal commissionMoney;
     //订单总额
     @Excel(name = "订单总额", orderNum = "13", width = 15)
     private BigDecimal totalMoney;
