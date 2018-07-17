@@ -83,6 +83,7 @@ public class HomeController {
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
+    @UserScore(type = UserScoreEnum.USER_LOGIN)
     public Result login(@RequestParam("code") String code,
                         @RequestParam(value = "sourceId", required = false) Integer sourceId,
                         HttpServletRequest request) throws WxErrorException {

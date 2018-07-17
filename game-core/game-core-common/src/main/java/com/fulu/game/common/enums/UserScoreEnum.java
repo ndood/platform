@@ -14,7 +14,14 @@ import lombok.Getter;
 public enum UserScoreEnum {
 
     USER_LOGIN(Constant.USER_LOGIN, 1),
+
     IM_REPLY(Constant.IM_REPLY, 0),
+    IM_REPLY_DELAY_0_TO_5(Constant.IM_REPLY, 1),
+    IM_REPLY_DELAY_5_TO_60(Constant.IM_REPLY, 0),
+    IM_REPLY_DELAY_60_TO_120(Constant.IM_REPLY, -2),
+    IM_REPLY_DELAY_120_TO_360(Constant.IM_REPLY, -5),
+    IM_REPLY_DELAY_360_TO_1440(Constant.IM_REPLY, -8),
+    IM_REPLY_DELAY_LONGGER_1440(Constant.IM_REPLY, -10),
 
     ACCEPT_ORDER(Constant.ACCEPT_ORDER, 0),
     ACCEPT_ORDER_DELAY_30_TO_60(Constant.ACCEPT_ORDER_DELAY_30_TO_60, -2),

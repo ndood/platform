@@ -58,7 +58,7 @@ public class UserScoreQueue implements Runnable {
 
     @Override
     public void run() {
-        log.info("开始处理用户积分");
+        log.info("开始修改用户积分");
         while (run.get()) {
             try {
                 UserScoreDetails details = userScoreQueue.poll();
@@ -68,17 +68,17 @@ public class UserScoreQueue implements Runnable {
                 }
                 process(details);
             }catch (Exception e){
-                log.error("处理用户积分队列异常", e);
+                log.error("修改用户积分队列异常", e);
             }
         }
-        log.info("处理用户积分结束");
+        log.info("修改用户积分结束");
     }
 
 
     private void process(UserScoreDetails details) {
         try {
             Integer userScore = userService.findUserScoreByUpdate(details.getUserId());
-            log.info("处理用户积分，userId:{}，修改前用户总积分:{}", details.getUserId(), userScore);
+            log.info("修改用户积分，userId:{}，修改前用户总积分:{}", details.getUserId(), userScore);
             User user = new User();
             user.setId(details.getUserId());
             user.setUserScore(userScore + details.getScore());
@@ -87,9 +87,9 @@ public class UserScoreQueue implements Runnable {
 
             details.setCreateTime(new Date());
             userScoreDetailsDao.create(details);
-            log.info("处理用户积分，userId:{}，修改后用户总积分:{}", details.getUserId(), user.getUserScore());
+            log.info("修改用户积分，userId:{}，修改后用户总积分:{}", details.getUserId(), user.getUserScore());
         }catch (Exception e) {
-            log.error("处理用户积分出错!", e);
+            log.error("修改用户积分出错!", e);
         }
     }
 }
