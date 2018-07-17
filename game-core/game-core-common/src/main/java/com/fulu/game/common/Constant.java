@@ -67,8 +67,35 @@ public interface Constant {
      */
     String USER_LOGIN = "用户登录";
 
+    String IM_REPLY = "陪玩师回复IM消息";
+
+    String ACCEPT_ORDER = "订单接单";
+
+    String USER_COMMENT = "用户评价";
+
+    String FULL_RESTITUTION = "全额赔偿给用户";
+
+    String CONFER = "协商";
+
+    /**
+     * 陪玩师接单
+     */
+    String ACCEPT_ORDER_DELAY_30_TO_60 = "30到60分钟内接单";
+    String ACCEPT_ORDER_DELAY_60_TO_360 = "60到360分钟内接单";
+    String ACCEPT_ORDER_DELAY_360_TO_1440 = "360到1440分钟内接单";
+    String ACCEPT_ORDER_DELAY_LONGGER_1440 = "1440分钟后接单";
+
+    /**
+     * 用户评价
+     */
+    String USER_COMMENT_1_STAR = "用户评价1颗星";
+    String USER_COMMENT_2_STAR = "用户评价2颗星";
+    String USER_COMMENT_3_STAR = "用户评价3颗星";
+    String USER_COMMENT_4_STAR = "用户评价4颗星";
+    String USER_COMMENT_5_STAR = "用户评价5颗星";
+
+
     /**
      * 用户积分策略--end
      */
-
 }

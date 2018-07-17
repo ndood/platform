@@ -3,6 +3,7 @@ package com.fulu.game.play.controller;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.UserScoreEnum;
 import com.fulu.game.common.exception.SystemException;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
@@ -10,6 +11,7 @@ import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.play.aop.UserScore;
 import com.fulu.game.play.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -233,6 +235,7 @@ public class OrderController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/server/receive")
+    @UserScore(type = UserScoreEnum.ACCEPT_ORDER)
     public Result serverReceiveOrder(@RequestParam(required = true) String orderNo) {
         OrderVO orderVO = orderService.serverReceiveOrder(orderNo);
         return Result.success().data(orderVO).msg("接单成功!");
