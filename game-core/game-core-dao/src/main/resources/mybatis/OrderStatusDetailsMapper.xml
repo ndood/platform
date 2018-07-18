@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.OrderStatusDetailsDao">
+    <resultMap id="OrderStatusDetailsResultMap" type="com.fulu.game.core.entity.OrderStatusDetails">
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="order_status" property="orderStatus"/>
+        <result column="trigger_time" property="triggerTime"/>
+        <result column="count_down_minute" property="countDownMinute"/>
+        <result column="is_valid" property="isValid"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="OrderStatusDetailsResultVOMap" type="com.fulu.game.core.entity.vo.OrderStatusDetailsVO"
+               extends="OrderStatusDetailsResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,order_no,order_status,trigger_time,count_down_minute,is_valid,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="OrderStatusDetailsResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_order_status_details
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="OrderStatusDetailsResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_order_status_details
+    </select>
+
+    <select id="findByParameter" resultMap="OrderStatusDetailsResultMap"
+            parameterType="com.fulu.game.core.entity.vo.OrderStatusDetailsVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_order_status_details
+        <where>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="orderStatus != null">
+                and order_status = #{orderStatus}
+            </if>
+            <if test="triggerTime != null">
+                and trigger_time = #{triggerTime}
+            </if>
+            <if test="countDownMinute != null">
+                and count_down_minute = #{countDownMinute}
+            </if>
+            <if test="isValid != null">
+                and is_valid = #{isValid}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_order_status_details
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.OrderStatusDetails">
+        insert into
+        t_order_status_details (order_no,order_status,trigger_time,count_down_minute,is_valid,create_time,update_time)
+        values
+        (#{orderNo},#{orderStatus},#{triggerTime},#{countDownMinute},#{isValid},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.OrderStatusDetails">
+        update t_order_status_details
+        <set>
+
+            <if test="orderNo != null">
+                order_no = #{orderNo},
+            </if>
+
+            <if test="orderStatus != null">
+                order_status = #{orderStatus},
+            </if>
+
+            <if test="triggerTime != null">
+                trigger_time = #{triggerTime},
+            </if>
+
+            <if test="countDownMinute != null">
+                count_down_minute = #{countDownMinute},
+            </if>
+
+            <if test="isValid != null">
+                is_valid = #{isValid},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

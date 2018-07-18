@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.OrderShareProfitDao">
+    <resultMap id="OrderShareProfitResultMap" type="com.fulu.game.core.entity.OrderShareProfit">
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="server_money" property="serverMoney"/>
+        <result column="commission_money" property="commissionMoney"/>
+        <result column="user_money" property="userMoney"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="OrderShareProfitResultVOMap" type="com.fulu.game.core.entity.vo.OrderShareProfitVO" extends="OrderShareProfitResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,order_no,server_money,commission_money,user_money,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="OrderShareProfitResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_order_share_profit
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="OrderShareProfitResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_order_share_profit
+    </select>
+
+    <select id="findByParameter" resultMap="OrderShareProfitResultMap"
+            parameterType="com.fulu.game.core.entity.vo.OrderShareProfitVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_order_share_profit
+        <where>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="serverMoney != null">
+                and server_money = #{serverMoney}
+            </if>
+            <if test="commissionMoney != null">
+                and commission_money = #{commissionMoney}
+            </if>
+            <if test="userMoney != null">
+                and user_money = #{userMoney}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_order_share_profit
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.OrderShareProfit">
+        insert into
+        t_order_share_profit (order_no,server_money,commission_money,user_money,create_time,update_time)
+        values
+        (#{orderNo},#{serverMoney},#{commissionMoney},#{userMoney},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.OrderShareProfit">
+        update t_order_share_profit
+        <set>
+
+            <if test="orderNo != null">
+                order_no = #{orderNo},
+            </if>
+
+            <if test="serverMoney != null">
+                server_money = #{serverMoney},
+            </if>
+
+            <if test="commissionMoney != null">
+                commission_money = #{commissionMoney},
+            </if>
+
+            <if test="userMoney != null">
+                user_money = #{userMoney},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>
