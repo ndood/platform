@@ -1,10 +1,12 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.enums.RedisKeyEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -187,8 +189,27 @@ public class RedisOpenServiceImpl {
     public void unlock(String key) {
         // 释放锁
         redisTemplate.delete(key);
-
     }
+
+    /**
+     * 存储时间间隔
+     * @param key
+     * @param time
+     */
+    public void setTimeInterval(String key,long time){
+        set(RedisKeyEnum.TIME_INTERVAL_KEY.generateKey(key),new Date().getTime()+"",time);
+    }
+
+
+    /**
+     * 判断时间间隔
+     * @param key
+     * @return
+     */
+    public Boolean isTimeIntervalInside(String key){
+        return hasKey(RedisKeyEnum.TIME_INTERVAL_KEY.generateKey(key));
+    }
+
 
 
 }

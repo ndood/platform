@@ -366,7 +366,7 @@
         insert into
         t_order (order_no,coupon_no,category_id,user_id,service_user_id,name,type,channel_id,remark,is_pay,is_pay_callback,status,contact_type,contact_info,total_money,actual_money,coupon_money,charges,create_time,update_time,pay_time,complete_time,order_ip,receiving_time)
         values
-        (#{orderNo},#{couponNo},#{categoryId},#{userId},#{serviceUserId},#{name},#{type},#{channelId},#{remark},#{isPay},#{status},#{contactType},#{contactInfo},#{totalMoney},#{actualMoney},#{couponMoney},#{charges},#{createTime},#{updateTime},#{payTime},#{completeTime},#{orderIp},#{receivingTime})
+        (#{orderNo},#{couponNo},#{categoryId},#{userId},#{serviceUserId},#{name},#{type},#{channelId},#{remark},#{isPay},#{isPayCallback},#{status},#{contactType},#{contactInfo},#{totalMoney},#{actualMoney},#{couponMoney},#{charges},#{createTime},#{updateTime},#{payTime},#{completeTime},#{orderIp},#{receivingTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Order">

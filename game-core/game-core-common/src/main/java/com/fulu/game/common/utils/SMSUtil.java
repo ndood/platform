@@ -52,11 +52,10 @@ public class SMSUtil {
      * 发送留言通知短信
      * @param mobile
      * @param msg
-     * @param date
      * @return
      */
-    public static Boolean sendLeaveInform(String mobile, String msg, String date,String url){
-        return sendSMS(mobile,SMSTemplateEnum.SENDLEAVE_INFORM,msg,date,url);
+    public static Boolean sendLeaveInform(String mobile, String msg,String url){
+        return sendSMS(mobile,SMSTemplateEnum.SENDLEAVE_INFORM,msg,url);
     }
 
 }

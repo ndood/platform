@@ -35,10 +35,6 @@ public class OrderVO  extends Order {
 
     private String serverCity;
 
-    //todo 下单用户的联系方式
-
-
-
     private String userHeadUrl;
 
     private String userNickName;

@@ -15,6 +15,13 @@ import com.fulu.game.core.entity.OrderStatusDetails;
 public interface OrderStatusDetailsService extends ICommonService<OrderStatusDetails,Integer>{
 
 
-     void create(Order order,int minute);
+     public void create(String orderNo,Integer orderStatus, int minute);
+
+     public void resetOrderStatus(String orderNo, Integer orderStatus,int minute);
+
+
+     public OrderStatusDetails findByOrderAndStatus(String orderNo, Integer orderStatus);
+
+
 
 }

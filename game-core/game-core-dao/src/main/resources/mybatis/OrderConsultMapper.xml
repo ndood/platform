@@ -7,7 +7,7 @@
         <result column="order_no" property="orderNo"/>
         <result column="order_status" property="orderStatus"/>
         <result column="user_id" property="userId"/>
-        <result column="server_user_id" property="serverUserId"/>
+        <result column="service_user_id" property="serviceUserId"/>
         <result column="type" property="type"/>
         <result column="refund_money" property="refundMoney"/>
         <result column="create_time" property="createTime"/>
@@ -19,7 +19,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,order_no,order_status,user_id,server_user_id,type,refund_money,create_time,is_del    </sql>
+        id,order_no,order_status,user_id,service_user_id,type,refund_money,create_time,is_del    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="OrderConsultResultMap">
         select
@@ -51,8 +51,8 @@
             <if test="userId != null">
                 and user_id = #{userId}
             </if>
-            <if test="serverUserId != null">
-                and server_user_id = #{serverUserId}
+            <if test="serviceUserId != null">
+                and service_user_id = #{serviceUserId}
             </if>
             <if test="type != null">
                 and type = #{type}
@@ -78,9 +78,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.OrderConsult">
         insert into
-        t_order_consult (order_no,order_status,user_id,server_user_id,type,refund_money,create_time,is_del)
+        t_order_consult (order_no,order_status,user_id,service_user_id,type,refund_money,create_time,is_del)
         values
-        (#{orderNo},#{orderStatus},#{userId},#{serverUserId},#{type},#{refundMoney},#{createTime},#{isDel})
+        (#{orderNo},#{orderStatus},#{userId},#{serviceUserId},#{type},#{refundMoney},#{createTime},#{isDel})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.OrderConsult">
@@ -99,8 +99,8 @@
                 user_id = #{userId},
             </if>
 
-            <if test="serverUserId != null">
-                server_user_id = #{serverUserId},
+            <if test="serviceUserId != null">
+                service_user_id = #{serviceUserId},
             </if>
 
             <if test="type != null">

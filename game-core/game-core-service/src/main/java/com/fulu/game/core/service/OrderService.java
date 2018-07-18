@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Order;
+import com.fulu.game.core.entity.OrderDetailsVO;
 import com.fulu.game.core.entity.OrderMarketProduct;
 import com.fulu.game.core.entity.vo.MarketOrderVO;
 import com.fulu.game.core.entity.vo.OrderVO;
@@ -223,11 +224,9 @@ public interface OrderService extends ICommonService<Order, Integer> {
      * 订单验收
      *
      * @param orderNo
-     * @param remark
-     * @param fileUrl
      * @return
      */
-    OrderVO serverAcceptanceOrder(String orderNo, String remark, String... fileUrl);
+    OrderVO serverAcceptanceOrder(String orderNo);
 
     /**
      * 系统完成订单
@@ -277,13 +276,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
      */
     Order findByOrderNo(String orderNo);
 
-    /**
-     * 陪玩师是否已经在服务用户
-     *
-     * @param serverId
-     * @return
-     */
-    Boolean isAlreadyService(Integer serverId);
+
 
     /**
      * 查找状态
@@ -344,6 +337,13 @@ public interface OrderService extends ICommonService<Order, Integer> {
      * @return
      */
     OrderVO findUserOrderDetails(String orderNo);
+
+    /**
+     * 查询订单详情
+     * @param orderNo
+     * @return
+     */
+    OrderDetailsVO findOrderDetails(String orderNo);
 
     /**
      * 陪玩师

@@ -30,6 +30,6 @@ public class PlatformMoneyTest {
 
     @Test
     public void test2(){
-        SMSUtil.sendLeaveInform("15002781007","lalal","2018-05-20","https://t-open.wzpeilian.com/pc/weixin.html ");
+        SMSUtil.sendLeaveInform("15002781007","lalal","https://t-open.wzpeilian.com/pc/weixin.html ");
     }
 }

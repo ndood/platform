@@ -18,5 +18,9 @@ public interface OrderConsultService extends ICommonService<OrderConsult,Integer
 
     OrderConsult createConsult(Order order,int orderStatus,BigDecimal refundMoney);
 
+    void cancelConsult(Order order,Integer userId,OrderConsult orderConsult);
+
+
+
 
 }

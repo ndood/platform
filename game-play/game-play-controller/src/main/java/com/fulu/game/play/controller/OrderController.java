@@ -4,7 +4,10 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.UserScoreEnum;
+import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.exception.SystemException;
+import com.fulu.game.core.entity.Order;
+import com.fulu.game.core.entity.OrderDetailsVO;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.OrderDealVO;
@@ -22,8 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -44,24 +45,24 @@ public class OrderController extends BaseController {
     private UserService userService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private WxTemplateMsgService wxTemplateMsgService;
+
 
     /**
      * 查询陪玩是否是服务状态
+     *
      * @param productId
      * @return
      */
     @RequestMapping(value = "canservice")
     public Result canService(@RequestParam(required = true) Integer productId) {
-        Product product = productService.findById(productId);
-        Boolean status = orderService.isAlreadyService(product.getUserId());
-        if (status) {
-            return Result.error().msg("当前陪玩师正在服务中,需要等待后才能为您提供服务!");
-        }
         return Result.success().msg("陪玩师空闲状态!");
     }
 
     /**
      * 提交订单
+     *
      * @param productId
      * @param request
      * @param num
@@ -82,19 +83,18 @@ public class OrderController extends BaseController {
                          Integer contactType,
                          String contactInfo) {
         User user = userService.getCurrentUser();
-        if(!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))){
-            log.error("验证sessionkey错误:productId:{};num:{};couponNo:{};sessionkey:{};remark:{};userId:{}",productId,num,couponNo,sessionkey,remark,user.getId());
+        if (!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))) {
+            log.error("验证sessionkey错误:productId:{};num:{};couponNo:{};sessionkey:{};remark:{};userId:{}", productId, num, couponNo, sessionkey, remark, user.getId());
             throw new SystemException(SystemException.ExceptionCode.NO_FORM_TOKEN_ERROR);
         }
         try {
             String ip = RequestUtil.getIpAdrress(request);
             String orderNo = orderService.submit(productId, num, remark, couponNo, ip, contactType, contactInfo);
             return Result.success().data(orderNo).msg("创建订单成功!");
-        }finally {
+        } finally {
             redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));
         }
     }
-
 
 
     @RequestMapping(value = "pilot/submit")
@@ -105,41 +105,26 @@ public class OrderController extends BaseController {
                               @RequestParam(required = true) String sessionkey,
                               String remark,
                               Integer contactType,
-                              String contactInfo){
+                              String contactInfo) {
         User user = userService.getCurrentUser();
-        if(!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))){
-            log.error("验证sessionkey错误:productId:{};num:{};couponNo:{};sessionkey:{};remark:{};userId:{}",productId,num,couponNo,sessionkey,remark,user.getId());
+        if (!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))) {
+            log.error("验证sessionkey错误:productId:{};num:{};couponNo:{};sessionkey:{};remark:{};userId:{}", productId, num, couponNo, sessionkey, remark, user.getId());
             throw new SystemException(SystemException.ExceptionCode.NO_FORM_TOKEN_ERROR);
-        };
+        }
+        ;
         String ip = RequestUtil.getIpAdrress(request);
         try {
-            String  orderNo = orderService.pilotSubmit(productId, num, remark, couponNo, ip, contactType, contactInfo);
+            String orderNo = orderService.pilotSubmit(productId, num, remark, couponNo, ip, contactType, contactInfo);
             return Result.success().data(orderNo).msg("创建订单成功!");
-        }finally {
+        } finally {
             redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));
         }
-    }
-
-    /**
-     * 订单状态倒计时
-     * @param orderNo
-     * @return
-     */
-    @RequestMapping(value = "countdown")
-    public Result orderCountDownTime(@RequestParam(required = true)String orderNo){
-        Map<String, Object> store = redisOpenService.hget(RedisKeyEnum.ORDER_STATUS_COUNTDOWN.generateKey(orderNo));
-        if(store==null){
-            store = new HashMap<>();
-            store.put("hour",0);
-            store.put("startTime",new Date().getTime());
-        }
-        store.put("currentTime",new Date());
-        return Result.success().data(store);
     }
 
 
     /**
      * 订单支付接口
+     *
      * @param orderNo
      * @return
      */
@@ -202,8 +187,10 @@ public class OrderController extends BaseController {
         return Result.success().data(map);
     }
 
+
     /**
      * 打手订单列表
+     *
      * @return
      */
     @RequestMapping(value = "/server/list")
@@ -221,6 +208,7 @@ public class OrderController extends BaseController {
 
     /**
      * 用户取消订单
+     *
      * @param orderNo
      * @return
      */
@@ -232,6 +220,7 @@ public class OrderController extends BaseController {
 
     /**
      * 用户申诉订单
+     *
      * @param orderNo
      * @param remark
      * @param fileUrl
@@ -245,24 +234,57 @@ public class OrderController extends BaseController {
         return Result.success().data(orderVO).msg("订单申诉成功!");
     }
 
+    /**
+     * 提醒接单
+     *
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/remind/receive-order")
+    public Result remindOrder(@RequestParam(required = true) String orderNo) {
+        if (redisOpenService.isTimeIntervalInside(orderNo)) {
+            return Result.error().msg("不能频繁提醒接单!");
+        }
+        Order order = orderService.findByOrderNo(orderNo);
+        wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_SERVER_REMIND_RECEIVE_ORDER, order.getName());
+        redisOpenService.setTimeInterval(orderNo, 5 * 60);
+        return Result.success().msg("提醒接单成功!");
+    }
+
+
+
+    @RequestMapping(value = "/remind/start-order")
+    public Result remindStartOrder(@RequestParam(required = true) String orderNo) {
+        if (redisOpenService.isTimeIntervalInside(orderNo)) {
+            return Result.error().msg("不能频繁提醒开始!");
+        }
+        Order order = orderService.findByOrderNo(orderNo);
+        wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_SERVER_REMIND_START_ORDER, order.getName());
+        redisOpenService.setTimeInterval(orderNo, 5 * 60);
+        return Result.success().msg("提醒开始成功!");
+    }
+
+
+
 
     /**
      * 用户协商订单
+     *
      * @return
      */
     @RequestMapping(value = "/user/consult")
     public Result consult(@RequestParam(required = true) String orderNo,
                           BigDecimal refundMoney,
                           String remark,
-                          @RequestParam(required = true) String[] fileUrl){
-
-        return Result.success();
+                          @RequestParam(required = true) String[] fileUrl) {
+        orderService.userConsultOrder(orderNo, refundMoney, remark, fileUrl);
+        return Result.success().data(orderNo);
     }
-
 
 
     /**
      * 陪玩师接收订单
+     *
      * @param orderNo
      * @return
      */
@@ -273,21 +295,17 @@ public class OrderController extends BaseController {
         return Result.success().data(orderNo).msg("接单成功!");
     }
 
-
-
-
-
     /**
      * 陪玩师开始服务
+     *
      * @param orderNo
      * @return
      */
     @RequestMapping(value = "/server/start-serve")
     public Result startServerOrder(@RequestParam(required = true) String orderNo) {
-        orderService.serverReceiveOrder(orderNo);
+        orderService.serverStartServeOrder(orderNo);
         return Result.success().data(orderNo).msg("接单成功!");
     }
-
 
     /**
      * 用户验收订单
@@ -300,9 +318,9 @@ public class OrderController extends BaseController {
         return Result.success().data(orderVO).msg("订单验收成功!");
     }
 
-
     /**
      * 陪玩师取消订单
+     *
      * @param orderNo
      * @return
      */
@@ -314,22 +332,20 @@ public class OrderController extends BaseController {
 
     /**
      * 陪玩师提交验收订单
+     *
      * @param orderNo
-     * @param remark
-     * @param fileUrl
      * @return
      */
     @RequestMapping(value = "/server/acceptance")
-    public Result serverAcceptanceOrder(@RequestParam(required = true) String orderNo,
-                                        String remark,
-                                        @RequestParam(required = true) String[] fileUrl) {
-        OrderVO orderVO = orderService.serverAcceptanceOrder(orderNo, remark, fileUrl);
+    public Result serverAcceptanceOrder(@RequestParam(required = true) String orderNo) {
+        OrderVO orderVO = orderService.serverAcceptanceOrder(orderNo);
         return Result.success().data(orderVO).msg("提交订单验收成功!");
     }
 
 
     /**
      * 查看申诉或者验收截图
+     *
      * @return
      */
     @RequestMapping(value = "/deals")
@@ -339,8 +355,10 @@ public class OrderController extends BaseController {
         return Result.success().data(orderDealVO);
     }
 
+
     /**
      * 查看陪玩师的验收截图
+     *
      * @param orderNo
      * @return
      */
@@ -350,20 +368,36 @@ public class OrderController extends BaseController {
         return Result.success().data(orderDealVO);
     }
 
+
+    /**
+     * 订单详情
+     *
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/details")
+    public Result orderDetails(@RequestParam(required = true) String orderNo) {
+        OrderDetailsVO orderDetailsVO = orderService.findOrderDetails(orderNo);
+        return Result.success().data(orderDetailsVO);
+    }
+
+
     /**
      * 用户订单详情页
+     *
      * @param orderNo
      * @return
      */
     @RequestMapping(value = "/user/details")
     public Result userOrderDetails(@RequestParam(required = true) String orderNo) {
         OrderVO orderVO = orderService.findUserOrderDetails(orderNo);
+
         return Result.success().data(orderVO);
     }
 
-
     /**
      * 陪玩师订单详情页
+     *
      * @param orderNo
      * @return
      */

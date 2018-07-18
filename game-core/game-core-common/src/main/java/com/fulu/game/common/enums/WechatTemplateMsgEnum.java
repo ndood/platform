@@ -18,6 +18,8 @@ public enum WechatTemplateMsgEnum {
 
     ORDER_USER_PAY(PagePathEnum.SERVICE_USER_ORDER_LIST.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "{}向您下单{},快快去赚钱"), //用户付款
     ORDER_SERVER_USER_CHECK(PagePathEnum.USER_ORDER_LIST.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "您的{}订单已完成,请前往验收"), //打手验收订单
+    ORDER_SERVER_REMIND_RECEIVE_ORDER(PagePathEnum.USER_ORDER_LIST.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "您的{}订单已完成,请前往验收"), //todo 提醒接单
+    ORDER_SERVER_REMIND_START_ORDER(PagePathEnum.USER_ORDER_LIST.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "您的{}订单已完成,请前往验收"), //todo 提醒开始
     ORDER_USER_APPEAL(PagePathEnum.USER_ORDER_LIST.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "您的订单已成功申诉,客服正在处理,请耐心等待"),//用户申诉订单
     ORDER_SERVER_USER_APPEAL(PagePathEnum.SERVICE_USER_ORDER_LIST.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "您的订单已被申诉,请尽快联系客服处理"),//用户申诉订单
     ORDER_USER_APPEAL_REFUND(PagePathEnum.USER_ORDER_LIST.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "申诉成功,您支付金额将原路返回"),

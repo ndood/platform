@@ -25,7 +25,7 @@ public class OrderConsult implements Serializable {
 	//用户ID
 	private Integer userId;
 	//陪玩师ID
-	private Integer serverUserId;
+	private Integer serviceUserId;
 	//1申诉，2仲裁
 	private Integer type;
 	//退款

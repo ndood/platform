@@ -133,7 +133,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
         if (user == null || formId == null) {
             log.error("user或者formId为null无法给用户推送消息userId:{};content:{};formId:{}", userId, content, formId);
             if (user != null && user.getMobile() != null) {
-                Boolean flag = SMSUtil.sendLeaveInform(user.getMobile(), content, date,Constant.WEIXN_JUMP_URL);
+                Boolean flag = SMSUtil.sendLeaveInform(user.getMobile(), content, Constant.WEIXN_JUMP_URL);
                 if (!flag) {
                     log.error("留言通知发送短信失败:user.getMobile:{};content:{};", user.getMobile(), content);
                 }
