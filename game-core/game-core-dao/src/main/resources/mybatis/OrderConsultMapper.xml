@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.OrderConsultDao">
+    <resultMap id="OrderConsultResultMap" type="com.fulu.game.core.entity.OrderConsult">
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="order_status" property="orderStatus"/>
+        <result column="user_id" property="userId"/>
+        <result column="server_user_id" property="serverUserId"/>
+        <result column="type" property="type"/>
+        <result column="refund_money" property="refundMoney"/>
+        <result column="create_time" property="createTime"/>
+        <result column="is_del" property="isDel"/>
+    </resultMap>
+
+    <resultMap id="OrderConsultResultVOMap" type="com.fulu.game.core.entity.vo.OrderConsultVO"
+               extends="OrderConsultResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,order_no,order_status,user_id,server_user_id,type,refund_money,create_time,is_del    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="OrderConsultResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_order_consult
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="OrderConsultResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_order_consult
+    </select>
+
+    <select id="findByParameter" resultMap="OrderConsultResultMap"
+            parameterType="com.fulu.game.core.entity.vo.OrderConsultVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_order_consult
+        <where>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="orderStatus != null">
+                and order_status = #{orderStatus}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="serverUserId != null">
+                and server_user_id = #{serverUserId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="refundMoney != null">
+                and refund_money = #{refundMoney}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="isDel != null">
+                and is_del = #{isDel}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_order_consult
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.OrderConsult">
+        insert into
+        t_order_consult (order_no,order_status,user_id,server_user_id,type,refund_money,create_time,is_del)
+        values
+        (#{orderNo},#{orderStatus},#{userId},#{serverUserId},#{type},#{refundMoney},#{createTime},#{isDel})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.OrderConsult">
+        update t_order_consult
+        <set>
+
+            <if test="orderNo != null">
+                order_no = #{orderNo},
+            </if>
+
+            <if test="orderStatus != null">
+                order_status = #{orderStatus},
+            </if>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="serverUserId != null">
+                server_user_id = #{serverUserId},
+            </if>
+
+            <if test="type != null">
+                type = #{type},
+            </if>
+
+            <if test="refundMoney != null">
+                refund_money = #{refundMoney},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="isDel != null">
+                is_del = #{isDel},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

@@ -149,6 +149,16 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
 
     /**
+     * 陪玩师同样协商订单
+     * @param orderNo
+     * @param orderDealId
+     * @param remark
+     * @return
+     */
+    String serverAgreeConsultOrder(String orderNo,int orderDealId,String remark);
+
+
+    /**
      * 取消协商
      * @param orderNo
      * @param orderDealId
@@ -325,12 +335,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
      */
     int allOrderCount(Integer serverId);
 
-    /**
-     * 订单分润
-     *
-     * @param order
-     */
-    void shareProfit(Order order);
+
 
     /**
      * 用户订单详情页

@@ -55,8 +55,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     @Autowired
     private PlatformMoneyDetailsService platformMoneyDetailsService;
     @Autowired
-    private PayService payService;
-    @Autowired
     private CouponService couponService;
     @Autowired
     private AdminService adminService;
@@ -77,7 +75,10 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     @Autowired
     private OrderStatusDetailsService orderStatusDetailsService;
     @Autowired
-    private MoneyDetailsService moneyDetailsService;
+    private OrderShareProfitService orderShareProfitService;
+    @Autowired
+    private OrderConsultService orderConsultService;
+
 
 
 
@@ -676,7 +677,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         }else{
             refundType = "部分退款";
         }
-
         User user = userService.getCurrentUser();
         userService.isCurrentUser(order.getUserId());
         if (!order.getStatus().equals(OrderStatusEnum.ALREADY_RECEIVING.getStatus())&&
@@ -684,11 +684,23 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             !order.getStatus().equals(OrderStatusEnum.CHECK.getStatus())) {
             throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES,orderNo);
         }
+        //提交仲裁
+        OrderConsult orderConsult = orderConsultService.createConsult(order,order.getStatus(),refundMoney);
         order.setStatus(OrderStatusEnum.CONSULTING.getStatus());
         order.setUpdateTime(new Date());
         update(order);
+        //提交协商处理
         String title = "发起了协商-"+refundType+" ￥"+refundMoney.toPlainString();
-        orderDealService.create(order,title,refundMoney,user.getId(),remark,fileUrls);
+        OrderDeal orderDeal = new OrderDeal();
+        orderDeal.setTitle(title);
+        orderDeal.setType(OrderDealTypeEnum.CONSULT.getType());
+        orderDeal.setUserId(user.getId());
+        orderDeal.setRemark(remark);
+        orderDeal.setOrderNo(order.getOrderNo());
+        orderDeal.setOrderConsultId(orderConsult.getId());
+        orderDeal.setCreateTime(new Date());
+        orderDealService.create(orderDeal,fileUrls);
+
         //倒计时24小时后处理
         orderStatusDetailsService.create(order,24*60);
         return order.getOrderNo();
@@ -709,22 +721,56 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
                                            String[] fileUrls) {
         log.info("拒绝协商处理订单orderNo:{}", orderNo);
         Order order = findByOrderNo(orderNo);
-        OrderDeal orderDeal = orderDealService.findById(orderDealId);
+        OrderDeal orderDeal = orderDealService.find(orderDealId);
         if(orderDeal==null||!order.getOrderNo().equals(orderDeal.getOrderNo())){
             throw new OrderException(orderNo,"拒绝协商订单不匹配!");
         }
         User user = userService.getCurrentUser();
-        userService.isCurrentUser(order.getUserId());
+        userService.isCurrentUser(order.getServiceUserId());
         if (!order.getStatus().equals(OrderStatusEnum.CONSULTING.getStatus())) {
             throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES,orderNo);
         }
         order.setStatus(OrderStatusEnum.CONSULT_REJECT.getStatus());
         order.setUpdateTime(new Date());
         update(order);
-        String title = "拒绝了协商";
-        orderDealService.create(order,title,orderDeal.getRefundMoney(),user.getId(),remark,fileUrls);
+//        String title = "拒绝了协商";
+//        orderDealService.create(order,title,orderDeal.getRefundMoney(),user.getId(),remark,fileUrls);
         //倒计时24小时后处理
         orderStatusDetailsService.create(order,24*60);
+        return order.getOrderNo();
+    }
+
+
+    /**
+     * 协商解决完成
+     * @param orderNo
+     * @param orderDealId
+     * @param remark
+     * @return
+     */
+    @Override
+    public String serverAgreeConsultOrder(String orderNo, int orderDealId, String remark) {
+        log.info("陪玩师同意协商处理订单orderNo:{}", orderNo);
+        Order order = findByOrderNo(orderNo);
+        OrderDeal orderDeal = orderDealService.findById(orderDealId);
+        if(orderDeal==null||!order.getOrderNo().equals(orderDeal.getOrderNo())){
+            throw new OrderException(orderNo,"拒绝协商订单不匹配!");
+        }
+        User user = userService.getCurrentUser();
+        userService.isCurrentUser(order.getServiceUserId());
+        if (!order.getStatus().equals(OrderStatusEnum.CONSULTING.getStatus())) {
+            throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES,orderNo);
+        }
+        order.setStatus(OrderStatusEnum.CONSULT_COMPLETE.getStatus());
+        order.setUpdateTime(new Date());
+        update(order);
+
+//        String title = "同意了协商，￥"+orderDeal.getRefundMoney().toPlainString()+"已经退款结算";
+//        orderDealService.create(order,title,orderDeal.getRefundMoney(),user.getId(),remark,null);
+//        //退款给用户
+//        orderShareProfitService.orderRefund(order,orderDeal.getRefundMoney());
+        //创建订单状态详情
+        orderStatusDetailsService.create(order,0);
         return order.getOrderNo();
     }
 
@@ -740,6 +786,17 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         log.info("取消协商处理订单orderNo:{}", orderNo);
         Order order = findByOrderNo(orderNo);
         OrderDeal orderDeal = orderDealService.findById(orderDealId);
+        if(orderDeal==null||!order.getOrderNo().equals(orderDeal.getOrderNo())){
+            throw new OrderException(orderNo,"拒绝协商订单不匹配!");
+        }
+        User user = userService.getCurrentUser();
+        userService.isCurrentUser(order.getUserId());
+        if (!order.getStatus().equals(OrderStatusEnum.CONSULTING.getStatus())) {
+            throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES,orderNo);
+        }
+
+
+
         //todo 订单状态重置,时间重置
         return order.getOrderNo();
     }
@@ -764,7 +821,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         update(order);
         // 全额退款用户
         if (order.getIsPay()) {
-            orderRefund(order);
+            orderShareProfitService.orderRefund(order,order.getActualMoney());
         }
         return orderConvertVo(order);
     }
@@ -787,7 +844,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         update(order);
         // 全额退款用户
         if (order.getIsPay()) {
-            orderRefund(order);
+            orderShareProfitService.orderRefund(order,order.getActualMoney());
         }
     }
 
@@ -811,7 +868,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         update(order);
         // 全额退款用户
         if (order.getIsPay()) {
-            orderRefund(order);
+            orderShareProfitService.orderRefund(order,order.getActualMoney());
         }
 
     }
@@ -836,7 +893,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         update(order);
         // 全额退款用户
         if (order.getIsPay()) {
-            orderRefund(order);
+            orderShareProfitService.orderRefund(order,order.getActualMoney());
         }
         return orderConvertVo(order);
     }
@@ -950,7 +1007,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setCompleteTime(new Date());
         update(order);
         //订单分润
-        shareProfit(order);
+        orderShareProfitService.shareProfit(order);
         orderStatusDetailsService.create(order,0);
         return orderConvertVo(order);
     }
@@ -972,43 +1029,14 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setCompleteTime(new Date());
         update(order);
         //订单分润
-        shareProfit(order);
+        orderShareProfitService.shareProfit(order);
         orderStatusDetailsService.create(order,0);
         return orderConvertVo(order);
     }
 
 
     /**
-     * 订单正常完成状态分润
-     * @param order
-     */
-    public void shareProfit(Order order) {
-        //todo 重新做分润
-        BigDecimal totalMoney = order.getTotalMoney();
-        BigDecimal charges = order.getCharges();
-        if(charges==null){
-            Category category = categoryService.findById(order.getCategoryId());
-            charges = category.getCharges();
-        }
-        BigDecimal commissionMoney = totalMoney.multiply(charges);
-        BigDecimal serverMoney = order.getTotalMoney().subtract(commissionMoney);
-        //如果是领航订单则用原始的订单金额给打手分润
-        PilotOrder pilotOrder = pilotOrderService.findByOrderNo(order.getOrderNo());
-        if (pilotOrder != null) {
-            serverMoney = pilotOrder.getTotalMoney().subtract(commissionMoney);
-            pilotOrder.setIsComplete(true);
-            pilotOrderService.update(pilotOrder);
-        }
-        //记录用户加零钱
-        moneyDetailsService.orderSave(serverMoney, order.getServiceUserId(), order.getOrderNo());
-        //平台记录支付打手流水
-        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_SHARE_PROFIT, order.getOrderNo(), serverMoney.negate());
-    }
-
-
-    /**
      * 管理员强制完成订单 (打款给打手)
-     *
      * @param orderNo
      * @return
      */
@@ -1025,7 +1053,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setCompleteTime(new Date());
         update(order);
         //订单分润
-        shareProfit(order);
+        orderShareProfitService.shareProfit(order);
         if (order.getUserId() != null) {
             wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_USER_APPEAL_COMPLETE);
         }
@@ -1051,7 +1079,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setCompleteTime(new Date());
         update(order);
         if (order.getIsPay()) {
-            orderRefund(order);
+            orderShareProfitService.orderRefund(order,order.getActualMoney());
         }
         if (order.getUserId() != null) {
             wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_USER_APPEAL_REFUND);
@@ -1085,37 +1113,10 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return orderConvertVo(order);
     }
 
-    /**
-     * 订单退款
-     *
-     * @param order
-     */
-    private void orderRefund(Order order) {
-        if (!order.getIsPay()) {
-            throw new OrderException(order.getOrderNo(), "未支付订单不允许退款!");
-        }
-        //记录平台流水
-        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_REFUND, order.getOrderNo(), order.getActualMoney().negate());
-        //如果是集市订单则退款给渠道商,如果是平台订单则退款给用户
-        if (OrderTypeEnum.MARKET.getType().equals(order.getType())) {
-            channelCashDetailsService.refundCash(order.getChannelId(), order.getActualMoney(), order.getOrderNo());
-        } else {
-            try {
-                payService.refund(order.getOrderNo(), order.getActualMoney());
-            } catch (Exception e) {
-                log.error("退款失败{}", order.getOrderNo(), e.getMessage());
-                throw new OrderException(order.getOrderNo(), "订单退款失败!");
-            }
-            //记录订单流水
-            orderMoneyDetailsService.create(order.getOrderNo(), order.getUserId(), DetailsEnum.ORDER_USER_CANCEL, order.getActualMoney().negate());
-        }
-
-    }
 
 
     /**
      * 陪玩师是否已经在服务用户
-     *
      * @return
      */
     @Override
@@ -1125,7 +1126,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 删除陪玩师已经服务用户状态
-     *
      * @param serverId
      */
     private void deleteAlreadyService(Integer serverId) {

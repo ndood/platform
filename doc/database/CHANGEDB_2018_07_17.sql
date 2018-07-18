@@ -13,3 +13,16 @@ CREATE TABLE `t_user_score_details` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COMMENT='用户积分详情表';
 
+
+
+
+
+
+
+
+
+--todo
+t_order表 isPay和isPayCallback两个状态同步
+--todo
+t_order_share_profit 表金额和t_order表金额同步
+

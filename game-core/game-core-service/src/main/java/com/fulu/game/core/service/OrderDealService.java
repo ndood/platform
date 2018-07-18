@@ -17,13 +17,7 @@ public interface OrderDealService extends ICommonService<OrderDeal, Integer> {
 
     void create(String orderNo, Integer userId, Integer type, String remark, String... fileUrls);
 
-
-    void create(Order order,
-                String title,
-                BigDecimal refundMoney,
-                int userId,
-                String remark,
-                String[] fileUrls);
+    public void create(OrderDeal orderDeal, String... fileUrls);
 
 
     OrderDealVO findByUserAndOrderNo(Integer userId, String orderNo);

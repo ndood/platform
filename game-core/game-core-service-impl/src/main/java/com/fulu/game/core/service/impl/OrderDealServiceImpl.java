@@ -61,24 +61,10 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal,Integer> im
         }
     }
 
-
-    public void create(Order order,
-                       String title,
-                       BigDecimal refundMoney,
-                       int userId,
-                       String remark,
-                       String[] fileUrls){
-        OrderDeal orderDeal = new OrderDeal();
-        orderDeal.setOrderNo(order.getOrderNo());
-        orderDeal.setOrderStatus(order.getStatus());
-        orderDeal.setUserId(userId);
-        orderDeal.setRemark(remark);
-        orderDeal.setTitle(title);
-        orderDeal.setRefundMoney(refundMoney);
-        orderDeal.setIsValid(true);
-        orderDeal.setType(OrderDealTypeEnum.CONSULT.getType());
+    @Override
+    public void create(OrderDeal orderDeal, String... fileUrls) {
+        orderDeal.setCreateTime(new Date());
         create(orderDeal);
-
         if(fileUrls!=null){
             for(String url : fileUrls){
                 OrderDealFile orderDealFile = new OrderDealFile();
@@ -89,6 +75,9 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal,Integer> im
             }
         }
     }
+
+
+
 
 
     @Override
