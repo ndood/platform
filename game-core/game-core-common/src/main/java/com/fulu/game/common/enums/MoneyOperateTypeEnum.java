@@ -11,6 +11,8 @@ public enum MoneyOperateTypeEnum implements TypeEnum<Integer>{
     ADMIN_ADD_CHANGE(1, "管理员加零钱"),
     ORDER_COMPLETE(2, "陪玩订单完成"),
     ADMIN_REFUSE_REMIT(3, "管理员拒绝打款"),
+    USER_DRAW_CASH_DONE(4, "提现完成"),
+    REFUND_DONE(5, "金额退回"),
 
     CHANNEL_ADD_CASH(1, "渠道商加款"),
     CHANNEL_CUT_CASH(2, "渠道商扣款"),

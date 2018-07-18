@@ -7,11 +7,13 @@ import com.fulu.game.common.exception.CashException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.CashDrawsDao;
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.dao.MoneyDetailsDao;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.CashDraws;
 import com.fulu.game.core.entity.MoneyDetails;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.CashDrawsVO;
+import com.fulu.game.core.entity.vo.MoneyDetailsVO;
 import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.CashDrawsService;
 import com.fulu.game.core.service.MoneyDetailsService;
@@ -21,6 +23,7 @@ import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.date.Week;
 import com.xiaoleilu.hutool.util.BeanUtil;
+import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +44,8 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
     private AdminService adminService;
     @Autowired
     private MoneyDetailsService mdService;
+    @Autowired
+    private MoneyDetailsDao moneyDetailsDao;
 
     @Override
     public ICommonDao<CashDraws, Integer> getDao() {
@@ -154,10 +159,23 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         }
         cashDraws.setOperator(admin.getName());
         cashDraws.setComment(comment);
-        cashDraws.setCashStatus(CashProcessStatusEnum.DONE.getType());//修改为已处理状态
-        cashDraws.setCashNo(null);//订单处理号暂做保留
+        //修改为已处理状态
+        cashDraws.setCashStatus(CashProcessStatusEnum.DONE.getType());
+        //订单处理号暂做保留
+        cashDraws.setCashNo(null);
         cashDraws.setProcessTime(new Date());
         cashDrawsDao.update(cashDraws);
+
+        MoneyDetailsVO detailsVO = new MoneyDetailsVO();
+        detailsVO.setCashId(cashId);
+        detailsVO.setAction(MoneyOperateTypeEnum.USER_DRAW_CASH.getType());
+        List<MoneyDetails> moneyDetailsList = moneyDetailsDao.findByParameter(detailsVO);
+        if(CollectionUtil.isEmpty(moneyDetailsList)) {
+            return null;
+        }
+        MoneyDetails details = moneyDetailsList.get(0);
+        details.setAction(MoneyOperateTypeEnum.USER_DRAW_CASH_DONE.getType());
+        mdService.update(details);
         return cashDraws;
     }
 
@@ -183,9 +201,23 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         balance = balance.add(cashDraws.getMoney());
         log.info("管理员拒绝打款后，用户账户余额:{}", balance);
 
+        //原表记录action状态修改为“管理员拒绝打款”
+        MoneyDetailsVO detailsVO = new MoneyDetailsVO();
+        detailsVO.setCashId(cashId);
+        detailsVO.setAction(MoneyOperateTypeEnum.USER_DRAW_CASH.getType());
+        List<MoneyDetails> moneyDetailsList = moneyDetailsDao.findByParameter(detailsVO);
+        if(CollectionUtil.isEmpty(moneyDetailsList)) {
+            return false;
+        }
+        MoneyDetails details = moneyDetailsList.get(0);
+        details.setAction(MoneyOperateTypeEnum.ADMIN_REFUSE_REMIT.getType());
+        mdService.update(details);
+
+
+        //新增action状态为“金额退回”的表记录
         MoneyDetails moneyDetails = new MoneyDetails();
         moneyDetails.setOperatorId(admin.getId());
-        moneyDetails.setAction(MoneyOperateTypeEnum.ADMIN_REFUSE_REMIT.getType());
+        moneyDetails.setAction(MoneyOperateTypeEnum.REFUND_DONE.getType());
         moneyDetails.setTargetId(cashDraws.getUserId());
         moneyDetails.setSum(balance);
         moneyDetails.setMoney(cashDraws.getMoney());

@@ -46,9 +46,8 @@
         tmd.create_time AS create_time,
         tmd.money AS money,
         tmd.sum AS sum,
-        tmd.action AS action,
-        tcd.cash_status AS cash_status
-        FROM t_money_details tmd LEFT JOIN t_cash_draws tcd ON tmd.cash_id = tcd.cash_id
+        tmd.action AS cash_status
+        FROM t_money_details tmd
         <where>
             <if test="targetId != null">tmd.target_id = #{targetId}</if>
         </where>
