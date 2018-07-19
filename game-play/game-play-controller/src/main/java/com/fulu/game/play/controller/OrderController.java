@@ -413,10 +413,10 @@ public class OrderController extends BaseController {
 
     @RequestMapping(value = "/leave-msg")
     public Result orderLeaveMsg(@RequestParam(required = true) String orderNo,
-                                Integer eventId,
+                                Integer orderEventId,
                                 String remark,
                                 String[] fileUrl) {
-        OrderDeal orderDeal =orderService.eventLeaveMessage(orderNo,eventId,remark,fileUrl);
+        OrderDeal orderDeal =orderService.eventLeaveMessage(orderNo,orderEventId,remark,fileUrl);
         return Result.success().data(orderDeal);
     }
 
