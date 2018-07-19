@@ -3,11 +3,7 @@ package com.fulu.game.core.service;
 import com.fulu.game.core.entity.ArbitrationDetails;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderMarketProduct;
-import com.fulu.game.core.entity.vo.MarketOrderVO;
-import com.fulu.game.core.entity.vo.OrderDetailsVO;
-import com.fulu.game.core.entity.vo.OrderStatusDetailsVO;
-import com.fulu.game.core.entity.vo.OrderEventVO;
-import com.fulu.game.core.entity.vo.OrderVO;
+import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import com.github.pagehelper.PageInfo;
@@ -155,7 +151,21 @@ public interface OrderService extends ICommonService<Order, Integer> {
     String userConsultOrder(String orderNo, BigDecimal refundMoney, String remark, String[] fileUrl);
 
 
-     OrderEventVO findOrderEvent(String orderNo);
+    OrderEventVO findOrderEvent(String orderNo);
+
+    /**
+     * 获取协商详情
+     * @param orderNo
+     * @return
+     */
+    List<OrderDealVO> findOrderConsultEvent(String orderNo);
+
+    /**
+     * 获取仲裁详情
+     * @param orderNo
+     * @return
+     */
+    List<OrderDealVO> findNegotiateEvent(String orderNo);
 
     /**
      * 陪玩师拒绝协商订单

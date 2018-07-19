@@ -10,6 +10,7 @@ import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.OrderDao;
+import com.fulu.game.core.dao.OrderEventDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
@@ -82,10 +83,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     private OrderEventService orderEventService;
     @Autowired
     private UserCommentService userCommentService;
-
-
-
-
+    @Autowired
+    private OrderEventDao orderEventDao;
 
     @Override
     public ICommonDao<Order, Integer> getDao() {
@@ -808,6 +807,42 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             throw new ServiceErrorException("用户不匹配!");
         }
         return orderEventVO;
+    }
+
+    public List<OrderDealVO> adminFindOrderEvent(String orderNo, Integer orderEventType) {
+        Order order = findByOrderNo(orderNo);
+
+        OrderEventVO param = new OrderEventVO();
+        param.setOrderNo(order.getOrderNo());
+        param.setType(orderEventType);
+        List<OrderEvent> orderEventList = orderEventDao.findByParameter(param);
+        OrderEvent orderEvent;
+        if(CollectionUtil.isEmpty(orderEventList)) {
+            return null;
+        }else {
+            orderEvent = orderEventList.get(0);
+        }
+
+        List<OrderDealVO> orderDealVOList = orderDealService.findByOrderEventId(orderEvent.getId());
+        if(CollectionUtil.isEmpty(orderDealVOList)) {
+            return null;
+        }
+        for(OrderDealVO orderDealVO : orderDealVOList){
+            User ouser = userService.findById(orderDealVO.getUserId());
+            orderDealVO.setHeadUrl(ouser.getHeadPortraitsUrl());
+            orderDealVO.setNickname(ouser.getNickname());
+        }
+        return orderDealVOList;
+    }
+
+    @Override
+    public List<OrderDealVO> findOrderConsultEvent(String orderNo) {
+        return adminFindOrderEvent(orderNo, OrderEventTypeEnum.CONSULT.getType());
+    }
+
+    @Override
+    public List<OrderDealVO> findNegotiateEvent(String orderNo) {
+        return adminFindOrderEvent(orderNo, OrderEventTypeEnum.APPEAL.getType());
     }
 
     /**
