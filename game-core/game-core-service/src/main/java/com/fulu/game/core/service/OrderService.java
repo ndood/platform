@@ -162,6 +162,20 @@ public interface OrderService extends ICommonService<Order, Integer> {
     OrderEventVO findOrderEvent(String orderNo);
 
     /**
+     * 获取协商详情
+     * @param orderNo
+     * @return
+     */
+    List<OrderDealVO> findOrderConsultEvent(String orderNo);
+
+    /**
+     * 获取仲裁详情
+     * @param orderNo
+     * @return
+     */
+    List<OrderDealVO> findNegotiateEvent(String orderNo);
+
+    /**
      * 陪玩师拒绝协商订单
      *
      * @param orderNo

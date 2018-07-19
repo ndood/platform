@@ -7,10 +7,12 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.core.entity.ArbitrationDetails;
 import com.fulu.game.core.entity.Order;
+import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderStatusDetailsVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
+import com.fulu.game.core.service.OrderEventService;
 import com.fulu.game.core.service.OrderService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +36,8 @@ public class OrderController extends BaseController {
 
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private OrderEventService orderEventService;
 
     /**
      * 管理员-订单列表
@@ -140,6 +144,33 @@ public class OrderController extends BaseController {
         return Result.success().data(voList).msg("订单流程查询成功!");
     }
 
+    /**
+     * 获取协商详情
+     * @param orderNo
+     * @return
+     */
+    @PostMapping("/admin/consult-detail")
+    public Result getConsultDetail(@RequestParam String orderNo) {
+        List<OrderDealVO> voList = orderService.findOrderConsultEvent(orderNo);
+        if(voList == null) {
+            return Result.error().data(voList).msg("无协商详情数据！");
+        }
+        return Result.success().data(voList).msg("获取协商详情成功!");
+    }
+
+    /**
+     * 获取仲裁详情
+     * @param orderNo
+     * @return
+     */
+    @PostMapping("/admin/negotiate-detail")
+    public Result getNegotiateDetail(@RequestParam String orderNo) {
+        List<OrderDealVO> voList = orderService.findNegotiateEvent(orderNo);
+        if(voList == null) {
+            return Result.error().data(voList).msg("无仲裁详情数据！");
+        }
+        return Result.success().data(voList).msg("获取仲裁详情成功!");
+    }
 
     /**
      * 订单列表导出
