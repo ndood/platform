@@ -116,6 +116,29 @@ public class OrderEventServiceImpl extends AbsCommonService<OrderEvent, Integer>
         return orderEvent;
     }
 
+    @Override
+    public OrderEvent createAppeal(Order order, User applyUser, String remark, String... fileUrl) {
+        OrderEvent orderEvent = new OrderEvent();
+        orderEvent.setOrderNo(order.getOrderNo());
+        orderEvent.setApplyId(applyUser.getId());
+        orderEvent.setUserId(order.getUserId());
+        orderEvent.setServiceUserId(order.getServiceUserId());
+        orderEvent.setType(OrderEventTypeEnum.APPEAL.getType());
+        orderEvent.setCreateTime(new Date());
+        orderEvent.setIsDel(false);
+        create(orderEvent);
+        OrderDeal orderDeal = new OrderDeal();
+        orderDeal.setTitle("申请了客服仲裁");
+        orderDeal.setType(OrderDealTypeEnum.APPEAL.getType());
+        orderDeal.setUserId(order.getServiceUserId());
+        orderDeal.setRemark(remark);
+        orderDeal.setOrderNo(order.getOrderNo());
+        orderDeal.setOrderEventId(orderEvent.getId());
+        orderDeal.setCreateTime(new Date());
+        orderDealService.create(orderDeal, fileUrl);
+        return orderEvent;
+    }
+
     //取消协商
     @Override
     public void cancelConsult(Order order, User applyUser, OrderEvent orderEvent) {
