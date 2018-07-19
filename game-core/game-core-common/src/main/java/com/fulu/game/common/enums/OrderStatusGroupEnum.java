@@ -43,8 +43,11 @@ public enum OrderStatusGroupEnum {
 
 
     MARKET_ORDER_REMARK_VISIBLE("接单者可见订单", "REMARK_VISIBLE", 200, new Integer[]{210, 220, 300}),
+    ALL_NORMAL_COMPLETE("陪玩师成功完成订单", "ALL", 100, new Integer[]{500, 501, 502, 600}),
 
-    ALL_NORMAL_COMPLETE("陪玩师成功完成订单", "ALL", 100, new Integer[]{500, 501, 502, 600});
+
+    CONSULT_ALL("所有协商状态", "ALL", 301, new Integer[]{350,352,415}),
+    APPEAL_ALL("所有协商状态", "ALL", 302, new Integer[]{400,401,410,420,502});
 
 
     private String name;

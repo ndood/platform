@@ -4,6 +4,7 @@ import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.entity.OrderMarketProduct;
 import com.fulu.game.core.entity.vo.MarketOrderVO;
+import com.fulu.game.core.entity.vo.OrderEventVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
@@ -150,6 +151,9 @@ public interface OrderService extends ICommonService<Order, Integer> {
      * @return
      */
     String userConsultOrder(String orderNo, BigDecimal refundMoney, String remark, String[] fileUrl);
+
+
+     OrderEventVO findOrderEvent(String orderNo);
 
     /**
      * 陪玩师拒绝协商订单

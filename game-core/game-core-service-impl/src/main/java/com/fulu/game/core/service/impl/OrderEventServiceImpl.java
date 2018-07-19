@@ -1,7 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
-import com.fulu.game.common.enums.OrderConsultTypeEnum;
+import com.fulu.game.common.enums.OrderEventTypeEnum;
 import com.fulu.game.common.enums.OrderDealTypeEnum;
 import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.core.dao.ICommonDao;
@@ -80,7 +80,7 @@ public class OrderEventServiceImpl extends AbsCommonService<OrderEvent, Integer>
         orderEvent.setApplyId(applyUser.getId());
         orderEvent.setUserId(order.getUserId());
         orderEvent.setServiceUserId(order.getServiceUserId());
-        orderEvent.setType(OrderConsultTypeEnum.CHECK.getType());
+        orderEvent.setType(OrderEventTypeEnum.CHECK.getType());
         orderEvent.setCreateTime(new Date());
         orderEvent.setIsDel(false);
         create(orderEvent);
@@ -109,7 +109,7 @@ public class OrderEventServiceImpl extends AbsCommonService<OrderEvent, Integer>
         orderEvent.setOrderStatus(orderStatus);
         orderEvent.setUserId(order.getUserId());
         orderEvent.setServiceUserId(order.getServiceUserId());
-        orderEvent.setType(OrderConsultTypeEnum.CONSULT.getType());
+        orderEvent.setType(OrderEventTypeEnum.CONSULT.getType());
         orderEvent.setCreateTime(new Date());
         orderEvent.setIsDel(false);
         create(orderEvent);

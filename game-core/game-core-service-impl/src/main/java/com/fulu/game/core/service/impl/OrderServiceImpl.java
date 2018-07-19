@@ -11,10 +11,7 @@ import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.entity.*;
-import com.fulu.game.core.entity.vo.MarketOrderVO;
-import com.fulu.game.core.entity.vo.OrderDealVO;
-import com.fulu.game.core.entity.vo.OrderDetailsVO;
-import com.fulu.game.core.entity.vo.OrderVO;
+import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import com.fulu.game.core.service.*;
@@ -29,7 +26,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 import static com.fulu.game.common.enums.OrderStatusEnum.NON_PAYMENT;
 
@@ -262,7 +262,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
         User currentUser = userService.getCurrentUser();
         Order order = findByOrderNo(orderNo);
-        if(order.getUserId().equals(currentUser.getId())){
+        if(currentUser.getId().equals(order.getUserId())){
             orderDetailsVO.setIdentity(UserTypeEnum.GENERAL_USER.getType());
         }else if(order.getServiceUserId().equals(currentUser.getId())){
             orderDetailsVO.setIdentity(UserTypeEnum.ACCOMPANY_PLAYER.getType());
@@ -470,12 +470,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     }
 
 
-
-
-
     /**
      * 领航订单
-     *
      * @param productId
      * @param num
      * @param remark
@@ -787,6 +783,20 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         //倒计时24小时后处理
         orderStatusDetailsService.create(order.getOrderNo(),order.getStatus(),24*60);
         return order.getOrderNo();
+    }
+
+    @Override
+    public OrderEventVO findOrderEvent(String orderNo) {
+        Order order = findByOrderNo(orderNo);
+        int type = OrderEventTypeEnum.CONSULT.getType();
+        if( Arrays.asList(OrderStatusGroupEnum.CONSULT_ALL.getStatusList()).contains(order.getStatus())){
+            type = OrderEventTypeEnum.CONSULT.getType();
+        }else if(Arrays.asList(OrderStatusGroupEnum.APPEAL_ALL.getStatusList()).contains(order.getStatus())){
+            type = OrderEventTypeEnum.APPEAL.getType();
+        }
+        User user = userService.getCurrentUser();
+        OrderEventVO orderEventVO =orderEventService.getOrderEvent(order,user,type);
+        return orderEventVO;
     }
 
     /**

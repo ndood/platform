@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum OrderConsultTypeEnum implements TypeEnum<Integer> {
+public enum OrderEventTypeEnum implements TypeEnum<Integer> {
 
     APPEAL(1,"仲裁"),
     CHECK(2,"验收"),

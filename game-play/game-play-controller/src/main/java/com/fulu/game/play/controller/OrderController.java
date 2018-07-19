@@ -10,6 +10,7 @@ import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.OrderDealVO;
+import com.fulu.game.core.entity.vo.OrderEventVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
@@ -346,10 +347,21 @@ public class OrderController extends BaseController {
         return Result.success().data(orderVO).msg("提交订单验收成功!");
     }
 
+    /**
+     * 订单事件查询
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/event")
+    public Result orderEvent(@RequestParam(required = true) String orderNo){
+        OrderEventVO orderEventVO = orderService.findOrderEvent(orderNo);
+        return Result.success().data(orderEventVO);
+    }
+
+
 
     /**
      * 查看申诉或者验收截图
-     *
      * @return
      */
     @RequestMapping(value = "/deals")
