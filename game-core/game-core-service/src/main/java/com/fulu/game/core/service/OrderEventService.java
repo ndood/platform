@@ -17,9 +17,34 @@ import java.math.BigDecimal;
  */
 public interface OrderEventService extends ICommonService<OrderEvent,Integer>{
 
-
+    /**
+     * 申请协商
+     * @param order
+     * @param applyUser
+     * @param orderStatus
+     * @param refundMoney
+     * @return
+     */
     OrderEvent createConsult(Order order, User applyUser, int orderStatus, BigDecimal refundMoney);
 
+
+    /**
+     * 申请仲裁
+     * @param order
+     * @param applyUser
+     * @param remark
+     * @param fileUrl
+     * @return
+     */
+    OrderEvent createAppeal(Order order, User applyUser, String remark, String... fileUrl);
+
+
+    /**
+     * 取消协商
+     * @param order
+     * @param applyUser
+     * @param orderConsult
+     */
     void cancelConsult(Order order, User applyUser,OrderEvent orderConsult);
 
     /**

@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum OrderStatusEnum {
 
     SYSTEM_CLOSE(100, "订单关闭",""),//系统关闭订单
-    USER_PAY_CLOSE(102, "订单关闭",""),//用户付款后超时关闭订单
+    USER_PAY_CLOSE(102, "订单关闭",""),//用户付款后关闭订单
     ADMIN_CLOSE(110, "订单关闭",""),//管理员关闭订单
     USER_CANCEL(101, "订单关闭",""),//用户取消订单
     SERVER_CANCEL(160, "订单关闭",""),//陪玩师取消订单

@@ -2,12 +2,9 @@ package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.ArbitrationDetails;
 import com.fulu.game.core.entity.Order;
+import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.entity.OrderMarketProduct;
-import com.fulu.game.core.entity.vo.MarketOrderVO;
-import com.fulu.game.core.entity.vo.OrderDetailsVO;
-import com.fulu.game.core.entity.vo.OrderStatusDetailsVO;
-import com.fulu.game.core.entity.vo.OrderEventVO;
-import com.fulu.game.core.entity.vo.OrderVO;
+import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import com.github.pagehelper.PageInfo;
@@ -38,13 +35,13 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 小程序订单列表
+     *
      * @param pageNum
      * @param pageSize
      * @param type
      * @return
      */
-    PageInfo<OrderDetailsVO> list(int pageNum, int pageSize,Integer type);
-
+    PageInfo<OrderDetailsVO> list(int pageNum, int pageSize, Integer type);
 
 
     /**
@@ -97,7 +94,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
      * @return
      */
     String submit(int productId, int num, String remark, String couponNo, String userIp, Integer contactType,
-                   String contactInfo);
+                  String contactInfo);
 
     /**
      * 领航网吧订单提交
@@ -141,6 +138,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 陪玩师开始服务
+     *
      * @param orderNo
      * @return
      */
@@ -149,42 +147,49 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 用户协商订单
+     *
      * @param orderNo
      * @return
      */
     String userConsultOrder(String orderNo, BigDecimal refundMoney, String remark, String[] fileUrl);
 
-
-     OrderEventVO findOrderEvent(String orderNo);
+    /**
+     * 查看留言
+     *
+     * @param orderNo
+     * @return
+     */
+    OrderEventVO findOrderEvent(String orderNo);
 
     /**
      * 陪玩师拒绝协商订单
+     *
      * @param orderNo
      * @param remark
      * @param fileUrls
      * @return
      */
-    String serverRejectConsultOrder(String orderNo, int orderDealId, String remark, String[] fileUrls);
+    String consultRejectOrder(String orderNo, int orderDealId, String remark, String[] fileUrls);
 
 
     /**
      * 陪玩师同样协商订单
+     *
      * @param orderNo
-     * @param orderDealId
-     * @param remark
+     * @param orderEventId
      * @return
      */
-    String serverAgreeConsultOrder(String orderNo,int orderDealId,String remark);
+    String consultAgreeOrder(String orderNo, int orderEventId);
 
 
     /**
      * 取消协商
+     *
      * @param orderNo
      * @param orderDealId
      * @return
      */
-    String cancelConsultOrder(String orderNo, int orderDealId);
-
+    String consultCancelOrder(String orderNo, int orderDealId);
 
 
     /**
@@ -224,10 +229,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
      * @param orderNo
      * @return
      */
-    OrderVO userAppealOrder(String orderNo, String remark, String... fileUrl);
-
-
-
+    String userAppealOrder(String orderNo, String remark, String... fileUrl);
 
 
     /**
@@ -244,7 +246,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
      * @param orderNo
      * @return
      */
-    OrderVO serverAcceptanceOrder(String orderNo,String remark,String[] fileUrl);
+    OrderVO serverAcceptanceOrder(String orderNo, String remark, String[] fileUrl);
 
     /**
      * 系统完成订单
@@ -280,6 +282,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 管理员协商处理订单(订单金额全部记录平台流水)
+     *
      * @param details
      * @return
      */
@@ -292,7 +295,6 @@ public interface OrderService extends ICommonService<Order, Integer> {
      * @return
      */
     Order findByOrderNo(String orderNo);
-
 
 
     /**
@@ -339,13 +341,20 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 用户所有完成订单数
-     *
      * @param serverId
      * @return
      */
     int allOrderCount(Integer serverId);
 
-
+    /**
+     * 留言
+     * @param orderNo
+     * @param eventId
+     * @param remark
+     * @param fileUrl
+     * @return
+     */
+    OrderDeal eventLeaveMessage(String orderNo, Integer eventId, String remark, String... fileUrl);
 
     /**
      * 用户订单详情页
@@ -357,13 +366,14 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 查询订单详情
+     *
      * @param orderNo
      * @return
      */
     OrderDetailsVO findOrderDetails(String orderNo);
 
     /**
-     * 陪玩师
+     * 陪玩师订单详情
      *
      * @param orderNo
      * @return
@@ -393,6 +403,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 获取订单流程
+     *
      * @param orderNo
      * @return
      */
