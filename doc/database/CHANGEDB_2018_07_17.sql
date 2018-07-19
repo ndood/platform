@@ -71,8 +71,21 @@ ADD COLUMN `order_event_id`  int(11) NULL DEFAULT NULL COMMENT '订单事件ID' 
 ALTER TABLE `t_order_deal`
 ADD COLUMN `title`  int(11) NULL DEFAULT NULL COMMENT '订单留言标题' AFTER `order_event_id`;
 
-
-
+-- 建表t_arbitration_details（仲裁结果流水表）
+DROP TABLE IF EXISTS `t_arbitration_details`;
+CREATE TABLE `t_arbitration_details` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `order_no` varchar(255) NOT NULL COMMENT '订单号',
+  `user_id` int(11) NOT NULL COMMENT '用户ID',
+  `service_user_id` int(11) NOT NULL COMMENT '陪玩师ID',
+  `refund_user_money` decimal(11,2) DEFAULT NULL COMMENT '退款给用户的金额',
+  `refund_service_user_money` decimal(11,2) DEFAULT NULL COMMENT '退款给陪玩师的金额',
+  `commission_money` decimal(11,2) DEFAULT NULL COMMENT '平台收入金额',
+  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) COMMENT='仲裁结果流水表';
 
 
 --todo

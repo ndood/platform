@@ -2,16 +2,14 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.dao.OrderStatusDetailsDao;
+import com.fulu.game.core.entity.OrderStatusDetails;
 import com.fulu.game.core.entity.vo.OrderStatusDetailsVO;
+import com.fulu.game.core.service.OrderStatusDetailsService;
 import com.xiaoleilu.hutool.date.DateUnit;
 import com.xiaoleilu.hutool.date.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-
-import com.fulu.game.core.dao.OrderStatusDetailsDao;
-import com.fulu.game.core.entity.OrderStatusDetails;
-import com.fulu.game.core.service.OrderStatusDetailsService;
 
 import java.util.Date;
 import java.util.List;
@@ -104,4 +102,8 @@ public class OrderStatusDetailsServiceImpl extends AbsCommonService<OrderStatusD
         }
     }
 
+    @Override
+    public List<OrderStatusDetails> findOrderProcess(String orderNo) {
+        return orderStatusDetailsDao.findOrderProcessByOrderNo(orderNo);
+    }
 }

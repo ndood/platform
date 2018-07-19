@@ -20,6 +20,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Objects;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
+import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,9 +82,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     private OrderEventService orderEventService;
     @Autowired
     private UserCommentService userCommentService;
-
-
-
 
 
     @Override
@@ -559,6 +557,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
      * @param orderIp
      * @return
      */
+    @Override
     public String submitMarketOrder(int channelId,
                                     OrderMarketProduct orderMarketProduct,
                                     String remark,
@@ -1161,6 +1160,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
      * @param orderNo
      * @return
      */
+    @Override
     public OrderVO adminHandleCompleteOrder(String orderNo) {
         Admin admin = adminService.getCurrentUser();
         log.info("管理员强制完成订单 (打款给打手)orderNo:{};adminId:{};adminName:{};", orderNo, admin.getId(), admin.getName());
@@ -1214,12 +1214,13 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 管理员协商处理订单
-     * @param orderNo
+     * @param details
      * @return
      */
     @Override
-    public OrderVO adminHandleNegotiateOrder(String orderNo) {
+    public OrderVO adminHandleNegotiateOrder(ArbitrationDetails details) {
         Admin admin = adminService.getCurrentUser();
+        String orderNo = details.getOrderNo();
         log.info("管理员协商处理订单orderNo:{};adminId:{};adminName:{};", orderNo, admin.getId(), admin.getName());
         Order order = findByOrderNo(orderNo);
         if (!order.getStatus().equals(OrderStatusEnum.APPEALING.getStatus())
@@ -1230,6 +1231,10 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setUpdateTime(new Date());
         order.setCompleteTime(new Date());
         update(order);
+        if (order.getIsPay()) {
+            orderShareProfitService.orderRefundToUserAndServiceUser(order, details);
+            orderStatusDetailsService.create(orderNo, order.getStatus(), 0);
+        }
         if (order.getUserId() != null) {
             wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_SYSTEM_USER_APPEAL_COMPLETE);
         }
@@ -1237,9 +1242,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return orderConvertVo(order);
     }
 
-
-
-
+    @Override
     public List<Order> findByStatusList(Integer[] statusList) {
         if (statusList == null) {
             return new ArrayList<>();
@@ -1284,6 +1287,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         }
     }
 
+    @Override
     public Order findByOrderNo(String orderNo) {
         if (orderNo == null) {
             return null;
@@ -1303,5 +1307,23 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         OrderVO orderVO = new OrderVO();
         BeanUtil.copyProperties(order, orderVO);
         return orderVO;
+    }
+
+    @Override
+    public List<OrderStatusDetailsVO> getOrderProcess(String orderNo) {
+        List<OrderStatusDetails> detailsList = orderStatusDetailsService.findOrderProcess(orderNo);
+        if(CollectionUtil.isEmpty(detailsList)) {
+            return null;
+        }
+        List<OrderStatusDetailsVO> voList = new ArrayList<>();
+        for(OrderStatusDetails details : detailsList) {
+            String msg = OrderStatusEnum.getMsgByStatus(details.getOrderStatus());
+            OrderStatusDetailsVO vo = new OrderStatusDetailsVO();
+            vo.setOrderNo(orderNo);
+            vo.setCreateTime(details.getCreateTime());
+            vo.setOrderStatusMsg(msg);
+            voList.add(vo);
+        }
+        return voList;
     }
 }

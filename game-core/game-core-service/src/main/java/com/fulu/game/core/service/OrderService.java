@@ -1,9 +1,11 @@
 package com.fulu.game.core.service;
 
+import com.fulu.game.core.entity.ArbitrationDetails;
 import com.fulu.game.core.entity.Order;
-import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.entity.OrderMarketProduct;
 import com.fulu.game.core.entity.vo.MarketOrderVO;
+import com.fulu.game.core.entity.vo.OrderDetailsVO;
+import com.fulu.game.core.entity.vo.OrderStatusDetailsVO;
 import com.fulu.game.core.entity.vo.OrderEventVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
@@ -278,11 +280,10 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 管理员协商处理订单(订单金额全部记录平台流水)
-     *
-     * @param orderNo
+     * @param details
      * @return
      */
-    OrderVO adminHandleNegotiateOrder(String orderNo);
+    OrderVO adminHandleNegotiateOrder(ArbitrationDetails details);
 
     /**
      * 通过订单号查找订单
@@ -389,5 +390,12 @@ public interface OrderService extends ICommonService<Order, Integer> {
      * @return
      */
     int countByChannelIdSuccess(Integer channelId);
+
+    /**
+     * 获取订单流程
+     * @param orderNo
+     * @return
+     */
+    List<OrderStatusDetailsVO> getOrderProcess(String orderNo);
 
 }

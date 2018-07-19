@@ -18,4 +18,11 @@ public interface OrderStatusDetailsDao extends ICommonDao<OrderStatusDetails,Int
 
     List<OrderStatusDetails> findByParameter(OrderStatusDetailsVO orderStatusDetailsVO);
 
+    /**
+     * 根据订单编号查询订单流程
+     * @param orderNo
+     * @return
+     */
+    List<OrderStatusDetails> findOrderProcessByOrderNo(String orderNo);
+
 }

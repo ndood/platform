@@ -5,7 +5,9 @@ import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
+import com.fulu.game.core.entity.ArbitrationDetails;
 import com.fulu.game.core.entity.Order;
+import com.fulu.game.core.entity.vo.OrderStatusDetailsVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
@@ -16,6 +18,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -64,15 +67,14 @@ public class OrderController extends BaseController {
     }
 
     /**
-     * 管理员强制完成订单,协商处理
-     *
-     * @param orderNo
+     * 管理员强制完成订单,协商处理(提交仲裁结果)
+     * @param details
      * @return
      */
     @RequestMapping(value = "/admin/negotiate")
-    public Result adminHandleNegotiateOrder(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = orderService.adminHandleNegotiateOrder(orderNo);
-        return Result.success().data(orderVO.getOrderNo()).msg("订单完成,协商处理!");
+    public Result adminHandleNegotiateOrder(ArbitrationDetails details) {
+        OrderVO orderVO = orderService.adminHandleNegotiateOrder(details);
+        return Result.success().data(orderVO.getOrderNo()).msg("仲裁已完成");
     }
 
     /**
@@ -122,6 +124,20 @@ public class OrderController extends BaseController {
                                          @RequestParam(required = true) String remark) {
         orderService.adminAppealOrder(orderNo, remark);
         return Result.success().msg("订单申诉成功!");
+    }
+
+    /**
+     * 管理员查看订单流程
+     * @param orderNo
+     * @return
+     */
+    @PostMapping("/admin/order-process")
+    public Result getOrderProcess(@RequestParam String orderNo) {
+        List<OrderStatusDetailsVO> voList = orderService.getOrderProcess(orderNo);
+        if(voList == null) {
+            return Result.error().msg("无订单数据！");
+        }
+        return Result.success().data(voList).msg("订单流程查询成功!");
     }
 
 
