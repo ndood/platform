@@ -7,6 +7,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.core.entity.ArbitrationDetails;
 import com.fulu.game.core.entity.Order;
+import com.fulu.game.core.entity.vo.OrderStatusDetailsVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
@@ -17,6 +18,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -122,6 +124,20 @@ public class OrderController extends BaseController {
                                          @RequestParam(required = true) String remark) {
         orderService.adminAppealOrder(orderNo, remark);
         return Result.success().msg("订单申诉成功!");
+    }
+
+    /**
+     * 管理员查看订单流程
+     * @param orderNo
+     * @return
+     */
+    @PostMapping("/admin/order-process")
+    public Result getOrderProcess(@RequestParam String orderNo) {
+        List<OrderStatusDetailsVO> voList = orderService.getOrderProcess(orderNo);
+        if(voList == null) {
+            return Result.error().msg("无订单数据！");
+        }
+        return Result.success().data(voList).msg("订单流程查询成功!");
     }
 
 

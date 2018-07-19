@@ -1,8 +1,8 @@
 package com.fulu.game.core.service;
 
-import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderStatusDetails;
 
+import java.util.List;
 
 
 /**
@@ -22,5 +22,12 @@ public interface OrderStatusDetailsService extends ICommonService<OrderStatusDet
       OrderStatusDetails findByOrderAndStatus(String orderNo, Integer orderStatus);
 
       long getCountDown(String orderNo,Integer orderStatus);
+
+      /**
+       * 获取订单流程
+       * @param orderNo
+       * @return
+       */
+      List<OrderStatusDetails> findOrderProcess(String orderNo);
 
 }

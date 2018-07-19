@@ -65,6 +65,18 @@
         </where>
     </select>
 
+    <select id="findOrderProcessByOrderNo" parameterType="String" resultType="com.fulu.game.core.entity.OrderStatusDetails">
+        SELECT
+            create_time,
+            order_status
+        FROM
+            t_order_status_details
+        WHERE
+            order_no = "DEV180718926790"
+        ORDER BY
+            create_time ASC;
+    </select>
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_order_status_details
         <where>

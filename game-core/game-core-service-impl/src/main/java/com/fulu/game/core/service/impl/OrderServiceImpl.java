@@ -11,10 +11,7 @@ import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.entity.*;
-import com.fulu.game.core.entity.vo.MarketOrderVO;
-import com.fulu.game.core.entity.vo.OrderDealVO;
-import com.fulu.game.core.entity.vo.OrderDetailsVO;
-import com.fulu.game.core.entity.vo.OrderVO;
+import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import com.fulu.game.core.service.*;
@@ -23,6 +20,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Objects;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
+import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1225,6 +1223,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         update(order);
         if (order.getIsPay()) {
             orderShareProfitService.orderRefundToUserAndServiceUser(order, details);
+            orderStatusDetailsService.create(orderNo, order.getStatus(), 0);
         }
         if (order.getUserId() != null) {
             wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_SYSTEM_USER_APPEAL_COMPLETE);
@@ -1298,5 +1297,23 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         OrderVO orderVO = new OrderVO();
         BeanUtil.copyProperties(order, orderVO);
         return orderVO;
+    }
+
+    @Override
+    public List<OrderStatusDetailsVO> getOrderProcess(String orderNo) {
+        List<OrderStatusDetails> detailsList = orderStatusDetailsService.findOrderProcess(orderNo);
+        if(CollectionUtil.isEmpty(detailsList)) {
+            return null;
+        }
+        List<OrderStatusDetailsVO> voList = new ArrayList<>();
+        for(OrderStatusDetails details : detailsList) {
+            String msg = OrderStatusEnum.getMsgByStatus(details.getOrderStatus());
+            OrderStatusDetailsVO vo = new OrderStatusDetailsVO();
+            vo.setOrderNo(orderNo);
+            vo.setCreateTime(details.getCreateTime());
+            vo.setOrderStatusMsg(msg);
+            voList.add(vo);
+        }
+        return voList;
     }
 }
