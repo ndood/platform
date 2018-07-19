@@ -11,6 +11,7 @@ import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.dao.OrderEventDao;
+import com.fulu.game.core.dao.OrderShareProfitDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
@@ -85,6 +86,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     private UserCommentService userCommentService;
     @Autowired
     private OrderEventDao orderEventDao;
+    @Autowired
+    private OrderShareProfitDao orderShareProfitDao;
 
     @Override
     public ICommonDao<Order, Integer> getDao() {
@@ -136,6 +139,22 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             orderResVO.setOrderMarketProduct(orderMarketProduct);
             //添加订单状态
             orderResVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderResVO.getStatus()));
+
+            OrderShareProfitVO profitVO = new OrderShareProfitVO();
+            profitVO.setOrderNo(orderResVO.getOrderNo());
+            List<OrderShareProfit> profitList = orderShareProfitDao.findByParameter(profitVO);
+            if(CollectionUtil.isEmpty(profitList)) {
+                continue;
+            }
+            OrderShareProfit profit = profitList.get(0);
+            BigDecimal commissionMoney = orderResVO.getCommissionMoney();
+            BigDecimal serverMoney = orderResVO.getServerMoney();
+            if(commissionMoney == null) {
+                orderResVO.setCommissionMoney(profit.getCommissionMoney());
+            }
+            if(serverMoney == null) {
+                orderResVO.setServerMoney(profit.getServerMoney());
+            }
         }
         return new PageInfo(list);
     }
