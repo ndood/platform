@@ -110,6 +110,12 @@ public class Order implements Serializable {
     //下单IP
     private String orderIp;
 
+    //佣金
+    BigDecimal commissionMoney;
+
+    //陪玩师金额
+    BigDecimal serverMoney;
+
     public String getRemark() {
         if (null == remark) {
             return "";
