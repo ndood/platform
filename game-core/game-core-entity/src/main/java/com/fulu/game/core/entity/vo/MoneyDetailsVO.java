@@ -17,6 +17,7 @@ public class MoneyDetailsVO extends MoneyDetails {
     private String mobile;
     private String nickname;
     private Integer cashStatus;
+    private String cashStatusMsg;
 
     private Date startTime;
     private Date endTime;
