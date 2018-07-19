@@ -7,8 +7,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum OrderConsultTypeEnum implements TypeEnum<Integer> {
 
-    CONSULT(1, "协商"),
-    ARBITRATE(2, "仲裁");
+    APPEAL(1,"仲裁"),
+    CHECK(2,"验收"),
+    CONSULT(3,"协商");
 
 
     private Integer type;

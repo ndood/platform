@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public enum  OrderDealTypeEnum implements  TypeEnum<Integer>{
 
-    APPEAL(1,"申诉"),
+    APPEAL(1,"仲裁"),
     CHECK(2,"验收"),
     CONSULT(3,"协商");
 

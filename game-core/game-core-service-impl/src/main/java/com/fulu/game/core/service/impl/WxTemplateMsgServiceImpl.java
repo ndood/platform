@@ -116,7 +116,6 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
     /**
      * 通用模板推送消息
-     *
      * @param userId
      * @param wechatTemplateMsgEnum
      * @param replaces
@@ -146,6 +145,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
                 dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", content),
                         new WxMaTemplateMessage.Data("keyword2", date));
                 break;
+
             default:
                 dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", content),
                         new WxMaTemplateMessage.Data("keyword2", date));

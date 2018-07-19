@@ -3,6 +3,8 @@ package com.fulu.game.core.service.impl;
 
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.vo.OrderStatusDetailsVO;
+import com.xiaoleilu.hutool.date.DateUnit;
+import com.xiaoleilu.hutool.date.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -88,5 +90,18 @@ public class OrderStatusDetailsServiceImpl extends AbsCommonService<OrderStatusD
         }
     }
 
+
+
+    public long getCountDown(String orderNo,Integer orderStatus){
+        OrderStatusDetails orderStatusDetails = findByOrderAndStatus(orderNo,orderStatus);
+        if(orderStatusDetails.getCountDownMinute().equals(0)){
+            return  0L;
+        }else{
+            long differSecond = DateUtil.between(orderStatusDetails.getTriggerTime(),new Date(), DateUnit.SECOND);
+            long storeCountDown =  orderStatusDetails.getCountDownMinute()*60;
+            long countDown = storeCountDown-differSecond<0?0:storeCountDown-differSecond;
+            return countDown;
+        }
+    }
 
 }

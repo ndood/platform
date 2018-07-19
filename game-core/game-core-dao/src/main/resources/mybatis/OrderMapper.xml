@@ -39,6 +39,13 @@
     <resultMap id="OrderResVOMap" type="com.fulu.game.core.entity.vo.responseVO.OrderResVO" extends="OrderResultMap">
     </resultMap>
 
+    <resultMap id="OrderDetailsVOMap" type="com.fulu.game.core.entity.vo.OrderDetailsVO" extends="OrderResultMap">
+        <result column="userNickName" property="userNickName"/>
+        <result column="serverNickName" property="serverNickName"/>
+        <result column="userHeadUrl" property="userHeadUrl"/>
+        <result column="serverHeadUrl" property="serverHeadUrl"/>
+    </resultMap>
+
     <sql id="Base_Column_List">
         id,order_no,coupon_no,category_id,user_id,service_user_id,name,type,channel_id,remark,is_pay,is_pay_callback,status,contact_type,contact_info,total_money,actual_money,coupon_money,charges,create_time,update_time,pay_time,complete_time,order_ip,receiving_time
     </sql>
@@ -51,6 +58,7 @@
             id = #{id}
         </where>
     </select>
+
 
     <select id="findByOrderNo" parameterType="java.lang.String" resultMap="OrderResultMap">
         select
@@ -65,6 +73,32 @@
         select
         <include refid="Base_Column_List"/>
         from t_order
+    </select>
+
+    <select id="listOrderDetails" resultMap="OrderDetailsVOMap">
+        SELECT
+        o.*,
+        cu.nickname AS userNickName,
+        pu.nickname AS serverNickName,
+        cu.head_portraits_url AS userHeadUrl,
+        pu.head_portraits_url AS serverHeadUrl,
+        op.product_id as productId
+        FROM
+        t_order o
+        LEFT JOIN t_user cu ON o.user_id = cu.id
+        LEFT JOIN t_user pu ON o.service_user_id = pu.id
+        LEFT JOIN t_order_product op ON o.order_no = op.order_no
+        <where>
+            <if test="type == null">
+               (o.user_id = #{userId}) OR ( o.service_user_id = #{userId} AND o.`status` NOT IN (100, 101) )
+            </if>
+            <if test="type == 1">
+                o.user_id = #{userId}
+            </if>
+            <if test="type == 2">
+                o.service_user_id = #{userId} AND o.`status` NOT IN (100, 101)
+            </if>
+        </where>
     </select>
 
     <select id="countByParameter" resultType="java.lang.Integer" parameterType="com.fulu.game.core.entity.vo.OrderVO">

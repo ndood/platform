@@ -5,7 +5,7 @@
     <resultMap id="OrderDealResultMap" type="com.fulu.game.core.entity.OrderDeal">
         <id column="id" property="id"/>
         <result column="order_no" property="orderNo"/>
-        <result column="order_consult_id" property="orderConsultId"/>
+        <result column="order_event_id" property="orderEventId"/>
         <result column="title" property="title"/>
         <result column="user_id" property="userId"/>
         <result column="type" property="type"/>
@@ -17,7 +17,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,order_no,order_consult_id,title,user_id,type,remark,create_time    </sql>
+        id,order_no,order_event_id,title,user_id,type,remark,create_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="OrderDealResultMap">
         select
@@ -43,8 +43,8 @@
             <if test="orderNo != null">
                 and order_no = #{orderNo}
             </if>
-            <if test="orderConsultId != null">
-                and order_consult_id = #{orderConsultId}
+            <if test="orderEventId != null">
+                and order_event_id = #{orderEventId}
             </if>
             <if test="title != null">
                 and title = #{title}
@@ -73,9 +73,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.OrderDeal">
         insert into
-        t_order_deal (order_no,order_consult_id,title,user_id,type,remark,create_time)
+        t_order_deal (order_no,order_event_id,title,user_id,type,remark,create_time)
         values
-        (#{orderNo},#{orderConsultId},#{title},#{userId},#{type},#{remark},#{createTime})
+        (#{orderNo},#{orderEventId},#{title},#{userId},#{type},#{remark},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.OrderDeal">
@@ -86,8 +86,8 @@
                 order_no = #{orderNo},
             </if>
 
-            <if test="orderConsultId != null">
-                order_consult_id = #{orderConsultId},
+            <if test="orderEventId != null">
+                order_event_id = #{orderEventId},
             </if>
 
             <if test="title != null">

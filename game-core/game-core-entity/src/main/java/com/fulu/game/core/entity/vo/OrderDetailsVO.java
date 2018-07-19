@@ -1,9 +1,10 @@
-package com.fulu.game.core.entity;
+package com.fulu.game.core.entity.vo;
 
+import com.fulu.game.core.entity.Order;
 import lombok.Data;
 
 @Data
-public class OrderDetailsVO extends Order{
+public class OrderDetailsVO extends Order {
 
     private String serverHeadUrl;
 
@@ -18,14 +19,15 @@ public class OrderDetailsVO extends Order{
     private String statusStr;
     //订单状态描述
     private String statusNote;
-
     private String categoryIcon;
-
     //倒计时
     private Long countDown;
-
     private Integer productId;
 
-
     private Integer identity;
+
+    private Integer commentScore;
+
+    private String commentContent;
+
 }

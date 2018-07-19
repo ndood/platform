@@ -17,6 +17,12 @@ import java.util.List;
 @Data
 public class OrderDealVO  extends OrderDeal {
 
+    //用户昵称
+    private String nickname;
+    //头像
+    private String headUrl;
+
+
     List<OrderDealFile> orderDealFileList;
 
 }

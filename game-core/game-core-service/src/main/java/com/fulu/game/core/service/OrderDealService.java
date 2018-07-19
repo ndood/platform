@@ -5,6 +5,7 @@ import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 /**
@@ -17,7 +18,7 @@ public interface OrderDealService extends ICommonService<OrderDeal, Integer> {
 
     void create(String orderNo, Integer userId, Integer type, String remark, String... fileUrls);
 
-    public void create(OrderDeal orderDeal, String... fileUrls);
+    void create(OrderDeal orderDeal, String... fileUrls);
 
 
     OrderDealVO findByUserAndOrderNo(Integer userId, String orderNo);
@@ -29,4 +30,7 @@ public interface OrderDealService extends ICommonService<OrderDeal, Integer> {
      * @return
      */
     OrderDealVO findOrderAcceptanceResult(String orderNo);
+
+
+    List<OrderDealVO> findByOrderEventId(Integer orderEventId);
 }

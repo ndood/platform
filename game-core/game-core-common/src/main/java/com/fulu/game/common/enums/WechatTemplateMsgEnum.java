@@ -37,6 +37,7 @@ public enum WechatTemplateMsgEnum {
     private String page;
     //模板代码
     private WechatTemplateEnum templateId;
+
     //内容
     private String content;
 

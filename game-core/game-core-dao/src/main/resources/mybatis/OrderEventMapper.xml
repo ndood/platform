@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.fulu.game.core.dao.OrderConsultDao">
-    <resultMap id="OrderConsultResultMap" type="com.fulu.game.core.entity.OrderConsult">
+<mapper namespace="com.fulu.game.core.dao.OrderEventDao">
+    <resultMap id="OrderEventResultMap" type="com.fulu.game.core.entity.OrderEvent">
         <id column="id" property="id"/>
         <result column="order_no" property="orderNo"/>
         <result column="order_status" property="orderStatus"/>
+        <result column="apply_id" property="applyId"/>
         <result column="user_id" property="userId"/>
         <result column="service_user_id" property="serviceUserId"/>
         <result column="type" property="type"/>
@@ -14,39 +15,44 @@
         <result column="is_del" property="isDel"/>
     </resultMap>
 
-    <resultMap id="OrderConsultResultVOMap" type="com.fulu.game.core.entity.vo.OrderConsultVO"
-               extends="OrderConsultResultMap">
+    <resultMap id="OrderEventResultVOMap" type="com.fulu.game.core.entity.vo.OrderEventVO"
+               extends="OrderEventResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,order_no,order_status,user_id,service_user_id,type,refund_money,create_time,is_del    </sql>
+        id,order_no,order_status,apply_id,user_id,service_user_id,type,refund_money,create_time,is_del    </sql>
 
-    <select id="findById" parameterType="java.lang.Integer" resultMap="OrderConsultResultMap">
+    <select id="findById" parameterType="java.lang.Integer" resultMap="OrderEventResultMap">
         select
         <include refid="Base_Column_List"/>
-        from t_order_consult
+        from t_order_event
         <where>
             id = #{id}
         </where>
     </select>
 
-    <select id="findAll" resultMap="OrderConsultResultMap">
+    <select id="findAll" resultMap="OrderEventResultMap">
         select
         <include refid="Base_Column_List"/>
-        from t_order_consult
+        from t_order_event
+        <where>
+            is_del = FALSE
+        </where>
     </select>
 
-    <select id="findByParameter" resultMap="OrderConsultResultMap"
-            parameterType="com.fulu.game.core.entity.vo.OrderConsultVO">
+    <select id="findByParameter" resultMap="OrderEventResultMap" parameterType="com.fulu.game.core.entity.vo.OrderEventVO">
         SELECT
         <include refid="Base_Column_List"/>
-        FROM t_order_consult
+        FROM t_order_event
         <where>
             <if test="orderNo != null">
                 and order_no = #{orderNo}
             </if>
             <if test="orderStatus != null">
                 and order_status = #{orderStatus}
+            </if>
+            <if test="applyId != null">
+                and apply_id = #{applyId}
             </if>
             <if test="userId != null">
                 and user_id = #{userId}
@@ -63,28 +69,26 @@
             <if test="createTime != null">
                 and create_time = #{createTime}
             </if>
-            <if test="isDel != null">
-                and is_del = #{isDel}
-            </if>
+                and is_del = FALSE
         </where>
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">
-        delete from t_order_consult
+        delete from t_order_event
         <where>
             id = #{id}
         </where>
     </delete>
 
-    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.OrderConsult">
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.OrderEvent">
         insert into
-        t_order_consult (order_no,order_status,user_id,service_user_id,type,refund_money,create_time,is_del)
+        t_order_event (order_no,order_status,apply_id,user_id,service_user_id,type,refund_money,create_time,is_del)
         values
-        (#{orderNo},#{orderStatus},#{userId},#{serviceUserId},#{type},#{refundMoney},#{createTime},#{isDel})
+        (#{orderNo},#{orderStatus},#{applyId},#{userId},#{serviceUserId},#{type},#{refundMoney},#{createTime},#{isDel})
     </insert>
 
-    <update id="update" parameterType="com.fulu.game.core.entity.OrderConsult">
-        update t_order_consult
+    <update id="update" parameterType="com.fulu.game.core.entity.OrderEvent">
+        update t_order_event
         <set>
 
             <if test="orderNo != null">
@@ -93,6 +97,10 @@
 
             <if test="orderStatus != null">
                 order_status = #{orderStatus},
+            </if>
+
+            <if test="applyId != null">
+                apply_id = #{applyId},
             </if>
 
             <if test="userId != null">

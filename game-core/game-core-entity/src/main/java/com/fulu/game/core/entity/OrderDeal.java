@@ -20,7 +20,7 @@ public class OrderDeal implements Serializable {
 	//订单号
 	private String orderNo;
 	//订单申诉和仲裁对应ID
-	private Integer orderConsultId;
+	private Integer orderEventId;
 	//订单协商标题
 	private String title;
 	//

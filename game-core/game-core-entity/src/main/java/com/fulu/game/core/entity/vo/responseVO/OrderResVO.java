@@ -1,26 +1,20 @@
 package com.fulu.game.core.entity.vo.responseVO;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderMarketProduct;
 import com.fulu.game.core.entity.OrderProduct;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.vo.MarketOrderVO;
 import com.fulu.game.core.entity.vo.OrderDealVO;
-import com.fulu.game.core.entity.vo.OrderMarketProductVO;
-import com.fulu.game.core.entity.vo.OrderProductVO;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * @author 2018.4.29
  * 管理员订单列表查询结果VO
  */
 @Data
-public class OrderResVO extends Order{
+public class OrderResVO extends Order {
 
 
     private User user;//玩家

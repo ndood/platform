@@ -7,8 +7,7 @@ import com.fulu.game.common.enums.UserScoreEnum;
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.exception.SystemException;
 import com.fulu.game.core.entity.Order;
-import com.fulu.game.core.entity.OrderDetailsVO;
-import com.fulu.game.core.entity.Product;
+import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderVO;
@@ -36,8 +35,6 @@ public class OrderController extends BaseController {
     @Autowired
     private OrderService orderService;
     @Autowired
-    private ProductService productService;
-    @Autowired
     private OrderDealService orderDealService;
     @Autowired
     private PayService payService;
@@ -51,7 +48,6 @@ public class OrderController extends BaseController {
 
     /**
      * 查询陪玩是否是服务状态
-     *
      * @param productId
      * @return
      */
@@ -62,7 +58,6 @@ public class OrderController extends BaseController {
 
     /**
      * 提交订单
-     *
      * @param productId
      * @param request
      * @param num
@@ -95,6 +90,8 @@ public class OrderController extends BaseController {
             redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));
         }
     }
+
+
 
 
     @RequestMapping(value = "pilot/submit")
@@ -139,7 +136,6 @@ public class OrderController extends BaseController {
 
     /**
      * 用户订单状态列表
-     *
      * @return
      */
     @RequestMapping(value = "/user/status")
@@ -152,6 +148,7 @@ public class OrderController extends BaseController {
         }
         return Result.success().data(map);
     }
+
 
     /**
      * 用户订单列表
@@ -171,9 +168,9 @@ public class OrderController extends BaseController {
         return Result.success().data(pageInfo);
     }
 
+
     /**
      * 打手订单状态列表
-     *
      * @return
      */
     @RequestMapping(value = "/server/status")
@@ -190,14 +187,13 @@ public class OrderController extends BaseController {
 
     /**
      * 打手订单列表
-     *
      * @return
      */
     @RequestMapping(value = "/server/list")
     public Result serverOrderList(@RequestParam(required = true) Integer pageNum,
                                   @RequestParam(required = true) Integer pageSize,
                                   Integer categoryId,
-                                  @RequestParam(required = true) Integer status) {
+                                  @RequestParam(required = true) Integer status){
         if (status == null) {
             status = OrderStatusGroupEnum.SERVER_ALL.getValue();
         }
@@ -207,8 +203,22 @@ public class OrderController extends BaseController {
     }
 
     /**
+     * 订单列表
+     * @param pageNum
+     * @param pageSize
+     * @param type
+     * @return
+     */
+    @RequestMapping(value = "/list")
+    public Result orderList(@RequestParam(required = true) Integer pageNum,
+                            @RequestParam(required = true) Integer pageSize,
+                            Integer type){
+        PageInfo<OrderDetailsVO> page = orderService.list(pageNum,pageSize,type);
+        return Result.success().data(page);
+    }
+
+    /**
      * 用户取消订单
-     *
      * @param orderNo
      * @return
      */
@@ -218,9 +228,9 @@ public class OrderController extends BaseController {
         return Result.success().data(orderVO).msg("取消订单成功!");
     }
 
+
     /**
      * 用户申诉订单
-     *
      * @param orderNo
      * @param remark
      * @param fileUrl
@@ -236,7 +246,6 @@ public class OrderController extends BaseController {
 
     /**
      * 提醒接单
-     *
      * @param orderNo
      * @return
      */
@@ -252,7 +261,6 @@ public class OrderController extends BaseController {
     }
 
 
-
     @RequestMapping(value = "/remind/start-order")
     public Result remindStartOrder(@RequestParam(required = true) String orderNo) {
         if (redisOpenService.isTimeIntervalInside(orderNo)) {
@@ -264,12 +272,8 @@ public class OrderController extends BaseController {
         return Result.success().msg("提醒开始成功!");
     }
 
-
-
-
     /**
      * 用户协商订单
-     *
      * @return
      */
     @RequestMapping(value = "/user/consult")
@@ -284,7 +288,6 @@ public class OrderController extends BaseController {
 
     /**
      * 陪玩师接收订单
-     *
      * @param orderNo
      * @return
      */
@@ -297,7 +300,6 @@ public class OrderController extends BaseController {
 
     /**
      * 陪玩师开始服务
-     *
      * @param orderNo
      * @return
      */
@@ -306,6 +308,7 @@ public class OrderController extends BaseController {
         orderService.serverStartServeOrder(orderNo);
         return Result.success().data(orderNo).msg("接单成功!");
     }
+
 
     /**
      * 用户验收订单
@@ -318,9 +321,9 @@ public class OrderController extends BaseController {
         return Result.success().data(orderVO).msg("订单验收成功!");
     }
 
+
     /**
      * 陪玩师取消订单
-     *
      * @param orderNo
      * @return
      */
@@ -332,13 +335,14 @@ public class OrderController extends BaseController {
 
     /**
      * 陪玩师提交验收订单
-     *
      * @param orderNo
      * @return
      */
     @RequestMapping(value = "/server/acceptance")
-    public Result serverAcceptanceOrder(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = orderService.serverAcceptanceOrder(orderNo);
+    public Result serverAcceptanceOrder(@RequestParam(required = true) String orderNo,
+                                        String remark,
+                                        String[] fileUrl) {
+        OrderVO orderVO = orderService.serverAcceptanceOrder(orderNo,remark,fileUrl);
         return Result.success().data(orderVO).msg("提交订单验收成功!");
     }
 
@@ -358,7 +362,6 @@ public class OrderController extends BaseController {
 
     /**
      * 查看陪玩师的验收截图
-     *
      * @param orderNo
      * @return
      */
@@ -371,7 +374,6 @@ public class OrderController extends BaseController {
 
     /**
      * 订单详情
-     *
      * @param orderNo
      * @return
      */
