@@ -16,6 +16,8 @@ import java.util.List;
 @Data
 public class OrderEventVO extends OrderEvent {
 
+    private Integer identity;
+
     private String categoryName;
     //倒计时
     private Long countDown;

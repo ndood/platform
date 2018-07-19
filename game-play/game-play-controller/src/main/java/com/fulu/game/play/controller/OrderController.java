@@ -348,7 +348,7 @@ public class OrderController extends BaseController {
     }
 
     /**
-     * 订单事件查询
+     * 订单事件查询（查询协商和申诉）
      * @param orderNo
      * @return
      */
