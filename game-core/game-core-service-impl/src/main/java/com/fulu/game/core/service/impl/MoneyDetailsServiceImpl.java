@@ -1,5 +1,6 @@
 package com.fulu.game.core.service.impl;
 
+import com.fulu.game.common.enums.CashProcessStatusEnum;
 import com.fulu.game.common.enums.MoneyOperateTypeEnum;
 import com.fulu.game.common.exception.CashException;
 import com.fulu.game.common.exception.UserException;
@@ -18,6 +19,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
+import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,6 +60,30 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         String orderBy = "tmd.create_time desc";
         PageHelper.startPage(pageNum, pageSize, orderBy);
         List<MoneyDetailsVO> list = moneyDetailsDao.findByUser(moneyDetailsVO);
+        if(CollectionUtil.isEmpty(list)) {
+            return null;
+        }
+        for(MoneyDetailsVO vo : list) {
+            if(vo.getAction().equals(MoneyOperateTypeEnum.USER_DRAW_CASH.getType())) {
+                if(vo.getCashStatus() == null) {
+                    vo.setCashStatusMsg(CashProcessStatusEnum.WAITING.getMsg());
+                }else {
+                    if(vo.getCashStatus().equals(CashProcessStatusEnum.DONE.getType())) {
+                        vo.setCashStatusMsg(CashProcessStatusEnum.DONE.getMsg());
+                    }else if(vo.getCashStatus().equals(CashProcessStatusEnum.REFUSE.getType())) {
+                        vo.setCashStatusMsg(CashProcessStatusEnum.REFUSE.getMsg());
+                    }else {
+                        vo.setCashStatusMsg(CashProcessStatusEnum.WAITING.getMsg());
+                    }
+                }
+            }else if(vo.getAction().equals(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType())) {
+                vo.setCashStatusMsg(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getMsg());
+            }else if(vo.getAction().equals(MoneyOperateTypeEnum.ORDER_COMPLETE.getType())) {
+                vo.setCashStatusMsg(MoneyOperateTypeEnum.ORDER_COMPLETE.getMsg());
+            }else if(vo.getAction().equals(MoneyOperateTypeEnum.ADMIN_REFUSE_REMIT.getType())) {
+                vo.setCashStatusMsg(CashProcessStatusEnum.REFUND.getMsg());
+            }
+        }
         return new PageInfo(list);
     }
 
