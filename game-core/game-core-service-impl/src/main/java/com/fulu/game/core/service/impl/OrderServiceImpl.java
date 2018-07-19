@@ -92,6 +92,18 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     }
 
 
+
+    public void pushToServiceOrderWxMessage(Order order,WechatTemplateMsgEnum wechatTemplateMsgEnum) {
+        wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(),wechatTemplateMsgEnum);
+    }
+
+
+    public void pushToUserOrderWxMessage(Order order,WechatTemplateMsgEnum wechatTemplateMsgEnum) {
+        User user =userService.getCurrentUser();
+        String orderStatus = OrderStatusEnum.getMsgByStatus(order.getStatus());
+        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(),wechatTemplateMsgEnum,orderStatus,order.getTotalMoney().toPlainString(),user.getNickname());
+    }
+
     @Override
     public PageInfo<OrderResVO> list(OrderSearchVO orderSearchVO, Integer pageNum, Integer pageSize, String orderBy) {
         if (StringUtils.isBlank(orderBy)) {
@@ -696,9 +708,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             //发送短信通知给陪玩师
             User server = userService.findById(order.getServiceUserId());
             SMSUtil.sendOrderReceivingRemind(server.getMobile(), order.getName());
-            User user = userService.findById(order.getUserId());
-            //推送通知陪玩师
-            wxTemplateMsgService.pushWechatTemplateMsg(server.getId(), WechatTemplateMsgEnum.ORDER_USER_PAY, user.getNickname(), order.getName());
+            //推送通知
+            pushToServiceOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOSERVICE_PAY);
         }
         return orderConvertVo(order);
     }
@@ -722,6 +733,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         update(order);
         //计算订单状态倒计时24小时
         orderStatusDetailsService.create(order.getOrderNo(),order.getStatus(),24*60);
+        //推送通知
+        pushToUserOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOUSER_AFFIRM_RECEIVE);
         return order.getOrderNo();
     }
 
@@ -744,7 +757,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setStatus(OrderStatusEnum.SERVICING.getStatus());
         order.setUpdateTime(new Date());
         update(order);
-        orderStatusDetailsService.create(order.getOrderNo(),order.getStatus(),0);
+        orderStatusDetailsService.create(order.getOrderNo(),order.getStatus());
+        //推送通知
+        pushToUserOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOUSER_START_SERVICE);
         return order.getOrderNo();
     }
 
@@ -796,10 +811,11 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         orderDeal.setOrderEventId(orderEvent.getId());
         orderDeal.setCreateTime(new Date());
         orderDealService.create(orderDeal,fileUrls);
-
         //倒计时24小时后处理
         orderStatusDetailsService.create(order.getOrderNo(),order.getStatus(),24*60);
-        return order.getOrderNo();
+        //推送通知
+        pushToServiceOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT);
+        return orderNo;
     }
 
 
@@ -815,6 +831,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         }
         User user = userService.getCurrentUser();
         OrderEventVO orderEventVO =orderEventService.getOrderEvent(order,user,type);
+        if(orderEventVO==null){
+            throw new OrderException(orderNo,"该协商已经被取消!");
+        }
         User currentUser = userService.getCurrentUser();
         if(currentUser.getId().equals(orderEventVO.getUserId())){
             orderEventVO.setIdentity(UserTypeEnum.GENERAL_USER.getType());
@@ -898,9 +917,10 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         orderDeal.setOrderEventId(orderEvent.getId());
         orderDeal.setCreateTime(new Date());
         orderDealService.create(orderDeal,fileUrls);
-
         //倒计时24小时后处理
         orderStatusDetailsService.create(order.getOrderNo(),order.getStatus(),24*60);
+        //推送通知
+        pushToUserOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_REJECT);
         return order.getOrderNo();
     }
 
@@ -927,7 +947,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setStatus(OrderStatusEnum.CONSULT_COMPLETE.getStatus());
         order.setUpdateTime(new Date());
         update(order);
-
         String title = "同意了协商，￥"+orderEvent.getRefundMoney().toPlainString()+"已经退款结算";
         OrderDeal orderDeal = new OrderDeal();
         orderDeal.setTitle(title);
@@ -941,7 +960,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         //退款给用户
         orderShareProfitService.orderRefund(order,orderEvent.getRefundMoney());
         //创建订单状态详情
-        orderStatusDetailsService.create(order.getOrderNo(),order.getStatus(),0);
+        orderStatusDetailsService.create(order.getOrderNo(),order.getStatus());
+        //推送通知同意协商
+        pushToUserOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE);
         return order.getOrderNo();
     }
 
@@ -949,14 +970,14 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     /**
      * 用户取消协商
      * @param orderNo
-     * @param orderConsultId
+     * @param orderEventId
      * @return
      */
     @Override
-    public String consultCancelOrder(String orderNo, int orderConsultId) {
+    public String consultCancelOrder(String orderNo, int orderEventId) {
         log.info("取消协商处理订单orderNo:{}", orderNo);
         Order order = findByOrderNo(orderNo);
-        OrderEvent orderEvent = orderEventService.findById(orderConsultId);
+        OrderEvent orderEvent = orderEventService.findById(orderEventId);
         if(orderEvent==null||!order.getOrderNo().equals(orderEvent.getOrderNo())){
             throw new OrderException(orderNo,"拒绝协商订单不匹配!");
         }
@@ -972,6 +993,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setUpdateTime(new Date());
         update(order);
         log.info("取消协商处理更改订单状态后:{}",order);
+        //推送通知
+        pushToServiceOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL);
         return order.getOrderNo();
     }
 
@@ -996,8 +1019,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         if (order.getIsPay()) {
             orderShareProfitService.orderRefund(order,order.getActualMoney());
         }
-        orderStatusDetailsService.create(order.getOrderNo(),order.getStatus(),0);
-
+        orderStatusDetailsService.create(order.getOrderNo(),order.getStatus());
+        //消息提醒
+        pushToUserOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOUSER_REJECT_RECEIVE);
         return orderConvertVo(order);
     }
 
@@ -1022,7 +1046,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             orderShareProfitService.orderRefund(order,order.getActualMoney());
         }
         orderStatusDetailsService.create(order.getOrderNo(),order.getStatus(),0);
-
     }
 
     /**
@@ -1047,9 +1070,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         if (order.getIsPay()) {
             orderShareProfitService.orderRefund(order,order.getActualMoney());
         }
-
         orderStatusDetailsService.create(order.getOrderNo(),order.getStatus(),0);
-
     }
 
 
@@ -1078,11 +1099,11 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         // 全额退款用户
         if (order.getIsPay()) {
             orderShareProfitService.orderRefund(order,order.getActualMoney());
+            pushToServiceOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOSERVICE_ORDER_CANCEL);
         }
-        orderStatusDetailsService.create(order.getOrderNo(),order.getStatus(),0);
+        orderStatusDetailsService.create(order.getOrderNo(),order.getStatus());
         return orderConvertVo(order);
     }
-
 
     /**
      * 用户仲裁订单
@@ -1105,14 +1126,16 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setStatus(OrderStatusEnum.APPEALING.getStatus());
         order.setUpdateTime(new Date());
         update(order);
+        //创建仲裁事件
         orderEventService.createAppeal(order,user,remark,fileUrl);
-        //推送通知给双方
-        if (order.getUserId() != null) {
-            wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_USER_APPEAL);
-        }
-        wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_SERVER_USER_APPEAL);
         //两小时倒计时
         orderStatusDetailsService.create(order.getOrderNo(),order.getStatus(),2*60);
+        //推送通知
+        if(user.getId().equals(order.getUserId())){
+            pushToServiceOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL);
+        }else{
+            pushToUserOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL);
+        }
         return orderNo;
     }
 
@@ -1168,9 +1191,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         orderStatusDetailsService.create(order.getOrderNo(),order.getStatus(),24*60);
         //提交验收订单
         orderEventService.createCheckEvent(order,user,remark,fileUrl);
-        if (order.getUserId() != null) {
-            wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_SERVER_USER_CHECK, order.getName());
-        }
+        //推送通知
+        pushToUserOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOUSER_CHECK);
         return orderConvertVo(order);
     }
 
@@ -1193,7 +1215,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         update(order);
         //订单分润
         orderShareProfitService.shareProfit(order);
-        orderStatusDetailsService.create(order.getOrderNo(),order.getStatus(),0);
+        orderStatusDetailsService.create(order.getOrderNo(),order.getStatus());
+        //确认服务
+        pushToServiceOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOSERVICE_AFFIRM_SERVER);
         return orderConvertVo(order);
     }
 

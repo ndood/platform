@@ -59,9 +59,9 @@ public class OrderController extends BaseController {
         return Result.success().msg("陪玩师空闲状态!");
     }
 
+
     /**
      * 提交订单
-     *
      * @param productId
      * @param request
      * @param num
@@ -209,7 +209,6 @@ public class OrderController extends BaseController {
 
     /**
      * 订单列表
-     *
      * @param pageNum
      * @param pageSize
      * @param type
@@ -263,19 +262,24 @@ public class OrderController extends BaseController {
             return Result.error().msg("不能频繁提醒接单!");
         }
         Order order = orderService.findByOrderNo(orderNo);
-        wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_SERVER_REMIND_RECEIVE_ORDER, order.getName());
+        orderService.pushToServiceOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_RECEIVE);
         redisOpenService.setTimeInterval(orderNo, 5 * 60);
         return Result.success().msg("提醒接单成功!");
     }
 
 
+    /**
+     * 提醒开始服务
+     * @param orderNo
+     * @return
+     */
     @RequestMapping(value = "/remind/start-order")
     public Result remindStartOrder(@RequestParam(required = true) String orderNo) {
         if (redisOpenService.isTimeIntervalInside(orderNo)) {
             return Result.error().msg("不能频繁提醒开始!");
         }
         Order order = orderService.findByOrderNo(orderNo);
-        wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_SERVER_REMIND_START_ORDER, order.getName());
+        orderService.pushToServiceOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_START_SERVICE);
         redisOpenService.setTimeInterval(orderNo, 5 * 60);
         return Result.success().msg("提醒开始成功!");
     }
@@ -333,7 +337,7 @@ public class OrderController extends BaseController {
     public Result consultCancel(@RequestParam(required = true) String orderNo,
                                 Integer orderEventId) {
         orderService.consultCancelOrder(orderNo, orderEventId);
-        return Result.success().data(orderNo);
+        return Result.success().data(orderNo).msg("取消协商成功!");
     }
 
     /**
@@ -386,7 +390,6 @@ public class OrderController extends BaseController {
 
     /**
      * 陪玩师提交验收订单
-     *
      * @param orderNo
      * @return
      */
@@ -397,6 +400,7 @@ public class OrderController extends BaseController {
         OrderVO orderVO = orderService.serverAcceptanceOrder(orderNo, remark, fileUrl);
         return Result.success().data(orderVO).msg("提交订单验收成功!");
     }
+
 
     /**
      * 订单事件查询（查询协商和申诉）

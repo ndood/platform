@@ -123,6 +123,7 @@ public class OrderEventServiceImpl extends AbsCommonService<OrderEvent, Integer>
         orderEvent.setApplyId(applyUser.getId());
         orderEvent.setUserId(order.getUserId());
         orderEvent.setServiceUserId(order.getServiceUserId());
+        orderEvent.setRefundMoney(order.getActualMoney());
         orderEvent.setType(OrderEventTypeEnum.APPEAL.getType());
         orderEvent.setCreateTime(new Date());
         orderEvent.setIsDel(false);
@@ -154,8 +155,10 @@ public class OrderEventServiceImpl extends AbsCommonService<OrderEvent, Integer>
         orderDealService.create(orderDeal, null);
         //创建取消协商的订单状态详情
         orderStatusDetailsService.create(order.getOrderNo(), OrderStatusEnum.CONSULT_CANCEL.getStatus(), 0);
+
+
         //重置订单状态
-        orderStatusDetailsService.resetOrderStatus(order.getOrderNo(), orderEvent.getOrderStatus(), 72 * 60);
+        orderStatusDetailsService.resetOrderStatus(order.getOrderNo(), orderEvent.getOrderStatus());
         //删除申诉
         orderEvent.setIsDel(true);
         update(orderEvent);

@@ -40,19 +40,27 @@ public class OrderStatusDetailsServiceImpl extends AbsCommonService<OrderStatusD
         create(orderStatusDetails);
     }
 
+    @Override
+    public void create(String orderNo, Integer orderStatus) {
+        create(orderNo,orderStatus,0);
+    }
+
     /**
      * 重置订单状态
      * @param orderNo
      * @param orderStatus
-     * @param minute
      */
     @Override
-    public void resetOrderStatus(String orderNo, Integer orderStatus,int minute) {
+    public void resetOrderStatus(String orderNo, Integer orderStatus) {
         OrderStatusDetailsVO param = new OrderStatusDetailsVO();
         param.setOrderNo(orderNo);
         param.setOrderStatus(orderStatus);
         List<OrderStatusDetails> list = orderStatusDetailsDao.findByParameter(param);
+        int minute = 0;
         for(OrderStatusDetails orderStatusDetails : list){
+            if(orderStatusDetails.getCountDownMinute()>0){
+                minute = 72*60;
+            }
             orderStatusDetails.setIsValid(false);
             orderStatusDetails.setUpdateTime(new Date());
             update(orderStatusDetails);

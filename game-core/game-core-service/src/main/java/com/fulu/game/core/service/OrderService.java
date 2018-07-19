@@ -1,5 +1,6 @@
 package com.fulu.game.core.service;
 
+import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.core.entity.ArbitrationDetails;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderDeal;
@@ -21,9 +22,24 @@ import java.util.List;
  */
 public interface OrderService extends ICommonService<Order, Integer> {
 
+
+    /**
+     * 向陪玩师推送消息
+     * @param order
+     * @param wechatTemplateMsgEnum
+     */
+    void pushToServiceOrderWxMessage(Order order,WechatTemplateMsgEnum wechatTemplateMsgEnum);
+
+    /**
+     * 向用户推送消息
+     * @param order
+     * @param wechatTemplateMsgEnum
+     */
+    void pushToUserOrderWxMessage(Order order,WechatTemplateMsgEnum wechatTemplateMsgEnum);
+
+
     /**
      * 管理员订单列表
-     *
      * @param orderSearchVO
      * @param pageNum
      * @param pageSize
@@ -130,7 +146,6 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 陪玩师接收订单
-     *
      * @param orderNo
      * @return
      */
@@ -188,7 +203,6 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 陪玩师同样协商订单
-     *
      * @param orderNo
      * @param orderEventId
      * @return
@@ -198,17 +212,15 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 取消协商
-     *
      * @param orderNo
-     * @param orderDealId
+     * @param orderEventId
      * @return
      */
-    String consultCancelOrder(String orderNo, int orderDealId);
+    String consultCancelOrder(String orderNo, int orderEventId);
 
 
     /**
      * 陪玩师取消订单
-     *
      * @param orderNo
      * @return
      */

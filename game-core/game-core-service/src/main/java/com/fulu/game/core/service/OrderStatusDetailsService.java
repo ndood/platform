@@ -17,7 +17,9 @@ public interface OrderStatusDetailsService extends ICommonService<OrderStatusDet
 
       void create(String orderNo,Integer orderStatus, int minute);
 
-      void resetOrderStatus(String orderNo, Integer orderStatus,int minute);
+      void create(String orderNo,Integer orderStatus);
+
+      void resetOrderStatus(String orderNo, Integer orderStatus);
 
       OrderStatusDetails findByOrderAndStatus(String orderNo, Integer orderStatus);
 

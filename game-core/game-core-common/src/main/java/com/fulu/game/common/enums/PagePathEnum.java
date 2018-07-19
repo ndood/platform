@@ -16,7 +16,9 @@ public enum PagePathEnum {
     USER_ORDER_LIST("pages/c/order/order?refresh=true","用户订单列表"),
     SERVICE_USER_ORDER_LIST("pages/a/order/order?refresh=true","陪玩师订单列表"),
     PUSH_PAGE("pages/push/push","小程序推送中转页面"),
-    MARKET_ORDER_PAGE("pages/a/market/market","集市订单列表");
+    MARKET_ORDER_PAGE("pages/a/market/market","集市订单列表"),
+    ORDER_LIST_PAGE("pages/order/list/list","订单列表");
+
 
     //跳转页面路径
     private String pagePath;

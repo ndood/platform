@@ -69,7 +69,7 @@ ALTER TABLE `t_order_deal`
 ADD COLUMN `order_event_id`  int(11) NULL DEFAULT NULL COMMENT '订单事件ID' AFTER `order_no`;
 
 ALTER TABLE `t_order_deal`
-ADD COLUMN `title`  int(11) NULL DEFAULT NULL COMMENT '订单留言标题' AFTER `order_event_id`;
+ADD COLUMN `title` varchar(255) NULL DEFAULT NULL COMMENT '订单留言标题' AFTER `order_event_id`;
 
 -- 建表t_arbitration_details（仲裁结果流水表）
 DROP TABLE IF EXISTS `t_arbitration_details`;

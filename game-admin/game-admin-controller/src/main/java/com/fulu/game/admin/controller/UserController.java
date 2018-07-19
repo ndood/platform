@@ -127,7 +127,6 @@ public class UserController extends BaseController {
 
     /**
      * 清除认证信息驳回状态
-     *
      * @param id
      * @return
      */
