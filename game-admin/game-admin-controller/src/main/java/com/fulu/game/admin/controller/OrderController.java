@@ -5,6 +5,7 @@ import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
+import com.fulu.game.core.entity.ArbitrationDetails;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
@@ -64,15 +65,14 @@ public class OrderController extends BaseController {
     }
 
     /**
-     * 管理员强制完成订单,协商处理
-     *
-     * @param orderNo
+     * 管理员强制完成订单,协商处理(提交仲裁结果)
+     * @param details
      * @return
      */
     @RequestMapping(value = "/admin/negotiate")
-    public Result adminHandleNegotiateOrder(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = orderService.adminHandleNegotiateOrder(orderNo);
-        return Result.success().data(orderVO.getOrderNo()).msg("订单完成,协商处理!");
+    public Result adminHandleNegotiateOrder(ArbitrationDetails details) {
+        OrderVO orderVO = orderService.adminHandleNegotiateOrder(details);
+        return Result.success().data(orderVO.getOrderNo()).msg("仲裁已完成");
     }
 
     /**

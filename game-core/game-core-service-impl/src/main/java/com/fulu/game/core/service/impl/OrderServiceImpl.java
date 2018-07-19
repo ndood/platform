@@ -29,7 +29,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 import static com.fulu.game.common.enums.OrderStatusEnum.NON_PAYMENT;
 
@@ -81,9 +84,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     private OrderEventService orderEventService;
     @Autowired
     private UserCommentService userCommentService;
-
-
-
 
 
     @Override
@@ -563,6 +563,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
      * @param orderIp
      * @return
      */
+    @Override
     public String submitMarketOrder(int channelId,
                                     OrderMarketProduct orderMarketProduct,
                                     String remark,
@@ -1151,6 +1152,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
      * @param orderNo
      * @return
      */
+    @Override
     public OrderVO adminHandleCompleteOrder(String orderNo) {
         Admin admin = adminService.getCurrentUser();
         log.info("管理员强制完成订单 (打款给打手)orderNo:{};adminId:{};adminName:{};", orderNo, admin.getId(), admin.getName());
@@ -1204,12 +1206,13 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 管理员协商处理订单
-     * @param orderNo
+     * @param details
      * @return
      */
     @Override
-    public OrderVO adminHandleNegotiateOrder(String orderNo) {
+    public OrderVO adminHandleNegotiateOrder(ArbitrationDetails details) {
         Admin admin = adminService.getCurrentUser();
+        String orderNo = details.getOrderNo();
         log.info("管理员协商处理订单orderNo:{};adminId:{};adminName:{};", orderNo, admin.getId(), admin.getName());
         Order order = findByOrderNo(orderNo);
         if (!order.getStatus().equals(OrderStatusEnum.APPEALING.getStatus())
@@ -1220,6 +1223,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setUpdateTime(new Date());
         order.setCompleteTime(new Date());
         update(order);
+        if (order.getIsPay()) {
+            orderShareProfitService.orderRefundToUserAndServiceUser(order, details);
+        }
         if (order.getUserId() != null) {
             wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_SYSTEM_USER_APPEAL_COMPLETE);
         }
@@ -1227,9 +1233,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return orderConvertVo(order);
     }
 
-
-
-
+    @Override
     public List<Order> findByStatusList(Integer[] statusList) {
         if (statusList == null) {
             return new ArrayList<>();
@@ -1274,6 +1278,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         }
     }
 
+    @Override
     public Order findByOrderNo(String orderNo) {
         if (orderNo == null) {
             return null;

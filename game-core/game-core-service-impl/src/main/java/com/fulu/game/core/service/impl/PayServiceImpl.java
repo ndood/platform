@@ -13,7 +13,6 @@ import com.github.binarywang.wxpay.bean.order.WxPayMpOrderResult;
 import com.github.binarywang.wxpay.bean.request.WxPayRefundRequest;
 import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderRequest;
 import com.github.binarywang.wxpay.bean.result.BaseWxPayResult;
-import com.github.binarywang.wxpay.bean.result.WxPayRefundResult;
 import com.github.binarywang.wxpay.exception.WxPayException;
 import com.github.binarywang.wxpay.service.WxPayService;
 import com.xiaoleilu.hutool.date.DateUtil;
@@ -83,21 +82,24 @@ public class PayServiceImpl implements PayService {
     }
 
     @Override
-    public Boolean refund(String orderNo,BigDecimal totalMoney,BigDecimal refundMoney) throws WxPayException {
-        Integer totalFee = (totalMoney.multiply(new BigDecimal(100))).intValue();
-        Integer refunFee = totalFee;
-        if(refundMoney!=null){
-            refunFee = (refundMoney.multiply(new BigDecimal(100))).intValue();
+    public Boolean refund(String orderNo, BigDecimal totalMoney, BigDecimal refundMoney) throws WxPayException {
+        Integer totalMoneyInt = (totalMoney.multiply(new BigDecimal(100))).intValue();
+        Integer refundMoneyInt;
+        if(refundMoney == null) {
+            refundMoneyInt = totalMoneyInt;
+        }else {
+            refundMoneyInt = (refundMoney.multiply(new BigDecimal(100))).intValue();
         }
-        log.info("退款:orderNo:{};refunFee:{};",orderNo,refunFee);
-        if(refunFee.equals(0)){
+
+        log.info("退款:orderNo:{};refunFee:{};", orderNo, refundMoneyInt);
+        if(refundMoneyInt.equals(0)){
             return true;
         }
         WxPayRefundRequest request = new WxPayRefundRequest();
         request.setOutTradeNo(orderNo);
         request.setOutRefundNo(orderNo+"E");
-        request.setTotalFee(totalFee);
-        request.setRefundFee(refunFee);
+        request.setTotalFee(totalMoneyInt);
+        request.setRefundFee(refundMoneyInt);
         wxPayService.refund(request);
         return true;
     }
