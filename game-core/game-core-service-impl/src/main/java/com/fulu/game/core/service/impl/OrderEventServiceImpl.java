@@ -134,7 +134,7 @@ public class OrderEventServiceImpl extends AbsCommonService<OrderEvent, Integer>
         OrderDeal orderDeal = new OrderDeal();
         orderDeal.setTitle("申请了客服仲裁");
         orderDeal.setType(OrderDealTypeEnum.APPEAL.getType());
-        orderDeal.setUserId(order.getServiceUserId());
+        orderDeal.setUserId(applyUser.getId());
         orderDeal.setRemark(remark);
         orderDeal.setOrderNo(order.getOrderNo());
         orderDeal.setOrderEventId(orderEvent.getId());

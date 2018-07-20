@@ -37,9 +37,10 @@ public class OrderStatusTask {
                                              OrderStatusEnum.ALREADY_RECEIVING.getStatus()};
         List<Order> orderList = orderService.findByStatusListAndType(statusList, OrderTypeEnum.PLATFORM.getType());
         for (Order order : orderList) {
-            long hour = DateUtil.between(order.getCreateTime(), new Date(), DateUnit.MINUTE);
+            long hour = DateUtil.between(order.getCreateTime(), new Date(), DateUnit.HOUR);
             if (hour >= 24) {
                 long countDown = orderStatusDetailsService.getCountDown(order.getOrderNo(), order.getStatus());
+                log.info("订单倒计时orderNo:{};countDown:{}",order.getOrderNo(),countDown);
                 if(countDown<=0){
                     log.info("订单超时时间到order:{}:",order);
                     orderService.systemCancelOrder(order.getOrderNo());
@@ -60,6 +61,7 @@ public class OrderStatusTask {
             long hour = DateUtil.between(order.getCreateTime(), new Date(), DateUnit.HOUR);
             if (hour >= 24) {
                 long countDown = orderStatusDetailsService.getCountDown(order.getOrderNo(), order.getStatus());
+                log.info("订单倒计时orderNo:{};countDown:{}",order.getOrderNo(),countDown);
                 if(countDown<=0){
                     log.info("订单完成时间到order:{}:",order);
                     orderService.systemCompleteOrder(order.getOrderNo());
@@ -78,6 +80,7 @@ public class OrderStatusTask {
         List<Order> orderList = orderService.findByStatusList(statusList);
         for (Order order : orderList) {
             long countDown = orderStatusDetailsService.getCountDown(order.getOrderNo(), order.getStatus());
+            log.info("订单超时时间到order:{}:",order);
             if(countDown<=0){
                 log.info("系统自动取消协商订单order:{}:",order);
                 orderService.systemConsultCancelOrder(order.getOrderNo());

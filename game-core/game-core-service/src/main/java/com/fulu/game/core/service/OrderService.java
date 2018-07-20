@@ -264,13 +264,6 @@ public interface OrderService extends ICommonService<Order, Integer> {
     String userAppealOrder(String orderNo, String remark, String... fileUrl);
 
 
-    /**
-     * 管理员订单申诉
-     *
-     * @param orderNo
-     * @return
-     */
-    OrderVO adminAppealOrder(String orderNo, String remark);
 
     /**
      * 订单验收

@@ -1153,9 +1153,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return orderConvertVo(order);
     }
 
+
     /**
      * 用户仲裁订单
-     *
      * @param orderNo
      * @param remark
      * @param fileUrl
@@ -1169,7 +1169,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         Order order = findByOrderNo(orderNo);
         User user = userService.getCurrentUser();
         if (!order.getStatus().equals(OrderStatusEnum.CONSULTING.getStatus())
-                && !order.getStatus().equals(OrderStatusEnum.CONSULT_REJECT.getStatus())) {
+            && !order.getStatus().equals(OrderStatusEnum.CONSULT_REJECT.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有协商中协商拒绝的订单才能申诉仲裁!");
         }
         order.setStatus(OrderStatusEnum.APPEALING.getStatus());
@@ -1186,35 +1186,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             pushToUserOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL);
         }
         return orderNo;
-    }
-
-
-    /**
-     * 管理员申诉订单
-     * @param orderNo
-     * @param remark
-     * @return
-     */
-    @Override
-    public OrderVO adminAppealOrder(String orderNo,
-                                    String remark) {
-        Admin admin = adminService.getCurrentUser();
-        log.info("管理员申诉订单:orderNo:{};remark:{};admin:{};", orderNo, remark, admin);
-        Order order = findByOrderNo(orderNo);
-        if (!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())
-                && !order.getStatus().equals(OrderStatusEnum.CHECK.getStatus())
-                && !order.getStatus().equals(NON_PAYMENT.getStatus())) {
-            throw new OrderException(order.getOrderNo(), "只有陪玩中和等待验收的订单才能申诉!");
-        }
-        order.setStatus(OrderStatusEnum.APPEALING_ADMIN.getStatus());
-        order.setUpdateTime(new Date());
-        update(order);
-        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 0);
-        //添加申诉文本
-        orderDealService.create(orderNo, order.getUserId(), OrderDealTypeEnum.APPEAL.getType(), remark);
-        //推送通知给打手
-        wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_SERVER_USER_APPEAL);
-        return orderConvertVo(order);
     }
 
 

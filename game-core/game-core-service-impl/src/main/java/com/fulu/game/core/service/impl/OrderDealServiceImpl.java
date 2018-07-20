@@ -38,31 +38,12 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal, Integer> i
         return orderDealDao;
     }
 
-    @Override
-    public void create(String orderNo,
-                       Integer userId, Integer type, String remark, String... fileUrls) {
-        OrderDeal orderDeal = new OrderDeal();
-        orderDeal.setOrderNo(orderNo);
-        orderDeal.setType(type);
-        orderDeal.setRemark(remark);
-        orderDeal.setUserId(userId);
-        orderDeal.setCreateTime(new Date());
-        create(orderDeal);
-        if (fileUrls != null) {
-            for (String url : fileUrls) {
-                OrderDealFile orderDealFile = new OrderDealFile();
-                orderDealFile.setFileUrl(ossUtil.activateOssFile(url));
-                orderDealFile.setOrderDealId(orderDeal.getId());
-                orderDealFile.setCreateTime(new Date());
-                orderDealFileService.create(orderDealFile);
-            }
-        }
-    }
+
 
     @Override
     public int create(OrderDeal orderDeal){
         orderDeal.setCreateTime(new Date());
-        return create(orderDeal);
+        return orderDealDao.create(orderDeal);
     }
 
 

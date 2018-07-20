@@ -16,7 +16,6 @@ import java.util.List;
 public interface OrderDealService extends ICommonService<OrderDeal, Integer> {
 
 
-    void create(String orderNo, Integer userId, Integer type, String remark, String... fileUrls);
 
     void create(OrderDeal orderDeal, String... fileUrls);
 
