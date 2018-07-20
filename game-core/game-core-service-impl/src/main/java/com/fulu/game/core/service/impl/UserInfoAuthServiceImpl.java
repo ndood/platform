@@ -377,6 +377,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             userInfoAuth = new UserInfoAuth();
             userInfoAuth.setUserId(userId);
         }
+
         UserInfoAuthVO userInfoAuthVO = new UserInfoAuthVO();
         BeanUtil.copyProperties(userInfoAuth, userInfoAuthVO);
         userInfoAuthVO.setNickname(user.getNickname());
@@ -387,7 +388,16 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userInfoAuthVO.setBirth(user.getBirth());
         userInfoAuthVO.setUserInfoAuth(user.getUserInfoAuth());
         //查询写真信息和声音
-        findUserPortraitsAndVoices(userInfoAuthVO);
+        Integer userInfoAuthStatus = user.getUserInfoAuth();
+        boolean flag = userInfoAuthStatus.equals(UserInfoAuthStatusEnum.NOT_PERFECT.getType())
+                ||  userInfoAuthStatus.equals(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType());
+        //不通过或者审核中
+        if(flag) {
+            findUserAuthInfoByTemp(userInfoAuthVO);
+        }else {
+            findUserPortraitsAndVoices(userInfoAuthVO);
+        }
+
         //查询用户所有标签
         List<TagVO> allPersonTagVos = findAllUserTagSelected(userId, false);
         userInfoAuthVO.setGroupTags(allPersonTagVos);
@@ -808,10 +818,12 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         if(StringUtils.isBlank(mainPicUrl)) {
             return;
         }
+
         UserInfoAuthFileTemp fileTemp = new UserInfoAuthFileTemp();
         fileTemp.setUserId(userId);
         fileTemp.setName("主图");
         fileTemp.setType(FileTypeEnum.MAIN_PIC.getType());
+        mainPicUrl = ossUtil.activateOssFile(mainPicUrl);
         fileTemp.setUrl(mainPicUrl);
         fileTemp.setUpdateTime(DateUtil.date());
         fileTemp.setCreateTime(DateUtil.date());
@@ -833,7 +845,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             fileTemp.setUserId(userId);
             fileTemp.setName("写真" + (i + 1));
             fileTemp.setType(FileTypeEnum.PIC.getType());
-            fileTemp.setUrl(portraitUrlList.get(i));
+            String portraitUrl = ossUtil.activateOssFile(portraitUrlList.get(i));
+            fileTemp.setUrl(portraitUrl);
             fileTemp.setCreateTime(DateUtil.date());
             fileTemp.setUpdateTime(DateUtil.date());
             userInfoAuthFileTempDao.create(fileTemp);
@@ -856,6 +869,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         fileTemp.setUserId(userId);
         fileTemp.setName("语音介绍");
         fileTemp.setType(FileTypeEnum.VOICE.getType());
+        voiceUrl = ossUtil.activateOssFile(voiceUrl);
         fileTemp.setUrl(voiceUrl);
         fileTemp.setDuration(duration);
         fileTemp.setCreateTime(DateUtil.date());
