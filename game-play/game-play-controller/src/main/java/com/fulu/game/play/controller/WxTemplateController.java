@@ -1,5 +1,6 @@
 package com.fulu.game.play.controller;
 
+import aop.UserScore;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.UserScoreEnum;
 import com.fulu.game.core.entity.User;
@@ -7,7 +8,6 @@ import com.fulu.game.core.entity.WechatFormid;
 import com.fulu.game.core.service.PushMsgService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.WxTemplateMsgService;
-import com.fulu.game.play.aop.UserScore;
 import com.fulu.game.play.queue.CollectFormIdQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

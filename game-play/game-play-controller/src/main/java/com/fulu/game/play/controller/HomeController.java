@@ -1,5 +1,6 @@
 package com.fulu.game.play.controller;
 
+import aop.UserScore;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.fulu.game.common.Result;
@@ -13,7 +14,6 @@ import com.fulu.game.core.entity.vo.BannerVO;
 import com.fulu.game.core.service.BannerService;
 import com.fulu.game.core.service.SysConfigService;
 import com.fulu.game.core.service.UserService;
-import com.fulu.game.play.aop.UserScore;
 import com.fulu.game.play.shiro.PlayUserToken;
 import com.fulu.game.play.utils.RequestUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;

@@ -1,4 +1,4 @@
-package com.fulu.game.play.aop;
+package aop;
 
 import com.fulu.game.common.enums.UserScoreEnum;
 

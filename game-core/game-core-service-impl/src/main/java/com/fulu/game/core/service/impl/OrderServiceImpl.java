@@ -1313,18 +1313,22 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setUpdateTime(new Date());
         order.setCompleteTime(new Date());
         update(order);
+
+        //仲裁留言
+        OrderEvent orderEvent = orderEventService.findByOrderNoAndType(orderNo,OrderEventTypeEnum.APPEAL.getType());
+        if(orderEvent != null) {
+            OrderDeal orderDeal = new OrderDeal();
+            orderDeal.setOrderNo(orderNo);
+            orderDeal.setRemark("客服人员仲裁订单，结果:陪玩师胜诉");
+            orderDeal.setTitle("客服人员仲裁订单");
+            orderDeal.setType(OrderEventTypeEnum.APPEAL.getType());
+            orderDeal.setOrderEventId(orderEvent.getId());
+            orderDealService.create(orderDeal);
+        }
+
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         //订单分润
         orderShareProfitService.shareProfit(order);
-        //仲裁留言
-        OrderEvent orderEvent = orderEventService.findByOrderNoAndType(orderNo,OrderEventTypeEnum.APPEAL.getType());
-        OrderDeal orderDeal = new OrderDeal();
-        orderDeal.setOrderNo(orderNo);
-        orderDeal.setRemark("客服人员仲裁订单，结果:陪玩师胜诉");
-        orderDeal.setTitle("客服人员仲裁订单");
-        orderDeal.setType(OrderEventTypeEnum.APPEAL.getType());
-        orderDeal.setOrderEventId(orderEvent.getId());
-        orderDealService.create(orderDeal);
         return orderConvertVo(order);
     }
 
@@ -1345,19 +1349,23 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setUpdateTime(new Date());
         order.setCompleteTime(new Date());
         update(order);
+
+        //仲裁留言
+        OrderEvent orderEvent = orderEventService.findByOrderNoAndType(orderNo,OrderEventTypeEnum.APPEAL.getType());
+        if(orderEvent != null) {
+            OrderDeal orderDeal = new OrderDeal();
+            orderDeal.setOrderNo(orderNo);
+            orderDeal.setRemark("客服人员仲裁订单，结果:老板胜诉");
+            orderDeal.setTitle("客服人员仲裁订单");
+            orderDeal.setType(OrderEventTypeEnum.APPEAL.getType());
+            orderDeal.setOrderEventId(orderEvent.getId());
+            orderDealService.create(orderDeal);
+        }
+
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         if (order.getIsPay()) {
             orderShareProfitService.orderRefund(order, order.getActualMoney());
         }
-        //仲裁留言
-        OrderEvent orderEvent = orderEventService.findByOrderNoAndType(orderNo,OrderEventTypeEnum.APPEAL.getType());
-        OrderDeal orderDeal = new OrderDeal();
-        orderDeal.setOrderNo(orderNo);
-        orderDeal.setRemark("客服人员仲裁订单，结果:老板胜诉");
-        orderDeal.setTitle("客服人员仲裁订单");
-        orderDeal.setType(OrderEventTypeEnum.APPEAL.getType());
-        orderDeal.setOrderEventId(orderEvent.getId());
-        orderDealService.create(orderDeal);
         return orderConvertVo(order);
     }
 
@@ -1382,19 +1390,24 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setUpdateTime(new Date());
         order.setCompleteTime(new Date());
         update(order);
+
+        //仲裁留言
+        OrderEvent orderEvent = orderEventService.findByOrderNoAndType(orderNo,OrderEventTypeEnum.APPEAL.getType());
+        if(orderEvent != null) {
+            OrderDeal orderDeal = new OrderDeal();
+            orderDeal.setOrderNo(orderNo);
+            orderDeal.setRemark("客服人员仲裁订单，结果:协商处理");
+            orderDeal.setTitle("客服人员仲裁订单");
+            orderDeal.setType(OrderEventTypeEnum.APPEAL.getType());
+            orderDeal.setOrderEventId(orderEvent.getId());
+            orderDealService.create(orderDeal);
+        }
         if (order.getIsPay()) {
             orderShareProfitService.orderRefundToUserAndServiceUser(order, details);
             orderStatusDetailsService.create(orderNo, order.getStatus());
+        }else {
+            throw new OrderException(order.getOrderNo(), "只有已付款的订单才能操作!");
         }
-        //仲裁留言
-        OrderEvent orderEvent = orderEventService.findByOrderNoAndType(orderNo,OrderEventTypeEnum.APPEAL.getType());
-        OrderDeal orderDeal = new OrderDeal();
-        orderDeal.setOrderNo(orderNo);
-        orderDeal.setRemark("客服人员仲裁订单，结果:协商处理");
-        orderDeal.setTitle("客服人员仲裁订单");
-        orderDeal.setType(OrderEventTypeEnum.APPEAL.getType());
-        orderDeal.setOrderEventId(orderEvent.getId());
-        orderDealService.create(orderDeal);
         return orderConvertVo(order);
     }
 

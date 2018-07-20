@@ -1,7 +1,8 @@
-package com.fulu.game.play.aop;
+package aop;
 
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.UserScoreEnum;
+import com.fulu.game.core.entity.ArbitrationDetails;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserScoreDetails;
@@ -42,7 +43,8 @@ public class UserScoreAspect {
     /**
      * 用户积分--切入点
      */
-    @Pointcut("execution(* com.fulu.game.play.controller.*.*(..))")
+//    @Pointcut("execution(* com.fulu.game.play.controller.*.*(..))")
+    @Pointcut("execution(* *Controller(..))")
     public void annotationPointCut() {
     }
 
@@ -92,11 +94,18 @@ public class UserScoreAspect {
             Integer commentScore = vo.getScore();
             modifyUserScoreByUserComment(details, commentScore, order.getOrderNo());
         }else if(userScoreEnum.getDescription().equals(Constant.FULL_RESTITUTION)) {
+            Object[] array = joinPoint.getArgs();
+            String orderNo = (String)array[0];
+            Order order = orderService.findByOrderNo(orderNo);
+            details.setUserId(order.getServiceUserId());
             details.setScore(UserScoreEnum.FULL_RESTITUTION.getScore());
             details.setDescription(Constant.FULL_RESTITUTION);
-        }else if(userScoreEnum.getDescription().equals(Constant.CONFER)) {
-            details.setScore(UserScoreEnum.CONFER.getScore());
-            details.setDescription(Constant.CONFER);
+        }else if(userScoreEnum.getDescription().equals(Constant.NEGOTIATE)) {
+            Object[] array = joinPoint.getArgs();
+            ArbitrationDetails arbitrationDetails = (ArbitrationDetails)array[0];
+            details.setUserId(arbitrationDetails.getServiceUserId());
+            details.setScore(UserScoreEnum.NEGOTIATE.getScore());
+            details.setDescription(Constant.NEGOTIATE);
         }
 
         if(details.getUserId() != null) {
