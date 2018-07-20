@@ -72,7 +72,7 @@
         FROM
             t_order_status_details
         WHERE
-            order_no = "DEV180718926790"
+            order_no = #{orderNo}
         ORDER BY
             create_time ASC;
     </select>

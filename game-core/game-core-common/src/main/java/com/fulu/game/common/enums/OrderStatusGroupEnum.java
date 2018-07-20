@@ -26,12 +26,13 @@ public enum OrderStatusGroupEnum {
     SERVER_CLOSE("订单关闭", "SERVER", 11, new Integer[]{110,160}),
 
     ADMIN_ALL("全部", "ADMIN", 20, null),
-    ADMIN_CLOSE("订单关闭", "ADMIN", 21, new Integer[]{100, 101,110,160}),
+    ADMIN_CLOSE("订单关闭", "ADMIN", 21, new Integer[]{100,101,102,110,160}),
     ADMIN_NON_PAYMENT("待付款", "ADMIN", 22, new Integer[]{200}),
-    ADMIN_WAIT_SERVICE("等待陪玩", "ADMIN", 23, new Integer[]{210}),
+    ADMIN_WAIT_SERVICE("等待陪玩", "ADMIN", 23, new Integer[]{210,213}),
     ADMIN_SERVING("陪玩中", "ADMIN", 24, new Integer[]{220}),
     ADMIN_CHECK("等待验收", "ADMIN", 25, new Integer[]{300}),
-    ADMIN_APPEALING("申诉中", "ADMIN", 26, new Integer[]{400,401}),
+    ADMIN_CONSULTING("协商中", "ADMIN", 26, new Integer[]{400,401}),
+    ADMIN_APPEALING("仲裁中", "ADMIN", 26, new Integer[]{400,401}),
     ADMIN_COMPLETE("订单完成", "ADMIN", 27, new Integer[]{500, 410, 420, 501, 502, 600}),
 
 

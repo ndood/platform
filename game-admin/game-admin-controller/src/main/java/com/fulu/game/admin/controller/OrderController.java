@@ -90,7 +90,7 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/admin/complete")
     public Result adminHandleCompleteOrder(@RequestParam(required = true) String orderNo) {
         OrderVO orderVO = orderService.adminHandleCompleteOrder(orderNo);
-        return Result.success().data(orderVO.getOrderNo()).msg("订单完成!");
+        return Result.success().data(orderVO.getOrderNo()).msg("订单完成,退款给陪玩师!");
     }
 
     /**
