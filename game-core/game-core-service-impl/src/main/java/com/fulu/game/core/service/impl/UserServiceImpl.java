@@ -265,12 +265,15 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         if (userInfoAuth == null) {
             throw new UserAuthException(UserAuthException.ExceptionCode.NOT_EXIST_USER_AUTH);
         }
-        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.NOT_PERFECT.getType())) {
-            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_REJECT);
+        if(userInfoAuth.getMainPicUrl()==null){
+            throw new UserAuthException(UserAuthException.ExceptionCode.NOT_EXIST_USER_AUTH);
         }
-        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType())) {
-            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_AUTHING);
-        }
+//        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.NOT_PERFECT.getType())) {
+//            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_REJECT);
+//        }
+//        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType())) {
+//            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_AUTHING);
+//        }
         if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
             throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE);
         }
