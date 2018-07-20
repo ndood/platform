@@ -32,6 +32,11 @@ public enum WechatTemplateMsgEnum {
     ORDER_TOUSER_APPEAL(PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "【订单状态：{}】" +
                                                                                                    "备注：对于您的协商，陪玩师申请客服进行仲裁，快去提交凭证吧（2小时内提交）。"), //仲裁
 
+    ORDER_TOUSER_APPEAL_USER_WIN(PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "【订单状态：{}】" +
+            "备注：您的订单仲裁结果为:老板胜诉，将会为你全额退款。"), //仲裁
+    ORDER_TOUSER_APPEAL_SERVICE_WIN(PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "【订单状态：{}】" +
+            "备注：您的订单仲裁结果为:陪玩师胜诉，订单金额将会支付给陪玩师。"), //仲裁
+
     ORDER_TOUSER_CONSULT_REJECT(PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "【订单状态：{}】" +
                                                                                                     "备注：对于您的协商，陪玩师进行了拒绝，快去处理吧，超过2小时未处理，将默认取消协商。"), //拒绝协商
 
@@ -46,6 +51,8 @@ public enum WechatTemplateMsgEnum {
     ORDER_TOSERVICE_ORDER_CANCEL(PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "很遗憾，老板取消了订单，要再接再厉哦。"), //确认服务完成
     ORDER_TOSERVICE_CONSULT(PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "老板发起协商，申请退款，快去处理吧，超过24小时未处理，将默认同意协商。"), //确认服务完成
     ORDER_TOSERVICE_APPEAL(PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "老板对您的回馈不满意，申请了客服仲裁，快去提交凭证吧（2小时内提交）。"), //确认服务完成
+    ORDER_TOSERVICE_APPEAL_USER_WIN(PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "您的订单仲裁结果为:老板胜诉，订单金额将会全额退款给老板。"), //确认服务完成
+    ORDER_TOSERVICE_APPEAL_SERVICE_WIN(PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "您的订单仲裁结果为:陪玩师胜诉，订单金额将会支付给您。"), //确认服务完成
     ORDER_TOSERVICE_CONSULT_CANCEL(PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "老板取消了协商，服务照常进行哦。"), //确认服务完成
 
 
@@ -61,6 +68,9 @@ public enum WechatTemplateMsgEnum {
     ORDER_SERVER_USER_APPEAL_COMPLETE(PagePathEnum.SERVICE_USER_ORDER_LIST.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "申诉失败,订单金额将稍后到账"),
     ORDER_SYSTEM_USER_APPEAL_COMPLETE(PagePathEnum.USER_ORDER_LIST.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "该订单已协商处理完成,协商结果请咨询客服"),
     ORDER_SYSTEM_SERVER_APPEAL_COMPLETE(PagePathEnum.SERVICE_USER_ORDER_LIST.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "该订单已协商处理完成,协商结果请咨询客服"),
+    ORDER_SYSTEM_APPEAL_NEGOTIATE(PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "您的订单仲裁结果为:协商处理。客服回复:{}"), //确认服务完成
+
+
 
     IM_MSG_PUSH(PagePathEnum.IM_MSG.getPagePath(), WechatTemplateEnum.LEAVE_MSG, "{}:{}"),
 

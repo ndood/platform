@@ -1325,7 +1325,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             orderDeal.setOrderEventId(orderEvent.getId());
             orderDealService.create(orderDeal);
         }
-
+        pushToServiceOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_SERVICE_WIN);
+        pushToUserOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_SERVICE_WIN);
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         //订单分润
         orderShareProfitService.shareProfit(order);
@@ -1361,7 +1362,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             orderDeal.setOrderEventId(orderEvent.getId());
             orderDealService.create(orderDeal);
         }
-
+        pushToServiceOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_USER_WIN);
+        pushToUserOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_USER_WIN);
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         if (order.getIsPay()) {
             orderShareProfitService.orderRefund(order, order.getActualMoney());
@@ -1372,7 +1374,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 管理员协商处理订单
-     *
      * @param details
      * @return
      */
@@ -1402,6 +1403,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             orderDeal.setOrderEventId(orderEvent.getId());
             orderDealService.create(orderDeal);
         }
+        pushToServiceOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE);
+        pushToUserOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE);
         if (order.getIsPay()) {
             orderShareProfitService.orderRefundToUserAndServiceUser(order, details);
             orderStatusDetailsService.create(orderNo, order.getStatus());
