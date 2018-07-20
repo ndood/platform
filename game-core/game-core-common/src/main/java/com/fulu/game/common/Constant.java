@@ -85,7 +85,7 @@ public interface Constant {
 
     String FULL_RESTITUTION = "全额赔偿给用户";
 
-    String NEGOTIATE = "协商";
+    String NEGOTIATE = "仲裁";
 
     String IM_REPLY_DELAY_0_TO_5 = "0到5分钟回复IM";
     String IM_REPLY_DELAY_5_TO_60 = "5到60分钟回复IM";
