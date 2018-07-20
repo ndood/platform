@@ -765,7 +765,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         log.info("陪玩师接单orderNo:{}", orderNo);
         Order order = findByOrderNo(orderNo);
         userService.isCurrentUser(order.getServiceUserId());
-        if (!order.getStatus().equals(OrderStatusEnum.ALREADY_RECEIVING.getStatus())) {
+        if (!order.getStatus().equals(OrderStatusEnum.ALREADY_RECEIVING.getStatus())&&
+            !order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())) {
             throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES, orderNo);
         }
         order.setStatus(OrderStatusEnum.SERVICING.getStatus());

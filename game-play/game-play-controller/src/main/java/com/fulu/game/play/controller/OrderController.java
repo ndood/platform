@@ -19,6 +19,7 @@ import com.fulu.game.play.aop.UserScore;
 import com.fulu.game.play.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -44,8 +45,7 @@ public class OrderController extends BaseController {
     private UserService userService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
-    @Autowired
-    private WxTemplateMsgService wxTemplateMsgService;
+
 
 
     /**
@@ -353,14 +353,20 @@ public class OrderController extends BaseController {
 
     /**
      * 陪玩师接收订单
-     *
      * @param orderNo
      * @return
      */
     @RequestMapping(value = "/server/receive")
     @UserScore(type = UserScoreEnum.ACCEPT_ORDER)
-    public Result serverReceiveOrder(@RequestParam(required = true) String orderNo) {
-        orderService.serverReceiveOrder(orderNo);
+    public Result serverReceiveOrder(@RequestParam(required = true) String orderNo,
+                                     String version) {
+        if(StringUtils.isBlank(version)){
+            log.info("执行开始服务接口");
+            orderService.serverStartServeOrder(orderNo);
+        }else{
+            log.info("执行开始接单接口");
+            orderService.serverReceiveOrder(orderNo);
+        }
         return Result.success().data(orderNo).msg("接单成功!");
     }
 
@@ -379,7 +385,6 @@ public class OrderController extends BaseController {
 
     /**
      * 用户验收订单
-     *
      * @param orderNo
      * @return
      */
