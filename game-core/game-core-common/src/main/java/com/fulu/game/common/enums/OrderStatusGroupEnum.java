@@ -31,9 +31,9 @@ public enum OrderStatusGroupEnum {
     ADMIN_WAIT_SERVICE("等待陪玩", "ADMIN", 23, new Integer[]{210,213}),
     ADMIN_SERVING("陪玩中", "ADMIN", 24, new Integer[]{220}),
     ADMIN_CHECK("等待验收", "ADMIN", 25, new Integer[]{300}),
-    ADMIN_CONSULTING("协商中", "ADMIN", 26, new Integer[]{400,401}),
+    ADMIN_CONSULTING("协商中", "ADMIN", 26, new Integer[]{350,352,354}),
     ADMIN_APPEALING("仲裁中", "ADMIN", 26, new Integer[]{400,401}),
-    ADMIN_COMPLETE("订单完成", "ADMIN", 27, new Integer[]{500, 410, 420, 501, 502, 600}),
+    ADMIN_COMPLETE("订单完成", "ADMIN", 27, new Integer[]{500, 410, 415, 420, 500, 501, 502, 600}),
 
 
     MARKET_ALL("全部", "MARKET", 30, new Integer[]{210,220,300, 500,501,502,600}),
