@@ -36,8 +36,10 @@ public enum UserScoreEnum {
     USER_COMMENT_4_STAR(Constant.USER_COMMENT_4_STAR, 1),
     USER_COMMENT_5_STAR(Constant.USER_COMMENT_5_STAR, 2),
 
+    //全额退款给用户
     FULL_RESTITUTION(Constant.FULL_RESTITUTION, -20),
-    CONFER(Constant.CONFER, -10);
+    //仲裁
+    NEGOTIATE(Constant.NEGOTIATE, -10);
 
 
     private String description;

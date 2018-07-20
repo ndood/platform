@@ -184,7 +184,7 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
 
         //微信退款给用户
         try {
-            payService.refund(orderNo, order.getActualMoney(), refundUserMoney);
+//            payService.refund(orderNo, order.getActualMoney(), refundUserMoney);
         } catch (Exception e) {
             log.error("退款失败{}", orderNo, e.getMessage());
             throw new OrderException(orderNo, "订单退款失败!");
