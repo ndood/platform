@@ -1490,6 +1490,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             OrderStatusDetailsVO vo = new OrderStatusDetailsVO();
             vo.setOrderNo(orderNo);
             vo.setCreateTime(details.getCreateTime());
+            vo.setOrderStatus(details.getOrderStatus());
             vo.setOrderStatusMsg(msg);
             voList.add(vo);
         }
