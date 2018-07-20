@@ -7,8 +7,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum FileTypeEnum implements TypeEnum<Integer>{
 
-    PIC(1,"图片"),
-    VOICE(2,"声音");
+    PIC(1,"写真图片"),
+    VOICE(2,"声音"),
+    MAIN_PIC(3, "主图");
 
     private Integer type;
     private String msg;

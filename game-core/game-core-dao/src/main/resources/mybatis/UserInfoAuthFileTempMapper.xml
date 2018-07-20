@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.UserInfoAuthFileTempDao">
+    <resultMap id="UserInfoAuthFileTempResultMap" type="com.fulu.game.core.entity.UserInfoAuthFileTemp">
+        <id column="id"  property="id" />
+        <result column="user_id"  property="userId" />
+        <result column="info_auth_id"  property="infoAuthId" />
+        <result column="name"  property="name" />
+        <result column="type"  property="type" />
+        <result column="url"  property="url" />
+        <result column="duration"  property="duration" />
+        <result column="ext"  property="ext" />
+        <result column="create_time"  property="createTime" />
+        <result column="update_time"  property="updateTime" />
+    </resultMap>
+
+    <resultMap id="UserInfoAuthFileTempResultVOMap" type="com.fulu.game.core.entity.vo.UserInfoAuthFileTempVO" extends="UserInfoAuthFileTempResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,info_auth_id,name,type,url,duration,ext,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="UserInfoAuthFileTempResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_user_info_auth_file_temp
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll"  resultMap="UserInfoAuthFileTempResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_user_info_auth_file_temp
+    </select>
+
+    <select id="findByParameter" resultMap="UserInfoAuthFileTempResultMap" parameterType="com.fulu.game.core.entity.vo.UserInfoAuthFileTempVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_user_info_auth_file_temp
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="infoAuthId != null">
+                and info_auth_id = #{infoAuthId}
+            </if>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="url != null">
+                and url = #{url}
+            </if>
+            <if test="duration != null">
+                and duration = #{duration}
+            </if>
+            <if test="ext != null">
+                and ext = #{ext}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_user_info_auth_file_temp
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserInfoAuthFileTemp">
+        insert into
+        t_user_info_auth_file_temp (user_id,info_auth_id,name,type,url,duration,ext,create_time,update_time)
+        values
+        (#{userId},#{infoAuthId},#{name},#{type},#{url},#{duration},#{ext},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.UserInfoAuthFileTemp">
+        update t_user_info_auth_file_temp
+        <set>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="infoAuthId != null">
+                info_auth_id = #{infoAuthId},
+            </if>
+
+            <if test="name != null">
+                name = #{name},
+            </if>
+
+            <if test="type != null">
+                type = #{type},
+            </if>
+
+            <if test="url != null">
+                url = #{url},
+            </if>
+
+            <if test="duration != null">
+                duration = #{duration},
+            </if>
+
+            <if test="ext != null">
+                ext = #{ext},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+
+    <delete id="deleteByUserId" parameterType="Integer">
+        DELETE
+            FROM
+                t_user_info_auth_file_temp
+            WHERE
+                user_id = #{userId}
+    </delete>
+</mapper>

@@ -87,6 +87,22 @@ CREATE TABLE `t_arbitration_details` (
   PRIMARY KEY (`id`)
 ) COMMENT='仲裁结果流水表';
 
+-- 新增临时表
+DROP TABLE IF EXISTS `t_user_info_auth_file_temp`;
+CREATE TABLE `t_user_info_auth_file_temp` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL COMMENT '用户ID',
+  `info_auth_id` int(11) DEFAULT NULL COMMENT '关联信息认证ID',
+  `name` varchar(255) DEFAULT NULL COMMENT '文件名称',
+  `type` tinyint(1) DEFAULT NULL COMMENT '类型(1写真图片,2声音,3主图)',
+  `url` varchar(255) DEFAULT NULL,
+  `duration` int(11) DEFAULT NULL,
+  `ext` varchar(255) DEFAULT NULL COMMENT '扩展名',
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) COMMENT='信息认证文件临时表（图片、声音）';
+
 
 --todo
 t_order表 isPay和isPayCallback两个状态同步

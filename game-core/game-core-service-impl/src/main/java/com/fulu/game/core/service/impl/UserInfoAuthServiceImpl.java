@@ -7,16 +7,16 @@ import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserInfoAuthDao;
+import com.fulu.game.core.dao.UserInfoAuthFileDao;
+import com.fulu.game.core.dao.UserInfoAuthFileTempDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
-import com.fulu.game.core.entity.vo.TagVO;
-import com.fulu.game.core.entity.vo.UserInfoAuthVO;
-import com.fulu.game.core.entity.vo.UserInfoVO;
-import com.fulu.game.core.entity.vo.UserTechAuthVO;
+import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import com.xiaoleilu.hutool.util.CollectionUtil;
 import com.xiaoleilu.hutool.util.ObjectUtil;
@@ -58,6 +58,10 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     private OssUtil ossUtil;
     @Autowired
     private WxTemplateMsgService wxTemplateMsgService;
+    @Autowired
+    private UserInfoAuthFileTempDao userInfoAuthFileTempDao;
+    @Autowired
+    private UserInfoAuthFileDao userInfoAuthFileDao;
 
     @Override
     public ICommonDao<UserInfoAuth, Integer> getDao() {
@@ -73,8 +77,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         }
         return userInfoAuthList.get(0);
     }
-
-
 
     /**
      * 保存用户认证的个人信息
@@ -98,10 +100,12 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         user.setUserInfoAuth(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType());
         user.setUpdateTime(new Date());
         userService.update(user);
-        //修改认证信息
+
         UserInfoAuth userInfoAuth = new UserInfoAuth();
         BeanUtil.copyProperties(userInfoAuthTO, userInfoAuth);
         userInfoAuth.setUpdateTime(new Date());
+        //主图不存userInfoAuth，改为存入临时表
+        userInfoAuth.setMainPicUrl(null);
         if (userInfoAuth.getId() == null) {
             UserInfoAuth existUserAuth = findByUserId(user.getId());
             if (existUserAuth != null) {
@@ -115,17 +119,71 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         }else {
             update(userInfoAuth);
         }
+
+        //添加用户主图
+        createUserMainPic(userInfoAuthTO.getMainPicUrl(), user.getId());
         //添加用户认证写真图片
-        createUserAuthPortrait(userInfoAuthTO.getPortraitUrls(), userInfoAuth.getId());
+        createUserAuthPortrait(userInfoAuthTO.getPortraitUrls(), user.getId());
         //添加语音介绍
-        createUserAuthVoice(userInfoAuthTO.getVoiceUrl(), userInfoAuth.getId(), userInfoAuthTO.getDuration());
+        createUserAuthVoice(userInfoAuthTO.getVoiceUrl(), user.getId(), userInfoAuthTO.getDuration());
         //添加用户信息标签
         createUserInfoTags(userInfoAuthTO.getTags(), user.getId());
 
         //同步下架用户该技能商品
-        productService.deleteProductByUser(userInfoAuth.getUserId());
+//        productService.deleteProductByUser(userInfoAuth.getUserId());
         return userInfoAuth;
     }
+
+    /**
+     * 保存用户认证的个人信息
+     * @param userInfoAuthTO
+     * @return
+     */
+//    @Override
+//    public UserInfoAuth save(UserInfoAuthTO userInfoAuthTO) {
+//        log.info("保存用户认证信息:UserInfoAuthTO:{}", userInfoAuthTO);
+//        User user = userService.findById(userInfoAuthTO.getUserId());
+//        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
+//            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE);
+//        }
+//        if (userInfoAuthTO.getMobile() == null) {
+//            userInfoAuthTO.setMobile(user.getMobile());
+//        }
+//        user.setGender(userInfoAuthTO.getGender());
+//        user.setAge(userInfoAuthTO.getAge());
+//        user.setBirth(userInfoAuthTO.getBirth());
+//        user.setConstellation(userInfoAuthTO.getConstellation());
+//        user.setUserInfoAuth(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType());
+//        user.setUpdateTime(new Date());
+//        userService.update(user);
+//        //修改认证信息
+//        UserInfoAuth userInfoAuth = new UserInfoAuth();
+//        BeanUtil.copyProperties(userInfoAuthTO, userInfoAuth);
+//        userInfoAuth.setUpdateTime(new Date());
+//        if (userInfoAuth.getId() == null) {
+//            UserInfoAuth existUserAuth = findByUserId(user.getId());
+//            if (existUserAuth != null) {
+//                throw new UserAuthException(UserAuthException.ExceptionCode.EXIST_USER_AUTH);
+//            }
+//            userInfoAuth.setIsRejectSubmit(false);
+//            userInfoAuth.setCreateTime(new Date());
+//            userInfoAuth.setPushTimeInterval(30F);
+//            userInfoAuth.setAllowExport(true);
+//            create(userInfoAuth);
+//        }else {
+//            update(userInfoAuth);
+//        }
+//        //添加用户认证写真图片
+//        createUserAuthPortrait(userInfoAuthTO.getPortraitUrls(), userInfoAuth.getId());
+//        //添加语音介绍
+//        createUserAuthVoice(userInfoAuthTO.getVoiceUrl(), userInfoAuth.getId(), userInfoAuthTO.getDuration());
+//        //添加用户信息标签
+//        createUserInfoTags(userInfoAuthTO.getTags(), user.getId());
+//
+//        //同步下架用户该技能商品
+//        productService.deleteProductByUser(userInfoAuth.getUserId());
+//        return userInfoAuth;
+//    }
 
 
 
@@ -196,14 +254,62 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         user.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
         userService.update(user);
 
-        //同步恢复用户正确技能的商品状态
-        List<UserTechAuth> userTechAuthList = userTechAuthService.findUserNormalTechs(userInfoAuth.getUserId());
-        for (UserTechAuth userTechAuth : userTechAuthList) {
-            productService.recoverProductDelFlagByTechAuthId(userTechAuth.getId());
+        Integer userId = userInfoAuth.getUserId();
+        UserInfoAuthFileTempVO tempVO = new UserInfoAuthFileTempVO();
+        tempVO.setUserId(userId);
+        List<UserInfoAuthFileTemp> fileTempList = userInfoAuthFileTempDao.findByParameter(tempVO);
+        if(CollectionUtil.isNotEmpty(fileTempList)) {
+            //更新主图
+            for(UserInfoAuthFileTemp fileTemp : fileTempList) {
+                Integer type = fileTemp.getType();
+                if(type.equals(FileTypeEnum.MAIN_PIC.getType())) {
+                    UserInfoAuth infoAuth = new UserInfoAuth();
+                    infoAuth.setId(id);
+                    infoAuth.setUserId(userId);
+                    infoAuth.setMainPicUrl(fileTemp.getUrl());
+                    userInfoAuthDao.update(infoAuth);
+                }
+            }
+            //更新写真图
+            deleteTempFileAndUpdateOrg(userId, FileTypeEnum.PIC.getType());
+            //更新声音文件
+            deleteTempFileAndUpdateOrg(userId, FileTypeEnum.VOICE.getType());
+
+            userInfoAuthFileTempDao.deleteByUserId(userId);
         }
+
+        //同步恢复用户正确技能的商品状态
+//        List<UserTechAuth> userTechAuthList = userTechAuthService.findUserNormalTechs(userInfoAuth.getUserId());
+//        for (UserTechAuth userTechAuth : userTechAuthList) {
+//            productService.recoverProductDelFlagByTechAuthId(userTechAuth.getId());
+//        }
+
         //给用户推送通知
         wxTemplateMsgService.pushWechatTemplateMsg(user.getId(), WechatTemplateMsgEnum.USER_AUTH_INFO_PASS);
         return userInfoAuth;
+    }
+
+    /**
+     * 将temp表的数据更新到t_user_info_auth_file表
+     * @param userId
+     * @param fileType
+     */
+    public void deleteTempFileAndUpdateOrg(Integer userId, Integer fileType) {
+        UserInfoAuth auth = findByUserId(userId);
+        UserInfoAuthFile infoAuthFile = new UserInfoAuthFile();
+        infoAuthFile.setInfoAuthId(auth.getId());
+        userInfoAuthFileService.deleteByUserAuthIdAndType(auth.getId(), fileType);
+
+        UserInfoAuthFileTempVO fileTempVO = new UserInfoAuthFileTempVO();
+        fileTempVO.setUserId(userId);
+        fileTempVO.setType(fileType);
+        List<UserInfoAuthFileTemp> fileTemps = userInfoAuthFileTempDao.findByParameter(fileTempVO);
+        for(UserInfoAuthFileTemp meta : fileTemps) {
+            UserInfoAuthFile authFile = new UserInfoAuthFile();
+            BeanUtil.copyProperties(meta, authFile);
+            authFile.setInfoAuthId(auth.getId());
+            userInfoAuthFileService.create(authFile);
+        }
     }
 
     /**
@@ -461,7 +567,16 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             UserInfoAuthVO userInfoAuthVO = new UserInfoAuthVO();
             BeanUtil.copyProperties(userInfoAuth, userInfoAuthVO);
             //查询写真信息和声音
-            findUserPortraitsAndVoices(userInfoAuthVO);
+            Integer userInfoAuthStatus = userInfoAuthVO.getUserInfoAuth();
+            boolean flag = userInfoAuthStatus.equals(UserInfoAuthStatusEnum.VERIFIED.getType())
+                    || userInfoAuthStatus.equals(UserInfoAuthStatusEnum.FREEZE.getType());
+            if(flag) {
+                findUserPortraitsAndVoices(userInfoAuthVO);
+            }else {
+                //如果是未通过和审核中的用户信息，从副本表查询
+                findUserAuthInfoByTemp(userInfoAuthVO);
+            }
+
             List<TagVO> allPersonTagVos = findAllUserTagSelected(userInfoAuthVO.getUserId(), Boolean.TRUE);
             userInfoAuthVO.setGroupTags(allPersonTagVos);
             //查询用户认证的所有技能
@@ -487,6 +602,53 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             List<UserInfoAuthFile> voiceFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthVO.getId(), FileTypeEnum.VOICE.getType());
             userInfoAuthVO.setVoiceList(voiceFiles);
         }
+    }
+
+    /**
+     * 从副本表查询用户认证信息
+     * @param userInfoAuthVO
+     */
+    private void findUserAuthInfoByTemp(UserInfoAuthVO userInfoAuthVO) {
+        Integer userId = userInfoAuthVO.getUserId();
+        if(userId == null) {
+            return;
+        }
+
+        //主图
+        String mainPic;
+        UserInfoAuthFileTempVO tempVO = new UserInfoAuthFileTempVO();
+        tempVO.setUserId(userInfoAuthVO.getUserId());
+        tempVO.setType(FileTypeEnum.MAIN_PIC.getType());
+        List<UserInfoAuthFileTemp> tempList = userInfoAuthFileTempDao.findByParameter(tempVO);
+        if(CollectionUtil.isNotEmpty(tempList)) {
+            mainPic = tempList.get(0).getUrl();
+            userInfoAuthVO.setMainPicUrl(mainPic);
+        }
+
+        //写真图
+        tempVO.setType(FileTypeEnum.PIC.getType());
+        List<UserInfoAuthFileTemp> portraitFilesList = userInfoAuthFileTempDao.findByParameter(tempVO);
+        if(CollectionUtil.isNotEmpty(portraitFilesList)) {
+            List<UserInfoAuthFile> fileList = new ArrayList<>();
+            for(UserInfoAuthFileTemp fileTemp : portraitFilesList) {
+                UserInfoAuthFile file = new UserInfoAuthFile();
+                BeanUtil.copyProperties(fileTemp, file);
+                fileList.add(file);
+            }
+            userInfoAuthVO.setPortraitList(fileList);
+        }
+
+        //声音
+        tempVO.setType(FileTypeEnum.VOICE.getType());
+        List<UserInfoAuthFileTemp> voiceTempList = userInfoAuthFileTempDao.findByParameter(tempVO);
+        List<UserInfoAuthFile> voiceList = new ArrayList<>();
+        if(CollectionUtil.isNotEmpty(voiceTempList)) {
+            UserInfoAuthFileTemp voiceTemp =  voiceTempList.get(0);
+            UserInfoAuthFile voiceFile = new UserInfoAuthFile();
+            BeanUtil.copyProperties(voiceTemp, voiceFile);
+            voiceList.add(voiceFile);
+        }
+        userInfoAuthVO.setVoiceList(voiceList);
     }
 
 
@@ -587,53 +749,94 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
      * @param portraitUrls
      * @param userInfoAuthId
      */
-    public void createUserAuthPortrait(String[] portraitUrls, Integer userInfoAuthId) {
+//    public void createUserAuthPortrait(String[] portraitUrls, Integer userInfoAuthId) {
+//        if (portraitUrls == null || portraitUrls.length == 0) {
+//            return;
+//        }
+//        //激活所有写真URL
+//        List<String> portraitUrlList = Arrays.asList(portraitUrls);
+//        for (int i = 0; i < portraitUrlList.size(); i++) {
+//            portraitUrlList.set(i, ossUtil.activateOssFile(portraitUrlList.get(i)));
+//        }
+//        List<UserInfoAuthFile> dbPicFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthId, FileTypeEnum.PIC.getType());
+//        Iterator<UserInfoAuthFile> dbIt = dbPicFiles.iterator();
+//        while (dbIt.hasNext()) {
+//            UserInfoAuthFile file = dbIt.next();
+//            if (!portraitUrlList.contains(file.getUrl())) {
+//                userInfoAuthFileService.deleteFile(file);
+//                dbIt.remove();
+//            }
+//        }
+//        if (CollectionUtil.isEmpty(dbPicFiles)) {
+//            for (int i = 0; i < portraitUrlList.size(); i++) {
+//                String portraitUrl = portraitUrlList.get(i);
+//                UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
+//                userInfoAuthFile.setUrl(portraitUrl);
+//                userInfoAuthFile.setInfoAuthId(userInfoAuthId);
+//                userInfoAuthFile.setName("写真" + (i + 1));
+//                userInfoAuthFile.setCreateTime(new Date());
+//                userInfoAuthFile.setType(FileTypeEnum.PIC.getType());
+//                userInfoAuthFileService.create(userInfoAuthFile);
+//            }
+//        } else {
+//            for (int i = 0; i < portraitUrlList.size(); i++) {
+//                try {
+//                    UserInfoAuthFile file = dbPicFiles.get(i);
+//                    if (!Objects.equals(file.getUrl(), portraitUrlList.get(i))) {
+//                        file.setUrl(portraitUrlList.get(i));
+//                        userInfoAuthFileService.update(file);
+//                    }
+//                } catch (IndexOutOfBoundsException e) {
+//                    UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
+//                    userInfoAuthFile.setUrl(portraitUrlList.get(i));
+//                    userInfoAuthFile.setInfoAuthId(userInfoAuthId);
+//                    userInfoAuthFile.setName("写真" + (i + 1));
+//                    userInfoAuthFile.setCreateTime(new Date());
+//                    userInfoAuthFile.setType(FileTypeEnum.PIC.getType());
+//                    userInfoAuthFileService.create(userInfoAuthFile);
+//                }
+//            }
+//        }
+//    }
+
+    /**
+     * 添加主图
+     * @param mainPicUrl
+     * @param userId
+     */
+    public void createUserMainPic(String mainPicUrl, Integer userId) {
+        if(StringUtils.isBlank(mainPicUrl)) {
+            return;
+        }
+        UserInfoAuthFileTemp fileTemp = new UserInfoAuthFileTemp();
+        fileTemp.setUserId(userId);
+        fileTemp.setName("主图");
+        fileTemp.setType(FileTypeEnum.MAIN_PIC.getType());
+        fileTemp.setUrl(mainPicUrl);
+        fileTemp.setUpdateTime(DateUtil.date());
+        fileTemp.setCreateTime(DateUtil.date());
+        userInfoAuthFileTempDao.create(fileTemp);
+    }
+
+    /**
+     * 添加用户写真图集
+     * @param portraitUrls
+     * @param userId
+     */
+    public void createUserAuthPortrait(String[] portraitUrls, Integer userId) {
         if (portraitUrls == null || portraitUrls.length == 0) {
             return;
         }
-        //激活所有写真URL
         List<String> portraitUrlList = Arrays.asList(portraitUrls);
-        for (int i = 0; i < portraitUrlList.size(); i++) {
-            portraitUrlList.set(i, ossUtil.activateOssFile(portraitUrlList.get(i)));
-        }
-        List<UserInfoAuthFile> dbPicFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthId, FileTypeEnum.PIC.getType());
-        Iterator<UserInfoAuthFile> dbIt = dbPicFiles.iterator();
-        while (dbIt.hasNext()) {
-            UserInfoAuthFile file = dbIt.next();
-            if (!portraitUrlList.contains(file.getUrl())) {
-                userInfoAuthFileService.deleteFile(file);
-                dbIt.remove();
-            }
-        }
-        if (CollectionUtil.isEmpty(dbPicFiles)) {
-            for (int i = 0; i < portraitUrlList.size(); i++) {
-                String portraitUrl = portraitUrlList.get(i);
-                UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
-                userInfoAuthFile.setUrl(portraitUrl);
-                userInfoAuthFile.setInfoAuthId(userInfoAuthId);
-                userInfoAuthFile.setName("写真" + (i + 1));
-                userInfoAuthFile.setCreateTime(new Date());
-                userInfoAuthFile.setType(FileTypeEnum.PIC.getType());
-                userInfoAuthFileService.create(userInfoAuthFile);
-            }
-        } else {
-            for (int i = 0; i < portraitUrlList.size(); i++) {
-                try {
-                    UserInfoAuthFile file = dbPicFiles.get(i);
-                    if (!Objects.equals(file.getUrl(), portraitUrlList.get(i))) {
-                        file.setUrl(portraitUrlList.get(i));
-                        userInfoAuthFileService.update(file);
-                    }
-                } catch (IndexOutOfBoundsException e) {
-                    UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
-                    userInfoAuthFile.setUrl(portraitUrlList.get(i));
-                    userInfoAuthFile.setInfoAuthId(userInfoAuthId);
-                    userInfoAuthFile.setName("写真" + (i + 1));
-                    userInfoAuthFile.setCreateTime(new Date());
-                    userInfoAuthFile.setType(FileTypeEnum.PIC.getType());
-                    userInfoAuthFileService.create(userInfoAuthFile);
-                }
-            }
+        for(int i = 0; i < portraitUrlList.size(); i++) {
+            UserInfoAuthFileTemp fileTemp = new UserInfoAuthFileTemp();
+            fileTemp.setUserId(userId);
+            fileTemp.setName("写真" + (i + 1));
+            fileTemp.setType(FileTypeEnum.PIC.getType());
+            fileTemp.setUrl(portraitUrlList.get(i));
+            fileTemp.setCreateTime(DateUtil.date());
+            fileTemp.setUpdateTime(DateUtil.date());
+            userInfoAuthFileTempDao.create(fileTemp);
         }
     }
 
@@ -642,31 +845,22 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
      * 添加用户认证声音
      *
      * @param voiceUrl
-     * @param userInfoAuthId
+     * @param userId
+     * @param duration
      */
-    public void createUserAuthVoice(String voiceUrl, Integer userInfoAuthId, Integer duration) {
+    public void createUserAuthVoice(String voiceUrl, Integer userId, Integer duration) {
         if (voiceUrl == null) {
             return;
         }
-        List<UserInfoAuthFile> voiceFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthId, FileTypeEnum.VOICE.getType());
-        boolean flag = true;
-        for (UserInfoAuthFile file : voiceFiles) {
-            if (file.getUrl().contains(voiceUrl)) {
-                flag = false;
-            } else {
-                userInfoAuthFileService.deleteFile(file);
-            }
-        }
-        if (flag) {
-            UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
-            userInfoAuthFile.setUrl(ossUtil.activateOssFile(voiceUrl));
-            userInfoAuthFile.setDuration(duration);
-            userInfoAuthFile.setInfoAuthId(userInfoAuthId);
-            userInfoAuthFile.setName("语音介绍");
-            userInfoAuthFile.setCreateTime(new Date());
-            userInfoAuthFile.setType(FileTypeEnum.VOICE.getType());
-            userInfoAuthFileService.create(userInfoAuthFile);
-        }
+        UserInfoAuthFileTemp fileTemp = new UserInfoAuthFileTemp();
+        fileTemp.setUserId(userId);
+        fileTemp.setName("语音介绍");
+        fileTemp.setType(FileTypeEnum.VOICE.getType());
+        fileTemp.setUrl(voiceUrl);
+        fileTemp.setDuration(duration);
+        fileTemp.setCreateTime(DateUtil.date());
+        fileTemp.setUpdateTime(DateUtil.date());
+        userInfoAuthFileTempDao.create(fileTemp);
     }
 
     /**
