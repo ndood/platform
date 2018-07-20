@@ -9,6 +9,7 @@ import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,6 +23,7 @@ import java.util.List;
 public interface OrderDao extends ICommonDao<Order, Integer> {
 
     List<Order> findByParameter(OrderVO orderVO);
+
 
     int countByParameter(OrderVO orderVO);
 

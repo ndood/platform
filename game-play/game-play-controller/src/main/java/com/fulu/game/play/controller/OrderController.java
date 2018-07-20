@@ -62,6 +62,7 @@ public class OrderController extends BaseController {
 
     /**
      * 提交订单
+     *
      * @param productId
      * @param request
      * @param num
@@ -209,6 +210,7 @@ public class OrderController extends BaseController {
 
     /**
      * 订单列表
+     *
      * @param pageNum
      * @param pageSize
      * @param type
@@ -237,6 +239,7 @@ public class OrderController extends BaseController {
 
     /**
      * 申请客服仲裁
+     *
      * @param orderNo
      * @param remark
      * @param fileUrl
@@ -253,6 +256,7 @@ public class OrderController extends BaseController {
 
     /**
      * 提醒接单
+     *
      * @param orderNo
      * @return
      */
@@ -262,7 +266,7 @@ public class OrderController extends BaseController {
             return Result.error().msg("不能频繁提醒接单!");
         }
         Order order = orderService.findByOrderNo(orderNo);
-        orderService.pushToServiceOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_RECEIVE);
+        orderService.pushToServiceOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_RECEIVE);
         redisOpenService.setTimeInterval(orderNo, 5 * 60);
         return Result.success().msg("提醒接单成功!");
     }
@@ -279,7 +283,7 @@ public class OrderController extends BaseController {
             return Result.error().msg("不能频繁提醒开始!");
         }
         Order order = orderService.findByOrderNo(orderNo);
-        orderService.pushToServiceOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_START_SERVICE);
+        orderService.pushToServiceOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_START_SERVICE);
         redisOpenService.setTimeInterval(orderNo, 5 * 60);
         return Result.success().msg("提醒开始成功!");
     }
@@ -293,6 +297,10 @@ public class OrderController extends BaseController {
                           BigDecimal refundMoney,
                           String remark,
                           @RequestParam(required = true) String[] fileUrl) {
+
+        if (redisOpenService.isTimeIntervalInside(OrderEventService.CANCEL_CONSULT_LIMIT + orderNo)) {
+            return Result.error().msg("取消协商后,两个小时内不能重复协商!");
+        }
         orderService.userConsultOrder(orderNo, refundMoney, remark, fileUrl);
         return Result.success().data(orderNo);
     }
@@ -300,6 +308,7 @@ public class OrderController extends BaseController {
 
     /**
      * 陪玩师同意协商
+     *
      * @param orderNo
      * @param orderEventId
      * @return
@@ -314,6 +323,7 @@ public class OrderController extends BaseController {
 
     /**
      * 陪玩师拒绝协商
+     *
      * @param orderNo
      * @param orderEventId
      * @return
@@ -323,12 +333,13 @@ public class OrderController extends BaseController {
                                 Integer orderEventId,
                                 String remark,
                                 @RequestParam(required = true) String[] fileUrl) {
-        orderService.consultRejectOrder(orderNo, orderEventId,remark,fileUrl);
+        orderService.consultRejectOrder(orderNo, orderEventId, remark, fileUrl);
         return Result.success().data(orderNo);
     }
 
     /**
      * 用户取消协商
+     *
      * @param orderNo
      * @param orderEventId
      * @return
@@ -342,6 +353,7 @@ public class OrderController extends BaseController {
 
     /**
      * 陪玩师接收订单
+     *
      * @param orderNo
      * @return
      */
@@ -354,6 +366,7 @@ public class OrderController extends BaseController {
 
     /**
      * 陪玩师开始服务
+     *
      * @param orderNo
      * @return
      */
@@ -379,6 +392,7 @@ public class OrderController extends BaseController {
 
     /**
      * 陪玩师取消订单
+     *
      * @param orderNo
      * @return
      */
@@ -390,6 +404,7 @@ public class OrderController extends BaseController {
 
     /**
      * 陪玩师提交验收订单
+     *
      * @param orderNo
      * @return
      */
@@ -420,7 +435,7 @@ public class OrderController extends BaseController {
                                 Integer orderEventId,
                                 String remark,
                                 String[] fileUrl) {
-        OrderDeal orderDeal =orderService.eventLeaveMessage(orderNo,orderEventId,remark,fileUrl);
+        OrderDeal orderDeal = orderService.eventLeaveMessage(orderNo, orderEventId, remark, fileUrl);
         return Result.success().data(orderDeal);
     }
 
@@ -440,6 +455,7 @@ public class OrderController extends BaseController {
 
     /**
      * 查看陪玩师的验收截图
+     *
      * @param orderNo
      * @return
      */
@@ -465,6 +481,7 @@ public class OrderController extends BaseController {
 
     /**
      * 用户订单详情页
+     *
      * @param orderNo
      * @return
      */

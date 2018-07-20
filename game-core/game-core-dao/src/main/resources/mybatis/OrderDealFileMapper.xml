@@ -47,6 +47,7 @@
                 and create_time = #{createTime}
             </if>
         </where>
+        order BY create_time DESC
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">

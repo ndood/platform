@@ -17,6 +17,10 @@ import java.math.BigDecimal;
  */
 public interface OrderEventService extends ICommonService<OrderEvent,Integer>{
 
+
+    String CANCEL_CONSULT_LIMIT = "CANCEL_CONSULT_LIMIT";
+
+
     /**
      * 申请协商
      * @param order
@@ -38,6 +42,9 @@ public interface OrderEventService extends ICommonService<OrderEvent,Integer>{
      */
     OrderEvent createAppeal(Order order, User applyUser, String remark, String... fileUrl);
 
+
+
+     OrderEvent findByOrderNoAndType(String orderNo,int type);
 
     /**
      * 取消协商

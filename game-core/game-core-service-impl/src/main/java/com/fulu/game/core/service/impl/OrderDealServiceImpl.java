@@ -60,6 +60,13 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal, Integer> i
     }
 
     @Override
+    public int create(OrderDeal orderDeal){
+        orderDeal.setCreateTime(new Date());
+        return create(orderDeal);
+    }
+
+
+    @Override
     public void create(OrderDeal orderDeal, String... fileUrls) {
         orderDeal.setCreateTime(new Date());
         create(orderDeal);
@@ -73,7 +80,6 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal, Integer> i
             }
         }
     }
-
 
     @Override
     public OrderDealVO findByUserAndOrderNo(Integer userId, String orderNo) {

@@ -32,6 +32,9 @@ public class OrderEventServiceImpl extends AbsCommonService<OrderEvent, Integer>
     private CategoryService categoryService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
+
 
     @Override
     public ICommonDao<OrderEvent, Integer> getDao() {
@@ -145,24 +148,40 @@ public class OrderEventServiceImpl extends AbsCommonService<OrderEvent, Integer>
     public void cancelConsult(Order order, User applyUser, OrderEvent orderEvent) {
         //创建取消协商留言
         OrderDeal orderDeal = new OrderDeal();
-        orderDeal.setTitle("取消协商");
+        if(applyUser==null){
+            orderDeal.setTitle("取消协商");
+            orderDeal.setRemark("系统自动取消协商订单");
+            orderDeal.setUserId(order.getUserId());
+        }else{
+            orderDeal.setTitle("取消协商");
+            orderDeal.setRemark("用户取消协商订单");
+            orderDeal.setUserId(applyUser.getId());
+        }
         orderDeal.setType(OrderDealTypeEnum.CONSULT.getType());
-        orderDeal.setUserId(applyUser.getId());
-        orderDeal.setRemark("用户取消协商订单");
         orderDeal.setOrderNo(order.getOrderNo());
         orderDeal.setOrderEventId(orderEvent.getId());
         orderDeal.setCreateTime(new Date());
         orderDealService.create(orderDeal, null);
         //创建取消协商的订单状态详情
-        orderStatusDetailsService.create(order.getOrderNo(), OrderStatusEnum.CONSULT_CANCEL.getStatus(), 0);
-
-
+        orderStatusDetailsService.create(order.getOrderNo(), OrderStatusEnum.CONSULT_CANCEL.getStatus());
         //重置订单状态
         orderStatusDetailsService.resetOrderStatus(order.getOrderNo(), orderEvent.getOrderStatus());
         //删除申诉
         orderEvent.setIsDel(true);
         update(orderEvent);
+        redisOpenService.setTimeInterval(CANCEL_CONSULT_LIMIT+order.getOrderNo(),2*60*60);
     }
 
+
+    public OrderEvent findByOrderNoAndType(String orderNo,int type){
+        OrderEventVO param = new OrderEventVO();
+        param.setOrderNo(orderNo);
+        param.setType(type);
+        List<OrderEvent> orderEventList = orderEventDao.findByParameter(param);
+        if (orderEventDao.findByParameter(param).isEmpty()) {
+            return null;
+        }
+        return orderEventList.get(0);
+    }
 
 }

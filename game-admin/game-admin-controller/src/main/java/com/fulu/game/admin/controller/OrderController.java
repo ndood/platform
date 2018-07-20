@@ -126,8 +126,8 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/admin/appeal")
     public Result adminHandleAppealOrder(@RequestParam(required = true) String orderNo,
                                          @RequestParam(required = true) String remark) {
-        orderService.adminAppealOrder(orderNo, remark);
-        return Result.success().msg("订单申诉成功!");
+//        orderService.adminAppealOrder(orderNo, remark);
+        return Result.error().msg("管理员不允许仲裁订单!");
     }
 
     /**

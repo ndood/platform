@@ -157,6 +157,7 @@
         </where>
     </select>
 
+
     <select id="findByParameter" resultMap="OrderResultMap" parameterType="com.fulu.game.core.entity.vo.OrderVO">
         SELECT
         <include refid="Base_Column_List"/>
