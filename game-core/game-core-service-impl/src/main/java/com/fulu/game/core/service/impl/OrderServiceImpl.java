@@ -1039,6 +1039,36 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return order.getOrderNo();
     }
 
+    @Override
+    public String systemConsultAgreeOrder(String orderNo) {
+        log.info("陪玩师同意协商处理订单orderNo:{}", orderNo);
+        Order order = findByOrderNo(orderNo);
+        OrderEvent orderEvent = orderEventService.findByOrderNoAndType(orderNo,OrderEventTypeEnum.CONSULT.getType());
+        if (!order.getStatus().equals(OrderStatusEnum.CONSULTING.getStatus())) {
+            throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES, orderNo);
+        }
+        order.setStatus(OrderStatusEnum.SYSTEM_CONSULT_COMPLETE.getStatus());
+        order.setUpdateTime(new Date());
+        update(order);
+        String title = "系统自动同意了协商，￥" + orderEvent.getRefundMoney().toPlainString() + "已经退款结算";
+        OrderDeal orderDeal = new OrderDeal();
+        orderDeal.setTitle(title);
+        orderDeal.setType(OrderDealTypeEnum.CONSULT.getType());
+        orderDeal.setUserId(order.getServiceUserId());
+        orderDeal.setRemark("系统自动同意协商");
+        orderDeal.setOrderNo(order.getOrderNo());
+        orderDeal.setOrderEventId(orderEvent.getId());
+        orderDeal.setCreateTime(new Date());
+        orderDealService.create(orderDeal);
+        //退款给用户
+        orderShareProfitService.orderRefund(order, orderEvent.getRefundMoney());
+        //创建订单状态详情
+        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
+        //推送通知同意协商
+        pushToUserOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE);
+        return order.getOrderNo();
+    }
+
     /**
      * 陪玩师取消订单
      *

@@ -226,6 +226,13 @@ public interface OrderService extends ICommonService<Order, Integer> {
     String systemConsultCancelOrder(String orderNo);
 
     /**
+     * 系统处理协商中超时订单
+     * @param orderNo
+     * @return
+     */
+    String systemConsultAgreeOrder(String orderNo);
+
+    /**
      * 陪玩师取消订单
      * @param orderNo
      * @return

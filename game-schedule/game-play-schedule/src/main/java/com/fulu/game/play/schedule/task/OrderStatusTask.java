@@ -89,4 +89,23 @@ public class OrderStatusTask {
     }
 
 
+
+    /**
+     * 自动取消拒绝的订单
+     */
+    @Scheduled(cron = "0 0/1 * * * ? ")  //cron接受cron表达式，根据cron表达式确定定时规则
+    public void autoConsultOrder() {
+        Integer[] statusList = new Integer[]{OrderStatusEnum.CONSULTING.getStatus()};
+        List<Order> orderList = orderService.findByStatusList(statusList);
+        for (Order order : orderList) {
+            long countDown = orderStatusDetailsService.getCountDown(order.getOrderNo(), order.getStatus());
+            log.info("订单超时时间到order:{}:",order);
+            if(countDown<=0){
+                log.info("系统自动取消协商订单order:{}:",order);
+                orderService.systemConsultAgreeOrder(order.getOrderNo());
+            }
+        }
+    }
+
+
 }
