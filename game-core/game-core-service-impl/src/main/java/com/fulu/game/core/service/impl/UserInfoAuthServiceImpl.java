@@ -225,7 +225,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userInfoAuthReject.setCreateTime(new Date());
         userInfoAuthRejectService.create(userInfoAuthReject);
         //同步下架用户该技能商品
-        productService.deleteProductByUser(userInfoAuth.getUserId());
+//        productService.deleteProductByUser(userInfoAuth.getUserId());
 
         //给用户推送通知
         wxTemplateMsgService.pushWechatTemplateMsg(user.getId(), WechatTemplateMsgEnum.USER_AUTH_INFO_REJECT);
