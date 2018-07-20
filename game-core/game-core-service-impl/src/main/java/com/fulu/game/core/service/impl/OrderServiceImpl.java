@@ -101,9 +101,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
 
     public void pushToUserOrderWxMessage(Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum) {
-        User user = userService.getCurrentUser();
         String orderStatus = OrderStatusEnum.getMsgByStatus(order.getStatus());
-        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), wechatTemplateMsgEnum, orderStatus, order.getTotalMoney().toPlainString(), user.getNickname());
+        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), wechatTemplateMsgEnum, orderStatus);
     }
 
     @Override
@@ -1060,12 +1059,12 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         orderDeal.setOrderEventId(orderEvent.getId());
         orderDeal.setCreateTime(new Date());
         orderDealService.create(orderDeal);
-        //退款给用户
-        orderShareProfitService.orderRefund(order, orderEvent.getRefundMoney());
         //创建订单状态详情
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         //推送通知同意协商
         pushToUserOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE);
+        //退款给用户
+        orderShareProfitService.orderRefund(order, orderEvent.getRefundMoney());
         return order.getOrderNo();
     }
 
@@ -1087,13 +1086,13 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setUpdateTime(new Date());
         order.setCompleteTime(new Date());
         update(order);
+        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
+        //消息提醒
+        pushToUserOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOUSER_REJECT_RECEIVE);
         // 全额退款用户
         if (order.getIsPay()) {
             orderShareProfitService.orderRefund(order, order.getActualMoney());
         }
-        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
-        //消息提醒
-        pushToUserOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOUSER_REJECT_RECEIVE);
         return orderConvertVo(order);
     }
 
