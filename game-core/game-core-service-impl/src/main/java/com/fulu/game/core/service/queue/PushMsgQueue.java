@@ -92,6 +92,7 @@ public class PushMsgQueue  implements Runnable{
      * @param pushId
      */
     private void countPushSuccessNum(int pushId){
+        //todo 需要更改：不能及时更新pushmsg，会造成延时推送通知重复发送的问题
         lock.lock();
         try {
             PushMsg pushMsg = pushMsgService.findById(pushId);
