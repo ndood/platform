@@ -65,6 +65,24 @@
         </where>
     </select>
 
+
+    <select id="findByOrderStatus" resultMap="OrderStatusDetailsResultMap" parameterType="com.fulu.game.core.entity.vo.OrderStatusDetailsVO">
+        SELECT
+            <include refid="Base_Column_List"/>
+        FROM t_order_status_details
+        <where>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="statusList != null">
+                and orderStatus in
+                <foreach collection="statusList" item="s" index="index" open="(" close=")" separator=",">
+                    #{s}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
     <select id="findOrderProcessByOrderNo" parameterType="String" resultType="com.fulu.game.core.entity.OrderStatusDetails">
         SELECT
             create_time,

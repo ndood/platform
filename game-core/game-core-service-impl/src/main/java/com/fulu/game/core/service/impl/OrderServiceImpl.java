@@ -879,8 +879,10 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         }
         for (OrderDealVO orderDealVO : orderDealVOList) {
             User ouser = userService.findById(orderDealVO.getUserId());
-            orderDealVO.setHeadUrl(ouser.getHeadPortraitsUrl());
-            orderDealVO.setNickname(ouser.getNickname());
+            if(ouser!=null){
+                orderDealVO.setHeadUrl(ouser.getHeadPortraitsUrl());
+                orderDealVO.setNickname(ouser.getNickname());
+            }
         }
         return orderDealVOList;
     }

@@ -11,6 +11,8 @@ import com.xiaoleilu.hutool.date.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -42,20 +44,18 @@ public class OrderStatusDetailsServiceImpl extends AbsCommonService<OrderStatusD
 
     @Override
     public void create(String orderNo, Integer orderStatus) {
-        create(orderNo,orderStatus,0);
+        create(orderNo,orderStatus);
     }
 
     /**
      * 重置订单状态
      * @param orderNo
-     * @param orderStatus
+     * @param resetStatus
      */
     @Override
-    public void resetOrderStatus(String orderNo, Integer orderStatus) {
-        OrderStatusDetailsVO param = new OrderStatusDetailsVO();
-        param.setOrderNo(orderNo);
-        param.setOrderStatus(orderStatus);
-        List<OrderStatusDetails> list = orderStatusDetailsDao.findByParameter(param);
+    public void resetOrderStatus(String orderNo, Integer resetStatus,Integer[] invalidStatus) {
+        List<Integer> invalidStatusList =Arrays.asList(invalidStatus);
+        List<OrderStatusDetails> list = findByOrderStatus(orderNo,invalidStatusList);
         int minute = 0;
         for(OrderStatusDetails orderStatusDetails : list){
             if(orderStatusDetails.getCountDownMinute()>0){
@@ -66,7 +66,7 @@ public class OrderStatusDetailsServiceImpl extends AbsCommonService<OrderStatusD
             update(orderStatusDetails);
         }
         OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
-        orderStatusDetails.setOrderStatus(orderStatus);
+        orderStatusDetails.setOrderStatus(resetStatus);
         orderStatusDetails.setCountDownMinute(minute);
         orderStatusDetails.setOrderNo(orderNo);
         orderStatusDetails.setTriggerTime(new Date());
@@ -109,6 +109,15 @@ public class OrderStatusDetailsServiceImpl extends AbsCommonService<OrderStatusD
             return countDown;
         }
     }
+
+
+    public List<OrderStatusDetails> findByOrderStatus(String orderNo,List<Integer> statusList){
+        if(statusList.isEmpty()||orderNo==null){
+            return new ArrayList<>();
+        }
+        return orderStatusDetailsDao.findByOrderStatus(orderNo,statusList);
+    }
+
 
     @Override
     public List<OrderStatusDetails> findOrderProcess(String orderNo) {

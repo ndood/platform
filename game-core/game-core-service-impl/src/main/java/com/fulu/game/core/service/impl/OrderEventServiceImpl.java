@@ -82,6 +82,7 @@ public class OrderEventServiceImpl extends AbsCommonService<OrderEvent, Integer>
         orderEvent.setOrderNo(order.getOrderNo());
         orderEvent.setApplyId(applyUser.getId());
         orderEvent.setUserId(order.getUserId());
+        orderEvent.setOrderStatus(order.getStatus());
         orderEvent.setServiceUserId(order.getServiceUserId());
         orderEvent.setType(OrderEventTypeEnum.CHECK.getType());
         orderEvent.setCreateTime(new Date());
@@ -125,6 +126,7 @@ public class OrderEventServiceImpl extends AbsCommonService<OrderEvent, Integer>
         orderEvent.setOrderNo(order.getOrderNo());
         orderEvent.setApplyId(applyUser.getId());
         orderEvent.setUserId(order.getUserId());
+        orderEvent.setOrderStatus(order.getStatus());
         orderEvent.setServiceUserId(order.getServiceUserId());
         orderEvent.setRefundMoney(order.getActualMoney());
         orderEvent.setType(OrderEventTypeEnum.APPEAL.getType());
@@ -164,8 +166,15 @@ public class OrderEventServiceImpl extends AbsCommonService<OrderEvent, Integer>
         orderDealService.create(orderDeal, null);
         //创建取消协商的订单状态详情
         orderStatusDetailsService.create(order.getOrderNo(), OrderStatusEnum.CONSULT_CANCEL.getStatus());
+
+
+        Integer[] invalidStatus = new Integer[]{orderEvent.getOrderStatus(),
+                                                OrderStatusEnum.CONSULTING.getStatus(),
+                                                OrderStatusEnum.CONSULT_CANCEL.getStatus(),
+                                                OrderStatusEnum.CONSULT_REJECT.getStatus()};
+
         //重置订单状态
-        orderStatusDetailsService.resetOrderStatus(order.getOrderNo(), orderEvent.getOrderStatus());
+        orderStatusDetailsService.resetOrderStatus(order.getOrderNo(), orderEvent.getOrderStatus(),invalidStatus);
         //删除申诉
         orderEvent.setIsDel(true);
         update(orderEvent);
