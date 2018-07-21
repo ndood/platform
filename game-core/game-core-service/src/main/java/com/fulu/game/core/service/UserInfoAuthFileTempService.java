@@ -2,8 +2,6 @@ package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.UserInfoAuthFileTemp;
 
-
-
 /**
  * 信息认证文件临时表（图片、声音）
  * 
@@ -19,4 +17,6 @@ public interface UserInfoAuthFileTempService extends ICommonService<UserInfoAuth
      * @return
      */
     Integer deleteByUserId(Integer userId);
+
+//    List<UserInfoAuthFileTemp> findTempFilesByUserId(Integer userId);
 }
