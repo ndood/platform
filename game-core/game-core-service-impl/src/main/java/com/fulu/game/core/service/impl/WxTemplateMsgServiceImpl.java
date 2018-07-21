@@ -130,11 +130,13 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
         User user = userService.findById(userId);
         String formId = getWechatUserFormId(userId);
         if (user == null || formId == null) {
-            log.error("user或者formId为null无法给用户推送消息userId:{};content:{};formId:{}", userId, content, formId);
+            log.error("user或者formId为null无法给用户推送消息user:{};content:{};formId:{}", user, content, formId);
             if (user != null && user.getMobile() != null) {
                 Boolean flag = SMSUtil.sendLeaveInform(user.getMobile(), content, Constant.WEIXN_JUMP_URL);
                 if (!flag) {
                     log.error("留言通知发送短信失败:user.getMobile:{};content:{};", user.getMobile(), content);
+                }else{
+                    log.info("留言通知发送短信成功:user.getMobile:{};content:{};", user.getMobile(), content);
                 }
             }
             return;
