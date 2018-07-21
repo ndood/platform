@@ -293,7 +293,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     /**
      * 将temp表的数据更新到t_user_info_auth_file表
      * @param userId
-     * @param fileType
      */
     public void deleteTempFileAndUpdateOrg(Integer userId) {
         UserInfoAuth auth = findByUserId(userId);
@@ -411,13 +410,19 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userInfoAuthVO.setUserInfoAuth(user.getUserInfoAuth());
         //查询写真信息和声音
         Integer userInfoAuthStatus = user.getUserInfoAuth();
-        boolean flag = userInfoAuthStatus.equals(UserInfoAuthStatusEnum.NOT_PERFECT.getType())
-                ||  userInfoAuthStatus.equals(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType());
-        //不通过或者审核中
-        if(flag) {
+        //审核中
+        if(userInfoAuthStatus.equals(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType())) {
             findUserAuthInfoByTemp(userInfoAuthVO);
-        }else {
+            //审核通过或者冻结
+        }else if(userInfoAuthStatus.equals(UserInfoAuthStatusEnum.VERIFIED.getType())
+                || userInfoAuthStatus.equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
             findUserPortraitsAndVoices(userInfoAuthVO);
+            //不通过
+        }else if(userInfoAuthStatus.equals(UserInfoAuthStatusEnum.NOT_PERFECT.getType())) {
+            boolean flag = findUserAuthInfoByTemp(userInfoAuthVO);
+            if(!flag) {
+                findUserPortraitsAndVoices(userInfoAuthVO);
+            }
         }
 
         //查询用户所有标签
@@ -640,10 +645,10 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
      * 从副本表查询用户认证信息
      * @param userInfoAuthVO
      */
-    private void findUserAuthInfoByTemp(UserInfoAuthVO userInfoAuthVO) {
+    private boolean findUserAuthInfoByTemp(UserInfoAuthVO userInfoAuthVO) {
         Integer userId = userInfoAuthVO.getUserId();
         if(userId == null) {
-            return;
+            return false;
         }
 
         //主图
@@ -668,6 +673,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
                 fileList.add(file);
             }
             userInfoAuthVO.setPortraitList(fileList);
+        }else {
+            return false;
         }
 
         //声音
@@ -681,6 +688,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             voiceList.add(voiceFile);
         }
         userInfoAuthVO.setVoiceList(voiceList);
+        return true;
     }
 
 
