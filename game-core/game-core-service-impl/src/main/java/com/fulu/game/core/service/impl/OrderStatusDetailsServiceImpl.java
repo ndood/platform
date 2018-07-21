@@ -58,8 +58,10 @@ public class OrderStatusDetailsServiceImpl extends AbsCommonService<OrderStatusD
         List<OrderStatusDetails> list = findByOrderStatus(orderNo,invalidStatusList);
         int minute = 0;
         for(OrderStatusDetails orderStatusDetails : list){
-            if(orderStatusDetails.getCountDownMinute()>0){
-                minute = 72*60;
+            if(orderStatusDetails.getOrderStatus().equals(resetStatus)){
+                if(orderStatusDetails.getCountDownMinute()>0){
+                    minute = 72*60;
+                }
             }
             orderStatusDetails.setIsValid(false);
             orderStatusDetails.setUpdateTime(new Date());

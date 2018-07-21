@@ -50,7 +50,7 @@ public enum OrderStatusGroupEnum {
     CONSULT_ALL("所有协商状态", "ALL", 301, new Integer[]{350,352,415,416}),
     APPEAL_ALL("所有仲裁状态", "ALL", 302, new Integer[]{400,401,410,420,502}),
 
-    ORDER_CONTACT_INVISIBLE("联系方式可见状态","ALL",201,new Integer[]{100, 102, 110,101,160,200});
+    ORDER_CONTACT_INVISIBLE("联系方式可见状态","ALL",201,new Integer[]{100, 102,110,101,160,200,210});
 
 
     private String name;

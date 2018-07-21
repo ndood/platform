@@ -1334,6 +1334,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         }
         pushToServiceOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_SERVICE_WIN);
         pushToUserOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_SERVICE_WIN);
+
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         //订单分润
         orderShareProfitService.shareProfit(order);
