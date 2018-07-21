@@ -24,5 +24,9 @@ public class UserInfoAuthFileTempServiceImpl extends AbsCommonService<UserInfoAu
     public ICommonDao<UserInfoAuthFileTemp, Integer> getDao() {
         return userInfoAuthFileTempDao;
     }
-	
+
+    @Override
+    public Integer deleteByUserId(Integer userId) {
+        return userInfoAuthFileTempDao.deleteByUserId(userId);
+    }
 }
