@@ -1406,14 +1406,16 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         if(orderEvent != null) {
             OrderDeal orderDeal = new OrderDeal();
             orderDeal.setOrderNo(orderNo);
-            orderDeal.setRemark("客服人员仲裁订单，结果:协商处理");
+            orderDeal.setRemark("客服人员仲裁订单，结果:协商处理。留言:"+details.getRemark());
             orderDeal.setTitle("客服人员仲裁订单");
             orderDeal.setType(OrderEventTypeEnum.APPEAL.getType());
             orderDeal.setOrderEventId(orderEvent.getId());
             orderDealService.create(orderDeal);
         }
-        pushToServiceOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE);
-        pushToUserOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE);
+
+        wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE,details.getRemark());
+        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE,details.getRemark());
+
         if (order.getIsPay()) {
             orderShareProfitService.orderRefundToUserAndServiceUser(order, details);
             orderStatusDetailsService.create(orderNo, order.getStatus());
