@@ -229,7 +229,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 //        productService.deleteProductByUser(userInfoAuth.getUserId());
 
         //给用户推送通知
-        wxTemplateMsgService.pushWechatTemplateMsg(user.getId(), WechatTemplateMsgEnum.USER_AUTH_INFO_REJECT);
+        wxTemplateMsgService.pushWechatTemplateMsg(user.getId(), WechatTemplateMsgEnum.USER_AUTH_INFO_REJECT,reason);
         return userInfoAuth;
     }
 
