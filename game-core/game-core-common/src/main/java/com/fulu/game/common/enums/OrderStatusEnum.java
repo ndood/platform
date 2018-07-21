@@ -9,9 +9,9 @@ public enum OrderStatusEnum {
 
 
     UNPAY_ORDER_CLOSE(100, "订单关闭",""),//未付款订单取消或者关闭
+    USER_CANCEL(101, "订单取消",""),//用户取消订单
     SYSTEM_CLOSE(102, "订单取消",""),//系统关闭订单
     ADMIN_CLOSE(110, "订单取消",""),//管理员关闭订单
-    USER_CANCEL(101, "订单取消",""),//用户取消订单
     SERVER_CANCEL(160, "订单取消",""),//陪玩师取消订单
     NON_PAYMENT(200, "待付款","尽快付款享受服务哦##超过24小时未付款,订单将自动关闭。"),
     WAIT_SERVICE(210, "等待接单","等待陪玩师接单##超过将自动取消订单"),//已付款
