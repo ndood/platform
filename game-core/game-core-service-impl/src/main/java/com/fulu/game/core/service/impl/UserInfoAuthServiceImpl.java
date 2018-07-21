@@ -7,7 +7,6 @@ import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserInfoAuthDao;
-import com.fulu.game.core.dao.UserInfoAuthFileDao;
 import com.fulu.game.core.dao.UserInfoAuthFileTempDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
@@ -61,7 +60,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     @Autowired
     private UserInfoAuthFileTempDao userInfoAuthFileTempDao;
     @Autowired
-    private UserInfoAuthFileDao userInfoAuthFileDao;
+    private UserInfoAuthFileTempService userInfoAuthFileTempService;
 
     @Override
     public ICommonDao<UserInfoAuth, Integer> getDao() {
@@ -120,6 +119,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             update(userInfoAuth);
         }
 
+        //删除临时表陈旧数据
+        userInfoAuthFileTempService.deleteByUserId(user.getId());
         //添加用户主图
         createUserMainPic(userInfoAuthTO.getMainPicUrl(), user.getId());
         //添加用户认证写真图片

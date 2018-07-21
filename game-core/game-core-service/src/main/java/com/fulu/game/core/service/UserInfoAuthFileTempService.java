@@ -12,5 +12,11 @@ import com.fulu.game.core.entity.UserInfoAuthFileTemp;
  * @date 2018-07-19 20:14:50
  */
 public interface UserInfoAuthFileTempService extends ICommonService<UserInfoAuthFileTemp,Integer>{
-	
+
+    /**
+     * 根据userId删除表记录
+     * @param userId
+     * @return
+     */
+    Integer deleteByUserId(Integer userId);
 }
