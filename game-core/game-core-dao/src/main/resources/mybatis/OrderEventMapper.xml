@@ -15,8 +15,7 @@
         <result column="is_del" property="isDel"/>
     </resultMap>
 
-    <resultMap id="OrderEventResultVOMap" type="com.fulu.game.core.entity.vo.OrderEventVO"
-               extends="OrderEventResultMap">
+    <resultMap id="OrderEventResultVOMap" type="com.fulu.game.core.entity.vo.OrderEventVO" extends="OrderEventResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">

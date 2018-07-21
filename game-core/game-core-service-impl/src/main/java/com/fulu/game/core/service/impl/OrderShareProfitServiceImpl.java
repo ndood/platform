@@ -135,6 +135,7 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
      */
     @Override
     public void orderRefundToUserAndServiceUser(Order order, ArbitrationDetails details) {
+        log.info("订单协商退款:order:{};details:{}",order,details);
         if (!order.getIsPay()) {
             throw new OrderException(order.getOrderNo(), "未支付订单不允许退款!");
         }

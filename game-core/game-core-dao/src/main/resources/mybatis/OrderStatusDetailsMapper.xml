@@ -75,7 +75,7 @@
                 and order_no = #{orderNo}
             </if>
             <if test="statusList != null">
-                and orderStatus in
+                and order_status in
                 <foreach collection="statusList" item="s" index="index" open="(" close=")" separator=",">
                     #{s}
                 </foreach>
