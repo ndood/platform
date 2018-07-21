@@ -1390,6 +1390,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         String orderNo = details.getOrderNo();
         log.info("管理员协商处理订单orderNo:{};adminId:{};adminName:{};", orderNo, admin.getId(), admin.getName());
         Order order = findByOrderNo(orderNo);
+        details.setUserId(order.getUserId());
+        details.setServiceUserId(order.getServiceUserId());
         if (!order.getStatus().equals(OrderStatusEnum.APPEALING.getStatus())
                 && !order.getStatus().equals(OrderStatusEnum.APPEALING_ADMIN.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有申诉中的订单才能操作!");
