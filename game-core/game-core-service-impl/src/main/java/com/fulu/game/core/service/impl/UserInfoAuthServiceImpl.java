@@ -308,6 +308,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         for(UserInfoAuthFileTemp meta : fileTemps) {
             UserInfoAuthFile authFile = new UserInfoAuthFile();
             BeanUtil.copyProperties(meta, authFile);
+            String activatedUrl = ossUtil.activateOssFile(authFile.getUrl());
+            authFile.setUrl(activatedUrl);
             authFile.setInfoAuthId(auth.getId());
             userInfoAuthFileService.create(authFile);
         }
