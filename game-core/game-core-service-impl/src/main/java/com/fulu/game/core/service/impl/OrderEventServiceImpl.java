@@ -68,8 +68,10 @@ public class OrderEventServiceImpl extends AbsCommonService<OrderEvent, Integer>
         List<OrderDealVO> orderDealVOList = orderDealService.findByOrderEventId(orderEvent.getId());
         for(OrderDealVO orderDealVO : orderDealVOList){
             User ouser = userService.findById(orderDealVO.getUserId());
-            orderDealVO.setHeadUrl(ouser.getHeadPortraitsUrl());
-            orderDealVO.setNickname(ouser.getNickname());
+            if(ouser!=null){
+                orderDealVO.setHeadUrl(ouser.getHeadPortraitsUrl());
+                orderDealVO.setNickname(ouser.getNickname());
+            }
         }
         orderEventVO.setOrderDealList(orderDealVOList);
         return orderEventVO;

@@ -44,7 +44,7 @@ public class OrderStatusDetailsServiceImpl extends AbsCommonService<OrderStatusD
 
     @Override
     public void create(String orderNo, Integer orderStatus) {
-        create(orderNo,orderStatus);
+        create(orderNo,orderStatus,0);
     }
 
     /**

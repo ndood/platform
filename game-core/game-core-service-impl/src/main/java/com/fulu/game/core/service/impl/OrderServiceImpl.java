@@ -298,6 +298,11 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         OrderProduct orderProduct = orderProductService.findByOrderNo(orderNo);
         BeanUtil.copyProperties(order, orderDetailsVO);
 
+        List<Integer> invisibleContactList  = Arrays.asList(OrderStatusGroupEnum.ORDER_CONTACT_INVISIBLE.getStatusList());
+        if(invisibleContactList.contains(order.getStatus())){
+            orderDetailsVO.setContactInfo(null);
+        }
+
         Category category = categoryService.findById(order.getCategoryId());
 
         orderDetailsVO.setCategoryIcon(category.getIcon());
@@ -789,7 +794,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
      */
     @Override
     public String userConsultOrder(String orderNo, BigDecimal refundMoney, String remark, String[] fileUrls) {
-        log.info("用户申诉订单orderNo:{}", orderNo);
+        log.info("用户协商订单orderNo:{}", orderNo);
         Order order = findByOrderNo(orderNo);
         if (refundMoney == null) {
             throw new OrderException(orderNo, "协商处理金额不能为空!");
