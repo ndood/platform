@@ -666,6 +666,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         if(CollectionUtil.isNotEmpty(tempList)) {
             mainPic = tempList.get(0).getUrl();
             userInfoAuthVO.setMainPicUrl(mainPic);
+        }else {
+            return false;
         }
 
         //写真图
@@ -692,6 +694,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             UserInfoAuthFile voiceFile = new UserInfoAuthFile();
             BeanUtil.copyProperties(voiceTemp, voiceFile);
             voiceList.add(voiceFile);
+        }else {
+            return false;
         }
         userInfoAuthVO.setVoiceList(voiceList);
         return true;
