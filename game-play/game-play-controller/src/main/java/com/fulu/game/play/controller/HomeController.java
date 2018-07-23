@@ -35,7 +35,7 @@ import java.util.Map;
 
 @Controller
 @Slf4j
-public class HomeController {
+public class HomeController extends BaseController{
 
     @Autowired
     private WxMaService wxService;

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.GradingPriceDao">
+    <resultMap id="GradingPriceResultMap" type="com.fulu.game.core.entity.GradingPrice">
+        <id column="id" property="id"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="pid" property="pid"/>
+        <result column="name" property="name"/>
+        <result column="rank" property="rank"/>
+        <result column="price" property="price"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="GradingPriceResultVOMap" type="com.fulu.game.core.entity.vo.GradingPriceVO"
+               extends="GradingPriceResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,category_id,pid,name,rank,price,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="GradingPriceResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_grading_price
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="GradingPriceResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_grading_price
+    </select>
+
+    <select id="findByParameter" resultMap="GradingPriceResultMap"
+            parameterType="com.fulu.game.core.entity.vo.GradingPriceVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_grading_price
+        <where>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="pid != null">
+                and pid = #{pid}
+            </if>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="rank != null">
+                and rank = #{rank}
+            </if>
+            <if test="price != null">
+                and price = #{price}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_grading_price
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.GradingPrice">
+        insert into
+        t_grading_price (category_id,pid,name,rank,price,create_time,update_time)
+        values
+        (#{categoryId},#{pid},#{name},#{rank},#{price},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.GradingPrice">
+        update t_grading_price
+        <set>
+
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+
+            <if test="pid != null">
+                pid = #{pid},
+            </if>
+
+            <if test="name != null">
+                name = #{name},
+            </if>
+
+            <if test="rank != null">
+                rank = #{rank},
+            </if>
+
+            <if test="price != null">
+                price = #{price},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>
