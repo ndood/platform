@@ -605,13 +605,19 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             BeanUtil.copyProperties(userInfoAuth, userInfoAuthVO);
             //查询写真信息和声音
             Integer userInfoAuthStatus = userInfoAuthVO.getUserInfoAuth();
-            boolean flag = userInfoAuthStatus.equals(UserInfoAuthStatusEnum.VERIFIED.getType())
-                    || userInfoAuthStatus.equals(UserInfoAuthStatusEnum.FREEZE.getType());
-            if(flag) {
-                findUserPortraitsAndVoices(userInfoAuthVO);
-            }else {
-                //如果是未通过和审核中的用户信息，从副本表查询
+            //审核中
+            if(userInfoAuthStatus.equals(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType())) {
                 findUserAuthInfoByTemp(userInfoAuthVO);
+                //审核通过或者冻结
+            }else if(userInfoAuthStatus.equals(UserInfoAuthStatusEnum.VERIFIED.getType())
+                    || userInfoAuthStatus.equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
+                findUserPortraitsAndVoices(userInfoAuthVO);
+                //不通过
+            }else if(userInfoAuthStatus.equals(UserInfoAuthStatusEnum.NOT_PERFECT.getType())) {
+                boolean flag = findUserAuthInfoByTemp(userInfoAuthVO);
+                if(!flag) {
+                    findUserPortraitsAndVoices(userInfoAuthVO);
+                }
             }
 
             List<TagVO> allPersonTagVos = findAllUserTagSelected(userInfoAuthVO.getUserId(), Boolean.TRUE);
@@ -660,6 +666,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         if(CollectionUtil.isNotEmpty(tempList)) {
             mainPic = tempList.get(0).getUrl();
             userInfoAuthVO.setMainPicUrl(mainPic);
+        }else {
+            return false;
         }
 
         //写真图
@@ -686,6 +694,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             UserInfoAuthFile voiceFile = new UserInfoAuthFile();
             BeanUtil.copyProperties(voiceTemp, voiceFile);
             voiceList.add(voiceFile);
+        }else {
+            return false;
         }
         userInfoAuthVO.setVoiceList(voiceList);
         return true;
@@ -792,6 +802,10 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         List<UserInfoAuthFile> voiceList = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthId,
                 FileTypeEnum.VOICE.getType());
         if(CollectionUtil.isEmpty(voiceList)) {
+            UserInfoAuthFile createFile = new UserInfoAuthFile();
+            BeanUtil.copyProperties(fileTemp, createFile);
+            createFile.setInfoAuthId(userInfoAuthId);
+            userInfoAuthFileService.create(createFile);
             return;
         }
 

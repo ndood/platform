@@ -1,4 +1,4 @@
-package aop;
+package com.fulu.game.core.service.aop;
 
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.UserScoreEnum;
@@ -43,8 +43,8 @@ public class UserScoreAspect {
     /**
      * 用户积分--切入点
      */
-//    @Pointcut("execution(* com.fulu.game.play.controller.*.*(..))")
-    @Pointcut("execution(* *Controller(..))")
+    @Pointcut("execution(* com.fulu.game.core.service.impl..*.*(..))")
+//    @Pointcut("execution(public * *(..))")
     public void annotationPointCut() {
     }
 
@@ -103,7 +103,8 @@ public class UserScoreAspect {
         }else if(userScoreEnum.getDescription().equals(Constant.NEGOTIATE)) {
             Object[] array = joinPoint.getArgs();
             ArbitrationDetails arbitrationDetails = (ArbitrationDetails)array[0];
-            details.setUserId(arbitrationDetails.getServiceUserId());
+            Order order = orderService.findByOrderNo(arbitrationDetails.getOrderNo());
+            details.setUserId(order.getServiceUserId());
             details.setScore(UserScoreEnum.NEGOTIATE.getScore());
             details.setDescription(Constant.NEGOTIATE);
         }

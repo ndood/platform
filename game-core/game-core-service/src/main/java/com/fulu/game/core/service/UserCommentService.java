@@ -5,8 +5,6 @@ import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.github.pagehelper.PageInfo;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 /**
  * 用户(打手)星级评论表
  *

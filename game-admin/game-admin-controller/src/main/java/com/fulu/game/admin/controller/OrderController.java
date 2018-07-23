@@ -1,12 +1,10 @@
 package com.fulu.game.admin.controller;
 
-import aop.UserScore;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
-import com.fulu.game.common.enums.UserScoreEnum;
 import com.fulu.game.core.entity.ArbitrationDetails;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.vo.OrderDealVO;
@@ -78,7 +76,6 @@ public class OrderController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/admin/negotiate")
-    @UserScore(type = UserScoreEnum.NEGOTIATE)
     public Result adminHandleNegotiateOrder(ArbitrationDetails details) {
         OrderVO orderVO = orderService.adminHandleNegotiateOrder(details);
         return Result.success().data(orderVO.getOrderNo()).msg("仲裁已完成");
@@ -103,7 +100,6 @@ public class OrderController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/admin/refund")
-    @UserScore(type = UserScoreEnum.FULL_RESTITUTION)
     public Result adminHandleRefundOrder(@RequestParam(required = true) String orderNo) {
         OrderVO orderVO = orderService.adminHandleRefundOrder(orderNo);
         return Result.success().data(orderVO.getOrderNo()).msg("订单完成,退款给用户!");

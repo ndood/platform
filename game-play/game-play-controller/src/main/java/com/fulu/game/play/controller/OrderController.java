@@ -1,10 +1,8 @@
 package com.fulu.game.play.controller;
 
-import aop.UserScore;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.enums.UserScoreEnum;
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.exception.SystemException;
 import com.fulu.game.core.entity.Order;
@@ -357,7 +355,6 @@ public class OrderController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/server/receive")
-    @UserScore(type = UserScoreEnum.ACCEPT_ORDER)
     public Result serverReceiveOrder(@RequestParam(required = true) String orderNo,
                                      String version) {
         if(StringUtils.isBlank(version)){

@@ -14,6 +14,7 @@ import com.fulu.game.core.dao.UserDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.aop.UserScore;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
@@ -229,6 +230,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         }
     }
 
+    @Override
+    @UserScore(type = UserScoreEnum.USER_LOGIN)
     public User updateUserIpAndLastTime(String ip) {
         User user = getCurrentUser();
         user.setLoginIp(ip);
