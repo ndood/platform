@@ -1,10 +1,8 @@
 package com.fulu.game.play.controller;
 
-import aop.UserScore;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.fulu.game.common.Result;
-import com.fulu.game.common.enums.UserScoreEnum;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Banner;
@@ -83,7 +81,6 @@ public class HomeController {
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
-    @UserScore(type = UserScoreEnum.USER_LOGIN)
     public Result login(@RequestParam("code") String code,
                         @RequestParam(value = "sourceId", required = false) Integer sourceId,
                         HttpServletRequest request) throws WxErrorException {
@@ -120,7 +117,6 @@ public class HomeController {
 
     @RequestMapping(value = "/test/login", method = RequestMethod.POST)
     @ResponseBody
-    @UserScore(type = UserScoreEnum.USER_LOGIN)
     public Result testLogin(String openId, @RequestParam(value = "sourceId", required = false) Integer sourceId, HttpServletRequest request) {
         log.info("==调用/test/login方法==");
         PlayUserToken playUserToken = new PlayUserToken(openId, "", sourceId);

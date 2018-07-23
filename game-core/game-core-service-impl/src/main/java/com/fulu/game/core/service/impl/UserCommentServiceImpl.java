@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.enums.OrderStatusEnum;
+import com.fulu.game.common.enums.UserScoreEnum;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
@@ -9,6 +10,7 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.service.aop.UserScore;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +46,7 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
      * @param commentVO
      */
     @Override
+    @UserScore(type = UserScoreEnum.USER_COMMENT)
     public void save(UserCommentVO commentVO) {
         User user = userService.getCurrentUser();
         Order order = orderService.findByOrderNo(commentVO.getOrderNo());

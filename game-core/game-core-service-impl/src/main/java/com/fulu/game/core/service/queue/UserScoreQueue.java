@@ -86,6 +86,7 @@ public class UserScoreQueue implements Runnable {
             userService.update(user);
 
             details.setCreateTime(new Date());
+            details.setDescription(details.getDescription() + "，对应的userId： " + details.getUserId());
             userScoreDetailsDao.create(details);
             log.info("修改用户积分，userId:{}，修改后用户总积分:{}", details.getUserId(), user.getUserScore());
         }catch (Exception e) {

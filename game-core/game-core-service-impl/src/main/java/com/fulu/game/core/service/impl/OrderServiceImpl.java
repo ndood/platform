@@ -17,6 +17,7 @@ import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.aop.UserScore;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Objects;
@@ -739,6 +740,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
      * @return
      */
     @Override
+    @UserScore(type = UserScoreEnum.ACCEPT_ORDER)
     public String serverReceiveOrder(String orderNo) {
         log.info("陪玩师接单orderNo:{}", orderNo);
         Order order = findByOrderNo(orderNo);
@@ -1347,6 +1349,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
      * @param orderNo
      * @return
      */
+    @Override
+    @UserScore(type = UserScoreEnum.FULL_RESTITUTION)
     public OrderVO adminHandleRefundOrder(String orderNo) {
         Admin admin = adminService.getCurrentUser();
         log.info("管理员退款用户orderNo:{};adminId:{};adminName:{};", orderNo, admin.getId(), admin.getName());
@@ -1386,6 +1390,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
      * @return
      */
     @Override
+    @UserScore(type = UserScoreEnum.NEGOTIATE)
     public OrderVO adminHandleNegotiateOrder(ArbitrationDetails details) {
         Admin admin = adminService.getCurrentUser();
         String orderNo = details.getOrderNo();

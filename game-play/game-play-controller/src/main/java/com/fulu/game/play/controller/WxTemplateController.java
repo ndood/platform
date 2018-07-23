@@ -1,8 +1,6 @@
 package com.fulu.game.play.controller;
 
-import aop.UserScore;
 import com.fulu.game.common.Result;
-import com.fulu.game.common.enums.UserScoreEnum;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.WechatFormid;
 import com.fulu.game.core.service.PushMsgService;
@@ -50,7 +48,6 @@ public class WxTemplateController extends BaseController{
 
 
     @RequestMapping("/push")
-    @UserScore(type = UserScoreEnum.IM_REPLY)
     public Result pushWechatMsg(String content,
                                 String acceptImId,
                                 String imId)throws Exception{

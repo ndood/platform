@@ -9,6 +9,7 @@ import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.WechatFormidVO;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.aop.UserScore;
 import com.fulu.game.core.service.queue.PushMsgQueue;
 import com.xiaoleilu.hutool.date.DateField;
 import com.xiaoleilu.hutool.date.DateUtil;
@@ -164,6 +165,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
      * @return
      */
     @Override
+    @UserScore(type = UserScoreEnum.IM_REPLY)
     public String pushIMWxTemplateMsg(String content,
                                       String acceptImId,
                                       String imId) {
