@@ -190,6 +190,10 @@ public class UserController extends BaseController {
     @PostMapping("/wxinfo/save")
     public Result saveWxUserInfo(WxUserInfo wxUserInfo) {
         User user = userService.getCurrentUser();
+//        String sessionKey = redisOpenService.get(RedisKeyEnum.WX_SESSION_KEY.generateKey(SubjectUtil.getToken()));
+//        WxMaUserInfo wxMaUserInfo =wxMaService.getUserService().getUserInfo(sessionKey, wxUserInfo.getEncryptedData(), wxUserInfo.getIv());
+//        System.out.println(wxMaUserInfo);
+
         if (user.getGender() == null) {
             user.setGender(wxUserInfo.getGender());
         }
@@ -365,7 +369,9 @@ public class UserController extends BaseController {
      * @return
      */
     @PostMapping("/im/get")
-    public Result getImUser(@RequestParam("imId") String imId) {
+    public Result getImUser(@RequestParam("imId") String imId,
+                            String content) {
+        log.info("根据imId获取用户信息:imId:{};content:{}", imId, content);
         if (StringUtils.isEmpty(imId)) {
             throw new UserException(UserException.ExceptionCode.IllEGAL_IMID_EXCEPTION);
         }
@@ -373,6 +379,7 @@ public class UserController extends BaseController {
         if (null == user) {
             return Result.error().msg("未查询到该用户或尚未注册IM");
         }
+        log.info("根据imId获取用户信息:imId:{};content:{};user:{}", imId, content, user);
         return Result.success().data(user).msg("查询IM用户成功");
     }
 
