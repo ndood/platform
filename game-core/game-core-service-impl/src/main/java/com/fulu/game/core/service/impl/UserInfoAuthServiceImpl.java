@@ -802,6 +802,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             BeanUtil.copyProperties(fileTemp, createFile);
             createFile.setInfoAuthId(userInfoAuthId);
             userInfoAuthFileService.create(createFile);
+            return;
         }
 
         String dbVoiceUrl = voiceList.get(0).getUrl();
