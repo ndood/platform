@@ -814,12 +814,16 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             return;
         }
 
+        UserInfoAuthFile authFile = new UserInfoAuthFile();
+        authFile.setId(voiceList.get(0).getId());
+        authFile.setUrl(dbVoiceUrl);
+        authFile.setInfoAuthId(userInfoAuthId);
+        userInfoAuthFileService.deleteFile(authFile);
+
         UserInfoAuthFile createFile = new UserInfoAuthFile();
         BeanUtil.copyProperties(fileTemp, createFile);
         createFile.setInfoAuthId(userInfoAuthId);
-        createFile.setId(voiceList.get(0).getId());
-        createFile.setInfoAuthId(userInfoAuthId);
-        userInfoAuthFileService.update(createFile);
+        userInfoAuthFileService.create(createFile);
     }
 
     /**
