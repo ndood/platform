@@ -2,6 +2,7 @@ package com.fulu.game.play.controller;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
+import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
@@ -190,9 +191,9 @@ public class UserController extends BaseController {
     @PostMapping("/wxinfo/save")
     public Result saveWxUserInfo(WxUserInfo wxUserInfo) {
         User user = userService.getCurrentUser();
-//        String sessionKey = redisOpenService.get(RedisKeyEnum.WX_SESSION_KEY.generateKey(SubjectUtil.getToken()));
-//        WxMaUserInfo wxMaUserInfo =wxMaService.getUserService().getUserInfo(sessionKey, wxUserInfo.getEncryptedData(), wxUserInfo.getIv());
-//        System.out.println(wxMaUserInfo);
+        String sessionKey = redisOpenService.get(RedisKeyEnum.WX_SESSION_KEY.generateKey(SubjectUtil.getToken()));
+        WxMaUserInfo wxMaUserInfo =wxMaService.getUserService().getUserInfo(sessionKey, wxUserInfo.getEncryptedData(), wxUserInfo.getIv());
+        System.out.println(wxMaUserInfo);
 
         if (user.getGender() == null) {
             user.setGender(wxUserInfo.getGender());

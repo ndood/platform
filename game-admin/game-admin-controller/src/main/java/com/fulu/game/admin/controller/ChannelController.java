@@ -99,24 +99,7 @@ public class ChannelController {
         return Result.success().data(resultPage);
     }
 
-    /**
-     * 统计总下单数+成功订单数+总消费金额
-     *
-     * @param channelId
-     * @return
-     */
-    @PostMapping("/stats")
-    public Result stats(@RequestParam("channelId") Integer channelId) {
-        int orderCount = orderService.countByChannelId(channelId);
-        int success = orderService.countByChannelIdSuccess(channelId);
-        BigDecimal sum = channelCDService.sumByChannelId(channelId);
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("channelId", channelId);
-        resultMap.put("orderCount", orderCount);
-        resultMap.put("success", success);
-        resultMap.put("sum", sum);
-        return Result.success().data(resultMap);
-    }
+
 
     /**
      * 加款

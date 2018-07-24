@@ -43,28 +43,6 @@ public class MarketController extends BaseController{
 
 
     /**
-     * 订单列表
-     * @param pageNum
-     * @param pageSize
-     * @param categoryId
-     * @param status
-     * @return
-     */
-    @PostMapping(value = "order/list")
-    public Result orderList(@RequestParam(required = true)Integer pageNum,
-                            @RequestParam(required = true)Integer pageSize,
-                            Integer categoryId,
-                            Integer status){
-        if (status == null) {
-            status = OrderStatusGroupEnum.MARKET_ALL.getValue();
-        }
-        Integer[] statusArr = OrderStatusGroupEnum.getByValue(status);
-        PageInfo<MarketOrderVO> list = orderService.marketList(pageNum,pageSize,categoryId,statusArr);
-        return Result.success().data(list);
-    }
-
-
-    /**
      * 订单状态列表
      * @return
      */

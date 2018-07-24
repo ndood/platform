@@ -13,7 +13,7 @@ public class GenerateTest {
 
     @Test
     public void test1() {
-        codeGenerateForTable("wangbin","t_order_point_product");
+        codeGenerateForTable("wangbin","t_user_contact");
     }
 
     @Test

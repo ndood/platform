@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.UserContactDao">
+    <resultMap id="UserContactResultMap" type="com.fulu.game.core.entity.UserContact">
+                                    <id column="id"  property="id" />
+                                            <result column="user_id"  property="userId" />
+                                            <result column="type"  property="type" />
+                                            <result column="contact"  property="contact" />
+                                            <result column="is_default"  property="isDefault" />
+                                            <result column="create_time"  property="createTime" />
+                                            <result column="update_time"  property="updateTime" />
+                        </resultMap>
+
+    <resultMap id="UserContactResultVOMap" type="com.fulu.game.core.entity.vo.UserContactVO" extends="UserContactResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,type,contact,is_default,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="UserContactResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_user_contact
+        <where>
+        id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll"  resultMap="UserContactResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_user_contact
+    </select>
+
+    <select id="findByParameter" resultMap="UserContactResultMap" parameterType="com.fulu.game.core.entity.vo.UserContactVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_user_contact
+        <where>
+                                                                            <if test="userId != null">
+                       and user_id = #{userId}
+                    </if>
+                                                                <if test="type != null">
+                       and type = #{type}
+                    </if>
+                                                                <if test="contact != null">
+                       and contact = #{contact}
+                    </if>
+                                                                <if test="isDefault != null">
+                       and is_default = #{isDefault}
+                    </if>
+                                                                <if test="createTime != null">
+                       and create_time = #{createTime}
+                    </if>
+                                                                <if test="updateTime != null">
+                       and update_time = #{updateTime}
+                    </if>
+                                    </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_user_contact
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserContact">
+        insert into
+        t_user_contact (user_id,type,contact,is_default,create_time,update_time)
+        values
+        (#{userId},#{type},#{contact},#{isDefault},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.UserContact">
+        update t_user_contact
+        <set>
+                                                        
+                    <if test="userId != null">
+                        user_id = #{userId},
+                    </if>
+                                            
+                    <if test="type != null">
+                        type = #{type},
+                    </if>
+                                            
+                    <if test="contact != null">
+                        contact = #{contact},
+                    </if>
+                                            
+                    <if test="isDefault != null">
+                        is_default = #{isDefault},
+                    </if>
+                                            
+                    <if test="createTime != null">
+                        create_time = #{createTime},
+                    </if>
+                                            
+                    <if test="updateTime != null">
+                        update_time = #{updateTime},
+                    </if>
+                                    </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>
