@@ -70,10 +70,10 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
     /**
      * 查找用户个人认证信息
      *
-     * @param userId
-     * @return
+     * @param userId 用户id
+     * @return 用户认证信息VO
      */
-    UserInfoAuthVO findUserInfoAuthByUserId(int userId);
+    UserInfoAuthVO findUserInfoAuthByUserId(Integer userId);
 
 
     List<UserInfoAuth> findByUserIds(List<Integer> userIds);
@@ -81,10 +81,10 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
     /**
      * 个人信息认证列表
      *
-     * @param pageNum
-     * @param pageSize
-     * @param userInfoAuthSearchVO
-     * @return
+     * @param pageNum 页码
+     * @param pageSize 每页显示数据条数
+     * @param userInfoAuthSearchVO 查询条件VO
+     * @return 分页数据结果
      */
     PageInfo<UserInfoAuthVO> list(Integer pageNum, Integer pageSize, UserInfoAuthSearchVO userInfoAuthSearchVO);
 

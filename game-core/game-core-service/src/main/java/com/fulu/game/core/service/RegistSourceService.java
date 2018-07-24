@@ -39,6 +39,13 @@ public interface RegistSourceService extends ICommonService<RegistSource, Intege
     List<RegistSource> findByParam(RegistSourceVO rsVO);
 
     /**
+     * 通过主键id查询注册来源
+     * @param id 主键id
+     * @return 注册来源Bean
+     */
+    RegistSource findById(Integer id);
+
+    /**
      * 查询列表带统计结果
      * @param pageNum
      * @param pageSize

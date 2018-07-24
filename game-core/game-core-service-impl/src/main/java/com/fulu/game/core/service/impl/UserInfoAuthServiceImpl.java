@@ -67,6 +67,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         return userInfoAuthDao;
     }
 
+    @Override
     public UserInfoAuth findByUserId(int userId) {
         UserInfoAuthVO userInfoAuthVO = new UserInfoAuthVO();
         userInfoAuthVO.setUserId(userId);
@@ -79,6 +80,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     /**
      * 保存用户认证的个人信息
+     *
      * @param userInfoAuthTO
      * @return
      */
@@ -115,7 +117,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             userInfoAuth.setPushTimeInterval(30F);
             userInfoAuth.setAllowExport(true);
             create(userInfoAuth);
-        }else {
+        } else {
             update(userInfoAuth);
         }
 
@@ -187,9 +189,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 //    }
 
 
-
     /**
      * 认证信息驳回
+     *
      * @param id
      * @param reason
      * @return
@@ -225,16 +227,15 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userInfoAuthReject.setUserInfoAuthId(id);
         userInfoAuthReject.setCreateTime(new Date());
         userInfoAuthRejectService.create(userInfoAuthReject);
-        //同步下架用户该技能商品
-//        productService.deleteProductByUser(userInfoAuth.getUserId());
 
         //给用户推送通知
-        wxTemplateMsgService.pushWechatTemplateMsg(user.getId(), WechatTemplateMsgEnum.USER_AUTH_INFO_REJECT,reason);
+        wxTemplateMsgService.pushWechatTemplateMsg(user.getId(), WechatTemplateMsgEnum.USER_AUTH_INFO_REJECT, reason);
         return userInfoAuth;
     }
 
     /**
      * 技能审核通过
+     *
      * @param id
      * @return
      */
@@ -259,11 +260,11 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         UserInfoAuthFileTempVO tempVO = new UserInfoAuthFileTempVO();
         tempVO.setUserId(userId);
         List<UserInfoAuthFileTemp> fileTempList = userInfoAuthFileTempDao.findByParameter(tempVO);
-        if(CollectionUtil.isNotEmpty(fileTempList)) {
+        if (CollectionUtil.isNotEmpty(fileTempList)) {
             //更新主图
-            for(UserInfoAuthFileTemp fileTemp : fileTempList) {
+            for (UserInfoAuthFileTemp fileTemp : fileTempList) {
                 Integer type = fileTemp.getType();
-                if(type.equals(FileTypeEnum.MAIN_PIC.getType())) {
+                if (type.equals(FileTypeEnum.MAIN_PIC.getType())) {
                     UserInfoAuth infoAuth = new UserInfoAuth();
                     infoAuth.setId(id);
                     infoAuth.setUserId(userId);
@@ -271,19 +272,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
                     userInfoAuthDao.update(infoAuth);
                 }
             }
-            //更新写真图
             deleteTempFileAndUpdateOrg(userId);
-            //更新声音文件
-//            deleteTempFileAndUpdateOrg(userId, FileTypeEnum.VOICE.getType());
-
             userInfoAuthFileTempDao.deleteByUserId(userId);
         }
-
-        //同步恢复用户正确技能的商品状态
-//        List<UserTechAuth> userTechAuthList = userTechAuthService.findUserNormalTechs(userInfoAuth.getUserId());
-//        for (UserTechAuth userTechAuth : userTechAuthList) {
-//            productService.recoverProductDelFlagByTechAuthId(userTechAuth.getId());
-//        }
 
         //给用户推送通知
         wxTemplateMsgService.pushWechatTemplateMsg(user.getId(), WechatTemplateMsgEnum.USER_AUTH_INFO_PASS);
@@ -291,8 +282,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     }
 
     /**
-     * 将temp表的数据更新到t_user_info_auth_file表
-     * @param userId
+     * 根据用户id，将临时表的文件更新到主表中，并且删除临时表的数据
+     * @param userId 用户id
      */
     public void deleteTempFileAndUpdateOrg(Integer userId) {
         UserInfoAuth auth = findByUserId(userId);
@@ -300,37 +291,21 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         UserInfoAuthFileTempVO fileTempVO = new UserInfoAuthFileTempVO();
         fileTempVO.setUserId(userId);
         List<UserInfoAuthFileTemp> fileTempList = userInfoAuthFileTempDao.findByParameter(fileTempVO);
-        if(CollectionUtil.isEmpty(fileTempList)) {
+        if (CollectionUtil.isEmpty(fileTempList)) {
             return;
         }
         List<String> portraitUrls = new ArrayList<>();
         UserInfoAuthFileTemp voiceFileTemp = new UserInfoAuthFileTemp();
-        for(UserInfoAuthFileTemp fileTemp : fileTempList) {
-            if(fileTemp.getType().equals(FileTypeEnum.PIC.getType())) {
+        for (UserInfoAuthFileTemp fileTemp : fileTempList) {
+            if (fileTemp.getType().equals(FileTypeEnum.PIC.getType())) {
                 portraitUrls.add(fileTemp.getUrl());
-            }else if(fileTemp.getType().equals(FileTypeEnum.VOICE.getType())) {
+            } else if (fileTemp.getType().equals(FileTypeEnum.VOICE.getType())) {
                 voiceFileTemp = fileTemp;
             }
         }
 
-        //激活并创建写真图集
         createAndActivateUserAuthPortrait(portraitUrls, auth.getId());
-        //激活并创建声音文件
         createAndActivateUserAuthVoice(voiceFileTemp, auth.getId());
-
-
-//        UserInfoAuthFileTempVO fileTempVO = new UserInfoAuthFileTempVO();
-//        fileTempVO.setUserId(userId);
-//        fileTempVO.setType(fileType);
-//        List<UserInfoAuthFileTemp> fileTemps = userInfoAuthFileTempDao.findByParameter(fileTempVO);
-//        for(UserInfoAuthFileTemp meta : fileTemps) {
-//            UserInfoAuthFile authFile = new UserInfoAuthFile();
-//            BeanUtil.copyProperties(meta, authFile);
-//            String activatedUrl = ossUtil.activateOssFile(authFile.getUrl());
-//            authFile.setUrl(activatedUrl);
-//            authFile.setInfoAuthId(auth.getId());
-//            userInfoAuthFileService.create(authFile);
-//        }
     }
 
     /**
@@ -391,7 +366,11 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
 
     @Override
-    public UserInfoAuthVO findUserInfoAuthByUserId(int userId) {
+    public UserInfoAuthVO findUserInfoAuthByUserId(Integer userId) {
+        if (userId == null) {
+            throw new UserException(UserException.ExceptionCode.USER_ID_IS_NULL);
+        }
+
         User user = userService.findById(userId);
         UserInfoAuth userInfoAuth = findByUserId(userId);
         if (userInfoAuth == null) {
@@ -408,29 +387,15 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userInfoAuthVO.setConstellation(user.getConstellation());
         userInfoAuthVO.setBirth(user.getBirth());
         userInfoAuthVO.setUserInfoAuth(user.getUserInfoAuth());
-        //查询写真信息和声音
+
         Integer userInfoAuthStatus = user.getUserInfoAuth();
-        //审核中
-        if(userInfoAuthStatus.equals(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType())) {
-            findUserAuthInfoByTemp(userInfoAuthVO);
-            //审核通过或者冻结
-        }else if(userInfoAuthStatus.equals(UserInfoAuthStatusEnum.VERIFIED.getType())
-                || userInfoAuthStatus.equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
-            findUserPortraitsAndVoices(userInfoAuthVO);
-            //不通过
-        }else if(userInfoAuthStatus.equals(UserInfoAuthStatusEnum.NOT_PERFECT.getType())) {
-            boolean flag = findUserAuthInfoByTemp(userInfoAuthVO);
-            if(!flag) {
-                findUserPortraitsAndVoices(userInfoAuthVO);
-            }
-        }
+        findUserAuthInfoByStatus(userInfoAuthStatus, userInfoAuthVO);
 
         //查询用户所有标签
         List<TagVO> allPersonTagVos = findAllUserTagSelected(userId, false);
         userInfoAuthVO.setGroupTags(allPersonTagVos);
         return userInfoAuthVO;
     }
-
 
     @Override
     public List<UserInfoAuth> findByUserIds(List<Integer> userIds) {
@@ -439,8 +404,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         }
         return userInfoAuthDao.findByUserIds(userIds);
     }
-
-
 
     @Override
     public UserInfoVO findUserCardByUserId(int userId, Boolean hasPhotos, Boolean hasVoice, Boolean hasTags, Boolean hasTechs) {
@@ -460,7 +423,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userInfo.setScoreAvg(user.getScoreAvg());
         userInfo.setImId(user.getImId());
         userInfo.setImPsw(user.getImPsw());
-        int orderCount = orderService.allOrderCount(userId);//接单数
+        //接单数
+        int orderCount = orderService.allOrderCount(userId);
         userInfo.setOrderCount(orderCount);
 
         UserInfoAuth userInfoAuth = findByUserId(userId);
@@ -510,7 +474,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     public UserInfoVO findUserTechCardByUserId(int techAuthId) {
         //查询认证的技能
         UserInfoVO userInfo = new UserInfoVO();
-        UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(techAuthId,null);
+        UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(techAuthId, null);
         if (null == userTechAuthVO) {
             throw new UserException(UserException.ExceptionCode.TECH_AUTH_NOT_EXIST_EXCEPTION);
         }
@@ -541,7 +505,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     public UserInfoVO getSharePage(int techAuthId) {
         UserInfoVO userInfo = new UserInfoVO();
         //查询认证的技能
-        UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(techAuthId,null);
+        UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(techAuthId, null);
         userInfo.setUserTechAuthVO(userTechAuthVO);
         Integer userId = userTechAuthVO.getUserId();
         //陪玩师个人信息
@@ -595,30 +559,18 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
                                          Integer pageSize,
                                          UserInfoAuthSearchVO userInfoAuthSearchVO) {
         List<UserInfoAuthVO> userInfoAuthVOList = new ArrayList<>();
-        if (StringUtils.isBlank(userInfoAuthSearchVO.getOrderBy())) {
-            userInfoAuthSearchVO.setOrderBy("uia.update_time desc");
+        String orderBy = userInfoAuthSearchVO.getOrderBy();
+        if (StringUtils.isBlank(orderBy)) {
+            orderBy = "uia.update_time desc";
         }
-        PageHelper.startPage(pageNum, pageSize, userInfoAuthSearchVO.getOrderBy());
+        PageHelper.startPage(pageNum, pageSize, orderBy);
         List<UserInfoAuth> userInfoAuths = userInfoAuthDao.findBySearchVO(userInfoAuthSearchVO);
         for (UserInfoAuth userInfoAuth : userInfoAuths) {
             UserInfoAuthVO userInfoAuthVO = new UserInfoAuthVO();
             BeanUtil.copyProperties(userInfoAuth, userInfoAuthVO);
-            //查询写真信息和声音
+
             Integer userInfoAuthStatus = userInfoAuthVO.getUserInfoAuth();
-            //审核中
-            if(userInfoAuthStatus.equals(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType())) {
-                findUserAuthInfoByTemp(userInfoAuthVO);
-                //审核通过或者冻结
-            }else if(userInfoAuthStatus.equals(UserInfoAuthStatusEnum.VERIFIED.getType())
-                    || userInfoAuthStatus.equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
-                findUserPortraitsAndVoices(userInfoAuthVO);
-                //不通过
-            }else if(userInfoAuthStatus.equals(UserInfoAuthStatusEnum.NOT_PERFECT.getType())) {
-                boolean flag = findUserAuthInfoByTemp(userInfoAuthVO);
-                if(!flag) {
-                    findUserPortraitsAndVoices(userInfoAuthVO);
-                }
-            }
+            findUserAuthInfoByStatus(userInfoAuthStatus, userInfoAuthVO);
 
             List<TagVO> allPersonTagVos = findAllUserTagSelected(userInfoAuthVO.getUserId(), Boolean.TRUE);
             userInfoAuthVO.setGroupTags(allPersonTagVos);
@@ -628,14 +580,50 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
             userInfoAuthVOList.add(userInfoAuthVO);
         }
-        PageInfo page = new PageInfo(userInfoAuths);
+
+        PageInfo<UserInfoAuthVO> page = new PageInfo<>(userInfoAuthVOList);
         page.setList(userInfoAuthVOList);
         return page;
     }
 
+    /**
+     * 根据userInfoAuthStatus（陪玩师审核状态）获取陪玩师主图、写真图和声音文件等信息，补充陪玩师认证信息VO
+     *
+     * @param userInfoAuthStatus 陪玩师审核状态
+     * @param userInfoAuthVO     陪玩师认证信息VO
+     * @return 陪玩师认证信息VO
+     */
+    private UserInfoAuthVO findUserAuthInfoByStatus(Integer userInfoAuthStatus, UserInfoAuthVO userInfoAuthVO) {
+        if (userInfoAuthStatus == null || userInfoAuthVO == null) {
+            log.error("查询参数为空");
+            return null;
+        }
+
+        Integer userId = userInfoAuthVO.getUserId();
+        if (userId == null) {
+            throw new UserException(UserException.ExceptionCode.USER_ID_IS_NULL);
+        }
+
+        //审核中
+        if (userInfoAuthStatus.equals(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType())) {
+            findUserAuthInfoByTemp(userInfoAuthVO);
+            //审核通过或者冻结
+        } else if (userInfoAuthStatus.equals(UserInfoAuthStatusEnum.VERIFIED.getType())
+                || userInfoAuthStatus.equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
+            findUserPortraitsAndVoices(userInfoAuthVO);
+            //不通过
+        } else if (userInfoAuthStatus.equals(UserInfoAuthStatusEnum.NOT_PERFECT.getType())) {
+            boolean flag = findUserAuthInfoByTemp(userInfoAuthVO);
+            if (!flag) {
+                findUserPortraitsAndVoices(userInfoAuthVO);
+            }
+        }
+        return userInfoAuthVO;
+    }
 
     /**
      * 查询用户写真和声音
+     *
      * @param userInfoAuthVO
      */
     private void findUserPortraitsAndVoices(UserInfoAuthVO userInfoAuthVO) {
@@ -649,11 +637,12 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     /**
      * 从副本表查询用户认证信息
+     *
      * @param userInfoAuthVO
      */
     private boolean findUserAuthInfoByTemp(UserInfoAuthVO userInfoAuthVO) {
         Integer userId = userInfoAuthVO.getUserId();
-        if(userId == null) {
+        if (userId == null) {
             return false;
         }
 
@@ -663,25 +652,25 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         tempVO.setUserId(userInfoAuthVO.getUserId());
         tempVO.setType(FileTypeEnum.MAIN_PIC.getType());
         List<UserInfoAuthFileTemp> tempList = userInfoAuthFileTempDao.findByParameter(tempVO);
-        if(CollectionUtil.isNotEmpty(tempList)) {
+        if (CollectionUtil.isNotEmpty(tempList)) {
             mainPic = tempList.get(0).getUrl();
             userInfoAuthVO.setMainPicUrl(mainPic);
-        }else {
+        } else {
             return false;
         }
 
         //写真图
         tempVO.setType(FileTypeEnum.PIC.getType());
         List<UserInfoAuthFileTemp> portraitFilesList = userInfoAuthFileTempDao.findByParameter(tempVO);
-        if(CollectionUtil.isNotEmpty(portraitFilesList)) {
+        if (CollectionUtil.isNotEmpty(portraitFilesList)) {
             List<UserInfoAuthFile> fileList = new ArrayList<>();
-            for(UserInfoAuthFileTemp fileTemp : portraitFilesList) {
+            for (UserInfoAuthFileTemp fileTemp : portraitFilesList) {
                 UserInfoAuthFile file = new UserInfoAuthFile();
                 BeanUtil.copyProperties(fileTemp, file);
                 fileList.add(file);
             }
             userInfoAuthVO.setPortraitList(fileList);
-        }else {
+        } else {
             return false;
         }
 
@@ -689,12 +678,12 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         tempVO.setType(FileTypeEnum.VOICE.getType());
         List<UserInfoAuthFileTemp> voiceTempList = userInfoAuthFileTempDao.findByParameter(tempVO);
         List<UserInfoAuthFile> voiceList = new ArrayList<>();
-        if(CollectionUtil.isNotEmpty(voiceTempList)) {
-            UserInfoAuthFileTemp voiceTemp =  voiceTempList.get(0);
+        if (CollectionUtil.isNotEmpty(voiceTempList)) {
+            UserInfoAuthFileTemp voiceTemp = voiceTempList.get(0);
             UserInfoAuthFile voiceFile = new UserInfoAuthFile();
             BeanUtil.copyProperties(voiceTemp, voiceFile);
             voiceList.add(voiceFile);
-        }else {
+        } else {
             return false;
         }
         userInfoAuthVO.setVoiceList(voiceList);
@@ -702,9 +691,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     }
 
 
-
     /**
      * 查询用户信息所有标签
+     *
      * @param userId
      * @return
      */
@@ -740,6 +729,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     /**
      * 判断一个标签是否是用户选择的标签
+     *
      * @return
      */
     private Boolean isUserTag(Integer userId, Tag tag) {
@@ -754,6 +744,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     /**
      * 添加用户身份文件
+     *
      * @param userId
      * @param idCardHeadUrl
      * @param idCardEmblemUrl
@@ -793,15 +784,20 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         }
     }
 
-    public void createAndActivateUserAuthVoice(UserInfoAuthFileTemp fileTemp, Integer userInfoAuthId) {
+    /**
+     * 更新陪玩师声音文件
+     * @param fileTemp 声音文件bean
+     * @param userInfoAuthId 陪玩师认证id
+     */
+    private void createAndActivateUserAuthVoice(UserInfoAuthFileTemp fileTemp, Integer userInfoAuthId) {
         String voiceUrl = fileTemp.getUrl();
-        if(StringUtils.isBlank(voiceUrl)) {
+        if (StringUtils.isBlank(voiceUrl)) {
             return;
         }
 
         List<UserInfoAuthFile> voiceList = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthId,
                 FileTypeEnum.VOICE.getType());
-        if(CollectionUtil.isEmpty(voiceList)) {
+        if (CollectionUtil.isEmpty(voiceList)) {
             UserInfoAuthFile createFile = new UserInfoAuthFile();
             BeanUtil.copyProperties(fileTemp, createFile);
             createFile.setInfoAuthId(userInfoAuthId);
@@ -810,7 +806,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         }
 
         String dbVoiceUrl = voiceList.get(0).getUrl();
-        if(dbVoiceUrl.equals(voiceUrl)) {
+        if (dbVoiceUrl.equals(voiceUrl)) {
             return;
         }
 
@@ -827,16 +823,15 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     }
 
     /**
-     * 添加用户写真图集
-     * @param portraitUrlList
-     * @param userInfoAuthId
+     * 更新陪玩师写真图集
+     *
+     * @param portraitUrlList 写真图集列表
+     * @param userInfoAuthId 陪玩师认证id
      */
-    public void createAndActivateUserAuthPortrait(List<String> portraitUrlList, Integer userInfoAuthId) {
+    private void createAndActivateUserAuthPortrait(List<String> portraitUrlList, Integer userInfoAuthId) {
         if (CollectionUtil.isEmpty(portraitUrlList)) {
             return;
         }
-        //激活所有写真URL
-//        List<String> portraitUrlList = Arrays.asList(portraitUrls);
         for (int i = 0; i < portraitUrlList.size(); i++) {
             portraitUrlList.set(i, ossUtil.activateOssFile(portraitUrlList.get(i)));
         }
@@ -883,11 +878,12 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     /**
      * 添加主图
+     *
      * @param mainPicUrl
      * @param userId
      */
     public void createUserMainPic(String mainPicUrl, Integer userId) {
-        if(StringUtils.isBlank(mainPicUrl)) {
+        if (StringUtils.isBlank(mainPicUrl)) {
             return;
         }
 
@@ -904,6 +900,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     /**
      * 添加用户写真图集
+     *
      * @param portraitUrls
      * @param userId
      */
@@ -912,7 +909,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             return;
         }
         List<String> portraitUrlList = Arrays.asList(portraitUrls);
-        for(int i = 0; i < portraitUrlList.size(); i++) {
+        for (int i = 0; i < portraitUrlList.size(); i++) {
             UserInfoAuthFileTemp fileTemp = new UserInfoAuthFileTemp();
             fileTemp.setUserId(userId);
             fileTemp.setName("写真" + (i + 1));

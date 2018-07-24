@@ -29,6 +29,8 @@ public class UserInfoAuth implements Serializable {
 	private String wechat;
 	//是否是驳回提交
 	private Boolean isRejectSubmit;
+	//用户信息是否在平台内展示（0：不展示，1：展示）
+	private Integer isPlatformShow;
 	//主图
 	private String mainPicUrl;
 	//推送时间间隔

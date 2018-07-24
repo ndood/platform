@@ -26,6 +26,11 @@ import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 用户Controller
+ * @author wangbin
+ * @date
+ */
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/user")
@@ -47,10 +52,11 @@ public class UserController extends BaseController {
     private UserTechAuthRejectService userTechAuthRejectService;
 
     /**
-     * 用户认证信息列表
-     * @param pageNum
-     * @param pageSize
-     * @return
+     * 陪玩师认证信息列表
+     * @param pageNum 页码
+     * @param pageSize 每页显示数据条数
+     * @param userInfoAuthSearchVO 查询条件VO
+     * @return 封装结果集
      */
     @PostMapping(value = "/info-auth/list")
     public Result userInfoAuthList(@RequestParam("pageNum") Integer pageNum,
