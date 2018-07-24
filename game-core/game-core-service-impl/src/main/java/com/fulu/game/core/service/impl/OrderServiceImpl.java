@@ -13,6 +13,7 @@ import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.dao.OrderEventDao;
 import com.fulu.game.core.dao.OrderShareProfitDao;
 import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.to.OrderPointProductTO;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
@@ -68,15 +69,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     @Autowired
     private OrderMarketProductService orderMarketProductService;
     @Autowired
-    private CdkService cdkService;
-    @Autowired
-    private ChannelCashDetailsService channelCashDetailsService;
-    @Autowired
     private PriceFactorService priceFactorService;
     @Autowired
     private PilotOrderService pilotOrderService;
-    @Autowired
-    private SpringThreadPoolExecutor springThreadPoolExecutor;
     @Autowired
     private OrderStatusDetailsService orderStatusDetailsService;
     @Autowired
@@ -89,6 +84,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     private OrderEventDao orderEventDao;
     @Autowired
     private OrderShareProfitDao orderShareProfitDao;
+    @Autowired
+    private OrderPointProductService orderPointProductService;
 
     @Override
     public ICommonDao<Order, Integer> getDao() {
@@ -229,31 +226,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return new PageInfo<>(orderVOList);
     }
 
-    /**
-     * 集市订单列表
-     *
-     * @param pageNum
-     * @param pageSize
-     * @param categoryId
-     * @param statusArr
-     * @return
-     */
-    @Override
-    public PageInfo<MarketOrderVO> marketList(int pageNum, int pageSize, Integer categoryId, Integer[] statusArr) {
-        OrderVO params = new OrderVO();
-        params.setCategoryId(categoryId);
-        params.setStatusList(statusArr);
-        params.setType(OrderTypeEnum.MARKET.getType());
-        PageHelper.startPage(pageNum, pageSize, "status asc,create_time desc");
-        List<MarketOrderVO> marketOrderVOList = orderDao.findMarketByParameter(params);
-        for (MarketOrderVO marketOrderVO : marketOrderVOList) {
-            Category category = categoryService.findById(marketOrderVO.getCategoryId());
-            marketOrderVO.setCategoryIcon(category.getIcon());
-            marketOrderVO.setStatusStr(OrderStatusEnum.getMsgByStatus(marketOrderVO.getStatus()));
-            marketOrderVO.setRemark(null);
-        }
-        return new PageInfo<>(marketOrderVOList);
-    }
+
 
 
     @Override
@@ -261,7 +234,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         User serviceUser = userService.getCurrentUser();
         Order order = findByOrderNo(orderNo);
         log.info("陪玩师抢单:userId:{};order:{}", serviceUser.getId(), order);
-        if (!OrderTypeEnum.MARKET.getType().equals(order.getType())) {
+        if (!OrderTypeEnum.POINT.getType().equals(order.getType())) {
             throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING, order.getOrderNo());
         }
         if (order.getServiceUserId() != null || !OrderStatusEnum.WAIT_SERVICE.getStatus().equals(order.getStatus())) {
@@ -334,59 +307,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     }
 
 
-    @Override
-    public OrderVO findUserOrderDetails(String orderNo) {
-        Order order = findByOrderNo(orderNo);
 
-        userService.isCurrentUser(order.getUserId());
-        OrderVO orderVO = new OrderVO();
-        BeanUtil.copyProperties(order, orderVO);
-        Category category = categoryService.findById(orderVO.getCategoryId());
-        orderVO.setCategoryIcon(category.getIcon());
-        orderVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderVO.getStatus()));
-        //添加陪玩师信息
-        User server = userService.findById(order.getServiceUserId());
-        orderVO.setServerHeadUrl(server.getHeadPortraitsUrl());
-        orderVO.setCategoryName(category.getName());
-        orderVO.setServerAge(server.getAge());
-        orderVO.setServerGender(server.getGender());
-        orderVO.setServerNickName(server.getNickname());
-        orderVO.setServerScoreAvg(server.getScoreAvg() == null ? Constant.DEFAULT_SCORE_AVG : server.getScoreAvg());
-        orderVO.setServerCity(server.getCity());
-        //添加订单商品信息
-        OrderProduct orderProduct = orderProductService.findByOrderNo(orderNo);
-        orderVO.setOrderProduct(orderProduct);
-        return orderVO;
-    }
 
-    @Override
-    public OrderVO findServerOrderDetails(String orderNo) {
-        Order order = findByOrderNo(orderNo);
-        userService.isCurrentUser(order.getServiceUserId());
-        OrderVO orderVO = new OrderVO();
-        BeanUtil.copyProperties(order, orderVO);
-        Category category = categoryService.findById(orderVO.getCategoryId());
-        orderVO.setCategoryIcon(category.getIcon());
-        orderVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderVO.getStatus()));
-        orderVO.setCategoryName(category.getName());
-        //如果是集市订单则没有商品信息
-        if (Objects.equal(OrderTypeEnum.MARKET.getType(), orderVO.getType())) {
-            List<Integer> visibleStatus = Arrays.asList(OrderStatusGroupEnum.MARKET_ORDER_REMARK_VISIBLE.getStatusList());
-            if (!visibleStatus.contains(order.getStatus())) {
-                orderVO.setRemark("");
-            }
-        } else {
-            //添加用户信息
-            User user = userService.findById(order.getUserId());
-            orderVO.setUserHeadUrl(user.getHeadPortraitsUrl());
-            orderVO.setUserNickName(user.getNickname());
-            //添加订单商品信息
-            OrderProduct orderProduct = orderProductService.findByOrderNo(orderNo);
-            orderVO.setOrderProduct(orderProduct);
-        }
 
-        return orderVO;
-    }
 
     @Override
     public int count(Integer serverId, Integer[] statusList, Date startTime, Date endTime) {
@@ -435,23 +358,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     }
 
 
-    @Override
-    public int countByChannelId(Integer channelId) {
-        OrderVO orderVO = new OrderVO();
-        orderVO.setChannelId(channelId);
-        orderVO.setType(OrderTypeEnum.MARKET.getType());
-        return orderDao.countByParameter(orderVO);
-    }
-
-    @Override
-    public int countByChannelIdSuccess(Integer channelId) {
-        Integer[] statusList = OrderStatusGroupEnum.ALL_NORMAL_COMPLETE.getStatusList();
-        OrderVO orderVO = new OrderVO();
-        orderVO.setChannelId(channelId);
-        orderVO.setType(OrderTypeEnum.MARKET.getType());
-        orderVO.setStatusList(statusList);
-        return orderDao.countByParameter(orderVO);
-    }
 
 
     @Override
@@ -598,74 +504,56 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return order.getOrderNo();
     }
 
-    /**
-     * 提交集市订单
-     *
-     * @param channelId
-     * @param orderMarketProduct
-     * @param remark
-     * @param orderIp
-     * @return
-     */
-    public String submitMarketOrder(int channelId,
-                                    OrderMarketProduct orderMarketProduct,
-                                    String remark,
-                                    String orderIp,
-                                    String series) {
-        log.info("提交集市订单:channelId:{};orderMarketProduct:{};remark:{};orderIp:{}", channelId, orderMarketProduct, remark, orderIp);
-        Category category = categoryService.findById(orderMarketProduct.getCategoryId());
-        //计算订单总价格
-        BigDecimal totalMoney = orderMarketProduct.getPrice().multiply(new BigDecimal(orderMarketProduct.getAmount()));
+
+    @Override
+    public String submitPointOrder(OrderPointProductVO orderPointProductVO,
+                                   String couponNo,
+                                   Integer contactType,
+                                   String contactInfo,
+                                   String orderIp) {
+        User user = userService.getCurrentUser();
+
+        Category category = categoryService.findById(orderPointProductVO.getCategoryId());
+        BigDecimal totalMoney = orderPointProductVO.getPrice().multiply(new BigDecimal(orderPointProductVO.getAmount()));
+
         //创建订单
         Order order = new Order();
-        order.setName(orderMarketProduct.getProductName());
+        order.setName(orderPointProductVO.getCategoryName() + " " + orderPointProductVO.getOrderChoice());
+        order.setType(OrderTypeEnum.POINT.getType());
         order.setOrderNo(generateOrderNo());
-        order.setCategoryId(orderMarketProduct.getCategoryId());
-        order.setRemark(remark);
+        order.setUserId(user.getId());
+        order.setCategoryId(orderPointProductVO.getCategoryId());
         order.setIsPay(false);
-        order.setType(OrderTypeEnum.MARKET.getType());
-        order.setChannelId(channelId);
+        order.setIsPayCallback(false);
         order.setTotalMoney(totalMoney);
         order.setActualMoney(totalMoney);
-        order.setStatus(NON_PAYMENT.getStatus());
+        order.setStatus(OrderStatusEnum.NON_PAYMENT.getStatus());
         order.setCreateTime(new Date());
-        order.setCharges(category.getCharges());
         order.setUpdateTime(new Date());
         order.setOrderIp(orderIp);
-        create(order);
-        //更新集市订单商品
-        orderMarketProduct.setCreateTime(new Date());
-        orderMarketProduct.setUpdateTime(new Date());
-        orderMarketProduct.setOrderNo(order.getOrderNo());
-        orderMarketProductService.create(orderMarketProduct);
-        log.info("创建集市订单完成:order:{};", order);
-        //更新cdkey使用状态
-        Cdk cdk = cdkService.findBySeries(series);
-        if (cdk != null) {
-            cdk.setOrderNo(order.getOrderNo());
-            cdk.setIsUse(true);
-            cdk.setUpdateTime(new Date());
-            log.info("更新CDK使用状态cdk:{}", cdk);
-            cdkService.update(cdk);
-        }
-        //订单支付,扣渠道商流水
-        payOrder(order.getOrderNo(), order.getActualMoney());
-
-        //推送集市订单给对应陪玩师
-        springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
-            @Override
-            public void run() {
-                wxTemplateMsgService.pushMarketOrder(order);
+        order.setCharges(category.getCharges());
+        order.setContactType(contactType);
+        order.setContactInfo(contactInfo);
+        //使用优惠券
+        Coupon coupon = null;
+        if (StringUtils.isNotBlank(couponNo)) {
+            coupon = useCouponForOrder(couponNo, order);
+            if (coupon == null) {
+                throw new ServiceErrorException("该优惠券不能使用!");
             }
-        });
-        //把订单缓存到redis里面
-        try {
-            redisOpenService.hset(RedisKeyEnum.MARKET_ORDER.generateKey(order.getOrderNo()), BeanUtil.beanToMap(order), Constant.TIME_HOUR_TWO);
-        } catch (Exception e) {
-            log.error("订单转map错误:order:{};msg:{};", order, e.getMessage());
         }
+        if (order.getUserId().equals(order.getServiceUserId())) {
+            throw new ServiceErrorException("不能给自己下单哦!");
+        }
+        //创建订单
+        create(order);
+        orderPointProductVO.setOrderNo(order.getOrderNo());
+        orderPointProductVO.setCreateTime(new Date());
+        orderPointProductVO.setUpdateTime(new Date());
+        orderPointProductService.create(orderPointProductVO);
         return order.getOrderNo();
     }
+
 
 
     /**
@@ -694,9 +582,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return coupon;
     }
 
+
     /**
      * 订单支付
-     *
      * @param orderNo
      * @return
      */
@@ -720,8 +608,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.COUPON_DEDUCTION, order.getOrderNo(), order.getCouponMoney().negate());
         }
         //如果订单类型是渠道商则扣渠道商款,如果是平台订单则发送通知
-        if (OrderTypeEnum.MARKET.getType().equals(order.getType())) {
-            channelCashDetailsService.cutCash(order.getChannelId(), order.getActualMoney(), order.getOrderNo());
+        if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
+            //todo 上分订单给陪玩师推送通知
+
         } else {
             //记录订单流水
             orderMoneyDetailsService.create(order.getOrderNo(), order.getUserId(), DetailsEnum.ORDER_PAY, orderMoney);
@@ -736,7 +625,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 陪玩师接单
-     *
      * @return
      */
     @Override

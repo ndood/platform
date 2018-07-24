@@ -87,5 +87,6 @@ public class GradingController extends BaseController {
         List<GradingPriceVO> list = gradingPriceService.findByGradingPrice(pid);
         return Result.success().data(list);
     }
+    
 
 }

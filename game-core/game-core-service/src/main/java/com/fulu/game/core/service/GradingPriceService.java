@@ -22,4 +22,7 @@ public interface GradingPriceService extends ICommonService<GradingPrice, Intege
     GradingPrice update(Integer id, String name, Integer rank, BigDecimal price);
 
     List<GradingPriceVO> findByGradingPrice(int pid);
+
+
+    BigDecimal findRangePrice(int categoryId,int startGradingId, int endGradingId);
 }

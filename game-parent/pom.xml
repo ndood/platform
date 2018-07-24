@@ -36,6 +36,7 @@
         <module>../game-schedule</module>
         <module>../code-generate</module>
         <module>../game-play</module>
+        <module>../game-point</module>
     </modules>
 
     <parent>

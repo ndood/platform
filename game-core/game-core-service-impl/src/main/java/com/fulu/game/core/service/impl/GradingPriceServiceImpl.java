@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.core.dao.GradingPriceDao;
@@ -49,6 +50,7 @@ public class GradingPriceServiceImpl extends AbsCommonService<GradingPrice, Inte
         gradingPrice.setName(name);
         gradingPrice.setRank(rank);
         gradingPrice.setPrice(price);
+        gradingPrice.setType(parentGradingPrice.getType());
         gradingPrice.setAdminId(admin.getId());
         gradingPrice.setAdminName(admin.getName());
         gradingPrice.setCreateTime(new Date());
@@ -92,6 +94,19 @@ public class GradingPriceServiceImpl extends AbsCommonService<GradingPrice, Inte
             }
         }
         return list;
+    }
+
+
+    @Override
+    public BigDecimal findRangePrice(int categoryId,int startGradingId, int endGradingId) {
+        GradingPrice startGradingPrice = findById(startGradingId);
+        GradingPrice endGradingPrice = findById(endGradingId);
+        if(!startGradingPrice.getCategoryId().equals(endGradingPrice.getCategoryId())
+                ||!startGradingPrice.getType().equals(endGradingPrice.getType())){
+            throw new ServiceErrorException("段位类型不匹配,请重新选择!");
+        }
+        BigDecimal totalPrice = gradingPriceDao.findRangePrice(categoryId,startGradingId,endGradingId);
+        return totalPrice;
     }
 
 

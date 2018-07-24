@@ -5,6 +5,7 @@
     <resultMap id="GradingPriceResultMap" type="com.fulu.game.core.entity.GradingPrice">
         <id column="id" property="id"/>
         <result column="category_id" property="categoryId"/>
+        <result column="type" property="type"/>
         <result column="pid" property="pid"/>
         <result column="name" property="name"/>
         <result column="rank" property="rank"/>
@@ -20,7 +21,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,category_id,pid,name,rank,price,admin_id,admin_name,create_time,update_time    </sql>
+        id,category_id,type,pid,name,rank,price,admin_id,admin_name,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="GradingPriceResultMap">
         select
@@ -37,14 +38,16 @@
         from t_grading_price
     </select>
 
-    <select id="findByParameter" resultMap="GradingPriceResultMap"
-            parameterType="com.fulu.game.core.entity.vo.GradingPriceVO">
+    <select id="findByParameter" resultMap="GradingPriceResultMap" parameterType="com.fulu.game.core.entity.vo.GradingPriceVO">
         SELECT
         <include refid="Base_Column_List"/>
         FROM t_grading_price
         <where>
             <if test="categoryId != null">
                 and category_id = #{categoryId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
             </if>
             <if test="pid != null">
                 and pid = #{pid}
@@ -73,6 +76,19 @@
         </where>
     </select>
 
+    <select id="findRangePrice" resultType="java.math.BigDecimal">
+        SELECT
+        sum(price)
+        FROM
+        t_grading_price
+        <where>
+            category_id = #{categoryId}
+            AND type = 3
+            AND rank &gt;= #{startRank} AND rank &lt;= #{endRank}
+        </where>
+    </select>
+
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_grading_price
         <where>
@@ -82,9 +98,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.GradingPrice">
         insert into
-        t_grading_price (category_id,pid,name,rank,price,admin_id,admin_name,create_time,update_time)
+        t_grading_price (category_id,type,pid,name,rank,price,admin_id,admin_name,create_time,update_time)
         values
-        (#{categoryId},#{pid},#{name},#{rank},#{price},#{adminId},#{adminName},#{createTime},#{updateTime})
+        (#{categoryId},#{type},#{pid},#{name},#{rank},#{price},#{adminId},#{adminName},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.GradingPrice">
@@ -93,6 +109,10 @@
 
             <if test="categoryId != null">
                 category_id = #{categoryId},
+            </if>
+
+            <if test="type != null">
+                type = #{type},
             </if>
 
             <if test="pid != null">

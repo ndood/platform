@@ -10,11 +10,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>game-play</artifactId>
+    <artifactId>game-point</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>game-play-controller</module>
+        <module>game-point-controller</module>
     </modules>
+
 
     <dependencies>
         <dependency>

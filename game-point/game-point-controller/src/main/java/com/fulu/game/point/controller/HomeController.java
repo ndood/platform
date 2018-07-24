@@ -1,4 +1,4 @@
-package com.fulu.game.towin.controller;
+package com.fulu.game.point.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;

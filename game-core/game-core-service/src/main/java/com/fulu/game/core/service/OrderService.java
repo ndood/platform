@@ -5,6 +5,7 @@ import com.fulu.game.core.entity.ArbitrationDetails;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.entity.OrderMarketProduct;
+import com.fulu.game.core.entity.to.OrderPointProductTO;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
@@ -21,6 +22,9 @@ import java.util.List;
  * @date 2018-04-25 18:27:54
  */
 public interface OrderService extends ICommonService<Order, Integer> {
+
+
+
 
 
     /**
@@ -82,16 +86,6 @@ public interface OrderService extends ICommonService<Order, Integer> {
      */
     PageInfo<OrderVO> serverList(int pageNum, int pageSize, Integer categoryId, Integer[] statusArr);
 
-    /**
-     * 集市订单列表
-     *
-     * @param pageNum
-     * @param pageSize
-     * @param categoryId
-     * @param statusArr
-     * @return
-     */
-    PageInfo<MarketOrderVO> marketList(int pageNum, int pageSize, Integer categoryId, Integer[] statusArr);
 
     /**
      * 集市订单抢单
@@ -126,15 +120,16 @@ public interface OrderService extends ICommonService<Order, Integer> {
                        String contactInfo);
 
     /**
-     * 提交集市订单
-     *
-     * @param channelId
-     * @param orderMarketProduct
-     * @param remark
+     * 提交上分订单
+     * @param orderPointProductVO
      * @param orderIp
      * @return
      */
-    String submitMarketOrder(int channelId, OrderMarketProduct orderMarketProduct, String remark, String orderIp, String series);
+    String submitPointOrder(OrderPointProductVO orderPointProductVO,
+                            String couponNo,
+                            Integer contactType,
+                            String contactInfo,
+                            String orderIp);
 
     /**
      * 支付订单,订单回调的时候调用
@@ -388,13 +383,6 @@ public interface OrderService extends ICommonService<Order, Integer> {
      */
     OrderDeal eventLeaveMessage(String orderNo, Integer eventId, String remark, String... fileUrl);
 
-    /**
-     * 用户订单详情页
-     *
-     * @param orderNo
-     * @return
-     */
-    OrderVO findUserOrderDetails(String orderNo);
 
     /**
      * 查询订单详情
@@ -404,34 +392,13 @@ public interface OrderService extends ICommonService<Order, Integer> {
      */
     OrderDetailsVO findOrderDetails(String orderNo);
 
-    /**
-     * 陪玩师订单详情
-     *
-     * @param orderNo
-     * @return
-     */
-    OrderVO findServerOrderDetails(String orderNo);
 
     /**
      * 是否是老用户（下单过的）
      */
     Boolean isOldUser(Integer userId);
 
-    /**
-     * 统计渠道商总下单数
-     *
-     * @param channelId
-     * @return
-     */
-    int countByChannelId(Integer channelId);
 
-    /**
-     * 统计渠道商成功订单数
-     *
-     * @param channelId
-     * @return
-     */
-    int countByChannelIdSuccess(Integer channelId);
 
     /**
      * 获取订单流程
@@ -440,5 +407,9 @@ public interface OrderService extends ICommonService<Order, Integer> {
      * @return
      */
     List<OrderStatusDetailsVO> getOrderProcess(String orderNo);
+
+
+
+
 
 }

@@ -481,28 +481,6 @@ public class OrderController extends BaseController {
     }
 
 
-    /**
-     * 用户订单详情页
-     *
-     * @param orderNo
-     * @return
-     */
-    @RequestMapping(value = "/user/details")
-    public Result userOrderDetails(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = orderService.findUserOrderDetails(orderNo);
-        return Result.success().data(orderVO);
-    }
 
-    /**
-     * 陪玩师订单详情页
-     *
-     * @param orderNo
-     * @return
-     */
-    @RequestMapping(value = "/server/details")
-    public Result serverOrderDetails(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = orderService.findServerOrderDetails(orderNo);
-        return Result.success().data(orderVO);
-    }
 
 }

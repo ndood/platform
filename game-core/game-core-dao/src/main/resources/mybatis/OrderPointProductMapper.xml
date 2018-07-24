@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.OrderPointProductDao">
+    <resultMap id="OrderPointProductResultMap" type="com.fulu.game.core.entity.OrderPointProduct">
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="point_type" property="pointType"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="area_id" property="areaId"/>
+        <result column="grading_price_id" property="gradingPriceId"/>
+        <result column="target_grading_price_id" property="targetGradingPriceId"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="account_info" property="accountInfo"/>
+        <result column="order_choice" property="orderChoice"/>
+        <result column="price" property="price"/>
+        <result column="amount" property="amount"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="OrderPointProductResultVOMap" type="com.fulu.game.core.entity.vo.OrderPointProductVO"
+               extends="OrderPointProductResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,order_no,point_type,category_id,area_id,grading_price_id,target_grading_price_id,category_name,account_info,order_choice,price,amount,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="OrderPointProductResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_order_point_product
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="OrderPointProductResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_order_point_product
+    </select>
+
+    <select id="findByParameter" resultMap="OrderPointProductResultMap"
+            parameterType="com.fulu.game.core.entity.vo.OrderPointProductVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_order_point_product
+        <where>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="pointType != null">
+                and point_type = #{pointType}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="areaId != null">
+                and area_id = #{areaId}
+            </if>
+            <if test="gradingPriceId != null">
+                and grading_price_id = #{gradingPriceId}
+            </if>
+            <if test="targetGradingPriceId != null">
+                and target_grading_price_id = #{targetGradingPriceId}
+            </if>
+            <if test="categoryName != null">
+                and category_name = #{categoryName}
+            </if>
+            <if test="accountInfo != null">
+                and account_info = #{accountInfo}
+            </if>
+            <if test="orderChoice != null">
+                and order_choice = #{orderChoice}
+            </if>
+            <if test="price != null">
+                and price = #{price}
+            </if>
+            <if test="amount != null">
+                and amount = #{amount}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_order_point_product
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.OrderPointProduct">
+        insert into
+        t_order_point_product (order_no,point_type,category_id,area_id,grading_price_id,target_grading_price_id,category_name,account_info,order_choice,price,amount,create_time,update_time)
+        values
+        (#{orderNo},#{pointType},#{categoryId},#{areaId},#{gradingPriceId},#{targetGradingPriceId},#{categoryName},#{accountInfo},#{orderChoice},#{price},#{amount},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.OrderPointProduct">
+        update t_order_point_product
+        <set>
+
+            <if test="orderNo != null">
+                order_no = #{orderNo},
+            </if>
+
+            <if test="pointType != null">
+                point_type = #{pointType},
+            </if>
+
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+
+            <if test="areaId != null">
+                area_id = #{areaId},
+            </if>
+
+            <if test="gradingPriceId != null">
+                grading_price_id = #{gradingPriceId},
+            </if>
+
+            <if test="targetGradingPriceId != null">
+                target_grading_price_id = #{targetGradingPriceId},
+            </if>
+
+            <if test="categoryName != null">
+                category_name = #{categoryName},
+            </if>
+
+            <if test="accountInfo != null">
+                account_info = #{accountInfo},
+            </if>
+
+            <if test="orderChoice != null">
+                order_choice = #{orderChoice},
+            </if>
+
+            <if test="price != null">
+                price = #{price},
+            </if>
+
+            <if test="amount != null">
+                amount = #{amount},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

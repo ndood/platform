@@ -1,4 +1,4 @@
-package com.fulu.game.towin;
+package com.fulu.game.point;
 
 
 import org.springframework.boot.SpringApplication;

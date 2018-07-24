@@ -10,7 +10,7 @@ import lombok.Data;
  * 段位定级价格表
  * 
  * @author wangbin
- * @date 2018-07-24 11:54:28
+ * @date 2018-07-24 16:20:06
  */
 @Data
 public class GradingPrice implements Serializable {
@@ -20,6 +20,8 @@ public class GradingPrice implements Serializable {
 	private Integer id;
 	//游戏分类
 	private Integer categoryId;
+	//类型(1:开黑,2：包赢,3:精准上分)
+	private Integer type;
 	//父类属性id
 	private Integer pid;
 	//单位名称

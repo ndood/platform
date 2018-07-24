@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -121,7 +120,7 @@ public class OpenController extends BaseController{
         remark.append("玩家角色昵称为：").append(rolename);
         Integer channelId = cdk.getChannelId();
         log.info("验证CDK可以下单:orderMarketProduct:{};channelId:{};remark:{};ip:{}",orderMarketProduct,channelId,remark,ip);
-        orderService.submitMarketOrder(channelId,orderMarketProduct,remark.toString(),ip,series);
+        orderService.submitPointOrder(channelId,orderMarketProduct,remark.toString(),ip,series);
         //删除sessionKey
         redisOpenService.delete(RedisKeyEnum.WRITER_SESSION_KEY.generateKey(sessionKey));
         return Result.success().msg("下单成功!");
