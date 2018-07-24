@@ -7,10 +7,10 @@ import lombok.Data;
 
 
 /**
- * 段位定级表
+ * 段位定级价格表
  * 
  * @author wangbin
- * @date 2018-07-23 19:34:58
+ * @date 2018-07-24 11:54:28
  */
 @Data
 public class GradingPrice implements Serializable {
@@ -26,8 +26,12 @@ public class GradingPrice implements Serializable {
 	private String name;
 	//权重
 	private Integer rank;
-	//
+	//价格
 	private BigDecimal price;
+	//最后修改管理员
+	private Integer adminId;
+	//
+	private String adminName;
 	//创建时间
 	private Date createTime;
 	//
