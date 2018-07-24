@@ -10,6 +10,7 @@
         <result column="wechat" property="wechat"/>
         <result column="is_reject_submit" property="isRejectSubmit"/>
         <result column="is_platform_show"  property="isPlatformShow" />
+        <result column="source_id"  property="sourceId" />
         <result column="main_pic_url" property="mainPicUrl"/>
         <result column="push_time_interval" property="pushTimeInterval"/>
         <result column="allow_export" property="allowExport"/>
@@ -30,7 +31,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,mobile,qq,wechat,is_reject_submit,is_platform_show,main_pic_url,push_time_interval,allow_export,create_time,update_time
+        id,user_id,mobile,qq,wechat,is_reject_submit,is_platform_show,source_id,main_pic_url,push_time_interval,allow_export,create_time,update_time
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserInfoAuthResultMap">
@@ -84,6 +85,9 @@
             <if test="isPlatformShow != null">
                 and is_platform_show = #{isPlatformShow}
             </if>
+            <if test="sourceId != null">
+                and source_id = #{sourceId}
+            </if>
             <if test="mainPicUrl != null">
                 and main_pic_url = #{mainPicUrl}
             </if>
@@ -101,7 +105,6 @@
         u.gender,
         u.age,
         u.nickname,
-        u.source_id,
         rs.name as source_str,
         IFNULL( sum( o.total_money ), 0 ) AS money_sum,
         count( o.service_user_id ) AS order_count,
@@ -111,7 +114,7 @@
         LEFT JOIN t_user u ON uia.user_id = u.id
         LEFT JOIN ( SELECT service_user_id, total_money FROM t_order WHERE STATUS &gt;= 500 AND STATUS &lt;= 600 ) o ON
         uia.user_id = o.service_user_id
-        LEFT JOIN t_regist_source rs on u.source_id = rs.id
+        LEFT JOIN t_regist_source rs on uia.source_id = rs.id
         <where>
             <if test="userId != null">
                 and uia.user_id = #{userId}
@@ -160,9 +163,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserInfoAuth">
         insert into
-        t_user_info_auth (user_id,mobile,qq,wechat,is_reject_submit,is_platform_show,main_pic_url,push_time_interval,allow_export,create_time,update_time)
+        t_user_info_auth (user_id,mobile,qq,wechat,is_reject_submit,is_platform_show,source_id,main_pic_url,push_time_interval,allow_export,create_time,update_time)
         values
-        (#{userId},#{mobile},#{qq},#{wechat},#{isRejectSubmit},#{isPlatformShow},#{mainPicUrl},#{pushTimeInterval},#{allowExport},#{createTime},#{updateTime})
+        (#{userId},#{mobile},#{qq},#{wechat},#{isRejectSubmit},#{isPlatformShow},#{sourceId},#{mainPicUrl},#{pushTimeInterval},#{allowExport},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.UserInfoAuth">
@@ -189,6 +192,9 @@
             </if>
             <if test="isPlatformShow != null">
                 is_platform_show = #{isPlatformShow},
+            </if>
+            <if test="sourceId != null">
+                source_id = #{sourceId},
             </if>
             <if test="mainPicUrl != null">
                 main_pic_url = #{mainPicUrl},
