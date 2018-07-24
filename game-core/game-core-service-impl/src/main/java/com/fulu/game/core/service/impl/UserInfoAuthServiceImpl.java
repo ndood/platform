@@ -1,7 +1,9 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.*;
+import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
@@ -368,7 +370,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     @Override
     public UserInfoAuthVO findUserInfoAuthByUserId(Integer userId) {
         if (userId == null) {
-            throw new UserException(UserException.ExceptionCode.USER_ID_IS_NULL);
+            throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
 
         User user = userService.findById(userId);
@@ -461,7 +463,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         //查询用户技能
         if (hasTechs) {
             List<UserTechAuth> userTechAuthList = userTechAuthService.findUserNormalTechs(userId);
-            List<String> techList = new ArrayList<String>();
+            List<String> techList = new ArrayList<>();
             for (UserTechAuth userTechAuth : userTechAuthList) {
                 techList.add(userTechAuth.getCategoryName());
             }
@@ -586,6 +588,46 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         return page;
     }
 
+    @Override
+    public boolean addSource(Integer userId, Integer sourceId) {
+        if(userId == null || sourceId == null) {
+            throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
+        }
+
+        UserInfoAuth userInfoAuth = new UserInfoAuth();
+        userInfoAuth.setUserId(userId);
+        userInfoAuth.setSourceId(sourceId);
+        userInfoAuth.setUpdateTime(DateUtil.date());
+        return updateByUserId(userInfoAuth);
+    }
+
+    @Override
+    public boolean isPlatformShow(Integer userId, Integer showFlag) {
+        if(userId == null || showFlag == null) {
+            throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
+        }
+
+        if(!showFlag.equals(Constant.PLATFORM_NOT_SHOW) && !showFlag.equals(Constant.PLATFORM_SHOW)) {
+            throw new ParamsException(ParamsException.ExceptionCode.ILLEGAL_PARAM_EXCEPTION);
+        }
+
+        UserInfoAuth userInfoAuth = new UserInfoAuth();
+        userInfoAuth.setUserId(userId);
+        userInfoAuth.setIsPlatformShow(showFlag);
+        userInfoAuth.setUpdateTime(DateUtil.date());
+        return updateByUserId(userInfoAuth);
+    }
+
+    @Override
+    public boolean updateByUserId(UserInfoAuth userInfoAuth) {
+        Integer userId = userInfoAuth.getUserId();
+        if(userId == null) {
+            throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
+        }
+        int result = userInfoAuthDao.updateByUserId(userInfoAuth);
+        return result > 0;
+    }
+
     /**
      * 根据userInfoAuthStatus（陪玩师审核状态）获取陪玩师主图、写真图和声音文件等信息，补充陪玩师认证信息VO
      *
@@ -601,7 +643,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
         Integer userId = userInfoAuthVO.getUserId();
         if (userId == null) {
-            throw new UserException(UserException.ExceptionCode.USER_ID_IS_NULL);
+            log.error("查询参数为空");
+            return null;
         }
 
         //审核中
@@ -970,5 +1013,4 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             personTagService.create(personTag);
         }
     }
-
 }

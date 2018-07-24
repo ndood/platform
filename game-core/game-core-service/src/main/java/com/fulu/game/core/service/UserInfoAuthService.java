@@ -89,6 +89,29 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
     PageInfo<UserInfoAuthVO> list(Integer pageNum, Integer pageSize, UserInfoAuthSearchVO userInfoAuthSearchVO);
 
     /**
+     * 给陪玩师增加外链来源
+     * @param userId 陪玩师用户id
+     * @param sourceId 来源id
+     * @return 是否操作成功
+     */
+    boolean addSource(Integer userId, Integer sourceId);
+
+    /**
+     * 设置陪玩师是否在平台内展示
+     * @param userId 陪玩师用户id
+     * @param showFlag 是否展示（0：否，1：是）
+     * @return 是否操作成功
+     */
+    boolean isPlatformShow(Integer userId, Integer showFlag);
+
+    /**
+     * 根据userId更新用户认证信息
+     * @param userInfoAuth 用户认证信息bean
+     * @return 是否操作成功
+     */
+    boolean updateByUserId(UserInfoAuth userInfoAuth);
+
+    /**
      * 查询用户名片
      *
      * @param userId

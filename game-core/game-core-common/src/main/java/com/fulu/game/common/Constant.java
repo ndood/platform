@@ -115,4 +115,13 @@ public interface Constant {
     /**
      * 用户积分策略--end
      */
+
+    /**
+     * 陪玩师在平台内展示
+     */
+    Integer PLATFORM_SHOW = 1;
+    /**
+     * 陪玩师不在平台内展示
+     */
+    Integer PLATFORM_NOT_SHOW = 0;
 }
