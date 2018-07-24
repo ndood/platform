@@ -441,4 +441,11 @@ public interface OrderService extends ICommonService<Order, Integer> {
      */
     List<OrderStatusDetailsVO> getOrderProcess(String orderNo);
 
+    /**
+     * 根据陪玩师id获取外链来源的订单列表
+     * @param userId 陪玩师id
+     * @return 订单列表
+     */
+    List<SourceOrderVO> getSourceOrderList(Integer userId);
+
 }

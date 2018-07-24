@@ -173,6 +173,19 @@ public class OrderController extends BaseController {
     }
 
     /**
+     * 获取外链来源订单列表
+     * @param userId 用户id
+     * @return 封装结果集
+     */
+    @PostMapping("/admin/source-order")
+    public Result getSourceOrderList(@RequestParam Integer userId) {
+        //todo
+        orderService.getSourceOrderList(userId);
+
+        return null;
+    }
+
+    /**
      * 订单列表导出
      *
      * @param response

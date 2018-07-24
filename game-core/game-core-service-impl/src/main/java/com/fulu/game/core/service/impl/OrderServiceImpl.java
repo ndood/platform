@@ -1431,7 +1431,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return orderConvertVo(order);
     }
 
-
+    @Override
     public List<Order> findByStatusList(Integer[] statusList) {
         if (statusList == null) {
             return new ArrayList<>();
@@ -1515,5 +1515,13 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             voList.add(vo);
         }
         return voList;
+    }
+
+    @Override
+    public List<SourceOrderVO> getSourceOrderList(Integer userId) {
+
+
+
+        return null;
     }
 }
