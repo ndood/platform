@@ -64,4 +64,12 @@ public interface RegistSourceService extends ICommonService<RegistSource, Intege
      * @return
      */
     PageInfo<RegistSourceVO> listWithCount(Integer pageNum, Integer pageSize);
+
+    /**
+     * 根据注册名称查询注册来源
+     *
+     * @param name 注册来源名称
+     * @return 注册来源Bean
+     */
+    RegistSource findByName(String name);
 }

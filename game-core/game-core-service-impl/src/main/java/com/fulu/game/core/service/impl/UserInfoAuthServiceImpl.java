@@ -593,14 +593,18 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     }
 
     @Override
-    public boolean addSource(Integer userId, Integer sourceId) {
-        if (userId == null || sourceId == null) {
+    public boolean addSource(Integer userId, String name) {
+        if (userId == null || StringUtils.isBlank(name)) {
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
 
+        RegistSource registSource = registSourceService.findByName(name);
+        if (registSource == null) {
+            throw new ServiceErrorException("找不到对应的注册来源");
+        }
         UserInfoAuth userInfoAuth = new UserInfoAuth();
         userInfoAuth.setUserId(userId);
-        userInfoAuth.setSourceId(sourceId);
+        userInfoAuth.setSourceId(registSource.getId());
         userInfoAuth.setUpdateTime(DateUtil.date());
         return updateByUserId(userInfoAuth);
     }

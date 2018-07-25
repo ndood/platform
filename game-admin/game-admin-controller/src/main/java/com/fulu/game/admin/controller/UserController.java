@@ -71,13 +71,13 @@ public class UserController extends BaseController {
     /**
      * 给陪玩师增加外链来源
      *
-     * @param userId   陪玩师用户id
-     * @param sourceId 来源id
+     * @param userId 陪玩师用户id
+     * @param name   来源名称
      * @return 封装结果集
      */
     @PostMapping(value = "/source/add")
-    public Result addSource(@RequestParam Integer userId, @RequestParam Integer sourceId) {
-        boolean flag = userInfoAuthService.addSource(userId, sourceId);
+    public Result addSource(@RequestParam Integer userId, @RequestParam String name) {
+        boolean flag = userInfoAuthService.addSource(userId, name);
         if (flag) {
             return Result.success().msg("添加外链来源成功");
         }
@@ -104,7 +104,7 @@ public class UserController extends BaseController {
      * 将陪玩师从CJ渠道去除掉
      *
      * @param userId 陪玩师id
-     * @return
+     * @return 封装结果集
      */
     @PostMapping("/source/remove")
     public Result removeServiceUserFromCjSource(@RequestParam Integer userId) {

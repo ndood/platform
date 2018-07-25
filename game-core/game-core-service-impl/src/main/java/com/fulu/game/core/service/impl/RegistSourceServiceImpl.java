@@ -103,4 +103,9 @@ public class RegistSourceServiceImpl extends AbsCommonService<RegistSource, Inte
         }
         return registSource;
     }
+
+    @Override
+    public RegistSource findByName(String name) {
+        return registSourceDao.findByName(name);
+    }
 }

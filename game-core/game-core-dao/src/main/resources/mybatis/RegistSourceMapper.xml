@@ -76,6 +76,16 @@
         LIMIT 1;
     </select>
 
+    <select id="findByName" parameterType="String" resultType="com.fulu.game.core.entity.RegistSource">
+        SELECT
+            *
+        FROM
+            t_regist_source
+        WHERE
+            NAME = #{name}
+        LIMIT 1;
+    </select>
+
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.RegistSource">
         insert into
         t_regist_source (name,admin_id,remark,wxcode_url,create_time,update_time)

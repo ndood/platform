@@ -92,11 +92,11 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
     /**
      * 给陪玩师增加外链来源
      *
-     * @param userId   陪玩师用户id
-     * @param sourceId 来源id
+     * @param userId 陪玩师用户id
+     * @param name   来源名称
      * @return 是否操作成功
      */
-    boolean addSource(Integer userId, Integer sourceId);
+    boolean addSource(Integer userId, String name);
 
     /**
      * 设置陪玩师是否在平台内展示
