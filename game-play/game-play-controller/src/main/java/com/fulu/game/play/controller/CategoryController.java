@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/category")
-public class CategoryController extends BaseController{
+public class CategoryController extends BaseController {
 
     @Autowired
     private TechAttrService techAttrService;
@@ -41,13 +41,14 @@ public class CategoryController extends BaseController{
 
     /**
      * 查询所有陪玩业务
-      * @return
+     *
+     * @return
      */
     @PostMapping(value = "all")
-    public Result list(){
+    public Result list() {
         List<Category> categoryList = categoryService.findAllAccompanyPlayCategory();
-        for(Category category:categoryList){
-            if(category.getIndexIcon()!=null){
+        for (Category category : categoryList) {
+            if (category.getIndexIcon() != null) {
                 category.setIcon(category.getIndexIcon());
             }
         }
@@ -56,17 +57,19 @@ public class CategoryController extends BaseController{
 
     /**
      * 分页查询陪玩业务
-      * @return
+     *
+     * @return
      */
     @PostMapping(value = "list")
     public Result page(@RequestParam(required = true) Integer pageNum,
-                       @RequestParam(required = true) Integer pageSize){
-        PageInfo<Category> categoryList = categoryService.list(pageNum,pageSize);
+                       @RequestParam(required = true) Integer pageSize) {
+        PageInfo<Category> categoryList = categoryService.list(pageNum, pageSize);
         return Result.success().data(categoryList);
     }
 
     /**
      * 分页查询所有商品
+     *
      * @param categoryId
      * @param gender
      * @param pageNum
@@ -75,29 +78,52 @@ public class CategoryController extends BaseController{
      * @return
      */
     @RequestMapping(value = "/product/list")
-    public Result findPageByProductId(@RequestParam(required = true)Integer categoryId,
+    public Result findPageByProductId(@RequestParam(required = true) Integer categoryId,
                                       Integer gender,
-                                      @RequestParam(required = true)Integer pageNum,
-                                      @RequestParam(required = true)Integer pageSize,
-                                      String orderBy){
-        PageInfo<ProductShowCaseVO> pageInfo = productService.findProductShowCase(categoryId,gender,pageNum,pageSize,orderBy);
+                                      @RequestParam(required = true) Integer pageNum,
+                                      @RequestParam(required = true) Integer pageSize,
+                                      String orderBy) {
+        PageInfo<ProductShowCaseVO> pageInfo = productService.findProductShowCase(categoryId, gender, pageNum, pageSize, orderBy);
         return Result.success().data(pageInfo);
     }
 
     /**
+     * 分页查询所有商品
+     *
+     * @param categoryId 分类id
+     * @param gender     性别
+     * @param pageNum    页码
+     * @param pageSize   每页显示数据条数
+     * @param orderBy    排序字符串
+     * @return 封装结果集
+     */
+    @RequestMapping(value = "/cj/product/list")
+    public Result findCjPageByProductId(@RequestParam Integer categoryId,
+                                        Integer gender,
+                                        @RequestParam Integer pageNum,
+                                        @RequestParam Integer pageSize,
+                                        String orderBy) {
+        PageInfo<ProductShowCaseVO> pageInfo = productService.findCjProductShowCase(categoryId, gender, pageNum, pageSize, orderBy);
+        return Result.success().data(pageInfo);
+    }
+
+
+    /**
      * 根据业务查询游戏销售方式
+     *
      * @param categoryId
      * @return
      */
     @PostMapping(value = "/salesmode/list")
-    public Result saleModel(@RequestParam(required = true)Integer categoryId){
-        List<SalesMode> salesModeList =  salesModeService.findByCategory(categoryId);
+    public Result saleModel(@RequestParam(required = true) Integer categoryId) {
+        List<SalesMode> salesModeList = salesModeService.findByCategory(categoryId);
         return Result.success().data(salesModeList);
     }
 
 
     /**
      * 查询游戏所有标签
+     *
      * @param categoryId
      * @return
      */
@@ -112,12 +138,13 @@ public class CategoryController extends BaseController{
 
     /**
      * 查询游戏所有段位
+     *
      * @return
      */
     @PostMapping(value = "/dan/list")
     public Result danList(@RequestParam(required = true) Integer categoryId) {
         TechAttr techAttr = techAttrService.findByCategoryAndType(categoryId, TechAttrTypeEnum.DAN.getType());
-        if(techAttr==null){
+        if (techAttr == null) {
             return Result.error().msg("该游戏没有设置段位信息!");
         }
         List<TechValue> techValueList = techValueService.findByTechAttrId(techAttr.getId());

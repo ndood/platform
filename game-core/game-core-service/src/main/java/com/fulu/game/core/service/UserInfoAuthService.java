@@ -21,6 +21,7 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
 
     /**
      * 保存用户认证个人信息
+     *
      * @param userInfoAuthTO
      * @return
      */
@@ -81,8 +82,8 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
     /**
      * 个人信息认证列表
      *
-     * @param pageNum 页码
-     * @param pageSize 每页显示数据条数
+     * @param pageNum              页码
+     * @param pageSize             每页显示数据条数
      * @param userInfoAuthSearchVO 查询条件VO
      * @return 分页数据结果
      */
@@ -90,7 +91,8 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
 
     /**
      * 给陪玩师增加外链来源
-     * @param userId 陪玩师用户id
+     *
+     * @param userId   陪玩师用户id
      * @param sourceId 来源id
      * @return 是否操作成功
      */
@@ -98,7 +100,8 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
 
     /**
      * 设置陪玩师是否在平台内展示
-     * @param userId 陪玩师用户id
+     *
+     * @param userId   陪玩师用户id
      * @param showFlag 是否展示（0：否，1：是）
      * @return 是否操作成功
      */
@@ -106,6 +109,7 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
 
     /**
      * 根据userId更新用户认证信息
+     *
      * @param userInfoAuth 用户认证信息bean
      * @return 是否操作成功
      */
@@ -141,5 +145,17 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
      */
     void settingPushTimeInterval(float minute);
 
+    /**
+     * 获取所有CJ陪玩师的陪玩师认证信息列表
+     *
+     * @return 陪玩师认证信息列表
+     */
+    List<UserInfoAuth> findAllCjUsers();
 
+    /**
+     * 获取所有不在平台内展示的陪玩师的认证信息列表
+     *
+     * @return 陪玩师认证信息列表
+     */
+    List<UserInfoAuth> findPlatformNotShowUserInfoAuth();
 }

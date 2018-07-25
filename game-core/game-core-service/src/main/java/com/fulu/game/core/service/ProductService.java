@@ -3,8 +3,8 @@ package com.fulu.game.core.service;
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.SalesMode;
-import com.fulu.game.core.entity.vo.ProductShowCaseVO;
 import com.fulu.game.core.entity.vo.ProductDetailsVO;
+import com.fulu.game.core.entity.vo.ProductShowCaseVO;
 import com.fulu.game.core.entity.vo.ProductVO;
 import com.fulu.game.core.entity.vo.SimpleProductVO;
 import com.github.pagehelper.PageInfo;
@@ -16,50 +16,56 @@ import java.util.Map;
 
 /**
  * 商品表
- * 
+ *
  * @author yanbiao
  * @email ${email}
  * @date 2018-04-24 15:23:43
  */
-public interface ProductService extends ICommonService<Product,Integer>{
+public interface ProductService extends ICommonService<Product, Integer> {
 
     /**
      * 陪玩师新建接单方式
+     *
      * @param techAuthId
      * @param price
      * @param unitId
      * @return
      */
-    Product create(Integer techAuthId,BigDecimal price,Integer unitId);
+    Product create(Integer techAuthId, BigDecimal price, Integer unitId);
+
     /**
      * 修改接单方式
+     *
      * @param id
      * @param techAuthId
      * @param price
      * @param unitId
      * @return
      */
-    Product update(Integer id,Integer techAuthId,BigDecimal price,Integer unitId);
+    Product update(Integer id, Integer techAuthId, BigDecimal price, Integer unitId);
 
 
     void updateByCategory(Category category);
 
     /**
      * 查看用户开始接单状态
+     *
      * @return
      */
-    Map<String,Object> readOrderReceivingStatus();
+    Map<String, Object> readOrderReceivingStatus();
 
     /**
      * 订单状态修改
+     *
      * @param id
      * @param status
      * @return
      */
-    Product enable(int id,boolean status);
+    Product enable(int id, boolean status);
 
     /**
      * 开始接单
+     *
      * @param hour
      */
     void startOrderReceiving(Float hour);
@@ -72,13 +78,15 @@ public interface ProductService extends ICommonService<Product,Integer>{
 
     /**
      * 更新用户所有商品索引
+     *
      * @param userId
-     * @param needUpdateTime  是否要更新商品接单时间
+     * @param needUpdateTime 是否要更新商品接单时间
      */
     void updateUserProductIndex(Integer userId, Boolean needUpdateTime);
 
     /**
      * 查询商品详情页
+     *
      * @param productId
      * @return
      */
@@ -86,6 +94,7 @@ public interface ProductService extends ICommonService<Product,Integer>{
 
     /**
      * 再来一单商品页面
+     *
      * @param productId
      * @return
      */
@@ -93,6 +102,7 @@ public interface ProductService extends ICommonService<Product,Integer>{
 
     /**
      * 查询用户所有商品
+     *
      * @param userId
      * @return
      */
@@ -100,15 +110,30 @@ public interface ProductService extends ICommonService<Product,Integer>{
 
     /**
      * 查询商品橱窗
+     *
      * @param pageNum
      * @param pageSize
      * @param categoryId
      * @return
      */
-    PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId,Integer gender,Integer pageNum,Integer pageSize,String orderBy);
+    PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId, Integer gender, Integer pageNum, Integer pageSize, String orderBy);
+
+    /**
+     * 查询CJ首页商品橱窗
+     *
+     * @param categoryId 分类id
+     * @param gender     性别
+     * @param pageNum    页码
+     * @param pageSize   每页显示数据条数
+     * @param orderBy    排序字符串
+     * @return 封装分页结果集
+     */
+    PageInfo<ProductShowCaseVO> findCjProductShowCase(Integer categoryId, Integer gender, Integer pageNum,
+                                                      Integer pageSize, String orderBy);
 
     /**
      * 通过昵称查找商品
+     *
      * @param pageNum
      * @param pageSize
      * @param nickName
@@ -118,6 +143,7 @@ public interface ProductService extends ICommonService<Product,Integer>{
 
     /**
      * 判断商品是否是开始接单状态
+     *
      * @param productId
      * @return
      */
@@ -125,6 +151,7 @@ public interface ProductService extends ICommonService<Product,Integer>{
 
     /**
      * 判断陪玩师是否是开始接单状态
+     *
      * @param userId
      * @return
      */
@@ -132,12 +159,14 @@ public interface ProductService extends ICommonService<Product,Integer>{
 
     /**
      * 删除用户下所有商品
+     *
      * @param userId
      */
     void deleteProductByUser(Integer userId);
 
     /**
      * 删除技能下所有商品
+     *
      * @param techAuthId
      */
     void deleteProductByTech(Integer techAuthId);
@@ -146,8 +175,10 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * 批量更新所有用户索引
      */
     void bathUpdateProductIndex();
+
     /**
      * 逻辑删除商品
+     *
      * @param product
      * @return
      */
@@ -155,18 +186,21 @@ public interface ProductService extends ICommonService<Product,Integer>{
 
     /**
      * 恢复商品删除状态
+     *
      * @param productId
      */
     void recoverProductDelFlag(int productId);
 
     /**
      * 通过TechAuthId恢复商品状态
+     *
      * @param techAuthId
      */
     void recoverProductDelFlagByTechAuthId(Integer techAuthId);
 
     /**
      * 修改商品销售方式
+     *
      * @param salesMode
      * @return
      */
@@ -176,7 +210,6 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * 查询同一种游戏下的所有商品
      */
     List<ProductVO> findOthersByproductId(Integer productId);
-
 
 
 }

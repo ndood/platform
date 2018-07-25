@@ -4,6 +4,7 @@ package com.fulu.game.core.service.impl;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ParamsException;
+import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
@@ -63,6 +64,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     private UserInfoAuthFileTempDao userInfoAuthFileTempDao;
     @Autowired
     private UserInfoAuthFileTempService userInfoAuthFileTempService;
+    @Autowired
+    private RegistSourceService registSourceService;
 
     @Override
     public ICommonDao<UserInfoAuth, Integer> getDao() {
@@ -285,6 +288,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     /**
      * 根据用户id，将临时表的文件更新到主表中，并且删除临时表的数据
+     *
      * @param userId 用户id
      */
     public void deleteTempFileAndUpdateOrg(Integer userId) {
@@ -590,7 +594,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     @Override
     public boolean addSource(Integer userId, Integer sourceId) {
-        if(userId == null || sourceId == null) {
+        if (userId == null || sourceId == null) {
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
 
@@ -603,11 +607,11 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     @Override
     public boolean isPlatformShow(Integer userId, Integer showFlag) {
-        if(userId == null || showFlag == null) {
+        if (userId == null || showFlag == null) {
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
 
-        if(!showFlag.equals(Constant.PLATFORM_NOT_SHOW) && !showFlag.equals(Constant.PLATFORM_SHOW)) {
+        if (!showFlag.equals(Constant.PLATFORM_NOT_SHOW) && !showFlag.equals(Constant.PLATFORM_SHOW)) {
             throw new ParamsException(ParamsException.ExceptionCode.ILLEGAL_PARAM_EXCEPTION);
         }
 
@@ -621,7 +625,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     @Override
     public boolean updateByUserId(UserInfoAuth userInfoAuth) {
         Integer userId = userInfoAuth.getUserId();
-        if(userId == null) {
+        if (userId == null) {
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
         int result = userInfoAuthDao.updateByUserId(userInfoAuth);
@@ -829,7 +833,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     /**
      * 更新陪玩师声音文件
-     * @param fileTemp 声音文件bean
+     *
+     * @param fileTemp       声音文件bean
      * @param userInfoAuthId 陪玩师认证id
      */
     private void createAndActivateUserAuthVoice(UserInfoAuthFileTemp fileTemp, Integer userInfoAuthId) {
@@ -869,7 +874,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
      * 更新陪玩师写真图集
      *
      * @param portraitUrlList 写真图集列表
-     * @param userInfoAuthId 陪玩师认证id
+     * @param userInfoAuthId  陪玩师认证id
      */
     private void createAndActivateUserAuthPortrait(List<String> portraitUrlList, Integer userInfoAuthId) {
         if (CollectionUtil.isEmpty(portraitUrlList)) {
@@ -1012,5 +1017,25 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             personTag.setUpdateTime(new Date());
             personTagService.create(personTag);
         }
+    }
+
+    @Override
+    public List<UserInfoAuth> findAllCjUsers() {
+        RegistSource registSource = registSourceService.findCjRegistSource();
+        if (registSource == null) {
+            throw new ServiceErrorException("查询不到ChinaJoy的注册来源");
+        }
+
+        Integer sourceId = registSource.getId();
+        UserInfoAuthVO authVO = new UserInfoAuthVO();
+        authVO.setSourceId(sourceId);
+        return userInfoAuthDao.findByParameter(authVO);
+    }
+
+    @Override
+    public List<UserInfoAuth> findPlatformNotShowUserInfoAuth() {
+        UserInfoAuthVO authVO = new UserInfoAuthVO();
+        authVO.setIsPlatformShow(Constant.PLATFORM_NOT_SHOW);
+        return userInfoAuthDao.findByParameter(authVO);
     }
 }
