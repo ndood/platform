@@ -158,4 +158,12 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
      * @return 陪玩师认证信息列表
      */
     List<UserInfoAuth> findPlatformNotShowUserInfoAuth();
+
+    /**
+     * 将陪玩师从CJ渠道去除掉
+     *
+     * @param userId 陪玩师id
+     * @return 是否操作完成
+     */
+    boolean removeServiceUserFromCjSource(Integer userId);
 }

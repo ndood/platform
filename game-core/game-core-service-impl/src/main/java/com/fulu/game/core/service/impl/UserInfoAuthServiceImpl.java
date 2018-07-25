@@ -1038,4 +1038,13 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         authVO.setIsPlatformShow(Constant.PLATFORM_NOT_SHOW);
         return userInfoAuthDao.findByParameter(authVO);
     }
+
+    @Override
+    public boolean removeServiceUserFromCjSource(Integer userId) {
+        UserInfoAuth userInfoAuth = findByUserId(userId);
+        userInfoAuth.setSourceId(0);
+        userInfoAuth.setUpdateTime(DateUtil.date());
+        int result = update(userInfoAuth);
+        return result > 0;
+    }
 }
