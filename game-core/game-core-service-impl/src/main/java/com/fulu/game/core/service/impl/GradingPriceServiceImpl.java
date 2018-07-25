@@ -101,12 +101,15 @@ public class GradingPriceServiceImpl extends AbsCommonService<GradingPrice, Inte
     public BigDecimal findRangePrice(int categoryId,int startGradingId, int endGradingId) {
         GradingPrice startGradingPrice = findById(startGradingId);
         GradingPrice endGradingPrice = findById(endGradingId);
+        if(startGradingPrice==null||endGradingPrice==null){
+            throw new ServiceErrorException("段位设置错误,请重新设置!");
+        }
         if(!startGradingPrice.getCategoryId().equals(endGradingPrice.getCategoryId())
                 ||!startGradingPrice.getType().equals(endGradingPrice.getType())){
             throw new ServiceErrorException("段位类型不匹配,请重新选择!");
         }
-        BigDecimal totalPrice = gradingPriceDao.findRangePrice(categoryId,startGradingId,endGradingId);
-        return totalPrice;
+        Double result = gradingPriceDao.findRangePrice(categoryId,startGradingPrice.getRank(),endGradingPrice.getRank());
+        return new BigDecimal(result);
     }
 
 

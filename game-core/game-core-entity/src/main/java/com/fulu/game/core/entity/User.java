@@ -61,9 +61,20 @@ public class User implements Serializable {
     //状态(0封禁,1为解封)
     @Excel(name = "用户状态", orderNum = "5", replace = {"封禁_false", "解封_true"}, width = 15)
     private Integer status;
+
     @JsonIgnore
     @Excel(name = "openId", orderNum = "6", width = 35)
     private String openId;
+
+    @JsonIgnore
+    private String pointOpenId;
+
+    @JsonIgnore
+    private String publicOpenId;
+
+    @JsonIgnore
+    private String unionId;
+
     //综合得星评分数
     private BigDecimal scoreAvg;
     //用户总积分

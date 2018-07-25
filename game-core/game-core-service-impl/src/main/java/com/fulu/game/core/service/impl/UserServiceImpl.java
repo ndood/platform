@@ -87,14 +87,20 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
 
     @Override
-    public User findByOpenId(String openId) {
+    public User findByOpenId(String openId,WechatEcoEnum wechatEcoEnum) {
         if (openId == null) {
             return null;
         }
         UserVO userVO = new UserVO();
-        userVO.setOpenId(openId);
+        if(WechatEcoEnum.PLAY.equals(wechatEcoEnum)){
+            userVO.setOpenId(openId);
+        }else if(WechatEcoEnum.POINT.equals(wechatEcoEnum)){
+            userVO.setPointOpenId(openId);
+        }else{
+            return null;
+        }
         List<User> users = userDao.findByParameter(userVO);
-        if (CollectionUtil.isEmpty(users)) {
+        if(CollectionUtil.isEmpty(users)){
             return null;
         }
         return users.get(0);
@@ -194,9 +200,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public User createNewUser(UserVO userVO) {
-        User user = new User();
-        BeanUtil.copyProperties(userVO, user);
+    public User createNewUser(User user) {
         user.setStatus(UserStatusEnum.NORMAL.getType());//默认账户解封状态
         user.setType(UserTypeEnum.GENERAL_USER.getType());//默认普通用户
         user.setUserInfoAuth(UserInfoAuthStatusEnum.NOT_PERFECT.getType());//默认未审核
@@ -208,14 +212,23 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         return user;
     }
 
+
     @Override
-    public User createNewUser(String openId, Integer sourceId, String host) {
-        UserVO user = new UserVO();
+    public User createNewUser(WechatEcoEnum wechatEcoEnum,String openId, Integer sourceId, String host) {
+        User user = new User();
         user.setRegistIp(host);
+        if(WechatEcoEnum.PLAY.equals(wechatEcoEnum)){
+            user.setOpenId(openId);
+        }else if(WechatEcoEnum.POINT.equals(wechatEcoEnum)){
+            user.setPointOpenId(openId);
+        }else{
+            throw new UserException(UserException.ExceptionCode.NO_WECHATECO_EXCEPTION);
+        }
         user.setSourceId(sourceId);
-        user.setOpenId(openId);
+
         return createNewUser(user);
     }
+
 
     @Override
     public User getCurrentUser() {

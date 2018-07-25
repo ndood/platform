@@ -5,10 +5,8 @@ import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.MarketOrderVO;
-import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.github.pagehelper.PageInfo;
 import com.google.common.base.Objects;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -74,6 +72,7 @@ public class MarketController extends BaseController{
         if(order==null){
             throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST,order.getOrderNo());
         }
+
         User user = userService.findById(userService.getCurrentUser().getId());
         if (!UserInfoAuthStatusEnum.VERIFIED.getType().equals(user.getUserInfoAuth()) || !UserStatusEnum.NORMAL.getType().equals(user.getStatus())) {
             throw new OrderException(OrderException.ExceptionCode.ORDER_USER_NOT_VERIFIED,order.getOrderNo());
@@ -82,7 +81,7 @@ public class MarketController extends BaseController{
         if(!techAuthList.contains(order.getCategoryId())){
             throw new OrderException(OrderException.ExceptionCode.ORDER_USER_NOT_HAS_TECH,order.getOrderNo());
         }
-        order = orderService.marketReceiveOrder(order.getOrderNo());
+        orderService.receivePointOrder(order.getOrderNo(),user);
         return Result.success().data(order).msg("接单成功!");
     }
 

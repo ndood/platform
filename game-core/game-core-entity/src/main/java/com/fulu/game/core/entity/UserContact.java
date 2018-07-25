@@ -24,10 +24,13 @@ public class UserContact implements Serializable {
 	//联系方式
 	private String contact;
 	//是否默认
-	private Integer isDefault;
+	private Boolean isDefault;
 	//创建时间
 	private Date createTime;
 	//
 	private Date updateTime;
+
+
+
 
 }

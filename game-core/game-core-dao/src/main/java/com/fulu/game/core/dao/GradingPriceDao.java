@@ -21,7 +21,7 @@ public interface GradingPriceDao extends ICommonDao<GradingPrice,Integer>{
     List<GradingPrice> findByParameter(GradingPriceVO gradingPriceVO);
 
 
-    BigDecimal findRangePrice(@Param(value = "categoryId") Integer categoryId,
+    Double findRangePrice(@Param(value = "categoryId") Integer categoryId,
                               @Param(value = "startRank")  Integer startRank,
                               @Param(value = "endRank") Integer endRank);
 

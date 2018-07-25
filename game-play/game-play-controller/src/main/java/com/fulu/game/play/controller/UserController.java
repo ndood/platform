@@ -7,6 +7,7 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.UserScoreEnum;
+import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.common.utils.SMSUtil;
@@ -239,7 +240,7 @@ public class UserController extends BaseController {
             return Result.error().msg("验证码提交错误");
         }
         User currentUser = userService.getCurrentUser();
-        User openIdUser = userService.findByOpenId(currentUser.getOpenId());
+        User openIdUser = userService.findByOpenId(currentUser.getOpenId(), WechatEcoEnum.PLAY);
         //如果openId已经绑定手机号
         if (openIdUser != null && openIdUser.getMobile() != null) {
             return Result.error().msg("已经绑定过手机号！");
@@ -271,7 +272,6 @@ public class UserController extends BaseController {
 
     /**
      * 绑定手机号且更新用户信息
-     *
      * @param wxUserInfo
      * @return
      */
@@ -290,7 +290,7 @@ public class UserController extends BaseController {
         User user = userService.getCurrentUser();
         String openId = user.getOpenId();
         User newUser = null;
-        User openIdUser = userService.findByOpenId(openId);
+        User openIdUser = userService.findByOpenId(openId,WechatEcoEnum.PLAY);
         //如果openId已经绑定手机号
         if (openIdUser != null && openIdUser.getMobile() != null) {
             return Result.error().msg("已经绑定过手机号！");

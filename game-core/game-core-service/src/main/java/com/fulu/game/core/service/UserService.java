@@ -1,5 +1,6 @@
 package com.fulu.game.core.service;
 
+import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.core.entity.ImUser;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserVO;
@@ -46,7 +47,7 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param openId
      * @return
      */
-    User findByOpenId(String openId);
+    User findByOpenId(String openId, WechatEcoEnum wechatEcoEnum);
 
     /**
      * 根据imId查询user
@@ -116,10 +117,9 @@ public interface UserService extends ICommonService<User, Integer> {
     /**
      * 新增用户
      *
-     * @param userVO
      * @return
      */
-    User createNewUser(UserVO userVO);
+    User createNewUser(User user);
 
     /**
      * 通过openId创建用户
@@ -127,7 +127,7 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param openId
      * @return
      */
-    User createNewUser(String openId, Integer sourceId, String host);
+    User createNewUser(WechatEcoEnum wechatEcoEnum,String openId, Integer sourceId, String host);
 
     /**
      * 获取当前登录用户

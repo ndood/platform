@@ -20,6 +20,9 @@
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="open_id" property="openId"/>
+        <result column="point_open_id" property="pointOpenId"/>
+        <result column="public_open_id" property="publicOpenId"/>
+        <result column="union_id" property="unionId"/>
         <result column="city" property="city"/>
         <result column="province" property="province"/>
         <result column="country" property="country"/>
@@ -46,7 +49,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,city,province,country,score_avg,user_score,constellation,birth,age,im_id,im_psw,source_id,regist_ip,login_ip,login_time </sql>
+        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,point_open_id,public_open_id,union_id,city,province,country,score_avg,user_score,constellation,birth,age,im_id,im_psw,source_id,regist_ip,login_ip,login_time
+    </sql>
 
     <select id="findUserVOByUserIds" resultMap="UserResultVOMap">
         SELECT
@@ -98,7 +102,16 @@
                 id = #{id}
             </if>
             <if test="openId != null">
-                open_id = #{openId}
+                and open_id = #{openId}
+            </if>
+            <if test="pointOpenId != null">
+                and point_open_id = #{pointOpenId}
+            </if>
+            <if test="publicOpenId != null">
+                and public_open_id = #{publicOpenId}
+            </if>
+            <if test="unionId != null">
+                and union_id = #{unionId}
             </if>
             <if test="mobile != null">
                 and mobile = #{mobile}
@@ -190,6 +203,7 @@
         GROUP BY u.id
     </select>
 
+
     <select id="countByParameter" resultType="java.lang.Integer" parameterType="com.fulu.game.core.entity.vo.UserVO">
         SELECT
         COUNT(1)
@@ -199,7 +213,16 @@
                 id = #{id}
             </if>
             <if test="openId != null">
-                open_id = #{openId}
+                and open_id = #{openId}
+            </if>
+            <if test="pointOpenId != null">
+                and point_open_id = #{pointOpenId}
+            </if>
+            <if test="publicOpenId != null">
+                and public_open_id = #{publicOpenId}
+            </if>
+            <if test="unionId != null">
+                and union_id = #{unionId}
             </if>
             <if test="mobile != null">
                 and mobile = #{mobile}
@@ -243,9 +266,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.User">
         insert into
-        t_user (mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,city,province,country,score_avg,user_score,constellation,birth,im_id,im_psw,source_id,regist_ip,login_ip,login_time)
+        t_user (mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,point_open_id,public_open_id,union_id,city,province,country,score_avg,user_score,constellation,birth,im_id,im_psw,source_id,regist_ip,login_ip,login_time)
         values
-        (#{mobile},#{nickname},#{gender},#{headPortraitsUrl},#{password},#{salt},#{realname},#{idcard},#{type},#{userInfoAuth},#{balance},#{status},#{createTime},#{updateTime},#{openId},#{city},#{province},#{country},#{scoreAvg},#{userScore},#{constellation},#{birth},#{imId},#{imPsw},#{sourceId},#{registIp},#{loginIp},#{loginTime})
+        (#{mobile},#{nickname},#{gender},#{headPortraitsUrl},#{password},#{salt},#{realname},#{idcard},#{type},#{userInfoAuth},#{balance},#{status},#{createTime},#{updateTime},#{openId},#{pointOpenId},#{publicOpenId},#{unionId},#{city},#{province},#{country},#{scoreAvg},#{userScore},#{constellation},#{birth},#{imId},#{imPsw},#{sourceId},#{registIp},#{loginIp},#{loginTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.User">
@@ -311,6 +334,15 @@
             </if>
             <if test="openId != null">
                 open_id = #{openId},
+            </if>
+            <if test="pointOpenId != null">
+                point_open_id = #{pointOpenId},
+            </if>
+            <if test="publicOpenId != null">
+                public_open_id = #{publicOpenId},
+            </if>
+            <if test="unionId != null">
+                union_id = #{unionId},
             </if>
             <if test="scoreAvg != null">
                 score_avg = #{scoreAvg},

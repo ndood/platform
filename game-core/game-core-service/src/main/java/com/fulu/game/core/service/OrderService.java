@@ -1,10 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
-import com.fulu.game.core.entity.ArbitrationDetails;
-import com.fulu.game.core.entity.Order;
-import com.fulu.game.core.entity.OrderDeal;
-import com.fulu.game.core.entity.OrderMarketProduct;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.OrderPointProductTO;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
@@ -89,11 +86,10 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 集市订单抢单
-     *
      * @param orderNo
      * @return
      */
-    Order marketReceiveOrder(String orderNo);
+    String receivePointOrder(String orderNo, User serviceUser);
 
     /**
      * 提交订单

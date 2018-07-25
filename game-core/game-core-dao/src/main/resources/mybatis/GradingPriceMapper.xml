@@ -76,7 +76,7 @@
         </where>
     </select>
 
-    <select id="findRangePrice" resultType="java.math.BigDecimal">
+    <select id="findRangePrice" resultType="java.lang.Double">
         SELECT
         sum(price)
         FROM

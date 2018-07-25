@@ -67,3 +67,8 @@ CREATE TABLE `t_user_contact` (
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) COMMENT='用户联系方式';
+
+
+ALTER TABLE `t_user` ADD COLUMN `point_open_id` varchar(255) DEFAULT NULL COMMENT '开黑上分openid' after `open_id`;
+ALTER TABLE `t_user` ADD COLUMN `public_open_id` varchar(255) DEFAULT NULL COMMENT '微信公众号openid' after `point_open_id`;
+ALTER TABLE `t_user` ADD COLUMN `unionid` varchar(255) DEFAULT NULL COMMENT '微信生态唯一标识' after `public_open_id`;

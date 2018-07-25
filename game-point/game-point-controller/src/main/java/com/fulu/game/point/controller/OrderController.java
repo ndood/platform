@@ -3,27 +3,28 @@ package com.fulu.game.point.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.TOWinTypeEnum;
-import com.fulu.game.core.entity.Category;
-import com.fulu.game.core.entity.GradingPrice;
-import com.fulu.game.core.entity.TechValue;
+import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
+import com.fulu.game.common.enums.UserStatusEnum;
+import com.fulu.game.common.exception.OrderException;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.OrderPointProductTO;
 import com.fulu.game.core.entity.vo.OrderPointProductVO;
-import com.fulu.game.core.service.CategoryService;
-import com.fulu.game.core.service.GradingPriceService;
-import com.fulu.game.core.service.OrderService;
-import com.fulu.game.core.service.TechValueService;
+import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.point.utils.RequestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.util.List;
 
-@Controller
+@RestController
 @Slf4j
 @RequestMapping(value = "/api/v1/order")
 public class OrderController extends BaseController{
@@ -36,14 +37,47 @@ public class OrderController extends BaseController{
     private CategoryService categoryService;
     @Autowired
     private TechValueService techValueService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private UserTechAuthService userTechAuthService;
 
 
+    /**
+     * 段位价格计算
+     * @param orderPointProductTO
+     * @return
+     */
     @RequestMapping(value = "/advance")
     public Result accurateSubmit(@Valid OrderPointProductTO orderPointProductTO) {
         OrderPointProductVO gradingAdvanceOrderVO = getAdvanceOrder(orderPointProductTO);
         return Result.success().data(gradingAdvanceOrderVO);
     }
 
+    /**
+     * 上分订单抢单
+     * @param orderNo
+     * @return
+     */
+    @PostMapping(value = "order/receive")
+    public Result orderReceive(@RequestParam(required = true)String orderNo){
+        Order order = orderService.findByOrderNo(orderNo);
+        if(order==null){
+            throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST,orderNo);
+        }
+        User user = userService.findById(userService.getCurrentUser().getId());
+        if (!UserInfoAuthStatusEnum.VERIFIED.getType().equals(user.getUserInfoAuth()) || !UserStatusEnum.NORMAL.getType().equals(user.getStatus())) {
+            throw new OrderException(OrderException.ExceptionCode.ORDER_USER_NOT_VERIFIED,order.getOrderNo());
+        }
+        List<Integer> techAuthList = userTechAuthService.findUserNormalCategoryIds(user.getId());
+        if(!techAuthList.contains(order.getCategoryId())){
+            throw new OrderException(OrderException.ExceptionCode.ORDER_USER_NOT_HAS_TECH,order.getOrderNo());
+        }
+        orderService.receivePointOrder(order.getOrderNo(),user);
+        return Result.success().data(orderNo).msg("接单成功!");
+    }
 
     /**
      * 提交上分订单
@@ -64,6 +98,10 @@ public class OrderController extends BaseController{
                 orderPointProductTO.getContactInfo(),orderIp);
         return Result.success().data(orderNo);
     }
+
+
+
+
 
 
 
@@ -89,9 +127,11 @@ public class OrderController extends BaseController{
             GradingPrice parentEndGradingPrice = gradingPriceService.findById(endGradingPrice.getPid());
             gradingAdvanceOrderVO.setOrderChoice(parentStartGradingPrice.getName() + startGradingPrice.getName() + "-" + parentEndGradingPrice.getName() + endGradingPrice.getName());
 
+            gradingAdvanceOrderVO.setPrice(totalMoney);
+            gradingAdvanceOrderVO.setAmount(1);
+
         } else {
             //todo 包赢和开黑逻辑
-
 
         }
         gradingAdvanceOrderVO.setPointTypeStr(TOWinTypeEnum.getMsgByType(gradingAdvanceOrderVO.getPointType()));

@@ -86,6 +86,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     private OrderShareProfitDao orderShareProfitDao;
     @Autowired
     private OrderPointProductService orderPointProductService;
+    @Autowired
+    private UserContactService userContactService;
 
     @Override
     public ICommonDao<Order, Integer> getDao() {
@@ -227,11 +229,13 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     }
 
 
-
-
+    /**
+     * 三分订单抢单
+     * @param orderNo
+     * @return
+     */
     @Override
-    public Order marketReceiveOrder(String orderNo) {
-        User serviceUser = userService.getCurrentUser();
+    public String receivePointOrder(String orderNo, User serviceUser) {
         Order order = findByOrderNo(orderNo);
         log.info("陪玩师抢单:userId:{};order:{}", serviceUser.getId(), order);
         if (!OrderTypeEnum.POINT.getType().equals(order.getType())) {
@@ -246,14 +250,14 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             }
             order.setServiceUserId(serviceUser.getId());
             order.setReceivingTime(new Date());
-            order.setStatus(OrderStatusEnum.SERVICING.getStatus());
+            order.setStatus(OrderStatusEnum.ALREADY_RECEIVING.getStatus());
             order.setUpdateTime(new Date());
             update(order);
             log.info("抢单成功:userId:{};order:{}", serviceUser.getId(), order);
         } finally {
             redisOpenService.unlock(RedisKeyEnum.MARKET_ORDER_RECEIVE_LOCK.generateKey(order.getOrderNo()));
         }
-        return order;
+        return orderNo;
     }
 
 
@@ -410,6 +414,10 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         }
         //创建订单
         create(order);
+
+        //保存联系方式
+        userContactService.save(user.getId(),order.getContactType(),order.getContactInfo());
+
         //更新优惠券使用状态
         if (coupon != null) {
             couponService.updateCouponUseStatus(order.getOrderNo(), userIp, coupon);
@@ -481,6 +489,10 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         }
         //创建订单
         create(order);
+
+        //保存联系方式
+        userContactService.save(user.getId(),order.getContactType(),order.getContactInfo());
+
         //更新优惠券使用状态
         if (coupon != null) {
             couponService.updateCouponUseStatus(order.getOrderNo(), userIp, coupon);
@@ -512,10 +524,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
                                    String contactInfo,
                                    String orderIp) {
         User user = userService.getCurrentUser();
-
         Category category = categoryService.findById(orderPointProductVO.getCategoryId());
         BigDecimal totalMoney = orderPointProductVO.getPrice().multiply(new BigDecimal(orderPointProductVO.getAmount()));
-
         //创建订单
         Order order = new Order();
         order.setName(orderPointProductVO.getCategoryName() + " " + orderPointProductVO.getOrderChoice());
@@ -541,9 +551,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             if (coupon == null) {
                 throw new ServiceErrorException("该优惠券不能使用!");
             }
-        }
-        if (order.getUserId().equals(order.getServiceUserId())) {
-            throw new ServiceErrorException("不能给自己下单哦!");
         }
         //创建订单
         create(order);

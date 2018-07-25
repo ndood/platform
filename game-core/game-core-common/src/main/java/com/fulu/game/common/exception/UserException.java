@@ -23,7 +23,8 @@ public class UserException extends BizException {
         SESSION_KEY_DISABLE_EXCEPTION(21001, "sessionKey过期"),
         WX_PHONE_NOT_EXIST_EXCEPTION(21002, "未获取用户手机号"),
         LOCK_SELF_EXCEPTION(21003, "试图禁用正在登录管理员"),
-        LOCK_DENY_EXCEPTION(21004, "已被禁用，无此权限");
+        LOCK_DENY_EXCEPTION(21004, "已被禁用，无此权限"),
+        NO_WECHATECO_EXCEPTION(21005, "没有匹配的微信生态类型");
         private int code;
         private String msg;
     }
