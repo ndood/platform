@@ -52,7 +52,6 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
     /**
      * 推送集市订单通知
-     *
      * @param order
      */
     @Override
@@ -75,10 +74,10 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
             if (!UserInfoAuthStatusEnum.VERIFIED.getType().equals(user.getUserInfoAuth()) || !UserStatusEnum.NORMAL.getType().equals(user.getStatus())) {
                 continue;
             }
-            //默认为30分钟
+            //默认为1分钟
             Float pushTimeInterval = user.getPushTimeInterval();
             if (pushTimeInterval == null) {
-                pushTimeInterval = 30F;
+                pushTimeInterval = 1F;
             }
             //数据库设置永不推送
             if (pushTimeInterval.equals(0F)) {
