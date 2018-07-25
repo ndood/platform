@@ -8,22 +8,25 @@ import com.fulu.game.core.dao.ArbitrationDetailsDao;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.OrderShareProfitDao;
 import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.vo.SourceOrderVO;
 import com.fulu.game.core.service.*;
 import com.xiaoleilu.hutool.date.DateUtil;
+import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 
 @Service
 @Slf4j
-public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProfit,Integer> implements OrderShareProfitService {
+public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProfit, Integer> implements OrderShareProfitService {
 
     @Autowired
-	private OrderShareProfitDao orderShareProfitDao;
+    private OrderShareProfitDao orderShareProfitDao;
     @Autowired
     private CategoryService categoryService;
     @Autowired
@@ -46,13 +49,14 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
 
     /**
      * 订单正常完成状态分润
+     *
      * @param order
      */
     @Override
     public void shareProfit(Order order) {
         BigDecimal totalMoney = order.getTotalMoney();
         BigDecimal charges = order.getCharges();
-        if(charges==null){
+        if (charges == null) {
             Category category = categoryService.findById(order.getCategoryId());
             charges = category.getCharges();
         }
@@ -81,21 +85,21 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
     }
 
 
-
     /**
      * 订单发生退款
+     *
      * @param order
      */
     @Override
-    public void orderRefund(Order order,BigDecimal refundMoney) {
+    public void orderRefund(Order order, BigDecimal refundMoney) {
         if (!order.getIsPay()) {
             throw new OrderException(order.getOrderNo(), "未支付订单不允许退款!");
         }
-        if(order.getActualMoney().compareTo(refundMoney)<0){
+        if (order.getActualMoney().compareTo(refundMoney) < 0) {
             throw new OrderException(order.getOrderNo(), "退款金额不能大于用户实付金额!");
         }
         BigDecimal charges = order.getCharges();
-        if(charges==null){
+        if (charges == null) {
             Category category = categoryService.findById(order.getCategoryId());
             charges = category.getCharges();
         }
@@ -130,12 +134,13 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
 
     /**
      * 订单金额部分退款给用户，部分退款给陪玩师
+     *
      * @param order
      * @param details
      */
     @Override
     public void orderRefundToUserAndServiceUser(Order order, ArbitrationDetails details) {
-        log.info("订单协商退款:order:{};details:{}",order,details);
+        log.info("订单协商退款:order:{};details:{}", order, details);
         if (!order.getIsPay()) {
             throw new OrderException(order.getOrderNo(), "未支付订单不允许退款!");
         }
@@ -145,7 +150,7 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
         BigDecimal refundServiceUserMoney = details.getRefundServiceUserMoney();
         BigDecimal actualMoney = order.getActualMoney();
 
-        if(actualMoney.compareTo(refundUserMoney.add(refundServiceUserMoney)) < 0){
+        if (actualMoney.compareTo(refundUserMoney.add(refundServiceUserMoney)) < 0) {
             throw new OrderException(orderNo, "退款金额不能大于用户实付金额!");
         }
 
@@ -192,4 +197,12 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
         }
     }
 
+    @Override
+    public List<SourceOrderVO> getSourceOrderList(Integer userId) {
+        List<SourceOrderVO> orderVOList = orderShareProfitDao.getSourceOrderList(userId);
+        if (CollectionUtil.isEmpty(orderVOList)) {
+            return null;
+        }
+        return orderVOList;
+    }
 }

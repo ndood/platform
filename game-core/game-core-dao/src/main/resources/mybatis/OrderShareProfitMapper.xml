@@ -12,7 +12,8 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
-    <resultMap id="OrderShareProfitResultVOMap" type="com.fulu.game.core.entity.vo.OrderShareProfitVO" extends="OrderShareProfitResultMap">
+    <resultMap id="OrderShareProfitResultVOMap" type="com.fulu.game.core.entity.vo.OrderShareProfitVO"
+               extends="OrderShareProfitResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -58,6 +59,22 @@
                 and update_time = #{updateTime}
             </if>
         </where>
+    </select>
+
+    <select id="getSourceOrderList" parameterType="Integer" resultType="com.fulu.game.core.entity.vo.SourceOrderVO">
+        SELECT
+            rs.NAME AS source_str,
+            count(*) AS source_order_counts,
+            sum(osp.server_money) AS server_money,
+            sum(osp.commission_money) AS commission_money
+        FROM
+            t_order_share_profit osp
+        LEFT JOIN t_order tor ON osp.order_no = tor.order_no
+        LEFT JOIN t_user tu ON tor.user_id = tu.id
+        LEFT JOIN t_regist_source rs ON tu.source_id = rs.id
+        WHERE
+            tor.service_user_id = #{userId}
+        AND rs.NAME = "ChinaJoy";
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">

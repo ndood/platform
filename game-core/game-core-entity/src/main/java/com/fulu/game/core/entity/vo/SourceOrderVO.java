@@ -26,10 +26,10 @@ public class SourceOrderVO {
     /**
      * 陪玩师通过外链来源的服务总收入
      */
-    private BigDecimal serviceUserProfit;
+    private BigDecimal serverMoney;
 
     /**
      * 平台收入金额
      */
-    private BigDecimal commissionProfit;
+    private BigDecimal commissionMoney;
 }

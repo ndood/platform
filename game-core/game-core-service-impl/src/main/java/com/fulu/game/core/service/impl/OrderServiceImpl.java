@@ -1524,13 +1524,4 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         }
         return voList;
     }
-
-    @Override
-    public List<SourceOrderVO> getSourceOrderList(Integer userId) {
-        //todo
-        //获取CJ来源订单
-
-
-        return null;
-    }
 }
