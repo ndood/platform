@@ -12,5 +12,8 @@ import com.fulu.game.core.entity.Setting;
  * @date 2018-07-25 18:48:32
  */
 public interface SettingService extends ICommonService<Setting,Integer>{
-	
+
+
+
+    public Setting lastSettingType(int type);
 }
