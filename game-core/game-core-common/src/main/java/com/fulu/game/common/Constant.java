@@ -16,12 +16,12 @@ public interface Constant {
 
     Long TIME_MINUTES_FIFE = 5 * 60L;
 
-    Long TIME_HOUR_TWO = 2*60 * 60L;
+    Long TIME_HOUR_TWO = 2 * 60 * 60L;
 
-    Long TIME_HOUR_FIVE = 5*60 * 60L;
+    Long TIME_HOUR_FIVE = 5 * 60 * 60L;
 
 
-    Long TIME_MINUTES_FIVE= 5 * 60L;
+    Long TIME_MINUTES_FIVE = 5 * 60L;
 
     //手机验证码限定次数和限定时间
     Integer MOBILE_CODE_SEND_TIMES_DEV = 20;
@@ -124,4 +124,19 @@ public interface Constant {
      * 陪玩师不在平台内展示
      */
     Integer PLATFORM_NOT_SHOW = 0;
+
+    /**
+     * 已完成微信群分享
+     */
+    Integer WECHAT_GROUP_SHARE_FINISHED = 1;
+    /**
+     * 未完成微信群分享
+     */
+    Integer WECHAT_GROUP_SHARE_NOT_FINISHED = 0;
+
+    /**
+     * CJ默认的来源id
+     * (只能在查表无效时，才能使用此字段，使用之前确认线上环境的管理后台的注册来源中是否改动过)
+     */
+    Integer CJ_SOURCE_ID = 31;
 }

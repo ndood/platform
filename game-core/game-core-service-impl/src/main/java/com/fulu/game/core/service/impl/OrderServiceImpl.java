@@ -299,8 +299,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         OrderProduct orderProduct = orderProductService.findByOrderNo(orderNo);
         BeanUtil.copyProperties(order, orderDetailsVO);
 
-        List<Integer> invisibleContactList  = Arrays.asList(OrderStatusGroupEnum.ORDER_CONTACT_INVISIBLE.getStatusList());
-        if(invisibleContactList.contains(order.getStatus())){
+        List<Integer> invisibleContactList = Arrays.asList(OrderStatusGroupEnum.ORDER_CONTACT_INVISIBLE.getStatusList());
+        if (invisibleContactList.contains(order.getStatus())) {
             orderDetailsVO.setContactInfo(null);
         }
 
@@ -763,6 +763,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 陪玩师开始服务
+     *
      * @param orderNo
      * @return
      */
@@ -771,8 +772,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         log.info("陪玩师接单orderNo:{}", orderNo);
         Order order = findByOrderNo(orderNo);
         userService.isCurrentUser(order.getServiceUserId());
-        if (!order.getStatus().equals(OrderStatusEnum.ALREADY_RECEIVING.getStatus())&&
-            !order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())) {
+        if (!order.getStatus().equals(OrderStatusEnum.ALREADY_RECEIVING.getStatus()) &&
+                !order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())) {
             throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES, orderNo);
         }
         order.setStatus(OrderStatusEnum.SERVICING.getStatus());
@@ -886,7 +887,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         }
         for (OrderDealVO orderDealVO : orderDealVOList) {
             User ouser = userService.findById(orderDealVO.getUserId());
-            if(ouser!=null){
+            if (ouser != null) {
                 orderDealVO.setHeadUrl(ouser.getHeadPortraitsUrl());
                 orderDealVO.setNickname(ouser.getNickname());
             }
@@ -994,6 +995,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 用户取消协商
+     *
      * @param orderNo
      * @param orderEventId
      * @return
@@ -1028,7 +1030,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     public String systemConsultCancelOrder(String orderNo) {
         log.info("取消协商处理订单orderNo:{}", orderNo);
         Order order = findByOrderNo(orderNo);
-        OrderEvent orderEvent = orderEventService.findByOrderNoAndType(orderNo,OrderEventTypeEnum.CONSULT.getType());
+        OrderEvent orderEvent = orderEventService.findByOrderNoAndType(orderNo, OrderEventTypeEnum.CONSULT.getType());
         if (orderEvent == null || !order.getOrderNo().equals(orderEvent.getOrderNo())) {
             throw new OrderException(orderNo, "拒绝协商订单不匹配!");
         }
@@ -1051,7 +1053,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     public String systemConsultAgreeOrder(String orderNo) {
         log.info("陪玩师同意协商处理订单orderNo:{}", orderNo);
         Order order = findByOrderNo(orderNo);
-        OrderEvent orderEvent = orderEventService.findByOrderNoAndType(orderNo,OrderEventTypeEnum.CONSULT.getType());
+        OrderEvent orderEvent = orderEventService.findByOrderNoAndType(orderNo, OrderEventTypeEnum.CONSULT.getType());
         if (!order.getStatus().equals(OrderStatusEnum.CONSULTING.getStatus())) {
             throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES, orderNo);
         }
@@ -1107,6 +1109,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 系统取消订单
+     *
      * @param orderNo
      */
     @Override
@@ -1124,7 +1127,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         if (order.getIsPay()) {
             order.setStatus(OrderStatusEnum.SYSTEM_CLOSE.getStatus());
             orderShareProfitService.orderRefund(order, order.getActualMoney());
-        }else{
+        } else {
             order.setStatus(OrderStatusEnum.UNPAY_ORDER_CLOSE.getStatus());
         }
         update(order);
@@ -1195,6 +1198,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 用户仲裁订单
+     *
      * @param orderNo
      * @param remark
      * @param fileUrl
@@ -1208,7 +1212,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         Order order = findByOrderNo(orderNo);
         User user = userService.getCurrentUser();
         if (!order.getStatus().equals(OrderStatusEnum.CONSULTING.getStatus())
-            && !order.getStatus().equals(OrderStatusEnum.CONSULT_REJECT.getStatus())) {
+                && !order.getStatus().equals(OrderStatusEnum.CONSULT_REJECT.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有协商中协商拒绝的订单才能申诉仲裁!");
         }
         order.setStatus(OrderStatusEnum.APPEALING.getStatus());
@@ -1284,6 +1288,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 系统完成订单
+     *
      * @param orderNo
      * @return
      */
@@ -1308,6 +1313,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 管理员强制完成订单 (打款给打手)
+     *
      * @param orderNo
      * @return
      */
@@ -1324,8 +1330,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         update(order);
 
         //仲裁留言
-        OrderEvent orderEvent = orderEventService.findByOrderNoAndType(orderNo,OrderEventTypeEnum.APPEAL.getType());
-        if(orderEvent != null) {
+        OrderEvent orderEvent = orderEventService.findByOrderNoAndType(orderNo, OrderEventTypeEnum.APPEAL.getType());
+        if (orderEvent != null) {
             OrderDeal orderDeal = new OrderDeal();
             orderDeal.setOrderNo(orderNo);
             orderDeal.setRemark("客服人员仲裁订单，结果:陪玩师胜诉");
@@ -1334,8 +1340,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             orderDeal.setOrderEventId(orderEvent.getId());
             orderDealService.create(orderDeal);
         }
-        pushToServiceOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_SERVICE_WIN);
-        pushToUserOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_SERVICE_WIN);
+        pushToServiceOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_SERVICE_WIN);
+        pushToUserOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_SERVICE_WIN);
 
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         //订单分润
@@ -1346,6 +1352,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 管理员退款用户
+     *
      * @param orderNo
      * @return
      */
@@ -1364,8 +1371,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         update(order);
 
         //仲裁留言
-        OrderEvent orderEvent = orderEventService.findByOrderNoAndType(orderNo,OrderEventTypeEnum.APPEAL.getType());
-        if(orderEvent != null) {
+        OrderEvent orderEvent = orderEventService.findByOrderNoAndType(orderNo, OrderEventTypeEnum.APPEAL.getType());
+        if (orderEvent != null) {
             OrderDeal orderDeal = new OrderDeal();
             orderDeal.setOrderNo(orderNo);
             orderDeal.setRemark("客服人员仲裁订单，结果:老板胜诉");
@@ -1374,8 +1381,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             orderDeal.setOrderEventId(orderEvent.getId());
             orderDealService.create(orderDeal);
         }
-        pushToServiceOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_USER_WIN);
-        pushToUserOrderWxMessage(order,WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_USER_WIN);
+        pushToServiceOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_USER_WIN);
+        pushToUserOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_USER_WIN);
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         if (order.getIsPay()) {
             orderShareProfitService.orderRefund(order, order.getActualMoney());
@@ -1386,6 +1393,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 管理员协商处理订单
+     *
      * @param details
      * @return
      */
@@ -1408,24 +1416,24 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         update(order);
 
         //仲裁留言
-        OrderEvent orderEvent = orderEventService.findByOrderNoAndType(orderNo,OrderEventTypeEnum.APPEAL.getType());
-        if(orderEvent != null) {
+        OrderEvent orderEvent = orderEventService.findByOrderNoAndType(orderNo, OrderEventTypeEnum.APPEAL.getType());
+        if (orderEvent != null) {
             OrderDeal orderDeal = new OrderDeal();
             orderDeal.setOrderNo(orderNo);
-            orderDeal.setRemark("客服人员仲裁订单，结果:协商处理。留言:"+details.getRemark());
+            orderDeal.setRemark("客服人员仲裁订单，结果:协商处理。留言:" + details.getRemark());
             orderDeal.setTitle("客服人员仲裁订单");
             orderDeal.setType(OrderEventTypeEnum.APPEAL.getType());
             orderDeal.setOrderEventId(orderEvent.getId());
             orderDealService.create(orderDeal);
         }
 
-        wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE,details.getRemark());
-        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE,details.getRemark());
+        wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE, details.getRemark());
+        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE, details.getRemark());
 
         if (order.getIsPay()) {
             orderShareProfitService.orderRefundToUserAndServiceUser(order, details);
             orderStatusDetailsService.create(orderNo, order.getStatus());
-        }else {
+        } else {
             throw new OrderException(order.getOrderNo(), "只有已付款的订单才能操作!");
         }
         return orderConvertVo(order);
@@ -1519,7 +1527,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     @Override
     public List<SourceOrderVO> getSourceOrderList(Integer userId) {
-
+        //todo
+        //获取CJ来源订单
 
 
         return null;

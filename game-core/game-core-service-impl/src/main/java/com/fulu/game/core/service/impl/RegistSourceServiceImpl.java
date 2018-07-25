@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.enums.PagePathEnum;
+import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.RegistSourceDao;
 import com.fulu.game.core.entity.Admin;
@@ -63,11 +64,11 @@ public class RegistSourceServiceImpl extends AbsCommonService<RegistSource, Inte
 
     @Override
     public RegistSource findById(Integer id) {
-        if(id == null) {
+        if (id == null) {
             return null;
         }
         RegistSource registSource = registSourceDao.findById(id);
-        if(registSource == null) {
+        if (registSource == null) {
             return null;
         }
         return registSource;
@@ -89,9 +90,17 @@ public class RegistSourceServiceImpl extends AbsCommonService<RegistSource, Inte
 
     @Override
     public PageInfo<RegistSourceVO> listWithCount(Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum,pageSize);
+        PageHelper.startPage(pageNum, pageSize);
         List<RegistSourceVO> resultList = registSourceDao.listWithCount();
         return new PageInfo(resultList);
     }
 
+    @Override
+    public RegistSource findCjRegistSource() {
+        RegistSource registSource = registSourceDao.findCjRegistSource();
+        if (registSource == null) {
+            throw new ServiceErrorException("查询不到ChinaJoy的注册来源");
+        }
+        return registSource;
+    }
 }
