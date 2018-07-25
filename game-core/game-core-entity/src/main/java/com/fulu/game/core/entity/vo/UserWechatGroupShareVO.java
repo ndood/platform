@@ -20,4 +20,9 @@ public class UserWechatGroupShareVO extends UserWechatGroupShare {
      * 来源id
      */
     private Integer sourceId;
+
+    /**
+     * 优惠券状态（0：不可用，1：可用）
+     */
+    private Integer coupouStatus;
 }

@@ -26,6 +26,8 @@ public class UserWechatGroupShare implements Serializable {
     private Integer groupCounts;
     //分享到的微信群的群号（多个以逗号隔开）
     private String groupIds;
+    //优惠券状态（0：发放失败，1：已成功发放）
+    private Integer coupouStatus;
     //备注
     private String remark;
     //更新时间

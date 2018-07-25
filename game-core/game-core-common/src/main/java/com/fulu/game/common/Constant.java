@@ -116,6 +116,7 @@ public interface Constant {
      * 用户积分策略--end
      */
 
+    //==============CJ活动start==================
     /**
      * 陪玩师在平台内展示
      */
@@ -135,8 +136,31 @@ public interface Constant {
     Integer WECHAT_GROUP_SHARE_NOT_FINISHED = 0;
 
     /**
+     * CJ活动首页：微信群最大分享个数限制
+     */
+    Integer WECHAT_GROUP_SHARE_MAXIMUM = 5;
+
+    /**
      * CJ默认的来源id
      * (只能在查表无效时，才能使用此字段，使用之前确认线上环境的管理后台的注册来源中是否改动过)
      */
     Integer CJ_SOURCE_ID = 31;
+
+    /**
+     * CJ对应的优惠券兑换码
+     */
+    //fixme 上线之前要确认此处的优惠券兑换码
+    String CJ_COUPON_GROUP_REDEEM_CODE = "ABCD";
+
+    /**
+     * 发放优惠券成功
+     */
+    Integer SEND_COUPOU_SUCCESS = 1;
+
+    /**
+     * 发放优惠券失败(默认值)
+     */
+    Integer SEND_COUPOU_FAIL = 0;
+
+    //==============CJ活动end==================
 }

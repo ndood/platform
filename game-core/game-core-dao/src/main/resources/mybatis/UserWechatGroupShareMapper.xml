@@ -3,64 +3,70 @@
 
 <mapper namespace="com.fulu.game.core.dao.UserWechatGroupShareDao">
     <resultMap id="UserWechatGroupShareResultMap" type="com.fulu.game.core.entity.UserWechatGroupShare">
-                                    <id column="id"  property="id" />
-                                            <result column="user_id"  property="userId" />
-                                            <result column="share_status"  property="shareStatus" />
-                                            <result column="group_counts"  property="groupCounts" />
-                                            <result column="group_ids"  property="groupIds" />
-                                            <result column="remark"  property="remark" />
-                                            <result column="update_time"  property="updateTime" />
-                                            <result column="create_time"  property="createTime" />
-                        </resultMap>
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="share_status" property="shareStatus"/>
+        <result column="group_counts" property="groupCounts"/>
+        <result column="group_ids" property="groupIds"/>
+        <result column="coupou_status" property="coupouStatus"/>
+        <result column="remark" property="remark"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
 
-    <resultMap id="UserWechatGroupShareResultVOMap" type="com.fulu.game.core.entity.vo.UserWechatGroupShareVO" extends="UserWechatGroupShareResultMap">
+    <resultMap id="UserWechatGroupShareResultVOMap" type="com.fulu.game.core.entity.vo.UserWechatGroupShareVO"
+               extends="UserWechatGroupShareResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,share_status,group_counts,group_ids,remark,update_time,create_time    </sql>
+        id,user_id,share_status,group_counts,group_ids,coupou_status,remark,update_time,create_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserWechatGroupShareResultMap">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from t_user_wechat_group_share
         <where>
-        id = #{id}
+            id = #{id}
         </where>
     </select>
 
-    <select id="findAll"  resultMap="UserWechatGroupShareResultMap">
+    <select id="findAll" resultMap="UserWechatGroupShareResultMap">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from t_user_wechat_group_share
     </select>
 
-    <select id="findByParameter" resultMap="UserWechatGroupShareResultMap" parameterType="com.fulu.game.core.entity.vo.UserWechatGroupShareVO">
+    <select id="findByParameter" resultMap="UserWechatGroupShareResultMap"
+            parameterType="com.fulu.game.core.entity.vo.UserWechatGroupShareVO">
         SELECT
         <include refid="Base_Column_List"/>
         FROM t_user_wechat_group_share
         <where>
-                                                                            <if test="userId != null">
-                       and user_id = #{userId}
-                    </if>
-                                                                <if test="shareStatus != null">
-                       and share_status = #{shareStatus}
-                    </if>
-                                                                <if test="groupCounts != null">
-                       and group_counts = #{groupCounts}
-                    </if>
-                                                                <if test="groupIds != null">
-                       and group_ids = #{groupIds}
-                    </if>
-                                                                <if test="remark != null">
-                       and remark = #{remark}
-                    </if>
-                                                                <if test="updateTime != null">
-                       and update_time = #{updateTime}
-                    </if>
-                                                                <if test="createTime != null">
-                       and create_time = #{createTime}
-                    </if>
-                                    </where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="shareStatus != null">
+                and share_status = #{shareStatus}
+            </if>
+            <if test="groupCounts != null">
+                and group_counts = #{groupCounts}
+            </if>
+            <if test="groupIds != null">
+                and group_ids = #{groupIds}
+            </if>
+            <if test="coupouStatus != null">
+                and coupou_status = #{coupouStatus}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
     </select>
 
     <select id="findByUserId" parameterType="Integer" resultType="com.fulu.game.core.entity.vo.UserWechatGroupShareVO">
@@ -80,45 +86,50 @@
         </where>
     </delete>
 
-    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserWechatGroupShare">
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.UserWechatGroupShare">
         insert into
-        t_user_wechat_group_share (user_id,share_status,group_counts,group_ids,remark,update_time,create_time)
+        t_user_wechat_group_share (user_id,share_status,group_counts,group_ids,coupou_status,remark,update_time,create_time)
         values
-        (#{userId},#{shareStatus},#{groupCounts},#{groupIds},#{remark},#{updateTime},#{createTime})
+        (#{userId},#{shareStatus},#{groupCounts},#{groupIds},#{coupouStatus},#{remark},#{updateTime},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.UserWechatGroupShare">
         update t_user_wechat_group_share
         <set>
-                                                        
-                    <if test="userId != null">
-                        user_id = #{userId},
-                    </if>
-                                            
-                    <if test="shareStatus != null">
-                        share_status = #{shareStatus},
-                    </if>
-                                            
-                    <if test="groupCounts != null">
-                        group_counts = #{groupCounts},
-                    </if>
-                                            
-                    <if test="groupIds != null">
-                        group_ids = #{groupIds},
-                    </if>
-                                            
-                    <if test="remark != null">
-                        remark = #{remark},
-                    </if>
-                                            
-                    <if test="updateTime != null">
-                        update_time = #{updateTime},
-                    </if>
-                                            
-                    <if test="createTime != null">
-                        create_time = #{createTime},
-                    </if>
-                                    </set>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="shareStatus != null">
+                share_status = #{shareStatus},
+            </if>
+
+            <if test="groupCounts != null">
+                group_counts = #{groupCounts},
+            </if>
+
+            <if test="groupIds != null">
+                group_ids = #{groupIds},
+            </if>
+
+            <if test="coupouStatus != null">
+                coupou_status = #{coupouStatus},
+            </if>
+
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
         <where>
             id = #{id}
         </where>
