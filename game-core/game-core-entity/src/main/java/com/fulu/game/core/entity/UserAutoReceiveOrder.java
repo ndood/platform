@@ -9,10 +9,10 @@ import lombok.Data;
  * 
  * 
  * @author wangbin
- * @date 2018-07-25 19:22:19
+ * @date 2018-07-26 19:42:13
  */
 @Data
-public class AutoReceivingOrder implements Serializable {
+public class UserAutoReceiveOrder implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	//
@@ -31,6 +31,16 @@ public class AutoReceivingOrder implements Serializable {
 	private Integer endRank;
 	//备注
 	private String remark;
+	//自动派单数
+	private Integer orderNum;
+	//自动派单完成数
+	private Integer orderCompleteNum;
+	//派单取消数
+	private Integer orderCancelNum;
+	//派单协商仲裁数
+	private Integer orderDisputeNum;
+	//派单失败率
+	private Double orderFailPercent;
 	//用户自己自动接单设置
 	private Boolean userAutoSetting;
 	//
@@ -39,7 +49,7 @@ public class AutoReceivingOrder implements Serializable {
 	private String adminName;
 	//
 	private Date createTime;
-
+	//
 	private Date updateTime;
 
 }

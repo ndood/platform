@@ -21,7 +21,7 @@ import java.util.List;
 public interface OrderService extends ICommonService<Order, Integer> {
 
 
-
+    PageInfo<PointOrderDetailsVO> listPointOrderDetails(Integer pageNum,Integer pageSize);
 
 
     /**

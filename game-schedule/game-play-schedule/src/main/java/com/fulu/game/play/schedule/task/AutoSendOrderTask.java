@@ -5,6 +5,8 @@ import com.fulu.game.common.enums.OrderTypeEnum;
 import com.fulu.game.common.enums.SettingTypeEnum;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.Setting;
+import com.fulu.game.core.entity.User;
+import com.fulu.game.core.service.AssignOrderService;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.SettingService;
 import com.xiaoleilu.hutool.date.DateUnit;
@@ -26,6 +28,8 @@ public class AutoSendOrderTask {
     private OrderService orderService;
     @Autowired
     private SettingService settingService;
+    @Autowired
+    private AssignOrderService assignOrderService;
 
     /**
      * 自动派单
@@ -39,7 +43,11 @@ public class AutoSendOrderTask {
         for (Order order : orderList) {
             long minute = DateUtil.between(order.getCreateTime(), new Date(), DateUnit.MINUTE);
             if(minute>autoReveTime){
-                //todo
+                User user = assignOrderService.getMatchUser(order);
+                if(user==null){
+                    continue;
+                }
+                orderService.receivePointOrder(order.getOrderNo(),user);
             }
         }
     }

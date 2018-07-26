@@ -4,12 +4,10 @@ package com.fulu.game.admin.controller;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.SettingTypeEnum;
 import com.fulu.game.core.entity.Admin;
-import com.fulu.game.core.entity.AutoReceivingOrder;
 import com.fulu.game.core.entity.Setting;
-import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.service.AdminService;
-import com.fulu.game.core.service.AutoReceivingOrderService;
 import com.fulu.game.core.service.SettingService;
+import com.fulu.game.core.service.UserAutoReceiveOrderService;
 import com.fulu.game.core.service.UserTechAuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +28,10 @@ public class AutoReceiveController extends BaseController{
     @Autowired
     private AdminService adminService;
     @Autowired
-    private AutoReceivingOrderService autoReceivingOrderService;
+    private UserAutoReceiveOrderService userAutoReceiveOrderService;
     @Autowired
     private UserTechAuthService userTechAuthService;
+
 
     /**
      * 设置自动接单时间
@@ -57,17 +56,14 @@ public class AutoReceiveController extends BaseController{
      * @param techAuthId
      * @return
      */
-    @PostMapping(value = "add/tech")
+    @PostMapping(value = "tech/add")
     public Result addTech(@RequestParam(required = true)Integer techAuthId,
                           String remark){
-        UserTechAuth userTechAuth = userTechAuthService.findById(techAuthId);
-        Admin admin = adminService.getCurrentUser();
-
-        AutoReceivingOrder autoReceivingOrder = new AutoReceivingOrder();
-        autoReceivingOrder.setCategoryId(userTechAuth.getCategoryId());
-
+        userAutoReceiveOrderService.addAutoReceivingTech(techAuthId,remark);
         return Result.success();
     }
+
+
 
 
 }

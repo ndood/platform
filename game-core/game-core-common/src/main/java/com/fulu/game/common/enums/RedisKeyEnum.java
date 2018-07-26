@@ -23,7 +23,8 @@ public enum RedisKeyEnum {
     MARKET_ORDER_IS_PUSH, //判断集市订单是否推送过
     GLOBAL_FORM_TOKEN, //表单验证token
     USER_ONLINE_KEY, //表单验证token
-    TIME_INTERVAL_KEY; //订单状态倒计时
+    TIME_INTERVAL_KEY, //订单状态倒计时
+    AUTO_ASSIGN_ORDER_USER; //订单状态倒计时
 
 
     public static final String SPLIT = "-";

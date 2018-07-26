@@ -46,6 +46,17 @@
         <result column="serverHeadUrl" property="serverHeadUrl"/>
     </resultMap>
 
+    <resultMap id="PointOrderDetailsVOMap" type="com.fulu.game.core.entity.Order.PointOrderDetailsVO" extends="OrderResultMap">
+        <result column="userNickName" property="userNickName"/>
+        <result column="userHeadUrl" property="userHeadUrl"/>
+        <result column="accountInfo" property="accountInfo"/>
+        <result column="orderChoice" property="orderChoice"/>
+        <result column="categoryIcon" property="categoryIcon"/>
+        <result column="categoryName" property="categoryName"/>
+    </resultMap>
+
+
+
     <sql id="Base_Column_List">
         id,order_no,coupon_no,category_id,user_id,service_user_id,name,type,channel_id,remark,is_pay,is_pay_callback,status,contact_type,contact_info,total_money,actual_money,coupon_money,charges,create_time,update_time,pay_time,complete_time,order_ip,receiving_time
     </sql>
@@ -73,6 +84,31 @@
         select
         <include refid="Base_Column_List"/>
         from t_order
+    </select>
+
+
+    <select id="listPointOrderDetails" resultMap="PointOrderDetailsVOMap">
+        SELECT
+            o.*,
+            cu.nickname AS userNickName,
+            cu.head_portraits_url AS userHeadUrl,
+            op.accountInfo AS accountInfo,
+            op.orderChoice AS orderChoice,
+            op.categoryName as categoryName,
+            op.categoryIcon as categoryIcon
+         FROM
+          t_order o
+         LEFT JOIN t_user cu ON o.user_id = cu.id
+         LEFT JOIN t_order_point_product op ON o.order_no = op.order_no
+         <where>
+                 type = 2
+             <if test="statusList != null">
+                 and status in
+                 <foreach collection="statusList" item="s" index="index" open="(" close=")" separator=",">
+                     #{s}
+                 </foreach>
+             </if>
+         </where>
     </select>
 
     <select id="listOrderDetails" resultMap="OrderDetailsVOMap">

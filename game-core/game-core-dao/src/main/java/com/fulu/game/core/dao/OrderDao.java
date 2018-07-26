@@ -4,6 +4,7 @@ import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.entity.vo.MarketOrderVO;
 import com.fulu.game.core.entity.vo.OrderVO;
+import com.fulu.game.core.entity.vo.PointOrderDetailsVO;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -40,4 +41,6 @@ public interface OrderDao extends ICommonDao<Order, Integer> {
     List<OrderDetailsVO> listOrderDetails(@Param(value = "type") Integer type,
                                           @Param(value = "userId") Integer userId);
 
+
+    List<PointOrderDetailsVO> listPointOrderDetails(@Param(value = "statusList") List<Integer> statusList);
 }

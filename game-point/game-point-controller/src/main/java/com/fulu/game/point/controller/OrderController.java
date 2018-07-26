@@ -9,9 +9,12 @@ import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.OrderPointProductTO;
 import com.fulu.game.core.entity.vo.OrderPointProductVO;
+import com.fulu.game.core.entity.vo.PointOrderDetailsVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.point.utils.RequestUtil;
+import com.github.pagehelper.PageInfo;
+import com.sun.org.apache.regexp.internal.RE;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,6 +46,19 @@ public class OrderController extends BaseController{
     private UserService userService;
     @Autowired
     private UserTechAuthService userTechAuthService;
+
+
+    /**
+     * 抢单列表
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @RequestMapping(value = "/list")
+    public Result list(Integer pageNum,Integer pageSize){
+        PageInfo<PointOrderDetailsVO> pageInfo = orderService.listPointOrderDetails(pageNum,pageSize);
+        return Result.success().data(pageInfo);
+    }
 
 
     /**

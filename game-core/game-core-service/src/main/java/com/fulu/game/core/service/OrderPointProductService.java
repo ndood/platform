@@ -12,5 +12,8 @@ import com.fulu.game.core.entity.OrderPointProduct;
  * @date 2018-07-24 17:55:45
  */
 public interface OrderPointProductService extends ICommonService<OrderPointProduct,Integer>{
-	
+
+
+    OrderPointProduct findByOrderNo(String orderNo);
+
 }

@@ -32,6 +32,9 @@ public class OrderPointProduct implements Serializable {
 	private Integer targetGradingPriceId;
 	//
 	private String categoryName;
+
+	private String categoryIcon;
+
 	//
 	private String accountInfo;
 	//

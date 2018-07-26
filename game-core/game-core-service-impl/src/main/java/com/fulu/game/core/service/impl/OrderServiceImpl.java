@@ -95,6 +95,14 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     }
 
 
+    @Override
+    public PageInfo<PointOrderDetailsVO> listPointOrderDetails(Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize, "id DESC");
+        Integer[] status =  new Integer[]{OrderStatusEnum.WAIT_SERVICE.getStatus()};
+        List<PointOrderDetailsVO>  pointOrderDetailsVOS =orderDao.listPointOrderDetails(Arrays.asList(status));
+        return new PageInfo<>(pointOrderDetailsVOS);
+    }
+
     public void pushToServiceOrderWxMessage(Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum) {
         wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), wechatTemplateMsgEnum);
     }

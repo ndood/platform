@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.fulu.game.core.dao.AutoReceivingOrderDao">
-    <resultMap id="AutoReceivingOrderResultMap" type="com.fulu.game.core.entity.AutoReceivingOrder">
+<mapper namespace="com.fulu.game.core.dao.UserAutoReceiveOrderDao">
+    <resultMap id="UserAutoReceiveOrderResultMap" type="com.fulu.game.core.entity.UserAutoReceiveOrder">
         <id column="id" property="id"/>
         <result column="user_id" property="userId"/>
         <result column="tech_auth_id" property="techAuthId"/>
@@ -11,6 +11,11 @@
         <result column="start_rank" property="startRank"/>
         <result column="end_rank" property="endRank"/>
         <result column="remark" property="remark"/>
+        <result column="order_num" property="orderNum"/>
+        <result column="order_complete_num" property="orderCompleteNum"/>
+        <result column="order_cancel_num" property="orderCancelNum"/>
+        <result column="order_dispute_num" property="orderDisputeNum"/>
+        <result column="order_fail_percent" property="orderFailPercent"/>
         <result column="user_auto_setting" property="userAutoSetting"/>
         <result column="admin_id" property="adminId"/>
         <result column="admin_name" property="adminName"/>
@@ -18,33 +23,56 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
-    <resultMap id="AutoReceivingOrderResultVOMap" type="com.fulu.game.core.entity.vo.AutoReceivingOrderVO"
-               extends="AutoReceivingOrderResultMap">
+    <resultMap id="UserAutoReceiveOrderResultVOMap" type="com.fulu.game.core.entity.vo.UserAutoReceiveOrderVO"
+               extends="UserAutoReceiveOrderResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,tech_auth_id,category_id,area_id,start_rank,end_rank,remark,user_auto_setting,admin_id,admin_name,create_time,update_time    </sql>
+        id,user_id,tech_auth_id,category_id,area_id,start_rank,end_rank,remark,order_num,order_complete_num,order_cancel_num,order_dispute_num,order_fail_percent,user_auto_setting,admin_id,admin_name,create_time,update_time    </sql>
 
-    <select id="findById" parameterType="java.lang.Integer" resultMap="AutoReceivingOrderResultMap">
+    <select id="findById" parameterType="java.lang.Integer" resultMap="UserAutoReceiveOrderResultMap">
         select
         <include refid="Base_Column_List"/>
-        from t_auto_receiving_order
+        from t_user_auto_receive_order
         <where>
             id = #{id}
         </where>
     </select>
 
-    <select id="findAll" resultMap="AutoReceivingOrderResultMap">
+    <select id="findAll" resultMap="UserAutoReceiveOrderResultMap">
         select
         <include refid="Base_Column_List"/>
-        from t_auto_receiving_order
+        from t_user_auto_receive_order
     </select>
 
-    <select id="findByParameter" resultMap="AutoReceivingOrderResultMap"
-            parameterType="com.fulu.game.core.entity.vo.AutoReceivingOrderVO">
+
+
+    <select id="findUserBySearch" resultMap="UserAutoReceiveOrderResultMap" parameterType="com.fulu.game.core.entity.vo.searchVO.UserAutoOrderSearchVO">
+        SELECT
+             user_id
+        FROM t_user_auto_receive_order
+        <where>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="areaId != null">
+                and (area_id = #{areaId} or area_id is null)
+            </if>
+            <if test="startRank != null">
+                and start_rank &gt;= #{startRank}
+            </if>
+            <if test="endRank != null">
+                and end_rank &lt;= #{endRank}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="findByParameter" resultMap="UserAutoReceiveOrderResultMap"
+            parameterType="com.fulu.game.core.entity.vo.UserAutoReceiveOrderVO">
         SELECT
         <include refid="Base_Column_List"/>
-        FROM t_auto_receiving_order
+        FROM t_user_auto_receive_order
         <where>
             <if test="userId != null">
                 and user_id = #{userId}
@@ -67,6 +95,21 @@
             <if test="remark != null">
                 and remark = #{remark}
             </if>
+            <if test="orderNum != null">
+                and order_num = #{orderNum}
+            </if>
+            <if test="orderCompleteNum != null">
+                and order_complete_num = #{orderCompleteNum}
+            </if>
+            <if test="orderCancelNum != null">
+                and order_cancel_num = #{orderCancelNum}
+            </if>
+            <if test="orderDisputeNum != null">
+                and order_dispute_num = #{orderDisputeNum}
+            </if>
+            <if test="orderFailPercent != null">
+                and order_fail_percent = #{orderFailPercent}
+            </if>
             <if test="userAutoSetting != null">
                 and user_auto_setting = #{userAutoSetting}
             </if>
@@ -86,22 +129,22 @@
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">
-        delete from t_auto_receiving_order
+        delete from t_user_auto_receive_order
         <where>
             id = #{id}
         </where>
     </delete>
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id"
-            parameterType="com.fulu.game.core.entity.AutoReceivingOrder">
+            parameterType="com.fulu.game.core.entity.UserAutoReceiveOrder">
         insert into
-        t_auto_receiving_order (user_id,tech_auth_id,category_id,area_id,start_rank,end_rank,remark,user_auto_setting,admin_id,admin_name,create_time,update_time)
+        t_user_auto_receive_order (user_id,tech_auth_id,category_id,area_id,start_rank,end_rank,remark,order_num,order_complete_num,order_cancel_num,order_dispute_num,order_fail_percent,user_auto_setting,admin_id,admin_name,create_time,update_time)
         values
-        (#{userId},#{techAuthId},#{categoryId},#{areaId},#{startRank},#{endRank},#{remark},#{userAutoSetting},#{adminId},#{adminName},#{createTime},#{updateTime})
+        (#{userId},#{techAuthId},#{categoryId},#{areaId},#{startRank},#{endRank},#{remark},#{orderNum},#{orderCompleteNum},#{orderCancelNum},#{orderDisputeNum},#{orderFailPercent},#{userAutoSetting},#{adminId},#{adminName},#{createTime},#{updateTime})
     </insert>
 
-    <update id="update" parameterType="com.fulu.game.core.entity.AutoReceivingOrder">
-        update t_auto_receiving_order
+    <update id="update" parameterType="com.fulu.game.core.entity.UserAutoReceiveOrder">
+        update t_user_auto_receive_order
         <set>
 
             <if test="userId != null">
@@ -130,6 +173,26 @@
 
             <if test="remark != null">
                 remark = #{remark},
+            </if>
+
+            <if test="orderNum != null">
+                order_num = #{orderNum},
+            </if>
+
+            <if test="orderCompleteNum != null">
+                order_complete_num = #{orderCompleteNum},
+            </if>
+
+            <if test="orderCancelNum != null">
+                order_cancel_num = #{orderCancelNum},
+            </if>
+
+            <if test="orderDisputeNum != null">
+                order_dispute_num = #{orderDisputeNum},
+            </if>
+
+            <if test="orderFailPercent != null">
+                order_fail_percent = #{orderFailPercent},
             </if>
 
             <if test="userAutoSetting != null">

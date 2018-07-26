@@ -24,6 +24,12 @@ public class GradingInfoController extends BaseController{
     @Autowired
     private GradingPriceService gradingPriceService;
 
+
+
+
+
+
+
     /**
      * 大区
      * @param categoryId
@@ -34,7 +40,6 @@ public class GradingInfoController extends BaseController{
         List<TechValue> list = techValueService.areaList(categoryId);
         return Result.success().data(list);
     }
-
 
     /**
      * 段位价格

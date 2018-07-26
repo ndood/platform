@@ -11,6 +11,7 @@
         <result column="grading_price_id" property="gradingPriceId"/>
         <result column="target_grading_price_id" property="targetGradingPriceId"/>
         <result column="category_name" property="categoryName"/>
+        <result column="category_icon" property="categoryIcon"/>
         <result column="account_info" property="accountInfo"/>
         <result column="order_choice" property="orderChoice"/>
         <result column="price" property="price"/>
@@ -24,7 +25,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,order_no,point_type,category_id,area_id,grading_price_id,target_grading_price_id,category_name,account_info,order_choice,price,amount,create_time,update_time    </sql>
+        id,order_no,point_type,category_id,area_id,grading_price_id,target_grading_price_id,category_name,category_icon,account_info,order_choice,price,amount,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="OrderPointProductResultMap">
         select
@@ -68,6 +69,9 @@
             <if test="categoryName != null">
                 and category_name = #{categoryName}
             </if>
+            <if test="categoryIcon != null">
+                and category_icon = #{categoryIcon}
+            </if>
             <if test="accountInfo != null">
                 and account_info = #{accountInfo}
             </if>
@@ -99,9 +103,9 @@
     <insert id="create" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.fulu.game.core.entity.OrderPointProduct">
         insert into
-        t_order_point_product (order_no,point_type,category_id,area_id,grading_price_id,target_grading_price_id,category_name,account_info,order_choice,price,amount,create_time,update_time)
+        t_order_point_product (order_no,point_type,category_id,area_id,grading_price_id,target_grading_price_id,category_name,category_icon,account_info,order_choice,price,amount,create_time,update_time)
         values
-        (#{orderNo},#{pointType},#{categoryId},#{areaId},#{gradingPriceId},#{targetGradingPriceId},#{categoryName},#{accountInfo},#{orderChoice},#{price},#{amount},#{createTime},#{updateTime})
+        (#{orderNo},#{pointType},#{categoryId},#{areaId},#{gradingPriceId},#{targetGradingPriceId},#{categoryName},#{categoryIcon},#{accountInfo},#{orderChoice},#{price},#{amount},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.OrderPointProduct">
@@ -134,6 +138,10 @@
 
             <if test="categoryName != null">
                 category_name = #{categoryName},
+            </if>
+
+            <if test="categoryIcon != null">
+                category_icon = #{categoryIcon},
             </if>
 
             <if test="accountInfo != null">

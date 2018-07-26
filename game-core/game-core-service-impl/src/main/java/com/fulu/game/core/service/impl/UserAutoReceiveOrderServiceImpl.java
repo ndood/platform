@@ -1,41 +1,46 @@
 package com.fulu.game.core.service.impl;
 
 
-import com.fulu.game.core.dao.AutoReceivingOrderDao;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Admin;
-import com.fulu.game.core.entity.AutoReceivingOrder;
 import com.fulu.game.core.entity.UserTechAuth;
+import com.fulu.game.core.entity.vo.searchVO.UserAutoOrderSearchVO;
 import com.fulu.game.core.service.AdminService;
-import com.fulu.game.core.service.AutoReceivingOrderService;
 import com.fulu.game.core.service.UserTechAuthService;
+import org.bouncycastle.cms.PasswordRecipientId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
+import com.fulu.game.core.dao.UserAutoReceiveOrderDao;
+import com.fulu.game.core.entity.UserAutoReceiveOrder;
+import com.fulu.game.core.service.UserAutoReceiveOrderService;
+
 import java.util.Date;
+import java.util.List;
 
 
 @Service
-public class AutoReceivingOrderServiceImpl extends AbsCommonService<AutoReceivingOrder, Integer> implements AutoReceivingOrderService {
+public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoReceiveOrder,Integer> implements UserAutoReceiveOrderService {
 
     @Autowired
-    private AutoReceivingOrderDao autoReceivingOrderDao;
-    @Autowired
-    private AdminService adminService;
+	private UserAutoReceiveOrderDao userAutoReceiveOrderDao;
     @Autowired
     private UserTechAuthService userTechAuthService;
+    @Autowired
+    private AdminService adminService;
 
 
     @Override
-    public ICommonDao<AutoReceivingOrder, Integer> getDao() {
-        return autoReceivingOrderDao;
+    public ICommonDao<UserAutoReceiveOrder, Integer> getDao() {
+        return userAutoReceiveOrderDao;
     }
 
     @Override
-    public AutoReceivingOrder addAutoReceivingTech(Integer techAuthId, String remark) {
+    public UserAutoReceiveOrder addAutoReceivingTech(Integer techAuthId, String remark) {
         UserTechAuth userTechAuth = userTechAuthService.findById(techAuthId);
         Admin admin = adminService.getCurrentUser();
-        AutoReceivingOrder autoReceivingOrder = new AutoReceivingOrder();
+        UserAutoReceiveOrder autoReceivingOrder = new UserAutoReceiveOrder();
         autoReceivingOrder.setCategoryId(userTechAuth.getCategoryId());
         autoReceivingOrder.setTechAuthId(userTechAuth.getId());
         autoReceivingOrder.setRemark(remark);
@@ -46,7 +51,12 @@ public class AutoReceivingOrderServiceImpl extends AbsCommonService<AutoReceivin
         autoReceivingOrder.setCreateTime(new Date());
         autoReceivingOrder.setUpdateTime(new Date());
         create(autoReceivingOrder);
-
         return autoReceivingOrder;
+    }
+
+
+    @Override
+    public List<Integer> findUserBySearch(UserAutoOrderSearchVO userAutoOrderSearchVO) {
+        return userAutoReceiveOrderDao.findUserBySearch(userAutoOrderSearchVO);
     }
 }
