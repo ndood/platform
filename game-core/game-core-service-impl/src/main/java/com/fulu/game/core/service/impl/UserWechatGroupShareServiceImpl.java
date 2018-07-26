@@ -17,10 +17,13 @@ import com.fulu.game.core.service.UserWechatGroupShareService;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @Slf4j
 public class UserWechatGroupShareServiceImpl extends AbsCommonService<UserWechatGroupShare, Integer>
         implements UserWechatGroupShareService {
@@ -91,13 +94,14 @@ public class UserWechatGroupShareServiceImpl extends AbsCommonService<UserWechat
         if (userId == null) {
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
-        log.info("用户userId:{} 将信息分享到微信群", userId);
         String resultStr = WxMaCryptUtils.decrypt(sessionKey, encryptedData, iv);
         JSONObject jo = new JSONObject(resultStr);
         String openGId = jo.getStr("openGId");
+        log.info("用户userId:{} 将信息分享到微信群:{}", userId, openGId);
 
         UserWechatGroupShareVO groupShareVO = userWechatGroupShareDao.findByUserId(userId);
         if (groupShareVO == null) {
+            log.info("插入用户userId:{}的第一条微信群分享记录！", userId);
             UserWechatGroupShare groupShare = new UserWechatGroupShare();
             groupShare.setUserId(userId);
             groupShare.setShareStatus(Constant.WECHAT_GROUP_SHARE_NOT_FINISHED);
@@ -110,6 +114,16 @@ public class UserWechatGroupShareServiceImpl extends AbsCommonService<UserWechat
         }
 
         String groupIds = groupShareVO.getGroupIds();
+        if (StringUtils.isBlank(groupIds)) {
+            UserWechatGroupShare groupShare = new UserWechatGroupShare();
+            groupShare.setId(groupShareVO.getId());
+            groupShare.setUserId(userId);
+            groupShare.setGroupCounts(groupShareVO.getGroupCounts() + 1);
+            groupShare.setGroupIds(openGId);
+            update(groupShare);
+            return true;
+        }
+
         if (groupIds.contains(Constant.DEFAULT_SPLIT_SEPARATOR)) {
             String[] groupIdsArray = groupIds.split(Constant.DEFAULT_SPLIT_SEPARATOR);
             boolean alreadyFinishShare = groupIdsArray.length >= Constant.WECHAT_GROUP_SHARE_MAXIMUM
