@@ -42,7 +42,12 @@ public interface TechValueService extends ICommonService<TechValue,Integer>{
       */
      TechValue createArea(Integer categoryId,String danName,Integer rank);
 
-
+     /**
+      * 大区列表
+      * @param categoryId
+      * @return
+      */
+     List<TechValue> areaList(Integer categoryId);
 
 
      List<TechValue> findByTechAttrId(Integer attrId);

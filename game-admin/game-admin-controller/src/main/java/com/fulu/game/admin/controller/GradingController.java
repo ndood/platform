@@ -84,9 +84,11 @@ public class GradingController extends BaseController {
      */
     @PostMapping(value = "list")
     public Result list(Integer pid) {
-        List<GradingPriceVO> list = gradingPriceService.findByGradingPrice(pid);
+        List<GradingPriceVO> list = gradingPriceService.findVoByPid(pid);
         return Result.success().data(list);
     }
-    
+
+
+
 
 }

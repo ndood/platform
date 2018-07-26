@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.fulu.game.core.dao.TechValueDao;
 import com.fulu.game.core.entity.TechValue;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -104,6 +105,14 @@ public class TechValueServiceImpl extends AbsCommonService<TechValue,Integer> im
         return techValue;
     }
 
+    @Override
+    public List<TechValue> areaList(Integer categoryId) {
+        TechAttr techAttr =techAttrService.findByCategoryAndType(categoryId,TechAttrTypeEnum.AREA.getType());
+        if(techAttr==null){
+            return new ArrayList<>();
+        }
+        return findByTechAttrId(techAttr.getId());
+    }
 
 
     @Override

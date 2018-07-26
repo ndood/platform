@@ -72,8 +72,23 @@ public class GradingPriceServiceImpl extends AbsCommonService<GradingPrice, Inte
     }
 
 
+
+    public List<GradingPriceVO> findByCategoryAndType(int categoryId,int type){
+        GradingPriceVO param = new GradingPriceVO();
+        param.setCategoryId(categoryId);
+        param.setType(type);
+        List<GradingPrice> gradingPriceList =  gradingPriceDao.findByParameter(param);
+        List<GradingPriceVO> parentList = CollectionUtil.copyNewCollections(gradingPriceList, GradingPriceVO.class);
+        for(GradingPriceVO gradingPriceVO : parentList){
+            List<GradingPrice>  sonGradingPrices =   findByPid(gradingPriceVO.getId());
+            gradingPriceVO.setChildren(CollectionUtil.copyNewCollections(sonGradingPrices, GradingPriceVO.class));;
+        }
+        return parentList;
+    }
+
+
     @Override
-    public List<GradingPriceVO> findByGradingPrice(int pid) {
+    public List<GradingPriceVO> findVoByPid(int pid) {
         GradingPrice parentGradingPrice = findById(pid);
         if (parentGradingPrice == null) {
             throw new ServiceErrorException("父类不能为空!");
@@ -94,6 +109,14 @@ public class GradingPriceServiceImpl extends AbsCommonService<GradingPrice, Inte
             }
         }
         return list;
+    }
+
+
+    @Override
+    public List<GradingPrice> findByPid(int pid) {
+        GradingPriceVO param = new GradingPriceVO();
+        param.setPid(pid);
+        return gradingPriceDao.findByParameter(param);
     }
 
 
