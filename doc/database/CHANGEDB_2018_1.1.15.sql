@@ -5,7 +5,8 @@ COMMENT '用户信息是否在平台内展示（0：不展示，1：展示）' a
 ALTER TABLE `t_user_info_auth` ADD COLUMN `source_id` int(11) DEFAULT NULL
 COMMENT '来源id（对应t_regist_source表的主键id）' after `is_platform_show`;
 
-
+ALTER TABLE `t_price_factor` ADD COLUMN `source_type` int(1) unsigned zerofill DEFAULT '0'
+COMMENT '来源渠道类型（0：领航，1：ChinaJoy）' after `factor`;
 
 -- 用户微信群分享表
 DROP TABLE IF EXISTS `t_user_wechat_group_share`;

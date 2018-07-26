@@ -16,4 +16,9 @@ public interface PriceFactorService extends ICommonService<PriceFactor,Integer>{
 
     PriceFactor findByNewPriceFactor();
 
+    /**
+     * 获取CJ的价格系数表
+     * @return
+     */
+    PriceFactor findCjPriceFactor();
 }
