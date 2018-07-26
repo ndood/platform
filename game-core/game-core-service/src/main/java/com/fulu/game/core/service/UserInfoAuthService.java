@@ -92,11 +92,11 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
     /**
      * 给陪玩师增加外链来源
      *
-     * @param userId 陪玩师用户id
-     * @param name   来源名称
+     * @param userId   陪玩师用户id
+     * @param sourceId 来源id
      * @return 是否操作成功
      */
-    boolean addSource(Integer userId, String name);
+    boolean addSource(Integer userId, Integer sourceId);
 
     /**
      * 设置陪玩师是否在平台内展示
@@ -166,4 +166,12 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
      * @return 是否操作完成
      */
     boolean removeServiceUserFromCjSource(Integer userId);
+
+    /**
+     * 获取陪玩师是否在平台内的显示状态
+     *
+     * @param userId 陪玩师id
+     * @return 陪玩师在平台内的显示状态（0：不显示；1：显示）
+     */
+    Integer getPlatformShowStatus(Integer userId);
 }

@@ -125,7 +125,7 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
         //记录订单流水
         orderMoneyDetailsService.create(order.getOrderNo(), order.getUserId(), DetailsEnum.ORDER_USER_CANCEL, refundMoney.negate());
         try {
-            payService.refund(order.getOrderNo(), order.getActualMoney(),refundMoney);
+            payService.refund(order.getOrderNo(), order.getActualMoney(), refundMoney);
         } catch (Exception e) {
             log.error("退款失败{}", order.getOrderNo(), e.getMessage());
             throw new OrderException(order.getOrderNo(), "订单退款失败!");
@@ -202,6 +202,14 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
         List<SourceOrderVO> orderVOList = orderShareProfitDao.getSourceOrderList(userId);
         if (CollectionUtil.isEmpty(orderVOList)) {
             return null;
+        }
+        for (SourceOrderVO vo : orderVOList) {
+            if (vo.getServerMoney() == null) {
+                vo.setServerMoney(new BigDecimal(0));
+            }
+            if (vo.getCommissionMoney() == null) {
+                vo.setCommissionMoney(new BigDecimal(0));
+            }
         }
         return orderVOList;
     }

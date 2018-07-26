@@ -63,7 +63,7 @@
 
     <select id="getSourceOrderList" parameterType="Integer" resultType="com.fulu.game.core.entity.vo.SourceOrderVO">
         SELECT
-            rs.NAME AS source_str,
+            IFNULL(rs.NAME, 'ChinaJoy') AS source_str,
             count(*) AS source_order_counts,
             sum(osp.server_money) AS server_money,
             sum(osp.commission_money) AS commission_money
@@ -74,7 +74,7 @@
         LEFT JOIN t_regist_source rs ON tu.source_id = rs.id
         WHERE
             tor.service_user_id = #{userId}
-        AND rs.NAME = "ChinaJoy";
+        AND rs.id = 31;
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">

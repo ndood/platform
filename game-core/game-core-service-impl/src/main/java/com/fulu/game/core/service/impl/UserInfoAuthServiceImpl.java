@@ -587,18 +587,18 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             userInfoAuthVOList.add(userInfoAuthVO);
         }
 
-        PageInfo<UserInfoAuthVO> page = new PageInfo<>(userInfoAuthVOList);
+        PageInfo page = new PageInfo(userInfoAuths);
         page.setList(userInfoAuthVOList);
         return page;
     }
 
     @Override
-    public boolean addSource(Integer userId, String name) {
-        if (userId == null || StringUtils.isBlank(name)) {
+    public boolean addSource(Integer userId, Integer sourceId) {
+        if (userId == null || sourceId == null) {
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
 
-        RegistSource registSource = registSourceService.findByName(name);
+        RegistSource registSource = registSourceService.findById(sourceId);
         if (registSource == null) {
             throw new ServiceErrorException("找不到对应的注册来源");
         }
@@ -607,6 +607,19 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userInfoAuth.setSourceId(registSource.getId());
         userInfoAuth.setUpdateTime(DateUtil.date());
         return updateByUserId(userInfoAuth);
+    }
+
+    @Override
+    public Integer getPlatformShowStatus(Integer userId) {
+        if (userId == null) {
+            throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
+        }
+
+        UserInfoAuth userInfoAuth = findByUserId(userId);
+        if (userInfoAuth == null) {
+            return null;
+        }
+        return userInfoAuth.getIsPlatformShow();
     }
 
     @Override

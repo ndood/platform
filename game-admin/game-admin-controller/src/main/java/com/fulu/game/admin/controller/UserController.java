@@ -24,7 +24,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户Controller
@@ -71,17 +73,34 @@ public class UserController extends BaseController {
     /**
      * 给陪玩师增加外链来源
      *
-     * @param userId 陪玩师用户id
-     * @param name   来源名称
+     * @param userId   陪玩师用户id
+     * @param sourceId 来源id
      * @return 封装结果集
      */
     @PostMapping(value = "/source/add")
-    public Result addSource(@RequestParam Integer userId, @RequestParam String name) {
-        boolean flag = userInfoAuthService.addSource(userId, name);
+    public Result addSource(@RequestParam Integer userId, @RequestParam Integer sourceId) {
+        boolean flag = userInfoAuthService.addSource(userId, sourceId);
         if (flag) {
             return Result.success().msg("添加外链来源成功");
         }
         return Result.error().msg("添加外链来源失败");
+    }
+
+    /**
+     * 获取陪玩师是否在平台内的显示状态
+     *
+     * @param userId 陪玩师用户id
+     * @return 封装结果集
+     */
+    @PostMapping(value = "/platform/status")
+    public Result getPlatformShowStatus(@RequestParam Integer userId) {
+        Integer flag = userInfoAuthService.getPlatformShowStatus(userId);
+        if (flag == null) {
+            return Result.error().msg("无法获取显示状态");
+        }
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("showFlag", flag);
+        return Result.success().data(resultMap).msg("查询成功");
     }
 
     /**
