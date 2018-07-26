@@ -46,7 +46,7 @@
         <result column="serverHeadUrl" property="serverHeadUrl"/>
     </resultMap>
 
-    <resultMap id="PointOrderDetailsVOMap" type="com.fulu.game.core.entity.Order.PointOrderDetailsVO" extends="OrderResultMap">
+    <resultMap id="PointOrderDetailsVOMap" type="com.fulu.game.core.entity.vo.PointOrderDetailsVO" extends="OrderResultMap">
         <result column="userNickName" property="userNickName"/>
         <result column="userHeadUrl" property="userHeadUrl"/>
         <result column="accountInfo" property="accountInfo"/>

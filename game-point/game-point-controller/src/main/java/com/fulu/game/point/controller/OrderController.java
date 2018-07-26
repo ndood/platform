@@ -2,10 +2,12 @@ package com.fulu.game.point.controller;
 
 
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.TOWinTypeEnum;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
 import com.fulu.game.common.enums.UserStatusEnum;
 import com.fulu.game.common.exception.OrderException;
+import com.fulu.game.common.exception.SystemException;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.OrderPointProductTO;
 import com.fulu.game.core.entity.vo.OrderPointProductVO;
@@ -14,7 +16,6 @@ import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.point.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
-import com.sun.org.apache.regexp.internal.RE;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,12 +42,11 @@ public class OrderController extends BaseController{
     @Autowired
     private TechValueService techValueService;
     @Autowired
-    private RedisOpenServiceImpl redisOpenService;
-    @Autowired
     private UserService userService;
     @Autowired
     private UserTechAuthService userTechAuthService;
-
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
 
     /**
      * 抢单列表
@@ -77,7 +77,7 @@ public class OrderController extends BaseController{
      * @param orderNo
      * @return
      */
-    @PostMapping(value = "order/receive")
+    @PostMapping(value = "receive")
     public Result orderReceive(@RequestParam(required = true)String orderNo){
         Order order = orderService.findByOrderNo(orderNo);
         if(order==null){
@@ -106,6 +106,10 @@ public class OrderController extends BaseController{
     public Result submit(HttpServletRequest request,
                          @Valid OrderPointProductTO orderPointProductTO,
                          @RequestParam(required = true) String sessionkey) {
+        if (!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))) {
+            log.error("验证sessionkey错误:orderPointProductTO:{};sessionkey:{};",orderPointProductTO,sessionkey);
+            throw new SystemException(SystemException.ExceptionCode.NO_FORM_TOKEN_ERROR);
+        }
         OrderPointProductVO orderPointProductVO = getAdvanceOrder(orderPointProductTO);
         String orderIp = RequestUtil.getIpAdrress(request);
         String orderNo = orderService.submitPointOrder(orderPointProductVO,
