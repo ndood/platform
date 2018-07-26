@@ -1,6 +1,8 @@
 package com.fulu.game.point.controller;
 
+import com.fulu.game.common.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -10,7 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class GradingInfoController extends BaseController{
 
 
+    @PostMapping(value = "")
+    public Result gradingAreaInfo(){
 
+
+        return Result.success();
+    }
 
 
 }

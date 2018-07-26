@@ -85,7 +85,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
 
     /**
-     * 集市订单抢单
+     * 上分订单抢单
      * @param orderNo
      * @return
      */
