@@ -149,7 +149,7 @@ public interface Constant {
     /**
      * CJ对应的优惠券兑换码
      */
-    //fixme 上线之前要确认此处的优惠券兑换码
+    //fixme 上线之前要确认此处的优惠券兑换码和其他优惠券相关所有信息
     String CJ_COUPON_GROUP_REDEEM_CODE = "ABCD";
 
     /**

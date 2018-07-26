@@ -1,9 +1,9 @@
 package com.fulu.game.play.controller;
 
 
-import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.PriceFactor;
+import com.fulu.game.core.entity.vo.PriceFactorVO;
 import com.fulu.game.core.service.PriceFactorService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -45,25 +46,11 @@ public class PriceFactorController extends BaseController {
      */
     @PostMapping(value = "/cj/get")
     public Result cjPriceFactor() {
-        PriceFactor priceFactor = priceFactorService.findCjPriceFactor();
-        if (priceFactor == null) {
-            return Result.success().data(1);
+        List<PriceFactorVO> voList = priceFactorService.findCjPriceFactor();
+        if (voList == null) {
+            return Result.error().data("查询结果为空");
         }
-        BigDecimal factor = priceFactor.getFactor();
-
-        String categoryIds = priceFactor.getCategoryIds();
-        if(!categoryIds.contains(Constant.DEFAULT_SPLIT_SEPARATOR)) {
-            Map<String, Object> result = new HashMap<>();
-            result.put("factor", factor);
-            result.put("categoryIds", categoryIds);
-            return Result.success().data(result);
-        }
-
-        String[] categoryIdsArray = categoryIds.split(",");
-        Map<String, Object> result = new HashMap<>();
-        result.put("factor", factor);
-        result.put("categoryIds", categoryIdsArray);
-        return Result.success().data(result);
+        return Result.success().data(voList);
     }
 
 }
