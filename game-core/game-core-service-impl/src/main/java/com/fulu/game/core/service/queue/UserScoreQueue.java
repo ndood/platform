@@ -1,6 +1,5 @@
 package com.fulu.game.core.service.queue;
 
-import com.fulu.game.core.dao.UserDao;
 import com.fulu.game.core.dao.UserScoreDetailsDao;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserScoreDetails;
@@ -17,9 +16,10 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * @Description: 用户积分队列
- * @Author: Gong ZeChun
- * @Date: 2018/7/17 12:00
+ * 用户积分队列
+ *
+ * @author Gong ZeChun
+ * @date 2018/7/17 12:00
  */
 @Component
 @Slf4j
@@ -28,12 +28,14 @@ public class UserScoreQueue implements Runnable {
 
     private AtomicBoolean run = new AtomicBoolean();
 
+    private final UserScoreDetailsDao userScoreDetailsDao;
+    private final UserService userService;
+
     @Autowired
-    private UserDao userDao;
-    @Autowired
-    private UserScoreDetailsDao userScoreDetailsDao;
-    @Autowired
-    private UserService userService;
+    public UserScoreQueue(UserScoreDetailsDao userScoreDetailsDao, UserService userService) {
+        this.userScoreDetailsDao = userScoreDetailsDao;
+        this.userService = userService;
+    }
 
     @PostConstruct
     public void init() {
@@ -62,12 +64,12 @@ public class UserScoreQueue implements Runnable {
         while (run.get()) {
             try {
                 UserScoreDetails details = userScoreQueue.poll();
-                if(details == null) {
+                if (details == null) {
                     Thread.sleep(300L);
                     continue;
                 }
                 process(details);
-            }catch (Exception e){
+            } catch (Exception e) {
                 log.error("修改用户积分队列异常", e);
             }
         }
@@ -77,8 +79,11 @@ public class UserScoreQueue implements Runnable {
 
     private void process(UserScoreDetails details) {
         try {
+            if (details == null) {
+                return;
+            }
             Integer userScore = userService.findUserScoreByUpdate(details.getUserId());
-            if(userScore == null) {
+            if (userScore == null) {
                 userScore = 0;
             }
             log.info("修改用户积分，userId:{}，修改前用户总积分:{}", details.getUserId(), userScore);
@@ -92,7 +97,7 @@ public class UserScoreQueue implements Runnable {
             details.setDescription(details.getDescription() + "，对应的userId： " + details.getUserId());
             userScoreDetailsDao.create(details);
             log.info("修改用户积分，userId:{}，修改后用户总积分:{}", details.getUserId(), user.getUserScore());
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("修改用户积分出错!", e);
         }
     }
