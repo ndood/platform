@@ -8,6 +8,9 @@ COMMENT '来源id（对应t_regist_source表的主键id）' after `is_platform_s
 ALTER TABLE `t_price_factor` ADD COLUMN `source_type` int(1) unsigned zerofill DEFAULT '0'
 COMMENT '来源渠道类型（0：领航，1：ChinaJoy）' after `factor`;
 
+-- 备注：insert此条数据的时候，主键id值和时间戳两个参数需要做相应的修改，其他的值不改
+INSERT INTO `t_price_factor` VALUES ('4', '1.00', '1', '30,31,32', '14', 'admin', '2018-07-26 11:31:51');
+
 -- 用户微信群分享表
 DROP TABLE IF EXISTS `t_user_wechat_group_share`;
 CREATE TABLE `t_user_wechat_group_share` (

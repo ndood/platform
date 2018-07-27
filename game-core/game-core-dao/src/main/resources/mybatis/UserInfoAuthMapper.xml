@@ -137,8 +137,8 @@
             <if test="userInfoAuth != null">
                 and u.user_info_auth = #{userInfoAuth}
             </if>
-            <if test="name != null">
-                and rs.name = #{name}
+            <if test="sourceId != null">
+                and rs.id = #{sourceId}
             </if>
             <if test="isPlatformShow != null">
                 and uia.is_platform_show = #{isPlatformShow}
