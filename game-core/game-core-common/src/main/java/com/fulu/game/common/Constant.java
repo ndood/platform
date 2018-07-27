@@ -162,6 +162,15 @@ public interface Constant {
      */
     Integer SEND_COUPOU_FAIL = 0;
 
+    /**
+     * 优惠券通道开启
+     */
+    Integer COUPON_AVAILABLE = 1;
+    /**
+     * 优惠券通道关闭
+     */
+    Integer COUPON_UNAVAILABLE = 0;
+
     //==============CJ活动end==================
 
     /**

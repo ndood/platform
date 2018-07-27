@@ -22,7 +22,12 @@ public class UserWechatGroupShareVO extends UserWechatGroupShare {
     private Integer sourceId;
 
     /**
-     * 优惠券状态（0：不可用，1：可用）
+     * 优惠券发放状态： 0：发放失败（默认）；1：发放成功
      */
     private Integer coupouStatus;
+
+    /**
+     * 优惠券通道是否可用（1：是； 0：否（在活动中途，优惠券通道可以被人为关闭））
+     */
+    private Integer isCouponAvailable;
 }
