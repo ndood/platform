@@ -27,7 +27,7 @@ import java.util.Map;
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/coupon")
-public class CouponController {
+public class CouponController extends BaseController {
 
     private final CouponService couponService;
     private final OrderService orderService;

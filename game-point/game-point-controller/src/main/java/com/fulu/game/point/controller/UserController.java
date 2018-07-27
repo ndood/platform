@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/user")
-public class UserController {
+public class UserController extends BaseController {
 
     private final UserService userService;
 

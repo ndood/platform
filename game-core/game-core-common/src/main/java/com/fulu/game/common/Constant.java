@@ -115,4 +115,9 @@ public interface Constant {
     /**
      * 用户积分策略--end
      */
+
+    /**
+     * 手机号码长度为11
+     */
+    Integer MOBILE_NUMBER_LENGTH = 11;
 }
