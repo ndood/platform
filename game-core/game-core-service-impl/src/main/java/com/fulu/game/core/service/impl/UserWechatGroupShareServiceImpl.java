@@ -64,16 +64,17 @@ public class UserWechatGroupShareServiceImpl extends AbsCommonService<UserWechat
             sourceId = registSource.getId();
         }
 
-        //查询优惠券总量 如果总量为0（在发放中途被人为修改干预） 表示优惠券通道关闭
+        //查询优惠券总量 如果总量为0（在发放中途被人为修改干预）或者优惠券发放完毕 表示优惠券通道关闭
         CouponGroup couponGroup = couponGroupService.findByRedeemCode(Constant.CJ_COUPON_GROUP_REDEEM_CODE);
-        Integer amount = 0;
-        if (couponGroup != null) {
-            amount = couponGroup.getAmount();
+        if (couponGroup == null) {
+            throw new ServiceErrorException("找不到对应优惠券！");
         }
+        Integer receiveCount = couponService.countByCouponGroup(couponGroup.getId());
+        Integer amount = couponGroup.getAmount();
 
         if (groupShareVO != null) {
             groupShareVO.setSourceId(sourceId);
-            if (amount > 0) {
+            if (amount > 0 && amount > receiveCount) {
                 groupShareVO.setIsCouponAvailable(Constant.COUPON_AVAILABLE);
             } else {
                 groupShareVO.setIsCouponAvailable(Constant.COUPON_UNAVAILABLE);
@@ -94,7 +95,7 @@ public class UserWechatGroupShareServiceImpl extends AbsCommonService<UserWechat
         paramGroupShare.setCreateTime(DateUtil.date());
         userWechatGroupShareDao.create(paramGroupShare);
 
-        if (amount > 0) {
+        if (amount > 0 && amount > receiveCount) {
             resultGroupShareVO.setIsCouponAvailable(Constant.COUPON_AVAILABLE);
         } else {
             resultGroupShareVO.setIsCouponAvailable(Constant.COUPON_UNAVAILABLE);
