@@ -1,13 +1,13 @@
 package com.fulu.game.core.service.queue;
 
 
-import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
+import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.core.entity.PushMsg;
-import com.fulu.game.core.entity.WechatFormid;
 import com.fulu.game.core.entity.WxMaTemplateMessageVO;
 import com.fulu.game.core.service.PushMsgService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +21,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Component
 @Slf4j
-public class PushMsgQueue  implements Runnable{
+public class PushMsgQueue implements Runnable {
 
     private BlockingQueue<WxMaTemplateMessageVO> templateMessageQueue = new LinkedBlockingDeque<>(50000);
 
@@ -29,7 +29,7 @@ public class PushMsgQueue  implements Runnable{
     private AtomicBoolean run = new AtomicBoolean();
 
     @Autowired
-    private WxMaService wxMaService;
+    private WxMaServiceSupply wxMaServiceSupply;
     @Autowired
     private PushMsgService pushMsgService;
 
@@ -57,15 +57,15 @@ public class PushMsgQueue  implements Runnable{
     @Override
     public void run() {
         log.info("开始推送微信模板消息");
-        while (run.get()){
+        while (run.get()) {
             try {
-                WxMaTemplateMessageVO wxMaTemplateMessageVO =templateMessageQueue.poll();
-                if(wxMaTemplateMessageVO==null){
+                WxMaTemplateMessageVO wxMaTemplateMessageVO = templateMessageQueue.poll();
+                if (wxMaTemplateMessageVO == null) {
                     Thread.sleep(300L);
                     continue;
                 }
                 process(wxMaTemplateMessageVO);
-            }catch (Exception e){
+            } catch (Exception e) {
                 log.error("推送微信模板消息异常", e);
             }
         }
@@ -77,30 +77,39 @@ public class PushMsgQueue  implements Runnable{
         try {
             WxMaTemplateMessage wxMaTemplateMessage = wxMaTemplateMessageVO.getWxMaTemplateMessage();
             Integer pushId = wxMaTemplateMessageVO.getPushId();
-            wxMaService.getMsgService().sendTemplateMsg(wxMaTemplateMessage);
-            if(pushId!=null){
+            String page = wxMaTemplateMessage.getPage();
+            if (StringUtils.isBlank(page)) {
+                wxMaServiceSupply.gameWxMaService().getMsgService().sendTemplateMsg(wxMaTemplateMessage);
+                wxMaServiceSupply.pointWxMaService().getMsgService().sendTemplateMsg(wxMaTemplateMessage);
+            } else {
+                //todo 识别路径
+
+            }
+
+            if (pushId != null) {
                 countPushSuccessNum(wxMaTemplateMessageVO.getPushId());
             }
-            log.info("推送微信模板消息:{}",wxMaTemplateMessage.toJson());
-        }catch (Exception e){
+            log.info("推送微信模板消息:{}", wxMaTemplateMessage.toJson());
+        } catch (Exception e) {
             log.error("推送消息出错!", e);
         }
     }
 
     /**
      * 计算消息推送成功数
+     *
      * @param pushId
      */
-    private void countPushSuccessNum(int pushId){
+    private void countPushSuccessNum(int pushId) {
         //todo 需要更改：不能及时更新pushmsg，会造成延时推送通知重复发送的问题
         lock.lock();
         try {
             PushMsg pushMsg = pushMsgService.findById(pushId);
             int successNum = pushMsg.getSuccessNum();
-            pushMsg.setSuccessNum(successNum+1);
+            pushMsg.setSuccessNum(successNum + 1);
             pushMsgService.update(pushMsg);
-            log.info("更新消息推送成功数:{}",pushMsg);
-        }finally {
+            log.info("更新消息推送成功数:{}", pushMsg);
+        } finally {
             lock.unlock();
         }
 

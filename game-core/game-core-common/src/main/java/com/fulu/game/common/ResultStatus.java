@@ -16,6 +16,9 @@ public class ResultStatus {
     //用户未登陆
     public static Integer NOLOGIN = 501;
 
+
+    public static Integer NOUNIONID = 502;
+
     //没有formToken，不能提交表单
     public static Integer NOFORMTOKEN = 503;
 

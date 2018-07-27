@@ -64,6 +64,13 @@ public class Result implements Serializable {
         return result;
     }
 
+    public static Result noUnionId() {
+        Result result = new Result();
+        result.setStatus(ResultStatus.NOUNIONID);
+        result.setMsg("信息不完善，请完善信息!");
+        return result;
+    }
+
     public static Result accessDeny() {
         Result result = new Result();
         result.setStatus(ResultStatus.ACCESS_DENY);

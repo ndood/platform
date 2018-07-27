@@ -82,7 +82,7 @@ public class GradingPriceServiceImpl extends AbsCommonService<GradingPrice, Inte
         List<GradingPriceVO> parentList = CollectionUtil.copyNewCollections(findByPid(gradingPriceList.get(0).getId()), GradingPriceVO.class);
         for(GradingPriceVO gradingPriceVO : parentList){
             List<GradingPrice>  sonGradingPrices =   findByPid(gradingPriceVO.getId());
-            gradingPriceVO.setChildren(CollectionUtil.copyNewCollections(sonGradingPrices, GradingPriceVO.class));;
+            gradingPriceVO.setChildren(CollectionUtil.copyNewCollections(sonGradingPrices, GradingPriceVO.class));
         }
         return parentList;
     }

@@ -1,7 +1,7 @@
 package com.fulu.game.admin.controller;
 
-import cn.binarywang.wx.miniapp.api.WxMaService;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.utils.OssUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
@@ -20,7 +20,7 @@ import java.io.FileNotFoundException;
 public class WxCodeController {
 
     @Autowired
-    private WxMaService wxMaService;
+    private WxMaServiceSupply wxMaServiceSupply;
     @Autowired
     private OssUtil ossUtil;
 
@@ -36,7 +36,9 @@ public class WxCodeController {
     @RequestMapping("/create")
     public Result wxaCreate(@RequestParam("scene") String scene,
                             @RequestParam("page") String page) throws WxErrorException {
-        File file = wxMaService.getQrcodeService().createWxCodeLimit(scene, page);
+
+        //todo 这里需要判断是上分还是陪玩
+        File file = wxMaServiceSupply.gameWxMaService().getQrcodeService().createWxCodeLimit(scene, page);
         //先上传到阿里云，返回图片地址
 
         if (file.exists()) {

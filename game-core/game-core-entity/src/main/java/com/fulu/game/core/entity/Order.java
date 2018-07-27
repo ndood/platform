@@ -27,26 +27,7 @@ public class Order implements Serializable {
     //优惠券编码
     @Excel(name = "优惠券编码", orderNum = "1", width = 20)
     private String couponNo;
-    //下单用户ID
-    @Excel(name = "下单用户ID", orderNum = "7", width = 15)
-    private Integer userId;
-    //订单类型
-    @Excel(name = "订单类型", orderNum = "3", replace = {"普通订单_1", "集市订单_2"}, width = 10)
-    private Integer type;
-    //渠道商ID
-    @Excel(name = "渠道商ID", orderNum = "4", width = 10)
-    private Integer channelId;
-    //陪玩师用户ID
-    @Excel(name = "陪玩师ID", orderNum = "5", width = 10)
-    private Integer serviceUserId;
 
-    //订单游戏分类
-    private Integer categoryId;
-    //订单名称
-    @Excel(name = "订单名称", orderNum = "6", width = 20)
-    private String name;
-    //备注
-    private String remark;
     //订单状态
     @Excel(name = "订单状态", orderNum = "2", replace = {
             "订单关闭_100",
@@ -76,6 +57,28 @@ public class Order implements Serializable {
             "仲裁完成:陪玩师胜诉 502",
             "已评价_600"}, width = 15)
     private Integer status;
+
+    //下单用户ID
+    @Excel(name = "下单用户ID", orderNum = "7", width = 15)
+    private Integer userId;
+    //订单类型
+    @Excel(name = "订单类型", orderNum = "3", replace = {"普通订单_1", "集市订单_2"}, width = 10)
+    private Integer type;
+    //渠道商ID
+    @Excel(name = "渠道商ID", orderNum = "4", width = 10)
+    private Integer channelId;
+    //陪玩师用户ID
+    @Excel(name = "陪玩师ID", orderNum = "5", width = 10)
+    private Integer serviceUserId;
+
+    //订单游戏分类
+    private Integer categoryId;
+    //订单名称
+    @Excel(name = "订单名称", orderNum = "6", width = 20)
+    private String name;
+    //备注
+    private String remark;
+
 
     //联系方式类型(1：手机号，2：QQ号，3：微信号)
     @Excel(name = "联系方式类型", orderNum = "18", width = 15)

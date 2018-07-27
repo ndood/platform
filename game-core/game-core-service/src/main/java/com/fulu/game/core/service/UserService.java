@@ -28,6 +28,13 @@ public interface UserService extends ICommonService<User, Integer> {
     User findByMobile(String mobile);
 
     /**
+     * 通过unionId查询用户
+     * @param unionId
+     * @return
+     */
+    User findByUnionId(String unionId);
+
+    /**
      * 查询所有陪玩师
      *
      * @return
@@ -65,12 +72,7 @@ public interface UserService extends ICommonService<User, Integer> {
      */
     List<User> findByImIds(String imIds);
 
-    /**
-     * 查询所有状态正常的用户
-     *
-     * @return
-     */
-    List<User> findAllNormalUser();
+
 
     /**
      * 查询所有正常用户的数量
@@ -197,6 +199,7 @@ public interface UserService extends ICommonService<User, Integer> {
 
 
 
+    void updateUnionUser(User user,WechatEcoEnum wechatEcoEnum);
 
 
     List<UserVO> findVOByUserIds(List<Integer> userIds);

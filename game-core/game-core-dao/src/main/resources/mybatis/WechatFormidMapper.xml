@@ -6,16 +6,17 @@
         <id column="id" property="id"/>
         <result column="user_id" property="userId"/>
         <result column="form_id" property="formId"/>
+        <result column="open_id" property="openId"/>
+        <result column="type" property="type"/>
         <result column="create_time" property="createTime"/>
     </resultMap>
 
-    <resultMap id="WechatFormidResultVOMap" type="com.fulu.game.core.entity.vo.WechatFormidVO"
-               extends="WechatFormidResultMap">
-        <result column="open_id" property="openId"/>
+    <resultMap id="WechatFormidResultVOMap" type="com.fulu.game.core.entity.vo.WechatFormidVO" extends="WechatFormidResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,form_id,create_time    </sql>
+        id,user_id,form_id,type,open_id,create_time
+    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="WechatFormidResultMap">
         select
@@ -34,15 +35,16 @@
 
     <select id="findByUserIds" resultMap="WechatFormidResultVOMap">
         SELECT
-        a.id,a.user_id,a.form_id,a.open_id,a.create_time
+        a.id,a.user_id,a.type,a.form_id,a.open_id,a.create_time
         FROM
         (
             SELECT
             f.id,
             f.user_id,
+            f.type,
+            f.open_id,
             f.form_id,
-            f.create_time,
-            u.`open_id`
+            f.create_time
             FROM
             t_wechat_formid f
             LEFT JOIN `t_user` u ON f.user_id = u.id
@@ -77,6 +79,9 @@
             <if test="formId != null">
                 and form_id = #{formId}
             </if>
+            <if test="openId != null">
+                and open_id = #{openId}
+            </if>
             <if test="createTime != null">
                 and create_time = #{createTime}
             </if>
@@ -109,23 +114,26 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.WechatFormid">
         insert into
-        t_wechat_formid (user_id,form_id,create_time)
+        t_wechat_formid (user_id,form_id,type,open_id,create_time)
         values
-        (#{userId},#{formId},#{createTime})
+        (#{userId},#{formId},#{type},#{openId},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.WechatFormid">
         update t_wechat_formid
         <set>
-
             <if test="userId != null">
                 user_id = #{userId},
             </if>
-
             <if test="formId != null">
                 form_id = #{formId},
             </if>
-
+            <if test="openId != null">
+                open_id = #{openId},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
             <if test="createTime != null">
                 create_time = #{createTime},
             </if>

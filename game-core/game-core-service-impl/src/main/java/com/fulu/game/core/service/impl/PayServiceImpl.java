@@ -1,6 +1,9 @@
 package com.fulu.game.core.service.impl;
 
+import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.enums.OrderStatusEnum;
+import com.fulu.game.common.enums.OrderTypeEnum;
+import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
@@ -13,6 +16,7 @@ import com.github.binarywang.wxpay.bean.order.WxPayMpOrderResult;
 import com.github.binarywang.wxpay.bean.request.WxPayRefundRequest;
 import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderRequest;
 import com.github.binarywang.wxpay.bean.result.BaseWxPayResult;
+import com.github.binarywang.wxpay.bean.result.WxPayRefundResult;
 import com.github.binarywang.wxpay.exception.WxPayException;
 import com.github.binarywang.wxpay.service.WxPayService;
 import com.xiaoleilu.hutool.date.DateUtil;
@@ -29,10 +33,12 @@ public class PayServiceImpl implements PayService {
 
     @Autowired
     private OrderService orderService;
+
     @Autowired
     private UserService userService;
+
     @Autowired
-    private WxPayService wxPayService;
+    private WxMaServiceSupply wxMaServiceSupply;
 
     @Override
     public WxPayMpOrderResult wechatUnifyOrder(String orderNo, String requestIp) {
@@ -57,7 +63,13 @@ public class PayServiceImpl implements PayService {
         orderRequest.setTimeStart(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
         try {
             log.info("订单支付:orderNo:{};order:{};requestIp:{};",orderNo,order,requestIp);
-            WxPayMpOrderResult result = wxPayService.createOrder(orderRequest);
+            WxPayMpOrderResult result = null;
+            //不同小程序订单调用不同的微信支付
+            if(OrderTypeEnum.PLATFORM.getType().equals(order.getType())){
+                result = wxMaServiceSupply.gameWxPayService().createOrder(orderRequest);
+            }else if(OrderTypeEnum.POINT.getType().equals(order.getType())){
+                result = wxMaServiceSupply.pointWxPayService().createOrder(orderRequest);
+            }
             return result;
         } catch (Exception e) {
             log.error("订单支付错误", e);
@@ -65,10 +77,16 @@ public class PayServiceImpl implements PayService {
         }
     }
 
+
     @Override
-    public String payResult(String xmlResult) {
+    public String payResult(String xmlResult,WechatEcoEnum wechatEcoEnum) {
         try {
-            WxPayOrderNotifyResult result = wxPayService.parseOrderNotifyResult(xmlResult);
+            WxPayOrderNotifyResult result = null;
+            if(WechatEcoEnum.PLAY.equals(wechatEcoEnum)){
+                result = wxMaServiceSupply.gameWxPayService().parseOrderNotifyResult(xmlResult);
+            }else{
+                result = wxMaServiceSupply.pointWxPayService().parseOrderNotifyResult(xmlResult);
+            }
             // 结果正确
             String orderNo = result.getOutTradeNo();
             String totalYuan = BaseWxPayResult.feeToYuan(result.getTotalFee());
@@ -81,8 +99,10 @@ public class PayServiceImpl implements PayService {
         }
     }
 
+
     @Override
     public Boolean refund(String orderNo, BigDecimal totalMoney, BigDecimal refundMoney) throws WxPayException {
+        Order order = orderService.findByOrderNo(orderNo);
         Integer totalMoneyInt = (totalMoney.multiply(new BigDecimal(100))).intValue();
         Integer refundMoneyInt;
         if(refundMoney == null) {
@@ -95,14 +115,24 @@ public class PayServiceImpl implements PayService {
         if(refundMoneyInt.equals(0)){
             return true;
         }
+        WxPayRefundResult wxPayRefundResult = null;
         WxPayRefundRequest request = new WxPayRefundRequest();
         request.setOutTradeNo(orderNo);
         request.setOutRefundNo(orderNo+"E");
         request.setTotalFee(totalMoneyInt);
         request.setRefundFee(refundMoneyInt);
-        wxPayService.refund(request);
+        if(OrderTypeEnum.PLATFORM.getType().equals(order.getType())){
+            wxPayRefundResult = wxMaServiceSupply.gameWxPayService().refund(request);
+        }else if(OrderTypeEnum.POINT.getType().equals(order.getType())){
+            wxPayRefundResult = wxMaServiceSupply.pointWxPayService().refund(request);
+        }
+        if(wxPayRefundResult==null){
+            return false;
+        }
         return true;
     }
+
+
 
     @Override
     public Boolean refund(String orderNo, BigDecimal totalMoney) throws WxPayException{

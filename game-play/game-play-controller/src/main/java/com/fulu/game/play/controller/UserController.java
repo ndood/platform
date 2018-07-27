@@ -1,12 +1,11 @@
 package com.fulu.game.play.controller;
 
-import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.enums.UserScoreEnum;
 import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
@@ -19,7 +18,6 @@ import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.WxUserInfo;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.fulu.game.core.service.impl.UserCommentServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
@@ -50,7 +48,7 @@ public class UserController extends BaseController {
     @Autowired
     private UserCommentService commentService;
     @Autowired
-    private WxMaService wxMaService;
+    private WxMaServiceSupply wxMaServiceSupply;
     @Autowired
     private OssUtil ossUtil;
     @Autowired
@@ -162,7 +160,7 @@ public class UserController extends BaseController {
         WxMaPhoneNumberInfo phoneNoInfo = null;
         String sessionKey = redisOpenService.get(RedisKeyEnum.WX_SESSION_KEY.generateKey(SubjectUtil.getToken()));
         try {
-            phoneNoInfo = wxMaService.getUserService().getPhoneNoInfo(sessionKey, encryptedData, iv);
+            phoneNoInfo = wxMaServiceSupply.gameWxMaService().getUserService().getPhoneNoInfo(sessionKey, encryptedData, iv);
         } catch (Exception e) {
             log.error("获取用户微信异常:encryptedData:{};iv:{};sessionKey:{};{}", encryptedData, iv, sessionKey, e.getMessage());
             throw new UserException(UserException.ExceptionCode.SESSION_KEY_DISABLE_EXCEPTION);
@@ -193,7 +191,7 @@ public class UserController extends BaseController {
     public Result saveWxUserInfo(WxUserInfo wxUserInfo) {
         User user = userService.getCurrentUser();
         String sessionKey = redisOpenService.get(RedisKeyEnum.WX_SESSION_KEY.generateKey(SubjectUtil.getToken()));
-        WxMaUserInfo wxMaUserInfo =wxMaService.getUserService().getUserInfo(sessionKey, wxUserInfo.getEncryptedData(), wxUserInfo.getIv());
+        WxMaUserInfo wxMaUserInfo = wxMaServiceSupply.gameWxMaService().getUserService().getUserInfo(sessionKey, wxUserInfo.getEncryptedData(), wxUserInfo.getIv());
         System.out.println(wxMaUserInfo);
 
         if (user.getGender() == null) {
@@ -215,8 +213,7 @@ public class UserController extends BaseController {
             user.setCountry(wxUserInfo.getCountry());
         }
         user.setUpdateTime(new Date());
-        userService.update(user);
-        userService.updateRedisUser(user);
+        userService.updateUnionUser(user, WechatEcoEnum.PLAY);
         return Result.success().data(user);
     }
 
@@ -272,6 +269,7 @@ public class UserController extends BaseController {
 
     /**
      * 绑定手机号且更新用户信息
+     *
      * @param wxUserInfo
      * @return
      */
@@ -290,7 +288,7 @@ public class UserController extends BaseController {
         User user = userService.getCurrentUser();
         String openId = user.getOpenId();
         User newUser = null;
-        User openIdUser = userService.findByOpenId(openId,WechatEcoEnum.PLAY);
+        User openIdUser = userService.findByOpenId(openId, WechatEcoEnum.PLAY);
         //如果openId已经绑定手机号
         if (openIdUser != null && openIdUser.getMobile() != null) {
             return Result.error().msg("已经绑定过手机号！");

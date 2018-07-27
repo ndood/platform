@@ -1,4 +1,4 @@
-package com.fulu.game.play.controller;
+package com.fulu.game.point.controller;
 
 import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.core.service.PayService;

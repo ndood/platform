@@ -69,6 +69,21 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
+    public User findByUnionId(String unionId) {
+        if (unionId == null) {
+            return null;
+        }
+        UserVO params = new UserVO();
+        params.setUnionId(unionId);
+        List<User> users = userDao.findByParameter(params);
+        if (users.isEmpty()) {
+            return null;
+        }
+        return users.get(0);
+    }
+
+
+    @Override
     public List<User> findAllServeUser() {
         UserVO params = new UserVO();
         params.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
@@ -87,20 +102,20 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
 
     @Override
-    public User findByOpenId(String openId,WechatEcoEnum wechatEcoEnum) {
+    public User findByOpenId(String openId, WechatEcoEnum wechatEcoEnum) {
         if (openId == null) {
             return null;
         }
         UserVO userVO = new UserVO();
-        if(WechatEcoEnum.PLAY.equals(wechatEcoEnum)){
+        if (WechatEcoEnum.PLAY.equals(wechatEcoEnum)) {
             userVO.setOpenId(openId);
-        }else if(WechatEcoEnum.POINT.equals(wechatEcoEnum)){
+        } else if (WechatEcoEnum.POINT.equals(wechatEcoEnum)) {
             userVO.setPointOpenId(openId);
-        }else{
+        } else {
             return null;
         }
         List<User> users = userDao.findByParameter(userVO);
-        if(CollectionUtil.isEmpty(users)){
+        if (CollectionUtil.isEmpty(users)) {
             return null;
         }
         return users.get(0);
@@ -139,13 +154,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         return userList;
     }
 
-    @Override
-    public List<User> findAllNormalUser() {
-        UserVO param = new UserVO();
-        param.setStatus(UserStatusEnum.NORMAL.getType());
-        List<User> users = userDao.findByParameter(param);
-        return users;
-    }
 
     @Override
     public Integer countAllNormalUser() {
@@ -214,14 +222,14 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
 
     @Override
-    public User createNewUser(WechatEcoEnum wechatEcoEnum,String openId, Integer sourceId, String host) {
+    public User createNewUser(WechatEcoEnum wechatEcoEnum, String openId, Integer sourceId, String host) {
         User user = new User();
         user.setRegistIp(host);
-        if(WechatEcoEnum.PLAY.equals(wechatEcoEnum)){
+        if (WechatEcoEnum.PLAY.equals(wechatEcoEnum)) {
             user.setOpenId(openId);
-        }else if(WechatEcoEnum.POINT.equals(wechatEcoEnum)){
+        } else if (WechatEcoEnum.POINT.equals(wechatEcoEnum)) {
             user.setPointOpenId(openId);
-        }else{
+        } else {
             throw new UserException(UserException.ExceptionCode.NO_WECHATECO_EXCEPTION);
         }
         user.setSourceId(sourceId);
@@ -270,18 +278,18 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         throw new ServiceErrorException("用户不匹配!");
     }
 
-    public void checkUserInfoAuthStatus(Integer userId,Integer ... ignoreAuthStatus) {
+    public void checkUserInfoAuthStatus(Integer userId, Integer... ignoreAuthStatus) {
         User user = findById(userId);
         UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(userId);
-        if(ignoreAuthStatus!=null){
-            if(Arrays.asList(ignoreAuthStatus).contains(user.getUserInfoAuth())){
+        if (ignoreAuthStatus != null) {
+            if (Arrays.asList(ignoreAuthStatus).contains(user.getUserInfoAuth())) {
                 return;
             }
         }
         if (userInfoAuth == null) {
             throw new UserAuthException(UserAuthException.ExceptionCode.NOT_EXIST_USER_AUTH);
         }
-        if(userInfoAuth.getMainPicUrl()==null){
+        if (userInfoAuth.getMainPicUrl() == null) {
             throw new UserAuthException(UserAuthException.ExceptionCode.NOT_EXIST_USER_AUTH);
         }
 //        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.NOT_PERFECT.getType())) {
@@ -332,8 +340,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
 
-
-
     @Override
     public String getTechShareCard(String scene, Integer productId) throws WxErrorException, IOException {
         ProductDetailsVO productDetailsVO = productService.findDetailsByProductId(productId);
@@ -375,7 +381,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         StringBuilder sb = new StringBuilder();
         sb.append(userInfoVO.getUserTechAuthVO().getCategoryName());
         sb.append("陪玩｜");
-        if(userInfoVO.getUserTechAuthVO().getDanInfo()!=null){
+        if (userInfoVO.getUserTechAuthVO().getDanInfo() != null) {
             sb.append("段位:");
             sb.append(userInfoVO.getUserTechAuthVO().getDanInfo().getValue()).append("｜");
         }
@@ -497,6 +503,46 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         user.setImPsw(imUser.getImPsw());
         user.setUpdateTime(new Date());
         userDao.update(user);
+    }
+
+
+    @Override
+    public void updateUnionUser(User user,WechatEcoEnum wechatEcoEnum) {
+        log.info("调用updateUnionUser方法:user:{}",user);
+        User unionUser = findByUnionId(user.getUnionId());
+        if(unionUser==null){
+            update(user);
+            updateRedisUser(user);
+            log.info("unionUser为空更新自己的unionId:{}",user.getUnionId());
+            return;
+        }
+        if(unionUser.getId().equals(user.getId())){
+            update(user);
+            updateRedisUser(user);
+            log.info("该用户已经存在unionUser:{}",unionUser);
+            return;
+        }
+        if(WechatEcoEnum.POINT.equals(wechatEcoEnum)){
+            BeanUtil.copyProperties(user,unionUser,BeanUtil.CopyOptions.create().setIgnoreNullValue(true));
+            update(unionUser);
+            updateRedisUser(unionUser);
+            log.info("判断存在开黑用户信息，更新unionUser:{}",unionUser);
+            user.setPointOpenId(unionUser.getId()+"-"+user.getUnionId()+"-"+new Date().getTime());
+            user.setUnionId(unionUser.getId()+"-"+user.getUnionId()+"-"+new Date().getTime());
+            update(user);
+            log.info("判断存在开黑用户信息，更新user:{}",user);
+        }else{
+            user.setPointOpenId(unionUser.getPointOpenId());
+            update(user);
+            updateRedisUser(user);
+            log.info("判断存在上分的用户信息，user:{}",user);
+            unionUser.setPointOpenId(user.getId()+"-"+unionUser.getUnionId()+"-"+new Date().getTime());
+            unionUser.setUnionId(user.getId()+"-"+unionUser.getUnionId()+"-"+new Date().getTime());
+            update(unionUser);
+        }
+
+
+
     }
 
     @Override

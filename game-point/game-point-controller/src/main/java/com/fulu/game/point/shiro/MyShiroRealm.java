@@ -1,6 +1,8 @@
 package com.fulu.game.point.shiro;
 
+import com.fulu.game.common.enums.UserStatusEnum;
 import com.fulu.game.common.enums.WechatEcoEnum;
+import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,7 @@ public class MyShiroRealm extends AuthorizingRealm {
         return authorizationInfo;
     }
 
+
     /**
      * 验证openId是否存在
      * 执行时机：subject.login()方法
@@ -50,6 +53,9 @@ public class MyShiroRealm extends AuthorizingRealm {
         User user = userService.findByOpenId(openId, WechatEcoEnum.POINT);
         if (user != null) {
             log.info("openId为{} 的用户已存在", openId);
+            if(UserStatusEnum.BANNED.getType().equals(user.getStatus())){
+                throw new UserException(UserException.ExceptionCode.USER_BANNED_EXCEPTION);
+            }
         } else {
             //新创建的用户记录注册的ip
             String host = playUserToken.getHost();
@@ -58,4 +64,6 @@ public class MyShiroRealm extends AuthorizingRealm {
         }
         return new SimpleAuthenticationInfo(user, user.getOpenId(), getName());
     }
+
+
 }

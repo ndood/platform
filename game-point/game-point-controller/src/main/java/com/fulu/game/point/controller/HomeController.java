@@ -3,6 +3,7 @@ package com.fulu.game.point.controller;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.SysConfig;
@@ -37,7 +38,8 @@ public class HomeController extends BaseController{
 
 
     @Autowired
-    private WxMaService wxService;
+    private WxMaServiceSupply wxMaServiceSupply;
+
     @Autowired
     private UserService userService;
     @Autowired
@@ -77,7 +79,7 @@ public class HomeController extends BaseController{
         if (StringUtils.isBlank(code)) {
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
-        WxMaJscode2SessionResult session = wxService.getUserService().getSessionInfo(code);
+        WxMaJscode2SessionResult session = wxMaServiceSupply.pointWxMaService().getUserService().getSessionInfo(code);
         String openId = session.getOpenid();
         //1.认证和凭据的token
         PlayUserToken playUserToken = new PlayUserToken(openId, session.getSessionKey(), sourceId);
@@ -85,23 +87,19 @@ public class HomeController extends BaseController{
         playUserToken.setHost(ip);
         Subject subject = SecurityUtils.getSubject();
         //2.提交认证和凭据给身份验证系统
-        try {
-            subject.login(playUserToken);
-            User user = userService.getCurrentUser();
-            userService.updateUserIpAndLastTime(ip);
-            user.setOpenId(null);
-            user.setBalance(null);
-            Map<String, Object> result = BeanUtil.beanToMap(user);
-            result.put("token", SubjectUtil.getToken());
-            result.put("userId", user.getId());
-            return Result.success().data(result).msg("登录成功!");
-        } catch (AuthenticationException e) {
-            log.error("验证登录异常，异常信息:", e);
-            return Result.noLogin().msg("用户验证信息错误！");
-        } catch (Exception e) {
-            log.error("登录异常!", e);
-            return Result.error().msg("登陆异常！");
+        subject.login(playUserToken);
+        User user = userService.getCurrentUser();
+        userService.updateUserIpAndLastTime(ip);
+        if(user.getUnionId()==null){
+            log.error("用户没有unionId;user{}",user);
+            return Result.noUnionId();
         }
+        user.setOpenId(null);
+        user.setBalance(null);
+        Map<String, Object> result = BeanUtil.beanToMap(user);
+        result.put("token", SubjectUtil.getToken());
+        result.put("userId", user.getId());
+        return Result.success().data(result).msg("登录成功!");
     }
 
 

@@ -1,4 +1,4 @@
-package com.fulu.game.play.controller;
+package com.fulu.game.point.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.WechatEcoEnum;
@@ -7,7 +7,7 @@ import com.fulu.game.core.entity.WechatFormid;
 import com.fulu.game.core.service.PushMsgService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.WxTemplateMsgService;
-import com.fulu.game.play.queue.CollectFormIdQueue;
+import com.fulu.game.point.queue.CollectFormIdQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,8 +41,9 @@ public class WxTemplateController extends BaseController{
         WechatFormid wechatFormid = new WechatFormid();
         wechatFormid.setUserId(user.getId());
         wechatFormid.setFormId(formId);
-        wechatFormid.setType(WechatEcoEnum.PLAY.getType());
         wechatFormid.setCreateTime(new Date());
+        wechatFormid.setOpenId(user.getPointOpenId());
+        wechatFormid.setType(WechatEcoEnum.POINT.getType());
         collectFormIdQueue.addFormId(wechatFormid);
         log.info("收集formId成功:formId:{}",formId);
         return Result.success();

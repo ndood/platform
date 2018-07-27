@@ -12,6 +12,7 @@ public class UserException extends BizException {
     @Getter
     public enum ExceptionCode {
         USER_NOT_EXIST_EXCEPTION(20001, "用户不存在"),
+        USER_BANNED_EXCEPTION(20000, "用户被封禁"),
         USER_MISMATCH_EXCEPTION(20002, "用户不匹配"),
         IllEGAL_MOBILE_EXCEPTION(20003, "手机号参数为空或不合法"),
         IllEGAL_IMID_EXCEPTION(20004, "imId参数为空或不合法"),

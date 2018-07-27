@@ -10,5 +10,4 @@ import lombok.Data;
 @Data
 public class WechatFormidVO extends WechatFormid {
 
-    private String openId;
 }

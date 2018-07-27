@@ -95,7 +95,6 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
             redisOpenService.set(RedisKeyEnum.MARKET_ORDER_IS_PUSH.generateKey(user.getId()), order.getOrderNo(), expire);
             log.info("推送集市订单完成:userInfoAuth:{},order:{}", user, order);
         }
-
     }
 
     /**
@@ -190,7 +189,6 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
         time+=1;
         //推送状态缓存两个小时
         redisOpenService.set(RedisKeyEnum.WX_TEMPLATE_MSG.generateKey(imId + "|" + acceptImId), time + "", Constant.TIME_MINUTES_FIFE);
-
         return "消息推送成功!";
     }
 

@@ -1,8 +1,8 @@
 package com.fulu.game.play.controller;
 
-import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Banner;
@@ -36,7 +36,7 @@ import java.util.Map;
 public class HomeController extends BaseController{
 
     @Autowired
-    private WxMaService wxService;
+    private WxMaServiceSupply wxMaServiceSupply;
     @Autowired
     private UserService userService;
     @Autowired
@@ -87,7 +87,7 @@ public class HomeController extends BaseController{
         if (StringUtils.isBlank(code)) {
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
-        WxMaJscode2SessionResult session = wxService.getUserService().getSessionInfo(code);
+        WxMaJscode2SessionResult session = wxMaServiceSupply.gameWxMaService().getUserService().getSessionInfo(code);
         String openId = session.getOpenid();
         //1.认证和凭据的token
         PlayUserToken playUserToken = new PlayUserToken(openId, session.getSessionKey(), sourceId);
