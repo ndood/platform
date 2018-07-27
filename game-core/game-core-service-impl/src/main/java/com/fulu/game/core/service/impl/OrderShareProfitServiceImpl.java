@@ -206,6 +206,9 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
         UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(userId);
         if (userInfoAuth != null) {
             sourceId = userInfoAuth.getSourceId();
+            if (sourceId == null) {
+                sourceId = 0;
+            }
         }
         if (CollectionUtil.isEmpty(orderVOList)) {
             return null;
