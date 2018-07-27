@@ -90,7 +90,7 @@ public class SharingController extends BaseController {
             UserWechatGroupShareVO groupShareVO = userWechatGroupShareService.getUserShareStatus(user);
             return Result.success().data(groupShareVO).msg("分享成功！");
         } else {
-            return Result.error().msg("分享失败，已完成分享任务或分享到了重复微信群！");
+            return Result.error().msg("分享失败，请勿分享到重复微信群！");
         }
     }
 }

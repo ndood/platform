@@ -2,7 +2,7 @@
 ALTER TABLE `t_user_info_auth` ADD COLUMN `is_platform_show` tinyint(1) DEFAULT '1'
 COMMENT '用户信息是否在平台内展示（0：不展示，1：展示）' after `is_reject_submit`;
 
-ALTER TABLE `t_user_info_auth` ADD COLUMN `source_id` int(11) DEFAULT NULL
+ALTER TABLE `t_user_info_auth` ADD COLUMN `source_id` int(11) unsigned zerofill DEFAULT '00000000000'
 COMMENT '来源id（对应t_regist_source表的主键id）' after `is_platform_show`;
 
 ALTER TABLE `t_price_factor` ADD COLUMN `source_type` int(1) unsigned zerofill DEFAULT '0'
