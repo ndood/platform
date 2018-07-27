@@ -218,9 +218,9 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
                 vo.setCommissionMoney(new BigDecimal(0));
             }
             if (sourceId.equals(31)) {
-                vo.setIsCjPlayer(1);
+                vo.setIsCurrentSourcePlayer(1);
             } else {
-                vo.setIsCjPlayer(0);
+                vo.setIsCurrentSourcePlayer(0);
             }
         }
         return orderVOList;

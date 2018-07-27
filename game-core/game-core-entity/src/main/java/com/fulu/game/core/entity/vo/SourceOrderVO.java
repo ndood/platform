@@ -41,5 +41,5 @@ public class SourceOrderVO {
     /**
      * 陪玩师是否是CJ来源陪玩师（1：是，0：否）
      */
-    private Integer isCjPlayer;
+    private Integer isCurrentSourcePlayer;
 }
