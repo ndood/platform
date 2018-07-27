@@ -8,7 +8,9 @@ import lombok.Getter;
 public enum WechatTemplateEnum implements TypeEnum<String>{
 
 
-    LEAVE_MSG("yD7JulFzNv7ZNInswmn6_hdgwlf68qRL0fwLUNq98Vc","推送消息模板");
+    PLAY_LEAVE_MSG("yD7JulFzNv7ZNInswmn6_hdgwlf68qRL0fwLUNq98Vc","推送消息模板"),
+
+    POINT_LEAVE_MSG("q4vzN44BKXw-ZDLH-g7qsPgFb6UEj0enkutCwNfAuh0","推送消息模板");
 
     private String type;
     private String msg;

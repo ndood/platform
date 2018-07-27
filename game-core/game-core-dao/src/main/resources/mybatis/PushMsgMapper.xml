@@ -9,6 +9,7 @@
         <result column="push_ids" property="pushIds"/>
         <result column="touch_time" property="touchTime"/>
         <result column="content" property="content"/>
+        <result column="platform" property="platform"/>
         <result column="hits" property="hits"/>
         <result column="success_num" property="successNum"/>
         <result column="total_num" property="totalNum"/>
@@ -23,7 +24,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,type,page,push_ids,touch_time,content,hits,success_num,total_num,is_pushed,admin_id,admin_name,create_time,update_time    </sql>
+        id,type,page,push_ids,touch_time,content,platform,hits,success_num,total_num,is_pushed,admin_id,admin_name,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="PushMsgResultMap">
         select
@@ -59,6 +60,9 @@
             </if>
             <if test="content != null">
                 and content = #{content}
+            </if>
+            <if test="platform != null">
+                and platform = #{platform}
             </if>
             <if test="hits != null">
                 and hits = #{hits}
@@ -109,9 +113,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.PushMsg">
         insert into
-        t_push_msg (type,page,push_ids,touch_time,content,hits,success_num,total_num,is_pushed,admin_id,admin_name,create_time,update_time)
+        t_push_msg (type,page,push_ids,touch_time,content,platform,hits,success_num,total_num,is_pushed,admin_id,admin_name,create_time,update_time)
         values
-        (#{type},#{page},#{pushIds},#{touchTime},#{content},#{hits},#{successNum},#{totalNum},#{isPushed},#{adminId},#{adminName},#{createTime},#{updateTime})
+        (#{type},#{page},#{pushIds},#{touchTime},#{content},#{platform},#{hits},#{successNum},#{totalNum},#{isPushed},#{adminId},#{adminName},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.PushMsg">
@@ -136,6 +140,10 @@
 
             <if test="content != null">
                 content = #{content},
+            </if>
+
+            <if test="platform != null">
+                platform = #{platform},
             </if>
 
             <if test="hits != null">

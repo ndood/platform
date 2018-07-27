@@ -105,4 +105,10 @@ ALTER TABLE `t_user` ADD UNIQUE INDEX (`public_open_id`) USING BTREE;
 ALTER TABLE `t_user` ADD UNIQUE INDEX (`unionid`) USING BTREE;
 
 
-ALTER TABLE `t_category` ADD COLUMN `is_point` tinyint(1)  DEFAULT NULL COMMENT '微信生态唯一标识' after `public_open_id`;
+ALTER TABLE `t_category` ADD COLUMN `is_point` tinyint(1)  DEFAULT NULL COMMENT '是否是上分平台' after `public_open_id`;
+
+ALTER TABLE `t_push_msg` ADD COLUMN `platform` tinyint(1)  DEFAULT NULL COMMENT '微信平台号' after `content`;
+
+
+ALTER TABLE `t_wechat_formid` ADD COLUMN `platform` tinyint(1)  DEFAULT NULL COMMENT '微信平台号' after `form_id`;
+ALTER TABLE `t_wechat_formid` ADD COLUMN `open_id` tinyint(1)  DEFAULT NULL COMMENT 'openId' after `platform`;

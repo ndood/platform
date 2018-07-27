@@ -20,7 +20,10 @@ public interface WechatFormidDao extends ICommonDao<WechatFormid,Integer>{
 
     List<WechatFormid> findByParameter(WechatFormidVO wechatFormidVO);
 
-    List<WechatFormidVO> findByUserIds(@Param(value = "userIds") List<Integer> userIds,@Param(value = "offset") int offset,@Param(value = "size")int size);
+    List<WechatFormidVO> findByUserIds( @Param(value = "platform") int platform,
+                                        @Param(value = "userIds") List<Integer> userIds,
+                                       @Param(value = "offset") int offset,
+                                       @Param(value = "size")int size);
 
     void deleteByExpireTime(@Param(value = "expireTime") Date expireTime);
 

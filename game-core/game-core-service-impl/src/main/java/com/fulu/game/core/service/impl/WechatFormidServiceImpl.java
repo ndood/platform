@@ -37,9 +37,10 @@ public class WechatFormidServiceImpl extends AbsCommonService<WechatFormid, Inte
 
 
     @Override
-    public List<WechatFormid> findInSevenDaysFormIdByUser(Integer userId) {
+    public List<WechatFormid> findInSevenDaysFormIdByUser(Integer userId,int platform) {
         WechatFormidVO params = new WechatFormidVO();
         params.setUserId(userId);
+        params.setPlatform(platform);
         List<WechatFormid> formids = wechatFormidDao.findByParameter(params);
         List<WechatFormid> availableFormIds = new ArrayList<>();
         List<WechatFormid> notAvailableFormIds = new ArrayList<>();
@@ -74,10 +75,11 @@ public class WechatFormidServiceImpl extends AbsCommonService<WechatFormid, Inte
     }
 
 
-    public List<WechatFormidVO> findByUserIds(List<Integer> userIds,
+    public List<WechatFormidVO> findByUserIds(int type,
+                                              List<Integer> userIds,
                                               int offset,
                                               int size){
-        List<WechatFormidVO> wechatFormidVOS = wechatFormidDao.findByUserIds(userIds,offset,size);
+        List<WechatFormidVO> wechatFormidVOS = wechatFormidDao.findByUserIds(type,userIds,offset,size);
         return wechatFormidVOS;
     }
 

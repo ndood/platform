@@ -17,7 +17,7 @@ import java.util.List;
 public interface WechatFormidService extends ICommonService<WechatFormid,Integer>{
 
 
-    List<WechatFormid> findInSevenDaysFormIdByUser(Integer userId);
+    List<WechatFormid> findInSevenDaysFormIdByUser(Integer userId,int type);
 
     void  deleteNotAvailableFormIds(WechatFormid ... wechatFormid);
 
@@ -28,7 +28,7 @@ public interface WechatFormidService extends ICommonService<WechatFormid,Integer
      * @param size
      * @return
      */
-    List<WechatFormidVO> findByUserIds(List<Integer> userIds, int offset, int size);
+    List<WechatFormidVO> findByUserIds(int type,List<Integer> userIds, int offset, int size);
 
     /**
      * 删除过期的formID

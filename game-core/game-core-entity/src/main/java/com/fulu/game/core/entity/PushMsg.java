@@ -21,6 +21,9 @@ public class PushMsg implements Serializable {
 	private Integer id;
 	//推送类型
 	private Integer type;
+
+	private Integer platform;
+
 	//落地页
 	private String page;
 	//推送ID

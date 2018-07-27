@@ -104,13 +104,21 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     }
 
     public void pushToServiceOrderWxMessage(Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum) {
-        wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), wechatTemplateMsgEnum);
+        if(OrderTypeEnum.POINT.getType().equals(order.getType())){
+            wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(),wechatTemplateMsgEnum.choice(WechatEcoEnum.POINT.getType()));
+        }else{
+            wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(),wechatTemplateMsgEnum);
+        }
     }
-
 
     public void pushToUserOrderWxMessage(Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum) {
         String orderStatus = OrderStatusEnum.getMsgByStatus(order.getStatus());
-        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), wechatTemplateMsgEnum, orderStatus);
+        if(OrderTypeEnum.POINT.getType().equals(order.getType())){
+            wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), wechatTemplateMsgEnum.choice(WechatEcoEnum.POINT.getType()), orderStatus);
+        }else{
+            wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), wechatTemplateMsgEnum, orderStatus);
+        }
+
     }
 
     @Override

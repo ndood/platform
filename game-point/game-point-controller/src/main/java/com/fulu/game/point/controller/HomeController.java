@@ -90,10 +90,10 @@ public class HomeController extends BaseController{
         subject.login(playUserToken);
         User user = userService.getCurrentUser();
         userService.updateUserIpAndLastTime(ip);
-        if(user.getUnionId()==null){
-            log.error("用户没有unionId;user{}",user);
-            return Result.noUnionId();
-        }
+//        if(user.getUnionId()==null){
+//            log.error("用户没有unionId;user{}",user);
+//            return Result.noUnionId();
+//        }
         user.setOpenId(null);
         user.setBalance(null);
         Map<String, Object> result = BeanUtil.beanToMap(user);

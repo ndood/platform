@@ -22,7 +22,7 @@ public class WechatFormid implements Serializable {
 	//
 	private String formId;
 
-	private Integer type;
+	private Integer platform;
 
 	private String openId;
 	//
