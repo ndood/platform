@@ -166,6 +166,15 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
         return category;
     }
 
+    @Override
+    public List<Category> findPointCategory() {
+        PageHelper.orderBy("sort desc");
+        CategoryVO param = new CategoryVO();
+        param.setStatus(Boolean.TRUE);
+        param.setIsPoint(Boolean.TRUE);
+        return categoryDao.findByParameter(param);
+    }
+
 
     @Override
     public List<Category> findByPid(Integer pid, Boolean status) {

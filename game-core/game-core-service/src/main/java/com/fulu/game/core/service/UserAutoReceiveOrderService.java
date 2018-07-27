@@ -7,17 +7,23 @@ import java.util.List;
 
 
 /**
- * 
- * 
  * @author wangbin
  * @email ${email}
  * @date 2018-07-26 19:42:13
  */
-public interface UserAutoReceiveOrderService extends ICommonService<UserAutoReceiveOrder,Integer>{
+public interface UserAutoReceiveOrderService extends ICommonService<UserAutoReceiveOrder, Integer> {
 
 
-    public UserAutoReceiveOrder addAutoReceivingTech(Integer techAuthId, String remark);
+    UserAutoReceiveOrder addAutoReceivingTech(Integer techAuthId, String remark);
 
 
     List<Integer> findUserBySearch(UserAutoOrderSearchVO userAutoOrderSearchVO);
+
+
+    List<UserAutoReceiveOrder> findByUserId(int userId);
+
+    UserAutoReceiveOrder findByUserIdAndCategoryId(int userId,int categoryId);
+
+
+    void activateAutoOrder(int userId, boolean flag);
 }

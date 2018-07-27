@@ -3,7 +3,7 @@ package com.fulu.game.point.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.enums.TOWinTypeEnum;
+import com.fulu.game.common.enums.PointTypeEnum;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
 import com.fulu.game.common.enums.UserStatusEnum;
 import com.fulu.game.common.exception.OrderException;
@@ -132,7 +132,7 @@ public class OrderController extends BaseController{
         gradingAdvanceOrderVO.setAreaId(orderPointProductTO.getAreaId());
         gradingAdvanceOrderVO.setGradingPriceId(orderPointProductTO.getGradingPriceId());
         gradingAdvanceOrderVO.setTargetGradingPriceId(orderPointProductTO.getTargetGradingPriceId());
-        if (TOWinTypeEnum.ACCURATE_SCORE.getType().equals(orderPointProductTO.getPointType())) {
+        if (PointTypeEnum.ACCURATE_SCORE.getType().equals(orderPointProductTO.getPointType())) {
             //查询区间价格
             BigDecimal totalMoney = gradingPriceService.findRangePrice(gradingAdvanceOrderVO.getCategoryId(), gradingAdvanceOrderVO.getGradingPriceId(), gradingAdvanceOrderVO.getTargetGradingPriceId());
             gradingAdvanceOrderVO.setTotalMoney(totalMoney);
@@ -154,7 +154,7 @@ public class OrderController extends BaseController{
             //todo 包赢和开黑逻辑
 
         }
-        gradingAdvanceOrderVO.setPointTypeStr(TOWinTypeEnum.getMsgByType(gradingAdvanceOrderVO.getPointType()));
+        gradingAdvanceOrderVO.setPointTypeStr(PointTypeEnum.getMsgByType(gradingAdvanceOrderVO.getPointType()));
         Category category = categoryService.findById(orderPointProductTO.getCategoryId());
         gradingAdvanceOrderVO.setCategoryName(category.getName());
         return gradingAdvanceOrderVO;

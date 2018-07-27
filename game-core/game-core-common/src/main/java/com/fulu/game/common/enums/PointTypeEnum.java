@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum TOWinTypeEnum implements TypeEnum{
+public enum PointTypeEnum implements TypeEnum{
 
 
 
@@ -20,7 +20,7 @@ public enum TOWinTypeEnum implements TypeEnum{
 
 
     public static String getMsgByType(Integer type) {
-        for (TOWinTypeEnum toWinTypeEnum : TOWinTypeEnum.values()) {
+        for (PointTypeEnum toWinTypeEnum : PointTypeEnum.values()) {
             if (toWinTypeEnum.getType().equals(type)) {
                 return toWinTypeEnum.msg;
             }

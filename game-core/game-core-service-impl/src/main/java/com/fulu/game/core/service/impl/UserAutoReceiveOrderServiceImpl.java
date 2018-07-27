@@ -4,6 +4,7 @@ package com.fulu.game.core.service.impl;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.UserTechAuth;
+import com.fulu.game.core.entity.vo.UserAutoReceiveOrderVO;
 import com.fulu.game.core.entity.vo.searchVO.UserAutoOrderSearchVO;
 import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.UserTechAuthService;
@@ -30,11 +31,11 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
     @Autowired
     private AdminService adminService;
 
-
     @Override
     public ICommonDao<UserAutoReceiveOrder, Integer> getDao() {
         return userAutoReceiveOrderDao;
     }
+
 
     @Override
     public UserAutoReceiveOrder addAutoReceivingTech(Integer techAuthId, String remark) {
@@ -55,8 +56,36 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
     }
 
 
+    public List<UserAutoReceiveOrder> findByUserId(int userId){
+        UserAutoReceiveOrderVO param = new UserAutoReceiveOrderVO();
+        param.setUserId(userId);
+        return userAutoReceiveOrderDao.findByParameter(param);
+    }
+
+
+    public UserAutoReceiveOrder findByUserIdAndCategoryId(int userId,int categoryId){
+        UserAutoReceiveOrderVO param = new UserAutoReceiveOrderVO();
+        param.setUserId(userId);
+        param.setCategoryId(categoryId);
+        List<UserAutoReceiveOrder> autoReceiveOrders = userAutoReceiveOrderDao.findByParameter(param);
+        if(autoReceiveOrders.isEmpty()){
+            return null;
+        }
+        return autoReceiveOrders.get(0);
+    }
+
+
     @Override
     public List<Integer> findUserBySearch(UserAutoOrderSearchVO userAutoOrderSearchVO) {
         return userAutoReceiveOrderDao.findUserBySearch(userAutoOrderSearchVO);
     }
+
+
+    public void activateAutoOrder(int userId,boolean flag){
+        List<UserAutoReceiveOrder> userAutoReceiveOrders = findByUserId(userId);
+        for(UserAutoReceiveOrder autoReceiveOrder : userAutoReceiveOrders){
+            autoReceiveOrder.setUserAutoSetting(flag);
+        }
+    }
+
 }

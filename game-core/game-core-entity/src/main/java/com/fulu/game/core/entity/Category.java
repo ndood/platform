@@ -32,6 +32,8 @@ public class Category implements Serializable {
 	private Integer sort;
 	//手续费
 	private BigDecimal charges;
+
+	private Boolean isPoint;
 	//
 	private Date createTime;
 	//

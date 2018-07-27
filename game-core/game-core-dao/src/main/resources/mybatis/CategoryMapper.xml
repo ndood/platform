@@ -10,6 +10,7 @@
         <result column="name" property="name"/>
         <result column="status" property="status"/>
         <result column="sort" property="sort"/>
+        <result column="is_point" property="isPoint"/>
         <result column="charges" property="charges"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
@@ -17,7 +18,7 @@
 
 
     <sql id="Base_Column_List">
-        id,pid,icon,index_icon,name,status,sort,charges,create_time,update_time
+        id,pid,icon,index_icon,name,status,sort,is_point,charges,create_time,update_time
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="CategoryResultMap">
@@ -58,6 +59,9 @@
             <if test="sort != null">
                 and sort = #{sort}
             </if>
+            <if test="isPoint != null">
+                and is_point = #{isPoint}
+            </if>
             <if test="charges != null">
                 and charges = #{charges}
             </if>
@@ -79,9 +83,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Category">
         insert into
-        t_category (pid,icon,index_icon,name,status,sort,charges,create_time,update_time)
+        t_category (pid,icon,index_icon,name,status,sort,is_point,charges,create_time,update_time)
         values
-        (#{pid},#{icon},#{indexIcon},#{name},#{status},#{sort},#{charges},#{createTime},#{updateTime})
+        (#{pid},#{icon},#{indexIcon},#{name},#{status},#{sort},#{isPoint},#{charges},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Category">
@@ -100,11 +104,12 @@
             <if test="name != null">
                 name = #{name},
             </if>
-
             <if test="status != null">
                 status = #{status},
             </if>
-
+            <if test="isPoint != null">
+                is_point = #{isPoint},
+            </if>
             <if test="sort != null">
                 sort = #{sort},
             </if>

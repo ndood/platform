@@ -27,11 +27,11 @@ public class WxMaConfiguration {
     @ConditionalOnMissingBean
     public WxMaConfig maConfig() {
         WxMaInMemoryConfig config = new WxMaInMemoryConfig();
-        config.setAppid(configProperties.getWechat().getAppId());
-        config.setSecret(configProperties.getWechat().getSecret());
-        config.setToken(configProperties.getWechat().getToken());
-        config.setAesKey(configProperties.getWechat().getAesKey());
-        config.setMsgDataFormat(configProperties.getWechat().getMsgDataFormat());
+        config.setAppid(configProperties.getWechat_game().getAppId());
+        config.setSecret(configProperties.getWechat_game().getSecret());
+        config.setToken(configProperties.getWechat_game().getToken());
+        config.setAesKey(configProperties.getWechat_game().getAesKey());
+        config.setMsgDataFormat(configProperties.getWechat_game().getMsgDataFormat());
         return config;
     }
 
@@ -40,14 +40,14 @@ public class WxMaConfiguration {
     @ConditionalOnMissingBean
     public WxPayConfig payConfig() {
         WxPayConfig payConfig = new WxPayConfig();
-        payConfig.setAppId(configProperties.getWechat().getAppId());
-        payConfig.setMchId(configProperties.getWechat().getMchId());
-        payConfig.setMchKey(configProperties.getWechat().getMchKey());
-        payConfig.setSubAppId(StringUtils.trimToNull(configProperties.getWechat().getSubAppId()));
-        payConfig.setSubMchId(StringUtils.trimToNull(configProperties.getWechat().getSubMchId()));
-        payConfig.setKeyPath(configProperties.getWechat().getKeyPath());
-        payConfig.setNotifyUrl(configProperties.getWechat().getNotifyUrl());
-        payConfig.setTradeType(configProperties.getWechat().getTradeType());
+        payConfig.setAppId(configProperties.getWechat_game().getAppId());
+        payConfig.setMchId(configProperties.getWechat_game().getMchId());
+        payConfig.setMchKey(configProperties.getWechat_game().getMchKey());
+        payConfig.setSubAppId(StringUtils.trimToNull(configProperties.getWechat_game().getSubAppId()));
+        payConfig.setSubMchId(StringUtils.trimToNull(configProperties.getWechat_game().getSubMchId()));
+        payConfig.setKeyPath(configProperties.getWechat_game().getKeyPath());
+        payConfig.setNotifyUrl(configProperties.getWechat_game().getNotifyUrl());
+        payConfig.setTradeType(configProperties.getWechat_game().getTradeType());
         return payConfig;
     }
 

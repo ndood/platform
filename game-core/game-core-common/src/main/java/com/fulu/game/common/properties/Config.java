@@ -21,7 +21,10 @@ public class Config {
 
     private Cloopen cloopen = new Cloopen();
 
-    private Wechat wechat = new Wechat();
+    private Wechat wechat_game = new Wechat();
+
+    private Wechat wechat_poit = new Wechat();
+
 
     private Elasticsearch elasticsearch = new Elasticsearch();
 
