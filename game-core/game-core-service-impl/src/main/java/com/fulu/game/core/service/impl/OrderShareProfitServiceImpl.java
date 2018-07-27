@@ -41,6 +41,8 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
     private OrderMoneyDetailsService orderMoneyDetailsService;
     @Autowired
     private ArbitrationDetailsDao arbitrationDetailsDao;
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
 
     @Override
     public ICommonDao<OrderShareProfit, Integer> getDao() {
@@ -200,6 +202,11 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
     @Override
     public List<SourceOrderVO> getSourceOrderList(Integer userId) {
         List<SourceOrderVO> orderVOList = orderShareProfitDao.getSourceOrderList(userId);
+        Integer sourceId = 0;
+        UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(userId);
+        if (userInfoAuth != null) {
+            sourceId = userInfoAuth.getSourceId();
+        }
         if (CollectionUtil.isEmpty(orderVOList)) {
             return null;
         }
@@ -209,6 +216,11 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
             }
             if (vo.getCommissionMoney() == null) {
                 vo.setCommissionMoney(new BigDecimal(0));
+            }
+            if (sourceId.equals(31)) {
+                vo.setIsCjPlayer(1);
+            } else {
+                vo.setIsCjPlayer(0);
             }
         }
         return orderVOList;

@@ -37,4 +37,9 @@ public class SourceOrderVO {
      * 平台收入金额
      */
     private BigDecimal commissionMoney;
+
+    /**
+     * 陪玩师是否是CJ来源陪玩师（1：是，0：否）
+     */
+    private Integer isCjPlayer;
 }
