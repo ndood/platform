@@ -1057,7 +1057,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     }
 
     @Override
-    public boolean removeServiceUserFromCjSource(Integer userId) {
+    public boolean removeServiceUserFromCjSource(Integer userId, Integer sourceId) {
         UserInfoAuth userInfoAuth = findByUserId(userId);
         userInfoAuth.setSourceId(0);
         userInfoAuth.setUpdateTime(DateUtil.date());

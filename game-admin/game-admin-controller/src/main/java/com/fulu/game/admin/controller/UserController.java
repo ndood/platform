@@ -122,12 +122,13 @@ public class UserController extends BaseController {
     /**
      * 将陪玩师从CJ渠道去除掉
      *
-     * @param userId 陪玩师id
+     * @param userId   陪玩师id
+     * @param sourceId 来源id
      * @return 封装结果集
      */
     @PostMapping("/source/remove")
-    public Result removeServiceUserFromCjSource(@RequestParam Integer userId) {
-        boolean flag = userInfoAuthService.removeServiceUserFromCjSource(userId);
+    public Result removeServiceUserFromCjSource(@RequestParam Integer userId, Integer sourceId) {
+        boolean flag = userInfoAuthService.removeServiceUserFromCjSource(userId, sourceId);
         if (flag) {
             return Result.success().msg("移除成功");
         }

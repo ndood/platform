@@ -63,6 +63,7 @@
 
     <select id="getSourceOrderList" parameterType="Integer" resultType="com.fulu.game.core.entity.vo.SourceOrderVO">
         SELECT
+            rs.id AS source_id,
             IFNULL(rs.NAME, 'ChinaJoy') AS source_str,
             count(*) AS source_order_counts,
             sum(osp.server_money) AS server_money,

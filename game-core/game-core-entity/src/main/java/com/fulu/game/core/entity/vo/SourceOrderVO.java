@@ -14,6 +14,11 @@ import java.math.BigDecimal;
 public class SourceOrderVO {
 
     /**
+     * 外链来源id
+     */
+    private Integer sourceId;
+
+    /**
      * 外链来源名称
      */
     private String sourceStr;

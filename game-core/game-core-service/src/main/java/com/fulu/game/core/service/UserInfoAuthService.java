@@ -162,10 +162,11 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
     /**
      * 将陪玩师从CJ渠道去除掉
      *
-     * @param userId 陪玩师id
+     * @param userId   陪玩师id
+     * @param sourceId 来源id
      * @return 是否操作完成
      */
-    boolean removeServiceUserFromCjSource(Integer userId);
+    boolean removeServiceUserFromCjSource(Integer userId, Integer sourceId);
 
     /**
      * 获取陪玩师是否在平台内的显示状态
