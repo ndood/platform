@@ -132,7 +132,7 @@ public class GradingInfoController extends BaseController {
         userAutoReceiveOrder.setEndRank(endRank);
         userAutoReceiveOrder.setUpdateTime(new Date());
         userAutoReceiveOrderService.update(userAutoReceiveOrder);
-        return Result.success().data(userAutoReceiveOrder);
+        return Result.success().data(userAutoReceiveOrder).msg("接单范围保持成功!");
     }
 
 

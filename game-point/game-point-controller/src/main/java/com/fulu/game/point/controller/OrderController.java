@@ -95,7 +95,8 @@ public class OrderController extends BaseController{
      * @return
      */
     @RequestMapping(value = "/receive/list")
-    public Result list(Integer pageNum,Integer pageSize){
+    public Result list(@RequestParam(value = "pageNum") Integer pageNum,
+                       @RequestParam(value = "pageSize") Integer pageSize){
         PageInfo<PointOrderDetailsVO> pageInfo = orderService.receivingPointOrderList(pageNum,pageSize);
         return Result.success().data(pageInfo);
     }
@@ -240,7 +241,6 @@ public class OrderController extends BaseController{
 
     /**
      * 陪玩师同意协商
-     *
      * @param orderNo
      * @param orderEventId
      * @return
@@ -251,8 +251,6 @@ public class OrderController extends BaseController{
         orderService.consultAgreeOrder(orderNo, orderEventId);
         return Result.success().data(orderNo);
     }
-
-
 
 
     /**
