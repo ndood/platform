@@ -8,6 +8,9 @@ import lombok.Data;
 @AllArgsConstructor
 public class WxMaTemplateMessageVO {
 
+
+    private Integer platform;
+
     private Integer pushId;
 
     private WxMaTemplateMessage wxMaTemplateMessage;

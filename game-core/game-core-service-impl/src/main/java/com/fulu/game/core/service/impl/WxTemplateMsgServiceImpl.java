@@ -28,6 +28,7 @@ import java.util.List;
 @Slf4j
 public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
+    private static final int LOCK_NUM = 10000;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
     @Autowired
@@ -40,10 +41,6 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
     private UserTechAuthService userTechAuthService;
     @Autowired
     private CategoryService categoryService;
-
-
-
-    private static final int LOCK_NUM = 10000;
     private List<Object> objects = new ArrayList<>(LOCK_NUM);
 
     {
@@ -54,10 +51,11 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
     /**
      * 推送集市订单通知
+     *
      * @param order
      */
     @Override
-    public void pushMarketOrder(Order order) {
+    public void pushPointOrder(Order order) {
         log.info("推送集市订单:order:{};", order);
         Category category = categoryService.findById(order.getCategoryId());
         //查询所有符合推送条件的用户
@@ -101,16 +99,17 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
     /**
      * 管理员推送自定义通知
+     *
      * @param pushId
      * @param userIds
      * @param page
      * @param content
      */
-    public void adminPushWxTemplateMsg(int pushId, int platform,List<Integer> userIds, String page, String content) {
+    public void adminPushWxTemplateMsg(int platform, int pushId, List<Integer> userIds, String page, String content) {
         String date = DateUtil.format(new Date(), "yyyy年MM月dd日 HH:mm");
         List<WxMaTemplateMessage.Data> dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", content),
                 new WxMaTemplateMessage.Data("keyword2", date));
-        addTemplateMsg2Queue(pushId, platform,userIds, page, WechatTemplateEnum.PLAY_LEAVE_MSG, dataList);
+        addTemplateMsg2Queue(platform, pushId, userIds, page, WechatTemplateEnum.PLAY_LEAVE_MSG, dataList);
     }
 
 
@@ -128,14 +127,14 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
         }
         String date = DateUtil.format(new Date(), "yyyy年MM月dd日 HH:mm");
         User user = userService.findById(userId);
-        WechatFormid formIdObj = getWechatUserFormId(userId,wechatTemplateMsgEnum.getPlatform());
+        WechatFormid formIdObj = getWechatUserFormId(userId, wechatTemplateMsgEnum.getPlatform());
         if (user == null || formIdObj == null) {
             log.error("user或者formId为null无法给用户推送消息user:{};content:{};formId:{}", user, content, formIdObj);
             if (user != null && user.getMobile() != null) {
                 Boolean flag = SMSUtil.sendLeaveInform(user.getMobile(), content, Constant.WEIXN_JUMP_URL);
                 if (!flag) {
                     log.error("留言通知发送短信失败:user.getMobile:{};content:{};", user.getMobile(), content);
-                }else{
+                } else {
                     log.info("留言通知发送短信成功:user.getMobile:{};content:{};", user.getMobile(), content);
                 }
             }
@@ -149,12 +148,13 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
             default:
                 dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", content), new WxMaTemplateMessage.Data("keyword2", date));
         }
-        addTemplateMsg2Queue(null, formIdObj.getFormId(), formIdObj.getOpenId(), wechatTemplateMsgEnum.getPage(), wechatTemplateMsgEnum.getTemplateId(), dataList);
+        addTemplateMsg2Queue(wechatTemplateMsgEnum.getPlatform(), null, formIdObj.getFormId(), formIdObj.getOpenId(), wechatTemplateMsgEnum.getPage(), wechatTemplateMsgEnum.getTemplateId(), dataList);
     }
 
 
     /**
      * 推送IM消息通知
+     *
      * @param content
      * @param acceptImId 接收者IMid
      * @param imId       发送者IMid
@@ -184,7 +184,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
             return "推送次数太多不能推送!";
         }
         pushWechatTemplateMsg(acceptUser.getId(), WechatTemplateMsgEnum.IM_MSG_PUSH, sendUser.getNickname(), content);
-        time+=1;
+        time += 1;
         //推送状态缓存两个小时
         redisOpenService.set(RedisKeyEnum.WX_TEMPLATE_MSG.generateKey(imId + "|" + acceptImId), time + "", Constant.TIME_MINUTES_FIFE);
         return "消息推送成功!";
@@ -193,14 +193,15 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
     /**
      * 批量写入推送模板消息
+     *
      * @param pushId
      * @param userIds
      * @param page
      * @param wechatTemplateEnum
      * @param dataList
      */
-    private synchronized void addTemplateMsg2Queue(Integer pushId,
-                                                   int platform,
+    private synchronized void addTemplateMsg2Queue(int platform,
+                                                   Integer pushId,
                                                    List<Integer> userIds,
                                                    String page,
                                                    WechatTemplateEnum wechatTemplateEnum,
@@ -215,7 +216,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
             List<WechatFormidVO> wechatFormidVOS = null;
             try {
                 long findStartTime = System.currentTimeMillis();
-                wechatFormidVOS = wechatFormidService.findByUserIds(platform,userIds, i, 1000);
+                wechatFormidVOS = wechatFormidService.findByUserIds(platform, userIds, i, 1000);
                 long findEndTime = System.currentTimeMillis();
                 log.info("pushTask:{}执行wechatFormidService.findByUserIds:{}", pushId, findEndTime - findStartTime);
                 if (wechatFormidVOS.isEmpty()) {
@@ -229,7 +230,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
                     wxMaTemplateMessage.setPage(page);
                     wxMaTemplateMessage.setFormId(wechatFormidVO.getFormId());
                     wxMaTemplateMessage.setData(dataList);
-                    pushMsgQueue.addTemplateMessage(new WxMaTemplateMessageVO(pushId, wxMaTemplateMessage));
+                    pushMsgQueue.addTemplateMessage(new WxMaTemplateMessageVO(platform, pushId, wxMaTemplateMessage));
                     formIds.add(wechatFormidVO.getFormId());
                 }
                 if (formIds.size() > 0) {
@@ -249,6 +250,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
 
     /**
      * 写入队列推送消息
+     *
      * @param pushId
      * @param formId
      * @param openId
@@ -256,7 +258,8 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
      * @param wechatTemplateEnum
      * @param dataList
      */
-    private void addTemplateMsg2Queue(Integer pushId,
+    private void addTemplateMsg2Queue(int platform,
+                                      Integer pushId,
                                       String formId,
                                       String openId,
                                       String page,
@@ -268,17 +271,18 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
         wxMaTemplateMessage.setPage(page);
         wxMaTemplateMessage.setFormId(formId);
         wxMaTemplateMessage.setData(dataList);
-        pushMsgQueue.addTemplateMessage(new WxMaTemplateMessageVO(pushId, wxMaTemplateMessage));
+        pushMsgQueue.addTemplateMessage(new WxMaTemplateMessageVO(platform, pushId, wxMaTemplateMessage));
     }
 
 
     /**
      * 获取用户formId
+     *
      * @param userId
      * @return
      */
-    private WechatFormid getWechatUserFormId(Integer userId,int platform) {
-        List<WechatFormid> formidList = wechatFormidService.findInSevenDaysFormIdByUser(userId,platform);
+    private WechatFormid getWechatUserFormId(Integer userId, int platform) {
+        List<WechatFormid> formidList = wechatFormidService.findInSevenDaysFormIdByUser(userId, platform);
         if (formidList.isEmpty()) {
             return null;
         }

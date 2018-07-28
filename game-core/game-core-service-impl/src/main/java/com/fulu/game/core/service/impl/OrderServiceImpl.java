@@ -13,7 +13,6 @@ import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.dao.OrderEventDao;
 import com.fulu.game.core.dao.OrderShareProfitDao;
 import com.fulu.game.core.entity.*;
-import com.fulu.game.core.entity.to.OrderPointProductTO;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
@@ -21,7 +20,6 @@ import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.google.common.base.Objects;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import com.xiaoleilu.hutool.util.CollectionUtil;
@@ -88,6 +86,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     private OrderPointProductService orderPointProductService;
     @Autowired
     private UserContactService userContactService;
+    @Autowired
+    private SpringThreadPoolExecutor springThreadPoolExecutor;
 
     @Override
     public ICommonDao<Order, Integer> getDao() {
@@ -96,11 +96,30 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
 
     @Override
-    public PageInfo<PointOrderDetailsVO> listPointOrderDetails(Integer pageNum, Integer pageSize) {
+    public PageInfo<PointOrderDetailsVO> receivingPointOrderList(Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize, "id DESC");
         Integer[] status =  new Integer[]{OrderStatusEnum.WAIT_SERVICE.getStatus()};
-        List<PointOrderDetailsVO>  pointOrderDetailsVOS =orderDao.listPointOrderDetails(Arrays.asList(status));
+        List<PointOrderDetailsVO>  pointOrderDetailsVOS =orderDao.receivingPointOrderList(Arrays.asList(status));
         return new PageInfo<>(pointOrderDetailsVOS);
+    }
+
+    @Override
+    public PageInfo<PointOrderDetailsVO> pointOrderList(Integer pageNum, Integer pageSize, Integer type) {
+        PageHelper.startPage(pageNum, pageSize, "id DESC");
+        User user = userService.getCurrentUser();
+        List<PointOrderDetailsVO> list = orderDao.pointOrderList(type, user.getId());
+        for (PointOrderDetailsVO orderDetailsVO : list) {
+            if (user.getId().equals(orderDetailsVO.getUserId())) {
+                orderDetailsVO.setIdentity(UserTypeEnum.GENERAL_USER.getType());
+            } else {
+                orderDetailsVO.setIdentity(UserTypeEnum.ACCOMPANY_PLAYER.getType());
+            }
+            orderDetailsVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderDetailsVO.getStatus()));
+            orderDetailsVO.setStatusNote(OrderStatusEnum.getNoteByStatus(orderDetailsVO.getStatus()));
+            Long countDown = orderStatusDetailsService.getCountDown(orderDetailsVO.getOrderNo(), orderDetailsVO.getStatus());
+            orderDetailsVO.setCountDown(countDown);
+        }
+        return new PageInfo<PointOrderDetailsVO>(list);
     }
 
     public void pushToServiceOrderWxMessage(Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum) {
@@ -246,7 +265,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
 
     /**
-     * 三分订单抢单
+     * 上分订单抢单
      * @param orderNo
      * @return
      */
@@ -270,6 +289,10 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             order.setUpdateTime(new Date());
             update(order);
             log.info("抢单成功:userId:{};order:{}", serviceUser.getId(), order);
+            //倒计时订单状态
+            orderStatusDetailsService.create(orderNo,order.getStatus(),10);
+
+
         } finally {
             redisOpenService.unlock(RedisKeyEnum.MARKET_ORDER_RECEIVE_LOCK.generateKey(order.getOrderNo()));
         }
@@ -326,9 +349,60 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return orderDetailsVO;
     }
 
+    @Override
+    public PointOrderDetailsVO findPointOrderDetails(String orderNo) {
+        PointOrderDetailsVO orderDetailsVO = new PointOrderDetailsVO();
+
+        User currentUser = userService.getCurrentUser();
+        Order order = findByOrderNo(orderNo);
+        if (currentUser.getId().equals(order.getUserId())) {
+            orderDetailsVO.setIdentity(UserTypeEnum.GENERAL_USER.getType());
+        } else if (order.getServiceUserId().equals(currentUser.getId())) {
+            orderDetailsVO.setIdentity(UserTypeEnum.ACCOMPANY_PLAYER.getType());
+        } else {
+            throw new ServiceErrorException("用户不匹配!");
+        }
+        OrderPointProduct orderProduct = orderPointProductService.findByOrderNo(orderNo);
+        BeanUtil.copyProperties(order, orderDetailsVO);
+
+        orderDetailsVO.setAccountInfo(orderProduct.getAccountInfo());
+        orderDetailsVO.setOrderChoice(orderProduct.getOrderChoice());
+        orderDetailsVO.setCategoryIcon(orderProduct.getCategoryIcon());
+        orderDetailsVO.setCategoryName(orderProduct.getCategoryName());
+
+        List<Integer> invisibleContactList  = Arrays.asList(OrderStatusGroupEnum.ORDER_CONTACT_INVISIBLE.getStatusList());
+        if(invisibleContactList.contains(order.getStatus())){
+            orderDetailsVO.setContactInfo(null);
+        }
+
+        orderDetailsVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderDetailsVO.getStatus()));
+        orderDetailsVO.setStatusNote(OrderStatusEnum.getNoteByStatus(orderDetailsVO.getStatus()));
+
+        if(order.getServiceUserId()!=null){
+            User server = userService.findById(order.getServiceUserId());
+            orderDetailsVO.setServerHeadUrl(server.getHeadPortraitsUrl());
+            orderDetailsVO.setServerNickName(server.getNickname());
+        }
+
+
+        User user = userService.findById(order.getUserId());
+        orderDetailsVO.setUserHeadUrl(user.getHeadPortraitsUrl());
+        orderDetailsVO.setUserNickName(user.getNickname());
+
+        //orderStatus
+        long countDown = orderStatusDetailsService.getCountDown(orderNo, order.getStatus());
+        orderDetailsVO.setCountDown(countDown);
 
 
 
+        //用户评论
+        UserComment userComment = userCommentService.findByOrderNo(orderNo);
+        if (userComment != null) {
+            orderDetailsVO.setCommentContent(userComment.getContent());
+            orderDetailsVO.setCommentScore(userComment.getScore());
+        }
+        return orderDetailsVO;
+    }
 
 
     @Override
@@ -574,6 +648,15 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         orderPointProductVO.setCreateTime(new Date());
         orderPointProductVO.setUpdateTime(new Date());
         orderPointProductService.create(orderPointProductVO);
+
+        //推送上分订单消息
+        springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                wxTemplateMsgService.pushPointOrder(order);
+            }
+        });
+
         return order.getOrderNo();
     }
 
@@ -624,7 +707,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         order.setUpdateTime(new Date());
         order.setPayTime(new Date());
         update(order);
-        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
         //记录平台流水
         platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_PAY, order.getOrderNo(), order.getTotalMoney());
         if (order.getCouponNo() != null) {
@@ -632,9 +714,16 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         }
         //如果订单类型是渠道商则扣渠道商款,如果是平台订单则发送通知
         if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
-            //todo 上分订单给陪玩师推送通知
-
+            //订单状态倒计时
+            orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 10);
+            //记录订单流水
+            orderMoneyDetailsService.create(order.getOrderNo(), order.getUserId(), DetailsEnum.ORDER_PAY, orderMoney);
+            //通知
+            wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(),WechatTemplateMsgEnum.POINT_TOSERVICE_ORDER_RECEIVING);
+            wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(),WechatTemplateMsgEnum.POINT_TOSE_ORDER_RECEIVING);
         } else {
+            //订单状态倒计时
+            orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
             //记录订单流水
             orderMoneyDetailsService.create(order.getOrderNo(), order.getUserId(), DetailsEnum.ORDER_PAY, orderMoney);
             //发送短信通知给陪玩师

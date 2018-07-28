@@ -87,7 +87,7 @@
     </select>
 
 
-    <select id="listPointOrderDetails" resultMap="PointOrderDetailsVOMap">
+    <select id="receivingPointOrderList" resultMap="PointOrderDetailsVOMap">
         SELECT
             o.*,
             cu.nickname AS userNickName,
@@ -110,6 +110,40 @@
              </if>
          </where>
     </select>
+
+
+    <select id="pointOrderList" resultMap="PointOrderDetailsVOMap">
+        SELECT
+        o.*,
+        cu.nickname AS userNickName,
+        cu.head_portraits_url AS userHeadUrl,
+        pu.nickname AS serverNickName,
+        pu.head_portraits_url AS serverHeadUrl,
+        op.accountInfo AS accountInfo,
+        op.orderChoice AS orderChoice,
+        op.categoryName as categoryName,
+        op.categoryIcon as categoryIcon
+        FROM
+        t_order o
+        LEFT JOIN t_user cu ON o.user_id = cu.id
+        LEFT JOIN t_user pu ON o.service_user_id = pu.id
+        LEFT JOIN t_order_point_product op ON o.order_no = op.order_no
+        <where>
+            type = 2
+            <if test="type == null">
+                (o.user_id = #{userId}) OR ( o.service_user_id = #{userId} AND o.`status` NOT IN (100, 101) )
+            </if>
+            <if test="type == 1">
+                o.user_id = #{userId}
+            </if>
+            <if test="type == 2">
+                o.service_user_id = #{userId} AND o.`status` NOT IN (100, 101)
+            </if>
+        </where>
+    </select>
+
+
+
 
     <select id="listOrderDetails" resultMap="OrderDetailsVOMap">
         SELECT

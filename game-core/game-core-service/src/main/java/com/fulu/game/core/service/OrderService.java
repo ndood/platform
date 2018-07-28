@@ -21,7 +21,24 @@ import java.util.List;
 public interface OrderService extends ICommonService<Order, Integer> {
 
 
-    PageInfo<PointOrderDetailsVO> listPointOrderDetails(Integer pageNum,Integer pageSize);
+
+
+
+    /**
+     * 抢单列表
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    PageInfo<PointOrderDetailsVO> receivingPointOrderList(Integer pageNum, Integer pageSize);
+
+    /**
+     * 上分订单列表
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+     PageInfo<PointOrderDetailsVO> pointOrderList(Integer pageNum, Integer pageSize, Integer type);
 
 
     /**
@@ -387,6 +404,14 @@ public interface OrderService extends ICommonService<Order, Integer> {
      * @return
      */
     OrderDetailsVO findOrderDetails(String orderNo);
+
+    /**
+     * 上分订单详情
+     * @param orderNo
+     * @return
+     */
+    PointOrderDetailsVO findPointOrderDetails(String orderNo);
+
 
 
     /**

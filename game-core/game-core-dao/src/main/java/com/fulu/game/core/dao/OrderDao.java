@@ -42,5 +42,9 @@ public interface OrderDao extends ICommonDao<Order, Integer> {
                                           @Param(value = "userId") Integer userId);
 
 
-    List<PointOrderDetailsVO> listPointOrderDetails(@Param(value = "statusList") List<Integer> statusList);
+    List<PointOrderDetailsVO> pointOrderList(@Param(value = "type") Integer type,
+                                             @Param(value = "userId") Integer userId);
+
+
+    List<PointOrderDetailsVO> receivingPointOrderList(@Param(value = "statusList") List<Integer> statusList);
 }
