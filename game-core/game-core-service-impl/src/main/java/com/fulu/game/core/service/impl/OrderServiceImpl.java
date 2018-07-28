@@ -122,6 +122,16 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return new PageInfo<PointOrderDetailsVO>(list);
     }
 
+    @Override
+    public Integer countNewPointOrder(Date startDate) {
+        OrderVO param = new OrderVO();
+        Integer[] statusList =  new Integer[]{OrderStatusEnum.WAIT_SERVICE.getStatus()};
+        param.setType(OrderTypeEnum.POINT.getType());
+        param.setStatusList(statusList);
+        param.setStartTime(startDate);
+        return orderDao.countByParameter(param);
+    }
+
     public void pushToServiceOrderWxMessage(Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum) {
         if(OrderTypeEnum.POINT.getType().equals(order.getType())){
             wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(),wechatTemplateMsgEnum.choice(WechatEcoEnum.POINT.getType()));

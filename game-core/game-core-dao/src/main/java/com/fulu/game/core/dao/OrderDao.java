@@ -47,4 +47,7 @@ public interface OrderDao extends ICommonDao<Order, Integer> {
 
 
     List<PointOrderDetailsVO> receivingPointOrderList(@Param(value = "statusList") List<Integer> statusList);
+
+
+
 }

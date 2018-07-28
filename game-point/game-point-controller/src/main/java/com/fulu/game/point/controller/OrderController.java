@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +74,18 @@ public class OrderController extends BaseController{
                             Integer type){
         PageInfo<PointOrderDetailsVO> pageInfo = orderService.pointOrderList(pageNum,pageSize,type);
         return Result.success().data(pageInfo);
+    }
+
+
+    /**
+     * 新订单数
+     * @param startDate
+     * @return
+     */
+    @RequestMapping(value = "/new-order-count")
+    public Result newOrderCount(Date startDate){
+        Integer count = orderService.countNewPointOrder(startDate);
+        return Result.success().data(count);
     }
 
     /**

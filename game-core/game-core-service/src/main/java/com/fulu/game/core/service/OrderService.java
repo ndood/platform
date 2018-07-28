@@ -41,6 +41,9 @@ public interface OrderService extends ICommonService<Order, Integer> {
      PageInfo<PointOrderDetailsVO> pointOrderList(Integer pageNum, Integer pageSize, Integer type);
 
 
+     Integer countNewPointOrder(Date startDate);
+
+
     /**
      * 向陪玩师推送消息
      * @param order
