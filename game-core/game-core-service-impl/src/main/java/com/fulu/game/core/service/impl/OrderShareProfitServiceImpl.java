@@ -2,6 +2,7 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.common.enums.DetailsEnum;
+import com.fulu.game.common.enums.OrderTypeEnum;
 import com.fulu.game.common.enums.PlatFormMoneyTypeEnum;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.core.dao.ArbitrationDetailsDao;
@@ -38,6 +39,8 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
     private OrderMoneyDetailsService orderMoneyDetailsService;
     @Autowired
     private ArbitrationDetailsDao arbitrationDetailsDao;
+    @Autowired
+    private UserAutoReceiveOrderService userAutoReceiveOrderService;
 
     @Override
     public ICommonDao<OrderShareProfit, Integer> getDao() {
@@ -78,6 +81,11 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
         moneyDetailsService.orderSave(serverMoney, order.getServiceUserId(), order.getOrderNo());
         //平台记录支付打手流水
         platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_SHARE_PROFIT, order.getOrderNo(), serverMoney.negate());
+
+
+        if(OrderTypeEnum.POINT.getType().equals(order.getType())){
+            userAutoReceiveOrderService.addOrderCompleteNum(order.getServiceUserId(),order.getCategoryId());
+        }
     }
 
 

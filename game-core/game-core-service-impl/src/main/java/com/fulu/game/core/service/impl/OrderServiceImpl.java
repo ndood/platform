@@ -89,6 +89,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     @Autowired
     private SpringThreadPoolExecutor springThreadPoolExecutor;
 
+    @Autowired
+    private UserAutoReceiveOrderService userAutoReceiveOrderService;
+
     @Override
     public ICommonDao<Order, Integer> getDao() {
         return orderDao;

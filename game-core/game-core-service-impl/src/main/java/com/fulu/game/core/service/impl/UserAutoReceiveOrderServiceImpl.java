@@ -7,6 +7,7 @@ import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.vo.UserAutoReceiveOrderVO;
 import com.fulu.game.core.entity.vo.searchVO.UserAutoOrderSearchVO;
 import com.fulu.game.core.service.AdminService;
+import com.fulu.game.core.service.OrderShareProfitService;
 import com.fulu.game.core.service.UserTechAuthService;
 import org.bouncycastle.cms.PasswordRecipientId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
     private UserTechAuthService userTechAuthService;
     @Autowired
     private AdminService adminService;
+
 
     @Override
     public ICommonDao<UserAutoReceiveOrder, Integer> getDao() {
@@ -86,6 +88,42 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
         for(UserAutoReceiveOrder autoReceiveOrder : userAutoReceiveOrders){
             autoReceiveOrder.setUserAutoSetting(flag);
         }
+    }
+
+    @Override
+    public void addOrderCompleteNum(int userId, int categoryId) {
+        UserAutoReceiveOrder autoReceiveOrder = findByUserIdAndCategoryId(userId,categoryId);
+        Integer orderCompleteNum =  autoReceiveOrder.getOrderCompleteNum();
+        if(orderCompleteNum==null){
+            orderCompleteNum = 0;
+        }
+        autoReceiveOrder.setOrderCompleteNum(orderCompleteNum+1);
+        autoReceiveOrder.setUpdateTime(new Date());
+        update(autoReceiveOrder);
+    }
+
+    @Override
+    public void addOrderCancelNum(int userId, int categoryId) {
+        UserAutoReceiveOrder autoReceiveOrder = findByUserIdAndCategoryId(userId,categoryId);
+        Integer orderCancelNum =  autoReceiveOrder.getOrderCancelNum();
+        if(orderCancelNum==null){
+            orderCancelNum = 0;
+        }
+        autoReceiveOrder.setOrderCancelNum(orderCancelNum+1);
+        autoReceiveOrder.setUpdateTime(new Date());
+        update(autoReceiveOrder);
+    }
+
+    @Override
+    public void addOrderDisputeNum(int userId, int categoryId) {
+        UserAutoReceiveOrder autoReceiveOrder = findByUserIdAndCategoryId(userId,categoryId);
+        Integer orderDisputeNum = autoReceiveOrder.getOrderDisputeNum();
+        if(orderDisputeNum==null){
+            orderDisputeNum = 0 ;
+        }
+        autoReceiveOrder.setOrderDisputeNum(orderDisputeNum);
+        autoReceiveOrder.setUpdateTime(new Date());
+        update(autoReceiveOrder);
     }
 
 }
