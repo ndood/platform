@@ -2,6 +2,7 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.common.enums.DetailsEnum;
+import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.enums.OrderTypeEnum;
 import com.fulu.game.common.enums.PlatFormMoneyTypeEnum;
 import com.fulu.game.common.exception.OrderException;
@@ -81,8 +82,6 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
         moneyDetailsService.orderSave(serverMoney, order.getServiceUserId(), order.getOrderNo());
         //平台记录支付打手流水
         platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_SHARE_PROFIT, order.getOrderNo(), serverMoney.negate());
-
-
         if(OrderTypeEnum.POINT.getType().equals(order.getType())){
             userAutoReceiveOrderService.addOrderCompleteNum(order.getServiceUserId(),order.getCategoryId());
         }
@@ -130,6 +129,13 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
         orderMoneyDetailsService.create(order.getOrderNo(), order.getUserId(), DetailsEnum.ORDER_USER_CANCEL, refundMoney.negate());
         try {
             payService.refund(order.getOrderNo(), order.getActualMoney(),refundMoney);
+            if(OrderTypeEnum.POINT.getType().equals(order.getType())){
+                if(OrderStatusEnum.CONSULT_COMPLETE.getStatus().equals(order.getStatus())||OrderStatusEnum.SYSTEM_CONSULT_COMPLETE.getStatus().equals(order.getStatus())){
+                    userAutoReceiveOrderService.addOrderDisputeNum(order.getServiceUserId(),order.getCategoryId());
+                }else{
+                    userAutoReceiveOrderService.addOrderCancelNum(order.getServiceUserId(),order.getCategoryId());
+                }
+            }
         } catch (Exception e) {
             log.error("退款失败{}", order.getOrderNo(), e.getMessage());
             throw new OrderException(order.getOrderNo(), "订单退款失败!");
