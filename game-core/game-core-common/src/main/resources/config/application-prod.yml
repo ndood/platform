@@ -33,7 +33,7 @@ config:
       accountSid: 8a216da85f341b69015f4dbe74580a0c
       accountToken: 6f9dc07aa412497a995451f9463b1f61
       appId: 8aaf070862fae1b50163050c11f00460
-    wechat:
+    wechat_game:
       appId: wxf0bf670601a34bb5
       secret: d8aeb8dc6265394a3789aff6b2792a23
       token: 111
@@ -46,6 +46,19 @@ config:
       keyPath: /data/cert/apiclient_cert.p12
       tradeType: JSAPI
       notifyUrl: http://api-play.wzpeilian.com/wechat/pay/callback
+    wechat_poit:
+      appId: wxa0d900f1903341da
+      secret: 9bda42475984632a6e82734d61c964cb
+      token: 111
+      aesKey: 111
+      msgDataFormat: JSON
+      mchId: 1502601051
+      mchKey: 24d1b993f21046a296b0846f62d3e431
+      subAppId:
+      subMchId:
+      keyPath: E:\cert\apiclient_cert.p12
+      tradeType: JSAPI
+      notifyUrl: http://z3tfsd.natappfree.cc/wechat/pay/callback
     im:
       urlPrefix: http://a1.easemob.com
       appKey: 1183180421228734#game-play

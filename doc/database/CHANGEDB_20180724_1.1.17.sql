@@ -96,16 +96,16 @@ CREATE TABLE `t_user_auto_receive_order` (
 )  COMMENT='自动接单设置表';
 
 
-ALTER TABLE `t_user` ADD COLUMN `point_open_id` varchar(255) DEFAULT NULL COMMENT '开黑上分openid' after `open_id`;
-ALTER TABLE `t_user` ADD COLUMN `public_open_id` varchar(255) DEFAULT NULL COMMENT '微信公众号openid' after `point_open_id`;
-ALTER TABLE `t_user` ADD COLUMN `unionid` varchar(255) DEFAULT NULL COMMENT '微信生态唯一标识' after `public_open_id`;
+ALTER TABLE `t_user` ADD COLUMN `point_open_id` varchar(128) DEFAULT NULL COMMENT '开黑上分openid' after `open_id`;
+ALTER TABLE `t_user` ADD COLUMN `public_open_id` varchar(128) DEFAULT NULL COMMENT '微信公众号openid' after `point_open_id`;
+ALTER TABLE `t_user` ADD COLUMN `union_id` varchar(128) DEFAULT NULL COMMENT '微信生态唯一标识' after `public_open_id`;
 
 ALTER TABLE `t_user` ADD UNIQUE INDEX (`point_open_id`) USING BTREE;
 ALTER TABLE `t_user` ADD UNIQUE INDEX (`public_open_id`) USING BTREE;
-ALTER TABLE `t_user` ADD UNIQUE INDEX (`unionid`) USING BTREE;
+ALTER TABLE `t_user` ADD UNIQUE INDEX (`union_id`) USING BTREE;
 
 
-ALTER TABLE `t_category` ADD COLUMN `is_point` tinyint(1)  DEFAULT NULL COMMENT '是否是上分平台' after `public_open_id`;
+ALTER TABLE `t_category` ADD COLUMN `is_point` tinyint(1)  DEFAULT NULL COMMENT '是否是上分平台' after `status`;
 
 ALTER TABLE `t_push_msg` ADD COLUMN `platform` tinyint(1)  DEFAULT NULL COMMENT '微信平台号' after `content`;
 
