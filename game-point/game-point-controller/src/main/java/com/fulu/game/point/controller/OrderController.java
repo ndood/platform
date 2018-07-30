@@ -7,14 +7,17 @@ import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.SystemException;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.OrderPointProductTO;
-import com.fulu.game.core.entity.vo.*;
+import com.fulu.game.core.entity.vo.OrderEventVO;
+import com.fulu.game.core.entity.vo.OrderPointProductVO;
+import com.fulu.game.core.entity.vo.OrderVO;
+import com.fulu.game.core.entity.vo.PointOrderDetailsVO;
+import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.point.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,14 +28,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Slf4j
 @RequestMapping(value = "/api/v1/order")
-public class OrderController extends BaseController{
+public class OrderController extends BaseController {
 
     @Autowired
     private OrderService orderService;
@@ -55,6 +56,7 @@ public class OrderController extends BaseController{
 
     /**
      * 订单详情
+     *
      * @param orderNo
      * @return
      */
@@ -66,6 +68,7 @@ public class OrderController extends BaseController{
 
     /**
      * 订单列表
+     *
      * @param pageNum
      * @param pageSize
      * @param type
@@ -74,39 +77,42 @@ public class OrderController extends BaseController{
     @RequestMapping(value = "/list")
     public Result orderList(Integer pageNum,
                             Integer pageSize,
-                            Integer type){
-        PageInfo<PointOrderDetailsVO> pageInfo = orderService.pointOrderList(pageNum,pageSize,type);
+                            Integer type) {
+        PageInfo<PointOrderDetailsVO> pageInfo = orderService.pointOrderList(pageNum, pageSize, type);
         return Result.success().data(pageInfo);
     }
 
 
     /**
      * 新订单数
+     *
      * @param startDate
      * @return
      */
     @RequestMapping(value = "/new-order-count")
-    public Result newOrderCount(Date startDate){
+    public Result newOrderCount(Date startDate) {
         Integer count = orderService.countNewPointOrder(startDate);
         return Result.success().data(count);
     }
 
     /**
      * 抢单列表
+     *
      * @param pageNum
      * @param pageSize
      * @return
      */
     @RequestMapping(value = "/receive/list")
     public Result list(@RequestParam(value = "pageNum") Integer pageNum,
-                       @RequestParam(value = "pageSize") Integer pageSize){
-        PageInfo<PointOrderDetailsVO> pageInfo = orderService.receivingPointOrderList(pageNum,pageSize);
+                       @RequestParam(value = "pageSize") Integer pageSize) {
+        PageInfo<PointOrderDetailsVO> pageInfo = orderService.receivingPointOrderList(pageNum, pageSize);
         return Result.success().data(pageInfo);
     }
 
 
     /**
      * 段位价格计算
+     *
      * @param orderPointProductTO
      * @return
      */
@@ -133,30 +139,32 @@ public class OrderController extends BaseController{
 
     /**
      * 上分订单抢单
+     *
      * @param orderNo
      * @return
      */
     @PostMapping(value = "/receive")
-    public Result orderReceive(@RequestParam(required = true)String orderNo){
+    public Result orderReceive(@RequestParam(required = true) String orderNo) {
         Order order = orderService.findByOrderNo(orderNo);
-        if(order==null){
-            throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST,orderNo);
+        if (order == null) {
+            throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST, orderNo);
         }
         User user = userService.findById(userService.getCurrentUser().getId());
         if (!UserInfoAuthStatusEnum.VERIFIED.getType().equals(user.getUserInfoAuth()) || !UserStatusEnum.NORMAL.getType().equals(user.getStatus())) {
-            throw new OrderException(OrderException.ExceptionCode.ORDER_USER_NOT_VERIFIED,order.getOrderNo());
+            throw new OrderException(OrderException.ExceptionCode.ORDER_USER_NOT_VERIFIED, order.getOrderNo());
         }
         List<Integer> techAuthList = userTechAuthService.findUserNormalCategoryIds(user.getId());
-        if(!techAuthList.contains(order.getCategoryId())){
-            throw new OrderException(OrderException.ExceptionCode.ORDER_USER_NOT_HAS_TECH,order.getOrderNo());
+        if (!techAuthList.contains(order.getCategoryId())) {
+            throw new OrderException(OrderException.ExceptionCode.ORDER_USER_NOT_HAS_TECH, order.getOrderNo());
         }
-        orderService.receivePointOrder(order.getOrderNo(),user);
+        orderService.receivePointOrder(order.getOrderNo(), user);
         return Result.success().data(orderNo).msg("接单成功!");
     }
 
 
     /**
      * 提交上分订单
+     *
      * @param request
      * @param orderPointProductTO
      * @param sessionkey
@@ -167,7 +175,7 @@ public class OrderController extends BaseController{
                          @Valid OrderPointProductTO orderPointProductTO,
                          @RequestParam(required = true) String sessionkey) {
         if (!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))) {
-            log.error("验证sessionkey错误:orderPointProductTO:{};sessionkey:{};",orderPointProductTO,sessionkey);
+            log.error("验证sessionkey错误:orderPointProductTO:{};sessionkey:{};", orderPointProductTO, sessionkey);
             throw new SystemException(SystemException.ExceptionCode.NO_FORM_TOKEN_ERROR);
         }
         OrderPointProductVO orderPointProductVO = getAdvanceOrder(orderPointProductTO);
@@ -175,7 +183,7 @@ public class OrderController extends BaseController{
         String orderNo = orderService.submitPointOrder(orderPointProductVO,
                 orderPointProductTO.getCouponNo(),
                 orderPointProductTO.getContactType(),
-                orderPointProductTO.getContactInfo(),orderIp);
+                orderPointProductTO.getContactInfo(), orderIp);
         return Result.success().data(orderNo);
     }
 
@@ -197,6 +205,7 @@ public class OrderController extends BaseController{
 
     /**
      * 用户取消订单
+     *
      * @param orderNo
      * @return
      */
@@ -209,6 +218,7 @@ public class OrderController extends BaseController{
 
     /**
      * 申请客服仲裁
+     *
      * @param orderNo
      * @param remark
      * @param fileUrl
@@ -225,6 +235,7 @@ public class OrderController extends BaseController{
 
     /**
      * 提醒开始服务
+     *
      * @param orderNo
      * @return
      */
@@ -241,6 +252,7 @@ public class OrderController extends BaseController{
 
     /**
      * 用户协商订单
+     *
      * @return
      */
     @RequestMapping(value = "/user/consult")
@@ -259,6 +271,7 @@ public class OrderController extends BaseController{
 
     /**
      * 陪玩师同意协商
+     *
      * @param orderNo
      * @param orderEventId
      * @return
@@ -273,6 +286,7 @@ public class OrderController extends BaseController{
 
     /**
      * 陪玩师拒绝协商
+     *
      * @param orderNo
      * @param orderEventId
      * @return
@@ -288,6 +302,7 @@ public class OrderController extends BaseController{
 
     /**
      * 用户取消协商
+     *
      * @param orderNo
      * @param orderEventId
      * @return
@@ -302,6 +317,7 @@ public class OrderController extends BaseController{
 
     /**
      * 陪玩师开始服务
+     *
      * @param orderNo
      * @return
      */
@@ -314,6 +330,7 @@ public class OrderController extends BaseController{
 
     /**
      * 用户验收订单
+     *
      * @param orderNo
      * @return
      */
@@ -365,6 +382,7 @@ public class OrderController extends BaseController{
 
     /**
      * 留言接口
+     *
      * @param orderNo
      * @param orderEventId
      * @param remark
@@ -380,7 +398,24 @@ public class OrderController extends BaseController{
         return Result.success().data(orderDeal);
     }
 
-
+    /**
+     * 未接单订单列表
+     *
+     * @param pageNum       页码
+     * @param pageSize      每页显示数据条数
+     * @param orderSearchVO 查询VO
+     * @return 封装结果集
+     */
+    @PostMapping("/unaccept/list")
+    public Result unacceptOrderList(@RequestParam("pageNum") Integer pageNum,
+                                    @RequestParam("pageSize") Integer pageSize,
+                                    OrderSearchVO orderSearchVO) {
+        PageInfo<OrderVO> orderVOPageInfo = orderService.unacceptOrderList(pageNum, pageSize, orderSearchVO);
+        if (orderVOPageInfo == null) {
+            return Result.error().msg("无数据！");
+        }
+        return Result.success().data(orderVOPageInfo).msg("查询成功！");
+    }
 
     private OrderPointProductVO getAdvanceOrder(OrderPointProductTO orderPointProductTO) {
         OrderPointProductVO gradingAdvanceOrderVO = new OrderPointProductVO();

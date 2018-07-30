@@ -74,10 +74,12 @@ public class UserContactServiceImpl extends AbsCommonService<UserContact, Intege
             userContacts.setCreateTime(new Date());
             create(userContacts);
         } else {
-            userContacts.setIsDefault(isDefault);
-            userContacts.setContact(contact);
-            userContacts.setUpdateTime(new Date());
-            update(userContacts);
+            if (!userContacts.getContact().equals(contact) || !userContacts.getIsDefault().equals(isDefault)) {
+                userContacts.setIsDefault(isDefault);
+                userContacts.setContact(contact);
+                userContacts.setUpdateTime(new Date());
+                update(userContacts);
+            }
         }
         return userContacts;
     }

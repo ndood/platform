@@ -45,10 +45,10 @@
     </select>
 
 
-
-    <select id="findUserBySearch" resultMap="UserAutoReceiveOrderResultMap" parameterType="com.fulu.game.core.entity.vo.searchVO.UserAutoOrderSearchVO">
+    <select id="findUserBySearch" resultMap="UserAutoReceiveOrderResultMap"
+            parameterType="com.fulu.game.core.entity.vo.searchVO.UserAutoOrderSearchVO">
         SELECT
-             user_id
+        user_id
         FROM t_user_auto_receive_order
         <where>
             <if test="categoryId != null">
@@ -121,6 +121,32 @@
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAutoReceiveUserInfoAuthList"
+            parameterType="com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO"
+            resultType="com.fulu.game.core.entity.vo.UserAutoReceiveOrderVO">
+        SELECT
+        auto.user_id,
+        auto.user_auto_setting,
+        tu.login_time,
+        tu.user_score,
+        cate. NAME,
+        auto.remark,
+        auto.order_complete_num,
+        auto.order_cancel_num,
+        auto.order_dispute_num,
+        auto.start_rank,
+        auto.end_rank
+        FROM
+        t_user_auto_receive_order AS auto
+        LEFT JOIN t_user AS tu ON auto.user_id = tu.id
+        LEFT JOIN t_category AS cate ON auto.category_id = cate.id
+        <where>
+            <if test="userAutoSetting != null">
+                and auto.user_auto_setting = #{userAutoSetting}
             </if>
         </where>
     </select>

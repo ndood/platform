@@ -9,10 +9,15 @@ import com.fulu.game.core.entity.UserAutoReceiveOrder;
 import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.vo.UserAutoReceiveOrderVO;
 import com.fulu.game.core.entity.vo.searchVO.UserAutoOrderSearchVO;
+import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.UserAutoReceiveOrderService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.UserTechAuthService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.xiaoleilu.hutool.util.CollectionUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -151,10 +156,25 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
         }
         List<String> headList = new ArrayList<>();
         List<User> userList = userService.findByUserIds(userIds, Boolean.TRUE);
-        for(User user: userList){
+        for (User user : userList) {
             headList.add(user.getHeadPortraitsUrl());
         }
         return headList;
     }
 
+    @Override
+    public PageInfo<UserAutoReceiveOrderVO> autoReceiveUserInfoAuthList(Integer pageNum,
+                                                                        Integer pageSize,
+                                                                        UserInfoAuthSearchVO userInfoAuthSearchVO) {
+        String orderBy = userInfoAuthSearchVO.getOrderBy();
+        if (StringUtils.isBlank(orderBy)) {
+            orderBy = "auto.create_time desc";
+        }
+        PageHelper.startPage(pageNum, pageSize, orderBy);
+        List<UserAutoReceiveOrderVO> voList = userAutoReceiveOrderDao.findAutoReceiveUserInfoAuthList();
+        if (CollectionUtil.isEmpty(voList)) {
+            return null;
+        }
+        return new PageInfo<>(voList);
+    }
 }
