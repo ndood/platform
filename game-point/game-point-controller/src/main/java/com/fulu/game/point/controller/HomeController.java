@@ -3,6 +3,7 @@ package com.fulu.game.point.controller;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.config.WxMaServiceSupply;
+import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.SysConfig;
@@ -51,16 +52,12 @@ public class HomeController extends BaseController{
     @RequestMapping(value = "/sys/config", method = RequestMethod.POST)
     @ResponseBody
     public Result sysConfig(@RequestParam(value = "version", required = false, defaultValue = "1.0.2") String version) {
-        List<SysConfig> result = sysConfigService.findByVersion(version);
+        List<SysConfig> result = sysConfigService.findByVersion(version, WechatEcoEnum.POINT.getType());
         if (CollectionUtil.isEmpty(result)) {
             result = new ArrayList<SysConfig>();
-            SysConfig sysConfig1 = new SysConfig();
-            sysConfig1.setName("MMCON");
-            sysConfig1.setValue("CLOSE");
             SysConfig sysConfig2 = new SysConfig();
             sysConfig2.setName("PAYCON");
             sysConfig2.setValue("CLOSE");
-            result.add(sysConfig1);
             result.add(sysConfig2);
         }
         return Result.success().data(result);
@@ -86,19 +83,28 @@ public class HomeController extends BaseController{
         playUserToken.setHost(ip);
         Subject subject = SecurityUtils.getSubject();
         //2.提交认证和凭据给身份验证系统
-        subject.login(playUserToken);
-        User user = userService.getCurrentUser();
-        userService.updateUserIpAndLastTime(ip);
-        user.setOpenId(null);
-        user.setBalance(null);
-        Map<String, Object> result = BeanUtil.beanToMap(user);
-        result.put("token", SubjectUtil.getToken());
-        result.put("userId", user.getId());
-        if(user.getUnionId()==null){
-            log.error("用户没有unionId;user{}",user);
-            return Result.newUser().data(result);
+        try {
+            subject.login(playUserToken);
+            User user = userService.getCurrentUser();
+            userService.updateUserIpAndLastTime(ip);
+            user.setOpenId(null);
+            user.setPointOpenId(null);
+            user.setBalance(null);
+            Map<String, Object> result = BeanUtil.beanToMap(user);
+            result.put("token", SubjectUtil.getToken());
+            result.put("userId", user.getId());
+            if(user.getUnionId()==null){
+                log.error("用户没有unionId;user{}",user);
+                return Result.newUser().data(result);
+            }
+            return Result.success().data(result).msg("登录成功!");
+        }catch (AuthenticationException e) {
+            log.error("验证登录异常，异常信息:", e);
+            return Result.noLogin().msg("用户验证信息错误！");
+        } catch (Exception e) {
+            log.error("登录异常!", e);
+            return Result.error().msg("登陆异常！");
         }
-        return Result.success().data(result).msg("登录成功!");
     }
 
 

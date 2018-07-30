@@ -49,7 +49,7 @@ public class GradingInfoController extends BaseController {
      * @return
      */
     @PostMapping(value = "/area")
-    public Result gradingAreaInfo(Integer categoryId) {
+    public Result gradingAreaInfo(@RequestParam(required = true)Integer categoryId) {
         List<TechValue> list = techValueService.areaList(categoryId);
         return Result.success().data(list);
     }
@@ -62,8 +62,8 @@ public class GradingInfoController extends BaseController {
      * @return
      */
     @PostMapping(value = "/price")
-    public Result gradingInfo(Integer categoryId,
-                              Integer type) {
+    public Result gradingInfo(@RequestParam(required = true) Integer categoryId,
+                              @RequestParam(required = true) Integer type) {
         List<GradingPriceVO> list = gradingPriceService.findByCategoryAndType(categoryId, type);
         return Result.success().data(list);
     }
@@ -107,7 +107,7 @@ public class GradingInfoController extends BaseController {
      * @return
      */
     @PostMapping(value = "/auto-order/range-list")
-    public Result autoOrderRangeList(Integer categoryId){
+    public Result autoOrderRangeList(@RequestParam(required = true) Integer categoryId){
         List<GradingPriceVO> gradingPriceVOList =  gradingPriceService.findByCategoryAndType(categoryId, PointTypeEnum.ACCURATE_SCORE.getType());
         return Result.success().data(gradingPriceVOList);
     }
@@ -121,10 +121,10 @@ public class GradingInfoController extends BaseController {
      * @return
      */
     @PostMapping(value = "/auto-order/range-save")
-    public Result autoOrderRangeSave(Integer categoryId,
-                                     Integer areaId,
-                                     Integer startRank,
-                                     Integer endRank){
+    public Result autoOrderRangeSave(@RequestParam(required = true)Integer categoryId,
+                                     @RequestParam(required = true) Integer areaId,
+                                     @RequestParam(required = true)Integer startRank,
+                                     @RequestParam(required = true) Integer endRank){
         User user = userService.getCurrentUser();
         UserAutoReceiveOrder userAutoReceiveOrder =  userAutoReceiveOrderService.findByUserIdAndCategoryId(user.getId(),categoryId);
         userAutoReceiveOrder.setAreaId(areaId);

@@ -20,6 +20,9 @@ public class SysConfig implements Serializable {
 	//
 	@JsonIgnore
 	private Integer id;
+
+	private Integer type;
+
 	private String version;
 	//配置名
 	private String name;

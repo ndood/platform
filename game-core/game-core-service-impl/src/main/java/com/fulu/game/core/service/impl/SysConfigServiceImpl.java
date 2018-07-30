@@ -54,11 +54,14 @@ public class SysConfigServiceImpl extends AbsGuavaCache<String,List<SysConfig>> 
     }
 
     @Override
-    public List<SysConfig> findByVersion(String version){
+    public List<SysConfig> findByVersion(String version,Integer type){
+        if(version==null){
+            return new ArrayList<>();
+        }
         List<SysConfig> listAll = getValue(ALL);
         List<SysConfig> versionList = new ArrayList<>();
         for (SysConfig sysConfig:listAll) {
-            if (version.equals(sysConfig.getVersion())){
+            if (version.equals(sysConfig.getVersion())&&type.equals(sysConfig.getType())){
                 versionList.add(sysConfig);
             }
         }

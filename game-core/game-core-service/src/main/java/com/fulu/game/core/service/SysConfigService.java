@@ -15,5 +15,5 @@ public interface SysConfigService {
 
     List<SysConfig> findAll();
 
-    List<SysConfig> findByVersion(String version);
+    List<SysConfig> findByVersion(String version,Integer type);
 }

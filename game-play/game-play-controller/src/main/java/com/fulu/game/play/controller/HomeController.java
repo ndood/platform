@@ -3,6 +3,7 @@ package com.fulu.game.play.controller;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.config.WxMaServiceSupply;
+import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Banner;
@@ -59,8 +60,8 @@ public class HomeController extends BaseController{
      */
     @RequestMapping(value = "/sys/config", method = RequestMethod.POST)
     @ResponseBody
-    public Result sysConfig(@RequestParam(value = "version", required = false, defaultValue = "1.0.2") String version) {
-        List<SysConfig> result = sysConfigService.findByVersion(version);
+    public Result sysConfig(@RequestParam(value = "version", required = false) String version) {
+        List<SysConfig> result = sysConfigService.findByVersion(version, WechatEcoEnum.PLAY.getType());
         if (CollectionUtil.isEmpty(result)) {
             result = new ArrayList<SysConfig>();
             SysConfig sysConfig1 = new SysConfig();
@@ -100,10 +101,15 @@ public class HomeController extends BaseController{
             User user = userService.getCurrentUser();
             userService.updateUserIpAndLastTime(ip);
             user.setOpenId(null);
+            user.setPointOpenId(null);
             user.setBalance(null);
             Map<String, Object> result = BeanUtil.beanToMap(user);
             result.put("token", SubjectUtil.getToken());
             result.put("userId", user.getId());
+            if(user.getUnionId()==null){
+                log.error("用户没有unionId;user{}",user);
+                return Result.newUser().data(result);
+            }
             return Result.success().data(result).msg("登录成功!");
         } catch (AuthenticationException e) {
             log.error("验证登录异常，异常信息:", e);
