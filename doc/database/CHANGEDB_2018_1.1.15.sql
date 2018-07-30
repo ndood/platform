@@ -6,7 +6,7 @@ ALTER TABLE `t_user_info_auth` ADD COLUMN `source_id` int(11) unsigned zerofill 
 COMMENT '来源id（对应t_regist_source表的主键id）' after `is_platform_show`;
 
 ALTER TABLE `t_price_factor` ADD COLUMN `source_id` int(11) unsigned zerofill DEFAULT '00000000000'
-COMMENT '来源id（对应t_regist_source表的主键id）' after `factor`,
+COMMENT '来源id（对应t_regist_source表的主键id）' after `factor`;
 
 -- 备注：insert此条数据的时候，主键id值和时间戳两个参数需要做相应的修改，其他的值不改
 INSERT INTO `t_price_factor` VALUES ('4', '1.00', '31', '30,31,32', '14', 'admin', '2018-07-26 11:31:51');
