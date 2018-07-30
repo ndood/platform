@@ -37,7 +37,7 @@ public class UserContactController extends BaseController {
         if (userContactVO == null) {
             return Result.error().msg("用户联系方式为空！");
         }
-        return Result.error().data(userContactVO).msg("查询成功！");
+        return Result.success().data(userContactVO).msg("查询成功！");
     }
 
     /**
