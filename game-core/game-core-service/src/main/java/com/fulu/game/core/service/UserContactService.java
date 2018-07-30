@@ -32,7 +32,14 @@ public interface UserContactService extends ICommonService<UserContact, Integer>
      * 保存用户联系方式
      *
      * @param userContactVO 参数VO
-     * @return 用户联系方式Bean
+     * @return 是否保存成功
      */
-    UserContact saveUserContact(UserContactVO userContactVO);
+    boolean saveUserContact(UserContactVO userContactVO);
+
+    /**
+     * 获取用户联系方式
+     *
+     * @return 用户联系方式VO
+     */
+    UserContactVO getUserContact();
 }
