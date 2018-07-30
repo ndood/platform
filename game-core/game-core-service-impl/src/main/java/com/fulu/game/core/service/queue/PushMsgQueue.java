@@ -8,7 +8,6 @@ import com.fulu.game.core.entity.PushMsg;
 import com.fulu.game.core.entity.WxMaTemplateMessageVO;
 import com.fulu.game.core.service.PushMsgService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -81,7 +80,7 @@ public class PushMsgQueue implements Runnable {
             if(WechatEcoEnum.POINT.getType().equals( wxMaTemplateMessageVO.getPlatform())){
                 wxMaServiceSupply.pointWxMaService().getMsgService().sendTemplateMsg(wxMaTemplateMessage);
             }else{
-                wxMaServiceSupply.gameWxMaService().getMsgService().sendTemplateMsg(wxMaTemplateMessage);
+                wxMaServiceSupply.playWxMaService().getMsgService().sendTemplateMsg(wxMaTemplateMessage);
             }
 
             if (pushId != null) {

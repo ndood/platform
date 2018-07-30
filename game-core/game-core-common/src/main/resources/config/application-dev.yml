@@ -50,7 +50,7 @@ config:
       notifyUrl: http://z3tfsd.natappfree.cc/wechat/pay/callback
     wechat_poit:
       appId: wxa0d900f1903341da
-      secret: 9bda42475984632a6e82734d61c964cb
+      secret: 4b4b3587688f2a534f20555194904d41
       token: 111
       aesKey: 111
       msgDataFormat: JSON

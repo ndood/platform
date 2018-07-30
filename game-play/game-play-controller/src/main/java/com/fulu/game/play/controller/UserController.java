@@ -160,7 +160,7 @@ public class UserController extends BaseController {
         WxMaPhoneNumberInfo phoneNoInfo = null;
         String sessionKey = redisOpenService.get(RedisKeyEnum.WX_SESSION_KEY.generateKey(SubjectUtil.getToken()));
         try {
-            phoneNoInfo = wxMaServiceSupply.gameWxMaService().getUserService().getPhoneNoInfo(sessionKey, encryptedData, iv);
+            phoneNoInfo = wxMaServiceSupply.playWxMaService().getUserService().getPhoneNoInfo(sessionKey, encryptedData, iv);
         } catch (Exception e) {
             log.error("获取用户微信异常:encryptedData:{};iv:{};sessionKey:{};{}", encryptedData, iv, sessionKey, e.getMessage());
             throw new UserException(UserException.ExceptionCode.SESSION_KEY_DISABLE_EXCEPTION);
@@ -190,10 +190,15 @@ public class UserController extends BaseController {
     @PostMapping("/wxinfo/save")
     public Result saveWxUserInfo(WxUserInfo wxUserInfo) {
         User user = userService.getCurrentUser();
-        String sessionKey = redisOpenService.get(RedisKeyEnum.WX_SESSION_KEY.generateKey(SubjectUtil.getToken()));
-        WxMaUserInfo wxMaUserInfo = wxMaServiceSupply.gameWxMaService().getUserService().getUserInfo(sessionKey, wxUserInfo.getEncryptedData(), wxUserInfo.getIv());
-        System.out.println(wxMaUserInfo);
-
+        WxMaUserInfo wxMaUserInfo = null;
+        try {
+            String sessionKey = redisOpenService.get(RedisKeyEnum.WX_SESSION_KEY.generateKey(SubjectUtil.getToken()));
+            wxMaUserInfo = wxMaServiceSupply.playWxMaService().getUserService().getUserInfo(sessionKey, wxUserInfo.getEncryptedData(), wxUserInfo.getIv());
+        } catch (Exception e) {
+            log.error("获取用户微信异常:wxUserInfo:{};{}", wxUserInfo, e.getMessage());
+            throw new UserException(UserException.ExceptionCode.SESSION_KEY_DISABLE_EXCEPTION);
+        }
+        user.setUnionId(wxMaUserInfo.getUnionId());
         if (user.getGender() == null) {
             user.setGender(wxUserInfo.getGender());
         }

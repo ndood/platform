@@ -6,6 +6,7 @@ import com.fulu.game.common.properties.Config;
 import com.github.binarywang.wxpay.config.WxPayConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +20,7 @@ public class WxMaConfiguration {
     private Config configProperties;
 
     @Bean(value = "gameMaconfig")
-    @ConditionalOnMissingBean
+    @Qualifier(value = "gameMaconfig")
     public WxMaConfig game_maConfig() {
         WxMaInMemoryConfig config = new WxMaInMemoryConfig();
         config.setAppid(configProperties.getWechat_game().getAppId());
@@ -32,7 +33,7 @@ public class WxMaConfiguration {
 
 
     @Bean(value = "gamePayConfig")
-    @ConditionalOnMissingBean
+    @Qualifier(value = "gamePayConfig")
     public WxPayConfig game_payConfig() {
         WxPayConfig payConfig = new WxPayConfig();
         payConfig.setAppId(configProperties.getWechat_game().getAppId());
@@ -48,30 +49,30 @@ public class WxMaConfiguration {
 
 
     @Bean(value = "pointMaconfig")
-    @ConditionalOnMissingBean
+    @Qualifier(value = "pointMaconfig")
     public WxMaConfig point_maConfig() {
         WxMaInMemoryConfig config = new WxMaInMemoryConfig();
-        config.setAppid(configProperties.getWechat_game().getAppId());
-        config.setSecret(configProperties.getWechat_game().getSecret());
-        config.setToken(configProperties.getWechat_game().getToken());
-        config.setAesKey(configProperties.getWechat_game().getAesKey());
-        config.setMsgDataFormat(configProperties.getWechat_game().getMsgDataFormat());
+        config.setAppid(configProperties.getWechat_poit().getAppId());
+        config.setSecret(configProperties.getWechat_poit().getSecret());
+        config.setToken(configProperties.getWechat_poit().getToken());
+        config.setAesKey(configProperties.getWechat_poit().getAesKey());
+        config.setMsgDataFormat(configProperties.getWechat_poit().getMsgDataFormat());
         return config;
     }
 
 
     @Bean(value = "pointPayConfig")
-    @ConditionalOnMissingBean
+    @Qualifier(value = "pointPayConfig")
     public WxPayConfig point_payConfig() {
         WxPayConfig payConfig = new WxPayConfig();
-        payConfig.setAppId(configProperties.getWechat_game().getAppId());
-        payConfig.setMchId(configProperties.getWechat_game().getMchId());
-        payConfig.setMchKey(configProperties.getWechat_game().getMchKey());
-        payConfig.setSubAppId(StringUtils.trimToNull(configProperties.getWechat_game().getSubAppId()));
-        payConfig.setSubMchId(StringUtils.trimToNull(configProperties.getWechat_game().getSubMchId()));
-        payConfig.setKeyPath(configProperties.getWechat_game().getKeyPath());
-        payConfig.setNotifyUrl(configProperties.getWechat_game().getNotifyUrl());
-        payConfig.setTradeType(configProperties.getWechat_game().getTradeType());
+        payConfig.setAppId(configProperties.getWechat_poit().getAppId());
+        payConfig.setMchId(configProperties.getWechat_poit().getMchId());
+        payConfig.setMchKey(configProperties.getWechat_poit().getMchKey());
+        payConfig.setSubAppId(StringUtils.trimToNull(configProperties.getWechat_poit().getSubAppId()));
+        payConfig.setSubMchId(StringUtils.trimToNull(configProperties.getWechat_poit().getSubMchId()));
+        payConfig.setKeyPath(configProperties.getWechat_poit().getKeyPath());
+        payConfig.setNotifyUrl(configProperties.getWechat_poit().getNotifyUrl());
+        payConfig.setTradeType(configProperties.getWechat_poit().getTradeType());
         return payConfig;
     }
 

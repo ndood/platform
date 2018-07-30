@@ -10,6 +10,8 @@ import com.github.binarywang.wxpay.service.impl.WxPayServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resources;
+
 @Component
 public class WxMaServiceSupply {
 
@@ -26,7 +28,7 @@ public class WxMaServiceSupply {
      * 开黑陪玩支付服务
      * @return
      */
-    public WxPayService gameWxPayService() {
+    public WxPayService playWxPayService() {
         WxPayService wxPayService = new WxPayServiceImpl();
         wxPayService.setConfig(gamePayConfig);
         return wxPayService;
@@ -36,7 +38,7 @@ public class WxMaServiceSupply {
      * 开黑陪玩微信sdk服务
      * @return
      */
-    public WxMaService gameWxMaService() {
+    public WxMaService playWxMaService() {
         WxMaService wxMaService = new WxMaServiceImpl();
         wxMaService.setWxMaConfig(gameMaconfig);
         return wxMaService;

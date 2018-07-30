@@ -38,7 +38,7 @@ public class WxCodeController {
                             @RequestParam("page") String page) throws WxErrorException {
 
         //todo 这里需要判断是上分还是陪玩
-        File file = wxMaServiceSupply.gameWxMaService().getQrcodeService().createWxCodeLimit(scene, page);
+        File file = wxMaServiceSupply.playWxMaService().getQrcodeService().createWxCodeLimit(scene, page);
         //先上传到阿里云，返回图片地址
 
         if (file.exists()) {

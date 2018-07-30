@@ -1,6 +1,5 @@
 package com.fulu.game.core.service.impl;
 
-import cn.binarywang.wx.miniapp.api.WxMaService;
 import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.service.WxCodeService;
@@ -35,7 +34,7 @@ public class WxCodeServiceImpl implements WxCodeService {
     @Override
     public String create(String scene, String page) throws WxErrorException {
         //todo 这里需要判断是上分还是陪玩
-        File file = wxMaServiceSupply.gameWxMaService().getQrcodeService().createWxCodeLimit(scene, page);
+        File file = wxMaServiceSupply.playWxMaService().getQrcodeService().createWxCodeLimit(scene, page);
         //先上传到阿里云，返回图片地址
 
         if (!file.exists()) {

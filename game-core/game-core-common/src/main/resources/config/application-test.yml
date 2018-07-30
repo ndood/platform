@@ -50,7 +50,7 @@ config:
       notifyUrl: http://t-api-play.wzpeilian.com/wechat/pay/callback
     wechat_poit:
       appId: wxa0d900f1903341da
-      secret: 9bda42475984632a6e82734d61c964cb
+      secret: 4b4b3587688f2a534f20555194904d41
       token: 111
       aesKey: 111
       msgDataFormat: JSON
@@ -58,9 +58,9 @@ config:
       mchKey: 24d1b993f21046a296b0846f62d3e431
       subAppId:
       subMchId:
-      keyPath: E:\cert\apiclient_cert.p12
+      keyPath: /data/cert/apiclient_cert.p12
       tradeType: JSAPI
-      notifyUrl: http://z3tfsd.natappfree.cc/wechat/pay/callback
+      notifyUrl: http://t-api-play.wzpeilian.com/wechat/pay/callback
     im:
       urlPrefix: http://a1.easemob.com
       appKey: 1183180421228734#game-test

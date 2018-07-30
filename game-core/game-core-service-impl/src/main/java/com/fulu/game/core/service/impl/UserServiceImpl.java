@@ -511,37 +511,41 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         log.info("调用updateUnionUser方法:user:{}",user);
         User unionUser = findByUnionId(user.getUnionId());
         if(unionUser==null){
+            log.info("unionUser为空更新自己的unionId:{}",user.getUnionId());
             update(user);
             updateRedisUser(user);
-            log.info("unionUser为空更新自己的unionId:{}",user.getUnionId());
             return;
         }
         if(unionUser.getId().equals(user.getId())){
+            log.info("该用户已经存在unionUser:{}",unionUser);
             update(user);
             updateRedisUser(user);
-            log.info("该用户已经存在unionUser:{}",unionUser);
             return;
         }
         if(WechatEcoEnum.POINT.equals(wechatEcoEnum)){
-            BeanUtil.copyProperties(user,unionUser,BeanUtil.CopyOptions.create().setIgnoreNullValue(true));
-            update(unionUser);
-            updateRedisUser(unionUser);
             log.info("判断存在开黑用户信息，更新unionUser:{}",unionUser);
+            unionUser.setPointOpenId(user.getPointOpenId());
+            //删除上分的用户
             user.setPointOpenId(unionUser.getId()+"-"+user.getUnionId()+"-"+new Date().getTime());
             user.setUnionId(unionUser.getId()+"-"+user.getUnionId()+"-"+new Date().getTime());
             update(user);
+            //更新陪玩的用户
+            update(unionUser);
+            updateRedisUser(unionUser);
             log.info("判断存在开黑用户信息，更新user:{}",user);
         }else{
+            log.info("判断存在上分的用户信息，unionUser:{}",unionUser);
             user.setPointOpenId(unionUser.getPointOpenId());
-            update(user);
-            updateRedisUser(user);
-            log.info("判断存在上分的用户信息，user:{}",user);
+            //删除上分的用户
             unionUser.setPointOpenId(user.getId()+"-"+unionUser.getUnionId()+"-"+new Date().getTime());
             unionUser.setUnionId(user.getId()+"-"+unionUser.getUnionId()+"-"+new Date().getTime());
             update(unionUser);
+            //更新陪玩的用户
+            update(user);
+            updateRedisUser(user);
+            log.info("判断存在上分的用户信息，更新user:{}",user);
+
         }
-
-
 
     }
 

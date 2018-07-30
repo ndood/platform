@@ -88,7 +88,7 @@ public class HomeController extends BaseController{
         if (StringUtils.isBlank(code)) {
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
-        WxMaJscode2SessionResult session = wxMaServiceSupply.gameWxMaService().getUserService().getSessionInfo(code);
+        WxMaJscode2SessionResult session = wxMaServiceSupply.playWxMaService().getUserService().getSessionInfo(code);
         String openId = session.getOpenid();
         //1.认证和凭据的token
         PlayUserToken playUserToken = new PlayUserToken(openId, session.getSessionKey(), sourceId);

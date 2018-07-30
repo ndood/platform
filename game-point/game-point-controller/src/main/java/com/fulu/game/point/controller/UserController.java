@@ -86,7 +86,7 @@ public class UserController extends BaseController {
         WxMaPhoneNumberInfo phoneNoInfo = null;
         String sessionKey = redisOpenService.get(RedisKeyEnum.WX_SESSION_KEY.generateKey(SubjectUtil.getToken()));
         try {
-            phoneNoInfo = wxMaServiceSupply.gameWxMaService().getUserService().getPhoneNoInfo(sessionKey, encryptedData, iv);
+            phoneNoInfo = wxMaServiceSupply.playWxMaService().getUserService().getPhoneNoInfo(sessionKey, encryptedData, iv);
         } catch (Exception e) {
             log.error("获取用户微信异常:encryptedData:{};iv:{};sessionKey:{};{}", encryptedData, iv, sessionKey, e.getMessage());
             throw new UserException(UserException.ExceptionCode.SESSION_KEY_DISABLE_EXCEPTION);

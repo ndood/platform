@@ -18,7 +18,6 @@ import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderRequest;
 import com.github.binarywang.wxpay.bean.result.BaseWxPayResult;
 import com.github.binarywang.wxpay.bean.result.WxPayRefundResult;
 import com.github.binarywang.wxpay.exception.WxPayException;
-import com.github.binarywang.wxpay.service.WxPayService;
 import com.xiaoleilu.hutool.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +64,7 @@ public class PayServiceImpl implements PayService {
             //不同小程序订单调用不同的微信支付
             if(OrderTypeEnum.PLATFORM.getType().equals(order.getType())){
                 orderRequest.setOpenid(user.getOpenId());
-                result = wxMaServiceSupply.gameWxPayService().createOrder(orderRequest);
+                result = wxMaServiceSupply.playWxPayService().createOrder(orderRequest);
             }else if(OrderTypeEnum.POINT.getType().equals(order.getType())){
                 orderRequest.setOpenid(user.getPointOpenId());
                 result = wxMaServiceSupply.pointWxPayService().createOrder(orderRequest);
@@ -83,7 +82,7 @@ public class PayServiceImpl implements PayService {
         try {
             WxPayOrderNotifyResult result = null;
             if(WechatEcoEnum.PLAY.equals(wechatEcoEnum)){
-                result = wxMaServiceSupply.gameWxPayService().parseOrderNotifyResult(xmlResult);
+                result = wxMaServiceSupply.playWxPayService().parseOrderNotifyResult(xmlResult);
             }else{
                 result = wxMaServiceSupply.pointWxPayService().parseOrderNotifyResult(xmlResult);
             }
@@ -122,7 +121,7 @@ public class PayServiceImpl implements PayService {
         request.setTotalFee(totalMoneyInt);
         request.setRefundFee(refundMoneyInt);
         if(OrderTypeEnum.PLATFORM.getType().equals(order.getType())){
-            wxPayRefundResult = wxMaServiceSupply.gameWxPayService().refund(request);
+            wxPayRefundResult = wxMaServiceSupply.playWxPayService().refund(request);
         }else if(OrderTypeEnum.POINT.getType().equals(order.getType())){
             wxPayRefundResult = wxMaServiceSupply.pointWxPayService().refund(request);
         }
