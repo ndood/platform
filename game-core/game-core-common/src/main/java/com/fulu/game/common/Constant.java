@@ -171,14 +171,4 @@ public interface Constant {
     Integer COUPON_UNAVAILABLE = 0;
 
     //==============CJ活动end==================
-
-    /**
-     * 领航类型
-     */
-    Integer PRICE_FACTOR_TYPE_LINGHANG = 0;
-
-    /**
-     * CJ类型
-     */
-    Integer PRICE_FACTOR_TYPE_CHINAJOY = 1;
 }

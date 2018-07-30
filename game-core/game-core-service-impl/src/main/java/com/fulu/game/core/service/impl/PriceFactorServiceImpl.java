@@ -2,6 +2,7 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.common.Constant;
+import com.fulu.game.common.enums.SourceIdEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.PriceFactorDao;
@@ -35,7 +36,7 @@ public class PriceFactorServiceImpl extends AbsCommonService<PriceFactor, Intege
     public PriceFactor findByNewPriceFactor() {
         PageHelper.startPage(1, 1, "id desc");
         PriceFactorVO priceFactorVO = new PriceFactorVO();
-        priceFactorVO.setSourceType(Constant.PRICE_FACTOR_TYPE_LINGHANG);
+        priceFactorVO.setSourceId(SourceIdEnum.PILOT.getType());
         List<PriceFactor> list = priceFactorDao.findByParameter(priceFactorVO);
         if (list.isEmpty()) {
             return null;
@@ -51,7 +52,7 @@ public class PriceFactorServiceImpl extends AbsCommonService<PriceFactor, Intege
     @Override
     public List<PriceFactorVO> findCjPriceFactor() {
         PriceFactorVO priceFactorVO = new PriceFactorVO();
-        priceFactorVO.setSourceType(Constant.PRICE_FACTOR_TYPE_CHINAJOY);
+        priceFactorVO.setSourceId(SourceIdEnum.CHINA_JOY.getType());
         List<PriceFactor> list = priceFactorDao.findByParameter(priceFactorVO);
         if (list.isEmpty()) {
             return null;

@@ -21,8 +21,8 @@ public class PriceFactor implements Serializable {
     private Integer id;
     //价格系数
     private BigDecimal factor;
-    //来源渠道类型（0：领航，1：ChinaJoy）
-    private Integer sourceType;
+    //来源id（对应t_regist_source表的主键id）
+    private Integer sourceId;
     //
     private String categoryIds;
     //
