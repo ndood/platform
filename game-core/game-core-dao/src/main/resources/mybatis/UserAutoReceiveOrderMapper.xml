@@ -15,7 +15,6 @@
         <result column="order_complete_num" property="orderCompleteNum"/>
         <result column="order_cancel_num" property="orderCancelNum"/>
         <result column="order_dispute_num" property="orderDisputeNum"/>
-        <result column="order_fail_percent" property="orderFailPercent"/>
         <result column="user_auto_setting" property="userAutoSetting"/>
         <result column="admin_id" property="adminId"/>
         <result column="admin_name" property="adminName"/>
@@ -28,7 +27,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,tech_auth_id,category_id,area_id,start_rank,end_rank,remark,order_num,order_complete_num,order_cancel_num,order_dispute_num,order_fail_percent,user_auto_setting,admin_id,admin_name,create_time,update_time    </sql>
+        id,user_id,tech_auth_id,category_id,area_id,start_rank,end_rank,remark,order_num,order_complete_num,order_cancel_num,order_dispute_num,user_auto_setting,admin_id,admin_name,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserAutoReceiveOrderResultMap">
         select
@@ -107,9 +106,7 @@
             <if test="orderDisputeNum != null">
                 and order_dispute_num = #{orderDisputeNum}
             </if>
-            <if test="orderFailPercent != null">
-                and order_fail_percent = #{orderFailPercent}
-            </if>
+
             <if test="userAutoSetting != null">
                 and user_auto_setting = #{userAutoSetting}
             </if>
@@ -138,9 +135,9 @@
     <insert id="create" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.fulu.game.core.entity.UserAutoReceiveOrder">
         insert into
-        t_user_auto_receive_order (user_id,tech_auth_id,category_id,area_id,start_rank,end_rank,remark,order_num,order_complete_num,order_cancel_num,order_dispute_num,order_fail_percent,user_auto_setting,admin_id,admin_name,create_time,update_time)
+        t_user_auto_receive_order (user_id,tech_auth_id,category_id,area_id,start_rank,end_rank,remark,order_num,order_complete_num,order_cancel_num,order_dispute_num,user_auto_setting,admin_id,admin_name,create_time,update_time)
         values
-        (#{userId},#{techAuthId},#{categoryId},#{areaId},#{startRank},#{endRank},#{remark},#{orderNum},#{orderCompleteNum},#{orderCancelNum},#{orderDisputeNum},#{orderFailPercent},#{userAutoSetting},#{adminId},#{adminName},#{createTime},#{updateTime})
+        (#{userId},#{techAuthId},#{categoryId},#{areaId},#{startRank},#{endRank},#{remark},#{orderNum},#{orderCompleteNum},#{orderCancelNum},#{orderDisputeNum},#{userAutoSetting},#{adminId},#{adminName},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.UserAutoReceiveOrder">
@@ -189,10 +186,6 @@
 
             <if test="orderDisputeNum != null">
                 order_dispute_num = #{orderDisputeNum},
-            </if>
-
-            <if test="orderFailPercent != null">
-                order_fail_percent = #{orderFailPercent},
             </if>
 
             <if test="userAutoSetting != null">

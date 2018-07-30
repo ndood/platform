@@ -45,6 +45,9 @@ public class HomeController extends BaseController{
     @Autowired
     private SysConfigService sysConfigService;
 
+
+
+
     /**
      * 初始化加载系统配置
      * @return

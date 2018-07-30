@@ -39,8 +39,7 @@ public class UserAutoReceiveOrder implements Serializable {
 	private Integer orderCancelNum;
 	//派单协商仲裁数
 	private Integer orderDisputeNum;
-	//派单失败率
-	private Double orderFailPercent;
+
 	//用户自己自动接单设置
 	private Boolean userAutoSetting;
 	//
