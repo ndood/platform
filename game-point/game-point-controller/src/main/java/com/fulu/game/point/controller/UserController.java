@@ -8,14 +8,17 @@ import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SubjectUtil;
+import com.fulu.game.core.entity.Advice;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.WxUserInfo;
+import com.fulu.game.core.service.AdviceService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
@@ -32,14 +35,17 @@ import java.util.Date;
 public class UserController extends BaseController {
 
     private final UserService userService;
-    @Autowired
-    private WxMaServiceSupply wxMaServiceSupply;
-    @Autowired
-    private RedisOpenServiceImpl redisOpenService;
+    private final WxMaServiceSupply wxMaServiceSupply;
+    private final RedisOpenServiceImpl redisOpenService;
+    private final AdviceService adviceService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(WxMaServiceSupply wxMaServiceSupply, RedisOpenServiceImpl redisOpenService,
+                          UserService userService, AdviceService adviceService) {
         this.userService = userService;
+        this.wxMaServiceSupply = wxMaServiceSupply;
+        this.redisOpenService = redisOpenService;
+        this.adviceService = adviceService;
     }
 
     /**
@@ -53,7 +59,6 @@ public class UserController extends BaseController {
         User user = userService.findById(userService.getCurrentUser().getId());
         return Result.success().data(user.getBalance()).msg("查询成功！");
     }
-
 
 
     /**
@@ -102,9 +107,9 @@ public class UserController extends BaseController {
     }
 
 
-
     /**
      * 保存微信信息
+     *
      * @param wxUserInfo
      * @return
      */
@@ -114,7 +119,7 @@ public class UserController extends BaseController {
         WxMaUserInfo wxMaUserInfo = null;
         try {
             String sessionKey = redisOpenService.get(RedisKeyEnum.WX_SESSION_KEY.generateKey(SubjectUtil.getToken()));
-            wxMaUserInfo =wxMaServiceSupply.pointWxMaService().getUserService().getUserInfo(sessionKey, wxUserInfo.getEncryptedData(), wxUserInfo.getIv());
+            wxMaUserInfo = wxMaServiceSupply.pointWxMaService().getUserService().getUserInfo(sessionKey, wxUserInfo.getEncryptedData(), wxUserInfo.getIv());
         } catch (Exception e) {
             log.error("获取用户微信异常:wxUserInfo:{};{}", wxUserInfo, e.getMessage());
             throw new UserException(UserException.ExceptionCode.SESSION_KEY_DISABLE_EXCEPTION);
@@ -143,6 +148,22 @@ public class UserController extends BaseController {
         return Result.success().data(user);
     }
 
-
-
+    /**
+     * 用户添加意见反馈
+     *
+     * @param content       建议内容
+     * @param contact       联系方式
+     * @param advicePicUrls 反馈图片
+     * @return 封装结果集
+     */
+    @PostMapping("/advice/add")
+    public Result addAdvice(@RequestParam("content") String content,
+                            @RequestParam(value = "contact", required = false) String contact,
+                            @RequestParam(value = "advicePicUrls", required = false) String[] advicePicUrls) {
+        if (content == null) {
+            return Result.error().msg("请填写建议内容");
+        }
+        Advice advice = adviceService.addAdvice(content, contact, advicePicUrls);
+        return Result.success().data(advice).msg("提交成功");
+    }
 }
