@@ -89,15 +89,15 @@ public class HomeController extends BaseController{
         subject.login(playUserToken);
         User user = userService.getCurrentUser();
         userService.updateUserIpAndLastTime(ip);
-//        if(user.getUnionId()==null){
-//            log.error("用户没有unionId;user{}",user);
-//            return Result.noUnionId();
-//        }
         user.setOpenId(null);
         user.setBalance(null);
         Map<String, Object> result = BeanUtil.beanToMap(user);
         result.put("token", SubjectUtil.getToken());
         result.put("userId", user.getId());
+        if(user.getUnionId()==null){
+            log.error("用户没有unionId;user{}",user);
+            return Result.newUser().data(result);
+        }
         return Result.success().data(result).msg("登录成功!");
     }
 

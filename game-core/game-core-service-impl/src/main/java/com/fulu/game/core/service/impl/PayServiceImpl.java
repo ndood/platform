@@ -47,7 +47,6 @@ public class PayServiceImpl implements PayService {
         if (!order.getIsPay() && !order.getStatus().equals(OrderStatusEnum.NON_PAYMENT.getStatus())) {
             throw new OrderException(orderNo, "已支付的订单不能支付!");
         }
-
         WxPayUnifiedOrderRequest orderRequest = new WxPayUnifiedOrderRequest();
         orderRequest.setBody(order.getName());
         orderRequest.setOutTradeNo(order.getOrderNo());
@@ -58,7 +57,6 @@ public class PayServiceImpl implements PayService {
             return null;
         }
         orderRequest.setTotalFee(totalFee);//元转成分
-        orderRequest.setOpenid(user.getOpenId());
         orderRequest.setSpbillCreateIp(requestIp);
         orderRequest.setTimeStart(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
         try {
@@ -66,8 +64,10 @@ public class PayServiceImpl implements PayService {
             WxPayMpOrderResult result = null;
             //不同小程序订单调用不同的微信支付
             if(OrderTypeEnum.PLATFORM.getType().equals(order.getType())){
+                orderRequest.setOpenid(user.getOpenId());
                 result = wxMaServiceSupply.gameWxPayService().createOrder(orderRequest);
             }else if(OrderTypeEnum.POINT.getType().equals(order.getType())){
+                orderRequest.setOpenid(user.getPointOpenId());
                 result = wxMaServiceSupply.pointWxPayService().createOrder(orderRequest);
             }
             return result;
