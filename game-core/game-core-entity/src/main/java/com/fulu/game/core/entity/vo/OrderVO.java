@@ -54,4 +54,9 @@ public class OrderVO  extends Order {
      */
     private Integer[] statusList;
 
+    //
+    private String accountInfo;
+    //
+    private String orderChoice;
+
 }

@@ -1,8 +1,10 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
-import com.fulu.game.core.entity.*;
-import com.fulu.game.core.entity.to.OrderPointProductTO;
+import com.fulu.game.core.entity.ArbitrationDetails;
+import com.fulu.game.core.entity.Order;
+import com.fulu.game.core.entity.OrderDeal;
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
@@ -21,11 +23,9 @@ import java.util.List;
 public interface OrderService extends ICommonService<Order, Integer> {
 
 
-
-
-
     /**
      * 抢单列表
+     *
      * @param pageNum
      * @param pageSize
      * @return
@@ -34,33 +34,37 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 上分订单列表
+     *
      * @param pageNum
      * @param pageSize
      * @return
      */
-     PageInfo<PointOrderDetailsVO> pointOrderList(Integer pageNum, Integer pageSize, Integer type);
+    PageInfo<PointOrderDetailsVO> pointOrderList(Integer pageNum, Integer pageSize, Integer type);
 
 
-     Integer countNewPointOrder(Date startDate);
+    Integer countNewPointOrder(Date startDate);
 
 
     /**
      * 向陪玩师推送消息
+     *
      * @param order
      * @param wechatTemplateMsgEnum
      */
-    void pushToServiceOrderWxMessage(Order order,WechatTemplateMsgEnum wechatTemplateMsgEnum);
+    void pushToServiceOrderWxMessage(Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum);
 
     /**
      * 向用户推送消息
+     *
      * @param order
      * @param wechatTemplateMsgEnum
      */
-    void pushToUserOrderWxMessage(Order order,WechatTemplateMsgEnum wechatTemplateMsgEnum);
+    void pushToUserOrderWxMessage(Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum);
 
 
     /**
      * 管理员订单列表
+     *
      * @param orderSearchVO
      * @param pageNum
      * @param pageSize
@@ -106,6 +110,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 上分订单抢单
+     *
      * @param orderNo
      * @return
      */
@@ -137,6 +142,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 提交上分订单
+     *
      * @param orderPointProductVO
      * @param orderIp
      * @return
@@ -157,6 +163,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 陪玩师接收订单
+     *
      * @param orderNo
      * @return
      */
@@ -189,6 +196,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 获取协商详情
+     *
      * @param orderNo
      * @return
      */
@@ -196,6 +204,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 获取仲裁详情
+     *
      * @param orderNo
      * @return
      */
@@ -214,6 +223,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 陪玩师同样协商订单
+     *
      * @param orderNo
      * @param orderEventId
      * @return
@@ -223,6 +233,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 取消协商
+     *
      * @param orderNo
      * @param orderEventId
      * @return
@@ -231,6 +242,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 系统处理拒绝协商订单
+     *
      * @param orderNo
      * @return
      */
@@ -238,6 +250,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 系统处理协商中超时订单
+     *
      * @param orderNo
      * @return
      */
@@ -245,6 +258,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 陪玩师取消订单
+     *
      * @param orderNo
      * @return
      */
@@ -280,7 +294,6 @@ public interface OrderService extends ICommonService<Order, Integer> {
      * @return
      */
     String userAppealOrder(String orderNo, String remark, String... fileUrl);
-
 
 
     /**
@@ -384,6 +397,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 用户所有完成订单数
+     *
      * @param serverId
      * @return
      */
@@ -391,6 +405,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 留言
+     *
      * @param orderNo
      * @param eventId
      * @param remark
@@ -410,18 +425,17 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 上分订单详情
+     *
      * @param orderNo
      * @return
      */
     PointOrderDetailsVO findPointOrderDetails(String orderNo);
 
 
-
     /**
      * 是否是老用户（下单过的）
      */
     Boolean isOldUser(Integer userId);
-
 
 
     /**
@@ -432,8 +446,22 @@ public interface OrderService extends ICommonService<Order, Integer> {
      */
     List<OrderStatusDetailsVO> getOrderProcess(String orderNo);
 
+    /**
+     * 获取进行中的上分订单数量和上分订单失败率
+     *
+     * @param userId     用户id
+     * @param categoryId 分类id
+     * @return 用户自动接单订单VO
+     */
+    UserAutoReceiveOrderVO getDynamicOrderInfo(Integer userId, Integer categoryId);
 
-
-
-
+    /**
+     * 未接单订单列表
+     *
+     * @param pageNum       页码
+     * @param pageSize      每页显示数据条数
+     * @param orderSearchVO 订单查询VO
+     * @return 订单VO分页列表
+     */
+    PageInfo<OrderVO> unacceptOrderList(Integer pageNum, Integer pageSize, OrderSearchVO orderSearchVO);
 }

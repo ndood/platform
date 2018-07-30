@@ -16,6 +16,7 @@ public class UserInfoAuthSearchVO {
     private Integer startAge;
     private Integer endAge;
     private String orderBy;
+    private Integer userAutoSetting;
 
 
     public String getOrderBy() {

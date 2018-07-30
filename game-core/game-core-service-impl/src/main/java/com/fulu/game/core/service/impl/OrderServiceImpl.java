@@ -88,7 +88,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     private UserContactService userContactService;
     @Autowired
     private SpringThreadPoolExecutor springThreadPoolExecutor;
-
     @Autowired
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
 
@@ -1538,5 +1537,69 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             voList.add(vo);
         }
         return voList;
+    }
+
+    @Override
+    public UserAutoReceiveOrderVO getDynamicOrderInfo(Integer userId, Integer categoryId) {
+        OrderVO orderVO = new OrderVO();
+        orderVO.setUserId(userId);
+        List<Order> orderList = orderDao.findByParameter(orderVO);
+        if (CollectionUtil.isEmpty(orderList)) {
+            return null;
+        }
+        int runningOrderNum = 0;
+        for (Order meta : orderList) {
+            boolean flag = meta.getStatus().equals(OrderStatusEnum.ALREADY_RECEIVING.getStatus())
+                    || meta.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())
+                    || meta.getStatus().equals(OrderStatusEnum.CHECK.getStatus())
+                    || meta.getStatus().equals(OrderStatusEnum.CONSULTING.getStatus())
+                    || meta.getStatus().equals(OrderStatusEnum.APPEALING.getStatus())
+                    || meta.getStatus().equals(OrderStatusEnum.APPEALING_ADMIN.getStatus());
+            if (flag) {
+                runningOrderNum++;
+            }
+        }
+
+        UserAutoReceiveOrder autoReceiveOrder = userAutoReceiveOrderService.findByUserIdAndCategoryId(userId, categoryId);
+        if (autoReceiveOrder == null) {
+            return null;
+        }
+        BigDecimal orderFailureRate = new BigDecimal(
+                (autoReceiveOrder.getOrderCancelNum() + autoReceiveOrder.getOrderDisputeNum())
+                        / autoReceiveOrder.getOrderCompleteNum());
+
+        UserAutoReceiveOrderVO resultVo = new UserAutoReceiveOrderVO();
+        resultVo.setRunningOrderNum(runningOrderNum);
+        resultVo.setOrderFailureRate(orderFailureRate);
+        return resultVo;
+    }
+
+    @Override
+    public PageInfo<OrderVO> unacceptOrderList(Integer pageNum, Integer pageSize, OrderSearchVO orderSearchVO) {
+        String orderBy = orderSearchVO.getOrderBy();
+        if (StringUtils.isBlank(orderBy)) {
+            orderBy = "create_time desc";
+        }
+        PageHelper.startPage(pageNum, pageSize, orderBy);
+        List<Order> orderList = findBySearchVO(orderSearchVO);
+        if (CollectionUtil.isEmpty(orderList)) {
+            return null;
+        }
+
+        List<OrderVO> orderVOList = new ArrayList<>();
+        for (Order meta : orderList) {
+            OrderVO orderVO = new OrderVO();
+            BeanUtil.copyProperties(meta, orderVO);
+            String orderNo = meta.getOrderNo();
+            OrderPointProduct orderPointProduct = orderPointProductService.findByOrderNo(orderNo);
+            if (orderPointProduct != null) {
+                orderVO.setAccountInfo(orderPointProduct.getAccountInfo());
+                orderVO.setOrderChoice(orderPointProduct.getOrderChoice());
+            }
+        }
+
+        PageInfo page = new PageInfo(orderList);
+        page.setList(orderVOList);
+        return page;
     }
 }

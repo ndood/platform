@@ -26,4 +26,14 @@ public class OrderSearchVO {
     private Integer ltInterval;
     //接单间隔右范围
     private Integer gtInterval ;
+
+    /**
+     * 订单类型（1：普通订单；2：上分订单）
+     */
+    private Integer type;
+
+    /**
+     * 排序
+     */
+    private String orderBy;
 }
