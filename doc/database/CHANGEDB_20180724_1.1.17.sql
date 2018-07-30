@@ -115,3 +115,6 @@ ALTER TABLE `t_wechat_formid` ADD COLUMN `open_id` varchar(128)  DEFAULT NULL CO
 
 --
 ALTER TABLE `t_sys_config` ADD COLUMN `type` tinyint(1)  DEFAULT NULL COMMENT '平台类型' after `id`;
+
+
+UPDATE `t_wechat_formid` as f SET `open_id` = (SELECT `open_id` FROM `t_user` as u WHERE u.`id` =f.`user_id` ),`platform` =1;
