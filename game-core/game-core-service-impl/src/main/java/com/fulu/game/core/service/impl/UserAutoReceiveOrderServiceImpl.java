@@ -78,6 +78,8 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
     }
 
 
+
+
     @Override
     public List<Integer> findUserBySearch(UserAutoOrderSearchVO userAutoOrderSearchVO) {
         return userAutoReceiveOrderDao.findUserBySearch(userAutoOrderSearchVO);
@@ -89,6 +91,18 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
         for (UserAutoReceiveOrder autoReceiveOrder : userAutoReceiveOrders) {
             autoReceiveOrder.setUserAutoSetting(flag);
         }
+    }
+
+    @Override
+    public void addOrderNum(int userId, int categoryId) {
+        UserAutoReceiveOrder autoReceiveOrder = findByUserIdAndCategoryId(userId, categoryId);
+        Integer orderNum = autoReceiveOrder.getOrderNum();
+        if (orderNum == null) {
+            orderNum = 0;
+        }
+        autoReceiveOrder.setOrderNum(orderNum + 1);
+        autoReceiveOrder.setUpdateTime(new Date());
+        update(autoReceiveOrder);
     }
 
     @Override

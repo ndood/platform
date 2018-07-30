@@ -279,7 +279,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 上分订单抢单
-     *
      * @param orderNo
      * @return
      */
@@ -305,8 +304,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             log.info("抢单成功:userId:{};order:{}", serviceUser.getId(), order);
             //倒计时订单状态
             orderStatusDetailsService.create(orderNo, order.getStatus(), 10);
-
-
+            //增加接单数量
+            userAutoReceiveOrderService.addOrderNum(serviceUser.getId(),order.getCategoryId());
         } finally {
             redisOpenService.unlock(RedisKeyEnum.MARKET_ORDER_RECEIVE_LOCK.generateKey(order.getOrderNo()));
         }
@@ -533,7 +532,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 领航订单
-     *
      * @param productId
      * @param num
      * @param remark
@@ -660,6 +658,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         orderPointProductVO.setUpdateTime(new Date());
         orderPointProductService.create(orderPointProductVO);
 
+        //计算订单状态倒计时24小时
+        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 10);
         //推送上分订单消息
         springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
             @Override
@@ -730,7 +730,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             //记录订单流水
             orderMoneyDetailsService.create(order.getOrderNo(), order.getUserId(), DetailsEnum.ORDER_PAY, orderMoney);
             //通知
-            wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.POINT_TOSERVICE_ORDER_RECEIVING);
             wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.POINT_TOSE_ORDER_RECEIVING);
         } else {
             //订单状态倒计时

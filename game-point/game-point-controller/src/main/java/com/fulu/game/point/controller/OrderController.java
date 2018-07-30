@@ -12,6 +12,7 @@ import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.point.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
+import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,8 @@ public class OrderController extends BaseController{
     private RedisOpenServiceImpl redisOpenService;
     @Autowired
     private PayService payService;
+    @Autowired
+    private OrderPointProductService orderPointProductService;
 
     /**
      * 订单详情
@@ -114,6 +117,21 @@ public class OrderController extends BaseController{
     }
 
     /**
+     * 重新下单接口
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/anew")
+    public Result anewSubmit(String orderNo) {
+        OrderPointProduct orderPointProduct = orderPointProductService.findByOrderNo(orderNo);
+        OrderPointProductTO orderPointProductTO = new OrderPointProductTO();
+        BeanUtil.copyProperties(orderPointProduct,orderPointProductTO);
+        OrderPointProductVO gradingAdvanceOrderVO = getAdvanceOrder(orderPointProductTO);
+        return Result.success().data(gradingAdvanceOrderVO);
+    }
+
+
+    /**
      * 上分订单抢单
      * @param orderNo
      * @return
@@ -135,6 +153,7 @@ public class OrderController extends BaseController{
         orderService.receivePointOrder(order.getOrderNo(),user);
         return Result.success().data(orderNo).msg("接单成功!");
     }
+
 
     /**
      * 提交上分订单
@@ -395,6 +414,7 @@ public class OrderController extends BaseController{
         gradingAdvanceOrderVO.setPointTypeStr(PointTypeEnum.getMsgByType(gradingAdvanceOrderVO.getPointType()));
         Category category = categoryService.findById(orderPointProductTO.getCategoryId());
         gradingAdvanceOrderVO.setCategoryName(category.getName());
+        gradingAdvanceOrderVO.setCategoryIcon(category.getIcon());
         return gradingAdvanceOrderVO;
     }
 

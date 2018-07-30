@@ -111,7 +111,7 @@ ALTER TABLE `t_push_msg` ADD COLUMN `platform` tinyint(1)  DEFAULT NULL COMMENT 
 
 
 ALTER TABLE `t_wechat_formid` ADD COLUMN `platform` tinyint(1)  DEFAULT NULL COMMENT '微信平台号' after `form_id`;
-ALTER TABLE `t_wechat_formid` ADD COLUMN `open_id` tinyint(1)  DEFAULT NULL COMMENT 'openId' after `platform`;
+ALTER TABLE `t_wechat_formid` ADD COLUMN `open_id` varchar(128)  DEFAULT NULL COMMENT 'openId' after `platform`;
 
 --
 ALTER TABLE `t_sys_config` ADD COLUMN `type` tinyint(1)  DEFAULT NULL COMMENT '平台类型' after `id`;

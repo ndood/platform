@@ -2,10 +2,7 @@ package com.fulu.game.point.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.PointTypeEnum;
-import com.fulu.game.core.entity.Category;
-import com.fulu.game.core.entity.TechValue;
-import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.UserAutoReceiveOrder;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.GradingPriceVO;
 import com.fulu.game.core.service.*;
 import com.xiaoleilu.hutool.util.RandomUtil;
@@ -36,6 +33,39 @@ public class GradingInfoController extends BaseController {
     private UserService userService;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
+
+
+    /**
+     * 获取用户推送时间间隔
+     * @return
+     */
+    @PostMapping(value = "/setting/pushtime/get")
+    public Result getPushTimeInterval(){
+        User user = userService.getCurrentUser();
+        UserInfoAuth userInfoAuth =  userInfoAuthService.findByUserId(user.getId());
+        Float time = 0F;
+        if(userInfoAuth.getPushTimeInterval()==null){
+            time = 0F;
+        }else{
+            if(userInfoAuth.getPushTimeInterval()>0){
+                time = 1F;
+            }
+        }
+        return Result.success().data(time);
+    }
+
+    /**
+     * 设置推送时间间隔
+     * @return
+     */
+    @PostMapping(value = "/setting/pushtime")
+    public Result settingPushTimeInterval(@RequestParam(required = true)Float minute){
+        userInfoAuthService.settingPushTimeInterval(minute);
+        return Result.success().msg("设置推送时间间隔成功!");
+    }
+
 
     /**
      * 上分游戏类型
@@ -58,13 +88,15 @@ public class GradingInfoController extends BaseController {
     }
 
 
-
-    @PostMapping(value = "/server/icon")
+    /**
+     * 订单等待，陪玩师头像显示
+     * @return
+     */
+    @PostMapping(value = "/server/head")
     public Result serverUserIconInfo() {
-        int randomNum = RandomUtil.randomInt(0, 100);
-        return Result.success().data(200+randomNum);
+        List<String> userHeads = userAutoReceiveOrderService.findAllAutoOrderUserHead();
+        return Result.success().data(userHeads);
     }
-
 
 
 

@@ -38,12 +38,10 @@ public interface OrderDao extends ICommonDao<Order, Integer> {
 
     List<Order> findBySearchVO(OrderSearchVO orderSearchVO);
 
-    List<OrderDetailsVO> listOrderDetails(@Param(value = "type") Integer type,
-                                          @Param(value = "userId") Integer userId);
+    List<OrderDetailsVO> listOrderDetails(@Param(value = "type") Integer type, @Param(value = "userId") Integer userId);
 
 
-    List<PointOrderDetailsVO> pointOrderList(@Param(value = "type") Integer type,
-                                             @Param(value = "userId") Integer userId);
+    List<PointOrderDetailsVO> pointOrderList(@Param(value = "type") Integer type, @Param(value = "userId") Integer userId);
 
 
     List<PointOrderDetailsVO> receivingPointOrderList(@Param(value = "statusList") List<Integer> statusList);

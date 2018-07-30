@@ -165,7 +165,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public List<User> findByUserIds(List<Integer> userIds,Boolean disabled) {
-        if (userIds == null) {
+        if (CollectionUtil.isEmpty(userIds)){
             return new ArrayList<>();
         }
         return userDao.findByUserIds(userIds,disabled);

@@ -46,8 +46,7 @@
         <result column="serverHeadUrl" property="serverHeadUrl"/>
     </resultMap>
 
-    <resultMap id="PointOrderDetailsVOMap" type="com.fulu.game.core.entity.vo.PointOrderDetailsVO"
-               extends="OrderResultMap">
+    <resultMap id="PointOrderDetailsVOMap" type="com.fulu.game.core.entity.vo.PointOrderDetailsVO" extends="OrderResultMap">
         <result column="userNickName" property="userNickName"/>
         <result column="userHeadUrl" property="userHeadUrl"/>
         <result column="accountInfo" property="accountInfo"/>
@@ -92,10 +91,10 @@
         o.*,
         cu.nickname AS userNickName,
         cu.head_portraits_url AS userHeadUrl,
-        op.accountInfo AS accountInfo,
-        op.orderChoice AS orderChoice,
-        op.categoryName as categoryName,
-        op.categoryIcon as categoryIcon
+        op.account_info AS accountInfo,
+        op.order_choice AS orderChoice,
+        op.category_name as categoryName,
+        op.category_icon as categoryIcon
         FROM
         t_order o
         LEFT JOIN t_user cu ON o.user_id = cu.id
@@ -119,10 +118,10 @@
         cu.head_portraits_url AS userHeadUrl,
         pu.nickname AS serverNickName,
         pu.head_portraits_url AS serverHeadUrl,
-        op.accountInfo AS accountInfo,
-        op.orderChoice AS orderChoice,
-        op.categoryName as categoryName,
-        op.categoryIcon as categoryIcon
+        op.account_info AS accountInfo,
+        op.order_choice AS orderChoice,
+        op.category_name as categoryName,
+        op.category_icon as categoryIcon
         FROM
         t_order o
         LEFT JOIN t_user cu ON o.user_id = cu.id
@@ -157,6 +156,7 @@
         LEFT JOIN t_user pu ON o.service_user_id = pu.id
         LEFT JOIN t_order_product op ON o.order_no = op.order_no
         <where>
+            o.type = 1
             <if test="type == null">
                 and (o.user_id = #{userId}) OR ( o.service_user_id = #{userId} AND o.`status` NOT IN (100, 101) )
             </if>

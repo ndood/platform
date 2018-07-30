@@ -81,7 +81,7 @@ public class PayServiceImpl implements PayService {
     public String payResult(String xmlResult,WechatEcoEnum wechatEcoEnum) {
         try {
             WxPayOrderNotifyResult result = null;
-            if(WechatEcoEnum.PLAY.equals(wechatEcoEnum)){
+            if(WechatEcoEnum.PLAY.getType().equals(wechatEcoEnum)){
                 result = wxMaServiceSupply.playWxPayService().parseOrderNotifyResult(xmlResult);
             }else{
                 result = wxMaServiceSupply.pointWxPayService().parseOrderNotifyResult(xmlResult);
