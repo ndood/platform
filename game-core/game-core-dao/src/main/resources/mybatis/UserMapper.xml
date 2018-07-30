@@ -84,7 +84,9 @@
             <foreach collection="userIds" item="userId" index="index" open="(" close=")" separator=",">
                 #{userId}
             </foreach>
-            AND user_info_auth != 3
+            <if test="#{disabled}">
+                AND user_info_auth != 3
+            </if>
         </where>
         ORDER BY user_score DESC
     </select>

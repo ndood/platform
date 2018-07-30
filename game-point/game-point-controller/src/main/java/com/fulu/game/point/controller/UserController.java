@@ -7,9 +7,11 @@ import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Advice;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.WxUserInfo;
 import com.fulu.game.core.service.AdviceService;
 import com.fulu.game.core.service.UserService;
@@ -38,14 +40,16 @@ public class UserController extends BaseController {
     private final WxMaServiceSupply wxMaServiceSupply;
     private final RedisOpenServiceImpl redisOpenService;
     private final AdviceService adviceService;
+    private final OssUtil ossUtil;
 
     @Autowired
     public UserController(WxMaServiceSupply wxMaServiceSupply, RedisOpenServiceImpl redisOpenService,
-                          UserService userService, AdviceService adviceService) {
+                          UserService userService, AdviceService adviceService,OssUtil ossUtil) {
         this.userService = userService;
         this.wxMaServiceSupply = wxMaServiceSupply;
         this.redisOpenService = redisOpenService;
         this.adviceService = adviceService;
+        this.ossUtil =ossUtil ;
     }
 
     /**
@@ -74,7 +78,6 @@ public class UserController extends BaseController {
 
     /**
      * 获取用户微信手机号
-     *
      * @param encryptedData
      * @param iv
      * @return
@@ -106,10 +109,34 @@ public class UserController extends BaseController {
 
     }
 
+    /**
+     * 用户-更新个人信息
+     *
+     * @param userVO
+     * @return
+     */
+    @RequestMapping("/update")
+    public Result update(UserVO userVO) {
+        User user = userService.findById(userService.getCurrentUser().getId());
+        user.setAge(userVO.getAge());
+        user.setGender(userVO.getGender());
+        user.setCity(userVO.getCity());
+        user.setProvince(userVO.getProvince());
+        user.setCountry(userVO.getCountry());
+        user.setBirth(userVO.getBirth());
+        user.setConstellation(userVO.getConstellation());
+        user.setNickname(userVO.getNickname());
+        user.setHeadPortraitsUrl(ossUtil.activateOssFile(userVO.getHeadPortraitsUrl()));
+        userService.update(user);
+        userService.updateRedisUser(user);
+        user.setIdcard(null);
+        user.setRealname(null);
+        return Result.success().data(user).msg("个人信息设置成功！");
+    }
+
 
     /**
      * 保存微信信息
-     *
      * @param wxUserInfo
      * @return
      */
@@ -166,4 +193,6 @@ public class UserController extends BaseController {
         Advice advice = adviceService.addAdvice(content, contact, advicePicUrls);
         return Result.success().data(advice).msg("提交成功");
     }
+
+
 }

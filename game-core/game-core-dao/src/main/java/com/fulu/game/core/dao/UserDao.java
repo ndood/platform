@@ -28,7 +28,7 @@ public interface UserDao extends ICommonDao<User, Integer> {
      * @param userIds
      * @return
      */
-    List<User> findByUserIds(@Param(value = "userIds") List<Integer> userIds);
+    List<User> findByUserIds(@Param(value = "userIds") List<Integer> userIds,@Param(value = "disabled")Boolean disabled);
 
     List<ImUser> findImNullUser();
 

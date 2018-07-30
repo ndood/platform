@@ -2,35 +2,36 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.dao.UserAutoReceiveOrderDao;
 import com.fulu.game.core.entity.Admin;
+import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.UserAutoReceiveOrder;
 import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.vo.UserAutoReceiveOrderVO;
 import com.fulu.game.core.entity.vo.searchVO.UserAutoOrderSearchVO;
 import com.fulu.game.core.service.AdminService;
-import com.fulu.game.core.service.OrderShareProfitService;
+import com.fulu.game.core.service.UserAutoReceiveOrderService;
+import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.UserTechAuthService;
-import org.bouncycastle.cms.PasswordRecipientId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
-import com.fulu.game.core.dao.UserAutoReceiveOrderDao;
-import com.fulu.game.core.entity.UserAutoReceiveOrder;
-import com.fulu.game.core.service.UserAutoReceiveOrderService;
-
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 
 @Service
-public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoReceiveOrder,Integer> implements UserAutoReceiveOrderService {
+public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoReceiveOrder, Integer> implements UserAutoReceiveOrderService {
 
     @Autowired
-	private UserAutoReceiveOrderDao userAutoReceiveOrderDao;
+    private UserAutoReceiveOrderDao userAutoReceiveOrderDao;
     @Autowired
     private UserTechAuthService userTechAuthService;
     @Autowired
     private AdminService adminService;
+    @Autowired
+    private UserService userService;
 
 
     @Override
@@ -58,19 +59,19 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
     }
 
 
-    public List<UserAutoReceiveOrder> findByUserId(int userId){
+    public List<UserAutoReceiveOrder> findByUserId(int userId) {
         UserAutoReceiveOrderVO param = new UserAutoReceiveOrderVO();
         param.setUserId(userId);
         return userAutoReceiveOrderDao.findByParameter(param);
     }
 
 
-    public UserAutoReceiveOrder findByUserIdAndCategoryId(int userId,int categoryId){
+    public UserAutoReceiveOrder findByUserIdAndCategoryId(int userId, int categoryId) {
         UserAutoReceiveOrderVO param = new UserAutoReceiveOrderVO();
         param.setUserId(userId);
         param.setCategoryId(categoryId);
         List<UserAutoReceiveOrder> autoReceiveOrders = userAutoReceiveOrderDao.findByParameter(param);
-        if(autoReceiveOrders.isEmpty()){
+        if (autoReceiveOrders.isEmpty()) {
             return null;
         }
         return autoReceiveOrders.get(0);
@@ -83,47 +84,62 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
     }
 
 
-    public void activateAutoOrder(int userId,boolean flag){
+    public void activateAutoOrder(int userId, boolean flag) {
         List<UserAutoReceiveOrder> userAutoReceiveOrders = findByUserId(userId);
-        for(UserAutoReceiveOrder autoReceiveOrder : userAutoReceiveOrders){
+        for (UserAutoReceiveOrder autoReceiveOrder : userAutoReceiveOrders) {
             autoReceiveOrder.setUserAutoSetting(flag);
         }
     }
 
     @Override
     public void addOrderCompleteNum(int userId, int categoryId) {
-        UserAutoReceiveOrder autoReceiveOrder = findByUserIdAndCategoryId(userId,categoryId);
-        Integer orderCompleteNum =  autoReceiveOrder.getOrderCompleteNum();
-        if(orderCompleteNum==null){
+        UserAutoReceiveOrder autoReceiveOrder = findByUserIdAndCategoryId(userId, categoryId);
+        Integer orderCompleteNum = autoReceiveOrder.getOrderCompleteNum();
+        if (orderCompleteNum == null) {
             orderCompleteNum = 0;
         }
-        autoReceiveOrder.setOrderCompleteNum(orderCompleteNum+1);
+        autoReceiveOrder.setOrderCompleteNum(orderCompleteNum + 1);
         autoReceiveOrder.setUpdateTime(new Date());
         update(autoReceiveOrder);
     }
 
     @Override
     public void addOrderCancelNum(int userId, int categoryId) {
-        UserAutoReceiveOrder autoReceiveOrder = findByUserIdAndCategoryId(userId,categoryId);
-        Integer orderCancelNum =  autoReceiveOrder.getOrderCancelNum();
-        if(orderCancelNum==null){
+        UserAutoReceiveOrder autoReceiveOrder = findByUserIdAndCategoryId(userId, categoryId);
+        Integer orderCancelNum = autoReceiveOrder.getOrderCancelNum();
+        if (orderCancelNum == null) {
             orderCancelNum = 0;
         }
-        autoReceiveOrder.setOrderCancelNum(orderCancelNum+1);
+        autoReceiveOrder.setOrderCancelNum(orderCancelNum + 1);
         autoReceiveOrder.setUpdateTime(new Date());
         update(autoReceiveOrder);
     }
 
     @Override
     public void addOrderDisputeNum(int userId, int categoryId) {
-        UserAutoReceiveOrder autoReceiveOrder = findByUserIdAndCategoryId(userId,categoryId);
+        UserAutoReceiveOrder autoReceiveOrder = findByUserIdAndCategoryId(userId, categoryId);
         Integer orderDisputeNum = autoReceiveOrder.getOrderDisputeNum();
-        if(orderDisputeNum==null){
-            orderDisputeNum = 0 ;
+        if (orderDisputeNum == null) {
+            orderDisputeNum = 0;
         }
         autoReceiveOrder.setOrderDisputeNum(orderDisputeNum);
         autoReceiveOrder.setUpdateTime(new Date());
         update(autoReceiveOrder);
+    }
+
+    @Override
+    public List<String> findAllAutoOrderUserHead() {
+        List<UserAutoReceiveOrder> allUserAutoReceiveOrder = findAll();
+        List<Integer> userIds = new ArrayList<>();
+        for (UserAutoReceiveOrder receiveOrder : allUserAutoReceiveOrder) {
+            userIds.add(receiveOrder.getUserId());
+        }
+        List<String> headList = new ArrayList<>();
+        List<User> userList = userService.findByUserIds(userIds, Boolean.TRUE);
+        for(User user: userList){
+            headList.add(user.getHeadPortraitsUrl());
+        }
+        return headList;
     }
 
 }

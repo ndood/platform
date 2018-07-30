@@ -164,11 +164,11 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public List<User> findByUserIds(List<Integer> userIds) {
+    public List<User> findByUserIds(List<Integer> userIds,Boolean disabled) {
         if (userIds == null) {
             return new ArrayList<>();
         }
-        return userDao.findByUserIds(userIds);
+        return userDao.findByUserIds(userIds,disabled);
     }
 
 
@@ -526,7 +526,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             log.info("判断存在开黑用户信息，更新unionUser:{}",unionUser);
             unionUser.setPointOpenId(user.getPointOpenId());
             //删除上分的用户
-            user.setPointOpenId(unionUser.getId()+"-"+user.getUnionId()+"-"+new Date().getTime());
+            user.setPointOpenId(unionUser.getId()+"-"+user.getPointOpenId()+"-"+new Date().getTime());
             user.setUnionId(unionUser.getId()+"-"+user.getUnionId()+"-"+new Date().getTime());
             update(user);
             //更新陪玩的用户
@@ -537,7 +537,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             log.info("判断存在上分的用户信息，unionUser:{}",unionUser);
             user.setPointOpenId(unionUser.getPointOpenId());
             //删除上分的用户
-            unionUser.setPointOpenId(user.getId()+"-"+unionUser.getUnionId()+"-"+new Date().getTime());
+            unionUser.setPointOpenId(user.getId()+"-"+unionUser.getPointOpenId()+"-"+new Date().getTime());
             unionUser.setUnionId(user.getId()+"-"+unionUser.getUnionId()+"-"+new Date().getTime());
             update(unionUser);
             //更新陪玩的用户

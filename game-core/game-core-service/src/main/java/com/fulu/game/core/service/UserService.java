@@ -87,7 +87,7 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param userIds
      * @return
      */
-    List<User> findByUserIds(List<Integer> userIds);
+    List<User> findByUserIds(List<Integer> userIds,Boolean disabled);
 
 
     void updateRedisUser(User user);

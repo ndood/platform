@@ -55,4 +55,7 @@ public interface UserAutoReceiveOrderService extends ICommonService<UserAutoRece
     void addOrderDisputeNum(int userId, int categoryId);
 
 
+    List<String> findAllAutoOrderUserHead();
+
+
 }

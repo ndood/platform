@@ -46,7 +46,8 @@
         <result column="serverHeadUrl" property="serverHeadUrl"/>
     </resultMap>
 
-    <resultMap id="PointOrderDetailsVOMap" type="com.fulu.game.core.entity.vo.PointOrderDetailsVO" extends="OrderResultMap">
+    <resultMap id="PointOrderDetailsVOMap" type="com.fulu.game.core.entity.vo.PointOrderDetailsVO"
+               extends="OrderResultMap">
         <result column="userNickName" property="userNickName"/>
         <result column="userHeadUrl" property="userHeadUrl"/>
         <result column="accountInfo" property="accountInfo"/>
@@ -54,7 +55,6 @@
         <result column="categoryIcon" property="categoryIcon"/>
         <result column="categoryName" property="categoryName"/>
     </resultMap>
-
 
 
     <sql id="Base_Column_List">
@@ -87,30 +87,28 @@
     </select>
 
 
-
-
     <select id="receivingPointOrderList" resultMap="PointOrderDetailsVOMap">
         SELECT
-            o.*,
-            cu.nickname AS userNickName,
-            cu.head_portraits_url AS userHeadUrl,
-            op.accountInfo AS accountInfo,
-            op.orderChoice AS orderChoice,
-            op.categoryName as categoryName,
-            op.categoryIcon as categoryIcon
-         FROM
-          t_order o
-         LEFT JOIN t_user cu ON o.user_id = cu.id
-         LEFT JOIN t_order_point_product op ON o.order_no = op.order_no
-         <where>
-                 o.type = 2
-             <if test="statusList != null">
-                 and status in
-                 <foreach collection="statusList" item="s" index="index" open="(" close=")" separator=",">
-                     #{s}
-                 </foreach>
-             </if>
-         </where>
+        o.*,
+        cu.nickname AS userNickName,
+        cu.head_portraits_url AS userHeadUrl,
+        op.accountInfo AS accountInfo,
+        op.orderChoice AS orderChoice,
+        op.categoryName as categoryName,
+        op.categoryIcon as categoryIcon
+        FROM
+        t_order o
+        LEFT JOIN t_user cu ON o.user_id = cu.id
+        LEFT JOIN t_order_point_product op ON o.order_no = op.order_no
+        <where>
+            o.type = 2
+            <if test="statusList != null">
+                and o.status in
+                <foreach collection="statusList" item="s" index="index" open="(" close=")" separator=",">
+                    #{s}
+                </foreach>
+            </if>
+        </where>
     </select>
 
 
@@ -133,18 +131,16 @@
         <where>
             o.type = 2
             <if test="type == null">
-                (o.user_id = #{userId}) OR ( o.service_user_id = #{userId} AND o.`status` NOT IN (100, 101) )
+                and (o.user_id = #{userId}) OR ( o.service_user_id = #{userId} AND o.`status` NOT IN (100, 101) )
             </if>
             <if test="type == 1">
-                o.user_id = #{userId}
+                and o.user_id = #{userId}
             </if>
             <if test="type == 2">
-                o.service_user_id = #{userId} AND o.`status` NOT IN (100, 101)
+                and o.service_user_id = #{userId} AND o.`status` NOT IN (100, 101)
             </if>
         </where>
     </select>
-
-
 
 
     <select id="listOrderDetails" resultMap="OrderDetailsVOMap">
@@ -162,13 +158,13 @@
         LEFT JOIN t_order_product op ON o.order_no = op.order_no
         <where>
             <if test="type == null">
-               (o.user_id = #{userId}) OR ( o.service_user_id = #{userId} AND o.`status` NOT IN (100, 101) )
+                and (o.user_id = #{userId}) OR ( o.service_user_id = #{userId} AND o.`status` NOT IN (100, 101) )
             </if>
             <if test="type == 1">
-                o.user_id = #{userId}
+                and o.user_id = #{userId}
             </if>
             <if test="type == 2">
-                o.service_user_id = #{userId} AND o.`status` NOT IN (100, 101)
+                and o.service_user_id = #{userId} AND o.`status` NOT IN (100, 101)
             </if>
         </where>
     </select>
