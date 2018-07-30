@@ -14,7 +14,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>game-play-controller</module>
-        <module>game-towin-controller</module>
     </modules>
 
     <dependencies>
