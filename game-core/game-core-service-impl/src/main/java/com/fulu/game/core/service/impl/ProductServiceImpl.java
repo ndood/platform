@@ -248,9 +248,18 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     }
 
 
+
     public List<TechAuthProductVO> techAuthProductList(int userId){
         List<UserTechAuth> userTechAuths = userTechAuthService.findByUserId(userId);
-        return null;
+        List<TechAuthProductVO> resultList = new ArrayList<>();
+        for(UserTechAuth userTechAuth : userTechAuths){
+            TechAuthProductVO techAuthProductVO = new TechAuthProductVO();
+            BeanUtil.copyProperties(userTechAuth,techAuthProductVO);
+            List<Product> list = findProductByTech(userTechAuth.getId());
+            techAuthProductVO.setProductList(list);
+            resultList.add(techAuthProductVO);
+        }
+        return resultList;
     }
 
 

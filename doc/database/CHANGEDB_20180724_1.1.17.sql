@@ -122,5 +122,4 @@ ALTER TABLE `t_product` 	ADD COLUMN `is_activate` tinyint(1) NULL COMMENT 'ÊòØÂê
 
 UPDATE `t_wechat_formid` as f SET `open_id` = (SELECT `open_id` FROM `t_user` as u WHERE u.`id` =f.`user_id` ),`platform` =1;
 
-
-
+update t_product set is_activate = TRUE;

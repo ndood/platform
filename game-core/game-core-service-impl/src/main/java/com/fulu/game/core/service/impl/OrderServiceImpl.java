@@ -136,7 +136,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     public void pushToServiceOrderWxMessage(Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum) {
         if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
-            wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), wechatTemplateMsgEnum.choice(WechatEcoEnum.POINT.getType()));
+            if(order.getServiceUserId()!=null){
+                wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), wechatTemplateMsgEnum.choice(WechatEcoEnum.POINT.getType()));
+            }
         } else {
             wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), wechatTemplateMsgEnum);
         }
@@ -145,7 +147,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     public void pushToUserOrderWxMessage(Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum) {
         String orderStatus = OrderStatusEnum.getMsgByStatus(order.getStatus());
         if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
-            wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), wechatTemplateMsgEnum.choice(WechatEcoEnum.POINT.getType()), orderStatus);
+            if(order.getServiceUserId()!=null){
+                wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), wechatTemplateMsgEnum.choice(WechatEcoEnum.POINT.getType()), orderStatus);
+            }
         } else {
             wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), wechatTemplateMsgEnum, orderStatus);
         }

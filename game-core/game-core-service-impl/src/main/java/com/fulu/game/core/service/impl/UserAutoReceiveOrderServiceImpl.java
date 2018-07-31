@@ -119,6 +119,9 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
     @Override
     public void addOrderCompleteNum(int userId, int categoryId) {
         UserAutoReceiveOrder autoReceiveOrder = findByUserIdAndCategoryId(userId, categoryId);
+        if (autoReceiveOrder == null) {
+            return;
+        }
         Integer orderCompleteNum = autoReceiveOrder.getOrderCompleteNum();
         if (orderCompleteNum == null) {
             orderCompleteNum = 0;
@@ -131,6 +134,9 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
     @Override
     public void addOrderCancelNum(int userId, int categoryId) {
         UserAutoReceiveOrder autoReceiveOrder = findByUserIdAndCategoryId(userId, categoryId);
+        if (autoReceiveOrder == null) {
+            return;
+        }
         Integer orderCancelNum = autoReceiveOrder.getOrderCancelNum();
         if (orderCancelNum == null) {
             orderCancelNum = 0;
@@ -143,6 +149,9 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
     @Override
     public void addOrderDisputeNum(int userId, int categoryId) {
         UserAutoReceiveOrder autoReceiveOrder = findByUserIdAndCategoryId(userId, categoryId);
+        if (autoReceiveOrder == null) {
+            return;
+        }
         Integer orderDisputeNum = autoReceiveOrder.getOrderDisputeNum();
         if (orderDisputeNum == null) {
             orderDisputeNum = 0;

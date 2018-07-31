@@ -3,10 +3,7 @@ package com.fulu.game.core.service;
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.SalesMode;
-import com.fulu.game.core.entity.vo.ProductShowCaseVO;
-import com.fulu.game.core.entity.vo.ProductDetailsVO;
-import com.fulu.game.core.entity.vo.ProductVO;
-import com.fulu.game.core.entity.vo.SimpleProductVO;
+import com.fulu.game.core.entity.vo.*;
 import com.github.pagehelper.PageInfo;
 
 import java.math.BigDecimal;
@@ -192,6 +189,12 @@ public interface ProductService extends ICommonService<Product,Integer>{
      */
     List<ProductVO> findOthersByproductId(Integer productId);
 
+    /**
+     * 查询技能商品列表
+     * @param userId
+     * @return
+     */
+    List<TechAuthProductVO> techAuthProductList(int userId);
 
 
 }

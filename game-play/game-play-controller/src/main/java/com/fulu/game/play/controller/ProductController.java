@@ -8,6 +8,7 @@ import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.ProductDetailsVO;
 import com.fulu.game.core.entity.vo.SimpleProductVO;
+import com.fulu.game.core.entity.vo.TechAuthProductVO;
 import com.fulu.game.core.service.MoneyDetailsService;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.ProductService;
@@ -160,7 +161,6 @@ public class ProductController extends BaseController {
 
     /**
      * 技能接单方式激活
-     *
      * @param techId
      * @param status
      * @return
@@ -176,6 +176,17 @@ public class ProductController extends BaseController {
         }
     }
 
+
+    /**
+     * 用户所有接单方式列表
+     * @return
+     */
+    @RequestMapping(value = "/order-receive/tech/list")
+    public Result techList() {
+        User user = userService.getCurrentUser();
+        List<TechAuthProductVO> techAuthProductVOS = productService.techAuthProductList(user.getId());
+        return Result.success().data(techAuthProductVOS);
+    }
 
     /**
      * 用户所有接单方式列表

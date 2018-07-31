@@ -133,7 +133,9 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
                 if(OrderStatusEnum.CONSULT_COMPLETE.getStatus().equals(order.getStatus())||OrderStatusEnum.SYSTEM_CONSULT_COMPLETE.getStatus().equals(order.getStatus())){
                     userAutoReceiveOrderService.addOrderDisputeNum(order.getServiceUserId(),order.getCategoryId());
                 }else{
-                    userAutoReceiveOrderService.addOrderCancelNum(order.getServiceUserId(),order.getCategoryId());
+                    if(order.getServiceUserId()!=null){
+                        userAutoReceiveOrderService.addOrderCancelNum(order.getServiceUserId(),order.getCategoryId());
+                    }
                 }
             }
         } catch (Exception e) {
