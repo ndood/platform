@@ -224,4 +224,12 @@ public interface UserService extends ICommonService<User, Integer> {
      * @return
      */
     Integer findUserScoreByUpdate(Integer userId);
+
+    /**
+     * 获取用户红包领取状态
+     *
+     * @param user 用户Bean
+     * @return 是否需要领取红包
+     */
+    boolean getUserCouponStatus(User user);
 }

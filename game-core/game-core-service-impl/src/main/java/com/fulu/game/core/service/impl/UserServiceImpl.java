@@ -530,8 +530,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             log.info("判断存在开黑用户信息，更新unionUser:{}", unionUser);
             unionUser.setPointOpenId(user.getPointOpenId());
             //删除上分的用户
-            user.setPointOpenId(unionUser.getId() + "-" + user.getPointOpenId() + "-" + new Date().getTime());
-            user.setUnionId(unionUser.getId() + "-" + user.getUnionId() + "-" + new Date().getTime());
+            user.setPointOpenId(unionUser.getId() + "-" + user.getPointOpenId() + "-" + System.currentTimeMillis());
+            user.setUnionId(unionUser.getId() + "-" + user.getUnionId() + "-" + System.currentTimeMillis());
             update(user);
             //更新陪玩的用户
             update(unionUser);
@@ -541,8 +541,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             log.info("判断存在上分的用户信息，unionUser:{}", unionUser);
             user.setPointOpenId(unionUser.getPointOpenId());
             //删除上分的用户
-            unionUser.setPointOpenId(user.getId() + "-" + unionUser.getPointOpenId() + "-" + new Date().getTime());
-            unionUser.setUnionId(user.getId() + "-" + unionUser.getUnionId() + "-" + new Date().getTime());
+            unionUser.setPointOpenId(user.getId() + "-" + unionUser.getPointOpenId() + "-" + System.currentTimeMillis());
+            unionUser.setUnionId(user.getId() + "-" + unionUser.getUnionId() + "-" + System.currentTimeMillis());
             update(unionUser);
             //更新陪玩的用户
             update(user);
@@ -615,7 +615,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
         CouponGroup couponGroup = couponGroupService.findByRedeemCode(Constant.NEW_POINT_USER_COUPON_GROUP_REDEEM_CODE);
         if (couponGroup == null) {
-            throw new ServiceErrorException("查询不到CJ活动的优惠券！");
+            throw new ServiceErrorException("查询不到优惠券！");
         }
 
         List<Coupon> couponList = couponService.findByUserReceive(couponGroup.getId(), user.getId());
@@ -626,7 +626,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
         Coupon coupon = couponService.generateCoupon(couponGroup.getRedeemCode(), user.getId(), DateUtil.date(), ipStr);
         if (coupon == null) {
-            throw new ServiceErrorException("通过优惠券兑换码:{}发放优惠券失败！");
+            throw new ServiceErrorException("发放优惠券失败！");
         }
         return true;
     }
@@ -642,5 +642,28 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Override
     public Integer findUserScoreByUpdate(Integer userId) {
         return userDao.findUserScoreByUpdate(userId);
+    }
+
+    @Override
+    public boolean getUserCouponStatus(User user) {
+        if (user == null) {
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+
+        String openId = user.getOpenId();
+        CouponGroup couponGroup = couponGroupService.findByRedeemCode(Constant.NEW_POINT_USER_COUPON_GROUP_REDEEM_CODE);
+        if (couponGroup == null) {
+            throw new ServiceErrorException("查询不到优惠券！");
+        }
+        List<Coupon> couponList = couponService.findByUserReceive(couponGroup.getId(), user.getId());
+        if (CollectionUtil.isNotEmpty(couponList)) {
+            log.info("用户userId:{}已经领取了优惠券!", user.getId());
+            return false;
+        }
+
+        if (StringUtils.isBlank(openId) && CollectionUtil.isEmpty(couponList)) {
+            return true;
+        }
+        return false;
     }
 }
