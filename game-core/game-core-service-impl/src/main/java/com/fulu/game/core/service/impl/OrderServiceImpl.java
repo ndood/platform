@@ -136,7 +136,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     public void pushToServiceOrderWxMessage(Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum) {
         if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
-            if(order.getServiceUserId()!=null){
+            if (order.getServiceUserId() != null) {
                 wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), wechatTemplateMsgEnum.choice(WechatEcoEnum.POINT.getType()));
             }
         } else {
@@ -147,7 +147,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     public void pushToUserOrderWxMessage(Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum) {
         String orderStatus = OrderStatusEnum.getMsgByStatus(order.getStatus());
         if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
-            if(order.getServiceUserId()!=null){
+            if (order.getServiceUserId() != null) {
                 wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), wechatTemplateMsgEnum.choice(WechatEcoEnum.POINT.getType()), orderStatus);
             }
         } else {
@@ -282,6 +282,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 上分订单抢单
+     *
      * @param orderNo
      * @return
      */
@@ -1572,9 +1573,14 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         if (autoReceiveOrder == null) {
             return null;
         }
-        BigDecimal orderFailureRate = new BigDecimal(
-                (autoReceiveOrder.getOrderCancelNum() + autoReceiveOrder.getOrderDisputeNum())
-                        / autoReceiveOrder.getOrderCompleteNum());
+
+        Integer orderCancelNum = autoReceiveOrder.getOrderCancelNum();
+        Integer orderDisputeNum = autoReceiveOrder.getOrderDisputeNum();
+        Integer orderCompleteNum = autoReceiveOrder.getOrderCompleteNum();
+        BigDecimal orderFailureRate = new BigDecimal(0);
+        if(orderCancelNum != null && orderDisputeNum != null && orderCompleteNum != null && orderCompleteNum != 0) {
+            orderFailureRate = new BigDecimal((orderCancelNum + orderDisputeNum) / orderCompleteNum);
+        }
 
         UserAutoReceiveOrderVO resultVo = new UserAutoReceiveOrderVO();
         resultVo.setRunningOrderNum(runningOrderNum);
@@ -1589,9 +1595,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             orderBy = "create_time desc";
         }
         PageHelper.startPage(pageNum, pageSize, orderBy);
-        orderSearchVO.setType(OrderTypeEnum.POINT.getType());
-        orderSearchVO.setStatus(OrderStatusEnum.WAIT_SERVICE.getStatus());
-        List<Order> orderList = findBySearchVO(orderSearchVO);
+        List<Order> orderList = orderDao.unacceptOrderList(orderSearchVO);
         if (CollectionUtil.isEmpty(orderList)) {
             return null;
         }

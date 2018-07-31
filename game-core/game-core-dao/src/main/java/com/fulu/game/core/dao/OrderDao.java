@@ -46,8 +46,11 @@ public interface OrderDao extends ICommonDao<Order, Integer> {
     List<PointOrderDetailsVO> receivingPointOrderList(@Param(value = "statusList") List<Integer> statusList);
 
     /**
-     * @return
+     * 上分订单--未接单订单列表
+     *
+     * @param orderSearchVO 查询VO
+     * @return 订单列表
      */
-    List<OrderVO> unacceptOrderList();
+    List<Order> unacceptOrderList(OrderSearchVO orderSearchVO);
 
 }
