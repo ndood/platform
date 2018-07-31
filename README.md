@@ -56,7 +56,7 @@ web端: https://pro.modao.cc/app/KmU8Jxs1hdjFFFBxDUe4Ub0VdD7CmaI#screen=s65673F5
 |200|待付款|
 |210|等待陪玩|
 |220|陪玩中|
-|300|等待验收|
+|300|等待验收| 
 |400|申诉中|
 |410|申诉：全额退款|
 |420|申诉：协商处理|

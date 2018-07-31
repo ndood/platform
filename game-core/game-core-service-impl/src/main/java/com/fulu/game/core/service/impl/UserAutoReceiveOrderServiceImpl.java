@@ -55,6 +55,10 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
         autoReceivingOrder.setRemark(remark);
         autoReceivingOrder.setUserId(userTechAuth.getUserId());
         autoReceivingOrder.setUserAutoSetting(Boolean.FALSE);
+        autoReceivingOrder.setOrderNum(0);
+        autoReceivingOrder.setOrderCancelNum(0);
+        autoReceivingOrder.setOrderCompleteNum(0);
+        autoReceivingOrder.setOrderDisputeNum(0);
         autoReceivingOrder.setAdminId(admin.getId());
         autoReceivingOrder.setAdminName(admin.getName());
         autoReceivingOrder.setCreateTime(new Date());
