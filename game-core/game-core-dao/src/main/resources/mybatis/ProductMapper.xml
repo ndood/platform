@@ -33,7 +33,7 @@
         <include refid="Base_Column_List"/>
         from t_product
         <where>
-            id = #{id} and del_flag = false
+            id = #{id} and del_flag = false and is_activate = true
         </where>
     </select>
 

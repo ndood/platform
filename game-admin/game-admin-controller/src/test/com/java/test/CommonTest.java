@@ -16,4 +16,15 @@ public class CommonTest {
         System.out.println(result);
     }
 
+
+
+    @Test
+    public void test2() throws Exception {
+        Integer a = 127;
+        int b = 127;
+        System.out.println(a==b);
+
+    }
+
+
 }

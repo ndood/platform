@@ -56,7 +56,22 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * @param status
      * @return
      */
-    Product enable(int id,boolean status);
+    Product enable(Product product,boolean status);
+
+    /**
+     * 技能下所有商品激活和失效
+     * @param techId
+     * @param status
+     */
+    void techEnable(int techId,boolean status);
+
+
+    /**
+     * 通过techId查询商品
+     * @param techId
+     * @return
+     */
+    List<Product> findByTechId(int techId);
 
     /**
      * 开始接单

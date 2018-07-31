@@ -2,6 +2,7 @@ package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
@@ -40,17 +41,17 @@ public class ProductController extends BaseController {
 
 
     @RequestMapping(value = "/search")
-    public Result search(@RequestParam(required = true)Integer pageNum,
-                         @RequestParam(required = true)Integer pageSize,
-                         @RequestParam(required = true) String content){
-        PageInfo pageInfo = productService.searchContent(pageNum,pageSize,content);
+    public Result search(@RequestParam(required = true) Integer pageNum,
+                         @RequestParam(required = true) Integer pageSize,
+                         @RequestParam(required = true) String content) {
+        PageInfo pageInfo = productService.searchContent(pageNum, pageSize, content);
         return Result.success().data(pageInfo);
     }
 
 
-
     /**
      * 添加接单方式
+     *
      * @param techAuthId
      * @param price
      * @param unitId
@@ -60,8 +61,8 @@ public class ProductController extends BaseController {
     public Result create(@RequestParam(required = true) Integer techAuthId,
                          @RequestParam(required = true) BigDecimal price,
                          @RequestParam(required = true) Integer unitId) {
-        if(new BigDecimal(Constant.DEF_RECEIVING_ORDER_PRICE).compareTo(price)>0){
-            return Result.error().msg("接单价格不能低于"+Constant.DEF_RECEIVING_ORDER_PRICE+"元");
+        if (new BigDecimal(Constant.DEF_RECEIVING_ORDER_PRICE).compareTo(price) > 0) {
+            return Result.error().msg("接单价格不能低于" + Constant.DEF_RECEIVING_ORDER_PRICE + "元");
         }
         productService.create(techAuthId, price, unitId);
         return Result.success().msg("添加接单方式成功!");
@@ -127,8 +128,8 @@ public class ProductController extends BaseController {
                          @RequestParam(required = false) Integer techAuthId,
                          @RequestParam(required = false) BigDecimal price,
                          @RequestParam(required = false) Integer unitId) {
-        if(new BigDecimal(Constant.DEF_RECEIVING_ORDER_PRICE).compareTo(price)>0){
-            return Result.error().msg("接单价格不能低于"+Constant.DEF_RECEIVING_ORDER_PRICE+"元");
+        if (new BigDecimal(Constant.DEF_RECEIVING_ORDER_PRICE).compareTo(price) > 0) {
+            return Result.error().msg("接单价格不能低于" + Constant.DEF_RECEIVING_ORDER_PRICE + "元");
         }
         productService.update(id, techAuthId, price, unitId);
         return Result.success().msg("修改接单方式成功!");
@@ -136,20 +137,45 @@ public class ProductController extends BaseController {
 
 
     /**
+     * 即将废弃
      * 接单方式激活
-     *
      * @return
      */
+    @Deprecated
     @RequestMapping(value = "/order-receive/enable")
     public Result enable(@RequestParam(required = true) Integer id,
                          @RequestParam(required = true) Boolean status) {
-        productService.enable(id, status);
+        Product product = productService.findById(id);
+        if (product == null) {
+            throw new ProductException(ProductException.ExceptionCode.PRODUCT_REVIEW_ING);
+        }
+        productService.enable(product, status);
         if (status) {
             return Result.success().msg("开启");
         } else {
             return Result.success().msg("关闭");
         }
     }
+
+
+    /**
+     * 技能接单方式激活
+     *
+     * @param techId
+     * @param status
+     * @return
+     */
+    @RequestMapping(value = "/order-receive/tech/enable")
+    public Result techEnable(@RequestParam(required = true) Integer techId,
+                             @RequestParam(required = true) Boolean status) {
+        productService.techEnable(techId, status);
+        if (status) {
+            return Result.success().msg("开启");
+        } else {
+            return Result.success().msg("关闭");
+        }
+    }
+
 
     /**
      * 用户所有接单方式列表
@@ -164,6 +190,7 @@ public class ProductController extends BaseController {
 
     /**
      * 用户接单状态
+     *
      * @return
      */
     @RequestMapping(value = "/order-receive/status")

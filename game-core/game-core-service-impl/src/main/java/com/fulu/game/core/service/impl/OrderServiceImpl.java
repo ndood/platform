@@ -278,7 +278,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 上分订单抢单
-     *
      * @param orderNo
      * @return
      */
@@ -286,6 +285,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     public String receivePointOrder(String orderNo, User serviceUser) {
         Order order = findByOrderNo(orderNo);
         log.info("陪玩师抢单:userId:{};order:{}", serviceUser.getId(), order);
+
+
         if (!OrderTypeEnum.POINT.getType().equals(order.getType())) {
             throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING, order.getOrderNo());
         }
@@ -301,6 +302,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             order.setStatus(OrderStatusEnum.ALREADY_RECEIVING.getStatus());
             order.setUpdateTime(new Date());
             update(order);
+            //todo 设置多少分钟不能再自动派单
             log.info("抢单成功:userId:{};order:{}", serviceUser.getId(), order);
             //倒计时订单状态
             orderStatusDetailsService.create(orderNo, order.getStatus(), 10);

@@ -19,6 +19,7 @@ import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -113,7 +114,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             throw new ServiceErrorException("在线技能不允许修改!");
         }
         Product product = findById(id);
-        if(product==null){
+        if (product == null) {
             throw new ProductException(ProductException.ExceptionCode.PRODUCT_REVIEW_ING);
         }
         userService.isCurrentUser(product.getUserId());
@@ -157,7 +158,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     @Override
     public void updateByCategory(Category category) {
-        if(category.getName()==null&&category.getIcon()==null){
+        if (category.getName() == null && category.getIcon() == null) {
             return;
         }
         productDao.updateByCategory(category);
@@ -165,30 +166,46 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 激活或者取消激活商品
-     * @param id
+     *
+     * @param product
      * @param status
      * @return
      */
     @Override
-    public Product enable(int id, boolean status) {
+    public Product enable(Product product, boolean status) {
         User user = userService.getCurrentUser();
-        log.info("激活或者取消激活商品:userId:{};id:{};status:{};", user.getId(), id, status);
-        userService.isCurrentUser(user.getId());
+        log.info("激活或者取消激活商品:userId:{};product:{};status:{};", user.getId(), product, status);
         //检查用户认证的状态
         userService.checkUserInfoAuthStatus(user.getId());
-        if (redisOpenService.hasKey(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(id))) {
+        if (redisOpenService.hasKey(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(product.getId()))) {
             throw new ServiceErrorException("在线技能不允许修改!");
-        }
-        Product product = findById(id);
-        if(product==null){
-            throw new ProductException(ProductException.ExceptionCode.PRODUCT_REVIEW_ING);
         }
         product.setStatus(status);
         update(product);
-        if(!status){
-            saveProductIndex(product,status);
+        if (!status) {
+            saveProductIndex(product, Boolean.FALSE);
         }
         return product;
+    }
+
+
+    @Override
+    public void techEnable(int techId, boolean status) {
+        log.info("激活或取消该技能下所有商品:techId:{};status:{};", techId, status);
+        User user = userService.getCurrentUser();
+        userService.checkUserInfoAuthStatus(user.getId());
+        List<Product> products = findByTechId(techId);
+        for (Product product : products) {
+            enable(product, status);
+        }
+    }
+
+
+    @Override
+    public List<Product> findByTechId(int techId) {
+        ProductVO param = new ProductVO();
+        param.setTechAuthId(techId);
+        return productDao.findByParameter(param);
     }
 
     /**
@@ -236,12 +253,13 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         log.info("批量更新所有商品索引");
         List<User> userList = userService.findAllServeUser();
         for (User user : userList) {
-            updateUserProductIndex(user.getId(),true);
+            updateUserProductIndex(user.getId(), Boolean.TRUE);
         }
     }
 
     /**
      * 恢复商品删除状态
+     *
      * @param productId
      */
     public void recoverProductActivate(int productId) {
@@ -263,7 +281,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     /**
      * 开始接单业务
      */
-    //todo 开始接单的时候要去校验商品字段有没有更新
     @Override
     public void startOrderReceiving(Float hour) {
         User user = userService.getCurrentUser();
@@ -293,7 +310,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             }
         }
         //添加商品到首页
-        updateUserProductIndex(user.getId(),true);
+        updateUserProductIndex(user.getId(), Boolean.TRUE);
     }
 
 
@@ -318,12 +335,13 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             }
         }
         //修改首页商品的状态
-        updateUserProductIndex(user.getId(),false);
+        updateUserProductIndex(user.getId(), Boolean.FALSE);
     }
 
 
     /**
      * 查询商品详情页
+     *
      * @param productId
      * @return
      */
@@ -348,23 +366,23 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         int orderCount = orderService.allOrderCount(userInfo.getUserId());
         //查询用户段位信息
         ProductDetailsVO productDetailsVO = ProductDetailsVO.builder()
-                                        .categoryId(product.getCategoryId())
-                                        .id(product.getId())
-                                        .onLine(isProductStartOrderReceivingStatus(product.getId()))
-                                        .description(userTechAuth.getDescription())
-                                        .productName(product.getProductName())
-                                        .categoryIcon(product.getCategoryIcon())
-                                        .price(product.getPrice())
-                                        .unit(product.getUnit())
-                                        .techAuthId(product.getTechAuthId())
-                                        .userInfo(userInfo)
-                                        .orderCount(orderCount)
-                                        .techTags(techTags)
-                                        .otherProduct(productVOList)
-                                        .build();
+                .categoryId(product.getCategoryId())
+                .id(product.getId())
+                .onLine(isProductStartOrderReceivingStatus(product.getId()))
+                .description(userTechAuth.getDescription())
+                .productName(product.getProductName())
+                .categoryIcon(product.getCategoryIcon())
+                .price(product.getPrice())
+                .unit(product.getUnit())
+                .techAuthId(product.getTechAuthId())
+                .userInfo(userInfo)
+                .orderCount(orderCount)
+                .techTags(techTags)
+                .otherProduct(productVOList)
+                .build();
 
         UserTechInfo userTechInfo = userTechAuthService.findDanInfo(product.getTechAuthId());
-        if(userTechInfo!=null){
+        if (userTechInfo != null) {
             productDetailsVO.setDan(userTechInfo.getValue());
         }
         return productDetailsVO;
@@ -387,6 +405,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 查找用户其他的商品
+     *
      * @param userId
      * @param productId
      * @return
@@ -423,6 +442,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 为用户所有商品添加索引
+     *
      * @param userId
      */
     @Override
@@ -431,11 +451,11 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         List<Integer> rightfulProductIds = new ArrayList<>();
         for (Product product : products) {
             //是否需要更新接单时间,如果不需要就获取索引里面的更新时间
-            if(needUpdateTime){
+            if (needUpdateTime) {
                 product.setCreateTime(new Date());
-            }else{
-                ProductShowCaseDoc productShowCaseDoc =productSearchComponent.searchById(product.getId(),ProductShowCaseDoc.class);
-                if(productShowCaseDoc!=null){
+            } else {
+                ProductShowCaseDoc productShowCaseDoc = productSearchComponent.searchById(product.getId(), ProductShowCaseDoc.class);
+                if (productShowCaseDoc != null) {
                     product.setCreateTime(productShowCaseDoc.getCreateTime());
                 }
             }
@@ -443,9 +463,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         }
         //删除掉之前用户的垃圾商品数据
         List<ProductShowCaseDoc> productShowCaseDocList = productSearchComponent.findByUser(userId);
-        for (ProductShowCaseDoc pdoc : productShowCaseDocList) {
-            if (!rightfulProductIds.contains(pdoc.getId())) {
-                productSearchComponent.deleteIndex(pdoc.getId());
+        for (ProductShowCaseDoc pDoc : productShowCaseDocList) {
+            if (!rightfulProductIds.contains(pDoc.getId())) {
+                productSearchComponent.deleteIndex(pDoc.getId());
             }
         }
         batchUpdateProductIndex(products);
@@ -454,6 +474,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 搜索商品
+     *
      * @param pageNum
      * @param pageSize
      * @param nickName
@@ -485,21 +506,21 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * @return
      */
     @Override
-    public PageInfo findProductShowCase(Integer categoryId,
-                                        Integer gender,
-                                        Integer pageNum,
-                                        Integer pageSize,
-                                        String orderBy) {
+    public PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId,
+                                                           Integer gender,
+                                                           Integer pageNum,
+                                                           Integer pageSize,
+                                                           String orderBy) {
         PageInfo page = null;
         try {
             Page searchResult = productSearchComponent.searchShowCaseDoc(categoryId, gender, pageNum, pageSize, orderBy);
-            page = new PageInfo(searchResult);
+            page = new PageInfo<ProductShowCaseVO>(searchResult);
         } catch (Exception e) {
             log.error("ProductShowCase查询异常:", e);
             PageHelper.startPage(pageNum, pageSize, "create_time desc");
             List<ProductShowCaseVO> showCaseVOS = productDao.findProductShowCase(categoryId, gender);
             for (ProductShowCaseVO showCaseVO : showCaseVOS) {
-                UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(showCaseVO.getUserId(), false, false, true, false);
+                UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(showCaseVO.getUserId(), Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE);
                 showCaseVO.setNickName(userInfoVO.getNickName());
                 showCaseVO.setGender(userInfoVO.getGender());
                 showCaseVO.setMainPhoto(userInfoVO.getMainPhotoUrl());
@@ -511,17 +532,18 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                 }
                 showCaseVO.setOnLine(isProductStartOrderReceivingStatus(showCaseVO.getId()));
             }
-            page = new PageInfo(showCaseVOS);
+            page = new PageInfo<ProductShowCaseVO>(showCaseVOS);
         }
         return page;
     }
 
     /**
      * 批量创建商品索引
+     *
      * @param products (每个用户的所有商品集合)
      */
     private void batchUpdateProductIndex(List<Product> products) {
-        if(products.isEmpty()){
+        if (products.isEmpty()) {
             return;
         }
         List<Product> showIndexProducts = getShowIndexProduct(products);
@@ -536,6 +558,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 查询那些可以在首页显示的商品
+     *
      * @param products
      * @return
      */
@@ -558,7 +581,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                 }
             });
             if (!waitProducts.isEmpty()) {
-                waitProducts.sort((Product p1, Product p2) -> p2.getSalesModeRank().compareTo(p1.getSalesModeRank()));
+                waitProducts.sort((Product p1, Product p2) -> p1.getPrice().compareTo(p2.getPrice()));
                 showIndexProducts.add(waitProducts.get(0));
             }
         });
@@ -568,6 +591,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 保存商品索引
+     *
      * @param product
      * @param isIndexShow
      * @return
@@ -592,7 +616,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             productShowCaseDoc.setDan(userTechInfo.getValue());
         }
         //查询置顶排序
-        int topSort = productTopService.findTopSortByUserCategory(product.getUserId(),product.getCategoryId());
+        int topSort = productTopService.findTopSortByUserCategory(product.getUserId(), product.getCategoryId());
         productShowCaseDoc.setTopSort(topSort);
 
         log.info("插入索引:{}", productShowCaseDoc);
@@ -646,7 +670,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     public int deleteById(Integer id) {
         return productDao.deleteById(id);
     }
-
 
 
     @Override

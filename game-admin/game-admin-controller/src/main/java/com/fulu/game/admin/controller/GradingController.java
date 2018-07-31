@@ -79,6 +79,17 @@ public class GradingController extends BaseController {
 
 
     /**
+     * 删除段位价格成功
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "delete")
+    public Result delete(Integer id) {
+        gradingPriceService.deleteById(id);
+        return Result.success().msg("删除段位成功!");
+    }
+
+    /**
      * 段位价格列表
      * @param pid
      * @return

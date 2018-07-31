@@ -118,6 +118,9 @@ ALTER TABLE `t_sys_config` ADD COLUMN `type` tinyint(1)  DEFAULT NULL COMMENT '�
 
 ALTER TABLE `t_sales_mode` 	ADD COLUMN `type` tinyint(1) NULL COMMENT '平台统一单位类型(1:小时,2:局,3:次,4:首)' AFTER `category_id`;
 
+ALTER TABLE `t_product` 	ADD COLUMN `is_activate` tinyint(1) NULL COMMENT '是否激活' AFTER `status`;
 
 UPDATE `t_wechat_formid` as f SET `open_id` = (SELECT `open_id` FROM `t_user` as u WHERE u.`id` =f.`user_id` ),`platform` =1;
+
+
 

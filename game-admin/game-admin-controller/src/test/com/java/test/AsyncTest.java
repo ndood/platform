@@ -19,12 +19,8 @@ public class AsyncTest {
     private ImService imService;
 
 
-    @Test
-    public void test1() throws Exception {
-        String imId = "s87_20180629";
-        String imPwd = "123456";
-        ImUser imUser = imService.registerUser(imId, imPwd);
-        System.out.println(imUser);
-    }
+
+
+
 
 }
