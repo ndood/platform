@@ -16,11 +16,11 @@ public class UserInfoAuthSearchVO {
     private Integer startAge;
     private Integer endAge;
     private String orderBy;
-    private Integer userAutoSetting;
+    private Boolean userAutoSetting;
 
 
     public String getOrderBy() {
-        if(orderBy!=null){
+        if (orderBy != null) {
             return StrUtil.toUnderlineCase(orderBy);
         }
         return orderBy;

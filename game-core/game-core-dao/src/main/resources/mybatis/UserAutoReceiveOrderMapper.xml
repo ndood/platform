@@ -148,6 +148,9 @@
             <if test="userAutoSetting != null">
                 and auto.user_auto_setting = #{userAutoSetting}
             </if>
+            <if test="userId != null">
+                and auto.user_id = #{userId}
+            </if>
         </where>
     </select>
 
