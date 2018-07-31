@@ -131,6 +131,8 @@
         SELECT
         auto.user_id,
         auto.user_auto_setting,
+        auto.tech_auth_id,
+        auto.category_id,
         tu.login_time,
         tu.user_score,
         cate. NAME,

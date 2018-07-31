@@ -74,7 +74,7 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
         return userAutoReceiveOrderDao.findByParameter(param);
     }
 
-
+    @Override
     public UserAutoReceiveOrder findByUserIdAndCategoryId(int userId, int categoryId) {
         UserAutoReceiveOrderVO param = new UserAutoReceiveOrderVO();
         param.setUserId(userId);
