@@ -17,6 +17,7 @@ import com.fulu.game.core.service.AdviceService;
 import com.fulu.game.core.service.CouponService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -178,7 +179,10 @@ public class UserController extends BaseController {
             user.setCountry(wxUserInfo.getCountry());
         }
         user.setUpdateTime(new Date());
-        userService.updateUnionUser(user, WechatEcoEnum.POINT);
+
+        UserVO userVO = new UserVO();
+        BeanUtil.copyProperties(user, userVO);
+        userService.updateUnionUser(userVO, WechatEcoEnum.POINT, null);
         return Result.success().data(user);
     }
 

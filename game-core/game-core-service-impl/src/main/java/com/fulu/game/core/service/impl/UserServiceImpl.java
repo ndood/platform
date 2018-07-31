@@ -511,48 +511,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public void updateUnionUser(User user, WechatEcoEnum wechatEcoEnum) {
-        log.info("调用updateUnionUser方法:user:{}", user);
-        User unionUser = findByUnionId(user.getUnionId());
-        if (unionUser == null) {
-            log.info("unionUser为空更新自己的unionId:{}", user.getUnionId());
-            update(user);
-            updateRedisUser(user);
-            return;
-        }
-        if (unionUser.getId().equals(user.getId())) {
-            log.info("该用户已经存在unionUser:{}", unionUser);
-            update(user);
-            updateRedisUser(user);
-            return;
-        }
-        if (WechatEcoEnum.POINT.equals(wechatEcoEnum)) {
-            log.info("判断存在开黑用户信息，更新unionUser:{}", unionUser);
-            unionUser.setPointOpenId(user.getPointOpenId());
-            //删除上分的用户
-            user.setPointOpenId(unionUser.getId() + "-" + user.getPointOpenId() + "-" + System.currentTimeMillis());
-            user.setUnionId(unionUser.getId() + "-" + user.getUnionId() + "-" + System.currentTimeMillis());
-            update(user);
-            //更新陪玩的用户
-            update(unionUser);
-            updateRedisUser(unionUser);
-            log.info("判断存在开黑用户信息，更新user:{}", user);
-        } else {
-            log.info("判断存在上分的用户信息，unionUser:{}", unionUser);
-            user.setPointOpenId(unionUser.getPointOpenId());
-            //删除上分的用户
-            unionUser.setPointOpenId(user.getId() + "-" + unionUser.getPointOpenId() + "-" + System.currentTimeMillis());
-            unionUser.setUnionId(user.getId() + "-" + unionUser.getUnionId() + "-" + System.currentTimeMillis());
-            update(unionUser);
-            //更新陪玩的用户
-            update(user);
-            updateRedisUser(user);
-            log.info("判断存在上分的用户信息，更新user:{}", user);
-
-        }
-    }
-
-    @Override
     public void updateUnionUser(UserVO user, WechatEcoEnum wechatEcoEnum, String ipStr) {
         log.info("调用updateUnionUser方法:user:{}", user);
         User unionUser = findByUnionId(user.getUnionId());

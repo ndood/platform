@@ -199,14 +199,6 @@ public interface UserService extends ICommonService<User, Integer> {
     void bindIm(ImUser imUser);
 
     /**
-     * 同步用户信息
-     *
-     * @param user          用户Bean
-     * @param wechatEcoEnum 用户来源
-     */
-    void updateUnionUser(User user, WechatEcoEnum wechatEcoEnum);
-
-    /**
      * 同步用户信息（陪玩上分和陪玩开黑之间的用户数据同步）
      *
      * @param userVO        用户VO
