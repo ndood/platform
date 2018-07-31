@@ -25,7 +25,7 @@ public class OrderResVO extends Order {
 
     private OrderProduct orderProduct; //订单商品
 
-    private OrderMarketProduct orderMarketProduct; //集市订单商品
+//    private OrderMarketProduct orderMarketProduct; //集市订单商品
 
     private BigDecimal commissionMoney;
 
