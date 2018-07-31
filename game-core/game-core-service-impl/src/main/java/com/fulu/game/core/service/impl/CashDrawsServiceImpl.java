@@ -112,9 +112,9 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
     /**
      * 根据提现时间获取提醒文案
      * 注：每周二、周五进行打款（周二办理周四-周日的提现申请，周五办理周一到周三的提现申请）
-     * @return
+     * @return 返回文案
      */
-    public String getCashDrawsTips() {
+    private String getCashDrawsTips() {
         int weekInt = DateUtil.thisDayOfWeekEnum().getValue();
         boolean flag = weekInt >= Week.MONDAY.getValue() && weekInt <= Week.WEDNESDAY.getValue();
         if(flag) {
