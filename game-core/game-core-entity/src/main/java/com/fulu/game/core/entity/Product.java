@@ -33,7 +33,6 @@ public class Product implements Serializable {
 	private Integer categoryId;
 	//游戏名称
 	private String productName;
-
 	//关联技能
 	private Integer techAuthId;
 	//价格
@@ -50,6 +49,10 @@ public class Product implements Serializable {
 	private Date createTime;
 	//修改时间
 	private Date updateTime;
+
+	//是否激活
+	private Boolean isActivate;
+
 	//删除标记
 	private Boolean delFlag;
 

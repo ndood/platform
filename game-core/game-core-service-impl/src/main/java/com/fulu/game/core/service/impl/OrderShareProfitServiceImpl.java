@@ -119,12 +119,12 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
         orderShareProfit.setUpdateTime(new Date());
         create(orderShareProfit);
         //记录平台流水
-        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_REFUND,
-                order.getOrderNo(), refundMoney.negate());
-        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_REFUND,
-                order.getOrderNo(), serverMoney.negate());
-        //记录用户（陪玩师）加零钱
-        moneyDetailsService.orderSave(serverMoney, order.getServiceUserId(), order.getOrderNo());
+        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_REFUND, order.getOrderNo(), refundMoney.negate());
+        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_REFUND, order.getOrderNo(), serverMoney.negate());
+        if(order.getServiceUserId()!=null){
+            //记录用户（陪玩师）加零钱
+            moneyDetailsService.orderSave(serverMoney, order.getServiceUserId(), order.getOrderNo());
+        }
         //记录订单流水
         orderMoneyDetailsService.create(order.getOrderNo(), order.getUserId(), DetailsEnum.ORDER_USER_CANCEL, refundMoney.negate());
         try {

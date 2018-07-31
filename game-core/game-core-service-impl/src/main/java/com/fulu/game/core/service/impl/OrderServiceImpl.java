@@ -1184,7 +1184,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         Order order = findByOrderNo(orderNo);
         userService.isCurrentUser(order.getUserId());
         if (!order.getStatus().equals(NON_PAYMENT.getStatus())
-                && !order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())) {
+            && !order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有等待陪玩和未支付的订单才能取消!");
         }
         if (order.getIsPay()) {

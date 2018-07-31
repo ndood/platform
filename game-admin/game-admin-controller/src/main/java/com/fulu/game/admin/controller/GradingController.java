@@ -9,6 +9,7 @@ import com.fulu.game.core.service.GradingPriceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
@@ -83,7 +84,7 @@ public class GradingController extends BaseController {
      * @return
      */
     @PostMapping(value = "list")
-    public Result list(Integer pid) {
+    public Result list(@RequestParam(required = true) Integer pid) {
         List<GradingPriceVO> list = gradingPriceService.findVoByPid(pid);
         return Result.success().data(list);
     }

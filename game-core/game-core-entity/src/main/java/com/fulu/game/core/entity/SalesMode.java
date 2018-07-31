@@ -7,8 +7,6 @@ import lombok.Data;
 
 
 /**
- * 
- * 
  * @author wangbin
  * @date 2018-05-04 18:48:12
  */
@@ -20,6 +18,8 @@ public class SalesMode implements Serializable {
 	private Integer id;
 	//类型ID
 	private Integer categoryId;
+	//种类
+	private Integer type;
 	//单位
 	private String name;
 	//价格

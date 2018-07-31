@@ -15,6 +15,7 @@
         <result column="sales_mode_id" property="salesModeId"/>
         <result column="sales_mode_rank" property="salesModeRank"/>
         <result column="status" property="status"/>
+        <result column="is_activate" property="isActivate"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="del_flag" property="delFlag"/>
@@ -24,7 +25,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,category_id,gender,product_name,category_icon,tech_auth_id,price,unit,sales_mode_id,sales_mode_rank,status,create_time,update_time,del_flag
+        id,user_id,category_id,gender,product_name,category_icon,tech_auth_id,price,unit,sales_mode_id,sales_mode_rank,status,is_activate,create_time,update_time,del_flag
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="ProductResultMap">
@@ -86,46 +87,46 @@
             <if test="updateTime != null">
                 and update_time = #{updateTime}
             </if>
-            and del_flag = false
+            and is_activate = true and del_flag = false
         </where>
         ORDER BY sales_mode_rank DESC ;
     </select>
 
     <select id="findProductShowCase" resultType="com.fulu.game.core.entity.vo.ProductShowCaseVO">
         SELECT
-            t1.id as id,
-            t1.user_id as userId,
-            t1.category_id as categoryId,
-            t1.tech_auth_id as techAuthId,
-            t1.gender as gender,
-            t1.product_name as productName,
-            t1.price as price,
-            t1.unit as unit,
-            t1.`status` as status,
-            t1.create_time as createTime
+        t1.id as id,
+        t1.user_id as userId,
+        t1.category_id as categoryId,
+        t1.tech_auth_id as techAuthId,
+        t1.gender as gender,
+        t1.product_name as productName,
+        t1.price as price,
+        t1.unit as unit,
+        t1.`status` as status,
+        t1.create_time as createTime
         FROM
-            t_product t1
+        t_product t1
         JOIN (
-            SELECT
-                user_id,
-                max(sales_mode_rank) AS sales_mode_rank,
-                `category_id`
-            FROM
-                t_product
-            WHERE
-                category_id = #{categoryId}
-                and `status` = 1
-                <if test="gender != null">
-                    and gender = #{gender}
-                </if>
-                and del_flag = false
-            GROUP BY
-                user_id
+        SELECT
+        user_id,
+        max(sales_mode_rank) AS sales_mode_rank,
+        `category_id`
+        FROM
+        t_product
+        WHERE
+        category_id = #{categoryId}
+        and `status` = 1
+        <if test="gender != null">
+            and gender = #{gender}
+        </if>
+        and del_flag = false and is_activate = true
+        GROUP BY
+        user_id
         ) t2 ON t1.user_id = t2.user_id
-        AND t1.sales_mode_rank = t2.sales_mode_rank  and t1.`category_id` = t2.category_id
+        AND t1.sales_mode_rank = t2.sales_mode_rank and t1.`category_id` = t2.category_id
     </select>
 
-    <delete id="deleteById" parameterType="java.lang.Integer">
+    <update id="deleteById" parameterType="java.lang.Integer">
         update t_product
         <set>
             del_flag = TRUE , status = FALSE
@@ -133,13 +134,23 @@
         <where>
             id = #{id}
         </where>
-    </delete>
+    </update>
+
+    <update id="disabledProductById" parameterType="java.lang.Integer">
+        update t_product
+        <set>
+            is_activate = FALSE,status = FALSE
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Product">
         insert into
-        t_product (user_id,category_id,gender,product_name,category_icon,tech_auth_id,price,unit,sales_mode_id,sales_mode_rank,status,create_time,update_time,del_flag)
+        t_product (user_id,category_id,gender,product_name,category_icon,tech_auth_id,price,unit,sales_mode_id,sales_mode_rank,status,is_activate,create_time,update_time,del_flag)
         values
-        (#{userId},#{categoryId},#{gender},#{productName},#{categoryIcon},#{techAuthId},#{price},#{unit},#{salesModeId},#{salesModeRank},#{status},#{createTime},#{updateTime},#{delFlag})
+        (#{userId},#{categoryId},#{gender},#{productName},#{categoryIcon},#{techAuthId},#{price},#{unit},#{salesModeId},#{salesModeRank},#{status},#{isActivate},#{createTime},#{updateTime},#{delFlag})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Product">
@@ -186,6 +197,10 @@
 
             <if test="status != null">
                 status = #{status},
+            </if>
+
+            <if test="isActivate != null">
+                is_activate = #{isActivate},
             </if>
 
             <if test="createTime != null">
@@ -235,10 +250,10 @@
         </where>
     </update>
 
-    <update id="recoverProductDelFlag" parameterType="java.lang.Integer">
+    <update id="recoverProductActivate" parameterType="java.lang.Integer">
         update t_product
         <set>
-            del_flag = FALSE
+            is_activate = TRUE
         </set>
         <where>
             id = #{id}
@@ -246,11 +261,10 @@
     </update>
 
 
-
-    <update id="recoverProductDelFlagByTechAuthId" parameterType="java.lang.Integer">
+    <update id="recoverProductActivateByTechAuthId" parameterType="java.lang.Integer">
         update t_product
         <set>
-            del_flag = FALSE
+            is_activate = TRUE
         </set>
         <where>
             tech_auth_id = #{techAuthId}

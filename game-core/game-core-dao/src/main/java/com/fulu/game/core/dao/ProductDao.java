@@ -24,9 +24,9 @@ public interface ProductDao extends ICommonDao<Product,Integer>{
 
     List<ProductShowCaseVO> findProductShowCase(@Param(value = "categoryId") Integer categoryId,@Param(value = "gender") Integer gender);
 
-    int recoverProductDelFlag(Integer productId);
+    int recoverProductActivate(Integer productId);
 
-    int recoverProductDelFlagByTechAuthId(Integer techAuthId);
+    int recoverProductActivateByTechAuthId(Integer techAuthId);
 
     int updateProductSalesModel(SalesMode salesMode);
 
@@ -35,4 +35,9 @@ public interface ProductDao extends ICommonDao<Product,Integer>{
      * @param category
      */
     void updateByCategory(Category category);
+
+
+    int disabledProductById(Integer id);
+
+
 }

@@ -5,6 +5,7 @@
     <resultMap id="SalesModeResultMap" type="com.fulu.game.core.entity.SalesMode">
         <id column="id" property="id"/>
         <result column="category_id" property="categoryId"/>
+        <result column="type" property="type"/>
         <result column="name" property="name"/>
         <result column="price" property="price"/>
         <result column="rank" property="rank"/>
@@ -16,7 +17,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,category_id,name,price,rank,create_time,update_time    </sql>
+        id,category_id,type,name,price,rank,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="SalesModeResultMap">
         select
@@ -41,6 +42,9 @@
         <where>
             <if test="categoryId != null">
                 and category_id = #{categoryId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
             </if>
             <if test="name != null">
                 and name = #{name}
@@ -69,17 +73,20 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.SalesMode">
         insert into
-        t_sales_mode (category_id,name,price,rank,create_time,update_time)
+        t_sales_mode (category_id,type,name,price,rank,create_time,update_time)
         values
-        (#{categoryId},#{name},#{price},#{rank},#{createTime},#{updateTime})
+        (#{categoryId},#{type},#{name},#{price},#{rank},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.SalesMode">
         update t_sales_mode
         <set>
-
             <if test="categoryId != null">
                 category_id = #{categoryId},
+            </if>
+
+            <if test="type != null">
+                type = #{type},
             </if>
 
             <if test="name != null">

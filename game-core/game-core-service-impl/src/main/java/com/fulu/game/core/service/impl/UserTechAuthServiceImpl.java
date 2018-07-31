@@ -105,7 +105,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
                 ossUtil.deleteFile(oldUserTechAuth.getGradePicUrl());
             }
             //删除重新认证的商品
-            productService.deleteProductByTech(userTechAuthTO.getId());
+            productService.disabledProductByTech(userTechAuthTO.getId());
             //删除重新认证的商品
         }
         //创建技能标签关联
@@ -144,7 +144,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         //给用户推送通知
         wxTemplateMsgService.pushWechatTemplateMsg(userTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_FAIL,reason);
         //同步下架用户该技能商品
-        productService.deleteProductByTech(userTechAuth.getId());
+        productService.disabledProductByTech(userTechAuth.getId());
 
         return userTechAuth;
     }
@@ -167,7 +167,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         //给用户推送通知
         wxTemplateMsgService.pushWechatTemplateMsg(userTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_SUCCESS);
         //技能下商品置为正常
-        productService.recoverProductDelFlagByTechAuthId(userTechAuth.getId());
+        productService.recoverProductActivateByTechAuthId(userTechAuth.getId());
         return userTechAuth;
     }
 
@@ -193,7 +193,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuthRejectService.create(userTechAuthReject);
 
         //同步下架用户该技能商品
-        productService.deleteProductByTech(userTechAuth.getId());
+        productService.disabledProductByTech(userTechAuth.getId());
         return userTechAuth;
     }
 
@@ -206,7 +206,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         update(userTechAuth);
 
         //技能下商品置为正常
-        productService.recoverProductDelFlagByTechAuthId(userTechAuth.getId());
+        productService.recoverProductActivateByTechAuthId(userTechAuth.getId());
         return userTechAuth;
     }
 

@@ -97,6 +97,7 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
         List<UserAutoReceiveOrder> userAutoReceiveOrders = findByUserId(userId);
         for (UserAutoReceiveOrder autoReceiveOrder : userAutoReceiveOrders) {
             autoReceiveOrder.setUserAutoSetting(flag);
+            update(autoReceiveOrder);
         }
     }
 

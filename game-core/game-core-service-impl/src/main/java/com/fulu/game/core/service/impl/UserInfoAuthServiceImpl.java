@@ -131,7 +131,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         createUserInfoTags(userInfoAuthTO.getTags(), user.getId());
 
         //同步下架用户该技能商品
-//        productService.deleteProductByUser(userInfoAuth.getUserId());
+//        productService.disabledProductByUser(userInfoAuth.getUserId());
         return userInfoAuth;
     }
 
@@ -182,7 +182,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 //        createUserInfoTags(userInfoAuthTO.getTags(), user.getId());
 //
 //        //同步下架用户该技能商品
-//        productService.deleteProductByUser(userInfoAuth.getUserId());
+//        productService.disabledProductByUser(userInfoAuth.getUserId());
 //        return userInfoAuth;
 //    }
 
@@ -226,7 +226,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userInfoAuthReject.setCreateTime(new Date());
         userInfoAuthRejectService.create(userInfoAuthReject);
         //同步下架用户该技能商品
-//        productService.deleteProductByUser(userInfoAuth.getUserId());
+//        productService.disabledProductByUser(userInfoAuth.getUserId());
 
         //给用户推送通知
         wxTemplateMsgService.pushWechatTemplateMsg(user.getId(), WechatTemplateMsgEnum.USER_AUTH_INFO_REJECT,reason);
@@ -282,7 +282,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         //同步恢复用户正确技能的商品状态
 //        List<UserTechAuth> userTechAuthList = userTechAuthService.findUserNormalTechs(userInfoAuth.getUserId());
 //        for (UserTechAuth userTechAuth : userTechAuthList) {
-//            productService.recoverProductDelFlagByTechAuthId(userTechAuth.getId());
+//            productService.recoverProductActivateByTechAuthId(userTechAuth.getId());
 //        }
 
         //给用户推送通知
@@ -366,7 +366,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userInfoAuthRejectService.create(userInfoAuthReject);
 
         //下架该用户上传的所有商品
-        productService.deleteProductByUser(userInfoAuth.getUserId());
+        productService.disabledProductByUser(userInfoAuth.getUserId());
         return userInfoAuth;
     }
 
@@ -383,7 +383,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         //同步恢复用户正确技能的商品状态
         List<UserTechAuth> userTechAuthList = userTechAuthService.findUserNormalTechs(userInfoAuth.getUserId());
         for (UserTechAuth userTechAuth : userTechAuthList) {
-            productService.recoverProductDelFlagByTechAuthId(userTechAuth.getId());
+            productService.recoverProductActivateByTechAuthId(userTechAuth.getId());
         }
 
         return userInfoAuth;

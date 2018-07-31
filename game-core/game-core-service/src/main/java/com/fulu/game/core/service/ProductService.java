@@ -134,13 +134,13 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * 删除用户下所有商品
      * @param userId
      */
-    void deleteProductByUser(Integer userId);
+    void disabledProductByUser(Integer userId);
 
     /**
      * 删除技能下所有商品
      * @param techAuthId
      */
-    void deleteProductByTech(Integer techAuthId);
+    void disabledProductByTech(Integer techAuthId);
 
     /**
      * 批量更新所有用户索引
@@ -151,19 +151,19 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * @param product
      * @return
      */
-    int deleteProduct(Product product);
+    int disabledProduct(Product product);
 
     /**
      * 恢复商品删除状态
      * @param productId
      */
-    void recoverProductDelFlag(int productId);
+    void recoverProductActivate(int productId);
 
     /**
      * 通过TechAuthId恢复商品状态
      * @param techAuthId
      */
-    void recoverProductDelFlagByTechAuthId(Integer techAuthId);
+    void recoverProductActivateByTechAuthId(Integer techAuthId);
 
     /**
      * 修改商品销售方式

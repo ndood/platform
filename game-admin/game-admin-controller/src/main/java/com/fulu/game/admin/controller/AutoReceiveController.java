@@ -23,16 +23,14 @@ import java.util.Date;
 @RequestMapping("/api/v1/auto-receive")
 public class AutoReceiveController extends BaseController {
 
-    @Autowired
-    private SettingService settingService;
+
     @Autowired
     private AdminService adminService;
     @Autowired
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
     @Autowired
-    private UserTechAuthService userTechAuthService;
-    @Autowired
     private OrderService orderService;
+
 
     /**
      * 设置自动接单时间
@@ -49,7 +47,7 @@ public class AutoReceiveController extends BaseController {
         setting.setAdminId(admin.getId());
         setting.setAdminName(admin.getName());
         setting.setCreateTime(new Date());
-        return Result.success().data(setting);
+        return Result.success().msg("设置自动接单时间成功!");
     }
 
 
@@ -89,7 +87,6 @@ public class AutoReceiveController extends BaseController {
 
     /**
      * 获取进行中的上分订单数量和上分订单失败率
-     *
      * @param userId     用户id
      * @param categoryId 分类id
      * @return 封装结果集
@@ -102,6 +99,8 @@ public class AutoReceiveController extends BaseController {
         }
         return Result.success().data(vo).msg("查询成功！");
     }
+
+
 }
 
 

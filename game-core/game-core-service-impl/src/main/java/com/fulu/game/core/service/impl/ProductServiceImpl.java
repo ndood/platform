@@ -96,7 +96,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         product.setStatus(false);
         product.setCreateTime(new Date());
         product.setUpdateTime(new Date());
-        product.setDelFlag(false);
+        product.setIsActivate(Boolean.TRUE);
+        product.setDelFlag(Boolean.FALSE);
         create(product);
         return product;
     }
@@ -118,7 +119,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         userService.isCurrentUser(product.getUserId());
         //检查用户认证的状态
         userService.checkUserInfoAuthStatus(product.getUserId());
-
         if (techAuthId != null) {
             if (!product.getTechAuthId().equals(techAuthId)) {
                 List<Product> products = findProductByUserAndSalesMode(product.getUserId(), techAuthId, unitId);
@@ -242,18 +242,17 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 恢复商品删除状态
-     *
      * @param productId
      */
-    public void recoverProductDelFlag(int productId) {
+    public void recoverProductActivate(int productId) {
         log.info("恢复商品删除状态:productId:{}", productId);
-        productDao.recoverProductDelFlag(productId);
+        productDao.recoverProductActivate(productId);
     }
 
 
-    public void recoverProductDelFlagByTechAuthId(Integer techAuthId) {
+    public void recoverProductActivateByTechAuthId(Integer techAuthId) {
         log.info("通过techAuthId恢复商品删除状态:techAuthId:{}", techAuthId);
-        productDao.recoverProductDelFlagByTechAuthId(techAuthId);
+        productDao.recoverProductActivateByTechAuthId(techAuthId);
     }
 
     @Override
@@ -368,7 +367,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         if(userTechInfo!=null){
             productDetailsVO.setDan(userTechInfo.getValue());
         }
-
         return productDetailsVO;
     }
 
@@ -385,7 +383,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         simpleProductVO.setUserInfo(userInfo);
         return simpleProductVO;
     }
-
 
 
     /**
@@ -625,11 +622,11 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     /**
      * 删除该技能下的所有商品
      */
-    public void deleteProductByTech(Integer techAuthId) {
+    public void disabledProductByTech(Integer techAuthId) {
         log.info("删除技能下所有商品techAuthId:{}", techAuthId);
         List<Product> productList = findProductByTech(techAuthId);
         for (Product product : productList) {
-            deleteProduct(product);
+            disabledProduct(product);
         }
     }
 
@@ -637,25 +634,27 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     /**
      * 删除该用户的所有商品
      */
-    public void deleteProductByUser(Integer userId) {
+    public void disabledProductByUser(Integer userId) {
         log.info("删除用户所有商品userId:{}", userId);
         redisOpenService.delete(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(userId));
         List<Product> productList = findByUserId(userId);
         for (Product product : productList) {
-            deleteProduct(product);
+            disabledProduct(product);
         }
     }
 
     public int deleteById(Integer id) {
-        redisOpenService.delete(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(id));
-        productSearchComponent.deleteIndex(id);
         return productDao.deleteById(id);
     }
 
 
-    public int deleteProduct(Product product) {
+
+    @Override
+    public int disabledProduct(Product product) {
+        redisOpenService.delete(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(product.getId()));
+        productSearchComponent.deleteIndex(product.getId());
         log.info("删除商品product:{}", product);
-        return deleteById(product.getId());
+        return productDao.disabledProductById(product.getId());
     }
 
     /**
