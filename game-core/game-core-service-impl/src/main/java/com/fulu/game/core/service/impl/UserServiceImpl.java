@@ -613,13 +613,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         if (couponGroup == null) {
             throw new ServiceErrorException("查询不到优惠券！");
         }
-        List<Coupon> couponList = couponService.findByUserReceive(couponGroup.getId(), user.getId());
-        if (CollectionUtil.isNotEmpty(couponList)) {
-            log.info("用户userId:{}已经领取了优惠券!", user.getId());
-            return false;
-        }
 
-        if (StringUtils.isBlank(openId) && CollectionUtil.isEmpty(couponList)) {
+        if (StringUtils.isBlank(openId)) {
             return true;
         }
         return false;
