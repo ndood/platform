@@ -16,12 +16,12 @@ public interface Constant {
 
     Long TIME_MINUTES_FIFE = 5 * 60L;
 
-    Long TIME_HOUR_TWO = 2*60 * 60L;
+    Long TIME_HOUR_TWO = 2 * 60 * 60L;
 
-    Long TIME_HOUR_FIVE = 5*60 * 60L;
+    Long TIME_HOUR_FIVE = 5 * 60 * 60L;
 
 
-    Long TIME_MINUTES_FIVE= 5 * 60L;
+    Long TIME_MINUTES_FIVE = 5 * 60L;
 
     //手机验证码限定次数和限定时间
     Integer MOBILE_CODE_SEND_TIMES_DEV = 20;
@@ -85,6 +85,8 @@ public interface Constant {
 
     String FULL_RESTITUTION = "全额赔偿给用户";
 
+    String CONSULT = "协商";
+
     String NEGOTIATE = "仲裁";
 
     String IM_REPLY_DELAY_0_TO_5 = "0到5分钟回复IM";
@@ -120,4 +122,19 @@ public interface Constant {
      * 手机号码长度为11
      */
     Integer MOBILE_NUMBER_LENGTH = 11;
+
+    /**
+     * 上分新用户-优惠券兑换码
+     */
+    String NEW_POINT_USER_COUPON_GROUP_REDEEM_CODE = "AAAA";
+
+    /**
+     * 发放优惠券成功
+     */
+    Integer SEND_COUPOU_SUCCESS = 1;
+
+    /**
+     * 发放优惠券失败(默认值)
+     */
+    Integer SEND_COUPOU_FAIL = 0;
 }

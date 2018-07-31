@@ -17,6 +17,7 @@ import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,10 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     private AdminService adminService;
     @Autowired
     private ImgUtil imgUtil;
+    @Autowired
+    private CouponGroupService couponGroupService;
+    @Autowired
+    private CouponService couponService;
 
     @Override
     public ICommonDao<User, Integer> getDao() {
@@ -164,11 +169,11 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public List<User> findByUserIds(List<Integer> userIds,Boolean disabled) {
-        if (CollectionUtil.isEmpty(userIds)){
+    public List<User> findByUserIds(List<Integer> userIds, Boolean disabled) {
+        if (CollectionUtil.isEmpty(userIds)) {
             return new ArrayList<>();
         }
-        return userDao.findByUserIds(userIds,disabled);
+        return userDao.findByUserIds(userIds, disabled);
     }
 
 
@@ -505,48 +510,83 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         userDao.update(user);
     }
 
-
     @Override
-    public void updateUnionUser(User user,WechatEcoEnum wechatEcoEnum) {
-        log.info("调用updateUnionUser方法:user:{}",user);
+    public void updateUnionUser(UserVO user, WechatEcoEnum wechatEcoEnum, String ipStr) {
+        log.info("调用updateUnionUser方法:user:{}", user);
         User unionUser = findByUnionId(user.getUnionId());
-        if(unionUser==null){
-            log.info("unionUser为空更新自己的unionId:{}",user.getUnionId());
+        if (unionUser == null) {
+            log.info("unionUser为空更新自己的unionId:{}", user.getUnionId());
             update(user);
             updateRedisUser(user);
             return;
         }
-        if(unionUser.getId().equals(user.getId())){
-            log.info("该用户已经存在unionUser:{}",unionUser);
+        if (unionUser.getId().equals(user.getId())) {
+            log.info("该用户已经存在unionUser:{}", unionUser);
             update(user);
             updateRedisUser(user);
             return;
         }
-        if(WechatEcoEnum.POINT.equals(wechatEcoEnum)){
-            log.info("判断存在开黑用户信息，更新unionUser:{}",unionUser);
+        if (WechatEcoEnum.POINT.equals(wechatEcoEnum)) {
+            log.info("判断存在开黑用户信息，更新unionUser:{}", unionUser);
             unionUser.setPointOpenId(user.getPointOpenId());
             //删除上分的用户
-            user.setPointOpenId(unionUser.getId()+"-"+user.getPointOpenId()+"-"+new Date().getTime());
-            user.setUnionId(unionUser.getId()+"-"+user.getUnionId()+"-"+new Date().getTime());
+            user.setPointOpenId(unionUser.getId() + "-" + user.getPointOpenId() + "-" + System.currentTimeMillis());
+            user.setUnionId(unionUser.getId() + "-" + user.getUnionId() + "-" + System.currentTimeMillis());
             update(user);
             //更新陪玩的用户
             update(unionUser);
             updateRedisUser(unionUser);
-            log.info("判断存在开黑用户信息，更新user:{}",user);
-        }else{
-            log.info("判断存在上分的用户信息，unionUser:{}",unionUser);
+            log.info("判断存在开黑用户信息，更新user:{}", user);
+        } else {
+            log.info("判断存在上分的用户信息，unionUser:{}", unionUser);
             user.setPointOpenId(unionUser.getPointOpenId());
             //删除上分的用户
-            unionUser.setPointOpenId(user.getId()+"-"+unionUser.getPointOpenId()+"-"+new Date().getTime());
-            unionUser.setUnionId(user.getId()+"-"+unionUser.getUnionId()+"-"+new Date().getTime());
+            unionUser.setPointOpenId(user.getId() + "-" + unionUser.getPointOpenId() + "-" + System.currentTimeMillis());
+            unionUser.setUnionId(user.getId() + "-" + unionUser.getUnionId() + "-" + System.currentTimeMillis());
             update(unionUser);
             //更新陪玩的用户
             update(user);
             updateRedisUser(user);
-            log.info("判断存在上分的用户信息，更新user:{}",user);
+            log.info("判断存在上分的用户信息，更新user:{}", user);
 
+            //发放优惠券
+            boolean flag = generateCouponForNewPointUser(user, ipStr);
+            if (flag) {
+                user.setCoupouStatus(Constant.SEND_COUPOU_SUCCESS);
+            } else {
+                user.setCoupouStatus(Constant.SEND_COUPOU_FAIL);
+            }
+        }
+    }
+
+    /**
+     * 发放优惠券
+     *
+     * @param user  用户Bean
+     * @param ipStr 用户ip
+     * @return 是否发放成功
+     */
+    private boolean generateCouponForNewPointUser(User user, String ipStr) {
+        if (user == null) {
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
 
+        CouponGroup couponGroup = couponGroupService.findByRedeemCode(Constant.NEW_POINT_USER_COUPON_GROUP_REDEEM_CODE);
+        if (couponGroup == null) {
+            throw new ServiceErrorException("查询不到优惠券！");
+        }
+
+        List<Coupon> couponList = couponService.findByUserReceive(couponGroup.getId(), user.getId());
+        if (CollectionUtil.isNotEmpty(couponList)) {
+            log.info("用户userId:{}已经领取了优惠券!", user.getId());
+            return false;
+        }
+
+        Coupon coupon = couponService.generateCoupon(couponGroup.getRedeemCode(), user.getId(), DateUtil.date(), ipStr);
+        if (coupon == null) {
+            throw new ServiceErrorException("发放优惠券失败！");
+        }
+        return true;
     }
 
     @Override
@@ -560,5 +600,23 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Override
     public Integer findUserScoreByUpdate(Integer userId) {
         return userDao.findUserScoreByUpdate(userId);
+    }
+
+    @Override
+    public boolean getUserCouponStatus(User user) {
+        if (user == null) {
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+
+        String openId = user.getOpenId();
+        CouponGroup couponGroup = couponGroupService.findByRedeemCode(Constant.NEW_POINT_USER_COUPON_GROUP_REDEEM_CODE);
+        if (couponGroup == null) {
+            throw new ServiceErrorException("查询不到优惠券！");
+        }
+
+        if (StringUtils.isBlank(openId)) {
+            return true;
+        }
+        return false;
     }
 }

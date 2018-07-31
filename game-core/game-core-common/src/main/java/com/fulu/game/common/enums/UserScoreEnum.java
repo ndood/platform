@@ -39,7 +39,9 @@ public enum UserScoreEnum {
     //全额退款给用户
     FULL_RESTITUTION(Constant.FULL_RESTITUTION, -20),
     //仲裁
-    NEGOTIATE(Constant.NEGOTIATE, -10);
+    NEGOTIATE(Constant.NEGOTIATE, -10),
+    //协商
+    CONSULT(Constant.CONSULT, -5);
 
 
     private String description;

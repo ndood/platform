@@ -14,8 +14,10 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.WxUserInfo;
 import com.fulu.game.core.service.AdviceService;
+import com.fulu.game.core.service.CouponService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 用户个人中心Controller
@@ -41,15 +45,17 @@ public class UserController extends BaseController {
     private final RedisOpenServiceImpl redisOpenService;
     private final AdviceService adviceService;
     private final OssUtil ossUtil;
+    private final CouponService couponService;
 
     @Autowired
     public UserController(WxMaServiceSupply wxMaServiceSupply, RedisOpenServiceImpl redisOpenService,
-                          UserService userService, AdviceService adviceService,OssUtil ossUtil) {
+                          UserService userService, AdviceService adviceService, OssUtil ossUtil, CouponService couponService) {
         this.userService = userService;
         this.wxMaServiceSupply = wxMaServiceSupply;
         this.redisOpenService = redisOpenService;
         this.adviceService = adviceService;
-        this.ossUtil =ossUtil ;
+        this.ossUtil = ossUtil;
+        this.couponService = couponService;
     }
 
     /**
@@ -78,6 +84,7 @@ public class UserController extends BaseController {
 
     /**
      * 获取用户微信手机号
+     *
      * @param encryptedData
      * @param iv
      * @return
@@ -137,6 +144,7 @@ public class UserController extends BaseController {
 
     /**
      * 保存微信信息
+     *
      * @param wxUserInfo
      * @return
      */
@@ -171,8 +179,25 @@ public class UserController extends BaseController {
             user.setCountry(wxUserInfo.getCountry());
         }
         user.setUpdateTime(new Date());
-        userService.updateUnionUser(user, WechatEcoEnum.POINT);
+
+        UserVO userVO = new UserVO();
+        BeanUtil.copyProperties(user, userVO);
+        userService.updateUnionUser(userVO, WechatEcoEnum.POINT, null);
         return Result.success().data(user);
+    }
+
+    /**
+     * 查询用户是否需要领取新用户优惠券
+     *
+     * @return 封装结果集
+     */
+    @PostMapping("/coupon/status")
+    public Result userCouponStatus() {
+        User user = userService.getCurrentUser();
+        boolean flag = userService.getUserCouponStatus(user);
+        Map<String, Object> resultMap = new HashMap<>(2);
+        resultMap.put("newUserCouponStatus", flag ? 1 : 0);
+        return Result.success().data(resultMap).msg("获取状态成功！");
     }
 
     /**
@@ -193,6 +218,4 @@ public class UserController extends BaseController {
         Advice advice = adviceService.addAdvice(content, contact, advicePicUrls);
         return Result.success().data(advice).msg("提交成功");
     }
-
-
 }
