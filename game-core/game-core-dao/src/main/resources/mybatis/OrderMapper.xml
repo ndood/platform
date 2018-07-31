@@ -387,6 +387,12 @@
         <include refid="Base_Column_List"/>
         FROM t_order
         <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="serviceUserId != null">
+                and service_user_id = #{serviceUserId}
+            </if>
             <if test="status != null">
                 and status = #{status}
             </if>
