@@ -344,6 +344,9 @@
         <include refid="Base_Column_List"/>
         FROM t_order
         <where>
+            <if test="type != null">
+                and type = #{type}
+            </if>
             <if test="categoryId != null">
                 and category_id = #{categoryId}
             </if>
