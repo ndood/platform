@@ -84,6 +84,7 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(OrderException.class)
     public Result orderException(OrderException e) {
         log.error("订单异常:orderNo:{},ex:{};", e.getOrderNo(), e.getMessage());
+        log.error("订单异常", e);
         return Result.error().data("errcode", e.getCode()).msg(e.getMessage());
     }
 
@@ -94,7 +95,7 @@ public class ExceptionHandlerAdvice {
      */
     @ExceptionHandler(UserAuthException.class)
     public Result handleUserAuthException(UserAuthException e) {
-        log.error("用户认证异常:{}", e.getMessage());
+        log.error("用户认证异常", e);
         return Result.error().msg(e.getMessage()).data("errcode", e.getCode());
     }
 
@@ -105,7 +106,7 @@ public class ExceptionHandlerAdvice {
      */
     @ExceptionHandler(BizException.class)
     public Result BizException(BizException e) {
-        log.error("业务异常:{}", e.getMessage());
+        log.error("业务异常", e);
         return Result.error().msg(e.getMessage()).data("errcode", e.getCode());
     }
 
@@ -139,7 +140,7 @@ public class ExceptionHandlerAdvice {
      */
     @ExceptionHandler(SystemException.class)
     public Result handleSystemException(SystemException e) {
-        log.error("系统异常:{}", e.getMessage());
+        log.error("系统异常", e);
         return Result.error(e.getCode()).msg(e.getMessage());
     }
 
