@@ -192,8 +192,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             //添加订单商品信息
             OrderProduct orderProduct = orderProductService.findByOrderNo(orderResVO.getOrderNo());
             orderResVO.setOrderProduct(orderProduct);
-            OrderMarketProduct orderMarketProduct = orderMarketProductService.findByOrderNo(orderResVO.getOrderNo());
-            orderResVO.setOrderMarketProduct(orderMarketProduct);
+//            OrderMarketProduct orderMarketProduct = orderMarketProductService.findByOrderNo(orderResVO.getOrderNo());
+//            orderResVO.setOrderMarketProduct(orderMarketProduct);
             //添加订单状态
             orderResVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderResVO.getStatus()));
 
