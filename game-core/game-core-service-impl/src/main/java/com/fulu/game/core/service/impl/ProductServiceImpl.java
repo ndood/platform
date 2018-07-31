@@ -238,7 +238,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 根据技能查询所有的商品
-     *
      * @param techAuthId
      * @return
      */
@@ -249,6 +248,16 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     }
 
 
+    public List<TechAuthProductVO> techAuthProductList(int userId){
+        List<UserTechAuth> userTechAuths = userTechAuthService.findByUserId(userId);
+        return null;
+    }
+
+
+
+    /**
+     * 批量更新所有的商品索引
+     */
     public void bathUpdateProductIndex() {
         log.info("批量更新所有商品索引");
         List<User> userList = userService.findAllServeUser();

@@ -137,7 +137,8 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
                 }
             }
         } catch (Exception e) {
-            log.error("退款失败{}", order.getOrderNo(), e.getMessage());
+            log.error("退款失败:{}", order.getOrderNo());
+            log.error("退款失败", e);
             throw new OrderException(order.getOrderNo(), "订单退款失败!");
         }
     }

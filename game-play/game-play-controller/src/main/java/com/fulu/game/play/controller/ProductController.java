@@ -188,9 +188,11 @@ public class ProductController extends BaseController {
         return Result.success().data(productList);
     }
 
+
+
+
     /**
      * 用户接单状态
-     *
      * @return
      */
     @RequestMapping(value = "/order-receive/status")
@@ -199,7 +201,6 @@ public class ProductController extends BaseController {
         status.put("CURRENT_TIME", new Date());
         return Result.success().data(status);
     }
-
 
     /**
      * 开始接单
