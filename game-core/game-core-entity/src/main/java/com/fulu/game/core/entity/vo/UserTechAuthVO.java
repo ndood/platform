@@ -40,12 +40,11 @@ public class UserTechAuthVO  extends UserTechAuth {
 
     private Integer gender;
 
-
-
     private List<TagVO> groupTags;
 
     private List<TechAttrVO> groupAttrs;
 
+    private Boolean autoOrder;
 
     public String getStatusStr() {
         return TechAuthStatusEnum.getMsgByType(getStatus());

@@ -86,6 +86,17 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
         return autoReceiveOrders.get(0);
     }
 
+    @Override
+    public UserAutoReceiveOrder findByTechId(int techId) {
+        UserAutoReceiveOrderVO param = new UserAutoReceiveOrderVO();
+        param.setTechAuthId(techId);
+        List<UserAutoReceiveOrder> autoReceiveOrders = userAutoReceiveOrderDao.findByParameter(param);
+        if (autoReceiveOrders.isEmpty()) {
+            return null;
+        }
+        return autoReceiveOrders.get(0);
+    }
+
 
     @Override
     public List<Integer> findUserBySearch(UserAutoOrderSearchVO userAutoOrderSearchVO) {

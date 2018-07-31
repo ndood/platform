@@ -60,6 +60,8 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     private ApproveService approveService;
     @Autowired
     private OssUtil ossUtil;
+    @Autowired
+    private UserAutoReceiveOrderService userAutoReceiveOrderService;
 
     @Override
     public ICommonDao<UserTechAuth, Integer> getDao() {
@@ -248,6 +250,13 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
             List<TechAttrVO> groupAttrs = findAllCategoryAttrSelected(userTechAuth.getCategoryId(),userTechAuth.getId(),Boolean.TRUE);
             userTechAuthVO.setGroupAttrs(groupAttrs);
             userTechAuthVOList.add(userTechAuthVO);
+            //查询是否存在开始接单
+            UserAutoReceiveOrder autoReceiveOrder =   userAutoReceiveOrderService.findByTechId(userTechAuth.getId());
+            if(autoReceiveOrder==null){
+                userTechAuthVO.setAutoOrder(false);
+            }else{
+                userTechAuthVO.setAutoOrder(true);
+            }
         }
         PageInfo page = new PageInfo(userTechAuths);
         page.setList(userTechAuthVOList);

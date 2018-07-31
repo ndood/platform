@@ -35,6 +35,9 @@ public interface UserAutoReceiveOrderService extends ICommonService<UserAutoRece
     UserAutoReceiveOrder findByUserIdAndCategoryId(int userId, int categoryId);
 
 
+    UserAutoReceiveOrder findByTechId(int techId);
+
+
     void addOrderNum(int userId, int categoryId);
 
 

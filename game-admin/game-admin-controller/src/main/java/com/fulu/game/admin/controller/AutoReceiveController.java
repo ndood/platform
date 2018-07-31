@@ -61,8 +61,7 @@ public class AutoReceiveController extends BaseController {
 
 
     /**
-     * tech
-     *
+     * 设置自动接单技能
      * @param techAuthId
      * @return
      */
@@ -70,7 +69,7 @@ public class AutoReceiveController extends BaseController {
     public Result addTech(@RequestParam(required = true) Integer techAuthId,
                           String remark) {
         userAutoReceiveOrderService.addAutoReceivingTech(techAuthId, remark);
-        return Result.success();
+        return Result.success().msg("自动接单设置成功!");
     }
 
     /**

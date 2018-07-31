@@ -52,7 +52,6 @@ public class ProductController extends BaseController {
 
     /**
      * 添加接单方式
-     *
      * @param techAuthId
      * @param price
      * @param unitId

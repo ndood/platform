@@ -13,4 +13,11 @@ public class TechAuthProductVO extends UserTechAuth {
     private List<Product> productList ;
 
 
+
+
+
+
+
+
+
 }
