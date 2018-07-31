@@ -266,6 +266,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         return user;
     }
 
+    @Override
     public void updateRedisUser(User user) {
         String token = SubjectUtil.getToken();
         Map<String, Object> userMap = new HashMap<String, Object>();
@@ -283,6 +284,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         throw new ServiceErrorException("用户不匹配!");
     }
 
+    @Override
     public void checkUserInfoAuthStatus(Integer userId, Integer... ignoreAuthStatus) {
         User user = findById(userId);
         UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(userId);
@@ -607,6 +609,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         if (user == null) {
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
+        log.info("获取新用户userId:{}优惠券领取状态", user.getId());
 
         String openId = user.getOpenId();
         CouponGroup couponGroup = couponGroupService.findByRedeemCode(Constant.NEW_POINT_USER_COUPON_GROUP_REDEEM_CODE);
