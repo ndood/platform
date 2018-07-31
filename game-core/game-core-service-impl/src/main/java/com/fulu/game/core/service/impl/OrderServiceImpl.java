@@ -192,8 +192,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             //添加订单商品信息
             OrderProduct orderProduct = orderProductService.findByOrderNo(orderResVO.getOrderNo());
             orderResVO.setOrderProduct(orderProduct);
-            OrderMarketProduct orderMarketProduct = orderMarketProductService.findByOrderNo(orderResVO.getOrderNo());
-            orderResVO.setOrderMarketProduct(orderMarketProduct);
+//            OrderMarketProduct orderMarketProduct = orderMarketProductService.findByOrderNo(orderResVO.getOrderNo());
+//            orderResVO.setOrderMarketProduct(orderMarketProduct);
             //添加订单状态
             orderResVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderResVO.getStatus()));
 
@@ -1189,7 +1189,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         Order order = findByOrderNo(orderNo);
         userService.isCurrentUser(order.getUserId());
         if (!order.getStatus().equals(NON_PAYMENT.getStatus())
-            && !order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())) {
+                && !order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有等待陪玩和未支付的订单才能取消!");
         }
         if (order.getIsPay()) {
@@ -1585,6 +1585,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             orderBy = "create_time desc";
         }
         PageHelper.startPage(pageNum, pageSize, orderBy);
+        orderSearchVO.setType(OrderTypeEnum.POINT.getType());
+        orderSearchVO.setStatus(OrderStatusEnum.WAIT_SERVICE.getStatus());
         List<Order> orderList = findBySearchVO(orderSearchVO);
         if (CollectionUtil.isEmpty(orderList)) {
             return null;
@@ -1599,7 +1601,9 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             if (orderPointProduct != null) {
                 orderVO.setAccountInfo(orderPointProduct.getAccountInfo());
                 orderVO.setOrderChoice(orderPointProduct.getOrderChoice());
+                orderVO.setPointType(orderPointProduct.getPointType());
             }
+            orderVOList.add(orderVO);
         }
 
         PageInfo page = new PageInfo(orderList);

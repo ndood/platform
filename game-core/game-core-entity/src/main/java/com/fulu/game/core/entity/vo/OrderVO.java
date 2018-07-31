@@ -3,7 +3,6 @@ package com.fulu.game.core.entity.vo;
 
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderProduct;
-import com.fulu.game.core.entity.Product;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -17,7 +16,7 @@ import java.util.Date;
  * @date 2018-04-25 18:27:54
  */
 @Data
-public class OrderVO  extends Order {
+public class OrderVO extends Order {
 
     private OrderProduct orderProduct;
 
@@ -58,5 +57,8 @@ public class OrderVO  extends Order {
     private String accountInfo;
     //
     private String orderChoice;
+
+    //上分分类
+    private Integer pointType;
 
 }

@@ -11,7 +11,6 @@ import com.fulu.game.core.entity.vo.OrderEventVO;
 import com.fulu.game.core.entity.vo.OrderPointProductVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.PointOrderDetailsVO;
-import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.point.utils.RequestUtil;
@@ -124,6 +123,7 @@ public class OrderController extends BaseController {
 
     /**
      * 重新下单接口
+     *
      * @param orderNo
      * @return
      */
@@ -131,7 +131,7 @@ public class OrderController extends BaseController {
     public Result anewSubmit(String orderNo) {
         OrderPointProduct orderPointProduct = orderPointProductService.findByOrderNo(orderNo);
         OrderPointProductTO orderPointProductTO = new OrderPointProductTO();
-        BeanUtil.copyProperties(orderPointProduct,orderPointProductTO);
+        BeanUtil.copyProperties(orderPointProduct, orderPointProductTO);
         OrderPointProductVO gradingAdvanceOrderVO = getAdvanceOrder(orderPointProductTO);
         return Result.success().data(gradingAdvanceOrderVO);
     }
@@ -396,25 +396,6 @@ public class OrderController extends BaseController {
                                 String[] fileUrl) {
         OrderDeal orderDeal = orderService.eventLeaveMessage(orderNo, orderEventId, remark, fileUrl);
         return Result.success().data(orderDeal);
-    }
-
-    /**
-     * 未接单订单列表
-     *
-     * @param pageNum       页码
-     * @param pageSize      每页显示数据条数
-     * @param orderSearchVO 查询VO
-     * @return 封装结果集
-     */
-    @PostMapping("/unaccept/list")
-    public Result unacceptOrderList(@RequestParam("pageNum") Integer pageNum,
-                                    @RequestParam("pageSize") Integer pageSize,
-                                    OrderSearchVO orderSearchVO) {
-        PageInfo<OrderVO> orderVOPageInfo = orderService.unacceptOrderList(pageNum, pageSize, orderSearchVO);
-        if (orderVOPageInfo == null) {
-            return Result.error().msg("无数据！");
-        }
-        return Result.success().data(orderVOPageInfo).msg("查询成功！");
     }
 
     private OrderPointProductVO getAdvanceOrder(OrderPointProductTO orderPointProductTO) {

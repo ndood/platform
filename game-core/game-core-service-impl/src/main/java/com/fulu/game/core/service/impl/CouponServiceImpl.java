@@ -113,14 +113,14 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         return new PageInfo<>(couponList);
     }
 
-    public List<Coupon> findByUserReceive(Integer couponGroupId,Integer userId) {
+    @Override
+    public List<Coupon> findByUserReceive(Integer couponGroupId, Integer userId) {
         return couponDao.findByUserReceive(couponGroupId, userId);
     }
 
 
-
     @Override
-    public int updateCouponUseStatus(String orderNo,String userIp,Coupon coupon) {
+    public int updateCouponUseStatus(String orderNo, String userIp, Coupon coupon) {
         coupon.setOrderNo(orderNo);
         coupon.setIsUse(true);
         coupon.setUseTime(new Date());
@@ -128,7 +128,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         return update(coupon);
     }
 
-
+    @Override
     public Integer countByUser(Integer userId) {
         CouponVO param = new CouponVO();
         param.setUserId(userId);
@@ -141,6 +141,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
      * @param couponGroupId
      * @return
      */
+    @Override
     public Integer countByCouponGroup(Integer couponGroupId) {
         CouponVO param = new CouponVO();
         param.setCouponGroupId(couponGroupId);
@@ -153,6 +154,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
      * @param couponGroupId
      * @return
      */
+    @Override
     public Integer countByCouponGroupAndIsFirst(Integer couponGroupId) {
         CouponVO param = new CouponVO();
         param.setCouponGroupId(couponGroupId);
@@ -229,7 +231,12 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         if (countUser > 0) {
             coupon.setIsFirstReceive(false);
         }
-        create(coupon);
+        try {
+            create(coupon);
+        } catch (Exception e) {
+            log.error("无法给用户userId:{}发放优惠券，兑换码为:{}", userId, couponGroup.getRedeemCode());
+            e.printStackTrace();
+        }
         log.info("生成优惠券:coupon:{}", coupon);
 
         //发放优惠券通知

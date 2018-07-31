@@ -72,6 +72,7 @@ public class OrderController extends BaseController {
 
     /**
      * 管理员强制完成订单,协商处理(提交仲裁结果)
+     *
      * @param details
      * @return
      */
@@ -132,13 +133,14 @@ public class OrderController extends BaseController {
 
     /**
      * 管理员查看订单流程
+     *
      * @param orderNo
      * @return
      */
     @PostMapping("/admin/order-process")
     public Result getOrderProcess(@RequestParam String orderNo) {
         List<OrderStatusDetailsVO> voList = orderService.getOrderProcess(orderNo);
-        if(voList == null) {
+        if (voList == null) {
             return Result.error().msg("无订单数据！");
         }
         return Result.success().data(voList).msg("订单流程查询成功!");
@@ -146,13 +148,14 @@ public class OrderController extends BaseController {
 
     /**
      * 获取协商详情
+     *
      * @param orderNo
      * @return
      */
     @PostMapping("/admin/consult-detail")
     public Result getConsultDetail(@RequestParam String orderNo) {
         List<OrderDealVO> voList = orderService.findOrderConsultEvent(orderNo);
-        if(voList == null) {
+        if (voList == null) {
             return Result.error().data(voList).msg("无协商详情数据！");
         }
         return Result.success().data(voList).msg("获取协商详情成功!");
@@ -160,13 +163,14 @@ public class OrderController extends BaseController {
 
     /**
      * 获取仲裁详情
+     *
      * @param orderNo
      * @return
      */
     @PostMapping("/admin/negotiate-detail")
     public Result getNegotiateDetail(@RequestParam String orderNo) {
         List<OrderDealVO> voList = orderService.findNegotiateEvent(orderNo);
-        if(voList == null) {
+        if (voList == null) {
             return Result.error().data(voList).msg("无仲裁详情数据！");
         }
         return Result.success().data(voList).msg("获取仲裁详情成功!");
@@ -190,5 +194,24 @@ public class OrderController extends BaseController {
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));
         workbook.write(response.getOutputStream());
         workbook.close();
+    }
+
+    /**
+     * 未接单订单列表
+     *
+     * @param pageNum       页码
+     * @param pageSize      每页显示数据条数
+     * @param orderSearchVO 查询VO
+     * @return 封装结果集
+     */
+    @PostMapping("/unaccept/list")
+    public Result unacceptOrderList(@RequestParam("pageNum") Integer pageNum,
+                                    @RequestParam("pageSize") Integer pageSize,
+                                    OrderSearchVO orderSearchVO) {
+        PageInfo<OrderVO> orderVOPageInfo = orderService.unacceptOrderList(pageNum, pageSize, orderSearchVO);
+        if (orderVOPageInfo == null) {
+            return Result.error().msg("无数据！");
+        }
+        return Result.success().data(orderVOPageInfo).msg("查询成功！");
     }
 }
