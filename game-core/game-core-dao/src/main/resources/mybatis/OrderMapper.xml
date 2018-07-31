@@ -426,6 +426,33 @@
         </where>
     </select>
 
+    <select id="unacceptOrderList" resultType="com.fulu.game.core.entity.Order"
+            parameterType="com.fulu.game.core.entity.vo.searchVO.OrderSearchVO">
+        SELECT
+        tor.*
+        FROM
+        t_order tor
+        LEFT JOIN t_user tu ON tor.user_id = tu.id
+        <where>
+            tor.type = 2 and tor.status = 210
+            <if test="userId != null">
+                and tor.user_id = #{userId}
+            </if>
+            <if test="serviceUserId != null">
+                and tor.service_user_id = #{serviceUserId}
+            </if>
+            <if test="userMobile != null">
+                and tu.mobile = #{userMobile} and tu.type = 1
+            </if>
+            <if test="serviceUserMobile != null">
+                and tu.mobile = #{serviceUserMobile} and tu.type = 2
+            </if>
+            <if test="type != null">
+                and tor.type = #{type}
+            </if>
+        </where>
+    </select>
+
     <select id="findMarketByParameter" resultMap="OrderResultMarketVOMap"
             parameterType="com.fulu.game.core.entity.vo.OrderVO">
         SELECT
