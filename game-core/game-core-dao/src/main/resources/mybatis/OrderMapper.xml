@@ -46,7 +46,8 @@
         <result column="serverHeadUrl" property="serverHeadUrl"/>
     </resultMap>
 
-    <resultMap id="PointOrderDetailsVOMap" type="com.fulu.game.core.entity.vo.PointOrderDetailsVO" extends="OrderResultMap">
+    <resultMap id="PointOrderDetailsVOMap" type="com.fulu.game.core.entity.vo.PointOrderDetailsVO"
+               extends="OrderResultMap">
         <result column="userNickName" property="userNickName"/>
         <result column="userHeadUrl" property="userHeadUrl"/>
         <result column="accountInfo" property="accountInfo"/>
@@ -386,6 +387,12 @@
         <include refid="Base_Column_List"/>
         FROM t_order
         <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
             <if test="categoryId != null">
                 and category_id = #{categoryId}
             </if>
