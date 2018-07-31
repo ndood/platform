@@ -29,6 +29,7 @@ public interface UserService extends ICommonService<User, Integer> {
 
     /**
      * 通过unionId查询用户
+     *
      * @param unionId
      * @return
      */
@@ -73,7 +74,6 @@ public interface UserService extends ICommonService<User, Integer> {
     List<User> findByImIds(String imIds);
 
 
-
     /**
      * 查询所有正常用户的数量
      *
@@ -87,7 +87,7 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param userIds
      * @return
      */
-    List<User> findByUserIds(List<Integer> userIds,Boolean disabled);
+    List<User> findByUserIds(List<Integer> userIds, Boolean disabled);
 
 
     void updateRedisUser(User user);
@@ -129,7 +129,7 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param openId
      * @return
      */
-    User createNewUser(WechatEcoEnum wechatEcoEnum,String openId, Integer sourceId, String host);
+    User createNewUser(WechatEcoEnum wechatEcoEnum, String openId, Integer sourceId, String host);
 
     /**
      * 获取当前登录用户
@@ -140,6 +140,7 @@ public interface UserService extends ICommonService<User, Integer> {
 
     /**
      * 更新用户最后登录时间和IP
+     *
      * @param ip
      * @return
      */
@@ -181,7 +182,7 @@ public interface UserService extends ICommonService<User, Integer> {
      *
      * @param userId
      */
-    void checkUserInfoAuthStatus(Integer userId,Integer ... ignoreAuthStatus);
+    void checkUserInfoAuthStatus(Integer userId, Integer... ignoreAuthStatus);
 
     /**
      * 查询imid为空的用户
@@ -197,15 +198,28 @@ public interface UserService extends ICommonService<User, Integer> {
      */
     void bindIm(ImUser imUser);
 
+    /**
+     * 同步用户信息
+     *
+     * @param user          用户Bean
+     * @param wechatEcoEnum 用户来源
+     */
+    void updateUnionUser(User user, WechatEcoEnum wechatEcoEnum);
 
-
-    void updateUnionUser(User user,WechatEcoEnum wechatEcoEnum);
-
+    /**
+     * 同步用户信息（陪玩上分和陪玩开黑之间的用户数据同步）
+     *
+     * @param userVO        用户VO
+     * @param wechatEcoEnum 用户来源
+     * @param ipStr         用户ip
+     */
+    void updateUnionUser(UserVO userVO, WechatEcoEnum wechatEcoEnum, String ipStr);
 
     List<UserVO> findVOByUserIds(List<Integer> userIds);
 
     /**
      * 根据userId获取用户积分(已避免脏读)
+     *
      * @param userId
      * @return
      */

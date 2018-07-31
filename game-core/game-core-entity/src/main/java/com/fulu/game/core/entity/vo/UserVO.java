@@ -28,6 +28,11 @@ public class UserVO extends User {
     private BigDecimal paySum;
     private Integer orderCount;
 
+    /**
+     * 优惠券发放状态： 0：发放失败（默认）；1：发放成功
+     */
+    private Integer coupouStatus;
+
     @JsonIgnore
     private String orderBy;
 

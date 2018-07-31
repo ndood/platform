@@ -18,7 +18,9 @@ import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.WxUserInfo;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.play.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
+import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -184,13 +187,15 @@ public class UserController extends BaseController {
     /**
      * 保存微信信息
      *
-     * @param wxUserInfo
-     * @return
+     * @param wxUserInfo 微信用户信息
+     * @return 封装结果集
      */
     @PostMapping("/wxinfo/save")
-    public Result saveWxUserInfo(WxUserInfo wxUserInfo) {
-        User user = userService.getCurrentUser();
-        WxMaUserInfo wxMaUserInfo = null;
+    public Result saveWxUserInfo(WxUserInfo wxUserInfo, HttpServletRequest request) {
+        User tempUser = userService.getCurrentUser();
+        UserVO user = new UserVO();
+        BeanUtil.copyProperties(tempUser, user);
+        WxMaUserInfo wxMaUserInfo;
         try {
             String sessionKey = redisOpenService.get(RedisKeyEnum.WX_SESSION_KEY.generateKey(SubjectUtil.getToken()));
             wxMaUserInfo = wxMaServiceSupply.playWxMaService().getUserService().getUserInfo(sessionKey, wxUserInfo.getEncryptedData(), wxUserInfo.getIv());
@@ -218,7 +223,8 @@ public class UserController extends BaseController {
             user.setCountry(wxUserInfo.getCountry());
         }
         user.setUpdateTime(new Date());
-        userService.updateUnionUser(user, WechatEcoEnum.PLAY);
+        String ipStr = RequestUtil.getIpAdrress(request);
+        userService.updateUnionUser(user, WechatEcoEnum.PLAY, ipStr);
         return Result.success().data(user);
     }
 

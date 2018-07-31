@@ -278,6 +278,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 上分订单抢单
+     *
      * @param orderNo
      * @return
      */
@@ -304,7 +305,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             //倒计时订单状态
             orderStatusDetailsService.create(orderNo, order.getStatus(), 10);
             //增加接单数量
-            userAutoReceiveOrderService.addOrderNum(serviceUser.getId(),order.getCategoryId());
+            userAutoReceiveOrderService.addOrderNum(serviceUser.getId(), order.getCategoryId());
         } finally {
             redisOpenService.unlock(RedisKeyEnum.MARKET_ORDER_RECEIVE_LOCK.generateKey(order.getOrderNo()));
         }
@@ -531,6 +532,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     /**
      * 领航订单
+     *
      * @param productId
      * @param num
      * @param remark
@@ -968,6 +970,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
      * @return
      */
     @Override
+    @UserScore(type = UserScoreEnum.CONSULT)
     public String consultAgreeOrder(String orderNo, int orderEventId) {
         log.info("陪玩师同意协商处理订单orderNo:{}", orderNo);
         Order order = findByOrderNo(orderNo);
