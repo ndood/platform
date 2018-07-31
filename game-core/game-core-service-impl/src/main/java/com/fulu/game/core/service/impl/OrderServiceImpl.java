@@ -1573,9 +1573,14 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         if (autoReceiveOrder == null) {
             return null;
         }
-        BigDecimal orderFailureRate = new BigDecimal(
-                (autoReceiveOrder.getOrderCancelNum() + autoReceiveOrder.getOrderDisputeNum())
-                        / autoReceiveOrder.getOrderCompleteNum());
+
+        Integer orderCancelNum = autoReceiveOrder.getOrderCancelNum();
+        Integer orderDisputeNum = autoReceiveOrder.getOrderDisputeNum();
+        Integer orderCompleteNum = autoReceiveOrder.getOrderCompleteNum();
+        BigDecimal orderFailureRate = new BigDecimal(0);
+        if(orderCancelNum != null && orderDisputeNum != null && orderCompleteNum != null && orderCompleteNum != 0) {
+            orderFailureRate = new BigDecimal((orderCancelNum + orderDisputeNum) / orderCompleteNum);
+        }
 
         UserAutoReceiveOrderVO resultVo = new UserAutoReceiveOrderVO();
         resultVo.setRunningOrderNum(runningOrderNum);
