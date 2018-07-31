@@ -74,7 +74,7 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
         return userAutoReceiveOrderDao.findByParameter(param);
     }
 
-
+    @Override
     public UserAutoReceiveOrder findByUserIdAndCategoryId(int userId, int categoryId) {
         UserAutoReceiveOrderVO param = new UserAutoReceiveOrderVO();
         param.setUserId(userId);
@@ -104,7 +104,7 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
     @Override
     public void addOrderNum(int userId, int categoryId) {
         UserAutoReceiveOrder autoReceiveOrder = findByUserIdAndCategoryId(userId, categoryId);
-        if(autoReceiveOrder==null){
+        if (autoReceiveOrder == null) {
             return;
         }
         Integer orderNum = autoReceiveOrder.getOrderNum();
@@ -176,10 +176,21 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
             orderBy = "auto.create_time desc";
         }
         PageHelper.startPage(pageNum, pageSize, orderBy);
-        List<UserAutoReceiveOrderVO> voList = userAutoReceiveOrderDao.findAutoReceiveUserInfoAuthList();
+        List<UserAutoReceiveOrderVO> voList =
+                userAutoReceiveOrderDao.findAutoReceiveUserInfoAuthList(userInfoAuthSearchVO);
         if (CollectionUtil.isEmpty(voList)) {
             return null;
         }
         return new PageInfo<>(voList);
+    }
+
+    @Override
+    public List<UserAutoReceiveOrderVO> autoReceiveUserInfoAuthListByVO(UserInfoAuthSearchVO userInfoAuthSearchVO) {
+        List<UserAutoReceiveOrderVO> voList =
+                userAutoReceiveOrderDao.findAutoReceiveUserInfoAuthList(userInfoAuthSearchVO);
+        if (CollectionUtil.isEmpty(voList)) {
+            return null;
+        }
+        return voList;
     }
 }

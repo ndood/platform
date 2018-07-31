@@ -131,6 +131,8 @@
         SELECT
         auto.user_id,
         auto.user_auto_setting,
+        auto.tech_auth_id,
+        auto.category_id,
         tu.login_time,
         tu.user_score,
         cate. NAME,
@@ -147,6 +149,9 @@
         <where>
             <if test="userAutoSetting != null">
                 and auto.user_auto_setting = #{userAutoSetting}
+            </if>
+            <if test="userId != null">
+                and auto.user_id = #{userId}
             </if>
         </where>
     </select>
