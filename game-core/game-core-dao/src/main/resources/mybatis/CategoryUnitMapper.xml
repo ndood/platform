@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.CategoryUnitDao">
+    <resultMap id="CategoryUnitResultMap" type="com.fulu.game.core.entity.CategoryUnit">
+        <id column="id" property="id"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="unit_id" property="unitId"/>
+        <result column="unit" property="unit"/>
+        <result column="create_date" property="createDate"/>
+    </resultMap>
+
+    <resultMap id="CategoryUnitResultVOMap" type="com.fulu.game.core.entity.vo.CategoryUnitVO"
+               extends="CategoryUnitResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,category_id,unit_id,unit,create_date    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="CategoryUnitResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_category_unit
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="CategoryUnitResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_category_unit
+    </select>
+
+    <select id="findByParameter" resultMap="CategoryUnitResultMap"
+            parameterType="com.fulu.game.core.entity.vo.CategoryUnitVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_category_unit
+        <where>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="unitId != null">
+                and unit_id = #{unitId}
+            </if>
+            <if test="unit != null">
+                and unit = #{unit}
+            </if>
+            <if test="createDate != null">
+                and create_date = #{createDate}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_category_unit
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.CategoryUnit">
+        insert into
+        t_category_unit (category_id,unit_id,unit,create_date)
+        values
+        (#{categoryId},#{unitId},#{unit},#{createDate})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.CategoryUnit">
+        update t_category_unit
+        <set>
+
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+
+            <if test="unitId != null">
+                unit_id = #{unitId},
+            </if>
+
+            <if test="unit != null">
+                unit = #{unit},
+            </if>
+
+            <if test="createDate != null">
+                create_date = #{createDate},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>
