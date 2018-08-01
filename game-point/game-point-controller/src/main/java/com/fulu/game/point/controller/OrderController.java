@@ -419,8 +419,8 @@ public class OrderController extends BaseController {
             GradingPrice endGradingPrice = gradingPriceService.findById(gradingAdvanceOrderVO.getTargetGradingPriceId());
             GradingPrice parentEndGradingPrice = gradingPriceService.findById(endGradingPrice.getPid());
             gradingAdvanceOrderVO.setOrderChoice(parentStartGradingPrice.getName() + startGradingPrice.getName() + "-" + parentEndGradingPrice.getName() + endGradingPrice.getName());
-
-            gradingAdvanceOrderVO.setPrice(totalMoney);
+            //计算段位区间价格
+            gradingAdvanceOrderVO.setPrice(totalMoney.subtract(endGradingPrice.getPrice()));
             gradingAdvanceOrderVO.setAmount(1);
 
         } else {

@@ -22,4 +22,7 @@ public interface UserAutoReceiveOrderDao extends ICommonDao<UserAutoReceiveOrder
     List<Integer> findUserBySearch(UserAutoOrderSearchVO userAutoOrderSearchVO);
 
     List<UserAutoReceiveOrderVO> findAutoReceiveUserInfoAuthList(UserInfoAuthSearchVO userInfoAuthSearchVO);
+
+
+    UserAutoReceiveOrder findByIdIncludeDel(int id);
 }

@@ -30,6 +30,8 @@ public class UserTechAuth implements Serializable {
     //状态(0未认证,1认证中，2正常，3冻结)
     private Integer status;
 
+    private Boolean isActivate;
+
     private String mobile;
 
     private String categoryName;

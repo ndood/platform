@@ -135,10 +135,17 @@ ALTER TABLE `t_sys_config` ADD COLUMN `type` tinyint(1)  DEFAULT NULL COMMENT '�
 
 --修改单位表
 ALTER TABLE `t_sales_mode` 	ADD COLUMN `type` tinyint(1) NULL COMMENT '平台统一单位类型(1:小时,2:局,3:次,4:首)' AFTER `category_id`;
+ALTER TABLE `t_sales_mode` 	ADD COLUMN `del_flag` tinyint(1) NULL COMMENT '删除标记(1:删除，0:正常)' AFTER `update_time`;
 
 --修改商品表
 ALTER TABLE `t_product` 	ADD COLUMN `is_activate` tinyint(1) NULL COMMENT '是否激活' AFTER `status`;
 update t_product set is_activate = TRUE;
+
+--修改用户技能表
+ALTER TABLE `t_user_tech_auth` ADD COLUMN `is_activate` tinyint(1)  DEFAULT NULL COMMENT '是否激活' after `status`;
+update t_user_tech_auth set is_activate = TRUE;
+
+
 
 
 

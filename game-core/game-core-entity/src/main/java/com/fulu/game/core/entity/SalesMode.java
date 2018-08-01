@@ -31,4 +31,6 @@ public class SalesMode implements Serializable {
 	//
 	private Date updateTime;
 
+	private Integer delFlag;
+
 }
