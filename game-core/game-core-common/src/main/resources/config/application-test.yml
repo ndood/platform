@@ -1,7 +1,7 @@
 datasource:
     playAdminDb:
-        url: jdbc:mysql://rm-bp1l599cg390lml8w.mysql.rds.aliyuncs.com/game_service?autoReconnect=true&failOverReadOnly=false&useUnicode=true&zeroDateTimeBehavior=convertToNull
-        username: game
+        url: jdbc:mysql://rm-bp182s2y347o90s30.mysql.rds.aliyuncs.com/t_game_service?autoReconnect=true&failOverReadOnly=false&useUnicode=true&zeroDateTimeBehavior=convertToNull
+        username: wangbin
         password: 20180502game!@#
         driverClassName: com.mysql.jdbc.Driver
 # REDIS (RedisProperties)

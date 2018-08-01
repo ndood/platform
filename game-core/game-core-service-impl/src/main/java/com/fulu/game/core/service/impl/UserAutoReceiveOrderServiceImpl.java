@@ -63,8 +63,19 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
         autoReceivingOrder.setAdminName(admin.getName());
         autoReceivingOrder.setCreateTime(new Date());
         autoReceivingOrder.setUpdateTime(new Date());
+        autoReceivingOrder.setDelFlag(Boolean.FALSE);
         create(autoReceivingOrder);
         return autoReceivingOrder;
+    }
+
+
+
+    @Override
+    public UserAutoReceiveOrder delAutoReceivingTech(Integer techAuthId) {
+        UserAutoReceiveOrder userAutoReceiveOrder = findByTechId(techAuthId);
+        userAutoReceiveOrder.setDelFlag(Boolean.TRUE);
+        update(userAutoReceiveOrder);
+        return userAutoReceiveOrder;
     }
 
 

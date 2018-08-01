@@ -40,5 +40,14 @@ public class SettingServiceImpl extends AbsCommonService<Setting,Integer> implem
         return settingList.get(0);
     }
 
-	
+
+    @Override
+    public List<Setting> settingList(int type) {
+        SettingVO param = new SettingVO();
+        param.setType(type);
+        List<Setting> settingList = settingDao.findByParameter(param);
+        return settingList;
+    }
+
+
 }

@@ -42,4 +42,5 @@ public class UserTechAuth implements Serializable {
 
     private Integer approveCount;
 
+
 }

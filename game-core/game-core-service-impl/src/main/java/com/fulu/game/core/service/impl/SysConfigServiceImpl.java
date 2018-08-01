@@ -48,7 +48,7 @@ public class SysConfigServiceImpl extends AbsGuavaCache<String,List<SysConfig>> 
     }
 
 
-    @Autowired
+    @Override
     public List<SysConfig> findAll(){
         return getValue(ALL);
     }
