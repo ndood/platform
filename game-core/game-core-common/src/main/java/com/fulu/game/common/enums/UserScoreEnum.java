@@ -41,9 +41,35 @@ public enum UserScoreEnum {
     //仲裁
     NEGOTIATE(Constant.NEGOTIATE, -10),
     //协商
-    CONSULT(Constant.CONSULT, -5);
+    CONSULT(Constant.CONSULT, -5),
 
+    /**
+     * 用户正常完成订单
+     */
+    USER_FINISH_ORDER(Constant.USER_FINISH_ORDER, -1),
 
+    /**
+     * 陪玩师正常完成订单
+     */
+    SERVICE_USER_FINISH_ORDER(Constant.SERVICE_USER_FINISH_ORDER, -1),
+
+    /**
+     * 用户取消订单
+     */
+    USER_CANCEL_ORDER(Constant.USER_CANCEL_ORDER, -5),
+
+    /**
+     * 陪玩师取消订单
+     */
+    SERVICE_USER_CANCEL_ORDER(Constant.SERVICE_USER_CANCEL_ORDER, -10);
+
+    /**
+     * 描述
+     */
     private String description;
+
+    /**
+     * 分数
+     */
     private Integer score;
 }
