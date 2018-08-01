@@ -1,5 +1,6 @@
 package com.fulu.game.play.controller;
 
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.utils.SubjectUtil;
@@ -84,6 +85,12 @@ public class SharingController extends BaseController {
                                    HttpServletRequest request) {
         String sessionKey = redisOpenService.get(RedisKeyEnum.WX_SESSION_KEY.generateKey(SubjectUtil.getToken()));
         User user = userService.getCurrentUser();
+
+        Integer sourceId = user.getSourceId();
+        if(!Constant.CJ_SOURCE_ID.equals(sourceId)) {
+            return Result.error().msg("非新用户无法领取优惠券！");
+        }
+
         String ipStr = RequestUtil.getIpAdrress(request);
         boolean shareFlag = userWechatGroupShareService.shareWechatGroup(user, sessionKey, encryptedData, iv, ipStr);
         if (shareFlag) {
