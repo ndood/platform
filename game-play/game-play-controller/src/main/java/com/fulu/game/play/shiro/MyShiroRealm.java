@@ -48,12 +48,12 @@ public class MyShiroRealm extends AuthorizingRealm {
         Integer sourceId = playUserToken.getSourceId();
         User user = userService.findByOpenId(openId);
         if (user != null) {
-            log.info("openId为{} 的用户已存在", openId);
+            log.info("user为{} 的用户已存在", user);
         } else {
             //新创建的用户记录注册的ip
             String host = playUserToken.getHost();
             user = userService.createNewUser(openId, sourceId, host);
-            log.info("创建openId为{}的用户", openId);
+            log.info("创建user为{}的用户", user);
         }
         return new SimpleAuthenticationInfo(user, user.getOpenId(), getName());
     }
