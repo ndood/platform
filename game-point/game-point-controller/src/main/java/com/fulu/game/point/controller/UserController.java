@@ -182,8 +182,8 @@ public class UserController extends BaseController {
 
         UserVO userVO = new UserVO();
         BeanUtil.copyProperties(user, userVO);
-        userService.updateUnionUser(userVO, WechatEcoEnum.POINT, null);
-        return Result.success().data(user);
+        User resultUser = userService.updateUnionUser(userVO, WechatEcoEnum.POINT, null);
+        return Result.success().data(resultUser);
     }
 
     /**

@@ -224,8 +224,8 @@ public class UserController extends BaseController {
         }
         user.setUpdateTime(new Date());
         String ipStr = RequestUtil.getIpAdrress(request);
-        userService.updateUnionUser(user, WechatEcoEnum.PLAY, ipStr);
-        return Result.success().data(user);
+        User resultUser = userService.updateUnionUser(user, WechatEcoEnum.PLAY, ipStr);
+        return Result.success().data(resultUser);
     }
 
     /**

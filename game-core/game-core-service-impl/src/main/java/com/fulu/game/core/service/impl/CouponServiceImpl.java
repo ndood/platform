@@ -234,8 +234,9 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         try {
             create(coupon);
         } catch (Exception e) {
-            log.error("无法给用户userId:{}发放优惠券，兑换码为:{}", userId, couponGroup.getRedeemCode());
             e.printStackTrace();
+            log.error("无法给用户userId:{}发放优惠券，兑换码为:{}", userId, couponGroup.getRedeemCode());
+            return null;
         }
         log.info("生成优惠券:coupon:{}", coupon);
 

@@ -513,20 +513,20 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public void updateUnionUser(UserVO user, WechatEcoEnum wechatEcoEnum, String ipStr) {
+    public User updateUnionUser(UserVO user, WechatEcoEnum wechatEcoEnum, String ipStr) {
         log.info("调用updateUnionUser方法:user:{}", user);
         User unionUser = findByUnionId(user.getUnionId());
         if (unionUser == null) {
             log.info("unionUser为空更新自己的unionId:{}", user.getUnionId());
             update(user);
             updateRedisUser(user);
-            return;
+            return user;
         }
         if (unionUser.getId().equals(user.getId())) {
             log.info("该用户已经存在unionUser:{}", unionUser);
             update(user);
             updateRedisUser(user);
-            return;
+            return user;
         }
         if (WechatEcoEnum.POINT.equals(wechatEcoEnum)) {
             log.info("判断存在开黑用户信息，更新unionUser:{}", unionUser);
@@ -539,6 +539,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             update(unionUser);
             updateRedisUser(unionUser);
             log.info("判断存在开黑用户信息，更新user:{}", user);
+            return unionUser;
         } else {
             log.info("判断存在上分的用户信息，unionUser:{}", unionUser);
             user.setPointOpenId(unionUser.getPointOpenId());
@@ -558,6 +559,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             } else {
                 user.setCoupouStatus(Constant.SEND_COUPOU_FAIL);
             }
+            return user;
         }
     }
 
@@ -573,18 +575,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
 
-        CouponGroup couponGroup = couponGroupService.findByRedeemCode(Constant.NEW_POINT_USER_COUPON_GROUP_REDEEM_CODE);
-        if (couponGroup == null) {
-            throw new ServiceErrorException("查询不到优惠券！");
-        }
-
-        List<Coupon> couponList = couponService.findByUserReceive(couponGroup.getId(), user.getId());
-        if (CollectionUtil.isNotEmpty(couponList)) {
-            log.info("用户userId:{}已经领取了优惠券!", user.getId());
-            return false;
-        }
-
-        Coupon coupon = couponService.generateCoupon(couponGroup.getRedeemCode(), user.getId(), DateUtil.date(), ipStr);
+        Coupon coupon = couponService.generateCoupon(Constant.NEW_POINT_USER_COUPON_GROUP_REDEEM_CODE,
+                user.getId(), DateUtil.date(), ipStr);
         if (coupon == null) {
             throw new ServiceErrorException("发放优惠券失败！");
         }
