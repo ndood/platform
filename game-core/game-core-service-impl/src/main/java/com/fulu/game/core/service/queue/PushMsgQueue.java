@@ -7,6 +7,7 @@ import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.core.entity.PushMsg;
 import com.fulu.game.core.entity.WxMaTemplateMessageVO;
 import com.fulu.game.core.service.PushMsgService;
+import com.xiaoleilu.hutool.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,8 +17,6 @@ import javax.annotation.PreDestroy;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Component
 @Slf4j
@@ -25,7 +24,6 @@ public class PushMsgQueue implements Runnable {
 
     private BlockingQueue<WxMaTemplateMessageVO> templateMessageQueue = new LinkedBlockingDeque<>(50000);
 
-    private Lock lock = new ReentrantLock();
     private AtomicBoolean run = new AtomicBoolean();
 
     @Autowired
@@ -77,9 +75,9 @@ public class PushMsgQueue implements Runnable {
         try {
             WxMaTemplateMessage wxMaTemplateMessage = wxMaTemplateMessageVO.getWxMaTemplateMessage();
             Integer pushId = wxMaTemplateMessageVO.getPushId();
-            if(WechatEcoEnum.POINT.getType().equals( wxMaTemplateMessageVO.getPlatform())){
+            if (WechatEcoEnum.POINT.getType().equals(wxMaTemplateMessageVO.getPlatform())) {
                 wxMaServiceSupply.pointWxMaService().getMsgService().sendTemplateMsg(wxMaTemplateMessage);
-            }else{
+            } else {
                 wxMaServiceSupply.playWxMaService().getMsgService().sendTemplateMsg(wxMaTemplateMessage);
             }
 
@@ -98,19 +96,14 @@ public class PushMsgQueue implements Runnable {
      * @param pushId
      */
     private void countPushSuccessNum(int pushId) {
-        //todo 需要更改：不能及时更新pushmsg，会造成延时推送通知重复发送的问题
-        lock.lock();
-        try {
-            PushMsg pushMsg = pushMsgService.findById(pushId);
-            int successNum = pushMsg.getSuccessNum();
-            pushMsg.setSuccessNum(successNum + 1);
-            pushMsgService.update(pushMsg);
-            log.info("更新消息推送成功数:{}", pushMsg);
-        } finally {
-            lock.unlock();
-        }
+        PushMsg pushMsg = pushMsgService.findById(pushId);
+        int successNum = pushMsg.getSuccessNum();
 
+        PushMsg paramPushMsg = new PushMsg();
+        paramPushMsg.setId(pushId);
+        paramPushMsg.setSuccessNum(successNum + 1);
+        paramPushMsg.setUpdateTime(DateUtil.date());
+        pushMsgService.update(paramPushMsg);
+        log.info("更新消息推送成功数:{}", paramPushMsg);
     }
-
-
 }
