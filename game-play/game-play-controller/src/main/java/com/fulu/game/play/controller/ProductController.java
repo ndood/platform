@@ -150,7 +150,6 @@ public class ProductController extends BaseController {
 
     /**
      * 查询简单的商品信息
-     *
      * @param productId
      * @return
      */

@@ -448,7 +448,11 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return productDetailsVO;
     }
 
-
+    /**
+     * 下单页面商品查询
+     * @param productId
+     * @return
+     */
     @Override
     public SimpleProductVO findSimpleProductByProductId(Integer productId) {
         Product product = findById(productId);
@@ -459,9 +463,10 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         SimpleProductVO simpleProductVO = new SimpleProductVO();
         BeanUtil.copyProperties(product, simpleProductVO);
         simpleProductVO.setUserInfo(userInfo);
-
-
-
+        //查询同一技能下的所有商品
+        List<Product> productList = findProductByTech(product.getTechAuthId());
+        productList.removeIf(p->(p.getId().equals(productId)));
+        simpleProductVO.setOtherProducts(productList);
         return simpleProductVO;
     }
 
