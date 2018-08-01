@@ -144,6 +144,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         }
     }
 
+    @Override
     public void pushToUserOrderWxMessage(Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum) {
         String orderStatus = OrderStatusEnum.getMsgByStatus(order.getStatus());
         if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
@@ -1107,6 +1108,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
      * @return
      */
     @Override
+    @UserScore(type = UserScoreEnum.SERVICE_USER_CANCEL_ORDER)
     public OrderVO serverCancelOrder(String orderNo) {
         log.info("陪玩师取消订单orderNo:{}", orderNo);
         Order order = findByOrderNo(orderNo);
@@ -1190,6 +1192,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
      * @return
      */
     @Override
+    @UserScore(type = UserScoreEnum.USER_CANCEL_ORDER)
     public OrderVO userCancelOrder(String orderNo) {
         log.info("用户取消订单orderNo:{}", orderNo);
         Order order = findByOrderNo(orderNo);
@@ -1579,7 +1582,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         Integer orderDisputeNum = autoReceiveOrder.getOrderDisputeNum();
         Integer orderCompleteNum = autoReceiveOrder.getOrderCompleteNum();
         BigDecimal orderFailureRate = new BigDecimal(0);
-        if(orderCancelNum != null && orderDisputeNum != null && orderCompleteNum != null && orderCompleteNum != 0) {
+        if (orderCancelNum != null && orderDisputeNum != null && orderCompleteNum != null && orderCompleteNum != 0) {
             orderFailureRate = new BigDecimal((orderCancelNum + orderDisputeNum) / orderCompleteNum);
         }
 

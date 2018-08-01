@@ -44,7 +44,6 @@ public class UserScoreAspect {
      * 用户积分--切入点
      */
     @Pointcut("execution(* com.fulu.game.core.service.impl..*.*(..))")
-//    @Pointcut("execution(public * *(..))")
     public void annotationPointCut() {
     }
 
@@ -93,6 +92,23 @@ public class UserScoreAspect {
             details.setUserId(order.getServiceUserId());
             Integer commentScore = vo.getScore();
             modifyUserScoreByUserComment(details, commentScore, order.getOrderNo());
+
+            //用户评价 视作订单已正常完成 用户和陪玩师都有加分逻辑
+            UserScoreDetails userDetails = new UserScoreDetails();
+            userDetails.setUserId(order.getUserId());
+            userDetails.setScore(UserScoreEnum.USER_FINISH_ORDER.getScore());
+            userDetails.setDescription(UserScoreEnum.USER_FINISH_ORDER.getDescription());
+            if (details.getUserId() != null) {
+                userScoreQueue.addUserScoreQueue(userDetails);
+            }
+
+            UserScoreDetails serviceUserDetails = new UserScoreDetails();
+            serviceUserDetails.setUserId(order.getServiceUserId());
+            serviceUserDetails.setScore(UserScoreEnum.SERVICE_USER_FINISH_ORDER.getScore());
+            serviceUserDetails.setDescription(UserScoreEnum.SERVICE_USER_FINISH_ORDER.getDescription());
+            if (details.getUserId() != null) {
+                userScoreQueue.addUserScoreQueue(serviceUserDetails);
+            }
         } else if (userScoreEnum.getDescription().equals(Constant.FULL_RESTITUTION)) {
             Object[] array = joinPoint.getArgs();
             String orderNo = (String) array[0];
@@ -108,13 +124,36 @@ public class UserScoreAspect {
             details.setScore(UserScoreEnum.NEGOTIATE.getScore());
             details.setDescription(Constant.NEGOTIATE);
         } else if (userScoreEnum.getDescription().equals(Constant.CONSULT)) {
-            //fixme
-
+            Object[] array = joinPoint.getArgs();
+            String orderNo = (String) array[0];
+            modifyUserScoreByOrderNo(details, orderNo, UserScoreEnum.CONSULT);
+        } else if (userScoreEnum.getDescription().equals(Constant.USER_CANCEL_ORDER)) {
+            Object[] array = joinPoint.getArgs();
+            String orderNo = (String) array[0];
+            modifyUserScoreByOrderNo(details, orderNo, UserScoreEnum.USER_CANCEL_ORDER);
+        } else if (userScoreEnum.getDescription().equals(Constant.SERVICE_USER_CANCEL_ORDER)) {
+            Object[] array = joinPoint.getArgs();
+            String orderNo = (String) array[0];
+            modifyUserScoreByOrderNo(details, orderNo, UserScoreEnum.SERVICE_USER_CANCEL_ORDER);
         }
 
         if (details.getUserId() != null) {
             userScoreQueue.addUserScoreQueue(details);
         }
+    }
+
+    /**
+     * 根据orderNo，修改用户积分
+     *
+     * @param details
+     * @param orderNo
+     * @param userScoreEnum
+     */
+    public void modifyUserScoreByOrderNo(UserScoreDetails details, String orderNo, UserScoreEnum userScoreEnum) {
+        Order order = orderService.findByOrderNo(orderNo);
+        details.setUserId(order.getUserId());
+        details.setScore(userScoreEnum.getScore());
+        details.setDescription(userScoreEnum.getDescription());
     }
 
     /**
