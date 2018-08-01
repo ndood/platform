@@ -761,6 +761,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     @Override
     @UserScore(type = UserScoreEnum.ACCEPT_ORDER)
     public String serverReceiveOrder(String orderNo) {
+        log.info("执行开始接单接口");
         log.info("陪玩师接单orderNo:{}", orderNo);
         Order order = findByOrderNo(orderNo);
         userService.isCurrentUser(order.getServiceUserId());

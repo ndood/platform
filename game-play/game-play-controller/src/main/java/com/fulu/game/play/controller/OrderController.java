@@ -355,15 +355,9 @@ public class OrderController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/server/receive")
-    public Result serverReceiveOrder(@RequestParam(required = true) String orderNo,
+    public Result serverReceiveOrder(@RequestParam String orderNo,
                                      String version) {
-        if(StringUtils.isBlank(version)){
-            log.info("执行开始服务接口");
-            orderService.serverStartServeOrder(orderNo);
-        }else{
-            log.info("执行开始接单接口");
-            orderService.serverReceiveOrder(orderNo);
-        }
+        orderService.serverReceiveOrder(orderNo);
         return Result.success().data(orderNo).msg("接单成功!");
     }
 
