@@ -62,6 +62,8 @@ public interface CouponService extends ICommonService<Coupon, Integer> {
      * @return
      */
     Coupon generateCoupon(String redeemCode, Integer userId, Date receiveTime, String receiveIp);
+
+    Coupon generateCoupon(String redeemCode, Integer userId, Date receiveTime, String receiveIp, boolean newUserFlag);
     /**
      * 查询用户优惠券数量
      * @param userId

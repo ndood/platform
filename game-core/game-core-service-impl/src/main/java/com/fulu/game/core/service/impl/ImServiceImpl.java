@@ -31,8 +31,8 @@ public class ImServiceImpl implements ImService {
         Map<String, String> headerMap = new HashMap();
         headerMap.put("Content-Type", "application/json");
 
-        HttpResponse httpResponse =HttpUtils.post(tokenUrl, body, headerMap);
-        if(httpResponse.getStatus()!=200){
+        HttpResponse httpResponse = HttpUtils.post(tokenUrl, body, headerMap);
+        if (httpResponse.getStatus() != 200) {
             log.error("服务器端IM注册获取TOKEN失败:body:{};", httpResponse.body());
             return null;
         }
@@ -88,6 +88,13 @@ public class ImServiceImpl implements ImService {
         } else {
             return null;
         }
+    }
+
+    //fixme 发送信息给环信用户
+    public boolean sendMsgToImUser(String imId) {
+
+
+        return true;
     }
 
 

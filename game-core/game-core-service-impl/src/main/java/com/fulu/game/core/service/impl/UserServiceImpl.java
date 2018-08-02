@@ -553,7 +553,13 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             log.info("判断存在上分的用户信息，更新user:{}", user);
 
             //发放优惠券
-            boolean flag = generateCouponForNewPointUser(user, ipStr);
+            boolean flag = false;
+            try {
+                flag = generateCouponForNewPointUser(user, ipStr);
+            } catch (Exception e) {
+                log.error("发放优惠券失败！");
+            }
+
             if (flag) {
                 user.setCoupouStatus(Constant.SEND_COUPOU_SUCCESS);
             } else {
@@ -576,7 +582,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         }
 
         Coupon coupon = couponService.generateCoupon(Constant.NEW_POINT_USER_COUPON_GROUP_REDEEM_CODE,
-                user.getId(), DateUtil.date(), ipStr);
+                user.getId(), DateUtil.date(), ipStr, true);
         if (coupon == null) {
             throw new ServiceErrorException("发放优惠券失败！");
         }
