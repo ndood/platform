@@ -114,6 +114,12 @@ public interface Constant {
     String USER_COMMENT_5_STAR = "用户评价5颗星";
 
 
+    String USER_CANCEL_ORDER = "用户取消订单";
+    String SERVICE_USER_CANCEL_ORDER = "陪玩师取消订单";
+
+    String USER_FINISH_ORDER = "用户正常完成订单";
+    String SERVICE_USER_FINISH_ORDER = "陪玩师正常完成订单";
+
     /**
      * 用户积分策略--end
      */

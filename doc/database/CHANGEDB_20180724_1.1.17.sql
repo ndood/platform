@@ -91,11 +91,26 @@ CREATE TABLE `t_user_auto_receive_order` (
   `admin_name` varchar(255) DEFAULT NULL,
   `create_time` datetime NOT NULL,
   `update_time` datetime DEFAULT NULL,
+  `del_flag` tinyint(1) DEFAULT NULL COMMENT '删除标记 1:删除',
   PRIMARY KEY (`id`),
   UNIQUE KEY `tech_auth_id` (`tech_auth_id`)
 )  COMMENT='自动接单设置表';
 
+--添加系统设置表
+DROP TABLE IF EXISTS `t_setting`;
+CREATE TABLE `t_setting` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` int(11) NOT NULL COMMENT '设置类型',
+  `val` varchar(255) NOT NULL COMMENT '系统值',
+  `admin_id` int(11) NOT NULL,
+  `admin_name` varchar(255) NOT NULL,
+  `create_time` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+)  COMMENT='系统设置表';
 
+INSERT INTO `t_setting` VALUES ('1', '1', '3', '1', '1', '2018-07-30 11:01:20');
+
+--修改用户表
 ALTER TABLE `t_user` ADD COLUMN `point_open_id` varchar(128) DEFAULT NULL COMMENT '开黑上分openid' after `open_id`;
 ALTER TABLE `t_user` ADD COLUMN `public_open_id` varchar(128) DEFAULT NULL COMMENT '微信公众号openid' after `point_open_id`;
 ALTER TABLE `t_user` ADD COLUMN `union_id` varchar(128) DEFAULT NULL COMMENT '微信生态唯一标识' after `public_open_id`;
@@ -104,22 +119,34 @@ ALTER TABLE `t_user` ADD UNIQUE INDEX (`point_open_id`) USING BTREE;
 ALTER TABLE `t_user` ADD UNIQUE INDEX (`public_open_id`) USING BTREE;
 ALTER TABLE `t_user` ADD UNIQUE INDEX (`union_id`) USING BTREE;
 
-
+--修改游戏分类表
 ALTER TABLE `t_category` ADD COLUMN `is_point` tinyint(1)  DEFAULT NULL COMMENT '是否是上分平台' after `status`;
 
+--修改推送消息表
 ALTER TABLE `t_push_msg` ADD COLUMN `platform` tinyint(1)  DEFAULT NULL COMMENT '微信平台号' after `content`;
 
-
+--修改微信formid表
 ALTER TABLE `t_wechat_formid` ADD COLUMN `platform` tinyint(1)  DEFAULT NULL COMMENT '微信平台号' after `form_id`;
 ALTER TABLE `t_wechat_formid` ADD COLUMN `open_id` varchar(128)  DEFAULT NULL COMMENT 'openId' after `platform`;
-
---
-ALTER TABLE `t_sys_config` ADD COLUMN `type` tinyint(1)  DEFAULT NULL COMMENT '平台类型' after `id`;
-
-ALTER TABLE `t_sales_mode` 	ADD COLUMN `type` tinyint(1) NULL COMMENT '平台统一单位类型(1:小时,2:局,3:次,4:首)' AFTER `category_id`;
-
-ALTER TABLE `t_product` 	ADD COLUMN `is_activate` tinyint(1) NULL COMMENT '是否激活' AFTER `status`;
-
 UPDATE `t_wechat_formid` as f SET `open_id` = (SELECT `open_id` FROM `t_user` as u WHERE u.`id` =f.`user_id` ),`platform` =1;
 
+--修改平台配置表
+ALTER TABLE `t_sys_config` ADD COLUMN `type` tinyint(1)  DEFAULT NULL COMMENT '平台类型' after `id`;
+
+--修改单位表
+ALTER TABLE `t_sales_mode` 	ADD COLUMN `type` tinyint(1) NULL COMMENT '平台统一单位类型(1:小时,2:局,3:次,4:首)' AFTER `category_id`;
+ALTER TABLE `t_sales_mode` 	ADD COLUMN `del_flag` tinyint(1) NULL COMMENT '删除标记(1:删除，0:正常)' AFTER `update_time`;
+
+--修改商品表
+ALTER TABLE `t_product` 	ADD COLUMN `is_activate` tinyint(1) NULL COMMENT '是否激活' AFTER `status`;
 update t_product set is_activate = TRUE;
+
+--修改用户技能表
+ALTER TABLE `t_user_tech_auth` ADD COLUMN `is_activate` tinyint(1)  DEFAULT NULL COMMENT '是否激活' after `status`;
+update t_user_tech_auth set is_activate = TRUE;
+
+
+
+
+
+

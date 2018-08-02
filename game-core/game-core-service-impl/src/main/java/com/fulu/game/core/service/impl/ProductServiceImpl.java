@@ -105,6 +105,17 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
 
     @Override
+    public Product save(Integer techAuthId, BigDecimal price, Integer unitId) {
+        Product product = findByTechAndSaleMode(techAuthId, unitId);
+        if (product == null) {
+            return create(techAuthId, price, unitId);
+        } else {
+            return update(product.getId(), techAuthId, price, unitId);
+        }
+    }
+
+
+    @Override
     public Product update(Integer id, Integer techAuthId, BigDecimal price, Integer unitId) {
         User user = userService.getCurrentUser();
         log.info("修改接单方式:userId:{};techAuthId:{};price:{};unitId:{}", user.getId(), techAuthId, price, unitId);
@@ -193,7 +204,14 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     public void techEnable(int techId, boolean status) {
         log.info("激活或取消该技能下所有商品:techId:{};status:{};", techId, status);
         User user = userService.getCurrentUser();
+        //检验用户激活状态
         userService.checkUserInfoAuthStatus(user.getId());
+        //检验该技能激活状态
+        userTechAuthService.checkUserTechAuth(techId);
+        UserTechAuth userTechAuth = userTechAuthService.findById(techId);
+        userTechAuth.setIsActivate(status);
+        userTechAuth.setUpdateTime(new Date());
+        userTechAuthService.update(userTechAuth);
         List<Product> products = findByTechId(techId);
         for (Product product : products) {
             enable(product, status);
@@ -206,6 +224,18 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         ProductVO param = new ProductVO();
         param.setTechAuthId(techId);
         return productDao.findByParameter(param);
+    }
+
+    @Override
+    public Product findByTechAndSaleMode(int techId, int saleModeId) {
+        ProductVO param = new ProductVO();
+        param.setTechAuthId(techId);
+        param.setSalesModeId(saleModeId);
+        List<Product> productList = productDao.findByParameter(param);
+        if (productList.isEmpty()) {
+            return null;
+        }
+        return productList.get(0);
     }
 
     /**
@@ -250,13 +280,26 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
 
     public List<TechAuthProductVO> techAuthProductList(int userId) {
-        List<UserTechAuth> userTechAuths = userTechAuthService.findByUserId(userId);
+        List<UserTechAuth> userTechAuths = userTechAuthService.findUserNormalTechs(userId);
         List<TechAuthProductVO> resultList = new ArrayList<>();
         for (UserTechAuth userTechAuth : userTechAuths) {
             TechAuthProductVO techAuthProductVO = new TechAuthProductVO();
             BeanUtil.copyProperties(userTechAuth, techAuthProductVO);
-            List<Product> list = findProductByTech(userTechAuth.getId());
-            techAuthProductVO.setProductList(list);
+            Category category = categoryService.findById(userTechAuth.getCategoryId());
+            techAuthProductVO.setCategoryName(category.getName());
+            techAuthProductVO.setCategoryIcon(category.getIcon());
+            List<SalesMode> salesModeList = salesModeService.findByCategory(techAuthProductVO.getCategoryId());
+            for (SalesMode salesMode : salesModeList) {
+                TechAuthProductVO.ModelPrice modelPrice = new TechAuthProductVO.ModelPrice();
+                modelPrice.setUnitId(salesMode.getId());
+                modelPrice.setUnitName(salesMode.getName());
+                techAuthProductVO.addModelPrice(modelPrice);
+                Product product = findByTechAndSaleMode(userTechAuth.getId(), salesMode.getId());
+                if (product != null) {
+                    modelPrice.setProductId(product.getId());
+                    modelPrice.setPrice(product.getPrice());
+                }
+            }
             resultList.add(techAuthProductVO);
         }
         return resultList;
@@ -405,17 +448,25 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return productDetailsVO;
     }
 
-
+    /**
+     * 下单页面商品查询
+     * @param productId
+     * @return
+     */
     @Override
     public SimpleProductVO findSimpleProductByProductId(Integer productId) {
         Product product = findById(productId);
         if (product == null) {
             throw new ProductException(ProductException.ExceptionCode.PRODUCT_NOT_EXIST);
         }
-        UserInfoVO userInfo = userInfoAuthService.findUserCardByUserId(product.getUserId(), false, false, false, false);
+        UserInfoVO userInfo = userInfoAuthService.findUserCardByUserId(product.getUserId(), Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
         SimpleProductVO simpleProductVO = new SimpleProductVO();
         BeanUtil.copyProperties(product, simpleProductVO);
         simpleProductVO.setUserInfo(userInfo);
+        //查询同一技能下的所有商品
+        List<Product> productList = findProductByTech(product.getTechAuthId());
+        productList.removeIf(p->(p.getId().equals(productId)));
+        simpleProductVO.setOtherProducts(productList);
         return simpleProductVO;
     }
 
@@ -658,6 +709,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      */
     @Override
     public List<Product> findByUserId(Integer userId) {
+        if(userId==null){
+            return new ArrayList<>();
+        }
         ProductVO productVO = new ProductVO();
         productVO.setUserId(userId);
         return productDao.findByParameter(productVO);

@@ -135,76 +135,6 @@ public class OrderController extends BaseController {
         return Result.success().data(result);
     }
 
-    /**
-     * 用户订单状态列表
-     *
-     * @return
-     */
-    @RequestMapping(value = "/user/status")
-    public Result userOrderStatus() {
-        Map<Integer, String> map = new LinkedHashMap<>();
-        for (OrderStatusGroupEnum groupEnum : OrderStatusGroupEnum.values()) {
-            if (groupEnum.getType().equals("USER")) {
-                map.put(groupEnum.getValue(), groupEnum.getName());
-            }
-        }
-        return Result.success().data(map);
-    }
-
-
-    /**
-     * 用户订单列表
-     *
-     * @return
-     */
-    @RequestMapping(value = "/user/list")
-    public Result userOrderList(@RequestParam(required = true) Integer pageNum,
-                                @RequestParam(required = true) Integer pageSize,
-                                Integer categoryId,
-                                @RequestParam(required = true) Integer status) {
-        if (status == null) {
-            status = OrderStatusGroupEnum.USER_ALL.getValue();
-        }
-        Integer[] statusArr = OrderStatusGroupEnum.getByValue(status);
-        PageInfo<OrderVO> pageInfo = orderService.userList(pageNum, pageSize, categoryId, statusArr);
-        return Result.success().data(pageInfo);
-    }
-
-
-    /**
-     * 打手订单状态列表
-     *
-     * @return
-     */
-    @RequestMapping(value = "/server/status")
-    public Result serverOrderStatus() {
-        Map<Integer, String> map = new LinkedHashMap<>();
-        for (OrderStatusGroupEnum groupEnum : OrderStatusGroupEnum.values()) {
-            if (groupEnum.getType().equals("SERVER")) {
-                map.put(groupEnum.getValue(), groupEnum.getName());
-            }
-        }
-        return Result.success().data(map);
-    }
-
-
-    /**
-     * 打手订单列表
-     *
-     * @return
-     */
-    @RequestMapping(value = "/server/list")
-    public Result serverOrderList(@RequestParam(required = true) Integer pageNum,
-                                  @RequestParam(required = true) Integer pageSize,
-                                  Integer categoryId,
-                                  @RequestParam(required = true) Integer status) {
-        if (status == null) {
-            status = OrderStatusGroupEnum.SERVER_ALL.getValue();
-        }
-        Integer[] statusArr = OrderStatusGroupEnum.getByValue(status);
-        PageInfo<OrderVO> pageInfo = orderService.serverList(pageNum, pageSize, categoryId, statusArr);
-        return Result.success().data(pageInfo);
-    }
 
     /**
      * 订单列表
@@ -355,15 +285,9 @@ public class OrderController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/server/receive")
-    public Result serverReceiveOrder(@RequestParam(required = true) String orderNo,
+    public Result serverReceiveOrder(@RequestParam String orderNo,
                                      String version) {
-        if(StringUtils.isBlank(version)){
-            log.info("执行开始服务接口");
-            orderService.serverStartServeOrder(orderNo);
-        }else{
-            log.info("执行开始接单接口");
-            orderService.serverReceiveOrder(orderNo);
-        }
+        orderService.serverReceiveOrder(orderNo);
         return Result.success().data(orderNo).msg("接单成功!");
     }
 

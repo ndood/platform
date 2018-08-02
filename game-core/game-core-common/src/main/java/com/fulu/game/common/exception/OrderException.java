@@ -23,7 +23,9 @@ public class OrderException  extends BizException{
         ORDER_ALREADY_RECEIVE(7003, "该订单已经被接单"),
         ORDER_USER_NOT_VERIFIED(7011, "您没通过陪玩师认证"),
         ORDER_USER_NOT_HAS_TECH(7012, "您没有认证该游戏"),
-        ORDER_STATUS_MISMATCHES(7014, "订单状态不匹配,不能操作!");
+        ORDER_STATUS_MISMATCHES(7014, "订单状态不匹配,不能操作!"),
+        ORDER_NOT_ROB_MYSELF(7015, "不能抢自己的订单!"),
+        ORDER_NOT_MYSELF(7016, "不能给自己下单");
         private int code;
         private String msg;
     }

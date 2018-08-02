@@ -45,8 +45,20 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
     }
 
 
+
+
+
     @Override
     public UserAutoReceiveOrder addAutoReceivingTech(Integer techAuthId, String remark) {
+        UserAutoReceiveOrder userAutoReceiveOrder = userAutoReceiveOrderDao.findByIdIncludeDel(techAuthId);
+        if(userAutoReceiveOrder!=null){
+            userAutoReceiveOrder.setDelFlag(Boolean.FALSE);
+            userAutoReceiveOrder.setRemark(remark);
+            userAutoReceiveOrder.setUserAutoSetting(Boolean.FALSE);
+            userAutoReceiveOrder.setUpdateTime(new Date());
+            update(userAutoReceiveOrder);
+            return userAutoReceiveOrder;
+        }
         UserTechAuth userTechAuth = userTechAuthService.findById(techAuthId);
         Admin admin = adminService.getCurrentUser();
         UserAutoReceiveOrder autoReceivingOrder = new UserAutoReceiveOrder();
@@ -63,8 +75,19 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
         autoReceivingOrder.setAdminName(admin.getName());
         autoReceivingOrder.setCreateTime(new Date());
         autoReceivingOrder.setUpdateTime(new Date());
+        autoReceivingOrder.setDelFlag(Boolean.FALSE);
         create(autoReceivingOrder);
         return autoReceivingOrder;
+    }
+
+
+
+    @Override
+    public UserAutoReceiveOrder delAutoReceivingTech(Integer techAuthId) {
+        UserAutoReceiveOrder userAutoReceiveOrder = findByTechId(techAuthId);
+        userAutoReceiveOrder.setDelFlag(Boolean.TRUE);
+        update(userAutoReceiveOrder);
+        return userAutoReceiveOrder;
     }
 
 

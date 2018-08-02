@@ -68,6 +68,72 @@ public class ProductController extends BaseController {
         return Result.success().msg("添加接单方式成功!");
     }
 
+    /**
+     * 修改接单方式
+     * @param techAuthId
+     * @param price
+     * @param unitId
+     * @return
+     */
+    @RequestMapping(value = "/order-receive/update")
+    public Result update(@RequestParam(required = true) Integer id,
+                         @RequestParam(required = false) Integer techAuthId,
+                         @RequestParam(required = false) BigDecimal price,
+                         @RequestParam(required = false) Integer unitId) {
+        if (new BigDecimal(Constant.DEF_RECEIVING_ORDER_PRICE).compareTo(price) > 0) {
+            return Result.error().msg("接单价格不能低于" + Constant.DEF_RECEIVING_ORDER_PRICE + "元");
+        }
+        productService.update(id, techAuthId, price, unitId);
+        return Result.success().msg("修改接单方式成功!");
+    }
+
+
+    /**
+     * 保存用户接单方式价格
+     *
+     * @param techAuthId
+     * @param price
+     * @param unitId
+     * @return
+     */
+    @RequestMapping(value = "/order-receive/save")
+    public Result save(@RequestParam(required = true) Integer techAuthId,
+                       @RequestParam(required = true) BigDecimal price,
+                       @RequestParam(required = true) Integer unitId) {
+        if (new BigDecimal(Constant.DEF_RECEIVING_ORDER_PRICE).compareTo(price) > 0) {
+            return Result.error().msg("接单价格不能低于" + Constant.DEF_RECEIVING_ORDER_PRICE + "元");
+        }
+        productService.save(techAuthId, price, unitId);
+        return Result.success().msg("修改接单方式成功!");
+    }
+
+    /**
+     * 技能接单方式激活
+     * @param techAuthId
+     * @param status
+     * @return
+     */
+    @RequestMapping(value = "/order-receive/tech/enable")
+    public Result techEnable(@RequestParam(required = true) Integer techAuthId,
+                             @RequestParam(required = true) Boolean status) {
+        productService.techEnable(techAuthId, status);
+        if (status) {
+            return Result.success().msg("开启");
+        } else {
+            return Result.success().msg("关闭");
+        }
+    }
+
+    /**
+     * 用户所有接单方式列表
+     * @return
+     */
+    @RequestMapping(value = "/order-receive/tech/list")
+    public Result techList() {
+        User user = userService.getCurrentUser();
+        List<TechAuthProductVO> techAuthProductVOS = productService.techAuthProductList(user.getId());
+        return Result.success().data(techAuthProductVOS);
+    }
 
     /**
      * 查询用户商品详情页
@@ -84,7 +150,6 @@ public class ProductController extends BaseController {
 
     /**
      * 查询简单的商品信息
-     *
      * @param productId
      * @return
      */
@@ -116,29 +181,9 @@ public class ProductController extends BaseController {
 
 
     /**
-     * 修改接单方式
-     *
-     * @param techAuthId
-     * @param price
-     * @param unitId
-     * @return
-     */
-    @RequestMapping(value = "/order-receive/update")
-    public Result update(@RequestParam(required = true) Integer id,
-                         @RequestParam(required = false) Integer techAuthId,
-                         @RequestParam(required = false) BigDecimal price,
-                         @RequestParam(required = false) Integer unitId) {
-        if (new BigDecimal(Constant.DEF_RECEIVING_ORDER_PRICE).compareTo(price) > 0) {
-            return Result.error().msg("接单价格不能低于" + Constant.DEF_RECEIVING_ORDER_PRICE + "元");
-        }
-        productService.update(id, techAuthId, price, unitId);
-        return Result.success().msg("修改接单方式成功!");
-    }
-
-
-    /**
      * 即将废弃
      * 接单方式激活
+     *
      * @return
      */
     @Deprecated
@@ -158,37 +203,10 @@ public class ProductController extends BaseController {
     }
 
 
-    /**
-     * 技能接单方式激活
-     * @param techId
-     * @param status
-     * @return
-     */
-    @RequestMapping(value = "/order-receive/tech/enable")
-    public Result techEnable(@RequestParam(required = true) Integer techId,
-                             @RequestParam(required = true) Boolean status) {
-        productService.techEnable(techId, status);
-        if (status) {
-            return Result.success().msg("开启");
-        } else {
-            return Result.success().msg("关闭");
-        }
-    }
-
 
     /**
      * 用户所有接单方式列表
-     * @return
-     */
-    @RequestMapping(value = "/order-receive/tech/list")
-    public Result techList() {
-        User user = userService.getCurrentUser();
-        List<TechAuthProductVO> techAuthProductVOS = productService.techAuthProductList(user.getId());
-        return Result.success().data(techAuthProductVOS);
-    }
-
-    /**
-     * 用户所有接单方式列表
+     *
      * @return
      */
     @RequestMapping(value = "/order-receive/list")
@@ -198,11 +216,9 @@ public class ProductController extends BaseController {
         return Result.success().data(productList);
     }
 
-
-
-
     /**
      * 用户接单状态
+     *
      * @return
      */
     @RequestMapping(value = "/order-receive/status")

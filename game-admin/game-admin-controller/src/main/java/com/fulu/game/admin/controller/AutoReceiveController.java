@@ -10,7 +10,10 @@ import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.Setting;
 import com.fulu.game.core.entity.vo.UserAutoReceiveOrderVO;
 import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
-import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.AdminService;
+import com.fulu.game.core.service.OrderService;
+import com.fulu.game.core.service.SettingService;
+import com.fulu.game.core.service.UserAutoReceiveOrderService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -31,19 +34,17 @@ import java.util.List;
 public class AutoReceiveController extends BaseController {
 
     @Autowired
-    private SettingService settingService;
-    @Autowired
     private AdminService adminService;
     @Autowired
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
     @Autowired
-    private UserTechAuthService userTechAuthService;
-    @Autowired
     private OrderService orderService;
+    @Autowired
+    private SettingService settingService;
+
 
     /**
      * 设置自动接单时间
-     *
      * @param minute
      * @return
      */
@@ -56,9 +57,16 @@ public class AutoReceiveController extends BaseController {
         setting.setAdminId(admin.getId());
         setting.setAdminName(admin.getName());
         setting.setCreateTime(new Date());
-        return Result.success().msg("设置自动接单时间成功!");
+        settingService.create(setting);
+        return Result.success().data(setting).msg("设置自动接单时间成功!");
     }
 
+
+    @PostMapping(value = "setting/list")
+    public Result autoReceiveTimeQueryList() {
+        List<Setting> settingList = settingService.settingList(SettingTypeEnum.AUTO_RECEIVE_ORDER_TIME.getType());
+        return Result.success().data(settingList);
+    }
 
     /**
      * 设置自动接单技能
@@ -69,6 +77,14 @@ public class AutoReceiveController extends BaseController {
     public Result addTech(@RequestParam(required = true) Integer techAuthId,
                           String remark) {
         userAutoReceiveOrderService.addAutoReceivingTech(techAuthId, remark);
+        return Result.success().msg("自动接单设置成功!");
+    }
+
+
+
+    @PostMapping(value = "tech/del")
+    public Result delTech(@RequestParam(required = true) Integer techAuthId) {
+        userAutoReceiveOrderService.delAutoReceivingTech(techAuthId);
         return Result.success().msg("自动接单设置成功!");
     }
 
@@ -128,6 +144,8 @@ public class AutoReceiveController extends BaseController {
         workbook.write(response.getOutputStream());
         workbook.close();
     }
+
+
 }
 
 

@@ -13,4 +13,5 @@ import com.fulu.game.core.entity.SalesMode;
  */
 public class SalesModeVO  extends SalesMode {
 
+
 }

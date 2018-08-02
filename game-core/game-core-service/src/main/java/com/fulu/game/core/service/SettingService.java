@@ -2,6 +2,7 @@ package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Setting;
 
+import java.util.List;
 
 
 /**
@@ -16,4 +17,7 @@ public interface SettingService extends ICommonService<Setting,Integer>{
 
 
     public Setting lastSettingType(int type);
+
+
+    public List<Setting> settingList(int type);
 }

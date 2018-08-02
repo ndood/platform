@@ -204,8 +204,9 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param userVO        用户VO
      * @param wechatEcoEnum 用户来源
      * @param ipStr         用户ip
+     * @return 用户Bean
      */
-    void updateUnionUser(UserVO userVO, WechatEcoEnum wechatEcoEnum, String ipStr);
+    User updateUnionUser(UserVO userVO, WechatEcoEnum wechatEcoEnum, String ipStr);
 
     List<UserVO> findVOByUserIds(List<Integer> userIds);
 

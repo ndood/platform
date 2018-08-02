@@ -59,4 +59,6 @@ public class UserAutoReceiveOrder implements Serializable {
     //
     private Date updateTime;
 
+    private Boolean delFlag;
+
 }

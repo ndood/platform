@@ -11,6 +11,7 @@
         <result column="grade_pic_url" property="gradePicUrl"/>
         <result column="description" property="description"/>
         <result column="status" property="status"/>
+        <result column="is_activate" property="isActivate"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="approve_count" property="approveCount"/>
@@ -21,7 +22,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,category_id,user_id,category_name,mobile,grade_pic_url,description,status,create_time,update_time,approve_count
+        id,category_id,user_id,category_name,mobile,grade_pic_url,description,status,is_activate,create_time,update_time,approve_count
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserTechAuthResultMap">
@@ -66,6 +67,9 @@
             <if test="status != null">
                 and status = #{status}
             </if>
+            <if test="isActivate != null">
+                and is_activate = #{isActivate}
+            </if>
             <if test="approveCount != null">
                 and approve_count &lt;= #{approveCount}
             </if>
@@ -73,8 +77,7 @@
     </select>
 
 
-    <select id="search" resultMap="UserTechAuthResultMap"
-            parameterType="com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO">
+    <select id="search" resultMap="UserTechAuthResultMap"  parameterType="com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO">
         SELECT uta.* FROM t_user_tech_auth uta LEFT JOIN t_user u ON uta.user_id = u.id
         <where>
             <if test="mobile != null">
@@ -108,9 +111,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserTechAuth">
         insert into
-        t_user_tech_auth (category_id,user_id,category_name,mobile,grade_pic_url,description,status,create_time,update_time,approve_count)
+        t_user_tech_auth (category_id,user_id,category_name,mobile,grade_pic_url,description,status,is_activate,create_time,update_time,approve_count)
         values
-        (#{categoryId},#{userId},#{categoryName},#{mobile},#{gradePicUrl},#{description},#{status},#{createTime},#{updateTime},#{approveCount})
+        (#{categoryId},#{userId},#{categoryName},#{mobile},#{gradePicUrl},#{description},#{status},#{isActivate},#{createTime},#{updateTime},#{approveCount})
     </insert>
 
     <update id="updateByCategory" parameterType="com.fulu.game.core.entity.Category">
@@ -155,6 +158,10 @@
 
             <if test="status != null">
                 status = #{status},
+            </if>
+
+            <if test="isActivate != null">
+                is_activate = #{isActivate},
             </if>
 
             <if test="createTime != null">

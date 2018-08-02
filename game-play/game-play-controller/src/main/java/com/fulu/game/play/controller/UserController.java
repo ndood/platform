@@ -168,16 +168,22 @@ public class UserController extends BaseController {
             log.error("获取用户微信异常:encryptedData:{};iv:{};sessionKey:{};{}", encryptedData, iv, sessionKey, e.getMessage());
             throw new UserException(UserException.ExceptionCode.SESSION_KEY_DISABLE_EXCEPTION);
         }
-        if (phoneNoInfo == null && phoneNoInfo.getPurePhoneNumber() == null) {
+        if (phoneNoInfo == null || phoneNoInfo.getPurePhoneNumber() == null) {
             log.error("未获取用户微信手机号:phoneNoInfo:{};encryptedData:{};iv:{};sessionKey:{};", phoneNoInfo, encryptedData, iv, sessionKey);
             throw new UserException(UserException.ExceptionCode.WX_PHONE_NOT_EXIST_EXCEPTION);
         }
-        User user = userService.findById(userService.getCurrentUser().getId());
+        User user = new User();
+        user.setId(userService.getCurrentUser().getId());
         log.info("获取用户微信手机号,原用户信息:{}", user);
         user.setMobile(phoneNoInfo.getPurePhoneNumber());
         user.setUpdateTime(new Date());
-        userService.update(user);
-        userService.updateRedisUser(user);
+        try {
+            userService.update(user);
+            userService.updateRedisUser(user);
+        }catch (Exception e){
+            log.error("更新微信手机号错误用户信息:{};手机号:{};", user, user.getMobile());
+            return Result.error().msg("手机号已被注册!");
+        }
         log.info("获取用户微信手机号,更新后用户信息:{};手机号:{};", user, user.getMobile());
         return Result.success().data(user);
 
@@ -224,8 +230,8 @@ public class UserController extends BaseController {
         }
         user.setUpdateTime(new Date());
         String ipStr = RequestUtil.getIpAdrress(request);
-        userService.updateUnionUser(user, WechatEcoEnum.PLAY, ipStr);
-        return Result.success().data(user);
+        User resultUser = userService.updateUnionUser(user, WechatEcoEnum.PLAY, ipStr);
+        return Result.success().data(resultUser);
     }
 
     /**

@@ -65,6 +65,7 @@ public class AssignOrderServiceImpl implements AssignOrderService {
         if (userIds.isEmpty()) {
             return new ArrayList<>();
         }
+        userIds.removeIf(userId->userId.equals(order.getUserId()));
         userIds.removeIf(userId -> redisOpenService.hasKey(RedisKeyEnum.AUTO_ASSIGN_ORDER_USER.generateKey(userId)));
         return userService.findByUserIds(userIds,Boolean.TRUE);
     }

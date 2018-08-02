@@ -186,6 +186,72 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         return generateCoupon(couponGroup, userId, receiveTime, receiveIp);
     }
 
+    @Override
+    public Coupon generateCoupon(String redeemCode,
+                                 Integer userId,
+                                 Date receiveTime,
+                                 String receiveIp,
+                                 boolean newUserFlag) {
+        log.info("领取或发放优惠券:redeemCode:{},userId:{},receiveTime:{},receiveIp:{}", redeemCode, userId, receiveTime, receiveIp);
+        CouponGroup couponGroup = couponGroupService.findByRedeemCode(redeemCode);
+        if (couponGroup == null) {
+            throw new CouponException(CouponException.ExceptionCode.REDEEMCODE_ERROR);
+        }
+        return generateCoupon(couponGroup, userId, receiveTime, receiveIp, newUserFlag);
+    }
+
+    private Coupon generateCoupon(CouponGroup couponGroup, Integer userId, Date receiveTime, String receiveIp, boolean newUserFlag) throws CouponException {
+        Integer couponCount = countByCouponGroup(couponGroup.getId());
+        if (couponCount >= couponGroup.getAmount()) {
+            throw new CouponException(CouponException.ExceptionCode.BROUGHT_OUT);
+        }
+        List<Coupon> coupons = findByUserReceive(couponGroup.getId(), userId);
+        if (coupons.size() > 0) {
+            throw new CouponException(CouponException.ExceptionCode.ALREADY_RECEIVE);
+        }
+        //新用户专享卷只能新用户领
+        if (orderService.isOldUser(userId) && couponGroup.getIsNewUser()) {
+            throw new CouponException(CouponException.ExceptionCode.NEWUSER_RECEIVE);
+        }
+        //过期的优惠券不能兑换
+        if (new Date().after(couponGroup.getEndUsefulTime())) {
+            throw new CouponException(CouponException.ExceptionCode.OVERDUE);
+        }
+        String couponNo = generateCouponNo();
+        User user = userService.findById(userId);
+        Coupon coupon = new Coupon();
+        coupon.setCouponGroupId(couponGroup.getId());
+        coupon.setCouponNo(couponNo);
+        coupon.setReceiveTime(receiveTime);
+        coupon.setReceiveIp(receiveIp);
+        coupon.setDeduction(couponGroup.getDeduction());
+        coupon.setIsNewUser(couponGroup.getIsNewUser());
+        coupon.setUserId(userId);
+        coupon.setMobile(user.getMobile());
+        coupon.setIsUse(false);
+        coupon.setStartUsefulTime(couponGroup.getStartUsefulTime());
+        coupon.setEndUsefulTime(couponGroup.getEndUsefulTime());
+        coupon.setCreateTime(new Date());
+        coupon.setIsFirstReceive(true);
+        //判断是否是首次领取
+        Integer countUser = countByUser(userId);
+        if (countUser > 0) {
+            coupon.setIsFirstReceive(false);
+        }
+        try {
+            create(coupon);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("无法给用户userId:{}发放优惠券，兑换码为:{}", userId, couponGroup.getRedeemCode());
+            return null;
+        }
+        log.info("生成优惠券:coupon:{}", coupon);
+
+        //发放优惠券通知
+        wxTemplateMsgService.pushWechatTemplateMsg(coupon.getUserId(), WechatTemplateMsgEnum.GRANT_COUPON, coupon.getDeduction().toString());
+        return coupon;
+    }
+
 
     /**
      * 给用户发放优惠券
@@ -234,8 +300,9 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         try {
             create(coupon);
         } catch (Exception e) {
-            log.error("无法给用户userId:{}发放优惠券，兑换码为:{}", userId, couponGroup.getRedeemCode());
             e.printStackTrace();
+            log.error("无法给用户userId:{}发放优惠券，兑换码为:{}", userId, couponGroup.getRedeemCode());
+            return null;
         }
         log.info("生成优惠券:coupon:{}", coupon);
 

@@ -28,6 +28,17 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * @return
      */
     Product create(Integer techAuthId,BigDecimal price,Integer unitId);
+
+    /**
+     * 保存陪玩师的接单方式
+     * @param techAuthId
+     * @param price
+     * @param unitId
+     * @return
+     */
+    Product save(Integer techAuthId,BigDecimal price,Integer unitId);
+
+
     /**
      * 修改接单方式
      * @param id
@@ -39,6 +50,10 @@ public interface ProductService extends ICommonService<Product,Integer>{
     Product update(Integer id,Integer techAuthId,BigDecimal price,Integer unitId);
 
 
+    /**
+     * 更新游戏同步更新商品字段
+     * @param category
+     */
     void updateByCategory(Category category);
 
     /**
@@ -69,6 +84,14 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * @return
      */
     List<Product> findByTechId(int techId);
+
+    /**
+     * 通过techId和saleModeId查询商品
+     * @param techId
+     * @param saleModeId
+     * @return
+     */
+    Product findByTechAndSaleMode(int techId,int saleModeId);
 
     /**
      * 开始接单
