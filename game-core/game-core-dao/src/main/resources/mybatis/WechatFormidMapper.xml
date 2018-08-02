@@ -80,6 +80,9 @@
             <if test="formId != null">
                 and form_id = #{formId}
             </if>
+            <if test="platform != null">
+                and platform = #{platform}
+            </if>
             <if test="openId != null">
                 and open_id = #{openId}
             </if>

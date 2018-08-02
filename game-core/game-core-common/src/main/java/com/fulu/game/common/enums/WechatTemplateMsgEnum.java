@@ -56,7 +56,7 @@ public enum WechatTemplateMsgEnum {
     public WechatTemplateMsgEnum choice(Integer ecoType){
         if(WechatEcoEnum.POINT.getType().equals(ecoType)){
             POINT_REPLACE_TEMPLATE.page = PagePathEnum.findSfPatgByPagePath(this.page);
-            POINT_REPLACE_TEMPLATE.content = PagePathEnum.findSfPatgByPagePath(this.content);
+            POINT_REPLACE_TEMPLATE.content = this.content;
             return POINT_REPLACE_TEMPLATE;
         }else{
             return this;

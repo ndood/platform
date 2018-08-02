@@ -40,6 +40,7 @@ public class UserAutoReceiveOrder implements Serializable {
     @Excel(name = "接单范围结束", orderNum = "7", width = 15)
     private Integer endRank;
 
+    private String rankIds;
     //自动派单数
     private Integer orderNum;
     //自动派单完成数

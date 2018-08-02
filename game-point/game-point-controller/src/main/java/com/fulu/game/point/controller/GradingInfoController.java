@@ -199,7 +199,8 @@ public class GradingInfoController extends BaseController {
     public Result autoOrderRangeSave(@RequestParam(required = true) Integer categoryId,
                                      @RequestParam(required = true) Integer areaId,
                                      @RequestParam(required = true) Integer startRank,
-                                     @RequestParam(required = true) Integer endRank) {
+                                     @RequestParam(required = true) Integer endRank,
+                                     String rankIds ) {
         User user = userService.getCurrentUser();
         UserAutoReceiveOrder userAutoReceiveOrder = userAutoReceiveOrderService.findByUserIdAndCategoryId(user.getId(), categoryId);
         if(userAutoReceiveOrder==null){
@@ -207,6 +208,7 @@ public class GradingInfoController extends BaseController {
         }
         userAutoReceiveOrder.setAreaId(areaId);
         userAutoReceiveOrder.setStartRank(startRank);
+        userAutoReceiveOrder.setRankIds(rankIds);
         userAutoReceiveOrder.setEndRank(endRank);
         userAutoReceiveOrder.setUpdateTime(new Date());
         userAutoReceiveOrderService.update(userAutoReceiveOrder);

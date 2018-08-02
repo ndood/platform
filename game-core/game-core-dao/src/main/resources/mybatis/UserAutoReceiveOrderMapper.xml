@@ -11,6 +11,7 @@
         <result column="start_rank" property="startRank"/>
         <result column="end_rank" property="endRank"/>
         <result column="remark" property="remark"/>
+        <result column="rank_ids" property="rankIds"/>
         <result column="order_num" property="orderNum"/>
         <result column="order_complete_num" property="orderCompleteNum"/>
         <result column="order_cancel_num" property="orderCancelNum"/>
@@ -28,7 +29,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,tech_auth_id,category_id,area_id,start_rank,end_rank,remark,order_num,order_complete_num,order_cancel_num,order_dispute_num,user_auto_setting,del_flag,admin_id,admin_name,create_time,update_time    </sql>
+        id,user_id,tech_auth_id,category_id,area_id,start_rank,end_rank,remark,rank_ids,order_num,order_complete_num,order_cancel_num,order_dispute_num,user_auto_setting,del_flag,admin_id,admin_name,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserAutoReceiveOrderResultMap">
         select
@@ -181,9 +182,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserAutoReceiveOrder">
         insert into
-        t_user_auto_receive_order (user_id,tech_auth_id,category_id,area_id,start_rank,end_rank,remark,order_num,order_complete_num,order_cancel_num,order_dispute_num,user_auto_setting,del_flag,admin_id,admin_name,create_time,update_time)
+        t_user_auto_receive_order (user_id,tech_auth_id,category_id,area_id,start_rank,end_rank,remark,rank_ids,order_num,order_complete_num,order_cancel_num,order_dispute_num,user_auto_setting,del_flag,admin_id,admin_name,create_time,update_time)
         values
-        (#{userId},#{techAuthId},#{categoryId},#{areaId},#{startRank},#{endRank},#{remark},#{orderNum},#{orderCompleteNum},#{orderCancelNum},#{orderDisputeNum},#{userAutoSetting},#{delFlag},#{adminId},#{adminName},#{createTime},#{updateTime})
+        (#{userId},#{techAuthId},#{categoryId},#{areaId},#{startRank},#{endRank},#{remark},#{rankIds},#{orderNum},#{orderCompleteNum},#{orderCancelNum},#{orderDisputeNum},#{userAutoSetting},#{delFlag},#{adminId},#{adminName},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.UserAutoReceiveOrder">
@@ -216,6 +217,9 @@
 
             <if test="remark != null">
                 remark = #{remark},
+            </if>
+            <if test="rankIds != null">
+                rank_ids = #{rankIds},
             </if>
 
             <if test="orderNum != null">

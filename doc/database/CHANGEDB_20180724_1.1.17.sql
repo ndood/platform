@@ -81,6 +81,7 @@ CREATE TABLE `t_user_auto_receive_order` (
   `start_rank` int(11) DEFAULT NULL COMMENT '接单范围开始',
   `end_rank` int(11) DEFAULT NULL COMMENT '接单范围结束',
   `remark` varchar(255) DEFAULT NULL COMMENT '备注',
+  `rank_ids` varchar(255) DEFAULT NULL COMMENT '段位ids',
   `order_num` int(11) DEFAULT NULL COMMENT '自动派单数',
   `order_complete_num` int(11) DEFAULT NULL COMMENT '自动派单完成数',
   `order_cancel_num` int(11) DEFAULT NULL COMMENT '派单取消数',
@@ -144,7 +145,7 @@ update t_product set is_activate = TRUE;
 
 --修改用户技能表
 ALTER TABLE `t_user_tech_auth` ADD COLUMN `is_activate` tinyint(1)  DEFAULT NULL COMMENT '是否激活' after `status`;
-update t_user_tech_auth set is_activate = TRUE;
+update t_user_tech_auth set is_activate = FALSE;
 
 
 -- 删除商品表多余的单位内容
