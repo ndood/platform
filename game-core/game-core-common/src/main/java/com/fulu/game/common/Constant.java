@@ -143,4 +143,14 @@ public interface Constant {
      * 发放优惠券失败(默认值)
      */
     Integer SEND_COUPOU_FAIL = 0;
+
+    /**
+     * 用户头像最少展示个数
+     */
+    Integer MIN_USER_HEAD_COUNT = 5;
+
+    /**
+     * 用户头像最多展示个数
+     */
+    Integer MAX_USER_HEAD_COUNT = 10;
 }

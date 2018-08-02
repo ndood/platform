@@ -84,11 +84,11 @@ public interface UserService extends ICommonService<User, Integer> {
     /**
      * 通过UserId查询一批用户
      *
-     * @param userIds
-     * @return
+     * @param userIds  userId列表
+     * @param disabled true：过滤冻结用户；false：不过滤冻结用户
+     * @return 用户列表
      */
     List<User> findByUserIds(List<Integer> userIds, Boolean disabled);
-
 
     void updateRedisUser(User user);
 

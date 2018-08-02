@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.Constant;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserAutoReceiveOrderDao;
 import com.fulu.game.core.entity.Admin;
@@ -17,13 +18,12 @@ import com.fulu.game.core.service.UserTechAuthService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.CollectionUtil;
+import com.xiaoleilu.hutool.util.RandomUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @Service
@@ -45,13 +45,10 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
     }
 
 
-
-
-
     @Override
     public UserAutoReceiveOrder addAutoReceivingTech(Integer techAuthId, String remark) {
         UserAutoReceiveOrder userAutoReceiveOrder = userAutoReceiveOrderDao.findByIdIncludeDel(techAuthId);
-        if(userAutoReceiveOrder!=null){
+        if (userAutoReceiveOrder != null) {
             userAutoReceiveOrder.setDelFlag(Boolean.FALSE);
             userAutoReceiveOrder.setRemark(remark);
             userAutoReceiveOrder.setUserAutoSetting(Boolean.FALSE);
@@ -81,7 +78,6 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
     }
 
 
-
     @Override
     public UserAutoReceiveOrder delAutoReceivingTech(Integer techAuthId) {
         UserAutoReceiveOrder userAutoReceiveOrder = findByTechId(techAuthId);
@@ -90,7 +86,7 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
         return userAutoReceiveOrder;
     }
 
-
+    @Override
     public List<UserAutoReceiveOrder> findByUserId(int userId) {
         UserAutoReceiveOrderVO param = new UserAutoReceiveOrderVO();
         param.setUserId(userId);
@@ -126,7 +122,7 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
         return userAutoReceiveOrderDao.findUserBySearch(userAutoOrderSearchVO);
     }
 
-
+    @Override
     public void activateAutoOrder(int userId, boolean flag) {
         List<UserAutoReceiveOrder> userAutoReceiveOrders = findByUserId(userId);
         for (UserAutoReceiveOrder autoReceiveOrder : userAutoReceiveOrders) {
@@ -198,16 +194,26 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
     @Override
     public List<String> findAllAutoOrderUserHead() {
         List<UserAutoReceiveOrder> allUserAutoReceiveOrder = findAll();
-        List<Integer> userIds = new ArrayList<>();
+        if (CollectionUtil.isEmpty(allUserAutoReceiveOrder)) {
+            return null;
+        }
+        Set<Integer> userIds = new HashSet<>();
         for (UserAutoReceiveOrder receiveOrder : allUserAutoReceiveOrder) {
             userIds.add(receiveOrder.getUserId());
         }
         List<String> headList = new ArrayList<>();
-        List<User> userList = userService.findByUserIds(userIds, Boolean.TRUE);
+        List<Integer> userIdList = new ArrayList<>(userIds);
+        List<User> userList = userService.findByUserIds(userIdList, Boolean.TRUE);
         for (User user : userList) {
             headList.add(user.getHeadPortraitsUrl());
         }
-        return headList;
+
+        int length = RandomUtil.randomInt(Constant.MIN_USER_HEAD_COUNT, Constant.MAX_USER_HEAD_COUNT + 1);
+        if (headList.size() <= length) {
+            return headList;
+        } else {
+            return headList.subList(0, length);
+        }
     }
 
     @Override
