@@ -135,7 +135,25 @@ public class GradingPriceServiceImpl extends AbsCommonService<GradingPrice, Inte
             throw new ServiceErrorException("段位类型不匹配,请重新选择!");
         }
         Double result = gradingPriceDao.findRangePrice(categoryId, startGradingPrice.getRank(), endGradingPrice.getRank());
-        return new BigDecimal(result);
+        return new BigDecimal(result.toString());
+    }
+
+
+    @Override
+    public void updateParentGradingTime(int pid) {
+        Admin admin = adminService.getCurrentUser();
+        GradingPrice gradingPrice = findById(pid);
+        if(gradingPrice.getId()<100){
+            GradingPrice parentGradingPrice = new GradingPrice();
+            parentGradingPrice.setId(gradingPrice.getId());
+            parentGradingPrice.setUpdateTime(new Date());
+            parentGradingPrice.setAdminName(admin.getName());
+            parentGradingPrice.setAdminId(admin.getId());
+            update(parentGradingPrice);
+        }else{
+            updateParentGradingTime(gradingPrice.getPid());
+        }
+
     }
 
 

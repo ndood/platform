@@ -40,6 +40,7 @@ public class GradingController extends BaseController {
                          Integer rank,
                          BigDecimal price) {
         GradingPrice gradingPrice = gradingPriceService.create(pid, name, rank, price);
+        gradingPriceService.updateParentGradingTime(gradingPrice.getPid());
         return Result.success().data(gradingPrice);
     }
 
@@ -74,6 +75,7 @@ public class GradingController extends BaseController {
                          Integer rank,
                          BigDecimal price) {
         GradingPrice gradingPrice = gradingPriceService.update(id, name, rank, price);
+        gradingPriceService.updateParentGradingTime(gradingPrice.getPid());
         return Result.success().data(gradingPrice);
     }
 

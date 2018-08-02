@@ -173,9 +173,22 @@ public class GradingInfoController extends BaseController {
         return Result.success().data(gradingPriceVOList);
     }
 
+
+    /**
+     * 自动接单设置查询
+     * @param categoryId
+     * @return
+     */
+    @PostMapping(value = "/auto-order/query")
+    public Result autoOrderRangeQuery(@RequestParam(required = true) Integer categoryId){
+        User user = userService.getCurrentUser();
+        UserAutoReceiveOrder userAutoReceiveOrder = userAutoReceiveOrderService.findByUserIdAndCategoryId(user.getId(), categoryId);
+        return Result.success().data(userAutoReceiveOrder);
+    }
+
+
     /**
      * 保存段位和大区
-     *
      * @param categoryId
      * @param areaId
      * @param startRank
@@ -189,12 +202,15 @@ public class GradingInfoController extends BaseController {
                                      @RequestParam(required = true) Integer endRank) {
         User user = userService.getCurrentUser();
         UserAutoReceiveOrder userAutoReceiveOrder = userAutoReceiveOrderService.findByUserIdAndCategoryId(user.getId(), categoryId);
+        if(userAutoReceiveOrder==null){
+            return Result.error().msg("没有开启自动接单权限!");
+        }
         userAutoReceiveOrder.setAreaId(areaId);
         userAutoReceiveOrder.setStartRank(startRank);
         userAutoReceiveOrder.setEndRank(endRank);
         userAutoReceiveOrder.setUpdateTime(new Date());
         userAutoReceiveOrderService.update(userAutoReceiveOrder);
-        return Result.success().data(userAutoReceiveOrder).msg("接单范围保持成功!");
+        return Result.success().data(userAutoReceiveOrder).msg("接单方式保存成功!");
     }
 
 

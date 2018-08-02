@@ -31,7 +31,7 @@ public class OrderStatusTask {
         Integer[] statusList = new Integer[]{OrderStatusEnum.NON_PAYMENT.getStatus(),
                 OrderStatusEnum.WAIT_SERVICE.getStatus(),
                 OrderStatusEnum.ALREADY_RECEIVING.getStatus()};
-        List<Order> orderList = orderService.findByStatusListAndType(statusList, OrderTypeEnum.PLATFORM.getType());
+        List<Order> orderList = orderService.findByStatusList(statusList);
         for (Order order : orderList) {
             long countDown = orderStatusDetailsService.getCountDown(order.getOrderNo(), order.getStatus());
             log.info("订单倒计时orderNo:{};countDown:{}", order.getOrderNo(), countDown);

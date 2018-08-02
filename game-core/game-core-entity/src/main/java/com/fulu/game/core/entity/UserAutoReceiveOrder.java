@@ -31,6 +31,8 @@ public class UserAutoReceiveOrder implements Serializable {
     //备注
     @Excel(name = "备注", orderNum = "5", width = 15)
     private String remark;
+
+
     //接单范围开始
     @Excel(name = "接单范围开始", orderNum = "6", width = 15)
     private Integer startRank;

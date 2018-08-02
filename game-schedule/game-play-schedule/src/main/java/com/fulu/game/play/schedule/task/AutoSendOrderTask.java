@@ -48,7 +48,12 @@ public class AutoSendOrderTask {
         for (Order order : orderList) {
             long minute = DateUtil.between(order.getCreateTime(), new Date(), DateUnit.MINUTE);
             if(minute>autoReveTime){
-                User user = assignOrderService.getMatchUser(order);
+                User user = null;
+                try {
+                    user = assignOrderService.getMatchUser(order);
+                }catch (Exception e){
+                    log.error("查询派单用户失败",e);
+                }
                 if(user==null){
                     log.info("没有查询到可以接单的用户");
                     continue;

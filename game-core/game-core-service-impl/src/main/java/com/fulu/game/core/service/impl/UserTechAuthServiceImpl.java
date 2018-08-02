@@ -81,6 +81,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuthTO.setCategoryName(category.getName());
         userTechAuthTO.setUpdateTime(new Date());
         userTechAuthTO.setApproveCount(0);
+        userTechAuthTO.setIsActivate(true);
         if (userTechAuthTO.getId() == null){
             //查询是否有重复技能
             List<UserTechAuth> userTechAuthes = findByCategoryAndUser(userTechAuthTO.getCategoryId(), userTechAuthTO.getUserId());
@@ -88,6 +89,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
                 throw new ServiceErrorException("不能添加重复的技能!");
             }
             userTechAuthTO.setCreateTime(new Date());
+
             create(userTechAuthTO);
         }else {
             UserTechAuth oldUserTechAuth = findById(userTechAuthTO.getId());

@@ -30,5 +30,6 @@ public interface GradingPriceService extends ICommonService<GradingPrice, Intege
     BigDecimal findRangePrice(int categoryId,int startGradingId, int endGradingId);
 
 
+    void updateParentGradingTime(int sonId);
 
 }
