@@ -7,6 +7,7 @@ import com.fulu.game.common.exception.ImgException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.common.utils.ImgUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
@@ -53,6 +54,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     private CouponGroupService couponGroupService;
     @Autowired
     private CouponService couponService;
+    @Autowired
+    private SpringThreadPoolExecutor springThreadPoolExecutor;
 
     @Override
     public ICommonDao<User, Integer> getDao() {
@@ -552,19 +555,15 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             updateRedisUser(user);
             log.info("判断存在上分的用户信息，更新user:{}", user);
 
-            //发放优惠券
-            boolean flag = false;
-            try {
-                flag = generateCouponForNewPointUser(user, ipStr);
-            } catch (Exception e) {
-                log.error("发放优惠券失败！");
-            }
+            //新线程发放优惠券（避免事务问题：当前方法的事务和优惠券发放的事务，因为都涉及到t_user表的操作，可能造成数据库死锁）
+            springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
+                @Override
+                public void run() {
+                    generateCouponForNewPointUser(user, ipStr);
+                }
+            });
 
-            if (flag) {
-                user.setCoupouStatus(Constant.SEND_COUPOU_SUCCESS);
-            } else {
-                user.setCoupouStatus(Constant.SEND_COUPOU_FAIL);
-            }
+            user.setCoupouStatus(Constant.SEND_COUPOU_SUCCESS);
             return user;
         }
     }
@@ -582,7 +581,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         }
 
         Coupon coupon = couponService.generateCoupon(Constant.NEW_POINT_USER_COUPON_GROUP_REDEEM_CODE,
-                user.getId(), DateUtil.date(), ipStr, true);
+                user.getId(), DateUtil.date(), ipStr);
         if (coupon == null) {
             throw new ServiceErrorException("发放优惠券失败！");
         }

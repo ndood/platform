@@ -9,8 +9,12 @@ import com.fulu.game.common.utils.IMUtil;
 import com.fulu.game.core.entity.ImUser;
 import com.fulu.game.core.entity.vo.ImUserVo;
 import com.fulu.game.core.service.ImService;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.xiaoleilu.hutool.util.BeanUtil;
 import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -92,8 +96,37 @@ public class ImServiceImpl implements ImService {
 
     //fixme 发送信息给环信用户
     public boolean sendMsgToImUser(String imId) {
+        String token = imUtil.getImToken();
+        if (StringUtils.isBlank(token)) {
+            token = getToken();
+        }
 
+        String Authorization = "Bearer " + token;
+        Map<String, Object> headerMap = new HashMap();
+        headerMap.put("Authorization", Authorization);
+        headerMap.put("Accept", "application/json");
+        headerMap.put("Content-Type", "application/json");
 
+        String userUrl = imUtil.getUserUrl();
+
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("target_type", "users");
+        String[] userArr = {imId};
+        paramMap.put("target", userArr);
+
+        Map<String, String> msgMap = new HashMap<>();
+        msgMap.put("type", "txt");
+        msgMap.put("msg", "txt-msg");
+        paramMap.put("msg", msgMap);
+
+        Map<String, String> extMap = new HashMap<>();
+        extMap.put("attr", "v1");
+        paramMap.put("ext", extMap);
+
+        JSONObject jsonObject = new JSONObject(paramMap);
+        String body = jsonObject.toString();
+        HttpResponse httpResponse = HttpUtils.post(userUrl, body, headerMap);
+        System.out.println(httpResponse);
         return true;
     }
 
