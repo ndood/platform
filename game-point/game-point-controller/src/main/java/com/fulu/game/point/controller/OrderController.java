@@ -399,6 +399,7 @@ public class OrderController extends BaseController {
     }
 
     private OrderPointProductVO getAdvanceOrder(OrderPointProductTO orderPointProductTO) {
+        log.info("开始计算段位区间价格:orderPointProductTO:{}",orderPointProductTO);
         OrderPointProductVO gradingAdvanceOrderVO = new OrderPointProductVO();
         gradingAdvanceOrderVO.setCategoryId(orderPointProductTO.getCategoryId());
         gradingAdvanceOrderVO.setPointType(orderPointProductTO.getPointType());
@@ -406,10 +407,6 @@ public class OrderController extends BaseController {
         gradingAdvanceOrderVO.setGradingPriceId(orderPointProductTO.getGradingPriceId());
         gradingAdvanceOrderVO.setTargetGradingPriceId(orderPointProductTO.getTargetGradingPriceId());
         if (PointTypeEnum.ACCURATE_SCORE.getType().equals(orderPointProductTO.getPointType())) {
-            //查询区间价格
-            BigDecimal totalMoney = gradingPriceService.findRangePrice(gradingAdvanceOrderVO.getCategoryId(), gradingAdvanceOrderVO.getGradingPriceId(), gradingAdvanceOrderVO.getTargetGradingPriceId());
-            gradingAdvanceOrderVO.setTotalMoney(totalMoney);
-            //大区信息
             TechValue techValue = techValueService.findById(gradingAdvanceOrderVO.getAreaId());
             //账户信息
             GradingPrice startGradingPrice = gradingPriceService.findById(gradingAdvanceOrderVO.getGradingPriceId());
@@ -419,8 +416,12 @@ public class OrderController extends BaseController {
             GradingPrice endGradingPrice = gradingPriceService.findById(gradingAdvanceOrderVO.getTargetGradingPriceId());
             GradingPrice parentEndGradingPrice = gradingPriceService.findById(endGradingPrice.getPid());
             gradingAdvanceOrderVO.setOrderChoice(parentStartGradingPrice.getName() + startGradingPrice.getName() + "-" + parentEndGradingPrice.getName() + endGradingPrice.getName());
+            //查询区间价格
+            BigDecimal totalMoney = gradingPriceService.findRangePrice(gradingAdvanceOrderVO.getCategoryId(), gradingAdvanceOrderVO.getGradingPriceId(), gradingAdvanceOrderVO.getTargetGradingPriceId());
+            totalMoney = totalMoney.subtract(endGradingPrice.getPrice());
+            gradingAdvanceOrderVO.setTotalMoney(totalMoney);
             //计算段位区间价格
-            gradingAdvanceOrderVO.setPrice(totalMoney.subtract(endGradingPrice.getPrice()));
+            gradingAdvanceOrderVO.setPrice(totalMoney);
             gradingAdvanceOrderVO.setAmount(1);
 
         } else {

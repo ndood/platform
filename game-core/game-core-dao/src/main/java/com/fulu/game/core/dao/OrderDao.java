@@ -31,7 +31,6 @@ public interface OrderDao extends ICommonDao<Order, Integer> {
 
     Order findByOrderNo(String orderNo);
 
-    List<MarketOrderVO> findMarketByParameter(OrderVO orderVO);
 
     List<OrderResVO> list(OrderSearchVO orderSearchVO);
 

@@ -5,14 +5,11 @@ import com.fulu.game.common.enums.OrderTypeEnum;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.OrderStatusDetailsService;
-import com.xiaoleilu.hutool.date.DateUnit;
-import com.xiaoleilu.hutool.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.List;
 
 @Component
@@ -36,14 +33,11 @@ public class OrderStatusTask {
                 OrderStatusEnum.ALREADY_RECEIVING.getStatus()};
         List<Order> orderList = orderService.findByStatusListAndType(statusList, OrderTypeEnum.PLATFORM.getType());
         for (Order order : orderList) {
-            long hour = DateUtil.between(order.getCreateTime(), new Date(), DateUnit.HOUR);
-            if (hour >= 24) {
-                long countDown = orderStatusDetailsService.getCountDown(order.getOrderNo(), order.getStatus());
-                log.info("订单倒计时orderNo:{};countDown:{}", order.getOrderNo(), countDown);
-                if (countDown <= 0) {
-                    log.info("订单超时时间到order:{}:", order);
-                    orderService.systemCancelOrder(order.getOrderNo());
-                }
+            long countDown = orderStatusDetailsService.getCountDown(order.getOrderNo(), order.getStatus());
+            log.info("订单倒计时orderNo:{};countDown:{}", order.getOrderNo(), countDown);
+            if (countDown <= 0) {
+                log.info("订单超时时间到order:{}:", order);
+                orderService.systemCancelOrder(order.getOrderNo());
             }
         }
     }
@@ -57,14 +51,11 @@ public class OrderStatusTask {
         Integer[] statusList = new Integer[]{OrderStatusEnum.CHECK.getStatus()};
         List<Order> orderList = orderService.findByStatusList(statusList);
         for (Order order : orderList) {
-            long hour = DateUtil.between(order.getCreateTime(), new Date(), DateUnit.HOUR);
-            if (hour >= 24) {
-                long countDown = orderStatusDetailsService.getCountDown(order.getOrderNo(), order.getStatus());
-                log.info("订单倒计时orderNo:{};countDown:{}", order.getOrderNo(), countDown);
-                if (countDown <= 0) {
-                    log.info("订单完成时间到order:{}:", order);
-                    orderService.systemCompleteOrder(order.getOrderNo());
-                }
+            long countDown = orderStatusDetailsService.getCountDown(order.getOrderNo(), order.getStatus());
+            log.info("订单倒计时orderNo:{};countDown:{}", order.getOrderNo(), countDown);
+            if (countDown <= 0) {
+                log.info("订单完成时间到order:{}:", order);
+                orderService.systemCompleteOrder(order.getOrderNo());
             }
         }
     }
@@ -89,7 +80,7 @@ public class OrderStatusTask {
 
 
     /**
-     * 自动取消拒绝的订单
+     * 自动取消协商的订单
      */
     @Scheduled(cron = "0 0/1 * * * ? ")  //cron接受cron表达式，根据cron表达式确定定时规则
     public void autoConsultOrder() {

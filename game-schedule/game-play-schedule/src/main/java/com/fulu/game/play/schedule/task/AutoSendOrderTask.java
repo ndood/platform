@@ -2,6 +2,7 @@ package com.fulu.game.play.schedule.task;
 
 import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.enums.OrderTypeEnum;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.SettingTypeEnum;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.Setting;
@@ -9,6 +10,7 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.AssignOrderService;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.SettingService;
+import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.xiaoleilu.hutool.date.DateUnit;
 import com.xiaoleilu.hutool.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -30,12 +32,15 @@ public class AutoSendOrderTask {
     private SettingService settingService;
     @Autowired
     private AssignOrderService assignOrderService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
 
     /**
      * 自动派单
      */
     @Scheduled(cron = "0 0/1 * * * ? ")  //cron接受cron表达式，根据cron表达式确定定时规则
     public void autoCompleteOrder() {
+        log.info("自动派单任务开始---");
         Setting setting = settingService.lastSettingType(SettingTypeEnum.AUTO_RECEIVE_ORDER_TIME.getType());
         long autoReveTime = Long.valueOf(setting.getVal());
         Integer[] statusList = new Integer[]{OrderStatusEnum.WAIT_SERVICE.getStatus()};
@@ -45,9 +50,18 @@ public class AutoSendOrderTask {
             if(minute>autoReveTime){
                 User user = assignOrderService.getMatchUser(order);
                 if(user==null){
+                    log.info("没有查询到可以接单的用户");
                     continue;
                 }
-                orderService.receivePointOrder(order.getOrderNo(),user);
+                try {
+                    log.info("指派订单:order:{};接单用户user:{}",order,user);
+                    orderService.receivePointOrder(order.getOrderNo(),user);
+                    redisOpenService.setTimeInterval(RedisKeyEnum.AUTO_ASSIGN_ORDER_USER.generateKey(user.getId()),30*60);
+                }catch (Exception e){
+                    log.error("派单失败",e);
+                }
+
+
             }
         }
     }

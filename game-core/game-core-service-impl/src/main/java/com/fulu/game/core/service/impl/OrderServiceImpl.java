@@ -242,43 +242,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     }
 
 
-    @Override
-    public PageInfo<OrderVO> userList(int pageNum, int pageSize, Integer categoryId, Integer[] statusArr) {
-        User user = userService.getCurrentUser();
-        OrderVO params = new OrderVO();
-        params.setUserId(user.getId());
-        params.setCategoryId(categoryId);
-        params.setStatusList(statusArr);
-        PageHelper.startPage(pageNum, pageSize, "create_time desc");
-        List<OrderVO> orderVOList = orderDao.findVOByParameter(params);
-        for (OrderVO orderVO : orderVOList) {
-            User server = userService.findById(orderVO.getServiceUserId());
-            OrderProduct orderProduct = orderProductService.findByOrderNo(orderVO.getOrderNo());
-            orderVO.setServerHeadUrl(server.getHeadPortraitsUrl());
-            orderVO.setServerNickName(server.getNickname());
-            orderVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderVO.getStatus()));
-            orderVO.setServerScoreAvg(server.getScoreAvg() == null ? Constant.DEFAULT_SCORE_AVG : server.getScoreAvg());
-            orderVO.setOrderProduct(orderProduct);
-        }
-        return new PageInfo<>(orderVOList);
-    }
-
-    @Override
-    public PageInfo<OrderVO> serverList(int pageNum, int pageSize, Integer categoryId, Integer[] statusArr) {
-        User user = userService.getCurrentUser();
-        OrderVO params = new OrderVO();
-        params.setServiceUserId(user.getId());
-        params.setCategoryId(categoryId);
-        params.setStatusList(statusArr);
-        PageHelper.startPage(pageNum, pageSize, "create_time desc");
-        List<OrderVO> orderVOList = orderDao.findVOByParameter(params);
-        for (OrderVO orderVO : orderVOList) {
-            Category category = categoryService.findById(orderVO.getCategoryId());
-            orderVO.setCategoryIcon(category.getIcon());
-            orderVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderVO.getStatus()));
-        }
-        return new PageInfo<>(orderVOList);
-    }
 
 
     /**
@@ -290,9 +253,10 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     @Override
     public String receivePointOrder(String orderNo, User serviceUser) {
         Order order = findByOrderNo(orderNo);
+        if(order.getUserId().equals(serviceUser.getId())){
+            throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_ROB_MYSELF,orderNo);
+        }
         log.info("陪玩师抢单:userId:{};order:{}", serviceUser.getId(), order);
-
-
         if (!OrderTypeEnum.POINT.getType().equals(order.getType())) {
             throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING, order.getOrderNo());
         }
@@ -597,10 +561,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         }
         //创建订单
         create(order);
-
         //保存联系方式
         userContactService.save(user.getId(), order.getContactType(), order.getContactInfo());
-
         //更新优惠券使用状态
         if (coupon != null) {
             couponService.updateCouponUseStatus(order.getOrderNo(), userIp, coupon);
@@ -662,12 +624,17 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         }
         //创建订单
         create(order);
+        //保存联系方式
+        userContactService.save(user.getId(), order.getContactType(), order.getContactInfo());
+        //更新优惠券使用状态
+        if (coupon != null) {
+            couponService.updateCouponUseStatus(order.getOrderNo(), orderIp, coupon);
+        }
         orderPointProductVO.setOrderNo(order.getOrderNo());
         orderPointProductVO.setCreateTime(new Date());
         orderPointProductVO.setUpdateTime(new Date());
         orderPointProductService.create(orderPointProductVO);
-
-        //计算订单状态倒计时24小时
+        //计算订单状态倒计时十分钟
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 10);
         //推送上分订单消息
         springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
@@ -676,7 +643,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
                 wxTemplateMsgService.pushPointOrder(order);
             }
         });
-
         return order.getOrderNo();
     }
 
