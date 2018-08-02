@@ -75,10 +75,10 @@
                 and (area_id = #{areaId} or area_id is null)
             </if>
             <if test="startRank != null">
-                and start_rank &gt;= #{startRank}
+                and start_rank   &lt;= #{startRank}
             </if>
             <if test="endRank != null">
-                and end_rank &lt;= #{endRank}
+                and end_rank &gt;= #{endRank}
             </if>
         </where>
     </select>

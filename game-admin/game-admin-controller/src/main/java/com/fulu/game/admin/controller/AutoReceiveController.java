@@ -63,8 +63,9 @@ public class AutoReceiveController extends BaseController {
 
 
     @PostMapping(value = "setting/list")
-    public Result autoReceiveTimeQueryList() {
-        List<Setting> settingList = settingService.settingList(SettingTypeEnum.AUTO_RECEIVE_ORDER_TIME.getType());
+    public Result autoReceiveTimeQueryList(@RequestParam("pageSize") Integer pageSize,
+                                           @RequestParam("pageNum") Integer pageNum) {
+        PageInfo<Setting> settingList = settingService.settingList(pageNum,pageSize,SettingTypeEnum.AUTO_RECEIVE_ORDER_TIME.getType());
         return Result.success().data(settingList);
     }
 

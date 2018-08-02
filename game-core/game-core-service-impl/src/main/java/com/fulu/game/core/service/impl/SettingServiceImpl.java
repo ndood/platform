@@ -4,6 +4,7 @@ package com.fulu.game.core.service.impl;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.vo.SettingVO;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,11 +43,12 @@ public class SettingServiceImpl extends AbsCommonService<Setting,Integer> implem
 
 
     @Override
-    public List<Setting> settingList(int type) {
+    public PageInfo<Setting> settingList(int pageNum, int pageSize,int type) {
+        PageHelper.startPage(pageNum, pageSize,"id desc");
         SettingVO param = new SettingVO();
         param.setType(type);
         List<Setting> settingList = settingDao.findByParameter(param);
-        return settingList;
+        return  new PageInfo(settingList);
     }
 
 

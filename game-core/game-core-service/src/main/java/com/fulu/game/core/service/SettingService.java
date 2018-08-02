@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Setting;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -19,5 +20,5 @@ public interface SettingService extends ICommonService<Setting,Integer>{
     public Setting lastSettingType(int type);
 
 
-    public List<Setting> settingList(int type);
+    public PageInfo<Setting> settingList(int pageNum, int pageSize,int type);
 }
