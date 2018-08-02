@@ -104,7 +104,7 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
             throw new SearchException(SearchException.ExceptionCode.FIND_EXCEPTION, sql, result.getErrorMessage());
         }
         List<ProductShowCaseDoc> showCaseDocList = result.getSourceAsObjectList(ProductShowCaseDoc.class, false);
-        Page<ProductShowCaseDoc> page = new Page(pageNum, pageSize);
+        Page<ProductShowCaseDoc> page = new Page<>(pageNum, pageSize);
         page.addAll(showCaseDocList);
         page.setTotal(result.getTotal());
         return page;
@@ -122,11 +122,12 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
      * @return
      * @throws IOException
      */
-    public Page<ProductShowCaseDoc> searchShowCaseDoc(int categoryId,
+    public <T> Page<T> searchShowCaseDoc(int categoryId,
                                                       Integer gender,
                                                       Integer pageNum,
                                                       Integer pageSize,
-                                                      String orderBy) throws IOException {
+                                                      String orderBy,
+                                                      Class<T> type) throws IOException {
         //封装查询条件
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
@@ -170,8 +171,8 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
         if (!result.isSucceeded()) {
             throw new SearchException(SearchException.ExceptionCode.FIND_EXCEPTION, sql, result.getErrorMessage());
         }
-        List<ProductShowCaseDoc> showCaseDocList = result.getSourceAsObjectList(ProductShowCaseDoc.class, false);
-        Page<ProductShowCaseDoc> page = new Page(pageNum, pageSize);
+        List<T> showCaseDocList = result.getSourceAsObjectList(type, false);
+        Page<T> page = new Page<>(pageNum, pageSize);
         page.addAll(showCaseDocList);
         page.setTotal(result.getTotal());
         page.setOrderBy(orderBy);
