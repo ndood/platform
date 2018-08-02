@@ -17,6 +17,7 @@ import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.UserTechAuthService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import com.xiaoleilu.hutool.util.CollectionUtil;
 import com.xiaoleilu.hutool.util.RandomUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +48,7 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
     @Override
     public UserAutoReceiveOrder addAutoReceivingTech(Integer techAuthId, String remark) {
         UserAutoReceiveOrder userAutoReceiveOrder = userAutoReceiveOrderDao.findByTechIdIncludeDel(techAuthId);
-        if(userAutoReceiveOrder!=null){
+        if (userAutoReceiveOrder != null) {
             userAutoReceiveOrder.setDelFlag(Boolean.FALSE);
             userAutoReceiveOrder.setRemark(remark);
             userAutoReceiveOrder.setUserAutoSetting(Boolean.FALSE);
@@ -75,7 +76,6 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
         create(autoReceivingOrder);
         return autoReceivingOrder;
     }
-
 
 
     @Override
@@ -212,7 +212,8 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
         if (headList.size() <= length) {
             return headList;
         } else {
-            return headList.subList(0, length);
+            Set<String> headSet = RandomUtil.randomEleSet(headList, length);
+            return Lists.newArrayList(headSet);
         }
     }
 
