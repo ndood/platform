@@ -38,7 +38,7 @@ public class AutoSendOrderTask {
     /**
      * 自动派单
      */
-    @Scheduled(cron = "0 0/1 * * * ? ")  //cron接受cron表达式，根据cron表达式确定定时规则
+    @Scheduled(cron = "0/10 * * * * ? ")  //cron接受cron表达式，根据cron表达式确定定时规则
     public void autoCompleteOrder() {
         log.info("自动派单任务开始---");
         Setting setting = settingService.lastSettingType(SettingTypeEnum.AUTO_RECEIVE_ORDER_TIME.getType());

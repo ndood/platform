@@ -61,8 +61,7 @@
     </select>
 
 
-    <select id="findUserBySearch" resultMap="UserAutoReceiveOrderResultMap"
-            parameterType="com.fulu.game.core.entity.vo.searchVO.UserAutoOrderSearchVO">
+    <select id="findUserBySearch" resultType="java.lang.Integer" parameterType="com.fulu.game.core.entity.vo.searchVO.UserAutoOrderSearchVO">
         SELECT
         user_id
         FROM t_user_auto_receive_order
