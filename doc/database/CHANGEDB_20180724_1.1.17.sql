@@ -147,7 +147,6 @@ ALTER TABLE `t_user_tech_auth` ADD COLUMN `is_activate` tinyint(1)  DEFAULT NULL
 update t_user_tech_auth set is_activate = TRUE;
 
 
-
-
-
+-- 删除商品表多余的单位内容
+UPDATE `t_product` p SET `del_flag` = 1  WHERE p.`sales_mode_id` in (SELECT id FROM `t_sales_mode` WHERE `del_flag` =1)
 

@@ -50,7 +50,7 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
 
     @Override
     public UserAutoReceiveOrder addAutoReceivingTech(Integer techAuthId, String remark) {
-        UserAutoReceiveOrder userAutoReceiveOrder = userAutoReceiveOrderDao.findByIdIncludeDel(techAuthId);
+        UserAutoReceiveOrder userAutoReceiveOrder = userAutoReceiveOrderDao.findByTechIdIncludeDel(techAuthId);
         if(userAutoReceiveOrder!=null){
             userAutoReceiveOrder.setDelFlag(Boolean.FALSE);
             userAutoReceiveOrder.setRemark(remark);

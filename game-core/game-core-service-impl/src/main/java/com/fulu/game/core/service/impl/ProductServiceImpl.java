@@ -348,7 +348,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         userService.isCurrentUser(user.getId());
         //检查用户认证的状态
         userService.checkUserInfoAuthStatus(user.getId());
-
         Long expire = (long) (hour * 3600);
         List<Product> products = findEnabledProductByUser(user.getId());
         if (products.isEmpty()) {

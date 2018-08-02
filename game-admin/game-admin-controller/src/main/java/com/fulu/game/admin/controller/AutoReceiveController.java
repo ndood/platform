@@ -85,7 +85,7 @@ public class AutoReceiveController extends BaseController {
     @PostMapping(value = "tech/del")
     public Result delTech(@RequestParam(required = true) Integer techAuthId) {
         userAutoReceiveOrderService.delAutoReceivingTech(techAuthId);
-        return Result.success().msg("自动接单设置成功!");
+        return Result.success().msg("取消自动接单成功!");
     }
 
     /**

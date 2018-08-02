@@ -39,12 +39,12 @@
         </where>
     </select>
 
-    <select id="findByIdIncludeDel" parameterType="java.lang.Integer" resultMap="UserAutoReceiveOrderResultMap">
+    <select id="findByTechIdIncludeDel" parameterType="java.lang.Integer" resultMap="UserAutoReceiveOrderResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_user_auto_receive_order
         <where>
-            id = #{id}
+            tech_auth_id = #{techAuthId}
         </where>
     </select>
 
