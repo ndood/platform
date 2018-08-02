@@ -186,7 +186,6 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         return generateCoupon(couponGroup, userId, receiveTime, receiveIp);
     }
 
-
     /**
      * 给用户发放优惠券
      *

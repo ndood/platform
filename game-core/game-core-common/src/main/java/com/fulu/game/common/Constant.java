@@ -132,7 +132,7 @@ public interface Constant {
     /**
      * 上分新用户-优惠券兑换码
      */
-    String NEW_POINT_USER_COUPON_GROUP_REDEEM_CODE = "AAAA";
+    String NEW_POINT_USER_COUPON_GROUP_REDEEM_CODE = "FlPwSfZx1882";
 
     /**
      * 发放优惠券成功

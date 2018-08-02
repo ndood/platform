@@ -551,16 +551,14 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     @Override
     public PageInfo searchContent(int pageNum, int pageSize, String nickName) {
-        PageInfo page = null;
         try {
-            Page searchResult = productSearchComponent.findByNickName(pageNum, pageSize, nickName);
-            page = new PageInfo(searchResult);
+            Page<ProductShowCaseDoc> searchResult = productSearchComponent.findByNickName(pageNum, pageSize, nickName);
+            return new PageInfo<>(searchResult);
         } catch (Exception e) {
             log.error("查询出错:查询内容:{};", nickName);
             log.error("查询出错:", e);
-            page = new PageInfo();
         }
-        return page;
+        return new PageInfo();
     }
 
     /**
@@ -579,14 +577,19 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                                                            Integer pageNum,
                                                            Integer pageSize,
                                                            String orderBy) {
-        PageInfo page = null;
+        PageInfo<ProductShowCaseVO> pageInfo;
         try {
-            Page searchResult = productSearchComponent.searchShowCaseDoc(categoryId, gender, pageNum, pageSize, orderBy);
-            page = new PageInfo<ProductShowCaseVO>(searchResult);
+            long startTime = System.currentTimeMillis();
+            Page<ProductShowCaseVO> searchResult = productSearchComponent.searchShowCaseDoc(categoryId,
+                    gender, pageNum, pageSize, orderBy, ProductShowCaseVO.class);
+            pageInfo = new PageInfo<>(searchResult);
+            log.info("findProductShowCase查询es耗时{}", (float) (System.currentTimeMillis() - startTime) / 1000);
         } catch (Exception e) {
             log.error("ProductShowCase查询异常:", e);
             PageHelper.startPage(pageNum, pageSize, "create_time desc");
+            long startTime = System.currentTimeMillis();
             List<ProductShowCaseVO> showCaseVOS = productDao.findProductShowCase(categoryId, gender);
+            log.info("findProductShowCase查询db耗时{}", (float) (System.currentTimeMillis() - startTime) / 1000);
             for (ProductShowCaseVO showCaseVO : showCaseVOS) {
                 UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(showCaseVO.getUserId(), Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE);
                 showCaseVO.setNickName(userInfoVO.getNickName());
@@ -600,9 +603,10 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                 }
                 showCaseVO.setOnLine(isProductStartOrderReceivingStatus(showCaseVO.getId()));
             }
-            page = new PageInfo<ProductShowCaseVO>(showCaseVOS);
+            pageInfo = new PageInfo<>(showCaseVOS);
+            log.info("findProductShowCase查询db然后for耗时{}", (float) (System.currentTimeMillis() - startTime) / 1000);
         }
-        return page;
+        return pageInfo;
     }
 
     /**
