@@ -11,10 +11,12 @@ import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Advice;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.WxUserInfo;
 import com.fulu.game.core.service.AdviceService;
 import com.fulu.game.core.service.CouponService;
+import com.fulu.game.core.service.UserCommentService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.xiaoleilu.hutool.util.BeanUtil;
@@ -46,16 +48,20 @@ public class UserController extends BaseController {
     private final AdviceService adviceService;
     private final OssUtil ossUtil;
     private final CouponService couponService;
+    private final UserCommentService userCommentService;
 
     @Autowired
     public UserController(WxMaServiceSupply wxMaServiceSupply, RedisOpenServiceImpl redisOpenService,
-                          UserService userService, AdviceService adviceService, OssUtil ossUtil, CouponService couponService) {
+                          UserService userService, AdviceService adviceService, OssUtil ossUtil,
+                          CouponService couponService,
+                          UserCommentService userCommentService) {
         this.userService = userService;
         this.wxMaServiceSupply = wxMaServiceSupply;
         this.redisOpenService = redisOpenService;
         this.adviceService = adviceService;
         this.ossUtil = ossUtil;
         this.couponService = couponService;
+        this.userCommentService = userCommentService;
     }
 
     /**
@@ -217,5 +223,16 @@ public class UserController extends BaseController {
         }
         Advice advice = adviceService.addAdvice(content, contact, advicePicUrls);
         return Result.success().data(advice).msg("提交成功");
+    }
+
+
+    /**
+     * 用户-添加评价
+     * @return
+     */
+    @RequestMapping("/comment/save")
+    public Result save(UserCommentVO commentVO) {
+        userCommentService.save(commentVO);
+        return Result.success().msg("添加成功！");
     }
 }
