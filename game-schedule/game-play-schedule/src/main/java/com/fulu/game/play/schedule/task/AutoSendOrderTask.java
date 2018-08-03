@@ -42,12 +42,12 @@ public class AutoSendOrderTask {
     public void autoCompleteOrder() {
         log.info("自动派单任务开始---");
         Setting setting = settingService.lastSettingType(SettingTypeEnum.AUTO_RECEIVE_ORDER_TIME.getType());
-        long autoReveTime = Long.valueOf(setting.getVal());
+        long autoReveTimeSecond = Long.valueOf(setting.getVal())*60;
         Integer[] statusList = new Integer[]{OrderStatusEnum.WAIT_SERVICE.getStatus()};
         List<Order> orderList = orderService.findByStatusListAndType(statusList, OrderTypeEnum.POINT.getType());
         for (Order order : orderList) {
-            long minute = DateUtil.between(order.getCreateTime(), new Date(), DateUnit.MINUTE);
-            if(minute>autoReveTime){
+            long apartSecond = DateUtil.between(order.getCreateTime(), new Date(), DateUnit.SECOND);
+            if(apartSecond>autoReveTimeSecond){
                 User user = null;
                 try {
                     user = assignOrderService.getMatchUser(order);

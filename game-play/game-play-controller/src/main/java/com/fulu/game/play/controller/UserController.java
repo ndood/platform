@@ -201,15 +201,18 @@ public class UserController extends BaseController {
         User tempUser = userService.getCurrentUser();
         UserVO user = new UserVO();
         BeanUtil.copyProperties(tempUser, user);
-        WxMaUserInfo wxMaUserInfo;
+        WxMaUserInfo wxMaUserInfo =null;
         try {
             String sessionKey = redisOpenService.get(RedisKeyEnum.WX_SESSION_KEY.generateKey(SubjectUtil.getToken()));
-            wxMaUserInfo = wxMaServiceSupply.playWxMaService().getUserService().getUserInfo(sessionKey, wxUserInfo.getEncryptedData(), wxUserInfo.getIv());
+            if( wxUserInfo.getEncryptedData()!=null&&wxUserInfo.getIv()!=null){
+                wxMaUserInfo = wxMaServiceSupply.playWxMaService().getUserService().getUserInfo(sessionKey, wxUserInfo.getEncryptedData(), wxUserInfo.getIv());
+            }
         } catch (Exception e) {
             log.error("获取用户微信异常:wxUserInfo:{};{}", wxUserInfo, e.getMessage());
-            throw new UserException(UserException.ExceptionCode.SESSION_KEY_DISABLE_EXCEPTION);
         }
-        user.setUnionId(wxMaUserInfo.getUnionId());
+        if(wxMaUserInfo!=null){
+            user.setUnionId(wxMaUserInfo.getUnionId());
+        }
         if (user.getGender() == null) {
             user.setGender(wxUserInfo.getGender());
         }
@@ -230,7 +233,15 @@ public class UserController extends BaseController {
         }
         user.setUpdateTime(new Date());
         String ipStr = RequestUtil.getIpAdrress(request);
-        User resultUser = userService.updateUnionUser(user, WechatEcoEnum.PLAY, ipStr);
+
+        User resultUser = null;
+        if(user.getUnionId()==null){
+            userService.update(user);
+            userService.updateRedisUser(user);
+            resultUser = user;
+        }else{
+            resultUser = userService.updateUnionUser(user, WechatEcoEnum.PLAY, ipStr);
+        }
         return Result.success().data(resultUser);
     }
 

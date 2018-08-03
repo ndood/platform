@@ -38,10 +38,10 @@ public enum WechatTemplateMsgEnum {
 
     IM_MSG_PUSH(WechatEcoEnum.PLAY.getType(),PagePathEnum.IM_MSG.getPagePath(), WechatTemplateEnum.PLAY_LEAVE_MSG, "{}:{}"),
 
-    MARKET_ORDER_PUSH(WechatEcoEnum.POINT.getType(),PagePathEnum.ORDER_LIST_PAGE.getSfPath(), WechatTemplateEnum.POINT_LEAVE_MSG, "有新的{}订单，快来看看吧"), //接单路径
+    MARKET_ORDER_PUSH(WechatEcoEnum.POINT.getType(),PagePathEnum.POINT_ORDER_PAGE.getSfPath(), WechatTemplateEnum.POINT_LEAVE_MSG, "有新的{}订单，快来看看吧"), //接单路径
 
-    POINT_TOSERVICE_ORDER_RECEIVING(WechatEcoEnum.POINT.getType(),PagePathEnum.ORDER_LIST_PAGE.getSfPath(),WechatTemplateEnum.POINT_LEAVE_MSG,"系统为您派单了,快去处理吧,若10分钟未处理则自动取消订单并对您进行惩罚。"),//todo 上分订单路径
-    POINT_TOSE_ORDER_RECEIVING(WechatEcoEnum.POINT.getType(),PagePathEnum.ORDER_LIST_PAGE.getSfPath(),WechatTemplateEnum.POINT_LEAVE_MSG,"若陪玩师10分钟内未进行处理，订单取消。"),//todo 上分订单路径
+    POINT_TOSERVICE_ORDER_RECEIVING(WechatEcoEnum.POINT.getType(),PagePathEnum.ORDER_LIST_PAGE.getSfPath(),WechatTemplateEnum.POINT_LEAVE_MSG,"系统为您派单了,快去处理吧,若10分钟未处理则自动取消订单并对您进行惩罚。"),
+    POINT_TOSE_ORDER_RECEIVING(WechatEcoEnum.POINT.getType(),PagePathEnum.ORDER_LIST_PAGE.getSfPath(),WechatTemplateEnum.POINT_LEAVE_MSG,"若陪玩师10分钟内未进行处理，订单取消。"),
 
     POINT_REPLACE_TEMPLATE(WechatEcoEnum.POINT.getType(),"",WechatTemplateEnum.POINT_LEAVE_MSG,"");
 

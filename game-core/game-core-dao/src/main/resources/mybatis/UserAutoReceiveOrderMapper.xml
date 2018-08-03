@@ -50,19 +50,18 @@
     </select>
 
 
-
-
     <select id="findAll" resultMap="UserAutoReceiveOrderResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_user_auto_receive_order
         <where>
-           del_flag != TRUE
+            del_flag != TRUE
         </where>
     </select>
 
 
-    <select id="findUserBySearch" resultType="java.lang.Integer" parameterType="com.fulu.game.core.entity.vo.searchVO.UserAutoOrderSearchVO">
+    <select id="findUserBySearch" resultType="java.lang.Integer"
+            parameterType="com.fulu.game.core.entity.vo.searchVO.UserAutoOrderSearchVO">
         SELECT
         user_id
         FROM t_user_auto_receive_order
@@ -75,7 +74,7 @@
                 and (area_id = #{areaId} or area_id is null)
             </if>
             <if test="startRank != null">
-                and start_rank   &lt;= #{startRank}
+                and start_rank &lt;= #{startRank}
             </if>
             <if test="endRank != null">
                 and end_rank &gt;= #{endRank}
@@ -143,7 +142,9 @@
         </where>
     </select>
 
-    <select id="findAutoReceiveUserInfoAuthList" parameterType="com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO" resultType="com.fulu.game.core.entity.vo.UserAutoReceiveOrderVO">
+    <select id="findAutoReceiveUserInfoAuthList"
+            parameterType="com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO"
+            resultType="com.fulu.game.core.entity.vo.UserAutoReceiveOrderVO">
         SELECT
         auto.user_id,
         auto.user_auto_setting,
@@ -180,7 +181,8 @@
         </where>
     </delete>
 
-    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserAutoReceiveOrder">
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.UserAutoReceiveOrder">
         insert into
         t_user_auto_receive_order (user_id,tech_auth_id,category_id,area_id,start_rank,end_rank,remark,rank_ids,order_num,order_complete_num,order_cancel_num,order_dispute_num,user_auto_setting,del_flag,admin_id,admin_name,create_time,update_time)
         values
@@ -204,6 +206,10 @@
             </if>
 
             <if test="areaId != null">
+                area_id = #{areaId},
+            </if>
+
+            <if test="areaId == null">
                 area_id = #{areaId},
             </if>
 
@@ -266,4 +272,6 @@
             id = #{id}
         </where>
     </update>
+
+
 </mapper>

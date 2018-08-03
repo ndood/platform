@@ -78,6 +78,7 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
     }
 
 
+
     @Override
     public UserAutoReceiveOrder delAutoReceivingTech(Integer techAuthId) {
         UserAutoReceiveOrder userAutoReceiveOrder = findByTechId(techAuthId);

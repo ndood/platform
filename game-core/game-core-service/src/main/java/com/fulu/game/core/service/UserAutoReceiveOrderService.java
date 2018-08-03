@@ -26,6 +26,7 @@ public interface UserAutoReceiveOrderService extends ICommonService<UserAutoRece
     UserAutoReceiveOrder addAutoReceivingTech(Integer techAuthId, String remark);
 
 
+
     UserAutoReceiveOrder delAutoReceivingTech(Integer techAuthId);
 
 

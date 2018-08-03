@@ -25,4 +25,6 @@ public interface UserAutoReceiveOrderDao extends ICommonDao<UserAutoReceiveOrder
 
 
     UserAutoReceiveOrder findByTechIdIncludeDel(int techAuthId);
+
+
 }

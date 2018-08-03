@@ -20,6 +20,8 @@ public class PushMsgVO  extends PushMsg {
     //推送类型
     @NotNull(message = "[推送类型]字段不能为空")
     private Integer type;
+    @NotNull(message = "[平台类型]字段不能为空")
+    private Integer platform;
     //落地页
     @NotNull(message = "[落地页]字段不能为空")
     private String page;
