@@ -10,7 +10,8 @@ public class ParamsException extends BizException{
     @AllArgsConstructor
     @Getter
     public enum ExceptionCode{
-        PARAM_NULL_EXCEPTION (10001,"必要参数为空");
+        PARAM_NULL_EXCEPTION (10001,"必要参数为空"),
+        ILLEGAL_PARAM_EXCEPTION (10002,"非法参数");
         private int code;
         private String msg;
     }

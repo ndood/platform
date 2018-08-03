@@ -10,14 +10,17 @@ import com.fulu.game.core.dao.ArbitrationDetailsDao;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.OrderShareProfitDao;
 import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.vo.SourceOrderVO;
 import com.fulu.game.core.service.*;
 import com.xiaoleilu.hutool.date.DateUtil;
+import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 
 @Service
@@ -42,6 +45,8 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
     private ArbitrationDetailsDao arbitrationDetailsDao;
     @Autowired
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
 
     @Override
     public ICommonDao<OrderShareProfit, Integer> getDao() {
@@ -209,4 +214,33 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
         }
     }
 
+    @Override
+    public List<SourceOrderVO> getSourceOrderList(Integer userId) {
+        List<SourceOrderVO> orderVOList = orderShareProfitDao.getSourceOrderList(userId);
+        Integer sourceId = 0;
+        UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(userId);
+        if (userInfoAuth != null) {
+            sourceId = userInfoAuth.getSourceId();
+            if (sourceId == null) {
+                sourceId = 0;
+            }
+        }
+        if (CollectionUtil.isEmpty(orderVOList)) {
+            return null;
+        }
+        for (SourceOrderVO vo : orderVOList) {
+            if (vo.getServerMoney() == null) {
+                vo.setServerMoney(new BigDecimal(0));
+            }
+            if (vo.getCommissionMoney() == null) {
+                vo.setCommissionMoney(new BigDecimal(0));
+            }
+            if (sourceId.equals(31)) {
+                vo.setIsCurrentSourcePlayer(1);
+            } else {
+                vo.setIsCurrentSourcePlayer(0);
+            }
+        }
+        return orderVOList;
+    }
 }

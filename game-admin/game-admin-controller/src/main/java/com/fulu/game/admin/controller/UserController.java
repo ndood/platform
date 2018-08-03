@@ -24,8 +24,16 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+/**
+ * 用户Controller
+ *
+ * @author wangbin
+ * @date
+ */
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/user")
@@ -47,10 +55,12 @@ public class UserController extends BaseController {
     private UserTechAuthRejectService userTechAuthRejectService;
 
     /**
-     * 用户认证信息列表
-     * @param pageNum
-     * @param pageSize
-     * @return
+     * 陪玩师认证信息列表
+     *
+     * @param pageNum              页码
+     * @param pageSize             每页显示数据条数
+     * @param userInfoAuthSearchVO 查询条件VO
+     * @return 封装结果集
      */
     @PostMapping(value = "/info-auth/list")
     public Result userInfoAuthList(@RequestParam("pageNum") Integer pageNum,
@@ -58,6 +68,71 @@ public class UserController extends BaseController {
                                    UserInfoAuthSearchVO userInfoAuthSearchVO) {
         PageInfo<UserInfoAuthVO> pageInfo = userInfoAuthService.list(pageNum, pageSize, userInfoAuthSearchVO);
         return Result.success().data(pageInfo);
+    }
+
+    /**
+     * 给陪玩师增加外链来源
+     *
+     * @param userId   陪玩师用户id
+     * @param sourceId 来源id
+     * @return 封装结果集
+     */
+    @PostMapping(value = "/source/add")
+    public Result addSource(@RequestParam Integer userId, @RequestParam Integer sourceId) {
+        boolean flag = userInfoAuthService.addSource(userId, sourceId);
+        if (flag) {
+            return Result.success().msg("添加外链来源成功");
+        }
+        return Result.error().msg("添加外链来源失败");
+    }
+
+    /**
+     * 获取陪玩师是否在平台内的显示状态
+     *
+     * @param userId 陪玩师用户id
+     * @return 封装结果集
+     */
+    @PostMapping(value = "/platform/status")
+    public Result getPlatformShowStatus(@RequestParam Integer userId) {
+        Integer flag = userInfoAuthService.getPlatformShowStatus(userId);
+        if (flag == null) {
+            return Result.error().msg("无法获取显示状态");
+        }
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("showFlag", flag);
+        return Result.success().data(resultMap).msg("查询成功");
+    }
+
+    /**
+     * 设置陪玩师是否在平台内展示
+     *
+     * @param userId   陪玩师用户id
+     * @param showFlag 是否展示（0：否，1：是）
+     * @return 封装结果集
+     */
+    @PostMapping(value = "/platform/show")
+    public Result isPlatformShow(@RequestParam Integer userId, @RequestParam Integer showFlag) {
+        boolean flag = userInfoAuthService.isPlatformShow(userId, showFlag);
+        if (flag) {
+            return Result.success().msg("设置成功");
+        }
+        return Result.error().msg("设置失败");
+    }
+
+    /**
+     * 将陪玩师从CJ渠道去除掉
+     *
+     * @param userId   陪玩师id
+     * @param sourceId 来源id
+     * @return 封装结果集
+     */
+    @PostMapping("/source/remove")
+    public Result removeServiceUserFromCjSource(@RequestParam Integer userId, Integer sourceId) {
+        boolean flag = userInfoAuthService.removeServiceUserFromCjSource(userId, sourceId);
+        if (flag) {
+            return Result.success().msg("移除成功");
+        }
+        return Result.error().msg("移除失败");
     }
 
 
@@ -127,6 +202,7 @@ public class UserController extends BaseController {
 
     /**
      * 清除认证信息驳回状态
+     *
      * @param id
      * @return
      */
@@ -190,6 +266,7 @@ public class UserController extends BaseController {
 
     /**
      * 用户技能认证信息添加和修改
+     *
      * @param userTechAuthTO
      * @return
      */
@@ -274,7 +351,7 @@ public class UserController extends BaseController {
     public Result techAuthList(@RequestParam("pageNum") Integer pageNum,
                                @RequestParam("pageSize") Integer pageSize,
                                UserTechAuthSearchVO userTechAuthSearchVO) {
-        PageInfo<UserTechAuthVO> page = userTechAuthService.list(pageNum, pageSize,  userTechAuthSearchVO);
+        PageInfo<UserTechAuthVO> page = userTechAuthService.list(pageNum, pageSize, userTechAuthSearchVO);
         return Result.success().data(page);
     }
 
@@ -286,7 +363,7 @@ public class UserController extends BaseController {
      */
     @PostMapping(value = "/tech-auth/query")
     public Result techAuthInfo(Integer id) {
-        UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(id,null);
+        UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(id, null);
         return Result.success().data(userTechAuthVO);
     }
 

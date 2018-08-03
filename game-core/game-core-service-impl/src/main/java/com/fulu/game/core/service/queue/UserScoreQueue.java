@@ -16,9 +16,10 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * @Description: 用户积分队列
- * @Author: Gong ZeChun
- * @Date: 2018/7/17 12:00
+ * 用户积分队列
+ *
+ * @author Gong ZeChun
+ * @date 2018/7/17 12:00
  */
 @Component
 @Slf4j
@@ -59,12 +60,12 @@ public class UserScoreQueue implements Runnable {
         while (run.get()) {
             try {
                 UserScoreDetails details = userScoreQueue.poll();
-                if (details == null) {
+                if(details == null) {
                     Thread.sleep(300L);
                     continue;
                 }
                 process(details);
-            } catch (Exception e) {
+            }catch (Exception e){
                 log.error("修改用户积分队列异常", e);
             }
         }
@@ -74,6 +75,9 @@ public class UserScoreQueue implements Runnable {
 
     private void process(UserScoreDetails details) {
         try {
+            if (details == null) {
+                return;
+            }
             Integer userScore = userService.findUserScoreByUpdate(details.getUserId());
             if (userScore == null) {
                 userScore = 0;
@@ -86,6 +90,7 @@ public class UserScoreQueue implements Runnable {
             userService.update(user);
 
             details.setCreateTime(DateUtil.date());
+            details.setDescription(details.getDescription() + "，对应的userId： " + details.getUserId());
             userScoreDetailsDao.create(details);
             log.info("修改用户积分，userId:{}，修改后用户总积分:{}", details.getUserId(), user.getUserScore());
         } catch (Exception e) {

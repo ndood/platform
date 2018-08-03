@@ -29,23 +29,19 @@ public class Order implements Serializable {
     private String couponNo;
 
     //订单状态
-    @Excel(name = "订单状态", orderNum = "2", replace = {
-            "订单关闭_100",
+    @Excel(name = "订单状态", orderNum = "2", replace = {"订单关闭_100",
             "订单关闭_101",
             "订单关闭_102",
             "订单关闭_110",
             "订单关闭_160",
-
             "待付款_200",
             "等待陪玩_210",
             "等待陪玩_213",
             "陪玩中_220",
             "等待验收_300",
-
-            "协商中 350",
-            "协商拒绝 352",
-            "协商取消 354",
-
+            "协商中_350",
+            "协商拒绝_352",
+            "协商取消_354",
             "仲裁中_400",
             "仲裁中_401",
             "仲裁完成:老板胜诉_410",
@@ -54,7 +50,7 @@ public class Order implements Serializable {
             "仲裁完成:协商处理_420",
             "待评价_500",
             "待评价_501",
-            "仲裁完成:陪玩师胜诉 502",
+            "仲裁完成:陪玩师胜诉_502",
             "已评价_600"}, width = 15)
     private Integer status;
 

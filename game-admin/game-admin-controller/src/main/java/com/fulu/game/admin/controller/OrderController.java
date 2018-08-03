@@ -10,11 +10,13 @@ import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderStatusDetailsVO;
 import com.fulu.game.core.entity.vo.OrderVO;
+import com.fulu.game.core.entity.vo.SourceOrderVO;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
-import com.fulu.game.core.service.OrderEventService;
 import com.fulu.game.core.service.OrderService;
+import com.fulu.game.core.service.OrderShareProfitService;
 import com.github.pagehelper.PageInfo;
+import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -34,10 +36,14 @@ import java.util.List;
 @RequestMapping("/api/v1/order")
 public class OrderController extends BaseController {
 
+    private final OrderService orderService;
+    private final OrderShareProfitService orderShareProfitService;
+
     @Autowired
-    private OrderService orderService;
-    @Autowired
-    private OrderEventService orderEventService;
+    public OrderController(OrderService orderService, OrderShareProfitService orderShareProfitService) {
+        this.orderService = orderService;
+        this.orderShareProfitService = orderShareProfitService;
+    }
 
     /**
      * 管理员-订单列表
@@ -174,6 +180,21 @@ public class OrderController extends BaseController {
             return Result.error().data(voList).msg("无仲裁详情数据！");
         }
         return Result.success().data(voList).msg("获取仲裁详情成功!");
+    }
+
+    /**
+     * 获取外链来源订单汇总列表
+     *
+     * @param userId 用户id
+     * @return 封装结果集
+     */
+    @PostMapping("/admin/source-order")
+    public Result getSourceOrderList(@RequestParam Integer userId) {
+        List<SourceOrderVO> orderVOList = orderShareProfitService.getSourceOrderList(userId);
+        if (CollectionUtil.isEmpty(orderVOList)) {
+            return Result.error().msg("无数据");
+        }
+        return Result.success().data(orderVOList).msg("获取外链来源订单汇总列表成功");
     }
 
     /**

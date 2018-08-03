@@ -15,6 +15,7 @@ public interface RegistSourceService extends ICommonService<RegistSource, Intege
 
     /**
      * 新增注册来源
+     *
      * @param name
      * @param remark
      * @return
@@ -24,25 +25,51 @@ public interface RegistSourceService extends ICommonService<RegistSource, Intege
 
     /**
      * 修改注册来源
+     *
      * @param id
      * @param name
      * @param remark
      * @return
      */
-    RegistSource update(Integer id,String name, String remark);
+    RegistSource update(Integer id, String name, String remark);
 
     /**
      * 参数查询
+     *
      * @param rsVO
      * @return
      */
     List<RegistSource> findByParam(RegistSourceVO rsVO);
 
     /**
+     * 查询Cj（China Joy）活动的注册来源
+     *
+     * @return 注册来源Bean
+     */
+    RegistSource findCjRegistSource();
+
+    /**
+     * 通过主键id查询注册来源
+     *
+     * @param id 主键id
+     * @return 注册来源Bean
+     */
+    RegistSource findById(Integer id);
+
+    /**
      * 查询列表带统计结果
+     *
      * @param pageNum
      * @param pageSize
      * @return
      */
     PageInfo<RegistSourceVO> listWithCount(Integer pageNum, Integer pageSize);
+
+    /**
+     * 根据注册名称查询注册来源
+     *
+     * @param name 注册来源名称
+     * @return 注册来源Bean
+     */
+    RegistSource findByName(String name);
 }

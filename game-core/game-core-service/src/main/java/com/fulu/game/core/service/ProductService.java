@@ -4,6 +4,10 @@ import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.SalesMode;
 import com.fulu.game.core.entity.vo.*;
+import com.fulu.game.core.entity.vo.ProductDetailsVO;
+import com.fulu.game.core.entity.vo.ProductShowCaseVO;
+import com.fulu.game.core.entity.vo.ProductVO;
+import com.fulu.game.core.entity.vo.SimpleProductVO;
 import com.github.pagehelper.PageInfo;
 
 import java.math.BigDecimal;
@@ -141,6 +145,19 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * @return
      */
     PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId,Integer gender,Integer pageNum,Integer pageSize,String orderBy);
+
+    /**
+     * 查询CJ首页商品橱窗
+     *
+     * @param categoryId 分类id
+     * @param gender     性别
+     * @param pageNum    页码
+     * @param pageSize   每页显示数据条数
+     * @param orderBy    排序字符串
+     * @return 封装分页结果集
+     */
+    PageInfo<ProductShowCaseVO> findCjProductShowCase(Integer categoryId, Integer gender, Integer pageNum,
+                                                      Integer pageSize, String orderBy);
 
     /**
      * 通过昵称查找商品

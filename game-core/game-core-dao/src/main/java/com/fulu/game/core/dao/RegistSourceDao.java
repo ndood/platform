@@ -17,4 +17,17 @@ public interface RegistSourceDao extends ICommonDao<RegistSource, Integer> {
 
     List<RegistSourceVO> listWithCount();
 
+    /**
+     * 查询CJ的注册来源详情
+     *
+     * @return 注册来源Bean
+     */
+    RegistSource findCjRegistSource();
+
+    /**
+     * 根据名称查询注册来源
+     *
+     * @return 注册名称
+     */
+    RegistSource findByName(String name);
 }

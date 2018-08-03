@@ -16,6 +16,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.xiaoleilu.hutool.util.BeanUtil;
+import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -125,7 +126,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             throw new ServiceErrorException("在线技能不允许修改!");
         }
         Product product = findById(id);
-        if (product == null) {
+        if(product==null){
             throw new ProductException(ProductException.ExceptionCode.PRODUCT_REVIEW_ING);
         }
         userService.isCurrentUser(product.getUserId());
@@ -425,23 +426,23 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         int orderCount = orderService.allOrderCount(userInfo.getUserId());
         //查询用户段位信息
         ProductDetailsVO productDetailsVO = ProductDetailsVO.builder()
-                .categoryId(product.getCategoryId())
-                .id(product.getId())
-                .onLine(isProductStartOrderReceivingStatus(product.getId()))
-                .description(userTechAuth.getDescription())
-                .productName(product.getProductName())
-                .categoryIcon(product.getCategoryIcon())
-                .price(product.getPrice())
-                .unit(product.getUnit())
-                .techAuthId(product.getTechAuthId())
-                .userInfo(userInfo)
-                .orderCount(orderCount)
-                .techTags(techTags)
-                .otherProduct(productVOList)
-                .build();
+                                        .categoryId(product.getCategoryId())
+                                        .id(product.getId())
+                                        .onLine(isProductStartOrderReceivingStatus(product.getId()))
+                                        .description(userTechAuth.getDescription())
+                                        .productName(product.getProductName())
+                                        .categoryIcon(product.getCategoryIcon())
+                                        .price(product.getPrice())
+                                        .unit(product.getUnit())
+                                        .techAuthId(product.getTechAuthId())
+                                        .userInfo(userInfo)
+                                        .orderCount(orderCount)
+                                        .techTags(techTags)
+                                        .otherProduct(productVOList)
+                                        .build();
 
         UserTechInfo userTechInfo = userTechAuthService.findDanInfo(product.getTechAuthId());
-        if (userTechInfo != null) {
+        if(userTechInfo!=null){
             productDetailsVO.setDan(userTechInfo.getValue());
         }
         return productDetailsVO;
@@ -541,7 +542,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 搜索商品
-     *
      * @param pageNum
      * @param pageSize
      * @param nickName
@@ -571,26 +571,29 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * @return
      */
     @Override
-    public PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId,
-                                                           Integer gender,
-                                                           Integer pageNum,
-                                                           Integer pageSize,
-                                                           String orderBy) {
-        PageInfo<ProductShowCaseVO> pageInfo;
+    public PageInfo findProductShowCase(Integer categoryId,
+                                        Integer gender,
+                                        Integer pageNum,
+                                        Integer pageSize,
+                                        String orderBy) {
+        PageInfo page = null;
         try {
-            long startTime = System.currentTimeMillis();
-            Page<ProductShowCaseVO> searchResult = productSearchComponent.searchShowCaseDoc(categoryId,
-                    gender, pageNum, pageSize, orderBy, ProductShowCaseVO.class);
-            pageInfo = new PageInfo<>(searchResult);
-            log.info("findProductShowCase查询es耗时{}", (float) (System.currentTimeMillis() - startTime) / 1000);
+            List<UserInfoAuth> userInfoAuthList = userInfoAuthService.findPlatformNotShowUserInfoAuth();
+            List<String> userIdList = new ArrayList<>();
+            if (CollectionUtil.isNotEmpty(userInfoAuthList)) {
+                for (UserInfoAuth meta : userInfoAuthList) {
+                    userIdList.add(meta.getUserId().toString());
+                }
+            }
+            Page searchResult = productSearchComponent.searchShowCaseDoc(categoryId, gender, pageNum, pageSize,
+                    orderBy, userIdList);
+            page = new PageInfo(searchResult);
         } catch (Exception e) {
             log.error("ProductShowCase查询异常:", e);
             PageHelper.startPage(pageNum, pageSize, "create_time desc");
-            long startTime = System.currentTimeMillis();
             List<ProductShowCaseVO> showCaseVOS = productDao.findProductShowCase(categoryId, gender);
-            log.info("findProductShowCase查询db耗时{}", (float) (System.currentTimeMillis() - startTime) / 1000);
             for (ProductShowCaseVO showCaseVO : showCaseVOS) {
-                UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(showCaseVO.getUserId(), Boolean.FALSE, Boolean.FALSE, Boolean.TRUE, Boolean.FALSE);
+                UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(showCaseVO.getUserId(), false, false, true, false);
                 showCaseVO.setNickName(userInfoVO.getNickName());
                 showCaseVO.setGender(userInfoVO.getGender());
                 showCaseVO.setMainPhoto(userInfoVO.getMainPhotoUrl());
@@ -602,10 +605,61 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                 }
                 showCaseVO.setOnLine(isProductStartOrderReceivingStatus(showCaseVO.getId()));
             }
-            pageInfo = new PageInfo<>(showCaseVOS);
-            log.info("findProductShowCase查询db然后for耗时{}", (float) (System.currentTimeMillis() - startTime) / 1000);
+            page = new PageInfo(showCaseVOS);
         }
-        return pageInfo;
+        return page;
+    }
+
+    /**
+     * CJ首页商品首页和列表页
+     *
+     * @param categoryId
+     * @param gender
+     * @param pageNum
+     * @param pageSize
+     * @param orderBy
+     * @return
+     */
+    @Override
+    public PageInfo findCjProductShowCase(Integer categoryId,
+                                          Integer gender,
+                                          Integer pageNum,
+                                          Integer pageSize,
+                                          String orderBy) {
+        PageInfo page = null;
+        try {
+            List<UserInfoAuth> userInfoAuthList = userInfoAuthService.findAllCjUsers();
+            List<String> userIdList = new ArrayList<>();
+            if (CollectionUtil.isNotEmpty(userInfoAuthList)) {
+                for (UserInfoAuth meta : userInfoAuthList) {
+                    userIdList.add(meta.getUserId().toString());
+                }
+            }
+
+            Page searchResult = productSearchComponent.searchCjShowCaseDoc(categoryId,
+                    gender, pageNum, pageSize, orderBy, userIdList);
+            page = new PageInfo(searchResult);
+
+        } catch (Exception e) {
+            log.error("ProductShowCase查询异常:", e);
+            PageHelper.startPage(pageNum, pageSize, "create_time desc");
+            List<ProductShowCaseVO> showCaseVOS = productDao.findProductShowCase(categoryId, gender);
+            for (ProductShowCaseVO showCaseVO : showCaseVOS) {
+                UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(showCaseVO.getUserId(), false, false, true, false);
+                showCaseVO.setNickName(userInfoVO.getNickName());
+                showCaseVO.setGender(userInfoVO.getGender());
+                showCaseVO.setMainPhoto(userInfoVO.getMainPhotoUrl());
+                showCaseVO.setCity(userInfoVO.getCity());
+                showCaseVO.setPersonTags(userInfoVO.getTags());
+                UserTechInfo userTechInfo = userTechAuthService.findDanInfo(showCaseVO.getTechAuthId());
+                if (userTechInfo != null) {
+                    showCaseVO.setDan(userTechInfo.getValue());
+                }
+                showCaseVO.setOnLine(isProductStartOrderReceivingStatus(showCaseVO.getId()));
+            }
+            page = new PageInfo(showCaseVOS);
+        }
+        return page;
     }
 
     /**
@@ -614,7 +668,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * @param products (每个用户的所有商品集合)
      */
     private void batchUpdateProductIndex(List<Product> products) {
-        if (products.isEmpty()) {
+        if(products.isEmpty()){
             return;
         }
         List<Product> showIndexProducts = getShowIndexProduct(products);
@@ -629,7 +683,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 查询那些可以在首页显示的商品
-     *
      * @param products
      * @return
      */
@@ -662,7 +715,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 保存商品索引
-     *
      * @param product
      * @param isIndexShow
      * @return

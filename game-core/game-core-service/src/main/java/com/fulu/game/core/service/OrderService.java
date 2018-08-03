@@ -47,24 +47,21 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 向陪玩师推送消息
-     *
      * @param order
      * @param wechatTemplateMsgEnum
      */
-    void pushToServiceOrderWxMessage(Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum);
+    void pushToServiceOrderWxMessage(Order order,WechatTemplateMsgEnum wechatTemplateMsgEnum);
 
     /**
      * 向用户推送消息
-     *
      * @param order
      * @param wechatTemplateMsgEnum
      */
-    void pushToUserOrderWxMessage(Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum);
+    void pushToUserOrderWxMessage(Order order,WechatTemplateMsgEnum wechatTemplateMsgEnum);
 
 
     /**
      * 管理员订单列表
-     *
      * @param orderSearchVO
      * @param pageNum
      * @param pageSize
@@ -143,7 +140,6 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 陪玩师接收订单
-     *
      * @param orderNo
      * @return
      */
@@ -176,7 +172,6 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 获取协商详情
-     *
      * @param orderNo
      * @return
      */
@@ -184,7 +179,6 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 获取仲裁详情
-     *
      * @param orderNo
      * @return
      */
@@ -203,7 +197,6 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 陪玩师同样协商订单
-     *
      * @param orderNo
      * @param orderEventId
      * @return
@@ -213,7 +206,6 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 取消协商
-     *
      * @param orderNo
      * @param orderEventId
      * @return
@@ -222,7 +214,6 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 系统处理拒绝协商订单
-     *
      * @param orderNo
      * @return
      */
@@ -230,7 +221,6 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 系统处理协商中超时订单
-     *
      * @param orderNo
      * @return
      */
@@ -238,7 +228,6 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 陪玩师取消订单
-     *
      * @param orderNo
      * @return
      */
@@ -274,6 +263,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
      * @return
      */
     String userAppealOrder(String orderNo, String remark, String... fileUrl);
+
 
 
     /**
@@ -377,7 +367,6 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 用户所有完成订单数
-     *
      * @param serverId
      * @return
      */
@@ -385,7 +374,6 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
     /**
      * 留言
-     *
      * @param orderNo
      * @param eventId
      * @param remark

@@ -17,6 +17,11 @@ public class UserInfoAuthSearchVO {
     private Integer endAge;
     private String orderBy;
     private Boolean userAutoSetting;
+    /**
+     * 外链id
+     */
+    private Integer sourceId;
+    private Integer isPlatformShow;
 
 
     public String getOrderBy() {

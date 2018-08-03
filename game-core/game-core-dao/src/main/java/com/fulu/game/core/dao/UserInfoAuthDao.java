@@ -23,4 +23,10 @@ public interface UserInfoAuthDao extends ICommonDao<UserInfoAuth, Integer> {
 
     List<UserInfoAuth> findByUserIds(@Param(value = "userIds") List<Integer> userIds);
 
+    /**
+     * 根据userId更新用户认证信息
+     * @param userInfoAuth 用户认证信息bean
+     * @return 数据库返回操作结果
+     */
+    int updateByUserId(UserInfoAuth userInfoAuth);
 }
