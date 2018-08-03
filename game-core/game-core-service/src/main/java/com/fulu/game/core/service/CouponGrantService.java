@@ -16,7 +16,7 @@ import java.util.List;
 public interface CouponGrantService extends ICommonService<CouponGrant,Integer>{
 
 
-     void create(String redeemCode,List<String> mobiles,String remark);
+     void create(String redeemCode,List<String> userIds,String remark);
 
      PageInfo<CouponGrant> list(Integer pageNum,Integer pageSize, String orderBy);
 }

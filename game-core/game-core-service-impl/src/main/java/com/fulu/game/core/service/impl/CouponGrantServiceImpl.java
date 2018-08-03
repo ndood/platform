@@ -42,7 +42,7 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant, Intege
     }
 
     @Override
-    public void create(String redeemCode, List<String> mobiles, String remark) {
+    public void create(String redeemCode, List<String> userIds, String remark) {
         Admin admin = adminService.getCurrentUser();
         CouponGroup couponGroup = couponGroupService.findByRedeemCode(redeemCode);
         if (couponGroup == null) {
@@ -65,7 +65,7 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant, Intege
         couponGrant.setAdminName(admin.getName());
         couponGrantService.create(couponGrant);
         //优惠券发放用户
-        grantCoupon2User(couponGrant, mobiles);
+        grantCoupon2User(couponGrant, userIds);
     }
 
 
@@ -82,17 +82,18 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant, Intege
 
     //优惠券发放用户
     @Transactional
-    public void grantCoupon2User(CouponGrant couponGrant, List<String> mobiles) {
+    public void grantCoupon2User(CouponGrant couponGrant, List<String> userIds) {
         String redeemCode = couponGrant.getRedeemCode();
-        for (String mobile : mobiles) {
-            User user = userService.findByMobile(mobile);
+        for (String userIdStr : userIds) {
+            Integer userId = Integer.valueOf(userIdStr);
+            User user = userService.findById(userId);
             if (user == null) {
-                couponGrantUserService.create(null, couponGrant.getId(), null, mobile, Boolean.FALSE, "用户不存在!");
+                couponGrantUserService.create(null, couponGrant.getId(), userId, null, Boolean.FALSE, "用户不存在!");
                 continue;
             }
             try {
                 Coupon coupon = couponService.generateCoupon(redeemCode, user.getId(), new Date(), null);
-                couponGrantUserService.create(coupon.getCouponNo(), couponGrant.getId(), user.getId(), mobile, true, null);
+                couponGrantUserService.create(coupon.getCouponNo(), couponGrant.getId(), user.getId(), null, true, null);
             } catch (CouponException e) {
                 String errorCause = "没有可用优惠券!";
                 switch (e.getExceptionCode()) {
@@ -114,7 +115,7 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant, Intege
                     default:
                         break;
                 }
-                couponGrantUserService.create(null, couponGrant.getId(), user.getId(), mobile, false, errorCause);
+                couponGrantUserService.create(null, couponGrant.getId(), user.getId(), null, false, errorCause);
             }
         }
     }

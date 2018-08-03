@@ -123,21 +123,20 @@ public class CouponController extends BaseController {
 
     /**
      * 优惠券发放
-     *
      * @param redeemCode
-     * @param mobiles
+     * @param userIds
      * @param remark
      * @return
      */
     @PostMapping(value = "/grant")
     public Result couponGrant(@RequestParam(required = true) String redeemCode,
-                              @RequestParam(required = true) String mobiles,
+                              @RequestParam(required = true) String userIds,
                               @RequestParam(required = true) String remark) {
-        if (StringUtils.isBlank(mobiles)) {
-            return Result.error().msg("手机号不能为空");
+        if (StringUtils.isBlank(userIds)) {
+            return Result.error().msg("用户ID不能为空");
         }
-        List<String> mobileList = Arrays.asList(mobiles.split(","));
-        couponGrantService.create(redeemCode, mobileList, remark);
+        List<String> userIdList = Arrays.asList(userIds.split(","));
+        couponGrantService.create(redeemCode, userIdList, remark);
         return Result.success().msg("优惠券发放完成，发放失败用户请查看明细!");
     }
 
