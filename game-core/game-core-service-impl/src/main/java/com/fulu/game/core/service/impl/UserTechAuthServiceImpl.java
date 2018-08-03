@@ -81,7 +81,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuthTO.setCategoryName(category.getName());
         userTechAuthTO.setUpdateTime(new Date());
         userTechAuthTO.setApproveCount(0);
-        userTechAuthTO.setIsActivate(true);
+        userTechAuthTO.setIsActivate(false);
         if (userTechAuthTO.getId() == null){
             //查询是否有重复技能
             List<UserTechAuth> userTechAuthes = findByCategoryAndUser(userTechAuthTO.getCategoryId(), userTechAuthTO.getUserId());

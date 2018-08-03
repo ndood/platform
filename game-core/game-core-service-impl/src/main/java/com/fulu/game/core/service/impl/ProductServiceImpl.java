@@ -571,12 +571,12 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * @return
      */
     @Override
-    public PageInfo findProductShowCase(Integer categoryId,
+    public PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId,
                                         Integer gender,
                                         Integer pageNum,
                                         Integer pageSize,
                                         String orderBy) {
-        PageInfo page = null;
+        PageInfo<ProductShowCaseVO> page = null;
         try {
             List<UserInfoAuth> userInfoAuthList = userInfoAuthService.findPlatformNotShowUserInfoAuth();
             List<String> userIdList = new ArrayList<>();
@@ -585,9 +585,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                     userIdList.add(meta.getUserId().toString());
                 }
             }
-            Page searchResult = productSearchComponent.searchShowCaseDoc(categoryId, gender, pageNum, pageSize,
-                    orderBy, userIdList);
-            page = new PageInfo(searchResult);
+            Page<ProductShowCaseVO> searchResult = productSearchComponent.searchShowCaseDoc(categoryId, gender, pageNum, pageSize, orderBy,ProductShowCaseVO.class, userIdList);
+            page = new PageInfo<ProductShowCaseVO>(searchResult);
         } catch (Exception e) {
             log.error("ProductShowCase查询异常:", e);
             PageHelper.startPage(pageNum, pageSize, "create_time desc");
@@ -605,7 +604,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                 }
                 showCaseVO.setOnLine(isProductStartOrderReceivingStatus(showCaseVO.getId()));
             }
-            page = new PageInfo(showCaseVOS);
+            page = new PageInfo<ProductShowCaseVO>(showCaseVOS);
         }
         return page;
     }

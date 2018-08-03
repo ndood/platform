@@ -154,4 +154,7 @@ UPDATE `t_wechat_formid` as f SET `open_id` = (SELECT `open_id` FROM `t_user` as
 
 UPDATE `t_product` p SET `del_flag` = 1  WHERE p.`sales_mode_id` in (SELECT id FROM `t_sales_mode` WHERE `del_flag` =1)
 
+--添加新单位
+insert `t_sales_mode`(`category_id`,`type`,`name`,`price`,`rank`,`create_time`,`update_time`,`del_flag`) values(30,2,'局','1',100,'2018-08-03 15:42:30','2018-08-03 15:42:32',0);
+
 --- 未更新脚本
