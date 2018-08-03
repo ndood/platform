@@ -1,6 +1,5 @@
 package com.fulu.game.core.service.impl;
 
-import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ProductException;
@@ -35,6 +34,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.fulu.game.common.enums.OrderStatusEnum.NON_PAYMENT;
+import static java.math.BigDecimal.ROUND_HALF_DOWN;
 
 @Service
 @Slf4j
@@ -242,8 +242,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     }
 
 
-
-
     /**
      * 上分订单抢单
      *
@@ -253,8 +251,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     @Override
     public String receivePointOrder(String orderNo, User serviceUser) {
         Order order = findByOrderNo(orderNo);
-        if(order.getUserId().equals(serviceUser.getId())){
-            throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_ROB_MYSELF,orderNo);
+        if (order.getUserId().equals(serviceUser.getId())) {
+            throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_ROB_MYSELF, orderNo);
         }
         log.info("陪玩师抢单:userId:{};order:{}", serviceUser.getId(), order);
         if (!OrderTypeEnum.POINT.getType().equals(order.getType())) {
@@ -1432,7 +1430,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return orderConvertVo(order);
     }
 
-
+    @Override
     public List<Order> findByStatusList(Integer[] statusList) {
         if (statusList == null) {
             return new ArrayList<>();
@@ -1478,6 +1476,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         }
     }
 
+    @Override
     public Order findByOrderNo(String orderNo) {
         if (orderNo == null) {
             return null;
@@ -1546,10 +1545,12 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
         Integer orderCancelNum = autoReceiveOrder.getOrderCancelNum();
         Integer orderDisputeNum = autoReceiveOrder.getOrderDisputeNum();
-        Integer orderCompleteNum = autoReceiveOrder.getOrderCompleteNum();
+        Integer orderNum = autoReceiveOrder.getOrderNum();
         BigDecimal orderFailureRate = new BigDecimal(0);
-        if (orderCancelNum != null && orderDisputeNum != null && orderCompleteNum != null && orderCompleteNum != 0) {
-            orderFailureRate = new BigDecimal((orderCancelNum + orderDisputeNum) / orderCompleteNum);
+        if (orderCancelNum != null && orderDisputeNum != null && orderNum != null && orderNum != 0) {
+            orderFailureRate = new BigDecimal(orderCancelNum)
+                    .add(new BigDecimal(orderDisputeNum))
+                    .divide(new BigDecimal(orderNum), 2, ROUND_HALF_DOWN);
         }
 
         UserAutoReceiveOrderVO resultVo = new UserAutoReceiveOrderVO();
