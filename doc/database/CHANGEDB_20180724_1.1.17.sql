@@ -142,7 +142,16 @@ update t_product set is_activate = TRUE;
 ALTER TABLE `t_user_tech_auth` ADD COLUMN `is_activate` tinyint(1)  DEFAULT NULL COMMENT '是否激活' after `status`;
 update t_user_tech_auth set is_activate = FALSE;
 
+--修改发放优惠券接口
+ALTER TABLE `t_coupon_grant_user` 	MODIFY COLUMN `mobile` varchar(255)  NULL COMMENT '发放手机号';
 
--- 删除商品表多余的单位内容
+
+
+--- 未更新脚本
+
+UPDATE `t_wechat_formid` as f SET `open_id` = (SELECT `open_id` FROM `t_user` as u WHERE u.`id` =f.`user_id` ),`platform` =1;
+-- 删除商品表多余的单位内容(修改技能单位后操作)
+
 UPDATE `t_product` p SET `del_flag` = 1  WHERE p.`sales_mode_id` in (SELECT id FROM `t_sales_mode` WHERE `del_flag` =1)
 
+--- 未更新脚本
