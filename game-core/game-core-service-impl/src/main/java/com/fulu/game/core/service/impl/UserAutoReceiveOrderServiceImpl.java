@@ -245,11 +245,4 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
         }
         return voList;
     }
-
-    public static void main(String[] args) {
-        Integer[] strArr = {1, 2, 3};
-        List<Integer> list = Lists.newArrayList(strArr);
-        Set<Integer> xx = RandomUtil.randomEleSet(list, 4);
-        System.out.println(xx);
-    }
 }
