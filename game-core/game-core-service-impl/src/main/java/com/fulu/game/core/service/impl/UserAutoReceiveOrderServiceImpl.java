@@ -20,6 +20,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.xiaoleilu.hutool.util.CollectionUtil;
 import com.xiaoleilu.hutool.util.RandomUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
+@Slf4j
 public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoReceiveOrder, Integer> implements UserAutoReceiveOrderService {
 
     @Autowired
@@ -76,7 +78,6 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
         create(autoReceivingOrder);
         return autoReceivingOrder;
     }
-
 
 
     @Override
@@ -202,19 +203,19 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
         for (UserAutoReceiveOrder receiveOrder : allUserAutoReceiveOrder) {
             userIds.add(receiveOrder.getUserId());
         }
-        List<String> headList = new ArrayList<>();
+        Set<String> headSet = new HashSet<>();
         List<Integer> userIdList = new ArrayList<>(userIds);
         List<User> userList = userService.findByUserIds(userIdList, Boolean.TRUE);
         for (User user : userList) {
-            headList.add(user.getHeadPortraitsUrl());
+            headSet.add(user.getHeadPortraitsUrl());
         }
 
         int length = RandomUtil.randomInt(Constant.MIN_USER_HEAD_COUNT, Constant.MAX_USER_HEAD_COUNT + 1);
-        if (headList.size() <= length) {
-            return headList;
-        } else {
-            Set<String> headSet = RandomUtil.randomEleSet(headList, length);
+        if (headSet.size() <= length) {
             return Lists.newArrayList(headSet);
+        } else {
+            Set<String> resultHeadSet = RandomUtil.randomEleSet(headSet, length);
+            return Lists.newArrayList(resultHeadSet);
         }
     }
 
@@ -243,5 +244,12 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
             return null;
         }
         return voList;
+    }
+
+    public static void main(String[] args) {
+        Integer[] strArr = {1, 2, 3};
+        List<Integer> list = Lists.newArrayList(strArr);
+        Set<Integer> xx = RandomUtil.randomEleSet(list, 4);
+        System.out.println(xx);
     }
 }
