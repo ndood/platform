@@ -156,5 +156,9 @@ UPDATE `t_product` p SET `del_flag` = 1  WHERE p.`sales_mode_id` in (SELECT id F
 
 --添加新单位
 insert `t_sales_mode`(`category_id`,`type`,`name`,`price`,`rank`,`create_time`,`update_time`,`del_flag`) values(30,2,'局','1',100,'2018-08-03 15:42:30','2018-08-03 15:42:32',0);
+insert `t_sales_mode`(`category_id`,`type`,`name`,`price`,`rank`,`create_time`,`update_time`,`del_flag`) values(31,2,'局','1',100,'2018-08-03 15:42:30','2018-08-03 15:42:32',0);
+insert `t_sales_mode`(`category_id`,`type`,`name`,`price`,`rank`,`create_time`,`update_time`,`del_flag`) values(32,2,'局','1',100,'2018-08-03 15:42:30','2018-08-03 15:42:32',0);
+insert `t_sales_mode`(`category_id`,`type`,`name`,`price`,`rank`,`create_time`,`update_time`,`del_flag`) values(33,2,'局','1',100,'2018-08-03 15:42:30','2018-08-03 15:42:32',0);
+insert `t_sales_mode`(`category_id`,`type`,`name`,`price`,`rank`,`create_time`,`update_time`,`del_flag`) values(41,2,'局','1',100,'2018-08-03 15:42:30','2018-08-03 15:42:32',0);
 
 --- 未更新脚本

@@ -214,6 +214,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         userTechAuth.setUpdateTime(new Date());
         userTechAuthService.update(userTechAuth);
         List<Product> products = findByTechId(techId);
+        if(status&&products.isEmpty()){
+            throw new ServiceErrorException("必须先填写价格才能激活!");
+        }
         for (Product product : products) {
             enable(product, status);
         }
@@ -328,11 +331,11 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         productDao.recoverProductActivate(productId);
     }
 
-
     public void recoverProductActivateByTechAuthId(Integer techAuthId) {
         log.info("通过techAuthId恢复商品删除状态:techAuthId:{}", techAuthId);
         productDao.recoverProductActivateByTechAuthId(techAuthId);
     }
+
 
     @Override
     public int updateProductSalesModel(SalesMode salesMode) {
@@ -772,6 +775,10 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * 删除该技能下的所有商品
      */
     public void disabledProductByTech(Integer techAuthId) {
+        UserTechAuth userTechAuth = userTechAuthService.findById(techAuthId);
+        userTechAuth.setIsActivate(false);
+        userTechAuth.setUpdateTime(new Date());
+        userTechAuthService.update(userTechAuth);
         log.info("删除技能下所有商品techAuthId:{}", techAuthId);
         List<Product> productList = findProductByTech(techAuthId);
         for (Product product : productList) {
@@ -784,6 +791,12 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * 删除该用户的所有商品
      */
     public void disabledProductByUser(Integer userId) {
+        List<UserTechAuth> list =  userTechAuthService.findByUserId(userId);
+        for(UserTechAuth techAuth : list){
+            techAuth.setIsActivate(false);
+            techAuth.setUpdateTime(new Date());
+            userTechAuthService.update(techAuth);
+        }
         log.info("删除用户所有商品userId:{}", userId);
         redisOpenService.delete(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(userId));
         List<Product> productList = findByUserId(userId);
