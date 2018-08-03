@@ -38,5 +38,5 @@ public interface WxTemplateMsgService {
       * @param page
       * @param content
       */
-     void adminPushWxTemplateMsg(int pushId, int type,List<Integer> userIds, String  page, String  content);
+     void adminPushWxTemplateMsg(int platform, int pushId,List<Integer> userIds, String  page, String  content);
 }

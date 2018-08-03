@@ -42,7 +42,6 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
     @Autowired
     private CategoryService categoryService;
     private List<Object> objects = new ArrayList<>(LOCK_NUM);
-
     {
         for (Integer i = 0; i < LOCK_NUM; i++) {
             objects.add(i);
@@ -109,7 +108,11 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
         String date = DateUtil.format(new Date(), "yyyy年MM月dd日 HH:mm");
         List<WxMaTemplateMessage.Data> dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", content),
                 new WxMaTemplateMessage.Data("keyword2", date));
-        addTemplateMsg2Queue(platform, pushId, userIds, page, WechatTemplateEnum.PLAY_LEAVE_MSG, dataList);
+        if(WechatEcoEnum.POINT.getType().equals(platform)){
+            addTemplateMsg2Queue(platform, pushId, userIds, page, WechatTemplateEnum.POINT_LEAVE_MSG, dataList);
+        }else{
+            addTemplateMsg2Queue(platform, pushId, userIds, page, WechatTemplateEnum.PLAY_LEAVE_MSG, dataList);
+        }
     }
 
 

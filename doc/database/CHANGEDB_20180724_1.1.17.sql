@@ -3,7 +3,6 @@
 -- /server/details
 
 
-DROP TABLE IF EXISTS `t_grading_price`;
 CREATE TABLE `t_grading_price` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `category_id` int(11) DEFAULT NULL COMMENT '游戏分类',
@@ -36,7 +35,6 @@ INSERT INTO `t_grading_price` VALUES ('108', '30', '3', '106', '2星', '6', '6.0
 -- ----------------------------
 -- Table structure for t_order_point_product
 -- ----------------------------
-DROP TABLE IF EXISTS `t_order_point_product`;
 CREATE TABLE `t_order_point_product` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `order_no` varchar(128) NOT NULL COMMENT '订单号',
@@ -58,7 +56,6 @@ CREATE TABLE `t_order_point_product` (
 ) COMMENT='上分订单详情';
 
 
-DROP TABLE IF EXISTS `t_user_contact`;
 CREATE TABLE `t_user_contact` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL COMMENT '用户ID',
@@ -71,7 +68,6 @@ CREATE TABLE `t_user_contact` (
 )  COMMENT='用户联系方式表';
 
 
-DROP TABLE IF EXISTS `t_user_auto_receive_order`;
 CREATE TABLE `t_user_auto_receive_order` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL COMMENT '用户ID',
@@ -98,7 +94,6 @@ CREATE TABLE `t_user_auto_receive_order` (
 )  COMMENT='自动接单设置表';
 
 --添加系统设置表
-DROP TABLE IF EXISTS `t_setting`;
 CREATE TABLE `t_setting` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `type` int(11) NOT NULL COMMENT '设置类型',
@@ -122,7 +117,7 @@ ALTER TABLE `t_user` ADD UNIQUE INDEX (`union_id`) USING BTREE;
 
 --修改游戏分类表
 ALTER TABLE `t_category` ADD COLUMN `is_point` tinyint(1)  DEFAULT NULL COMMENT '是否是上分平台' after `status`;
-
+UPDATE `t_category` SET `is_point` = true WHERE id = 30;
 --修改推送消息表
 ALTER TABLE `t_push_msg` ADD COLUMN `platform` tinyint(1)  DEFAULT NULL COMMENT '微信平台号' after `content`;
 

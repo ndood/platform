@@ -41,6 +41,7 @@ public class WxTemplateController extends BaseController{
         WechatFormid wechatFormid = new WechatFormid();
         wechatFormid.setUserId(user.getId());
         wechatFormid.setFormId(formId);
+        wechatFormid.setOpenId(user.getOpenId());
         wechatFormid.setPlatform(WechatEcoEnum.PLAY.getType());
         wechatFormid.setCreateTime(new Date());
         collectFormIdQueue.addFormId(wechatFormid);

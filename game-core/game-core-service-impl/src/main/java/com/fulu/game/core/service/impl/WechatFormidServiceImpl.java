@@ -75,12 +75,11 @@ public class WechatFormidServiceImpl extends AbsCommonService<WechatFormid, Inte
     }
 
 
-    public List<WechatFormidVO> findByUserIds(int type,
+    public List<WechatFormidVO> findByUserIds(int platform,
                                               List<Integer> userIds,
                                               int offset,
                                               int size){
-        List<WechatFormidVO> wechatFormidVOS = wechatFormidDao.findByUserIds(type,userIds,offset,size);
-        return wechatFormidVOS;
+        return wechatFormidDao.findByUserIds(platform,userIds,offset,size);
     }
 
 

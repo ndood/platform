@@ -35,35 +35,28 @@
 
     <select id="findByUserIds" resultMap="WechatFormidResultVOMap">
         SELECT
-        a.id,a.user_id,a.platform,a.form_id,a.open_id,a.create_time
+        f.id,
+        f.user_id,
+        f.platform,
+        f.open_id,
+        f.form_id,
+        f.create_time
         FROM
-        (
-            SELECT
-            f.id,
-            f.user_id,
-            f.platform,
-            f.open_id,
-            f.form_id,
-            f.create_time
-            FROM
-            t_wechat_formid f
-            LEFT JOIN `t_user` u ON f.user_id = u.id
-                <where>
-                        f.`platform` = #{platform}
-                    <if test="userIds == null">
-                        and u.`status` = 1
-                    </if>
-                    <if test="userIds != null">
-                        AND  f.`user_id` IN
-                        <foreach collection="userIds" index="index" item="userId" open="(" separator="," close=")">
-                            #{userId}
-                        </foreach>
-                    </if>
-                </where>
-            ORDER BY
-            create_time ASC
-        ) a
-        GROUP BY a.user_id
+        t_wechat_formid f
+        LEFT JOIN `t_user` u ON f.user_id = u.id
+        <where>
+            f.`platform` = #{platform}
+            <if test="userIds == null">
+                and u.`status` = 1
+            </if>
+            <if test="userIds != null">
+                AND  f.`user_id` IN
+                <foreach collection="userIds" index="index" item="userId" open="(" separator="," close=")">
+                    #{userId}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY  create_time ASC
         LIMIT #{offset},#{size}
     </select>
 
