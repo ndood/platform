@@ -1,6 +1,6 @@
 package com.fulu.game.core.entity.vo.searchVO;
 
-import com.xiaoleilu.hutool.util.StrUtil;
+import cn.hutool.core.util.StrUtil;
 import lombok.Data;
 
 @Data

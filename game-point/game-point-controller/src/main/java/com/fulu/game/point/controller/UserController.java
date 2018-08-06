@@ -19,7 +19,7 @@ import com.fulu.game.core.service.CouponService;
 import com.fulu.game.core.service.UserCommentService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.xiaoleilu.hutool.util.BeanUtil;
+import cn.hutool.core.bean.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

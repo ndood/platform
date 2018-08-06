@@ -1,5 +1,6 @@
 package com.fulu.game.core.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.fulu.game.common.exception.CommonException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.BannerDao;
@@ -11,7 +12,7 @@ import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.BannerService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.xiaoleilu.hutool.util.BeanUtil;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

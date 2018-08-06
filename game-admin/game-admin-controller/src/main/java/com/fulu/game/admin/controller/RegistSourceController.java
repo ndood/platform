@@ -5,7 +5,7 @@ import com.fulu.game.core.entity.RegistSource;
 import com.fulu.game.core.entity.vo.RegistSourceVO;
 import com.fulu.game.core.service.RegistSourceService;
 import com.github.pagehelper.PageInfo;
-import com.xiaoleilu.hutool.util.CollectionUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,12 +1,12 @@
 package com.fulu.game.core.search.component;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.fulu.game.common.exception.SearchException;
 import com.fulu.game.common.properties.Config;
 import com.fulu.game.core.search.domain.Criteria;
 import com.fulu.game.core.search.domain.ProductShowCaseDoc;
 import com.github.pagehelper.Page;
 import com.google.common.collect.Lists;
-import com.xiaoleilu.hutool.util.CollectionUtil;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;

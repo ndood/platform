@@ -4,7 +4,7 @@ import com.fulu.game.core.dao.UserScoreDetailsDao;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserScoreDetails;
 import com.fulu.game.core.service.UserService;
-import com.xiaoleilu.hutool.date.DateUtil;
+import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

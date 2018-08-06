@@ -1,17 +1,18 @@
 package com.fulu.game.common.utils;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.ArrayUtil;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.CannedAccessControlList;
 import com.aliyun.oss.model.DeleteObjectsRequest;
 import com.aliyun.oss.model.DeleteObjectsResult;
 import com.aliyun.oss.model.PutObjectRequest;
 import com.fulu.game.common.UploadException;
-import com.fulu.game.common.exception.SystemException;
 import com.fulu.game.common.properties.Config;
-import com.xiaoleilu.hutool.date.DateUtil;
-import com.xiaoleilu.hutool.io.FileUtil;
-import com.xiaoleilu.hutool.util.CollectionUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -116,7 +117,7 @@ public class OssUtil {
     }
 
 
-    /**
+    /**C
      * 删除oss文件
      * @param fileUrl
      */

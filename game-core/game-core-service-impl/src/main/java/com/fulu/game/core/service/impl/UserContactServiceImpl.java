@@ -12,7 +12,7 @@ import com.fulu.game.core.entity.UserContact;
 import com.fulu.game.core.entity.vo.UserContactVO;
 import com.fulu.game.core.service.UserContactService;
 import com.fulu.game.core.service.UserService;
-import com.xiaoleilu.hutool.util.CollectionUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,5 +1,6 @@
 package com.fulu.game.core.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
@@ -9,10 +10,6 @@ import com.fulu.game.common.utils.IMUtil;
 import com.fulu.game.core.entity.ImUser;
 import com.fulu.game.core.entity.vo.ImUserVo;
 import com.fulu.game.core.service.ImService;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.xiaoleilu.hutool.util.BeanUtil;
-import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -19,9 +19,9 @@ import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.xiaoleilu.hutool.date.DateUtil;
-import com.xiaoleilu.hutool.util.BeanUtil;
-import com.xiaoleilu.hutool.util.CollectionUtil;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,8 +64,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     private AdminService adminService;
     @Autowired
     private WxTemplateMsgService wxTemplateMsgService;
-    @Autowired
-    private OrderMarketProductService orderMarketProductService;
+
     @Autowired
     private PriceFactorService priceFactorService;
     @Autowired

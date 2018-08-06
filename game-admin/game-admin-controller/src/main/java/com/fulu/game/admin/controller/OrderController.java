@@ -16,7 +16,7 @@ import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.OrderShareProfitService;
 import com.github.pagehelper.PageInfo;
-import com.xiaoleilu.hutool.util.CollectionUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;

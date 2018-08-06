@@ -7,7 +7,7 @@ import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.xiaoleilu.hutool.util.BeanUtil;
+import cn.hutool.core.bean.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.MapUtils;

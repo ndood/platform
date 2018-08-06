@@ -1,6 +1,7 @@
 package com.fulu.game.common.utils;
 
-import com.xiaoleilu.hutool.util.BeanUtil;
+
+import cn.hutool.core.bean.BeanUtil;
 
 import java.util.ArrayList;
 import java.util.List;

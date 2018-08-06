@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
+import cn.hutool.core.util.StrUtil;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ServiceErrorException;
@@ -11,10 +12,9 @@ import com.fulu.game.core.entity.vo.WechatFormidVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
 import com.fulu.game.core.service.queue.PushMsgQueue;
-import com.xiaoleilu.hutool.date.DateField;
-import com.xiaoleilu.hutool.date.DateUtil;
-import com.xiaoleilu.hutool.util.CollectionUtil;
-import com.xiaoleilu.hutool.util.StrUtil;
+import cn.hutool.core.date.DateField;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

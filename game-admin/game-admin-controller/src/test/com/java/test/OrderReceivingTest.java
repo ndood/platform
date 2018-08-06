@@ -1,10 +1,9 @@
 package com.java.test;
 
+import cn.hutool.core.io.FileUtil;
 import com.google.common.collect.Lists;
-import com.xiaoleilu.hutool.date.DateUtil;
-import com.xiaoleilu.hutool.io.FileUtil;
+import cn.hutool.core.date.DateUtil;
 import lombok.Data;
-import lombok.Getter;
 import org.junit.Test;
 
 import java.math.BigDecimal;

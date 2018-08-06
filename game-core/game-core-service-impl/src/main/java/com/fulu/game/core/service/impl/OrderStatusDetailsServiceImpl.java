@@ -6,8 +6,8 @@ import com.fulu.game.core.dao.OrderStatusDetailsDao;
 import com.fulu.game.core.entity.OrderStatusDetails;
 import com.fulu.game.core.entity.vo.OrderStatusDetailsVO;
 import com.fulu.game.core.service.OrderStatusDetailsService;
-import com.xiaoleilu.hutool.date.DateUnit;
-import com.xiaoleilu.hutool.date.DateUtil;
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

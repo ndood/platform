@@ -1,8 +1,8 @@
 package com.fulu.game.common.utils;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.fulu.game.common.properties.Config;
-import com.xiaoleilu.hutool.date.DateUtil;
-import com.xiaoleilu.hutool.util.RandomUtil;
 
 import java.util.Date;
 import java.util.UUID;

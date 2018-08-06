@@ -1,14 +1,13 @@
 package com.fulu.game.common.component;
 
 
+import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.properties.Config;
 import com.fulu.game.common.utils.EncryptUtil;
-import com.fulu.game.common.utils.SMSUtil;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.xiaoleilu.hutool.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -19,7 +18,6 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.entity.BasicHttpEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.http.ssl.SSLContextBuilder;
@@ -30,7 +28,6 @@ import org.springframework.stereotype.Component;
 import javax.net.ssl.SSLContext;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -81,15 +78,14 @@ public class CloopenSmsComponent {
     private final Config configProperties;
 
     @Autowired
-    public CloopenSmsComponent(Config configProperties){
-        this.configProperties =configProperties;
+    public CloopenSmsComponent(Config configProperties) {
+        this.configProperties = configProperties;
         SERVER_IP = configProperties.getCloopen().getServerIp();
-        SERVER_PORT =  configProperties.getCloopen().getServerPort();
+        SERVER_PORT = configProperties.getCloopen().getServerPort();
         ACCOUNT_SID = configProperties.getCloopen().getAccountSid();
         ACCOUNT_TOKEN = configProperties.getCloopen().getAccountToken();
         App_ID = configProperties.getCloopen().getAppId();
     }
-
 
 
     public Boolean sendTemplateSMS(String to, String templateId, String[] datas) throws Exception {
@@ -102,7 +98,7 @@ public class CloopenSmsComponent {
         SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext);
         HttpClient httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).build();
         String result = "";
-        Boolean flag =false;
+        Boolean flag = false;
         int status = 0;
         try {
             HttpPost httppost = (HttpPost) getHttpRequestBase(1, TemplateSMS);
@@ -151,33 +147,33 @@ public class CloopenSmsComponent {
             HttpResponse response = httpclient.execute(httppost);
             //获取响应码
             status = response.getStatusLine().getStatusCode();
-            if(status==200){
+            if (status == 200) {
                 flag = true;
             }
             log.debug("Https请求返回状态码：" + status);
             HttpEntity entity = response.getEntity();
-            if (entity != null){
+            if (entity != null) {
                 result = EntityUtils.toString(entity, "UTF-8");
             }
             EntityUtils.consume(entity);
         } catch (IOException e) {
-            log.error( getMyError("172001", "网络错误" + "Https请求返回码：" + status),e);
+            log.error(getMyError("172001", "网络错误" + "Https请求返回码：" + status), e);
         } catch (Exception e) {
-            log.error(getMyError("172002", "无返回"),e);
+            log.error(getMyError("172002", "无返回"), e);
         } finally {
-            if (httpclient != null){
+            if (httpclient != null) {
                 httpclient.getConnectionManager().shutdown();
             }
         }
         try {
             String resultMsg = jsonToMap(result).toString();
-            if(!flag){
-                log.error("短信请求错误{}",resultMsg);
-            }else{
+            if (!flag) {
+                log.error("短信请求错误{}", resultMsg);
+            } else {
                 log.debug(resultMsg);
             }
         } catch (Exception e) {
-            log.error(getMyError("172003", "返回包体错误"),e);
+            log.error(getMyError("172003", "返回包体错误"), e);
         }
 
         return flag;
@@ -307,7 +303,7 @@ public class CloopenSmsComponent {
         HashMap<String, Object> hashMap = new HashMap<String, Object>();
         hashMap.put("statusCode", code);
         hashMap.put("statusMsg", msg);
-        return "错误码:code"+"【msg】";
+        return "错误码:code" + "【msg】";
     }
 
 
@@ -398,7 +394,6 @@ public class CloopenSmsComponent {
         }
         return hashMap;
     }
-
 
 
 }
