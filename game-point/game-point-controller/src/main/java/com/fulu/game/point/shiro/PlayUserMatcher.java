@@ -1,6 +1,8 @@
 package com.fulu.game.point.shiro;
 
 import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.UserStatusEnum;
+import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
@@ -48,6 +50,9 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
         String dBOpenId = user.getPointOpenId();
         //登录成功保存token和用户信息到redis
         if (paramOpenId.equals(dBOpenId)) {
+            if(UserStatusEnum.BANNED.getType().equals(user.getStatus())){
+                throw new UserException(UserException.ExceptionCode.USER_BANNED_EXCEPTION);
+            }
             //匹配完毕更新新的登录时间和IP
             Map<String, Object> userMap = new HashMap<>();
             userMap = BeanUtil.beanToMap(user);

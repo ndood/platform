@@ -6,6 +6,7 @@ import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.enums.UserStatusEnum;
 import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.common.exception.ParamsException;
+import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Banner;
 import com.fulu.game.core.entity.SysConfig;
@@ -105,20 +106,23 @@ public class HomeController extends BaseController{
             user.setPointOpenId(null);
             user.setBalance(null);
             Map<String, Object> result = BeanUtil.beanToMap(user);
-            if(!UserStatusEnum.BANNED.getType().equals(user.getStatus())){
-                log.error("该用户被封禁，不返回token。user:{}",user);
-                result.put("token", SubjectUtil.getToken());
-            }
+            result.put("token", SubjectUtil.getToken());
             result.put("userId", user.getId());
             if(user.getUnionId()==null){
                 log.error("用户没有unionId;user{}",user);
                 return Result.newUser().data(result);
             }
             return Result.success().data(result).msg("登录成功!");
-        } catch (AuthenticationException e) {
-            log.error("验证登录异常，异常信息:", e);
-            return Result.noLogin().msg("用户验证信息错误！");
-        } catch (Exception e) {
+        }
+        catch (AuthenticationException e) {
+            if(e.getCause() instanceof UserException){
+                if(UserException.ExceptionCode.USER_BANNED_EXCEPTION.equals(((UserException) e.getCause()).getExceptionCode())){
+                    log.error("用户被封禁,openId:{}", openId);
+                    return Result.userBanned();
+                }
+            }
+            return Result.noLogin().msg("测试登录用户验证信息错误！");
+        }  catch (Exception e) {
             log.error("登录异常!", e);
             return Result.error().msg("登陆异常！");
         }
@@ -140,7 +144,14 @@ public class HomeController extends BaseController{
             result.put("token", SubjectUtil.getToken());
             result.put("userId", user.getId());
             return Result.success().data(result).msg("测试登录成功!");
-        } catch (AuthenticationException e) {
+        }
+        catch (AuthenticationException e) {
+            if(e.getCause() instanceof UserException){
+                if(UserException.ExceptionCode.USER_BANNED_EXCEPTION.equals(((UserException) e.getCause()).getExceptionCode())){
+                    log.error("用户被封禁,openId:{}", openId);
+                    return Result.userBanned();
+                }
+            }
             return Result.noLogin().msg("测试登录用户验证信息错误！");
         } catch (Exception e) {
             log.error("测试登录异常!", e);

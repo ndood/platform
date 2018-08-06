@@ -16,6 +16,8 @@ public class ResultStatus {
     //用户未登陆
     public static Integer NOLOGIN = 501;
 
+    public static Integer USER_BANNED = 504;
+
 
     public static Integer NOUNIONID = 502;
 
