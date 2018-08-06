@@ -64,6 +64,13 @@ public class Result implements Serializable {
         return result;
     }
 
+    public static Result userBanned() {
+        Result result = new Result();
+        result.setStatus(ResultStatus.USER_BANNED);
+        result.setMsg("用户被封禁!");
+        return result;
+    }
+
     public static Result noUnionId() {
         Result result = new Result();
         result.setStatus(ResultStatus.NOUNIONID);
