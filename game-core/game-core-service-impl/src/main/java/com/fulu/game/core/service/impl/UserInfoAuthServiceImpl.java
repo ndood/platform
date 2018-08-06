@@ -1,11 +1,8 @@
 package com.fulu.game.core.service.impl;
 
 
-import cn.hutool.core.util.ObjectUtil;
-import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ParamsException;
-import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
@@ -64,8 +61,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     private UserInfoAuthFileTempDao userInfoAuthFileTempDao;
     @Autowired
     private UserInfoAuthFileTempService userInfoAuthFileTempService;
-    @Autowired
-    private RegistSourceService registSourceService;
 
     @Override
     public ICommonDao<UserInfoAuth, Integer> getDao() {
@@ -122,7 +117,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             userInfoAuth.setPushTimeInterval(30F);
             userInfoAuth.setAllowExport(true);
             create(userInfoAuth);
-        }else {
+        } else {
             update(userInfoAuth);
         }
 
@@ -137,66 +132,14 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         //添加用户信息标签
         createUserInfoTags(userInfoAuthTO.getTags(), user.getId());
 
-        //同步下架用户该技能商品
-//        productService.deleteProductByUser(userInfoAuth.getUserId());
         return userInfoAuth;
     }
-
-    /**
-     * 保存用户认证的个人信息
-     * @param userInfoAuthTO
-     * @return
-     */
-//    @Override
-//    public UserInfoAuth save(UserInfoAuthTO userInfoAuthTO) {
-//        log.info("保存用户认证信息:UserInfoAuthTO:{}", userInfoAuthTO);
-//        User user = userService.findById(userInfoAuthTO.getUserId());
-//        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
-//            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE);
-//        }
-//        if (userInfoAuthTO.getMobile() == null) {
-//            userInfoAuthTO.setMobile(user.getMobile());
-//        }
-//        user.setGender(userInfoAuthTO.getGender());
-//        user.setAge(userInfoAuthTO.getAge());
-//        user.setBirth(userInfoAuthTO.getBirth());
-//        user.setConstellation(userInfoAuthTO.getConstellation());
-//        user.setUserInfoAuth(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType());
-//        user.setUpdateTime(new Date());
-//        userService.update(user);
-//        //修改认证信息
-//        UserInfoAuth userInfoAuth = new UserInfoAuth();
-//        BeanUtil.copyProperties(userInfoAuthTO, userInfoAuth);
-//        userInfoAuth.setUpdateTime(new Date());
-//        if (userInfoAuth.getId() == null) {
-//            UserInfoAuth existUserAuth = findByUserId(user.getId());
-//            if (existUserAuth != null) {
-//                throw new UserAuthException(UserAuthException.ExceptionCode.EXIST_USER_AUTH);
-//            }
-//            userInfoAuth.setIsRejectSubmit(false);
-//            userInfoAuth.setCreateTime(new Date());
-//            userInfoAuth.setPushTimeInterval(30F);
-//            userInfoAuth.setAllowExport(true);
-//            create(userInfoAuth);
-//        }else {
-//            update(userInfoAuth);
-//        }
-//        //添加用户认证写真图片
-//        createUserAuthPortrait(userInfoAuthTO.getPortraitUrls(), userInfoAuth.getId());
-//        //添加语音介绍
-//        createUserAuthVoice(userInfoAuthTO.getVoiceUrl(), userInfoAuth.getId(), userInfoAuthTO.getDuration());
-//        //添加用户信息标签
-//        createUserInfoTags(userInfoAuthTO.getTags(), user.getId());
-//
-//        //同步下架用户该技能商品
-//        productService.deleteProductByUser(userInfoAuth.getUserId());
-//        return userInfoAuth;
-//    }
 
 
 
     /**
      * 认证信息驳回
+     *
      * @param id
      * @param reason
      * @return
@@ -236,12 +179,13 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 //        productService.disabledProductByUser(userInfoAuth.getUserId());
 
         //给用户推送通知
-        wxTemplateMsgService.pushWechatTemplateMsg(user.getId(), WechatTemplateMsgEnum.USER_AUTH_INFO_REJECT,reason);
+        wxTemplateMsgService.pushWechatTemplateMsg(user.getId(), WechatTemplateMsgEnum.USER_AUTH_INFO_REJECT, reason);
         return userInfoAuth;
     }
 
     /**
      * 技能审核通过
+     *
      * @param id
      * @return
      */
@@ -591,53 +535,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         PageInfo page = new PageInfo(userInfoAuths);
         page.setList(userInfoAuthVOList);
         return page;
-    }
-
-    @Override
-    public boolean addSource(Integer userId, Integer sourceId) {
-        if (userId == null || sourceId == null) {
-            throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
-        }
-
-        RegistSource registSource = registSourceService.findById(sourceId);
-        if (registSource == null) {
-            throw new ServiceErrorException("找不到对应的注册来源");
-        }
-        UserInfoAuth userInfoAuth = new UserInfoAuth();
-        userInfoAuth.setUserId(userId);
-        userInfoAuth.setSourceId(registSource.getId());
-        userInfoAuth.setUpdateTime(DateUtil.date());
-        return updateByUserId(userInfoAuth);
-    }
-
-    @Override
-    public Integer getPlatformShowStatus(Integer userId) {
-        if (userId == null) {
-            throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
-        }
-
-        UserInfoAuth userInfoAuth = findByUserId(userId);
-        if (userInfoAuth == null) {
-            return null;
-        }
-        return userInfoAuth.getIsPlatformShow();
-    }
-
-    @Override
-    public boolean isPlatformShow(Integer userId, Integer showFlag) {
-        if (userId == null || showFlag == null) {
-            throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
-        }
-
-        if (!showFlag.equals(Constant.PLATFORM_NOT_SHOW) && !showFlag.equals(Constant.PLATFORM_SHOW)) {
-            throw new ParamsException(ParamsException.ExceptionCode.ILLEGAL_PARAM_EXCEPTION);
-        }
-
-        UserInfoAuth userInfoAuth = new UserInfoAuth();
-        userInfoAuth.setUserId(userId);
-        userInfoAuth.setIsPlatformShow(showFlag);
-        userInfoAuth.setUpdateTime(DateUtil.date());
-        return updateByUserId(userInfoAuth);
     }
 
     @Override
@@ -1035,34 +932,5 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             personTag.setUpdateTime(new Date());
             personTagService.create(personTag);
         }
-    }
-
-    @Override
-    public List<UserInfoAuth> findAllCjUsers() {
-        RegistSource registSource = registSourceService.findCjRegistSource();
-        if (registSource == null) {
-            throw new ServiceErrorException("查询不到ChinaJoy的注册来源");
-        }
-
-        Integer sourceId = registSource.getId();
-        UserInfoAuthVO authVO = new UserInfoAuthVO();
-        authVO.setSourceId(sourceId);
-        return userInfoAuthDao.findByParameter(authVO);
-    }
-
-    @Override
-    public List<UserInfoAuth> findPlatformNotShowUserInfoAuth() {
-        UserInfoAuthVO authVO = new UserInfoAuthVO();
-        authVO.setIsPlatformShow(Constant.PLATFORM_NOT_SHOW);
-        return userInfoAuthDao.findByParameter(authVO);
-    }
-
-    @Override
-    public boolean removeServiceUserFromCjSource(Integer userId, Integer sourceId) {
-        UserInfoAuth userInfoAuth = findByUserId(userId);
-        userInfoAuth.setSourceId(0);
-        userInfoAuth.setUpdateTime(DateUtil.date());
-        int result = update(userInfoAuth);
-        return result > 0;
     }
 }

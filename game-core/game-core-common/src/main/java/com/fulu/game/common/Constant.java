@@ -16,12 +16,12 @@ public interface Constant {
 
     Long TIME_MINUTES_FIFE = 5 * 60L;
 
-    Long TIME_HOUR_TWO = 2*60 * 60L;
+    Long TIME_HOUR_TWO = 2 * 60 * 60L;
 
-    Long TIME_HOUR_FIVE = 5*60 * 60L;
+    Long TIME_HOUR_FIVE = 5 * 60 * 60L;
 
 
-    Long TIME_MINUTES_FIVE= 5 * 60L;
+    Long TIME_MINUTES_FIVE = 5 * 60L;
 
     //手机验证码限定次数和限定时间
     Integer MOBILE_CODE_SEND_TIMES_DEV = 20;
@@ -144,59 +144,8 @@ public interface Constant {
      */
     Integer MAX_USER_HEAD_COUNT = 10;
 
-    //==============CJ活动start==================
     /**
-     * 陪玩师在平台内展示
-     */
-    Integer PLATFORM_SHOW = 1;
-    /**
-     * 陪玩师不在平台内展示
-     */
-    Integer PLATFORM_NOT_SHOW = 0;
-
-    /**
-     * 已完成微信群分享
-     */
-    Integer WECHAT_GROUP_SHARE_FINISHED = 1;
-    /**
-     * 未完成微信群分享
-     */
-    Integer WECHAT_GROUP_SHARE_NOT_FINISHED = 0;
-
-    /**
-     * CJ活动首页：微信群最大分享个数限制
-     */
-    Integer WECHAT_GROUP_SHARE_MAXIMUM = 5;
-
-    /**
-     * CJ默认的来源id
-     * (只能在查表无效时，才能使用此字段，使用之前确认线上环境的管理后台的注册来源中是否改动过)
-     */
-    Integer CJ_SOURCE_ID = 31;
-
-    /**
-     * CJ对应的优惠券兑换码
-     */
-    String CJ_COUPON_GROUP_REDEEM_CODE = "FlPw11ZyCj";
-
-    /**
-     * 发放优惠券成功
+     * 发放新用户优惠券成功
      */
     Integer SEND_COUPOU_SUCCESS = 1;
-
-    /**
-     * 发放优惠券失败(默认值)
-     */
-    Integer SEND_COUPOU_FAIL = 0;
-
-    /**
-     * 优惠券通道开启
-     */
-    Integer COUPON_AVAILABLE = 1;
-    /**
-     * 优惠券通道关闭
-     */
-    Integer COUPON_UNAVAILABLE = 0;
-
-    //==============CJ活动end==================
 }

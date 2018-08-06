@@ -128,8 +128,7 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
                                                       Integer pageNum,
                                                       Integer pageSize,
                                                       String orderBy,
-                                                      Class<T> type,
-                                                      List<String> userIdList) throws IOException {
+                                                      Class<T> type) throws IOException {
         //封装查询条件
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
@@ -137,11 +136,6 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
             boolQueryBuilder.filter(QueryBuilders.termQuery("gender", gender));
         }
 
-        if (CollectionUtil.isNotEmpty(userIdList)) {
-            for (String userId : userIdList) {
-                boolQueryBuilder.mustNot(QueryBuilders.termQuery("userId", userId));
-            }
-        }
         boolQueryBuilder.filter(QueryBuilders.termQuery("categoryId", categoryId));
         boolQueryBuilder.filter(QueryBuilders.termQuery("isIndexShow", true));
         searchSourceBuilder.query(boolQueryBuilder);
