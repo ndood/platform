@@ -37,6 +37,7 @@
         <module>../code-generate</module>
         <module>../game-play</module>
         <module>../game-point</module>
+        <module>../game-third-party</module>
     </modules>
 
     <parent>
