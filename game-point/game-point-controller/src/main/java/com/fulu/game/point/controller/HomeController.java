@@ -3,6 +3,7 @@ package com.fulu.game.point.controller;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.config.WxMaServiceSupply;
+import com.fulu.game.common.enums.UserStatusEnum;
 import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.utils.SubjectUtil;
@@ -94,7 +95,10 @@ public class HomeController extends BaseController{
             user.setPointOpenId(null);
             user.setBalance(null);
             Map<String, Object> result = BeanUtil.beanToMap(user);
-            result.put("token", SubjectUtil.getToken());
+            if(!UserStatusEnum.BANNED.getType().equals(user.getStatus())){
+                log.error("该用户被封禁，不返回token。user:{}",user);
+                result.put("token", SubjectUtil.getToken());
+            }
             result.put("userId", user.getId());
             if(user.getUnionId()==null){
                 log.error("用户没有unionId;user{}",user);
