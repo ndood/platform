@@ -88,27 +88,6 @@ public class CategoryController extends BaseController {
     }
 
     /**
-     * 分页查询所有商品
-     *
-     * @param categoryId 分类id
-     * @param gender     性别
-     * @param pageNum    页码
-     * @param pageSize   每页显示数据条数
-     * @param orderBy    排序字符串
-     * @return 封装结果集
-     */
-    @RequestMapping(value = "/cj/product/list")
-    public Result findCjPageByProductId(@RequestParam Integer categoryId,
-                                        Integer gender,
-                                        @RequestParam Integer pageNum,
-                                        @RequestParam Integer pageSize,
-                                        String orderBy) {
-        PageInfo<ProductShowCaseVO> pageInfo = productService.findCjProductShowCase(categoryId, gender, pageNum, pageSize, orderBy);
-        return Result.success().data(pageInfo);
-    }
-
-
-    /**
      * 根据业务查询游戏销售方式
      *
      * @param categoryId
