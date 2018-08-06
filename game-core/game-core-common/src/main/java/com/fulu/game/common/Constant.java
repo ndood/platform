@@ -39,8 +39,7 @@ public interface Constant {
     BigDecimal DEFAULT_CHANNEL_BALANCE_MIN = new BigDecimal(1.00);
     //渠道商默认加款最高金额
     BigDecimal DEFAULT_CHANNEL_BALANCE_MAX = new BigDecimal(100000.00);
-    //默认认证通过需要的认可数
-    Integer DEFAULT_APPROVE_COUNT = 5;
+
 
     String DEFAULT_SPLIT_SEPARATOR = ",";
     //默认名片宽度

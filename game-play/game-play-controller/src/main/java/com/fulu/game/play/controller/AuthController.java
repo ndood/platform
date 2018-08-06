@@ -110,7 +110,6 @@ public class AuthController extends BaseController {
         for (UserTechAuth userTechAuth : techAuthList) {
             UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
             BeanUtil.copyProperties(userTechAuth, userTechAuthVO);
-            userTechAuthVO.setApproveCountStr(userTechAuth.getApproveCount() + "/" + Constant.DEFAULT_APPROVE_COUNT);
             UserTechAuthReject techAuthReject =userTechAuthRejectService.findLastRecordByTechAuth(userTechAuth.getId(),userTechAuth.getStatus());
             if(techAuthReject!=null){
                 userTechAuthVO.setReason(techAuthReject.getReason());

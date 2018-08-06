@@ -56,8 +56,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     private WxTemplateMsgService wxTemplateMsgService;
     @Autowired
     private ProductService productService;
-    @Autowired
-    private ApproveService approveService;
+
     @Autowired
     private OssUtil ossUtil;
     @Autowired
@@ -80,7 +79,6 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuthTO.setGradePicUrl(ossUtil.activateOssFile(userTechAuthTO.getGradePicUrl()));
         userTechAuthTO.setCategoryName(category.getName());
         userTechAuthTO.setUpdateTime(new Date());
-        userTechAuthTO.setApproveCount(0);
         userTechAuthTO.setIsActivate(false);
         if (userTechAuthTO.getId() == null){
             //查询是否有重复技能
@@ -104,7 +102,6 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
                 }
             }
             //重置技能好友认证状态
-            approveService.resetApproveStatusAndUpdate(userTechAuthTO);
             if(!oldUserTechAuth.getGradePicUrl().equals(userTechAuthTO.getGradePicUrl())){
                 ossUtil.deleteFile(oldUserTechAuth.getGradePicUrl());
             }
@@ -133,7 +130,6 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         }
         //重置技能好友认证状态
         userTechAuth.setStatus(TechAuthStatusEnum.NO_AUTHENTICATION.getType());
-        approveService.resetApproveStatusAndUpdate(userTechAuth);
         //添加拒绝原因
         UserTechAuthReject userTechAuthReject = new UserTechAuthReject();
         userTechAuthReject.setReason(reason);
@@ -183,7 +179,6 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         UserTechAuth userTechAuth = findById(id);
         //重置技能好友认证状态
         userTechAuth.setStatus(TechAuthStatusEnum.FREEZE.getType());
-        approveService.resetApproveStatusAndUpdate(userTechAuth);
         //添加拒绝原因
         UserTechAuthReject userTechAuthReject = new UserTechAuthReject();
         userTechAuthReject.setReason(reason);
@@ -287,16 +282,11 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
         BeanUtil.copyProperties(userTechAuth, userTechAuthVO);
         if(userTechAuthVO.getId()!=null){
-            Integer approveCount = userTechAuth.getApproveCount();
-            Integer requireCount = approveCount < 5 ? Constant.DEFAULT_APPROVE_COUNT - approveCount : 0;
-            userTechAuthVO.setRequireCount(requireCount);
             //审核不通过原因
             UserTechAuthReject techAuthReject =userTechAuthRejectService.findLastRecordByTechAuth(userTechAuthVO.getId(),userTechAuthVO.getStatus());
             if(techAuthReject!=null){
                 userTechAuthVO.setReason(techAuthReject.getReason());
             }
-        }else{
-            userTechAuthVO.setRequireCount(Constant.DEFAULT_APPROVE_COUNT);
         }
         //查询用户所有技能标签
         List<TechTag> techTagList = findTechTags(userTechAuthVO.getId());

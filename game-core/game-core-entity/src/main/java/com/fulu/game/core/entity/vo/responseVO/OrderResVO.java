@@ -1,7 +1,6 @@
 package com.fulu.game.core.entity.vo.responseVO;
 
 import com.fulu.game.core.entity.Order;
-import com.fulu.game.core.entity.OrderMarketProduct;
 import com.fulu.game.core.entity.OrderProduct;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.OrderDealVO;
