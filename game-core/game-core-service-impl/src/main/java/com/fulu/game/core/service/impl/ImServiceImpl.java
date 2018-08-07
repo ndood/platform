@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.exception.IMException;
 import com.fulu.game.common.utils.HttpUtils;
 import com.fulu.game.common.utils.IMUtil;
@@ -91,8 +92,9 @@ public class ImServiceImpl implements ImService {
         }
     }
 
-    //fixme 发送信息给环信用户
-    public boolean sendMsgToImUser(String imId) {
+    @Override
+    public boolean sendMsgToImUser(String imId, String action) {
+        log.info("正在发送IM通知消息给老板，imId:{}", imId);
         String token = imUtil.getImToken();
         if (StringUtils.isBlank(token)) {
             token = getToken();
@@ -104,7 +106,7 @@ public class ImServiceImpl implements ImService {
         headerMap.put("Accept", "application/json");
         headerMap.put("Content-Type", "application/json");
 
-        String userUrl = imUtil.getUserUrl();
+        String userUrl = imUtil.getMessageUrl();
 
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("target_type", "users");
@@ -112,13 +114,15 @@ public class ImServiceImpl implements ImService {
         paramMap.put("target", userArr);
 
         Map<String, String> msgMap = new HashMap<>();
-        msgMap.put("type", "txt");
-        msgMap.put("msg", "txt-msg");
+        msgMap.put("type", "cmd");
+        msgMap.put("action", action);
         paramMap.put("msg", msgMap);
 
         Map<String, String> extMap = new HashMap<>();
-        extMap.put("attr", "v1");
+        extMap.put("flag", Constant.SERVICE_USER_ACCEPT_ORDER);
         paramMap.put("ext", extMap);
+
+        paramMap.put("from", "admin");
 
         JSONObject jsonObject = new JSONObject(paramMap);
         String body = jsonObject.toString();

@@ -47,6 +47,23 @@ public class IMUtil {
         return sb.toString();
     }
 
+    /**
+     * 获取message的url拼接
+     *
+     * @return
+     */
+    public String getMessageUrl() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(configProperties.getIm().getUrlPrefix())
+                .append("/")
+                .append(configProperties.getIm().getOrgName())
+                .append("/")
+                .append(configProperties.getIm().getAppName())
+                .append("/")
+                .append("messages");
+        return sb.toString();
+    }
+
     public String getTokenBodyStr() {
         JsonObject jo = new JsonObject();
         jo.addProperty("grant_type", configProperties.getIm().getGrantType());

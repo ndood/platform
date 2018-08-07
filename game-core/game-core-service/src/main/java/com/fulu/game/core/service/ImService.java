@@ -23,11 +23,20 @@ public interface ImService {
 
     /**
      * 批量注册im用户
+     *
      * @param users
      */
     List<ImUser> registUsers(List<ImUser> users);
 
 
-
     ImUser registerUser(String imId, String imPsw);
+
+    /**
+     * 发送陪玩师已接单的IM信息到用户
+     *
+     * @param imId   环信id
+     * @param action
+     * @return 是否发送成功
+     */
+    boolean sendMsgToImUser(String imId, String action);
 }
