@@ -24,6 +24,8 @@ import java.util.Map;
 @Service
 public class LongPollingMsgServiceImpl {
 
+    private Long threadSleepTime = 5000L;
+
     @Autowired
     private UserService userService;
 
@@ -56,12 +58,12 @@ public class LongPollingMsgServiceImpl {
             }
             long currentTimeMillis = System.currentTimeMillis();
             long resultTimeMillis = currentTimeMillis - startTimeMillis;
-            if (resultTimeMillis >= Constant.MILLI_SECOND_60) {
+            if (resultTimeMillis >= Constant.MILLI_SECOND_60 - threadSleepTime) {
                 deferredResult.setResult(defaultResult);
                 break;
             }
             try {
-                Thread.sleep(5000L);
+                Thread.sleep(threadSleepTime);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

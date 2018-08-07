@@ -1,6 +1,7 @@
 package com.fulu.game.point.LongPollingDemo;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.point.controller.BaseController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,7 @@ import org.springframework.web.context.request.async.DeferredResult;
 @RestController
 @RequestMapping("/api/v1/order")
 @Slf4j
-public class LongPollingMsgController {
+public class LongPollingMsgController extends BaseController {
 
     @Autowired
     private LongPollingMsgServiceImpl longPollingMsgService;
@@ -32,20 +33,4 @@ public class LongPollingMsgController {
         DeferredResult<Result> resultDeferredResult = longPollingMsgService.getServiceUserAcceptOrderStatus();
         return resultDeferredResult;
     }
-
-//    /**
-//     * 模拟陪玩师接单接口
-//     *
-//     * @return
-//     */
-//    @PostMapping("/mock")
-//    public Result mockServiceUserAcceptOrder() {
-//        //业务逻辑-略
-//        Integer userId = 35;
-//        Order order = new Order();
-//        order.setOrderNo("180507430132");
-//        order.setServiceUserId(111);
-//        Constant.serviceUserAcceptOrderMap.put(userId, order);
-//        return Result.success().msg("模拟成功！");
-//    }
 }
