@@ -5,5 +5,5 @@ import com.fulu.game.thirdparty.fenqile.entity.FenqileOrderRequest;
 public interface FenqileOrderService {
 
 
-    public void createOrder(FenqileOrderRequest fenqileOrderRequest);
+    public  <T> T createOrder(FenqileOrderRequest fenqileOrderRequest);
 }

@@ -2,6 +2,8 @@ package com.fulu.game.thirdparty.fenqile.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONObject;
 import com.fulu.game.thirdparty.fenqile.entity.FenqileConfig;
 import com.fulu.game.thirdparty.fenqile.entity.FenqileOrderRequest;
 import com.fulu.game.thirdparty.fenqile.service.FenqileOrderService;
@@ -14,7 +16,7 @@ import java.util.Map;
 public class FenqileOrderServiceImpl implements FenqileOrderService {
 
 
-    private String BASE_API  = "http://pop.api.fenqile.com/router/rest.js" ;
+    private final String BASE_API  = "http://pop.api.fenqile.com/router/rest.js" ;
 
     protected FenqileConfig config;
 
@@ -27,7 +29,7 @@ public class FenqileOrderServiceImpl implements FenqileOrderService {
     }
 
     @Override
-    public void createOrder(FenqileOrderRequest fenqileOrderRequest) {
+    public  <T> T createOrder(FenqileOrderRequest fenqileOrderRequest) {
         String method = "fenqile.third.order.create";
         Map<String, Object> params =  BeanUtil.beanToMap(fenqileOrderRequest,Boolean.TRUE,Boolean.TRUE);
         params.put("method",method);
@@ -42,6 +44,8 @@ public class FenqileOrderServiceImpl implements FenqileOrderService {
 
         String result =  HttpUtil.post(BASE_API,params);
         log.info("请求结果result:{}",result);
+
+        return null;
     }
 
 
