@@ -1,10 +1,13 @@
 package com.fulu.game.point.controller;
 
 
+import cn.hutool.core.bean.BeanUtil;
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.SystemException;
+import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.OrderPointProductTO;
 import com.fulu.game.core.entity.vo.OrderEventVO;
@@ -15,8 +18,8 @@ import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.point.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
-import cn.hutool.core.bean.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,6 +55,10 @@ public class OrderController extends BaseController {
     private PayService payService;
     @Autowired
     private OrderPointProductService orderPointProductService;
+    @Autowired
+    private ImService imService;
+    @Autowired
+    private SpringThreadPoolExecutor springThreadPoolExecutor;
 
     /**
      * 订单详情
@@ -111,6 +118,7 @@ public class OrderController extends BaseController {
 
     /**
      * 段位价格计算
+     *
      * @param orderPointProductTO
      * @return
      */
@@ -139,8 +147,8 @@ public class OrderController extends BaseController {
     /**
      * 上分订单抢单
      *
-     * @param orderNo
-     * @return
+     * @param orderNo 订单编号
+     * @return 封装结果集
      */
     @PostMapping(value = "/receive")
     public Result orderReceive(@RequestParam(required = true) String orderNo) {
@@ -157,6 +165,21 @@ public class OrderController extends BaseController {
             throw new OrderException(OrderException.ExceptionCode.ORDER_USER_NOT_HAS_TECH, order.getOrderNo());
         }
         orderService.receivePointOrder(order.getOrderNo(), user);
+
+        springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                //方案一：长轮询通知用户
+                order.setServiceUserId(user.getId());
+                Constant.serviceUserAcceptOrderMap.put(order.getUserId(), order);
+                //方案二：发送IM消息通知用户
+                User bossUser = userService.findById(order.getUserId());
+                String imId = bossUser.getImId();
+                if (StringUtils.isNotBlank(imId)) {
+                    imService.sendMsgToImUser(imId, Constant.SERVICE_USER_ACCEPT_ORDER);
+                }
+            }
+        });
         return Result.success().data(orderNo).msg("接单成功!");
     }
 
@@ -398,7 +421,7 @@ public class OrderController extends BaseController {
     }
 
     private OrderPointProductVO getAdvanceOrder(OrderPointProductTO orderPointProductTO) {
-        log.info("开始计算段位区间价格:orderPointProductTO:{}",orderPointProductTO);
+        log.info("开始计算段位区间价格:orderPointProductTO:{}", orderPointProductTO);
         OrderPointProductVO gradingAdvanceOrderVO = new OrderPointProductVO();
         gradingAdvanceOrderVO.setCategoryId(orderPointProductTO.getCategoryId());
         gradingAdvanceOrderVO.setPointType(orderPointProductTO.getPointType());
@@ -410,11 +433,11 @@ public class OrderController extends BaseController {
             //账户信息
             GradingPrice startGradingPrice = gradingPriceService.findById(gradingAdvanceOrderVO.getGradingPriceId());
             GradingPrice parentStartGradingPrice = gradingPriceService.findById(startGradingPrice.getPid());
-            gradingAdvanceOrderVO.setAccountInfo(techValue.getName() + "-" + parentStartGradingPrice.getName() +" "+ startGradingPrice.getName());
+            gradingAdvanceOrderVO.setAccountInfo(techValue.getName() + "-" + parentStartGradingPrice.getName() + " " + startGradingPrice.getName());
             //下单选择
             GradingPrice endGradingPrice = gradingPriceService.findById(gradingAdvanceOrderVO.getTargetGradingPriceId());
             GradingPrice parentEndGradingPrice = gradingPriceService.findById(endGradingPrice.getPid());
-            gradingAdvanceOrderVO.setOrderChoice(parentStartGradingPrice.getName() +" "+startGradingPrice.getName() + "-" + parentEndGradingPrice.getName() +" "+ endGradingPrice.getName());
+            gradingAdvanceOrderVO.setOrderChoice(parentStartGradingPrice.getName() + " " + startGradingPrice.getName() + "-" + parentEndGradingPrice.getName() + " " + endGradingPrice.getName());
             //查询区间价格
             BigDecimal totalMoney = gradingPriceService.findRangePrice(gradingAdvanceOrderVO.getCategoryId(), gradingAdvanceOrderVO.getGradingPriceId(), gradingAdvanceOrderVO.getTargetGradingPriceId());
             totalMoney = totalMoney.subtract(endGradingPrice.getPrice());

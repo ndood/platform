@@ -59,6 +59,11 @@ public interface Constant {
     Long ONE_DAY = 24 * 60 * 60L;
 
     /**
+     * 60秒（毫秒值）
+     */
+    Long MILLI_SECOND_60 = 60 * 1000L;
+
+    /**
      * IM延迟回复--已计算对应用户积分
      */
     String IM_DELAY_CALCULATED = "0";
@@ -154,4 +159,13 @@ public interface Constant {
      * 陪玩师接单Map
      */
     Map<Integer, Object> serviceUserAcceptOrderMap = new ConcurrentHashMap<>();
+
+    /**
+     * 没有陪玩师接单
+     */
+    String SERVICE_USER_NOT_ACCEPT_ORDER = "0";
+    /**
+     * 陪玩师接单
+     */
+    String SERVICE_USER_ACCEPT_ORDER = "1";
 }
