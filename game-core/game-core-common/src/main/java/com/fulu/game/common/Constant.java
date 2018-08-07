@@ -1,6 +1,8 @@
 package com.fulu.game.common;
 
 import java.math.BigDecimal;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public interface Constant {
 
@@ -147,4 +149,9 @@ public interface Constant {
      * 发放新用户优惠券成功
      */
     Integer SEND_COUPOU_SUCCESS = 1;
+
+    /**
+     * 陪玩师接单Map
+     */
+    Map<Integer, Object> serviceUserAcceptOrderMap = new ConcurrentHashMap<>();
 }
