@@ -16,7 +16,7 @@ import java.util.Map;
 public class FenqileOrderServiceImpl implements FenqileOrderService {
 
 
-    private final String BASE_API  = "http://pop.api.fenqile.com/router/rest.js" ;
+    private final String BASE_API  = "http://pop.api.fenqile.com/router/rest.json" ;
 
     protected FenqileConfig config;
 
@@ -41,9 +41,9 @@ public class FenqileOrderServiceImpl implements FenqileOrderService {
         params.put("sign",sign);
         log.info("请求参数params:{}",params);
 
-
         String result =  HttpUtil.post(BASE_API,params);
         log.info("请求结果result:{}",result);
+
 
         return null;
     }
