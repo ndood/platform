@@ -24,7 +24,7 @@ public class FenqileOrderTest {
         fenqileOrderRequest.setSubject("lalal");
 
 
-        orderService.createOrder(fenqileOrderRequest);
+        orderService.createOrder(fenqileOrderRequest,Object.class);
 
     }
 

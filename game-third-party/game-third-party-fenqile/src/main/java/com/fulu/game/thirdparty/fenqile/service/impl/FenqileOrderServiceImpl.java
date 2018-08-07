@@ -31,7 +31,7 @@ public class FenqileOrderServiceImpl implements FenqileOrderService {
     }
 
     @Override
-    public <T> T createOrder(FenqileOrderRequest fenqileOrderRequest) {
+    public <T> T createOrder(FenqileOrderRequest fenqileOrderRequest,Class<T> clazz) {
         String method = "fenqile.third.order.create";
         Map<String, Object> params = BeanUtil.beanToMap(fenqileOrderRequest, Boolean.TRUE, Boolean.TRUE);
         params.put("method", method);
@@ -55,7 +55,7 @@ public class FenqileOrderServiceImpl implements FenqileOrderService {
         } catch (Exception e) {
             throw new ApiErrorException(e.getMessage());
         }
-        return null;
+        return BeanUtil.mapToBean(resultMap,clazz,Boolean.TRUE);
     }
 
 
