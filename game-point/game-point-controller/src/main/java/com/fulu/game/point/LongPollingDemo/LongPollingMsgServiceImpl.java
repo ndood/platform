@@ -28,7 +28,7 @@ public class LongPollingMsgServiceImpl {
     private UserService userService;
 
     DeferredResult<Result> getServiceUserAcceptOrderStatus() {
-        User user = userService.findById(36);
+        User user = userService.getCurrentUser();
         if (user == null) {
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
