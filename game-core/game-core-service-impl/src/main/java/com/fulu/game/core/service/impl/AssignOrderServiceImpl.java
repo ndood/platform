@@ -61,6 +61,7 @@ public class AssignOrderServiceImpl implements AssignOrderService {
         userAutoOrderSearchVO.setAreaId(areaId);
         userAutoOrderSearchVO.setStartRank(startRank);
         userAutoOrderSearchVO.setEndRank(endRank);
+        userAutoOrderSearchVO.setUserAutoSetting(Boolean.TRUE);
         List<Integer> userIds = userAutoReceiveOrderService.findUserBySearch(userAutoOrderSearchVO);
         if (userIds.isEmpty()) {
             return new ArrayList<>();
