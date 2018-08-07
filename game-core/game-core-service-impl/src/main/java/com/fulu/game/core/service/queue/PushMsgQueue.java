@@ -73,14 +73,16 @@ public class PushMsgQueue implements Runnable {
 
     private void process(WxMaTemplateMessageVO wxMaTemplateMessageVO) {
         try {
+            log.info("推送消息队列推送消息:wxMaTemplateMessageVO:{}",wxMaTemplateMessageVO);
             WxMaTemplateMessage wxMaTemplateMessage = wxMaTemplateMessageVO.getWxMaTemplateMessage();
             Integer pushId = wxMaTemplateMessageVO.getPushId();
             if (WechatEcoEnum.POINT.getType().equals(wxMaTemplateMessageVO.getPlatform())) {
+                log.info("上分平台推送消息:wxMaTemplateMessageVO:{}",wxMaTemplateMessageVO);
                 wxMaServiceSupply.pointWxMaService().getMsgService().sendTemplateMsg(wxMaTemplateMessage);
             } else {
+                log.info("陪玩平台推送消息:wxMaTemplateMessageVO:{}",wxMaTemplateMessageVO);
                 wxMaServiceSupply.playWxMaService().getMsgService().sendTemplateMsg(wxMaTemplateMessage);
             }
-
             if (pushId != null) {
                 countPushSuccessNum(wxMaTemplateMessageVO.getPushId());
             }

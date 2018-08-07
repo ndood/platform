@@ -245,6 +245,7 @@ public class WxTemplateMsgServiceImpl implements WxTemplateMsgService {
             } catch (Exception e) {
                 log.error("批量写入推送模板消息异常wechatFormidVOS:{}", wechatFormidVOS);
                 log.error("批量写入推送模板消息异常", e);
+                break;
             }
 
         }
