@@ -27,7 +27,7 @@ public class WechatController {
                             HttpServletResponse response) {
         try {
             String xmlResult = IOUtils.toString(request.getInputStream(), request.getCharacterEncoding());
-            return payService.payResult(xmlResult, WechatEcoEnum.PLAY);
+            return payService.payResult(xmlResult, WechatEcoEnum.POINT);
         }catch (Exception e){
             log.error("xml消息转换异常{}", e.getMessage());
             return WxPayNotifyResponse.fail(e.getMessage());

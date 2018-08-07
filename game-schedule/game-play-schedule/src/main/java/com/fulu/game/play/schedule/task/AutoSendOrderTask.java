@@ -61,7 +61,7 @@ public class AutoSendOrderTask {
                 try {
                     log.info("指派订单:order:{};接单用户user:{}",order,user);
                     orderService.receivePointOrder(order.getOrderNo(),user);
-                    redisOpenService.setTimeInterval(RedisKeyEnum.AUTO_ASSIGN_ORDER_USER.generateKey(user.getId()),30*60);
+                    redisOpenService.set(RedisKeyEnum.AUTO_ASSIGN_ORDER_USER.generateKey(user.getId()),order.getOrderNo(),30*60);
                 }catch (Exception e){
                     log.error("派单失败",e);
                 }
