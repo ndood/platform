@@ -127,10 +127,9 @@ public class ImServiceImpl implements ImService {
         JSONObject jsonObject = new JSONObject(paramMap);
         String body = jsonObject.toString();
         HttpResponse httpResponse = HttpUtils.post(userUrl, body, headerMap);
-        System.out.println(httpResponse);
+        log.info("im消息的返回状态:{}，消息内容:{}", httpResponse.getStatus(), httpResponse);
         return true;
     }
-
 
     public ImUser registerUser(String imId, String imPsw) {
         String token = getToken();

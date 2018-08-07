@@ -57,7 +57,7 @@ public class LongPollingMsgServiceImpl {
             long currentTimeMillis = System.currentTimeMillis();
             long resultTimeMillis = currentTimeMillis - startTimeMillis;
             if (resultTimeMillis >= Constant.MILLI_SECOND_60) {
-                System.out.println("超时退出轮询");
+                deferredResult.setResult(defaultResult);
                 break;
             }
             try {
@@ -67,9 +67,11 @@ public class LongPollingMsgServiceImpl {
             }
         }
 
-        //响应完毕的日志
+//        //响应完毕的日志
 //        deferredResult.onCompletion(
 //                () -> {
+//                    System.out.println("onCompletion，时间为:" + DateUtil.date());
+//                    return;
 //                    if(!deferredResult.hasResult()) {
 //                        Order order1 = (Order)Constant.serviceUserAcceptOrderMap.get(userId);
 //                        log.info("订单:{}在60s内没有陪玩师接单！", order1.getOrderNo());
@@ -81,8 +83,10 @@ public class LongPollingMsgServiceImpl {
 //        //超时日志
 //        deferredResult.onTimeout(
 //                () -> {
-//                    Order order1 = orders;
-//                    log.info("超时未接单，订单编号:{}", order1.getOrderNo());
+//                    System.out.println("onTimeout，时间为："+ DateUtil.date());
+//                    return;
+////                    Order order1 = orders;
+////                    log.info("超时未接单，订单编号:{}", order1.getOrderNo());
 //                });
 
         return deferredResult;
