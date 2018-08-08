@@ -10,11 +10,12 @@ public class FenqileConfig {
 
     private String partnerKey;
 
-
-
     private String v;
 
 
+    private String clientId;
+
+    private String clientSecret;
 
 
 

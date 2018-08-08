@@ -16,7 +16,7 @@ public class FenqileOrderRequest {
     //第三方订单号
     private String thirdOrderId;
     //下单时间
-    private Date createTime;
+    private String createTime;
     //商品描述
     private String subject;
 

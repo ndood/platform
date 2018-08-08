@@ -1,6 +1,7 @@
 package com.fulu.game.thirdparty.fenqile.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.thirdparty.fenqile.entity.FenqileConfig;
@@ -42,10 +43,12 @@ public class FenqileOrderServiceImpl implements FenqileOrderService {
         String sign = SignUtil.createSign(params, "MD5", getConfig().getPartnerKey());
         params.put("sign", sign);
         log.info("请求参数params:{}", HttpUtil.toParams(params));
-
         Map<String,Object> resultMap = null;
         try {
             String result = HttpUtil.post(BASE_API, params);
+            if(result==null){
+                throw new ApiErrorException("API请求错误");
+            }
             log.info("请求结果result:{}", result);
             JSONObject jso = JSONObject.parseObject(result);
             if(jso.containsKey("error_response")){
@@ -55,7 +58,7 @@ public class FenqileOrderServiceImpl implements FenqileOrderService {
         } catch (Exception e) {
             throw new ApiErrorException(e.getMessage());
         }
-        return BeanUtil.mapToBean(resultMap,clazz,Boolean.TRUE);
+        return BeanUtil.mapToBean(resultMap,clazz,CopyOptions.create().setIgnoreCase(true).setIgnoreNullValue(true));
     }
 
 
