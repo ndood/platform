@@ -15,7 +15,7 @@ public enum PagePathEnum {
     SERVICE_USER_VERIFY("pages/a/verify/verify?backHome=true","","陪玩师认证页面"),
     USER_ORDER_LIST("pages/c/order/order?refresh=true","","用户订单列表"),
     SERVICE_USER_ORDER_LIST("pages/a/order/order?refresh=true","","陪玩师订单列表"),
-    PUSH_PAGE("pages/push/push","","小程序推送中转页面"),
+    PUSH_PAGE("pages/push/push","sf/push/push","小程序推送中转页面"),
     POINT_ORDER_PAGE("","sf/rob/rob?refresh=true","上分订单抢单列表"),
     ORDER_LIST_PAGE("pages/order/list/list?backHome=true&refresh=true","sf/order/list/list?backHome=true&refresh=true","订单列表");
 

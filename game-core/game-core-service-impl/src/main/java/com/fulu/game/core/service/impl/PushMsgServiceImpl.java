@@ -4,6 +4,7 @@ package com.fulu.game.core.service.impl;
 import com.fulu.game.common.enums.PagePathEnum;
 import com.fulu.game.common.enums.PushMsgTypeEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.PushMsgDao;
@@ -99,7 +100,13 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
         }
 
         try {
-            String lastPage = new StringBuffer(PagePathEnum.PUSH_PAGE.getPagePath())
+            StringBuffer sbPath = null;
+            if(WechatEcoEnum.PLAY.getType().equals(pushMsg.getPlatform())){
+                sbPath =  new StringBuffer(PagePathEnum.PUSH_PAGE.getPagePath());
+            }else{
+                sbPath =  new StringBuffer(PagePathEnum.PUSH_PAGE.getSfPath());
+            }
+            String lastPage = sbPath
                     .append("?redirect=")
                     .append(URLEncoder.encode(pushMsg.getPage(), "utf-8"))
                     .append("&pushId=")

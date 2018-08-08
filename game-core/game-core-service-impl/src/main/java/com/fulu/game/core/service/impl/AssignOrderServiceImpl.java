@@ -61,14 +61,14 @@ public class AssignOrderServiceImpl implements AssignOrderService {
         userAutoOrderSearchVO.setAreaId(areaId);
         userAutoOrderSearchVO.setStartRank(startRank);
         userAutoOrderSearchVO.setEndRank(endRank);
+        userAutoOrderSearchVO.setUserAutoSetting(Boolean.TRUE);
         List<Integer> userIds = userAutoReceiveOrderService.findUserBySearch(userAutoOrderSearchVO);
         if (userIds.isEmpty()) {
             return new ArrayList<>();
         }
 
         Integer orderUserId = order.getUserId();
-        userIds.removeIf(userId -> (userId.equals(orderUserId)));
-        userIds.removeIf(userId -> redisOpenService.hasKey(RedisKeyEnum.AUTO_ASSIGN_ORDER_USER.generateKey(userId)));
+        userIds.removeIf(userId -> (userId.equals(orderUserId)||redisOpenService.hasKey(RedisKeyEnum.AUTO_ASSIGN_ORDER_USER.generateKey(userId))));
         return userService.findByUserIds(userIds,Boolean.TRUE);
     }
 
