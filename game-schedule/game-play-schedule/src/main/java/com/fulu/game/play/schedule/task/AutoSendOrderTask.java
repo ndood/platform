@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -42,11 +43,13 @@ public class AutoSendOrderTask {
     public void autoCompleteOrder() {
         log.info("自动派单任务开始---");
         Setting setting = settingService.lastSettingType(SettingTypeEnum.AUTO_RECEIVE_ORDER_TIME.getType());
-        long autoReveTimeSecond = Long.valueOf(setting.getVal())*60;
+        long autoReveTimeSecond =  new BigDecimal(setting.getVal()).multiply(new BigDecimal(60)).longValue();
+        log.info("自动派单时间为:{}",autoReveTimeSecond);
         Integer[] statusList = new Integer[]{OrderStatusEnum.WAIT_SERVICE.getStatus()};
         List<Order> orderList = orderService.findByStatusListAndType(statusList, OrderTypeEnum.POINT.getType());
         for (Order order : orderList) {
             long apartSecond = DateUtil.between(order.getCreateTime(), new Date(), DateUnit.SECOND);
+            log.info("订单时间间隔:apartSecond:{};orderNo:{}",apartSecond,order.getOrderNo());
             if(apartSecond>autoReveTimeSecond){
                 User user = null;
                 try {
