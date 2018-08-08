@@ -1,5 +1,6 @@
 package com.fulu.game.point.LongPollingDemo;
 
+import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.exception.UserException;
@@ -24,8 +25,6 @@ import java.util.Map;
 @Service
 public class LongPollingMsgServiceImpl {
 
-    private Long threadSleepTime = 5000L;
-
     @Autowired
     private UserService userService;
 
@@ -47,6 +46,7 @@ public class LongPollingMsgServiceImpl {
 
         long startTimeMillis = System.currentTimeMillis();
         while (true) {
+            Long threadSleepTime = 5000L;
             if (Constant.serviceUserAcceptOrderMap.containsKey(userId)) {
                 order = (Order) Constant.serviceUserAcceptOrderMap.get(userId);
                 log.info("陪玩师id:{}已接单，订单编号:{}！", order.getServiceUserId(), order.getOrderNo());
@@ -56,9 +56,13 @@ public class LongPollingMsgServiceImpl {
                 Constant.serviceUserAcceptOrderMap.remove(userId);
                 return deferredResult;
             }
+
             long currentTimeMillis = System.currentTimeMillis();
             long resultTimeMillis = currentTimeMillis - startTimeMillis;
-            if (resultTimeMillis >= Constant.MILLI_SECOND_60 - threadSleepTime) {
+            if (resultTimeMillis >= Constant.MILLI_SECOND_60 - 5000L) {
+                threadSleepTime = 1000L;
+            }
+            if (resultTimeMillis >= Constant.MILLI_SECOND_60 - 1000L) {
                 deferredResult.setResult(defaultResult);
                 break;
             }

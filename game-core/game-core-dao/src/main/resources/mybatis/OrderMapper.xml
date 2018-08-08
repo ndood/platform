@@ -11,7 +11,7 @@
         <result column="service_user_id" property="serviceUserId"/>
         <result column="name" property="name"/>
         <result column="type" property="type"/>
-        <result column="channelId" property="channel_id"/>
+        <result column="channel_id" property="channelId"/>
         <result column="remark" property="remark"/>
         <result column="is_pay" property="isPay"/>
         <result column="is_pay_callback" property="isPayCallback"/>
