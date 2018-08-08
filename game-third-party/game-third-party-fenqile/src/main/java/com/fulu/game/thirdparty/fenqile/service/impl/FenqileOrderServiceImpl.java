@@ -62,4 +62,36 @@ public class FenqileOrderServiceImpl implements FenqileOrderService {
     }
 
 
+
+    public <T> T noticeModify(Integer noticeType,String noticeUrl,Class<T> clazz){
+        String method = "fenqile.third.notice.modify";
+        Map<String, Object> params = new HashMap<>();
+        params.put("method", method);
+        params.put("timestamp", new Date().getTime());
+        params.put("format", "json");
+        params.put("v", getConfig().getV());
+        params.put("partner_id", getConfig().getPartnerId());
+        params.put("notice_type",noticeType);
+        params.put("notice_url",noticeUrl);
+        String sign = SignUtil.createSign(params, "MD5", getConfig().getPartnerKey());
+        params.put("sign", sign);
+        log.info("请求参数params:{}", HttpUtil.toParams(params));
+        Map<String,Object> resultMap = null;
+        try {
+            String result = HttpUtil.post(BASE_API, params);
+            if(result==null){
+                throw new ApiErrorException("API请求错误");
+            }
+            log.info("请求结果result:{}", result);
+            JSONObject jso = JSONObject.parseObject(result);
+            if(jso.containsKey("error_response")){
+                throw new ApiErrorException(result);
+            }
+            resultMap = jso.getInnerMap();
+        } catch (Exception e) {
+            throw new ApiErrorException(e.getMessage());
+        }
+        return BeanUtil.mapToBean(resultMap,clazz,CopyOptions.create().setIgnoreCase(true).setIgnoreNullValue(true));
+    }
+
 }

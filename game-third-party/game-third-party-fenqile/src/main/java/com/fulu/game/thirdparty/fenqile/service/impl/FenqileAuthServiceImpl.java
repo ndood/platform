@@ -6,6 +6,7 @@ import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.thirdparty.fenqile.entity.CodeSessionResult;
 import com.fulu.game.thirdparty.fenqile.entity.FenqileConfig;
+import com.fulu.game.thirdparty.fenqile.entity.FenqileUserInfo;
 import com.fulu.game.thirdparty.fenqile.exception.ApiErrorException;
 import com.fulu.game.thirdparty.fenqile.service.FenqileAuthService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,6 @@ public class FenqileAuthServiceImpl implements FenqileAuthService{
      * @param code
      * @return
      */
-
     public CodeSessionResult accessToken(String code){
         String baseUrl = "http://open.api.fenqile.com/auth/access_token";
         StringBuilder sb = new StringBuilder(baseUrl);
@@ -49,12 +49,22 @@ public class FenqileAuthServiceImpl implements FenqileAuthService{
     }
 
     /**
-     *
+     * 获取用户信息
+     * @param codeSessionResult
+     * @return
+     */
+    public FenqileUserInfo getUserInfo(CodeSessionResult codeSessionResult){
+        return getUserInfo(codeSessionResult.getUid(),codeSessionResult.getAccessToken());
+    }
+
+
+    /**
+     * 获取用户信息
      * @param openId
      * @param accessToken
      * @return
      */
-    public Object getUserInfo(String openId,String accessToken){
+    public FenqileUserInfo getUserInfo(String openId, String accessToken){
         String baseUrl = "https://open.api.fenqile.com/auth/user_info.json";
         StringBuilder sb = new StringBuilder(baseUrl);
         sb.append("?openId=").append(openId);
@@ -66,8 +76,8 @@ public class FenqileAuthServiceImpl implements FenqileAuthService{
         log.info("请求结果result:{}", body);
         JSONObject jso = JSONObject.parseObject(body);
         if("ok".equals(jso.get("retmsg"))){
-            CodeSessionResult codeSessionResult = BeanUtil.mapToBean(jso.getInnerMap(),CodeSessionResult.class, CopyOptions.create().setIgnoreCase(true).setIgnoreNullValue(true));
-            return codeSessionResult;
+            FenqileUserInfo userInfo = BeanUtil.mapToBean(jso.getJSONObject("userInfo").getInnerMap(),FenqileUserInfo.class, CopyOptions.create().setIgnoreCase(true).setIgnoreNullValue(true));
+            return userInfo;
         }
         throw new ApiErrorException(body);
     }

@@ -12,4 +12,7 @@ public interface FenqileOrderService {
      * @return
      */
     <T> T createOrder(FenqileOrderRequest fenqileOrderRequest, Class<T> clazz);
+
+
+    <T> T noticeModify(Integer noticeType,String noticeUrl,Class<T> clazz);
 }
