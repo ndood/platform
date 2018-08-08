@@ -28,6 +28,7 @@ public class FenqileAuthServiceImpl implements FenqileAuthService{
      * @param code
      * @return
      */
+
     public CodeSessionResult accessToken(String code){
         String baseUrl = "http://open.api.fenqile.com/auth/access_token";
         StringBuilder sb = new StringBuilder(baseUrl);
@@ -46,4 +47,31 @@ public class FenqileAuthServiceImpl implements FenqileAuthService{
         }
         throw new ApiErrorException(body);
     }
+
+    /**
+     *
+     * @param openId
+     * @param accessToken
+     * @return
+     */
+    public Object getUserInfo(String openId,String accessToken){
+        String baseUrl = "https://open.api.fenqile.com/auth/user_info.json";
+        StringBuilder sb = new StringBuilder(baseUrl);
+        sb.append("?openId=").append(openId);
+        sb.append("&accessToken=").append(accessToken);
+        String body = HttpUtil.get(sb.toString());
+        if(body==null){
+            throw new ApiErrorException("API请求错误");
+        }
+        log.info("请求结果result:{}", body);
+        JSONObject jso = JSONObject.parseObject(body);
+        if("ok".equals(jso.get("retmsg"))){
+            CodeSessionResult codeSessionResult = BeanUtil.mapToBean(jso.getInnerMap(),CodeSessionResult.class, CopyOptions.create().setIgnoreCase(true).setIgnoreNullValue(true));
+            return codeSessionResult;
+        }
+        throw new ApiErrorException(body);
+    }
+
+
+
 }
