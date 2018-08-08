@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URLEncoder;
 import java.util.List;
 
@@ -207,9 +209,9 @@ public class OrderController extends BaseController {
     public void orderExport(HttpServletResponse response,
                             OrderSearchVO orderSearchVO) throws Exception {
         String title = "订单列表";
-        List<Order> userList = orderService.findBySearchVO(orderSearchVO);
+        List<Order> orderList = orderService.findBySearchVO(orderSearchVO);
         ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
-        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, Order.class, userList);
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, Order.class, orderList);
         response.setCharacterEncoding("UTF-8");
         response.setHeader("content-Type", "application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));

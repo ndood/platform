@@ -1443,11 +1443,20 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     @Override
     public List<Order> findBySearchVO(OrderSearchVO orderSearchVO) {
         Integer status = orderSearchVO.getStatus();
+        orderSearchVO.setStatus(null);
         Integer[] statusList = OrderStatusGroupEnum.getByValue(status);
         if (null != statusList && statusList.length > 0) {
             orderSearchVO.setStatusList(statusList);
         }
-        return orderDao.findBySearchVO(orderSearchVO);
+        List<Order> orderList = orderDao.findBySearchVO(orderSearchVO);
+        if (cn.hutool.core.collection.CollectionUtil.isNotEmpty(orderList)) {
+            for (Order order : orderList) {
+                if (order.getContactType() == null) {
+                    order.setContactType(0);
+                }
+            }
+        }
+        return orderList;
     }
 
 
