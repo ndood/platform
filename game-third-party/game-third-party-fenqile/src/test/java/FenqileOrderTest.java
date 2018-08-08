@@ -38,10 +38,8 @@ public class FenqileOrderTest {
         fenqileConfig.setPartnerKey("43ea4b7f27e36f2eb7b194b3924291ca");
         fenqileConfig.setV("1.4");
         orderService.setConfig(fenqileConfig);
-
-
-        orderService.noticeModify(1,"http://www.baidu.com",Map.class);
-
+        Map map =    orderService.noticeModify(1,"http://www.baidu.com",HashMap.class);
+        System.out.println(map);
     }
 
 }
