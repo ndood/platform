@@ -55,10 +55,6 @@ public class OrderController extends BaseController {
     private PayService payService;
     @Autowired
     private OrderPointProductService orderPointProductService;
-    @Autowired
-    private ImService imService;
-    @Autowired
-    private SpringThreadPoolExecutor springThreadPoolExecutor;
 
     /**
      * 订单详情
@@ -165,21 +161,6 @@ public class OrderController extends BaseController {
             throw new OrderException(OrderException.ExceptionCode.ORDER_USER_NOT_HAS_TECH, order.getOrderNo());
         }
         orderService.receivePointOrder(order.getOrderNo(), user);
-
-        springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
-            @Override
-            public void run() {
-                //方案一：长轮询通知用户
-                order.setServiceUserId(user.getId());
-                Constant.serviceUserAcceptOrderMap.put(order.getUserId(), order);
-                //方案二：发送IM消息通知用户
-                User bossUser = userService.findById(order.getUserId());
-                String imId = bossUser.getImId();
-                if (StringUtils.isNotBlank(imId)) {
-                    imService.sendMsgToImUser(imId, Constant.SERVICE_USER_ACCEPT_ORDER);
-                }
-            }
-        });
         return Result.success().data(orderNo).msg("接单成功!");
     }
 

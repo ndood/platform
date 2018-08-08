@@ -3,6 +3,7 @@ package com.fulu.game.core.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ProductException;
@@ -89,6 +90,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     private SpringThreadPoolExecutor springThreadPoolExecutor;
     @Autowired
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
+    @Autowired
+    private ImService imService;
 
     @Override
     public ICommonDao<Order, Integer> getDao() {
@@ -275,9 +278,26 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             orderStatusDetailsService.create(orderNo, order.getStatus(), 10);
             //增加接单数量
             userAutoReceiveOrderService.addOrderNum(serviceUser.getId(), order.getCategoryId());
+
+            //开启新线程通知老板，陪玩师已接单
+            springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
+                @Override
+                public void run() {
+                    //方案一：长轮询通知老板
+                    order.setServiceUserId(serviceUser.getId());
+                    Constant.serviceUserAcceptOrderMap.put(order.getUserId(), order);
+                    //方案二：发送IM消息通知老板
+                    User bossUser = userService.findById(order.getUserId());
+                    String imId = bossUser.getImId();
+                    if (StringUtils.isNotBlank(imId)) {
+                        imService.sendMsgToImUser(imId, Constant.SERVICE_USER_ACCEPT_ORDER);
+                    }
+                }
+            });
         } finally {
             redisOpenService.unlock(RedisKeyEnum.MARKET_ORDER_RECEIVE_LOCK.generateKey(order.getOrderNo()));
         }
+
         return orderNo;
     }
 
