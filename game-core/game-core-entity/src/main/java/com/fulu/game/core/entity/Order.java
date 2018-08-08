@@ -80,7 +80,8 @@ public class Order implements Serializable {
     @Excel(name = "联系方式类型", orderNum = "18", replace = {
             "手机号_1",
             "QQ号_2",
-            "微信号_3"}, width = 15)
+            "微信号_3",
+            " _0"}, width = 15)
     private Integer contactType;
     //联系方式
     @Excel(name = "联系方式", orderNum = "19", width = 15)

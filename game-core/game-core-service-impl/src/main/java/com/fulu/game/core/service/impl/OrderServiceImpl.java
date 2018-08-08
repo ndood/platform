@@ -1,5 +1,8 @@
 package com.fulu.game.core.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ProductException;
@@ -19,9 +22,6 @@ import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1447,7 +1447,15 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         if (null != statusList && statusList.length > 0) {
             orderSearchVO.setStatusList(statusList);
         }
-        return orderDao.findBySearchVO(orderSearchVO);
+        List<Order> orderList = orderDao.findBySearchVO(orderSearchVO);
+        if (CollectionUtil.isNotEmpty(orderList)) {
+            for (Order order : orderList) {
+                if (order.getContactType() == null) {
+                    order.setContactType(0);
+                }
+            }
+        }
+        return orderList;
     }
 
 
