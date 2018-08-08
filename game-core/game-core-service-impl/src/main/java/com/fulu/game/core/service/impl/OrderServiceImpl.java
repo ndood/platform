@@ -1442,6 +1442,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     @Override
     public List<Order> findBySearchVO(OrderSearchVO orderSearchVO) {
         Integer status = orderSearchVO.getStatus();
+        orderSearchVO.setStatus(null);
         Integer[] statusList = OrderStatusGroupEnum.getByValue(status);
         if (null != statusList && statusList.length > 0) {
             orderSearchVO.setStatusList(statusList);

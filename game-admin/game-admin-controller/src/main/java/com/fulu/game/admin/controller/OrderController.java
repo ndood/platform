@@ -14,7 +14,6 @@ import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import com.fulu.game.core.service.OrderService;
 import com.github.pagehelper.PageInfo;
-import cn.hutool.core.collection.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -188,9 +187,9 @@ public class OrderController extends BaseController {
     public void orderExport(HttpServletResponse response,
                             OrderSearchVO orderSearchVO) throws Exception {
         String title = "订单列表";
-        List<Order> userList = orderService.findBySearchVO(orderSearchVO);
+        List<Order> orderList = orderService.findBySearchVO(orderSearchVO);
         ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
-        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, Order.class, userList);
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, Order.class, orderList);
         response.setCharacterEncoding("UTF-8");
         response.setHeader("content-Type", "application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));

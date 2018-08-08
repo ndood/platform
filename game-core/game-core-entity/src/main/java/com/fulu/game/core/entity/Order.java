@@ -58,7 +58,7 @@ public class Order implements Serializable {
     @Excel(name = "下单用户ID", orderNum = "7", width = 15)
     private Integer userId;
     //订单类型
-    @Excel(name = "订单类型", orderNum = "3", replace = {"普通订单_1", "集市订单_2"}, width = 10)
+    @Excel(name = "订单类型", orderNum = "3", replace = {"陪玩订单_1", "上分订单_2"}, width = 10)
     private Integer type;
     //渠道商ID
     @Excel(name = "渠道商ID", orderNum = "4", width = 10)
