@@ -8,8 +8,8 @@ import lombok.Getter;
 public enum  OrderTypeEnum  implements TypeEnum<Integer>{
 
 
-    PLATFORM(1,"平台订单"),
-    POINT(2,"市场订单");
+    PLATFORM(1,"陪玩订单"),
+    POINT(2,"上分订单");
 
     private Integer type;
     private String msg;

@@ -1,12 +1,6 @@
 package oss;
 
-import com.aliyun.oss.OSSClient;
-import com.aliyun.oss.model.CannedAccessControlList;
-import com.aliyun.oss.model.OSSObject;
-import com.aliyun.oss.model.PutObjectRequest;
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
-
-import java.io.*;
 
 public class OssTest {
 

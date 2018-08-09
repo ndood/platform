@@ -1,6 +1,6 @@
 package com.fulu.game.core.service.impl;
 
-import com.fulu.game.common.enums.PagePathEnum;
+import com.fulu.game.common.enums.WechatPagePathEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.RegistSourceDao;
@@ -51,7 +51,7 @@ public class RegistSourceServiceImpl extends AbsCommonService<RegistSource, Inte
 
         String scene = "sourceId=" + rs.getId();
         log.info("调用生成小程序码接口,参数scene={}", scene);
-        String url = wxCodeService.create(scene, PagePathEnum.PUSH_PAGE.getPagePath());
+        String url = wxCodeService.create(scene, WechatPagePathEnum.PUSH_PAGE.getPlayPagePath());
         rs.setWxcodeUrl(url);
         registSourceDao.update(rs);
         return rs;

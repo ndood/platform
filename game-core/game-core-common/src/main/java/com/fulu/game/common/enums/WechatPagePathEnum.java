@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum PagePathEnum {
+public enum WechatPagePathEnum {
 
     TECH_SHARE_CARD("pages/c/card/card","","陪玩师技能名片loadpage"),
     TECH_AUTH_CARD("pages/a/card/card","","技能认证分享loadpage"),
@@ -17,24 +17,18 @@ public enum PagePathEnum {
     SERVICE_USER_ORDER_LIST("pages/a/order/order?refresh=true","","陪玩师订单列表"),
     PUSH_PAGE("pages/push/push","","小程序推送中转页面"),
     POINT_ORDER_PAGE("","sf/rob/rob?refresh=true","上分订单抢单列表"),
+
+
+
     ORDER_LIST_PAGE("pages/order/list/list?backHome=true&refresh=true","sf/order/list/list?backHome=true&refresh=true","订单列表");
 
 
     //陪玩路径
-    private String pagePath;
+    private String playPagePath;
     //上分路径
-    private String sfPath;
+    private String pointPagePath;
     //路径描述
     private String content;
 
-
-    public static String findSfPatgByPagePath(String pagePath){
-        for(PagePathEnum  pg :  PagePathEnum.values()){
-            if(pg.getPagePath().equals(pagePath)){
-                return pg.getSfPath();
-            }
-        }
-        return null;
-    }
 
 }

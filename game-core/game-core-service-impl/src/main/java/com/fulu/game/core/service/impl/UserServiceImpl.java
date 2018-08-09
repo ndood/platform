@@ -343,7 +343,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             log.error("技能认证分享-未查询到对应文案");
             throw new ImgException(ImgException.ExceptionCode.SHARE_NOT_EXSISTS);
         }
-        String codeUrl = wxCodeService.create(scene, PagePathEnum.TECH_AUTH_CARD.getPagePath());
+        String codeUrl = wxCodeService.create(scene, WechatPagePathEnum.TECH_AUTH_CARD.getPlayPagePath());
         ImgUtil.CardImg cardImg = getTechAuthContentMap(userInfoVO, shareContent, codeUrl);
         String shareCardUrl = imgUtil.createTechAuth(cardImg);
         return shareCardUrl;
@@ -381,7 +381,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             log.error("技能认证分享-未查询到对应文案");
             throw new ImgException(ImgException.ExceptionCode.SHARE_NOT_EXSISTS);
         }
-        String codeUrl = wxCodeService.create(scene, PagePathEnum.TECH_SHARE_CARD.getPagePath());
+        String codeUrl = wxCodeService.create(scene, WechatPagePathEnum.TECH_SHARE_CARD.getPlayPagePath());
         ImgUtil.CardImg cardImg = getTechCardContentMap(productDetailsVO, shareStr, codeUrl);
         String shareCardUrl = imgUtil.createTechCard(cardImg);
         return shareCardUrl;
