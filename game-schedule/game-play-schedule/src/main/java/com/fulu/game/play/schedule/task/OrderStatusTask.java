@@ -5,6 +5,7 @@ import com.fulu.game.common.enums.OrderTypeEnum;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.OrderStatusDetailsService;
+import com.fulu.game.schedule.service.impl.ScheduleOrderServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,7 +18,7 @@ import java.util.List;
 public class OrderStatusTask {
 
     @Autowired
-    private OrderService orderService;
+    private ScheduleOrderServiceImpl orderService;
 
     @Autowired
     private OrderStatusDetailsService orderStatusDetailsService;

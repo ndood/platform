@@ -11,6 +11,7 @@ import com.fulu.game.core.service.AssignOrderService;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.SettingService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.schedule.service.impl.ScheduleOrderServiceImpl;
 import com.xiaoleilu.hutool.date.DateUnit;
 import com.xiaoleilu.hutool.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ import java.util.List;
 public class AutoSendOrderTask {
 
     @Autowired
-    private OrderService orderService;
+    private ScheduleOrderServiceImpl orderService;
     @Autowired
     private SettingService settingService;
     @Autowired

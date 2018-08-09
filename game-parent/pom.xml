@@ -19,6 +19,10 @@
         <hutool.version>3.0.6</hutool.version>
         <hutool-all.version>4.0.12</hutool-all.version>
         <game.core.version>1.0</game.core.version>
+        <game.play.service.version>1.0</game.play.service.version>
+        <game.point.service.version>1.0</game.point.service.version>
+        <game.admin.service.version>1.0</game.admin.service.version>
+        <game.schedule.service.version>1.0</game.schedule.service.version>
         <pagehelper.version>4.0.3</pagehelper.version>
         <xerces.version>2.9.1</xerces.version>
         <aliyun.oss.verson>2.8.2</aliyun.oss.verson>

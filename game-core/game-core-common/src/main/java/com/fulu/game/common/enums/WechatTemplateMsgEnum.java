@@ -18,9 +18,9 @@ public enum WechatTemplateMsgEnum {
     ORDER_TOUSER_AFFIRM_RECEIVE(WechatEcoEnum.PLAY.getType(),PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.PLAY_LEAVE_MSG, "【订单状态：{}】备注：陪玩师已经接单啦，一起谈谈什么时候开始呢？超过24小时未开始，订单将自动取消。"),//已经接单
     ORDER_TOUSER_START_SERVICE(WechatEcoEnum.PLAY.getType(),PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.PLAY_LEAVE_MSG, "【订单状态：{}】备注：陪玩师开始陪玩服务啦，快快上号开始吧。"), //开始服务
     ORDER_TOUSER_CHECK(WechatEcoEnum.PLAY.getType(),PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.PLAY_LEAVE_MSG, "【订单状态：{}】 备注：陪玩师向发起了完成服务申请，快去确认吧。"), //提交验收
-    ORDER_TOUSER_APPEAL(WechatEcoEnum.PLAY.getType(),PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.PLAY_LEAVE_MSG, "【订单状态：{}】备注：对于您的协商，陪玩师申请客服进行仲裁，快去提交凭证吧（2小时内提交）。"), //仲裁
-    ORDER_TOUSER_APPEAL_USER_WIN(WechatEcoEnum.PLAY.getType(),PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.PLAY_LEAVE_MSG, "【订单状态：{}】 备注：您的订单仲裁结果为:老板胜诉，将会为你全额退款。"), //仲裁
-    ORDER_TOUSER_APPEAL_SERVICE_WIN(WechatEcoEnum.PLAY.getType(),PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.PLAY_LEAVE_MSG, "【订单状态：{}】 备注：您的订单仲裁结果为:陪玩师胜诉，订单金额将会支付给陪玩师。"), //仲裁
+    ORDER_TOUSER_APPEAL(WechatEcoEnum.PLAY.getType(),PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.PLAY_LEAVE_MSG, "【订单状态：{}】备注：对于您的协商，陪玩师申请客服进行仲裁，快去提交凭证吧（2小时内提交）。"), //用户发起仲裁
+    ORDER_TOUSER_APPEAL_USER_WIN(WechatEcoEnum.PLAY.getType(),PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.PLAY_LEAVE_MSG, "【订单状态：{}】 备注：您的订单仲裁结果为:老板胜诉，将会为你全额退款。"), //管理员仲裁老板胜
+    ORDER_TOUSER_APPEAL_SERVICE_WIN(WechatEcoEnum.PLAY.getType(),PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.PLAY_LEAVE_MSG, "【订单状态：{}】 备注：您的订单仲裁结果为:陪玩师胜诉，订单金额将会支付给陪玩师。"), //管理员仲裁陪玩师胜
     ORDER_TOUSER_CONSULT_REJECT(WechatEcoEnum.PLAY.getType(),PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.PLAY_LEAVE_MSG, "【订单状态：{}】 备注：对于您的协商，陪玩师进行了拒绝，快去处理吧，超过2小时未处理，将默认取消协商。"), //拒绝协商
     ORDER_TOUSER_CONSULT_AGREE(WechatEcoEnum.PLAY.getType(),PagePathEnum.ORDER_LIST_PAGE.getPagePath(), WechatTemplateEnum.PLAY_LEAVE_MSG, "【订单状态：{}】 备注：对于您的协商，陪玩师进行了同意，金额将退回到您的微信账号。"), //同意协商
 

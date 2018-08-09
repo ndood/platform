@@ -1,7 +1,6 @@
 package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
-import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.exception.SystemException;
@@ -12,12 +11,15 @@ import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.entity.vo.OrderEventVO;
 import com.fulu.game.core.entity.vo.OrderVO;
-import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.OrderDealService;
+import com.fulu.game.core.service.OrderEventService;
+import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.play.service.impl.PilotOrderServiceImpl;
+import com.fulu.game.play.service.impl.PlayMiniAppOrderServiceImpl;
 import com.fulu.game.play.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,8 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 @RestController
 @Slf4j
@@ -34,16 +34,17 @@ import java.util.Map;
 public class OrderController extends BaseController {
 
     @Autowired
-    private OrderService orderService;
+    private PlayMiniAppOrderServiceImpl orderService;
+    @Autowired
+    private PilotOrderServiceImpl pilotOrderService;
     @Autowired
     private OrderDealService orderDealService;
     @Autowired
-    private PayService payService;
+    private PlayMiniAppPayServiceImpl playMiniAppPayService;
     @Autowired
     private UserService userService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
-
 
 
     /**
@@ -52,8 +53,8 @@ public class OrderController extends BaseController {
      * @param productId
      * @return
      */
-    @RequestMapping(value = "canservice")
-    public Result canService(@RequestParam(required = true) Integer productId) {
+    @RequestMapping(value = "isBusing")
+    public Result isBusing(@RequestParam(required = true) Integer productId) {
         return Result.success().msg("陪玩师空闲状态!");
     }
 
@@ -82,7 +83,8 @@ public class OrderController extends BaseController {
                          String contactInfo) {
         User user = userService.getCurrentUser();
         if (!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))) {
-            log.error("验证sessionkey错误:productId:{};num:{};couponNo:{};sessionkey:{};remark:{};userId:{}", productId, num, couponNo, sessionkey, remark, user.getId());
+            log.error("验证sessionkey错误:productId:{};num:{};couponNo:{};sessionkey:{};remark:{};userId:{}",
+                    productId, num, couponNo, sessionkey, remark, user.getId());
             throw new SystemException(SystemException.ExceptionCode.NO_FORM_TOKEN_ERROR);
         }
         try {
@@ -94,7 +96,19 @@ public class OrderController extends BaseController {
         }
     }
 
-
+    /**
+     * 领航小程序提交订单
+     *
+     * @param productId
+     * @param request
+     * @param num
+     * @param couponNo
+     * @param sessionkey
+     * @param remark
+     * @param contactType
+     * @param contactInfo
+     * @return
+     */
     @RequestMapping(value = "pilot/submit")
     public Result pilotSubmit(@RequestParam(required = true) Integer productId,
                               HttpServletRequest request,
@@ -109,16 +123,14 @@ public class OrderController extends BaseController {
             log.error("验证sessionkey错误:productId:{};num:{};couponNo:{};sessionkey:{};remark:{};userId:{}", productId, num, couponNo, sessionkey, remark, user.getId());
             throw new SystemException(SystemException.ExceptionCode.NO_FORM_TOKEN_ERROR);
         }
-        ;
         String ip = RequestUtil.getIpAdrress(request);
         try {
-            String orderNo = orderService.pilotSubmit(productId, num, remark, couponNo, ip, contactType, contactInfo);
+            String orderNo = pilotOrderService.pilotSubmit(productId, num, remark, couponNo, ip, contactType, contactInfo);
             return Result.success().data(orderNo).msg("创建订单成功!");
         } finally {
             redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));
         }
     }
-
 
     /**
      * 订单支付接口
@@ -131,10 +143,11 @@ public class OrderController extends BaseController {
     public Result pay(@RequestParam(required = true) String orderNo,
                       HttpServletRequest request) {
         String ip = RequestUtil.getIpAdrress(request);
-        Object result = payService.wechatUnifyOrder(orderNo, ip);
+        Order order = orderService.findByOrderNo(orderNo);
+        User user = userService.findById(order.getUserId());
+        Object result = playMiniAppPayService.payOrder(order, user, ip);
         return Result.success().data(result);
     }
-
 
     /**
      * 订单列表
@@ -202,6 +215,7 @@ public class OrderController extends BaseController {
 
     /**
      * 提醒开始服务
+     *
      * @param orderNo
      * @return
      */
@@ -218,6 +232,7 @@ public class OrderController extends BaseController {
 
     /**
      * 用户协商订单
+     *
      * @return
      */
     @RequestMapping(value = "/user/consult")
@@ -281,6 +296,7 @@ public class OrderController extends BaseController {
 
     /**
      * 陪玩师接收订单
+     *
      * @param orderNo
      * @return
      */
@@ -306,6 +322,7 @@ public class OrderController extends BaseController {
 
     /**
      * 用户验收订单
+     *
      * @param orderNo
      * @return
      */
@@ -403,8 +420,6 @@ public class OrderController extends BaseController {
         OrderDetailsVO orderDetailsVO = orderService.findOrderDetails(orderNo);
         return Result.success().data(orderDetailsVO);
     }
-
-
 
 
 }

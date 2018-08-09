@@ -18,10 +18,10 @@ import java.util.List;
 
 
 @Service
-public class OrderStatusDetailsServiceImpl extends AbsCommonService<OrderStatusDetails,Integer> implements OrderStatusDetailsService {
+public class OrderStatusDetailsServiceImpl extends AbsCommonService<OrderStatusDetails, Integer> implements OrderStatusDetailsService {
 
     @Autowired
-	private OrderStatusDetailsDao orderStatusDetailsDao;
+    private OrderStatusDetailsDao orderStatusDetailsDao;
 
     @Override
     public ICommonDao<OrderStatusDetails, Integer> getDao() {
@@ -30,7 +30,7 @@ public class OrderStatusDetailsServiceImpl extends AbsCommonService<OrderStatusD
 
 
     @Override
-    public void create(String orderNo,Integer orderStatus, int minute) {
+    public void create(String orderNo, Integer orderStatus, int minute) {
         OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
         orderStatusDetails.setOrderStatus(orderStatus);
         orderStatusDetails.setCountDownMinute(minute);
@@ -44,23 +44,24 @@ public class OrderStatusDetailsServiceImpl extends AbsCommonService<OrderStatusD
 
     @Override
     public void create(String orderNo, Integer orderStatus) {
-        create(orderNo,orderStatus,0);
+        create(orderNo, orderStatus, 0);
     }
 
     /**
      * 重置订单状态
+     *
      * @param orderNo
      * @param resetStatus
      */
     @Override
-    public void resetOrderStatus(String orderNo, Integer resetStatus,Integer[] invalidStatus) {
-        List<Integer> invalidStatusList =Arrays.asList(invalidStatus);
-        List<OrderStatusDetails> list = findByOrderStatus(orderNo,invalidStatusList);
+    public void resetOrderStatus(String orderNo, Integer resetStatus, Integer[] invalidStatus) {
+        List<Integer> invalidStatusList = Arrays.asList(invalidStatus);
+        List<OrderStatusDetails> list = findByOrderStatus(orderNo, invalidStatusList);
         int minute = 0;
-        for(OrderStatusDetails orderStatusDetails : list){
-            if(orderStatusDetails.getOrderStatus().equals(resetStatus)){
-                if(orderStatusDetails.getCountDownMinute()>0){
-                    minute = 72*60;
+        for (OrderStatusDetails orderStatusDetails : list) {
+            if (orderStatusDetails.getOrderStatus().equals(resetStatus)) {
+                if (orderStatusDetails.getCountDownMinute() > 0) {
+                    minute = 72 * 60;
                 }
             }
             orderStatusDetails.setIsValid(false);
@@ -86,9 +87,9 @@ public class OrderStatusDetailsServiceImpl extends AbsCommonService<OrderStatusD
         param.setOrderStatus(orderStatus);
         param.setIsValid(true);
         List<OrderStatusDetails> list = orderStatusDetailsDao.findByParameter(param);
-        if(!list.isEmpty()){
+        if (!list.isEmpty()) {
             return list.get(0);
-        }else{
+        } else {
             OrderStatusDetails orderStatusDetails = new OrderStatusDetails();
             orderStatusDetails.setOrderNo(orderNo);
             orderStatusDetails.setOrderStatus(orderStatus);
@@ -99,25 +100,23 @@ public class OrderStatusDetailsServiceImpl extends AbsCommonService<OrderStatusD
     }
 
 
-
-    public long getCountDown(String orderNo,Integer orderStatus){
-        OrderStatusDetails orderStatusDetails = findByOrderAndStatus(orderNo,orderStatus);
-        if(orderStatusDetails.getCountDownMinute().equals(0)){
-            return  0L;
-        }else{
-            long differSecond = DateUtil.between(orderStatusDetails.getTriggerTime(),new Date(), DateUnit.SECOND);
-            long storeCountDown =  orderStatusDetails.getCountDownMinute()*60;
-            long countDown = storeCountDown-differSecond<0?0:storeCountDown-differSecond;
-            return countDown;
+    public long getCountDown(String orderNo, Integer orderStatus) {
+        OrderStatusDetails orderStatusDetails = findByOrderAndStatus(orderNo, orderStatus);
+        if (orderStatusDetails.getCountDownMinute().equals(0)) {
+            return 0L;
+        } else {
+            long differSecond = DateUtil.between(orderStatusDetails.getTriggerTime(), new Date(), DateUnit.SECOND);
+            long storeCountDown = orderStatusDetails.getCountDownMinute() * 60;
+            return storeCountDown - differSecond < 0 ? 0 : storeCountDown - differSecond;
         }
     }
 
 
-    public List<OrderStatusDetails> findByOrderStatus(String orderNo,List<Integer> statusList){
-        if(statusList.isEmpty()||orderNo==null){
+    public List<OrderStatusDetails> findByOrderStatus(String orderNo, List<Integer> statusList) {
+        if (statusList.isEmpty() || orderNo == null) {
             return new ArrayList<>();
         }
-        return orderStatusDetailsDao.findByOrderStatus(orderNo,statusList);
+        return orderStatusDetailsDao.findByOrderStatus(orderNo, statusList);
     }
 
 

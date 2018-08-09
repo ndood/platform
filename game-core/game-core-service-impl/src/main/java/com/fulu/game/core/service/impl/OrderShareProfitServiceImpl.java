@@ -12,6 +12,7 @@ import com.fulu.game.core.dao.OrderShareProfitDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.SourceOrderVO;
 import com.fulu.game.core.service.*;
+import com.github.binarywang.wxpay.exception.WxPayException;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -25,10 +26,10 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProfit,Integer> implements OrderShareProfitService {
+public abstract class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProfit, Integer> implements OrderShareProfitService {
 
     @Autowired
-	private OrderShareProfitDao orderShareProfitDao;
+    private OrderShareProfitDao orderShareProfitDao;
     @Autowired
     private CategoryService categoryService;
     @Autowired
@@ -37,8 +38,6 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
     private MoneyDetailsService moneyDetailsService;
     @Autowired
     private PlatformMoneyDetailsService platformMoneyDetailsService;
-    @Autowired
-    private PayService payService;
     @Autowired
     private OrderMoneyDetailsService orderMoneyDetailsService;
     @Autowired
@@ -55,18 +54,20 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
 
     /**
      * 订单正常完成状态分润
+     *
      * @param order
      */
     @Override
     public void shareProfit(Order order) {
         BigDecimal totalMoney = order.getTotalMoney();
         BigDecimal charges = order.getCharges();
-        if(charges==null){
+        if (charges == null) {
             Category category = categoryService.findById(order.getCategoryId());
             charges = category.getCharges();
         }
         BigDecimal commissionMoney = totalMoney.multiply(charges);
         BigDecimal serverMoney = order.getTotalMoney().subtract(commissionMoney);
+        //TODO 领航订单做兼容
         //如果是领航订单则用原始的订单金额给打手分润
         PilotOrder pilotOrder = pilotOrderService.findByOrderNo(order.getOrderNo());
         if (pilotOrder != null) {
@@ -87,27 +88,27 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
         moneyDetailsService.orderSave(serverMoney, order.getServiceUserId(), order.getOrderNo());
         //平台记录支付打手流水
         platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_SHARE_PROFIT, order.getOrderNo(), serverMoney.negate());
-        if(OrderTypeEnum.POINT.getType().equals(order.getType())){
-            userAutoReceiveOrderService.addOrderCompleteNum(order.getServiceUserId(),order.getCategoryId());
+        if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
+            userAutoReceiveOrderService.addOrderCompleteNum(order.getServiceUserId(), order.getCategoryId());
         }
     }
 
 
-
     /**
      * 订单发生退款
+     *
      * @param order
      */
     @Override
-    public void orderRefund(Order order,BigDecimal refundMoney) {
+    public void orderRefund(Order order, BigDecimal refundMoney) {
         if (!order.getIsPay()) {
             throw new OrderException(order.getOrderNo(), "未支付订单不允许退款!");
         }
-        if(order.getActualMoney().compareTo(refundMoney)<0){
+        if (order.getActualMoney().compareTo(refundMoney) < 0) {
             throw new OrderException(order.getOrderNo(), "退款金额不能大于用户实付金额!");
         }
         BigDecimal charges = order.getCharges();
-        if(charges==null){
+        if (charges == null) {
             Category category = categoryService.findById(order.getCategoryId());
             charges = category.getCharges();
         }
@@ -126,20 +127,20 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
         //记录平台流水
         platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_REFUND, order.getOrderNo(), refundMoney.negate());
         platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_REFUND, order.getOrderNo(), serverMoney.negate());
-        if(order.getServiceUserId()!=null){
+        if (order.getServiceUserId() != null) {
             //记录用户（陪玩师）加零钱
             moneyDetailsService.orderSave(serverMoney, order.getServiceUserId(), order.getOrderNo());
         }
         //记录订单流水
         orderMoneyDetailsService.create(order.getOrderNo(), order.getUserId(), DetailsEnum.ORDER_USER_CANCEL, refundMoney.negate());
         try {
-            payService.refund(order.getOrderNo(), order.getActualMoney(),refundMoney);
-            if(OrderTypeEnum.POINT.getType().equals(order.getType())){
-                if(OrderStatusEnum.CONSULT_COMPLETE.getStatus().equals(order.getStatus())||OrderStatusEnum.SYSTEM_CONSULT_COMPLETE.getStatus().equals(order.getStatus())){
-                    userAutoReceiveOrderService.addOrderDisputeNum(order.getServiceUserId(),order.getCategoryId());
-                }else{
-                    if(order.getServiceUserId()!=null){
-                        userAutoReceiveOrderService.addOrderCancelNum(order.getServiceUserId(),order.getCategoryId());
+            refund(order.getOrderNo(), order.getActualMoney(), refundMoney);
+            if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
+                if (OrderStatusEnum.CONSULT_COMPLETE.getStatus().equals(order.getStatus()) || OrderStatusEnum.SYSTEM_CONSULT_COMPLETE.getStatus().equals(order.getStatus())) {
+                    userAutoReceiveOrderService.addOrderDisputeNum(order.getServiceUserId(), order.getCategoryId());
+                } else {
+                    if (order.getServiceUserId() != null) {
+                        userAutoReceiveOrderService.addOrderCancelNum(order.getServiceUserId(), order.getCategoryId());
                     }
                 }
             }
@@ -152,12 +153,13 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
 
     /**
      * 订单金额部分退款给用户，部分退款给陪玩师
+     *
      * @param order
      * @param details
      */
     @Override
     public void orderRefundToUserAndServiceUser(Order order, ArbitrationDetails details) {
-        log.info("订单协商退款:order:{};details:{}",order,details);
+        log.info("订单协商退款:order:{};details:{}", order, details);
         if (!order.getIsPay()) {
             throw new OrderException(order.getOrderNo(), "未支付订单不允许退款!");
         }
@@ -167,7 +169,7 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
         BigDecimal refundServiceUserMoney = details.getRefundServiceUserMoney();
         BigDecimal actualMoney = order.getActualMoney();
 
-        if(actualMoney.compareTo(refundUserMoney.add(refundServiceUserMoney)) < 0){
+        if (actualMoney.compareTo(refundUserMoney.add(refundServiceUserMoney)) < 0) {
             throw new OrderException(orderNo, "退款金额不能大于用户实付金额!");
         }
 
@@ -207,7 +209,7 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
 
         //微信退款给用户
         try {
-            payService.refund(orderNo, order.getActualMoney(), refundUserMoney);
+            refund(orderNo, order.getActualMoney(), refundUserMoney);
         } catch (Exception e) {
             log.error("退款失败{}", orderNo, e.getMessage());
             throw new OrderException(orderNo, "订单退款失败!");
@@ -243,4 +245,6 @@ public class OrderShareProfitServiceImpl extends AbsCommonService<OrderShareProf
         }
         return orderVOList;
     }
+
+    protected abstract <T> T refund(String orderNo, BigDecimal actualMoney, BigDecimal refundUserMoney) throws WxPayException;
 }

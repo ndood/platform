@@ -3,6 +3,7 @@ package com.fulu.game.admin.controller;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
+import com.fulu.game.admin.service.impl.AdminOrderServiceImpl;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.core.entity.ArbitrationDetails;
@@ -36,11 +37,11 @@ import java.util.List;
 @RequestMapping("/api/v1/order")
 public class OrderController extends BaseController {
 
-    private final OrderService orderService;
+    private final AdminOrderServiceImpl orderService;
     private final OrderShareProfitService orderShareProfitService;
 
     @Autowired
-    public OrderController(OrderService orderService, OrderShareProfitService orderShareProfitService) {
+    public OrderController(AdminOrderServiceImpl orderService, OrderShareProfitService orderShareProfitService) {
         this.orderService = orderService;
         this.orderShareProfitService = orderShareProfitService;
     }

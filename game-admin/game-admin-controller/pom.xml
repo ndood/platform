@@ -18,6 +18,11 @@
             <version>${game.core.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.fulu.game</groupId>
+            <artifactId>game-admin-service-impl</artifactId>
+            <version>${game.admin.service.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-spring</artifactId>
             <version>1.4.0</version>

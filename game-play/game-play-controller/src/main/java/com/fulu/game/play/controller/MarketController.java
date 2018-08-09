@@ -7,6 +7,7 @@ import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.MarketOrderVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.play.service.impl.PlayMiniAppOrderServiceImpl;
 import com.google.common.base.Objects;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ import java.util.Map;
 public class MarketController extends BaseController{
 
     @Autowired
-    private OrderService orderService;
+    private PlayMiniAppOrderServiceImpl orderService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
     @Autowired

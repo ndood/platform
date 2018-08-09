@@ -4,6 +4,7 @@ package com.fulu.game.admin.controller;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
+import com.fulu.game.admin.service.impl.AdminOrderServiceImpl;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.SettingTypeEnum;
 import com.fulu.game.core.entity.Admin;
@@ -38,7 +39,7 @@ public class AutoReceiveController extends BaseController {
     @Autowired
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
     @Autowired
-    private OrderService orderService;
+    private AdminOrderServiceImpl orderService;
     @Autowired
     private SettingService settingService;
 

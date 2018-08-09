@@ -28,6 +28,11 @@
             <artifactId>game-core-service-impl</artifactId>
             <version>${game.core.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.fulu.game</groupId>
+            <artifactId>game-schedule-service-impl</artifactId>
+            <version>${game.schedule.service.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

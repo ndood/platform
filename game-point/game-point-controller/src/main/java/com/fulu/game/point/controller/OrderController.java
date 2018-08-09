@@ -13,6 +13,7 @@ import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.PointOrderDetailsVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.point.service.impl.PointMiniAppOrderServiceImpl;
 import com.fulu.game.point.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
@@ -35,7 +36,7 @@ import java.util.List;
 public class OrderController extends BaseController {
 
     @Autowired
-    private OrderService orderService;
+    private PointMiniAppOrderServiceImpl orderService;
     @Autowired
     private GradingPriceService gradingPriceService;
     @Autowired
@@ -49,7 +50,7 @@ public class OrderController extends BaseController {
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
     @Autowired
-    private PayService payService;
+    private PointMiniAppPayServiceImpl pointMiniAppPayService;
     @Autowired
     private OrderPointProductService orderPointProductService;
 
@@ -111,6 +112,7 @@ public class OrderController extends BaseController {
 
     /**
      * 段位价格计算
+     *
      * @param orderPointProductTO
      * @return
      */
@@ -198,7 +200,9 @@ public class OrderController extends BaseController {
     public Result pay(@RequestParam(required = true) String orderNo,
                       HttpServletRequest request) {
         String ip = RequestUtil.getIpAdrress(request);
-        Object result = payService.wechatUnifyOrder(orderNo, ip);
+        Order order = orderService.findByOrderNo(orderNo);
+        User user = userService.findById(order.getUserId());
+        Object result = pointMiniAppPayService.payOrder(order, user, ip);
         return Result.success().data(result);
     }
 
@@ -398,7 +402,7 @@ public class OrderController extends BaseController {
     }
 
     private OrderPointProductVO getAdvanceOrder(OrderPointProductTO orderPointProductTO) {
-        log.info("开始计算段位区间价格:orderPointProductTO:{}",orderPointProductTO);
+        log.info("开始计算段位区间价格:orderPointProductTO:{}", orderPointProductTO);
         OrderPointProductVO gradingAdvanceOrderVO = new OrderPointProductVO();
         gradingAdvanceOrderVO.setCategoryId(orderPointProductTO.getCategoryId());
         gradingAdvanceOrderVO.setPointType(orderPointProductTO.getPointType());
@@ -410,11 +414,11 @@ public class OrderController extends BaseController {
             //账户信息
             GradingPrice startGradingPrice = gradingPriceService.findById(gradingAdvanceOrderVO.getGradingPriceId());
             GradingPrice parentStartGradingPrice = gradingPriceService.findById(startGradingPrice.getPid());
-            gradingAdvanceOrderVO.setAccountInfo(techValue.getName() + "-" + parentStartGradingPrice.getName() +" "+ startGradingPrice.getName());
+            gradingAdvanceOrderVO.setAccountInfo(techValue.getName() + "-" + parentStartGradingPrice.getName() + " " + startGradingPrice.getName());
             //下单选择
             GradingPrice endGradingPrice = gradingPriceService.findById(gradingAdvanceOrderVO.getTargetGradingPriceId());
             GradingPrice parentEndGradingPrice = gradingPriceService.findById(endGradingPrice.getPid());
-            gradingAdvanceOrderVO.setOrderChoice(parentStartGradingPrice.getName() +" "+startGradingPrice.getName() + "-" + parentEndGradingPrice.getName() +" "+ endGradingPrice.getName());
+            gradingAdvanceOrderVO.setOrderChoice(parentStartGradingPrice.getName() + " " + startGradingPrice.getName() + "-" + parentEndGradingPrice.getName() + " " + endGradingPrice.getName());
             //查询区间价格
             BigDecimal totalMoney = gradingPriceService.findRangePrice(gradingAdvanceOrderVO.getCategoryId(), gradingAdvanceOrderVO.getGradingPriceId(), gradingAdvanceOrderVO.getTargetGradingPriceId());
             totalMoney = totalMoney.subtract(endGradingPrice.getPrice());

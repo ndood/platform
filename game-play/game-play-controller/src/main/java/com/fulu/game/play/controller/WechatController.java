@@ -1,7 +1,5 @@
 package com.fulu.game.play.controller;
 
-import com.fulu.game.common.enums.WechatEcoEnum;
-import com.fulu.game.core.service.PayService;
 import com.github.binarywang.wxpay.bean.notify.WxPayNotifyResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -19,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 public class WechatController {
 
     @Autowired
-    private PayService payService;
+    private PlayMiniAppPayServiceImpl playMiniAppPayService;
 
     @ResponseBody
     @RequestMapping("/pay/callback")
@@ -27,8 +25,8 @@ public class WechatController {
                             HttpServletResponse response) {
         try {
             String xmlResult = IOUtils.toString(request.getInputStream(), request.getCharacterEncoding());
-            return payService.payResult(xmlResult, WechatEcoEnum.PLAY);
-        }catch (Exception e){
+            return playMiniAppPayService.payResult(xmlResult);
+        } catch (Exception e) {
             log.error("xml消息转换异常{}", e.getMessage());
             return WxPayNotifyResponse.fail(e.getMessage());
         }
