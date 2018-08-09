@@ -24,6 +24,10 @@ import java.util.Map;
  */
 public interface ProductService extends ICommonService<Product,Integer>{
 
+
+    void deleteAllProductIndex();
+
+
     /**
      * 陪玩师新建接单方式
      * @param techAuthId

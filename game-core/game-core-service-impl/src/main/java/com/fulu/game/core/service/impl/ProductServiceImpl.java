@@ -58,6 +58,11 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     }
 
     @Override
+    public void deleteAllProductIndex() {
+        productSearchComponent.deleteIndexAll();
+    }
+
+    @Override
     public Product create(Integer techAuthId, BigDecimal price, Integer unitId) {
         User user = userService.getCurrentUser();
         log.info("创建接单方式:userId:{};techAuthId:{};price:{};unitId:{}", user.getId(), techAuthId, price, unitId);
