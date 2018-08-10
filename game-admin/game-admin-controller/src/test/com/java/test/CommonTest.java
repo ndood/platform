@@ -1,6 +1,7 @@
 package com.java.test;
 
-import com.xiaoleilu.hutool.util.StrUtil;
+
+import cn.hutool.core.util.StrUtil;
 import org.junit.Test;
 
 import java.text.DateFormat;

@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
+import cn.hutool.core.util.RandomUtil;
 import com.fulu.game.common.Constant;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserAutoReceiveOrderDao;
@@ -18,8 +19,7 @@ import com.fulu.game.core.service.UserTechAuthService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
-import com.xiaoleilu.hutool.util.CollectionUtil;
-import com.xiaoleilu.hutool.util.RandomUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

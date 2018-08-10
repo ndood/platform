@@ -12,7 +12,7 @@ import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.service.OrderDealFileService;
 import com.fulu.game.core.service.OrderDealService;
 import com.fulu.game.core.service.OrderService;
-import com.xiaoleilu.hutool.util.BeanUtil;
+import cn.hutool.core.bean.BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

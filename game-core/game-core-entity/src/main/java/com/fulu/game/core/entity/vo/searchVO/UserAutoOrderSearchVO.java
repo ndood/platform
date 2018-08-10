@@ -14,6 +14,6 @@ public class UserAutoOrderSearchVO {
 
     private Integer endRank;
 
-
+    private Boolean userAutoSetting;
 
 }

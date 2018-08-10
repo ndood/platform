@@ -29,12 +29,10 @@ public class UserTechAuthVO  extends UserTechAuth {
     private String reason;
     //游戏信息
     private Category category;
-    //还需要好友认证数量(待废弃)
-    private Integer requireCount;
+
     //认证状态文字
     private String statusStr;
-    //认证数显示
-    private String approveCountStr;
+
 
     private String nickname;
 

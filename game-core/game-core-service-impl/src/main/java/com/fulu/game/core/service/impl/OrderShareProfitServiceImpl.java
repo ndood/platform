@@ -54,7 +54,6 @@ public abstract class OrderShareProfitServiceImpl extends AbsCommonService<Order
 
     /**
      * 订单正常完成状态分润
-     *
      * @param order
      */
     @Override

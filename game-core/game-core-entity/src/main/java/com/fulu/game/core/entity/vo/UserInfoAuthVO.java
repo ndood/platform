@@ -53,16 +53,6 @@ public class UserInfoAuthVO extends UserInfoAuth {
 
     private String remark;
 
-    /**
-     * 来源id
-     */
-    private Integer sourceId;
-
-    /**
-     * 来源id对应的来源名称
-     */
-    private String sourceStr;
-
     private List<UserTechAuth> userTechAuthList;
 
 

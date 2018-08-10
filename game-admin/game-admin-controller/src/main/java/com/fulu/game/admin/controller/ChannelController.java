@@ -10,7 +10,7 @@ import com.fulu.game.core.service.ChannelCashDetailsService;
 import com.fulu.game.core.service.ChannelService;
 import com.fulu.game.core.service.OrderService;
 import com.github.pagehelper.PageInfo;
-import com.xiaoleilu.hutool.util.CollectionUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

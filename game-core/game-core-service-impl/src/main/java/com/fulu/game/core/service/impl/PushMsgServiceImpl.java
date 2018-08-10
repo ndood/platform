@@ -17,7 +17,7 @@ import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.push.AdminPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.xiaoleilu.hutool.date.DateUtil;
+import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -11,7 +11,8 @@
         <result column="create_time" property="createTime"/>
     </resultMap>
 
-    <resultMap id="WechatFormidResultVOMap" type="com.fulu.game.core.entity.vo.WechatFormidVO" extends="WechatFormidResultMap">
+    <resultMap id="WechatFormidResultVOMap" type="com.fulu.game.core.entity.vo.WechatFormidVO"
+               extends="WechatFormidResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -42,22 +43,21 @@
         f.form_id,
         f.create_time
         FROM
-        t_wechat_formid f
-        LEFT JOIN `t_user` u ON f.user_id = u.id
-        <where>
-            f.`platform` = #{platform}
-            <if test="userIds == null">
-                and u.`status` = 1
-            </if>
-            <if test="userIds != null">
-                AND  f.`user_id` IN
-                <foreach collection="userIds" index="index" item="userId" open="(" separator="," close=")">
-                    #{userId}
-                </foreach>
-            </if>
-        </where>
-        ORDER BY  create_time ASC
-        LIMIT #{offset},#{size}
+        (
+            SELECT  *  FROM
+            t_wechat_formid
+            <where>
+                `platform` = #{platform}
+                <if test="userIds != null">
+                    AND `user_id` IN
+                    <foreach collection="userIds" index="index" item="userId" open="(" separator="," close=")">
+                        #{userId}
+                    </foreach>
+                </if>
+            </where>
+        ) f
+        GROUP BY f.`user_id`
+        ORDER BY create_time ASC LIMIT #{offset},#{size}
     </select>
 
 
@@ -92,7 +92,7 @@
         </where>
     </delete>
 
-    <delete id="deleteFormIds" >
+    <delete id="deleteFormIds">
         delete from t_wechat_formid
         <where>
             form_id in

@@ -1,8 +1,8 @@
 package com.fulu.game.common.utils;
 
+import cn.hutool.core.util.RandomUtil;
 import com.fulu.game.common.component.CloopenSmsComponent;
 import com.fulu.game.common.enums.SMSTemplateEnum;
-import com.xiaoleilu.hutool.util.RandomUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;

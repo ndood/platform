@@ -1,12 +1,14 @@
 package com.fulu.game.play.shiro;
 
 import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.UserStatusEnum;
+import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.xiaoleilu.hutool.util.BeanUtil;
+import cn.hutool.core.bean.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -51,6 +53,9 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
         String dBOpenId = user.getOpenId();
         //登录成功保存token和用户信息到redis
         if (paramOpenId.equals(dBOpenId)) {
+            if(UserStatusEnum.BANNED.getType().equals(user.getStatus())){
+                throw new UserException(UserException.ExceptionCode.USER_BANNED_EXCEPTION);
+            }
             //匹配完毕更新新的登录时间和IP
             Map<String, Object> userMap = new HashMap<>();
             userMap = BeanUtil.beanToMap(user);

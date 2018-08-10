@@ -1,9 +1,6 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.PriceFactor;
-import com.fulu.game.core.entity.vo.PriceFactorVO;
-
-import java.util.List;
 
 
 /**
@@ -15,13 +12,5 @@ import java.util.List;
  */
 public interface PriceFactorService extends ICommonService<PriceFactor, Integer> {
 
-
     PriceFactor findByNewPriceFactor();
-
-    /**
-     * 获取CJ的价格系数表
-     *
-     * @return 价格系数VO列表
-     */
-    List<PriceFactorVO> findCjPriceFactor();
 }

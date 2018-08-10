@@ -3,7 +3,6 @@ package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.PriceFactor;
-import com.fulu.game.core.entity.vo.PriceFactorVO;
 import com.fulu.game.core.service.PriceFactorService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -21,8 +19,12 @@ import java.util.Map;
 @Slf4j
 public class PriceFactorController extends BaseController {
 
+    private final PriceFactorService priceFactorService;
+
     @Autowired
-    private PriceFactorService priceFactorService;
+    public PriceFactorController(PriceFactorService priceFactorService) {
+        this.priceFactorService = priceFactorService;
+    }
 
 
     @PostMapping(value = "/get")
@@ -38,19 +40,4 @@ public class PriceFactorController extends BaseController {
         result.put("categoryIds", categoryIds);
         return Result.success().data(result);
     }
-
-    /**
-     * 获取CJ首页展示的游戏列表
-     *
-     * @return 封装结果集
-     */
-    @PostMapping(value = "/cj/get")
-    public Result cjPriceFactor() {
-        List<PriceFactorVO> voList = priceFactorService.findCjPriceFactor();
-        if (voList == null) {
-            return Result.error().data("查询结果为空");
-        }
-        return Result.success().data(voList);
-    }
-
 }

@@ -15,8 +15,8 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
-import com.xiaoleilu.hutool.util.BeanUtil;
-import com.xiaoleilu.hutool.util.CollectionUtil;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -248,7 +248,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * @param userId
      * @return
      */
-    public List<Product> findEnabledProductByUser(int userId) {
+    private List<Product> findEnabledProductByUser(int userId) {
         ProductVO productVO = new ProductVO();
         productVO.setStatus(true);
         productVO.setUserId(userId);
@@ -262,7 +262,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * @param salesModeId
      * @return
      */
-    public List<Product> findProductByUserAndSalesMode(int userId, int techAuthId, int salesModeId) {
+    private List<Product> findProductByUserAndSalesMode(int userId, int techAuthId, int salesModeId) {
         ProductVO productVO = new ProductVO();
         productVO.setTechAuthId(techAuthId);
         productVO.setUserId(userId);
@@ -276,13 +276,13 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * @param techAuthId
      * @return
      */
-    public List<Product> findProductByTech(int techAuthId) {
+    private List<Product> findProductByTech(int techAuthId) {
         ProductVO productVO = new ProductVO();
         productVO.setTechAuthId(techAuthId);
         return productDao.findByParameter(productVO);
     }
 
-
+    @Override
     public List<TechAuthProductVO> techAuthProductList(int userId) {
         List<UserTechAuth> userTechAuths = userTechAuthService.findUserNormalTechs(userId);
         List<TechAuthProductVO> resultList = new ArrayList<>();
@@ -313,6 +313,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     /**
      * 批量更新所有的商品索引
      */
+    @Override
     public void bathUpdateProductIndex() {
         log.info("批量更新所有商品索引");
         List<User> userList = userService.findAllServeUser();
@@ -326,11 +327,13 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      *
      * @param productId
      */
+    @Override
     public void recoverProductActivate(int productId) {
         log.info("恢复商品删除状态:productId:{}", productId);
         productDao.recoverProductActivate(productId);
     }
 
+    @Override
     public void recoverProductActivateByTechAuthId(Integer techAuthId) {
         log.info("通过techAuthId恢复商品删除状态:techAuthId:{}", techAuthId);
         productDao.recoverProductActivateByTechAuthId(techAuthId);
@@ -358,7 +361,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             throw new ServiceErrorException("请选择技能后再点击开始接单!");
         }
         redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()), "HOUR", hour, expire);
-        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()), "START_TIME", new Date().getTime(), expire);
+        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()), "START_TIME", System.currentTimeMillis(), expire);
         for (Product product : products) {
             ProductVO productVO = new ProductVO();
             BeanUtil.copyProperties(product, productVO);
@@ -581,14 +584,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                                         String orderBy) {
         PageInfo<ProductShowCaseVO> page = null;
         try {
-            List<UserInfoAuth> userInfoAuthList = userInfoAuthService.findPlatformNotShowUserInfoAuth();
-            List<String> userIdList = new ArrayList<>();
-            if (CollectionUtil.isNotEmpty(userInfoAuthList)) {
-                for (UserInfoAuth meta : userInfoAuthList) {
-                    userIdList.add(meta.getUserId().toString());
-                }
-            }
-            Page<ProductShowCaseVO> searchResult = productSearchComponent.searchShowCaseDoc(categoryId, gender, pageNum, pageSize, orderBy,ProductShowCaseVO.class, userIdList);
+            Page<ProductShowCaseVO> searchResult = productSearchComponent.searchShowCaseDoc(categoryId, gender, pageNum, pageSize, orderBy,ProductShowCaseVO.class);
             page = new PageInfo<ProductShowCaseVO>(searchResult);
         } catch (Exception e) {
             log.error("ProductShowCase查询异常:", e);
@@ -608,58 +604,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                 showCaseVO.setOnLine(isProductStartOrderReceivingStatus(showCaseVO.getId()));
             }
             page = new PageInfo<ProductShowCaseVO>(showCaseVOS);
-        }
-        return page;
-    }
-
-    /**
-     * CJ首页商品首页和列表页
-     *
-     * @param categoryId
-     * @param gender
-     * @param pageNum
-     * @param pageSize
-     * @param orderBy
-     * @return
-     */
-    @Override
-    public PageInfo findCjProductShowCase(Integer categoryId,
-                                          Integer gender,
-                                          Integer pageNum,
-                                          Integer pageSize,
-                                          String orderBy) {
-        PageInfo page = null;
-        try {
-            List<UserInfoAuth> userInfoAuthList = userInfoAuthService.findAllCjUsers();
-            List<String> userIdList = new ArrayList<>();
-            if (CollectionUtil.isNotEmpty(userInfoAuthList)) {
-                for (UserInfoAuth meta : userInfoAuthList) {
-                    userIdList.add(meta.getUserId().toString());
-                }
-            }
-
-            Page searchResult = productSearchComponent.searchCjShowCaseDoc(categoryId,
-                    gender, pageNum, pageSize, orderBy, userIdList);
-            page = new PageInfo(searchResult);
-
-        } catch (Exception e) {
-            log.error("ProductShowCase查询异常:", e);
-            PageHelper.startPage(pageNum, pageSize, "create_time desc");
-            List<ProductShowCaseVO> showCaseVOS = productDao.findProductShowCase(categoryId, gender);
-            for (ProductShowCaseVO showCaseVO : showCaseVOS) {
-                UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(showCaseVO.getUserId(), false, false, true, false);
-                showCaseVO.setNickName(userInfoVO.getNickName());
-                showCaseVO.setGender(userInfoVO.getGender());
-                showCaseVO.setMainPhoto(userInfoVO.getMainPhotoUrl());
-                showCaseVO.setCity(userInfoVO.getCity());
-                showCaseVO.setPersonTags(userInfoVO.getTags());
-                UserTechInfo userTechInfo = userTechAuthService.findDanInfo(showCaseVO.getTechAuthId());
-                if (userTechInfo != null) {
-                    showCaseVO.setDan(userTechInfo.getValue());
-                }
-                showCaseVO.setOnLine(isProductStartOrderReceivingStatus(showCaseVO.getId()));
-            }
-            page = new PageInfo(showCaseVOS);
         }
         return page;
     }
@@ -774,6 +718,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     /**
      * 删除该技能下的所有商品
      */
+    @Override
     public void disabledProductByTech(Integer techAuthId) {
         UserTechAuth userTechAuth = userTechAuthService.findById(techAuthId);
         userTechAuth.setIsActivate(false);
@@ -790,6 +735,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     /**
      * 删除该用户的所有商品
      */
+    @Override
     public void disabledProductByUser(Integer userId) {
         List<UserTechAuth> list =  userTechAuthService.findByUserId(userId);
         for(UserTechAuth techAuth : list){
@@ -805,6 +751,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         }
     }
 
+    @Override
     public int deleteById(Integer id) {
         return productDao.deleteById(id);
     }
@@ -835,7 +782,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return redisOpenService.hasKey(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(userId));
     }
 
-
+    @Override
     public Map<String, Object> readOrderReceivingStatus() {
         User user = userService.getCurrentUser();
         //检查用户认证的状态
@@ -849,6 +796,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * @param productId
      * @return
      */
+    @Override
     public List<ProductVO> findOthersByproductId(Integer productId) {
         Product mainProduct = productDao.findById(productId);
         ProductVO requestVO = new ProductVO();

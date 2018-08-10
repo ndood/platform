@@ -1,18 +1,16 @@
 package com.fulu.game.core.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.exception.IMException;
 import com.fulu.game.common.utils.HttpUtils;
 import com.fulu.game.common.utils.IMUtil;
 import com.fulu.game.core.entity.ImUser;
 import com.fulu.game.core.entity.vo.ImUserVo;
 import com.fulu.game.core.service.ImService;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.xiaoleilu.hutool.util.BeanUtil;
-import com.xiaoleilu.hutool.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,8 +92,9 @@ public class ImServiceImpl implements ImService {
         }
     }
 
-    //fixme 发送信息给环信用户
-    public boolean sendMsgToImUser(String imId) {
+    @Override
+    public boolean sendMsgToImUser(String imId, String action) {
+        log.info("正在发送IM通知消息给老板，imId:{}", imId);
         String token = imUtil.getImToken();
         if (StringUtils.isBlank(token)) {
             token = getToken();
@@ -107,7 +106,7 @@ public class ImServiceImpl implements ImService {
         headerMap.put("Accept", "application/json");
         headerMap.put("Content-Type", "application/json");
 
-        String userUrl = imUtil.getUserUrl();
+        String userUrl = imUtil.getMessageUrl();
 
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("target_type", "users");
@@ -115,21 +114,22 @@ public class ImServiceImpl implements ImService {
         paramMap.put("target", userArr);
 
         Map<String, String> msgMap = new HashMap<>();
-        msgMap.put("type", "txt");
-        msgMap.put("msg", "txt-msg");
+        msgMap.put("type", "cmd");
+        msgMap.put("action", action);
         paramMap.put("msg", msgMap);
 
         Map<String, String> extMap = new HashMap<>();
-        extMap.put("attr", "v1");
+        extMap.put("flag", Constant.SERVICE_USER_ACCEPT_ORDER);
         paramMap.put("ext", extMap);
+
+        paramMap.put("from", "admin");
 
         JSONObject jsonObject = new JSONObject(paramMap);
         String body = jsonObject.toString();
         HttpResponse httpResponse = HttpUtils.post(userUrl, body, headerMap);
-        System.out.println(httpResponse);
+        log.info("im消息的返回状态:{}，消息内容:{}", httpResponse.getStatus(), httpResponse);
         return true;
     }
-
 
     public ImUser registerUser(String imId, String imPsw) {
         String token = getToken();

@@ -21,7 +21,7 @@ import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.push.AdminPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.xiaoleilu.hutool.util.BeanUtil;
+import cn.hutool.core.bean.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +79,6 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuthTO.setGradePicUrl(ossUtil.activateOssFile(userTechAuthTO.getGradePicUrl()));
         userTechAuthTO.setCategoryName(category.getName());
         userTechAuthTO.setUpdateTime(new Date());
-        userTechAuthTO.setApproveCount(0);
         userTechAuthTO.setIsActivate(false);
         if (userTechAuthTO.getId() == null){
             //查询是否有重复技能
@@ -284,16 +283,11 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
         BeanUtil.copyProperties(userTechAuth, userTechAuthVO);
         if(userTechAuthVO.getId()!=null){
-            Integer approveCount = userTechAuth.getApproveCount();
-            Integer requireCount = approveCount < 5 ? Constant.DEFAULT_APPROVE_COUNT - approveCount : 0;
-            userTechAuthVO.setRequireCount(requireCount);
             //审核不通过原因
             UserTechAuthReject techAuthReject =userTechAuthRejectService.findLastRecordByTechAuth(userTechAuthVO.getId(),userTechAuthVO.getStatus());
             if(techAuthReject!=null){
                 userTechAuthVO.setReason(techAuthReject.getReason());
             }
-        }else{
-            userTechAuthVO.setRequireCount(Constant.DEFAULT_APPROVE_COUNT);
         }
         //查询用户所有技能标签
         List<TechTag> techTagList = findTechTags(userTechAuthVO.getId());

@@ -67,6 +67,9 @@
         FROM t_user_auto_receive_order
         <where>
             del_flag != TRUE
+            <if test="userAutoSetting != null">
+                and user_auto_setting = #{userAutoSetting}
+            </if>
             <if test="categoryId != null">
                 and category_id = #{categoryId}
             </if>

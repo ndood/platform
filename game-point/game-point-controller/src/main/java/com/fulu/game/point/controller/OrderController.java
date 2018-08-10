@@ -1,10 +1,13 @@
 package com.fulu.game.point.controller;
 
 
+import cn.hutool.core.bean.BeanUtil;
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.SystemException;
+import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.OrderPointProductTO;
 import com.fulu.game.core.entity.vo.OrderEventVO;
@@ -18,8 +21,8 @@ import com.fulu.game.point.service.impl.PointMiniAppOrderServiceImpl;
 import com.fulu.game.point.service.impl.PointMiniAppPushServiceImpl;
 import com.fulu.game.point.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
-import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -145,8 +148,8 @@ public class OrderController extends BaseController {
     /**
      * 上分订单抢单
      *
-     * @param orderNo
-     * @return
+     * @param orderNo 订单编号
+     * @return 封装结果集
      */
     @PostMapping(value = "/receive")
     public Result orderReceive(@RequestParam(required = true) String orderNo) {

@@ -41,6 +41,7 @@
         <module>../code-generate</module>
         <module>../game-play</module>
         <module>../game-point</module>
+        <module>../game-third-party</module>
     </modules>
 
     <parent>
@@ -58,7 +59,6 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons.lang3}</version>
             </dependency>
-
             <dependency>
                 <groupId>xerces</groupId>
                 <artifactId>xercesImpl</artifactId>
@@ -77,11 +77,6 @@
                 <groupId>org.mybatis.spring.boot</groupId>
                 <artifactId>mybatis-spring-boot-starter</artifactId>
                 <version>${mybatis.spring.boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.xiaoleilu</groupId>
-                <artifactId>hutool-core</artifactId>
-                <version>${hutool.version}</version>
             </dependency>
             <dependency>
                 <groupId>cn.hutool</groupId>
@@ -131,42 +126,42 @@
         </dependencies>
     </dependencyManagement>
 
-    <!--<repositories>-->
-        <!--<repository>-->
-        <!--<id>nexus</id>-->
-        <!--<name>Team Nexus Repository</name>-->
-        <!--<url>http://10.0.3.105:8081/repository/maven-public/</url>-->
-        <!--<snapshots>-->
-        <!--<checksumPolicy>warn</checksumPolicy>-->
-        <!--<enabled>true</enabled>-->
-        <!--<updatePolicy>interval:-1</updatePolicy>-->
-        <!--</snapshots>-->
-        <!--</repository>-->
-    <!--</repositories>-->
+    <repositories>
+        <repository>
+        <id>nexus</id>
+        <name>Team Nexus Repository</name>
+        <url>http://10.0.3.105:8081/repository/maven-public/</url>
+        <snapshots>
+        <checksumPolicy>warn</checksumPolicy>
+        <enabled>true</enabled>
+        <updatePolicy>interval:-1</updatePolicy>
+        </snapshots>
+        </repository>
+    </repositories>
 
-    <!--<pluginRepositories>-->
-        <!--<pluginRepository>-->
-        <!--<id>nexus</id>-->
-        <!--<name>Team Nexus Repository</name>-->
-        <!--<url>http://10.0.3.105:8081/repository/maven-public/</url>-->
-        <!--<snapshots>-->
-        <!--<enabled>false</enabled>-->
-        <!--</snapshots>-->
-        <!--</pluginRepository>-->
-    <!--</pluginRepositories>-->
+    <pluginRepositories>
+        <pluginRepository>
+        <id>nexus</id>
+        <name>Team Nexus Repository</name>
+        <url>http://10.0.3.105:8081/repository/maven-public/</url>
+        <snapshots>
+        <enabled>false</enabled>
+        </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
-    <!--<distributionManagement>-->
-        <!--<repository>-->
-        <!--<id>nexus-releases</id>-->
-        <!--<name>Local Nexus Repository</name>-->
-        <!--<url>http://10.0.3.105:8081/repository/maven-releases/</url>-->
-        <!--</repository>-->
-        <!--<snapshotRepository>-->
-        <!--<id>nexus-snapshots</id>-->
-        <!--<name>Local Nexus Repository</name>-->
-        <!--<url>http://10.0.3.105:8081/repository/maven-snapshots/</url>-->
-        <!--</snapshotRepository>-->
-    <!--</distributionManagement>-->
+    <distributionManagement>
+        <repository>
+        <id>nexus-releases</id>
+        <name>Local Nexus Repository</name>
+        <url>http://10.0.3.105:8081/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+        <id>nexus-snapshots</id>
+        <name>Local Nexus Repository</name>
+        <url>http://10.0.3.105:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <build>
         <pluginManagement>

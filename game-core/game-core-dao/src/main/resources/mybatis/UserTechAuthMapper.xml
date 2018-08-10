@@ -14,7 +14,6 @@
         <result column="is_activate" property="isActivate"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
-        <result column="approve_count" property="approveCount"/>
     </resultMap>
 
     <resultMap id="UserTechAuthResultVOMap" type="com.fulu.game.core.entity.vo.UserTechAuthVO"
@@ -22,7 +21,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,category_id,user_id,category_name,mobile,grade_pic_url,description,status,is_activate,create_time,update_time,approve_count
+        id,category_id,user_id,category_name,mobile,grade_pic_url,description,status,is_activate,create_time,update_time
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserTechAuthResultMap">
@@ -70,9 +69,7 @@
             <if test="isActivate != null">
                 and is_activate = #{isActivate}
             </if>
-            <if test="approveCount != null">
-                and approve_count &lt;= #{approveCount}
-            </if>
+
         </where>
     </select>
 
@@ -111,9 +108,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserTechAuth">
         insert into
-        t_user_tech_auth (category_id,user_id,category_name,mobile,grade_pic_url,description,status,is_activate,create_time,update_time,approve_count)
+        t_user_tech_auth (category_id,user_id,category_name,mobile,grade_pic_url,description,status,is_activate,create_time,update_time)
         values
-        (#{categoryId},#{userId},#{categoryName},#{mobile},#{gradePicUrl},#{description},#{status},#{isActivate},#{createTime},#{updateTime},#{approveCount})
+        (#{categoryId},#{userId},#{categoryName},#{mobile},#{gradePicUrl},#{description},#{status},#{isActivate},#{createTime},#{updateTime})
     </insert>
 
     <update id="updateByCategory" parameterType="com.fulu.game.core.entity.Category">
@@ -171,9 +168,7 @@
             <if test="updateTime != null">
                 update_time = #{updateTime},
             </if>
-            <if test="approveCount != null">
-                approve_count = #{approveCount},
-            </if>
+
         </set>
         <where>
             id = #{id}

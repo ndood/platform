@@ -90,24 +90,6 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
     PageInfo<UserInfoAuthVO> list(Integer pageNum, Integer pageSize, UserInfoAuthSearchVO userInfoAuthSearchVO);
 
     /**
-     * 给陪玩师增加外链来源
-     *
-     * @param userId   陪玩师用户id
-     * @param sourceId 来源id
-     * @return 是否操作成功
-     */
-    boolean addSource(Integer userId, Integer sourceId);
-
-    /**
-     * 设置陪玩师是否在平台内展示
-     *
-     * @param userId   陪玩师用户id
-     * @param showFlag 是否展示（0：否，1：是）
-     * @return 是否操作成功
-     */
-    boolean isPlatformShow(Integer userId, Integer showFlag);
-
-    /**
      * 根据userId更新用户认证信息
      *
      * @param userInfoAuth 用户认证信息bean
@@ -144,35 +126,4 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
      * @param minute
      */
     void settingPushTimeInterval(float minute);
-
-    /**
-     * 获取所有CJ陪玩师的陪玩师认证信息列表
-     *
-     * @return 陪玩师认证信息列表
-     */
-    List<UserInfoAuth> findAllCjUsers();
-
-    /**
-     * 获取所有不在平台内展示的陪玩师的认证信息列表
-     *
-     * @return 陪玩师认证信息列表
-     */
-    List<UserInfoAuth> findPlatformNotShowUserInfoAuth();
-
-    /**
-     * 将陪玩师从CJ渠道去除掉
-     *
-     * @param userId   陪玩师id
-     * @param sourceId 来源id
-     * @return 是否操作完成
-     */
-    boolean removeServiceUserFromCjSource(Integer userId, Integer sourceId);
-
-    /**
-     * 获取陪玩师是否在平台内的显示状态
-     *
-     * @param userId 陪玩师id
-     * @return 陪玩师在平台内的显示状态（0：不显示；1：显示）
-     */
-    Integer getPlatformShowStatus(Integer userId);
 }

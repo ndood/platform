@@ -1,12 +1,9 @@
 package com.fulu.game.common.utils;
 
+import cn.hutool.core.codec.Base64;
+import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.fulu.game.common.domain.Password;
-import com.xiaoleilu.hutool.lang.Base64;
-import com.xiaoleilu.hutool.util.ArrayUtil;
-import com.xiaoleilu.hutool.util.RandomUtil;
-
-
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
