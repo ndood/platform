@@ -15,7 +15,6 @@ import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.WxUserInfo;
 import com.fulu.game.core.service.AdviceService;
-import com.fulu.game.core.service.CouponService;
 import com.fulu.game.core.service.UserCommentService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
@@ -47,20 +46,17 @@ public class UserController extends BaseController {
     private final RedisOpenServiceImpl redisOpenService;
     private final AdviceService adviceService;
     private final OssUtil ossUtil;
-    private final CouponService couponService;
     private final UserCommentService userCommentService;
 
     @Autowired
     public UserController(WxMaServiceSupply wxMaServiceSupply, RedisOpenServiceImpl redisOpenService,
                           UserService userService, AdviceService adviceService, OssUtil ossUtil,
-                          CouponService couponService,
                           UserCommentService userCommentService) {
         this.userService = userService;
         this.wxMaServiceSupply = wxMaServiceSupply;
         this.redisOpenService = redisOpenService;
         this.adviceService = adviceService;
         this.ossUtil = ossUtil;
-        this.couponService = couponService;
         this.userCommentService = userCommentService;
     }
 
@@ -228,6 +224,7 @@ public class UserController extends BaseController {
 
     /**
      * 用户-添加评价
+     *
      * @return
      */
     @RequestMapping("/comment/save")

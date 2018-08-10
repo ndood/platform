@@ -1,10 +1,11 @@
-package com.fulu.game.core.service.impl;
+package com.fulu.game.admin.service.impl;
 
 
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.CouponGrant;
 import com.fulu.game.core.entity.vo.CouponGrantUserVO;
 import com.fulu.game.core.entity.vo.CouponGrantVO;
+import com.fulu.game.core.service.impl.AbsCommonService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;

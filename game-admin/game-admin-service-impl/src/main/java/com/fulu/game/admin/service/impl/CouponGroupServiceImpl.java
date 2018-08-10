@@ -1,4 +1,4 @@
-package com.fulu.game.core.service.impl;
+package com.fulu.game.admin.service.impl;
 
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.CouponGroupDao;

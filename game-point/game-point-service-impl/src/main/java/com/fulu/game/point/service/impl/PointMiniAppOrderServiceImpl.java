@@ -39,7 +39,7 @@ public class PointMiniAppOrderServiceImpl extends OrderServiceImpl {
     @Autowired
     private UserService userService;
     @Autowired
-    private CouponService couponService;
+    private PointCouponServiceImpl couponService;
     @Autowired
     private OrderStatusDetailsService orderStatusDetailsService;
     @Autowired

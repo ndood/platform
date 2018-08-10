@@ -152,6 +152,14 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
         push(order.getUserId(), WechatTemplateMsgEnum.ORDER_TOSERVICE_AFFIRM_SERVER);
     }
 
+    /**
+     * 发放优惠券
+     * @param userId
+     * @param deduction
+     */
+    public void grantCouponMsg(int userId,String deduction){
+        push(userId, WechatTemplateMsgEnum.ORDER_TOSERVICE_AFFIRM_SERVER,deduction);
+    }
 
 
     protected abstract void push(int userId, WechatTemplateMsgEnum wechatTemplateMsgEnum,String ... replaces);
@@ -187,7 +195,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
         if (time >= 10) {
             return "推送次数太多不能推送!";
         }
-        pushWechatTemplateMsg(WechatEcoEnum.PLAY.getType(), acceptUser.getId(), WechatTemplateIdEnum.PLAY_LEAVE_MSG, WechatTemplateMsgEnum.IM_MSG_PUSH.getPage().getPlayPagePath(),WechatTemplateMsgEnum.IM_MSG_PUSH.getContent(), sendUser.getNickname(), content);
+        push(acceptUser.getId(), WechatTemplateMsgEnum.IM_MSG_PUSH,sendUser.getNickname(), content);
         time += 1;
         //推送状态缓存两个小时
         redisOpenService.set(RedisKeyEnum.WX_TEMPLATE_MSG.generateKey(imId + "|" + acceptImId), time + "", Constant.TIME_MINUTES_FIFE);

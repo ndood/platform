@@ -570,7 +570,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     /**
      * 发放优惠券
-     *
      * @param user  用户Bean
      * @param ipStr 用户ip
      * @return 是否发放成功

@@ -16,6 +16,7 @@ import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.impl.push.AdminPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.date.DateUtil;
@@ -59,7 +60,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     @Autowired
     private OssUtil ossUtil;
     @Autowired
-    private WxTemplateMsgService wxTemplateMsgService;
+    private AdminPushServiceImpl adminPushService;
     @Autowired
     private UserInfoAuthFileTempDao userInfoAuthFileTempDao;
     @Autowired
@@ -234,9 +235,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userInfoAuthRejectService.create(userInfoAuthReject);
         //同步下架用户该技能商品
 //        productService.disabledProductByUser(userInfoAuth.getUserId());
-
-        //给用户推送通知
-        wxTemplateMsgService.pushWechatTemplateMsg(user.getId(), WechatTemplateMsgEnum.USER_AUTH_INFO_REJECT,reason);
+        adminPushService.userInfoAuthFail(user.getId(),reason);
         return userInfoAuth;
     }
 
@@ -283,7 +282,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         }
 
         //给用户推送通知
-        wxTemplateMsgService.pushWechatTemplateMsg(user.getId(), WechatTemplateMsgEnum.USER_AUTH_INFO_PASS);
+        adminPushService.userInfoAuthSuccess(userId);
         return userInfoAuth;
     }
 

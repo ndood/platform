@@ -6,6 +6,7 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.CouponService;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.UserService;
+import com.fulu.game.point.service.impl.PointCouponServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +30,12 @@ import java.util.Map;
 @RequestMapping("/api/v1/coupon")
 public class CouponController extends BaseController {
 
-    private final CouponService couponService;
+    private final PointCouponServiceImpl couponService;
     private final OrderService orderService;
     private final UserService userService;
 
     @Autowired
-    public CouponController(CouponService couponService, OrderService orderService, UserService userService) {
+    public CouponController(PointCouponServiceImpl couponService, OrderService orderService, UserService userService) {
         this.couponService = couponService;
         this.orderService = orderService;
         this.userService = userService;

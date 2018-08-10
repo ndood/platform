@@ -3,6 +3,7 @@ package com.fulu.game.admin.controller;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
+import com.fulu.game.admin.service.impl.AdminCouponServiceImpl;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Coupon;
 import com.fulu.game.core.entity.CouponGrantUser;
@@ -33,7 +34,7 @@ public class CouponController extends BaseController {
     @Autowired
     private CouponGroupService couponGroupService;
     @Autowired
-    private CouponService couponService;
+    private AdminCouponServiceImpl couponService;
     @Autowired
     private CouponGrantService couponGrantService;
     @Autowired

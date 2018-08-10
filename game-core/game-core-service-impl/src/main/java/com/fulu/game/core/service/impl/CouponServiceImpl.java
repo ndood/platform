@@ -1,6 +1,5 @@
 package com.fulu.game.core.service.impl;
 
-import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.exception.CouponException;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.dao.CouponDao;
@@ -9,7 +8,10 @@ import com.fulu.game.core.entity.Coupon;
 import com.fulu.game.core.entity.CouponGroup;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.CouponVO;
-import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.CouponGroupService;
+import com.fulu.game.core.service.CouponService;
+import com.fulu.game.core.service.OrderService;
+import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +37,14 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
     private UserService userService;
     @Autowired
     private OrderService orderService;
+
+    /**
+     * 发放完优惠券推送消息
+     * @param userId
+     * @param deduction
+     */
+    public void pushMsgAfterGrantCoupon(int userId, String deduction) {
+    }
 
 
     @Override
@@ -239,7 +249,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         log.info("生成优惠券:coupon:{}", coupon);
 
         //发放优惠券通知
-        wxTemplateMsgService.pushWechatTemplateMsg(coupon.getUserId(), WechatTemplateMsgEnum.GRANT_COUPON, coupon.getDeduction().toString());
+        pushMsgAfterGrantCoupon(coupon.getUserId(), coupon.getDeduction().toString());
         return coupon;
     }
 

@@ -3,9 +3,9 @@ package com.fulu.game.play.controller;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Coupon;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.service.CouponService;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.UserService;
+import com.fulu.game.play.service.impl.PlayCouponServiceImpl;
 import com.fulu.game.play.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ import java.util.Map;
 public class CouponController extends BaseController {
 
     @Autowired
-    private CouponService couponService;
+    private PlayCouponServiceImpl couponService;
     @Autowired
     private OrderService orderService;
     @Autowired

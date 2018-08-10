@@ -6,8 +6,8 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.WechatFormid;
 import com.fulu.game.core.service.PushMsgService;
 import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.WxTemplateMsgService;
 import com.fulu.game.play.queue.CollectFormIdQueue;
+import com.fulu.game.play.service.impl.PlayMiniAppPushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,14 +21,15 @@ import java.util.Date;
 @RequestMapping("/api/v1/wxtemplate")
 public class WxTemplateController extends BaseController{
 
-    @Autowired
-    private WxTemplateMsgService wxTemplateMsgService;
+
     @Autowired
     private UserService userService;
     @Autowired
     private CollectFormIdQueue collectFormIdQueue;
     @Autowired
     private PushMsgService pushMsgService;
+    @Autowired
+    private PlayMiniAppPushServiceImpl playMiniAppPushService;
 
     /**
      * 收集用户的formID
@@ -55,7 +56,7 @@ public class WxTemplateController extends BaseController{
                                 String acceptImId,
                                 String imId)throws Exception{
         log.info("推送模板消息imId:{},acceptImId:{},content:{}",imId,acceptImId,content);
-        String result = wxTemplateMsgService.pushIMWxTemplateMsg(content,acceptImId,imId);
+        String result = playMiniAppPushService.pushIMWxTemplateMsg(content,acceptImId,imId);
         return Result.success().msg(result);
     }
 

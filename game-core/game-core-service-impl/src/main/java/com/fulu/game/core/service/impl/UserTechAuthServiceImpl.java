@@ -18,6 +18,7 @@ import com.fulu.game.core.entity.vo.TechValueVO;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
 import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.impl.push.AdminPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
@@ -53,15 +54,13 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     @Autowired
     private AdminService adminService;
     @Autowired
-    private WxTemplateMsgService wxTemplateMsgService;
-    @Autowired
     private ProductService productService;
-    @Autowired
-    private ApproveService approveService;
     @Autowired
     private OssUtil ossUtil;
     @Autowired
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
+    @Autowired
+    private AdminPushServiceImpl adminPushService;
 
     @Override
     public ICommonDao<UserTechAuth, Integer> getDao() {
@@ -103,8 +102,6 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
                     throw new ServiceErrorException("不能添加重复的技能!");
                 }
             }
-            //重置技能好友认证状态
-            approveService.resetApproveStatusAndUpdate(userTechAuthTO);
             if(!oldUserTechAuth.getGradePicUrl().equals(userTechAuthTO.getGradePicUrl())){
                 ossUtil.deleteFile(oldUserTechAuth.getGradePicUrl());
             }
@@ -133,7 +130,6 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         }
         //重置技能好友认证状态
         userTechAuth.setStatus(TechAuthStatusEnum.NO_AUTHENTICATION.getType());
-        approveService.resetApproveStatusAndUpdate(userTechAuth);
         //添加拒绝原因
         UserTechAuthReject userTechAuthReject = new UserTechAuthReject();
         userTechAuthReject.setReason(reason);
@@ -146,7 +142,8 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuthReject.setCreateTime(new Date());
         userTechAuthRejectService.create(userTechAuthReject);
         //给用户推送通知
-        wxTemplateMsgService.pushWechatTemplateMsg(userTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_FAIL,reason);
+        adminPushService.techAuthAuditFail(userTechAuth.getUserId(),reason);
+
         //同步下架用户该技能商品
         productService.disabledProductByTech(userTechAuth.getId());
 
@@ -169,7 +166,8 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuth.setStatus(TechAuthStatusEnum.NORMAL.getType());
         update(userTechAuth);
         //给用户推送通知
-        wxTemplateMsgService.pushWechatTemplateMsg(userTechAuth.getUserId(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_SUCCESS);
+        adminPushService.techAuthAuditSuccess(userTechAuth.getUserId());
+
         //技能下商品置为正常
         productService.recoverProductActivateByTechAuthId(userTechAuth.getId());
         return userTechAuth;
@@ -183,7 +181,6 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         UserTechAuth userTechAuth = findById(id);
         //重置技能好友认证状态
         userTechAuth.setStatus(TechAuthStatusEnum.FREEZE.getType());
-        approveService.resetApproveStatusAndUpdate(userTechAuth);
         //添加拒绝原因
         UserTechAuthReject userTechAuthReject = new UserTechAuthReject();
         userTechAuthReject.setReason(reason);

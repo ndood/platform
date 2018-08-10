@@ -14,7 +14,7 @@ import com.fulu.game.core.entity.vo.PushMsgVO;
 import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.PushMsgService;
 import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.WxTemplateMsgService;
+import com.fulu.game.core.service.impl.push.AdminPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.date.DateUtil;
@@ -40,10 +40,9 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
     @Autowired
     private UserService userService;
     @Autowired
-    private WxTemplateMsgService wxTemplateMsgService;
-    @Autowired
     private RedisOpenServiceImpl redisOpenService;
-
+    @Autowired
+    private AdminPushServiceImpl adminPushService;
 
     private Lock lock = new ReentrantLock();
 
@@ -106,10 +105,9 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
                     .append(pushMsg.getId()).toString();
             log.info("开始执行推送消息:userId:{};lastPage:{};pushMsg:{};", userIds == null ? "全体用户" : userIds, lastPage, pushMsg);
             long startTime = System.currentTimeMillis();
-            wxTemplateMsgService.adminPushWxTemplateMsg(pushMsg.getPlatform(), pushMsg.getId(), userIds, lastPage, pushMsg.getContent());
+            adminPushService.adminPushWxTemplateMsg(pushMsg.getPlatform(), pushMsg.getId(), userIds, lastPage, pushMsg.getContent());
             long endTime = System.currentTimeMillis();
             log.info("pushTask:{}执行wxTemplateMsgService.adminPushWxTemplateMsg方法耗时:{}", pushMsg.getId(), endTime - startTime);
-
             pushMsg.setTotalNum(count);
             pushMsg.setIsPushed(true);
             pushMsg.setUpdateTime(new Date());
