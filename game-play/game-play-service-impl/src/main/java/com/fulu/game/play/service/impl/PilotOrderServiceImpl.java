@@ -19,7 +19,7 @@ import static com.fulu.game.common.enums.OrderStatusEnum.NON_PAYMENT;
 
 @Service
 @Slf4j
-public class PilotOrderServiceImpl extends OrderServiceImpl {
+public class PilotOrderServiceImpl extends PlayMiniAppOrderServiceImpl {
 
     @Autowired
     private ProductService productService;

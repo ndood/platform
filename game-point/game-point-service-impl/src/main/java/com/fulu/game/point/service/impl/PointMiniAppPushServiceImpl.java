@@ -1,9 +1,6 @@
 package com.fulu.game.point.service.impl;
 
-import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
-import com.fulu.game.common.enums.UserStatusEnum;
-import com.fulu.game.common.enums.WechatTemplateMsgEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.UserTechAuth;
@@ -33,6 +30,20 @@ public class PointMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
     private CategoryService categoryService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+
+
+
+
+    @Override
+    protected void push(int userId, WechatTemplateMsgEnum wechatTemplateMsgEnum,String... replaces) {
+        pushWechatTemplateMsg(WechatEcoEnum.POINT.getType(), userId, WechatTemplateIdEnum.POINT_LEAVE_MSG, wechatTemplateMsgEnum.getPage().getPointPagePath(), wechatTemplateMsgEnum.getContent(),replaces);
+    }
+
+
+    public void orderPay(Order order){
+        push(order.getServiceUserId(),WechatTemplateMsgEnum.POINT_TOSE_ORDER_RECEIVING);
+    }
+
 
     /**
      * 推送上分订单通知
@@ -74,10 +85,13 @@ public class PointMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
                 continue;
             }
             //推送订单消息
-            pushWechatTemplateMsg(user.getId(), WechatTemplateMsgEnum.MARKET_ORDER_PUSH, category.getName());
+            push(user.getId(), WechatTemplateMsgEnum.POINT_ORDER_PUSH, category.getName());
             Long expire = new BigDecimal(pushTimeInterval).multiply(new BigDecimal(60)).longValue();
             redisOpenService.set(RedisKeyEnum.MARKET_ORDER_IS_PUSH.generateKey(user.getId()), order.getOrderNo(), expire);
             log.info("推送集市订单完成:userInfoAuth:{},order:{}", user, order);
         }
     }
+
+
+
 }

@@ -20,13 +20,35 @@ import org.springframework.stereotype.Service;
 public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
 
     @Autowired
-    private PushMsgQueue pushMsgQueue;
-    @Autowired
     private UserService userService;
     @Autowired
-    private WechatFormidService wechatFormidService;
-    @Autowired
     private RedisOpenServiceImpl redisOpenService;
+
+
+    /**
+     * 陪玩师开始接单
+     * @param order
+     */
+    public void receiveOrder(Order order){
+        push(order.getUserId(),WechatTemplateMsgEnum.ORDER_TOUSER_AFFIRM_RECEIVE);
+    }
+
+    /**
+     * 提醒接单
+     * @param order
+     */
+    public void remindReceive(Order order){
+        push(order.getUserId(),WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_RECEIVE);
+    }
+
+    /**
+     * 提醒开始
+     * @param order
+     */
+    public void remindStart(Order order){
+        push(order.getUserId(),WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_START_SERVICE);
+    }
+
 
     /**
      * 陪玩师开始服务
@@ -132,7 +154,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
 
 
 
-    protected abstract void push(int userId, WechatTemplateMsgEnum wechatTemplateMsgEnum);
+    protected abstract void push(int userId, WechatTemplateMsgEnum wechatTemplateMsgEnum,String ... replaces);
 
 
     /**

@@ -1,6 +1,9 @@
 package com.fulu.game.admin.service.impl;
 
-import com.fulu.game.common.enums.*;
+import com.fulu.game.common.enums.OrderEventTypeEnum;
+import com.fulu.game.common.enums.OrderStatusEnum;
+import com.fulu.game.common.enums.OrderStatusGroupEnum;
+import com.fulu.game.common.enums.UserScoreEnum;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.OrderDao;
@@ -45,8 +48,6 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
     @Autowired
     private AdminService adminService;
     @Autowired
-    private WxTemplateMsgService wxTemplateMsgService;
-    @Autowired
     private OrderStatusDetailsService orderStatusDetailsService;
     @Autowired
     private OrderShareProfitService orderShareProfitService;
@@ -60,6 +61,21 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
     private OrderPointProductService orderPointProductService;
     @Autowired
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
+    @Autowired
+    private AdminPushServiceImpl adminPushService;
+
+    @Override
+    protected void dealOrderAfterPay(Order order) {
+    }
+
+    @Override
+    protected void shareProfit(Order order) {
+    }
+
+    @Override
+    protected void orderRefund(Order order, BigDecimal refundMoney) {
+    }
+
 
     public PageInfo<OrderVO> unacceptOrderList(Integer pageNum, Integer pageSize, OrderSearchVO orderSearchVO) {
         String orderBy = orderSearchVO.getOrderBy();
@@ -193,9 +209,7 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
             orderDeal.setOrderEventId(orderEvent.getId());
             orderDealService.create(orderDeal);
         }
-
-        wxTemplateMsgService.pushWechatTemplateMsg(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE, details.getRemark());
-        wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE, details.getRemark());
+        adminPushService.appealNegotiate(order, details.getRemark());
 
         if (order.getIsPay()) {
             orderShareProfitService.orderRefundToUserAndServiceUser(order, details);
@@ -236,8 +250,8 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
             orderDeal.setOrderEventId(orderEvent.getId());
             orderDealService.create(orderDeal);
         }
-        pushToServiceOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_USER_WIN);
-        pushToUserOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_USER_WIN);
+        //推送消息
+        adminPushService.appealUserWin(order);
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         if (order.getIsPay()) {
             orderShareProfitService.orderRefund(order, order.getActualMoney());
@@ -274,9 +288,7 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
             orderDeal.setOrderEventId(orderEvent.getId());
             orderDealService.create(orderDeal);
         }
-        pushToServiceOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_SERVICE_WIN);
-        pushToUserOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_SERVICE_WIN);
-
+        adminPushService.appealServiceWin(order);
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         //订单分润
         orderShareProfitService.shareProfit(order);
@@ -406,5 +418,6 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
         }
         return new PageInfo<>(list);
     }
+
 
 }

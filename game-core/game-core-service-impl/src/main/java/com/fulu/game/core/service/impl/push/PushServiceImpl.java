@@ -44,6 +44,7 @@ public abstract class PushServiceImpl implements PushService {
 
 
 
+
     /**
      * 通用模板推送消息
      * @param platform

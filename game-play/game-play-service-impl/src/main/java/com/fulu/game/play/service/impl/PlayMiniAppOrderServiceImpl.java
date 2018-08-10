@@ -12,6 +12,7 @@ import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
 import com.fulu.game.core.service.impl.OrderServiceImpl;
 import com.fulu.game.core.service.impl.profit.PlayOrderShareProfitServiceImpl;
+import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
@@ -49,6 +50,10 @@ public class PlayMiniAppOrderServiceImpl extends OrderServiceImpl {
     private UserContactService userContactService;
     @Autowired
     private PlayOrderShareProfitServiceImpl playOrderShareProfitService;
+    @Autowired
+    private PlayMiniAppPushServiceImpl playMiniAppPushService;
+
+
 
     /**
      * 陪玩师接单
@@ -71,9 +76,9 @@ public class PlayMiniAppOrderServiceImpl extends OrderServiceImpl {
         update(order);
         //计算订单状态倒计时24小时
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
-        //TODO 推送做抽象
-        //推送通知
-        pushToUserOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOUSER_AFFIRM_RECEIVE);
+
+        playMiniAppPushService.receiveOrder(order);
+
         return order.getOrderNo();
     }
 
@@ -226,10 +231,19 @@ public class PlayMiniAppOrderServiceImpl extends OrderServiceImpl {
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
         //发送短信通知给陪玩师
         User server = userService.findById(order.getServiceUserId());
-        //TODO 推送做抽象
         SMSUtil.sendOrderReceivingRemind(server.getMobile(), order.getName());
         //推送通知
-        pushToServiceOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOSERVICE_PAY);
+        playMiniAppPushService.orderPay(order);
+    }
+
+    @Override
+    protected void shareProfit(Order order) {
+        playOrderShareProfitService.shareProfit(order);
+    }
+
+    @Override
+    protected MiniAppPushServiceImpl getMinAppPushService() {
+        return playMiniAppPushService;
     }
 
     @Override

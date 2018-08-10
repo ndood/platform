@@ -1,22 +1,17 @@
-package com.fulu.game.core.service.impl.push;
+package com.fulu.game.admin.service.impl;
 
 import com.fulu.game.common.enums.OrderTypeEnum;
 import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.common.enums.WechatTemplateIdEnum;
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.core.entity.Order;
+import com.fulu.game.core.service.impl.push.PushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
 public class AdminPushServiceImpl extends PushServiceImpl {
-
-    @Autowired
-    private PlayMiniAppPushServiceImpl playMiniAppPushService;
-    @Autowired
-    private PointMiniAppPushServiceImpl pointMiniAppPushService;
 
 
     /**

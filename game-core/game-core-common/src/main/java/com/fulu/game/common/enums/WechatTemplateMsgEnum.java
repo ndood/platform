@@ -40,10 +40,10 @@ public enum WechatTemplateMsgEnum {
 
     IM_MSG_PUSH(WechatPagePathEnum.IM_MSG, "{}:{}"),
 
-    MARKET_ORDER_PUSH(WechatPagePathEnum.POINT_ORDER_PAGE, "有新的{}订单，快来看看吧"), //接单路径
+    POINT_ORDER_PUSH(WechatPagePathEnum.POINT_ORDER_PAGE, "有新的{}订单，快来看看吧"), //接单路径
 
     POINT_TOSERVICE_ORDER_RECEIVING(WechatPagePathEnum.ORDER_LIST_PAGE, "系统为您派单了,快去处理吧,若10分钟未处理则自动取消订单并对您进行惩罚。"),
-    POINT_TOSE_ORDER_RECEIVING(WechatPagePathEnum.ORDER_LIST_PAGE, "若陪玩师10分钟内未进行处理，订单取消。");
+    POINT_TOSE_ORDER_RECEIVING(WechatPagePathEnum.ORDER_LIST_PAGE, "订单支付成功,若陪玩师10分钟内未进行处理，订单取消。");
 
 
     //跳转页面

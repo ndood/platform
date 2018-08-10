@@ -1,5 +1,6 @@
 package com.fulu.game.point.controller;
 
+import com.fulu.game.core.service.impl.pay.PointMiniAppPayServiceImpl;
 import com.github.binarywang.wxpay.bean.notify.WxPayNotifyResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;

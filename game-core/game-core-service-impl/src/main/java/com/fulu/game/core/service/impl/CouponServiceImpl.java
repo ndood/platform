@@ -35,8 +35,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
     private UserService userService;
     @Autowired
     private OrderService orderService;
-    @Autowired
-    private WxTemplateMsgService wxTemplateMsgService;
+
 
     @Override
     public ICommonDao<Coupon, Integer> getDao() {

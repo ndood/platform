@@ -13,7 +13,9 @@ import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.PointOrderDetailsVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.core.service.impl.pay.PointMiniAppPayServiceImpl;
 import com.fulu.game.point.service.impl.PointMiniAppOrderServiceImpl;
+import com.fulu.game.point.service.impl.PointMiniAppPushServiceImpl;
 import com.fulu.game.point.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
@@ -53,6 +55,8 @@ public class OrderController extends BaseController {
     private PointMiniAppPayServiceImpl pointMiniAppPayService;
     @Autowired
     private OrderPointProductService orderPointProductService;
+    @Autowired
+    private PointMiniAppPushServiceImpl pointMiniAppPushService;
 
     /**
      * 订单详情
@@ -248,7 +252,8 @@ public class OrderController extends BaseController {
             return Result.error().msg("不能频繁提醒开始!");
         }
         Order order = orderService.findByOrderNo(orderNo);
-        orderService.pushToServiceOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_START_SERVICE);
+        //发送通知
+        pointMiniAppPushService.remindReceive(order);
         redisOpenService.setTimeInterval(orderNo, 5 * 60);
         return Result.success().msg("提醒开始成功!");
     }

@@ -1,6 +1,9 @@
 package com.fulu.game.point.service.impl;
 
-import com.fulu.game.common.enums.*;
+import com.fulu.game.common.enums.OrderStatusEnum;
+import com.fulu.game.common.enums.OrderStatusGroupEnum;
+import com.fulu.game.common.enums.OrderTypeEnum;
+import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.core.dao.OrderDao;
@@ -11,6 +14,7 @@ import com.fulu.game.core.entity.vo.PointOrderDetailsVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.OrderServiceImpl;
 import com.fulu.game.core.service.impl.profit.PointOrderShareProfitServiceImpl;
+import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xiaoleilu.hutool.util.BeanUtil;
@@ -48,6 +52,10 @@ public class PointMiniAppOrderServiceImpl extends OrderServiceImpl {
     private SpringThreadPoolExecutor springThreadPoolExecutor;
     @Autowired
     private PointOrderShareProfitServiceImpl pointOrderShareProfitService;
+    @Autowired
+    private PointMiniAppPushServiceImpl pointMiniAppPushService;
+
+
 
     public PageInfo<PointOrderDetailsVO> receivingPointOrderList(Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize, "id DESC");
@@ -198,23 +206,36 @@ public class PointMiniAppOrderServiceImpl extends OrderServiceImpl {
         springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
             @Override
             public void run() {
-                wxTemplateMsgService.pushPointOrder(order);
+                pointMiniAppPushService.pushPointOrder(order);
             }
         });
         return order.getOrderNo();
     }
 
     @Override
-    protected void dealOrderAfterPay(Order order){
+    protected void dealOrderAfterPay(Order order) {
         //订单状态倒计时
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 10);
         //通知
-        pushToUserOrderWxMessage(order, WechatTemplateMsgEnum.POINT_TOSE_ORDER_RECEIVING);
+        pointMiniAppPushService.orderPay(order);
+    }
+
+    @Override
+    protected void shareProfit(Order order) {
+        pointOrderShareProfitService.shareProfit(order);
     }
 
     @Override
     public void orderRefund(Order order, BigDecimal refundMoney) {
         pointOrderShareProfitService.orderRefund(order, refundMoney);
     }
+
+
+    @Override
+    protected MiniAppPushServiceImpl getMinAppPushService(){
+        return pointMiniAppPushService;
+    }
+
+
 
 }

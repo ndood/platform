@@ -11,6 +11,7 @@ import com.fulu.game.core.entity.vo.OrderEventVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
+import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +50,37 @@ public abstract class OrderServiceImpl extends AbsCommonService<Order, Integer> 
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+
+
+    /**
+     * 确认订单支付
+     * @param order
+     */
+    protected abstract void dealOrderAfterPay(Order order);
+
+    /**
+     * 分润
+     * @param order
+     */
+    protected abstract void shareProfit(Order order);
+
+    /**
+     * 退款
+     * @param order
+     * @param refundMoney
+     */
+    protected abstract void orderRefund(Order order, BigDecimal refundMoney);
+
+
+    /**
+     * 子类重写
+     * @return
+     */
+    protected MiniAppPushServiceImpl getMinAppPushService(){
+        return null;
+    }
+
+
 
     @Override
     public ICommonDao<Order, Integer> getDao() {
@@ -156,7 +188,7 @@ public abstract class OrderServiceImpl extends AbsCommonService<Order, Integer> 
         return orderConvertVo(order);
     }
 
-    protected abstract void dealOrderAfterPay(Order order);
+
 
     /**
      * 陪玩师开始服务
@@ -177,9 +209,8 @@ public abstract class OrderServiceImpl extends AbsCommonService<Order, Integer> 
         order.setUpdateTime(new Date());
         update(order);
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
-        //TODO 推送做抽象
         //推送通知
-        pushToUserOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOUSER_START_SERVICE);
+        getMinAppPushService().start(order);
         return order.getOrderNo();
     }
 
@@ -233,9 +264,8 @@ public abstract class OrderServiceImpl extends AbsCommonService<Order, Integer> 
         orderDealService.create(orderDeal, fileUrls);
         //倒计时24小时后处理
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
-        //TODO 推送做抽象
         //推送通知
-        pushToServiceOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT);
+        getMinAppPushService().consult(order);
         return orderNo;
     }
 
@@ -303,9 +333,8 @@ public abstract class OrderServiceImpl extends AbsCommonService<Order, Integer> 
         orderDealService.create(orderDeal, fileUrls);
         //倒计时24小时后处理
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
-        //TODO 推送做抽象
         //推送通知
-        pushToUserOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_REJECT);
+        getMinAppPushService().rejectConsult(order);
         return order.getOrderNo();
     }
 
@@ -347,13 +376,11 @@ public abstract class OrderServiceImpl extends AbsCommonService<Order, Integer> 
         orderRefund(order, orderEvent.getRefundMoney());
         //创建订单状态详情
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
-        //TODO 推送做抽象
         //推送通知同意协商
-        pushToUserOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE);
+        getMinAppPushService().agreeConsult(order);
         return order.getOrderNo();
     }
 
-    protected abstract void orderRefund(Order order, BigDecimal refundMoney);
 
     /**
      * 用户取消协商
@@ -383,7 +410,7 @@ public abstract class OrderServiceImpl extends AbsCommonService<Order, Integer> 
         update(order);
         log.info("取消协商处理更改订单状态后:{}", order);
         //推送通知
-        pushToServiceOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL);
+        getMinAppPushService().cancelConsult(order);
         return order.getOrderNo();
     }
 
@@ -407,13 +434,12 @@ public abstract class OrderServiceImpl extends AbsCommonService<Order, Integer> 
         order.setCompleteTime(new Date());
         update(order);
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
-        //TODO 推送做抽象
         //消息提醒
-        pushToUserOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOUSER_REJECT_RECEIVE);
+        getMinAppPushService().cancelOrderByServer(order);
         // 全额退款用户
         if (order.getIsPay()) {
             //TODO 退款
-            orderShareProfitService.orderRefund(order, order.getActualMoney());
+            orderRefund(order, order.getActualMoney());
         }
         return orderConvertVo(order);
     }
@@ -446,7 +472,7 @@ public abstract class OrderServiceImpl extends AbsCommonService<Order, Integer> 
         // 全额退款用户
         if (order.getIsPay()) {
             orderRefund(order, order.getActualMoney());
-            pushToServiceOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOSERVICE_ORDER_CANCEL);
+            getMinAppPushService().cancelOrderByUser(order);
         }
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         return orderConvertVo(order);
@@ -482,9 +508,9 @@ public abstract class OrderServiceImpl extends AbsCommonService<Order, Integer> 
         //TODO 推送做抽象
         //推送通知
         if (user.getId().equals(order.getUserId())) {
-            pushToServiceOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL);
+            getMinAppPushService().appealByUser(order);
         } else {
-            pushToUserOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL);
+            getMinAppPushService().appealByServer(order);
         }
 
         userAutoReceiveOrderService.addOrderDisputeNum(order.getServiceUserId(), order.getCategoryId());
@@ -495,7 +521,6 @@ public abstract class OrderServiceImpl extends AbsCommonService<Order, Integer> 
 
     /**
      * 陪玩师提交验收订单
-     *
      * @param orderNo
      * @return
      */
@@ -515,9 +540,8 @@ public abstract class OrderServiceImpl extends AbsCommonService<Order, Integer> 
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
         //提交验收订单
         orderEventService.createCheckEvent(order, user, remark, fileUrl);
-        //TODO 推送做抽象
         //推送通知
-        pushToUserOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOUSER_CHECK);
+        getMinAppPushService().checkOrder(order);
         return orderConvertVo(order);
     }
 
@@ -540,11 +564,10 @@ public abstract class OrderServiceImpl extends AbsCommonService<Order, Integer> 
         order.setCompleteTime(new Date());
         update(order);
         //订单分润
-        orderShareProfitService.shareProfit(order);
+        shareProfit(order);
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
-        //TODO 推送做抽象
         //确认服务
-        pushToServiceOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOSERVICE_AFFIRM_SERVER);
+        getMinAppPushService().acceptOrder(order);
         return orderConvertVo(order);
     }
 

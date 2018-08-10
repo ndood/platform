@@ -1,9 +1,6 @@
 package com.fulu.game.schedule.service.impl;
 
-import com.fulu.game.common.enums.OrderDealTypeEnum;
-import com.fulu.game.common.enums.OrderEventTypeEnum;
-import com.fulu.game.common.enums.OrderStatusEnum;
-import com.fulu.game.common.enums.WechatTemplateMsgEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.entity.Order;
@@ -46,6 +43,40 @@ public class ScheduleOrderServiceImpl extends OrderServiceImpl {
     private PlayOrderShareProfitServiceImpl playOrderShareProfitService;
     @Autowired
     private PointOrderShareProfitServiceImpl pointOrderShareProfitService;
+    @Autowired
+    private SchedulePushServiceImpl schedulePushService;
+
+    @Override
+    protected void dealOrderAfterPay(Order order) {
+    }
+
+
+
+    @Override
+    protected void shareProfit(Order order) {
+        if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
+            //陪玩订单
+            pointOrderShareProfitService.shareProfit(order);
+        } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
+            //上分订单
+            playOrderShareProfitService.shareProfit(order);
+        }
+    }
+
+    @Override
+    public void orderRefund(Order order, BigDecimal refundMoney) {
+        if (order == null) {
+            throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST, "");
+        }
+        if (order.getType().equals(1)) {
+            //陪玩订单
+            playOrderShareProfitService.orderRefund(order, refundMoney);
+        } else if (order.getType().equals(2)) {
+            //上分订单
+            pointOrderShareProfitService.orderRefund(order, refundMoney);
+        }
+    }
+
 
     public List<Order> findByStatusListAndType(Integer[] statusList, int type) {
         if (statusList == null) {
@@ -63,7 +94,7 @@ public class ScheduleOrderServiceImpl extends OrderServiceImpl {
      * @param orderNo
      * @return
      */
-    public OrderVO systemCompleteOrder(String orderNo) {
+    public void systemCompleteOrder(String orderNo) {
         Order order = findByOrderNo(orderNo);
         log.info("系统开始完成订单order:{}", order);
         if (!order.getStatus().equals(OrderStatusEnum.CHECK.getStatus())) {
@@ -74,10 +105,9 @@ public class ScheduleOrderServiceImpl extends OrderServiceImpl {
         order.setCompleteTime(new Date());
         update(order);
         //订单分润
-        orderShareProfitService.shareProfit(order);
+        shareProfit(order);
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         log.info("系统完成订单order:{}", order);
-        return orderConvertVo(order);
     }
 
     /**
@@ -98,7 +128,7 @@ public class ScheduleOrderServiceImpl extends OrderServiceImpl {
         // 全额退款用户
         if (order.getIsPay()) {
             order.setStatus(OrderStatusEnum.SYSTEM_CLOSE.getStatus());
-            orderShareProfitService.orderRefund(order, order.getActualMoney());
+            orderRefund(order, order.getActualMoney());
         } else {
             order.setStatus(OrderStatusEnum.UNPAY_ORDER_CLOSE.getStatus());
         }
@@ -107,7 +137,12 @@ public class ScheduleOrderServiceImpl extends OrderServiceImpl {
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
     }
 
-    public String systemConsultAgreeOrder(String orderNo) {
+    /**
+     * 系统自动同意协商
+     * @param orderNo
+     * @return
+     */
+    public void systemConsultAgreeOrder(String orderNo) {
         log.info("陪玩师同意协商处理订单orderNo:{}", orderNo);
         Order order = findByOrderNo(orderNo);
         OrderEvent orderEvent = orderEventService.findByOrderNoAndType(orderNo, OrderEventTypeEnum.CONSULT.getType());
@@ -129,15 +164,18 @@ public class ScheduleOrderServiceImpl extends OrderServiceImpl {
         orderDealService.create(orderDeal);
         //创建订单状态详情
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
-        //TODO 推送做抽象
         //推送通知同意协商
-        pushToUserOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE);
+        schedulePushService.consultAgree(order);
         //退款给用户
         orderShareProfitService.orderRefund(order, orderEvent.getRefundMoney());
-        return order.getOrderNo();
     }
 
-    public String systemConsultCancelOrder(String orderNo) {
+    /**
+     * 系统自动取消协商
+     * @param orderNo
+     * @return
+     */
+    public void systemConsultCancelOrder(String orderNo) {
         log.info("取消协商处理订单orderNo:{}", orderNo);
         Order order = findByOrderNo(orderNo);
         OrderEvent orderEvent = orderEventService.findByOrderNoAndType(orderNo, OrderEventTypeEnum.CONSULT.getType());
@@ -154,25 +192,9 @@ public class ScheduleOrderServiceImpl extends OrderServiceImpl {
         order.setUpdateTime(new Date());
         update(order);
         log.info("取消协商处理更改订单状态后:{}", order);
-        //TODO 推送做抽象
         //推送通知
-        pushToServiceOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL);
-        return order.getOrderNo();
+        schedulePushService.consultCancel(order);
     }
 
-    @Override
-    public void orderRefund(Order order, BigDecimal refundMoney) {
-        if (order == null) {
-            throw new OrderException(order.getOrderNo(), "退款订单对象为null");
-        }
-        if (order.getType().equals(1)) {
-            //陪玩订单
-            playOrderShareProfitService.orderRefund(order, refundMoney);
-        } else if (order.getType().equals(2)) {
-            //上分订单
-            pointOrderShareProfitService.orderRefund(order, refundMoney);
-        }
-
-    }
 
 }

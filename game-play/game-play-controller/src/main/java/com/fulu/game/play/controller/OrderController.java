@@ -15,8 +15,10 @@ import com.fulu.game.core.service.OrderDealService;
 import com.fulu.game.core.service.OrderEventService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.core.service.impl.pay.PlayMiniAppPayServiceImpl;
 import com.fulu.game.play.service.impl.PilotOrderServiceImpl;
 import com.fulu.game.play.service.impl.PlayMiniAppOrderServiceImpl;
+import com.fulu.game.play.service.impl.PlayMiniAppPushServiceImpl;
 import com.fulu.game.play.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +47,8 @@ public class OrderController extends BaseController {
     private UserService userService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private PlayMiniAppPushServiceImpl playMiniAppPushService;
 
 
     /**
@@ -207,7 +211,7 @@ public class OrderController extends BaseController {
             return Result.error().msg("不能频繁提醒接单!");
         }
         Order order = orderService.findByOrderNo(orderNo);
-        orderService.pushToServiceOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_RECEIVE);
+        playMiniAppPushService.remindReceive(order);
         redisOpenService.setTimeInterval(orderNo, 5 * 60);
         return Result.success().msg("提醒接单成功!");
     }
@@ -225,7 +229,7 @@ public class OrderController extends BaseController {
             return Result.error().msg("不能频繁提醒开始!");
         }
         Order order = orderService.findByOrderNo(orderNo);
-        orderService.pushToServiceOrderWxMessage(order, WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_START_SERVICE);
+        playMiniAppPushService.remindStart(order);
         redisOpenService.setTimeInterval(orderNo, 5 * 60);
         return Result.success().msg("提醒开始成功!");
     }
