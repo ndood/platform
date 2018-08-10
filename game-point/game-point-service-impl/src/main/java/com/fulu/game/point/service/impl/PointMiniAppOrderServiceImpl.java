@@ -1,5 +1,6 @@
 package com.fulu.game.point.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.common.enums.OrderTypeEnum;
@@ -17,7 +18,6 @@ import com.fulu.game.core.service.impl.profit.PointOrderShareProfitServiceImpl;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.xiaoleilu.hutool.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

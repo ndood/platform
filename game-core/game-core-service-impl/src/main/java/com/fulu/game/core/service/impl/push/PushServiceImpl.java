@@ -1,12 +1,13 @@
 package com.fulu.game.core.service.impl.push;
 
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DateField;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import com.fulu.game.common.Constant;
-import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.common.enums.WechatTemplateIdEnum;
-import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.utils.SMSUtil;
-import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.WxMaTemplateMessageVO;
 import com.fulu.game.core.entity.vo.WechatFormidVO;
@@ -15,10 +16,6 @@ import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.WechatFormidService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.queue.PushMsgQueue;
-import com.xiaoleilu.hutool.date.DateField;
-import com.xiaoleilu.hutool.date.DateUtil;
-import com.xiaoleilu.hutool.util.CollectionUtil;
-import com.xiaoleilu.hutool.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +28,6 @@ import java.util.*;
 public abstract class PushServiceImpl implements PushService {
 
 
-
     @Autowired
     private PushMsgQueue pushMsgQueue;
     @Autowired
@@ -42,11 +38,9 @@ public abstract class PushServiceImpl implements PushService {
     private RedisOpenServiceImpl redisOpenService;
 
 
-
-
-
     /**
      * 通用模板推送消息
+     *
      * @param platform
      * @param userId
      * @param templateIdEnum
@@ -68,12 +62,13 @@ public abstract class PushServiceImpl implements PushService {
                 dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", content), new WxMaTemplateMessage.Data("keyword2", date));
         }
 
-        addTemplateMsg2Queue(platform, null, Collections.singletonList(userId),wechatPage, templateIdEnum, dataList);
+        addTemplateMsg2Queue(platform, null, Collections.singletonList(userId), wechatPage, templateIdEnum, dataList);
     }
 
 
     /**
      * 批量写入推送模板消息
+     *
      * @param pushId
      * @param userIds
      * @param page
