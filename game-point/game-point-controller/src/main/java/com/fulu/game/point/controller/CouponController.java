@@ -3,8 +3,6 @@ package com.fulu.game.point.controller;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Coupon;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.service.CouponService;
-import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.point.service.impl.PointCouponServiceImpl;
 import com.github.pagehelper.PageInfo;
@@ -31,13 +29,11 @@ import java.util.Map;
 public class CouponController extends BaseController {
 
     private final PointCouponServiceImpl couponService;
-    private final OrderService orderService;
     private final UserService userService;
 
     @Autowired
-    public CouponController(PointCouponServiceImpl couponService, OrderService orderService, UserService userService) {
+    public CouponController(PointCouponServiceImpl couponService, UserService userService) {
         this.couponService = couponService;
-        this.orderService = orderService;
         this.userService = userService;
     }
 
@@ -57,7 +53,7 @@ public class CouponController extends BaseController {
                        @RequestParam("overdue") Boolean overdue) {
         User user = userService.getCurrentUser();
         //判断新老用戶
-        Boolean isOldUser = orderService.isOldUser(user.getId());
+        Boolean isOldUser = userService.isOldUser(user.getId());
         PageInfo<Coupon> pageInfo = couponService.listByUseStatus(pageNum, pageSize, isUse, overdue);
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("isOldUser", isOldUser);

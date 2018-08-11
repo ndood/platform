@@ -5,20 +5,19 @@ import com.fulu.game.common.enums.UserScoreEnum;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.dao.UserCommentDao;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.UserComment;
 import com.fulu.game.core.entity.vo.UserCommentVO;
-import com.fulu.game.core.service.OrderService;
+import com.fulu.game.core.service.UserCommentService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.aop.UserScore;
+import com.fulu.game.core.service.impl.order.DefaultOrderServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.fulu.game.core.dao.UserCommentDao;
-import com.fulu.game.core.entity.UserComment;
-import com.fulu.game.core.service.UserCommentService;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -30,7 +29,7 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
     @Autowired
     private UserCommentDao commentDao;
     @Autowired
-    private OrderService orderService;
+    private DefaultOrderServiceImpl orderService;
     @Autowired
     private UserService userService;
 
@@ -50,12 +49,12 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
     public void save(UserCommentVO commentVO) {
         User user = userService.getCurrentUser();
         Order order = orderService.findByOrderNo(commentVO.getOrderNo());
-        if (null == order){
-            throw new OrderException(order.getOrderNo(),"订单不存在!");
+        if (null == order) {
+            throw new OrderException(order.getOrderNo(), "订单不存在!");
         }
         //只有待评价的订单才能评价
-        if(!order.getStatus().equals(OrderStatusEnum.SYSTEM_COMPLETE.getStatus())&&!order.getStatus().equals(OrderStatusEnum.COMPLETE.getStatus())){
-            throw new OrderException(order.getOrderNo(),"只有待评价的订单才能评价!");
+        if (!order.getStatus().equals(OrderStatusEnum.SYSTEM_COMPLETE.getStatus()) && !order.getStatus().equals(OrderStatusEnum.COMPLETE.getStatus())) {
+            throw new OrderException(order.getOrderNo(), "只有待评价的订单才能评价!");
         }
         userService.isCurrentUser(order.getUserId());
         int serverUserId = order.getServiceUserId();
@@ -81,7 +80,7 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
         comment.setScoreAvg(scoreAvg);
         commentDao.update(comment);
         User serverUser = userService.findById(serverUserId);
-        if (null == serverUser){
+        if (null == serverUser) {
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
         serverUser.setScoreAvg(scoreAvg);

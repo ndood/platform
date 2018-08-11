@@ -12,7 +12,6 @@ import com.fulu.game.core.entity.Setting;
 import com.fulu.game.core.entity.vo.UserAutoReceiveOrderVO;
 import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.fulu.game.core.service.AdminService;
-import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.SettingService;
 import com.fulu.game.core.service.UserAutoReceiveOrderService;
 import com.github.pagehelper.PageInfo;
@@ -46,6 +45,7 @@ public class AutoReceiveController extends BaseController {
 
     /**
      * 设置自动接单时间
+     *
      * @param minute
      * @return
      */
@@ -66,12 +66,13 @@ public class AutoReceiveController extends BaseController {
     @PostMapping(value = "setting/list")
     public Result autoReceiveTimeQueryList(@RequestParam("pageSize") Integer pageSize,
                                            @RequestParam("pageNum") Integer pageNum) {
-        PageInfo<Setting> settingList = settingService.settingList(pageNum,pageSize,SettingTypeEnum.AUTO_RECEIVE_ORDER_TIME.getType());
+        PageInfo<Setting> settingList = settingService.settingList(pageNum, pageSize, SettingTypeEnum.AUTO_RECEIVE_ORDER_TIME.getType());
         return Result.success().data(settingList);
     }
 
     /**
      * 设置自动接单技能
+     *
      * @param techAuthId
      * @return
      */
@@ -81,7 +82,6 @@ public class AutoReceiveController extends BaseController {
         userAutoReceiveOrderService.addAutoReceivingTech(techAuthId, remark);
         return Result.success().msg("自动接单设置成功!");
     }
-
 
 
     @PostMapping(value = "tech/del")

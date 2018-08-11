@@ -4,8 +4,8 @@ import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.PayService;
+import com.fulu.game.core.service.impl.order.DefaultOrderServiceImpl;
 import com.github.binarywang.wxpay.bean.notify.WxPayNotifyResponse;
 import com.github.binarywang.wxpay.exception.WxPayException;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 public abstract class PayServiceImpl<T> implements PayService {
 
     @Autowired
-    private OrderService orderService;
+    private DefaultOrderServiceImpl orderService;
 
     @Override
     public Object payOrder(Order order, User user, String requestIp) {

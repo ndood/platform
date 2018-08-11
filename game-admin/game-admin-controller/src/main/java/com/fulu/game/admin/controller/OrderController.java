@@ -20,6 +20,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,12 +36,10 @@ import java.util.List;
 public class OrderController extends BaseController {
 
     private final AdminOrderServiceImpl orderService;
-    private final OrderShareProfitService orderShareProfitService;
 
     @Autowired
-    public OrderController(AdminOrderServiceImpl orderService, OrderShareProfitService orderShareProfitService) {
+    public OrderController(AdminOrderServiceImpl orderService) {
         this.orderService = orderService;
-        this.orderShareProfitService = orderShareProfitService;
     }
 
     /**

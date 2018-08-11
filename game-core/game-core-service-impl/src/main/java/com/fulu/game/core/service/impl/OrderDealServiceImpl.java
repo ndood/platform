@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
+import cn.hutool.core.bean.BeanUtil;
 import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
@@ -11,8 +12,7 @@ import com.fulu.game.core.entity.OrderDealFile;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.service.OrderDealFileService;
 import com.fulu.game.core.service.OrderDealService;
-import com.fulu.game.core.service.OrderService;
-import cn.hutool.core.bean.BeanUtil;
+import com.fulu.game.core.service.impl.order.DefaultOrderServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +29,7 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal, Integer> i
     @Autowired
     private OrderDealFileService orderDealFileService;
     @Autowired
-    private OrderService orderService;
+    private DefaultOrderServiceImpl orderService;
     @Autowired
     private OssUtil ossUtil;
 
@@ -39,9 +39,8 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal, Integer> i
     }
 
 
-
     @Override
-    public int create(OrderDeal orderDeal){
+    public int create(OrderDeal orderDeal) {
         orderDeal.setCreateTime(new Date());
         return orderDealDao.create(orderDeal);
     }
@@ -95,17 +94,17 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal, Integer> i
 
     @Override
     public List<OrderDealVO> findByOrderEventId(Integer orderEventId) {
-        if(orderEventId ==null){
+        if (orderEventId == null) {
             return new ArrayList<>();
         }
         OrderDealVO param = new OrderDealVO();
         param.setOrderEventId(orderEventId);
-        List<OrderDeal> orderDealList =   orderDealDao.findByParameter(param);
+        List<OrderDeal> orderDealList = orderDealDao.findByParameter(param);
         if (orderDealList.isEmpty()) {
             return new ArrayList<>();
         }
-        List<OrderDealVO> orderDealVOList = CollectionUtil.copyNewCollections(orderDealList,OrderDealVO.class);
-        for(OrderDealVO orderDealVO : orderDealVOList){
+        List<OrderDealVO> orderDealVOList = CollectionUtil.copyNewCollections(orderDealList, OrderDealVO.class);
+        for (OrderDealVO orderDealVO : orderDealVOList) {
             List<OrderDealFile> orderDealFiles = orderDealFileService.findByOrderDeal(orderDealVO.getId());
             orderDealVO.setOrderDealFileList(orderDealFiles);
         }

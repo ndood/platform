@@ -2,10 +2,7 @@ package com.fulu.game.admin.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
-import com.fulu.game.common.enums.OrderEventTypeEnum;
-import com.fulu.game.common.enums.OrderStatusEnum;
-import com.fulu.game.common.enums.OrderStatusGroupEnum;
-import com.fulu.game.common.enums.UserScoreEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.OrderDao;
@@ -18,12 +15,14 @@ import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
 import com.fulu.game.core.service.impl.OrderServiceImpl;
+import com.fulu.game.core.service.impl.profit.AdminOrderShareProfitServiceImpl;
 import com.fulu.game.core.service.impl.push.AdminPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -50,8 +49,10 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
     private AdminService adminService;
     @Autowired
     private OrderStatusDetailsService orderStatusDetailsService;
+
     @Autowired
-    private OrderShareProfitService orderShareProfitService;
+    private AdminOrderShareProfitServiceImpl adminOrderShareProfitService;
+
     @Autowired
     private OrderEventService orderEventService;
     @Autowired
@@ -65,17 +66,29 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
     @Autowired
     private AdminPushServiceImpl adminPushService;
 
+
+
+
+
+
     @Override
     protected void dealOrderAfterPay(Order order) {
     }
 
     @Override
     protected void shareProfit(Order order) {
+        adminOrderShareProfitService.shareProfit(order);
     }
 
     @Override
     protected void orderRefund(Order order, BigDecimal refundMoney) {
+        adminOrderShareProfitService.orderRefund(order,refundMoney);
     }
+
+
+
+
+
 
 
     public PageInfo<OrderVO> unacceptOrderList(Integer pageNum, Integer pageSize, OrderSearchVO orderSearchVO) {
@@ -213,7 +226,7 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
         adminPushService.appealNegotiate(order, details.getRemark());
 
         if (order.getIsPay()) {
-            orderShareProfitService.orderRefundToUserAndServiceUser(order, details);
+            adminOrderShareProfitService.orderRefundToUserAndServiceUser(order, details);
             orderStatusDetailsService.create(orderNo, order.getStatus());
         } else {
             throw new OrderException(order.getOrderNo(), "只有已付款的订单才能操作!");
@@ -255,7 +268,7 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
         adminPushService.appealUserWin(order);
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         if (order.getIsPay()) {
-            orderShareProfitService.orderRefund(order, order.getActualMoney());
+            orderRefund(order, order.getActualMoney());
         }
         return orderConvertVo(order);
     }
@@ -292,7 +305,7 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
         adminPushService.appealServiceWin(order);
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         //订单分润
-        orderShareProfitService.shareProfit(order);
+        shareProfit(order);
         return orderConvertVo(order);
     }
 
@@ -316,7 +329,7 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
         update(order);
         // 全额退款用户
         if (order.getIsPay()) {
-            orderShareProfitService.orderRefund(order, order.getActualMoney());
+            orderRefund(order, order.getActualMoney());
         }
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 0);
     }

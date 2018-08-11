@@ -2,7 +2,6 @@ package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.exception.SystemException;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderDeal;
@@ -16,13 +15,14 @@ import com.fulu.game.core.service.OrderEventService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.pay.PlayMiniAppPayServiceImpl;
-import com.fulu.game.play.service.impl.PilotOrderServiceImpl;
+import com.fulu.game.play.service.impl.PilotMiniAppOrderServiceImpl;
 import com.fulu.game.play.service.impl.PlayMiniAppOrderServiceImpl;
 import com.fulu.game.play.service.impl.PlayMiniAppPushServiceImpl;
 import com.fulu.game.play.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,10 +35,11 @@ import java.math.BigDecimal;
 @RequestMapping("/api/v1/order")
 public class OrderController extends BaseController {
 
+    @Qualifier("playMiniAppOrderServiceImpl")
     @Autowired
     private PlayMiniAppOrderServiceImpl orderService;
     @Autowired
-    private PilotOrderServiceImpl pilotOrderService;
+    private PilotMiniAppOrderServiceImpl pilotOrderService;
     @Autowired
     private OrderDealService orderDealService;
     @Autowired

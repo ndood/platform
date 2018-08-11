@@ -399,6 +399,10 @@
         SELECT id AS userId,im_id AS username,im_psw as imPsw from t_user WHERE im_id IS NULL OR im_id = ''
     </select>
 
+    <select id="countUserOrder" resultType="java.lang.Integer">
+        SELECT count(1) from t_order WHERE user_id = #{userId}
+    </select>
+
     <select id="findUserScoreByUpdate" parameterType="Integer" resultType="Integer">
         SELECT
             user_score

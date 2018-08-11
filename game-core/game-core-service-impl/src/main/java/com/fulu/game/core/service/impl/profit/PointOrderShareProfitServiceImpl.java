@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl.profit;
 
 
+import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.service.impl.OrderShareProfitServiceImpl;
 import com.fulu.game.core.service.impl.pay.PointMiniAppPayServiceImpl;
 import com.github.binarywang.wxpay.exception.WxPayException;
@@ -19,7 +20,7 @@ public class PointOrderShareProfitServiceImpl extends OrderShareProfitServiceImp
     private PointMiniAppPayServiceImpl pointMiniAppPayService;
 
     @Override
-    public Boolean refund(String orderNo, BigDecimal actualMoney, BigDecimal refundUserMoney) throws WxPayException {
-        return pointMiniAppPayService.refund(orderNo, actualMoney, refundUserMoney);
+    public Boolean refund(Order order, BigDecimal actualMoney, BigDecimal refundUserMoney) throws WxPayException {
+        return pointMiniAppPayService.refund(order.getOrderNo(), actualMoney, refundUserMoney);
     }
 }

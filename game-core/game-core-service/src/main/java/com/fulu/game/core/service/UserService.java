@@ -225,4 +225,7 @@ public interface UserService extends ICommonService<User, Integer> {
      * @return 是否需要领取红包
      */
     boolean getUserCouponStatus(User user);
+
+
+    boolean isOldUser(Integer userId);
 }

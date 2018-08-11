@@ -7,8 +7,6 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.AbsCommonService;
-import com.fulu.game.core.service.impl.CouponServiceImpl;
-import com.fulu.game.core.service.impl.push.AdminPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +32,7 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant, Intege
     @Autowired
     private AdminService adminService;
     @Autowired
-    private CouponServiceImpl couponService;
+    private AdminCouponServiceImpl couponService;
     @Autowired
     private UserService userService;
 

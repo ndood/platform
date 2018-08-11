@@ -17,6 +17,7 @@ import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.impl.order.DefaultOrderServiceImpl;
 import com.fulu.game.core.service.impl.push.AdminPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -26,6 +27,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -50,7 +52,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     @Autowired
     private TagService tagService;
     @Autowired
-    private OrderService orderService;
+    private DefaultOrderServiceImpl orderService;
     @Autowired
     private UserTechAuthService userTechAuthService;
     @Autowired

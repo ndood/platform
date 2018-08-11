@@ -9,6 +9,7 @@ import com.fulu.game.core.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -18,7 +19,7 @@ import static com.fulu.game.common.enums.OrderStatusEnum.NON_PAYMENT;
 
 @Service
 @Slf4j
-public class PilotOrderServiceImpl extends PlayMiniAppOrderServiceImpl {
+public class PilotMiniAppOrderServiceImpl extends PlayMiniAppOrderServiceImpl {
 
     @Autowired
     private ProductService productService;
@@ -29,7 +30,7 @@ public class PilotOrderServiceImpl extends PlayMiniAppOrderServiceImpl {
     @Autowired
     private UserService userService;
     @Autowired
-    private CouponService couponService;
+    private PlayCouponServiceImpl couponService;
     @Autowired
     private PriceFactorService priceFactorService;
     @Autowired

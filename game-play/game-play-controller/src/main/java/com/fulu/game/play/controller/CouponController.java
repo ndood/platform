@@ -3,7 +3,6 @@ package com.fulu.game.play.controller;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Coupon;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.play.service.impl.PlayCouponServiceImpl;
 import com.fulu.game.play.utils.RequestUtil;
@@ -35,20 +34,20 @@ public class CouponController extends BaseController {
 
     @Autowired
     private PlayCouponServiceImpl couponService;
-    @Autowired
-    private OrderService orderService;
+
     @Autowired
     private UserService userService;
 
     /**
      * 兑换优惠券
+     *
      * @return
      */
     @PostMapping("/exchange")
     public Result exchange(@RequestParam("redeemCode") String redeemCode, HttpServletRequest request) {
         User user = userService.getCurrentUser();
         String ipStr = RequestUtil.getIpAdrress(request);
-        Coupon coupon = couponService.generateCoupon(redeemCode, user.getId(),new Date(),ipStr);
+        Coupon coupon = couponService.generateCoupon(redeemCode, user.getId(), new Date(), ipStr);
         return Result.success().data(coupon).msg("恭喜你，兑换成功");
     }
 
@@ -60,7 +59,7 @@ public class CouponController extends BaseController {
                        @RequestParam("overdue") Boolean overdue) {
         User user = userService.getCurrentUser();
         //判断新老用戶
-        Boolean isOldUser = orderService.isOldUser(user.getId());
+        Boolean isOldUser = userService.isOldUser(user.getId());
         PageInfo<Coupon> pageInfo = couponService.listByUseStatus(pageNum, pageSize, isUse, overdue);
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("isOldUser", isOldUser);
@@ -70,12 +69,13 @@ public class CouponController extends BaseController {
 
     /**
      * 查询用户所有可用的优惠券
+     *
      * @return
      */
     @PostMapping(value = "/user")
-    public Result userCoupons(){
+    public Result userCoupons() {
         User user = userService.getCurrentUser();
-        List<Coupon> list =couponService.availableCouponList(user.getId());
+        List<Coupon> list = couponService.availableCouponList(user.getId());
         return Result.success().data(list);
     }
 

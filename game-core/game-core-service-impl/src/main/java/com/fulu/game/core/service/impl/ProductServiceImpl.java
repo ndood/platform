@@ -11,6 +11,7 @@ import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.search.component.ProductSearchComponent;
 import com.fulu.game.core.search.domain.ProductShowCaseDoc;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.impl.order.DefaultOrderServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -19,6 +20,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -44,7 +46,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Autowired
     private CategoryService categoryService;
     @Autowired
-    private OrderService orderService;
+    private DefaultOrderServiceImpl orderService;
     @Autowired
     private SalesModeService salesModeService;
     @Autowired

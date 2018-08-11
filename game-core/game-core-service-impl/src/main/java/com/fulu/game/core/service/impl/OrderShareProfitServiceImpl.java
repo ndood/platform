@@ -1,7 +1,6 @@
 package com.fulu.game.core.service.impl;
 
 
-import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.enums.DetailsEnum;
 import com.fulu.game.common.enums.OrderStatusEnum;
@@ -42,8 +41,7 @@ public abstract class OrderShareProfitServiceImpl extends AbsCommonService<Order
     private ArbitrationDetailsDao arbitrationDetailsDao;
     @Autowired
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
-    @Autowired
-    private UserInfoAuthService userInfoAuthService;
+
 
     @Override
     public ICommonDao<OrderShareProfit, Integer> getDao() {
@@ -131,7 +129,7 @@ public abstract class OrderShareProfitServiceImpl extends AbsCommonService<Order
         //记录订单流水
         orderMoneyDetailsService.create(order.getOrderNo(), order.getUserId(), DetailsEnum.ORDER_USER_CANCEL, refundMoney.negate());
         try {
-            refund(order.getOrderNo(), order.getActualMoney(), refundMoney);
+            refund(order, order.getActualMoney(), refundMoney);
             if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
                 if (OrderStatusEnum.CONSULT_COMPLETE.getStatus().equals(order.getStatus()) || OrderStatusEnum.SYSTEM_CONSULT_COMPLETE.getStatus().equals(order.getStatus())) {
                     userAutoReceiveOrderService.addOrderDisputeNum(order.getServiceUserId(), order.getCategoryId());
@@ -206,7 +204,7 @@ public abstract class OrderShareProfitServiceImpl extends AbsCommonService<Order
 
         //微信退款给用户
         try {
-            refund(orderNo, order.getActualMoney(), refundUserMoney);
+            refund(order, order.getActualMoney(), refundUserMoney);
         } catch (Exception e) {
             log.error("退款失败{}", orderNo, e.getMessage());
             throw new OrderException(orderNo, "订单退款失败!");
@@ -214,5 +212,5 @@ public abstract class OrderShareProfitServiceImpl extends AbsCommonService<Order
     }
 
 
-    protected abstract <T> T refund(String orderNo, BigDecimal actualMoney, BigDecimal refundUserMoney) throws WxPayException;
+    protected abstract <T> T refund(Order order, BigDecimal actualMoney, BigDecimal refundUserMoney) throws WxPayException;
 }

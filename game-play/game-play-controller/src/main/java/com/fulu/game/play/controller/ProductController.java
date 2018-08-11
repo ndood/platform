@@ -10,12 +10,13 @@ import com.fulu.game.core.entity.vo.ProductDetailsVO;
 import com.fulu.game.core.entity.vo.SimpleProductVO;
 import com.fulu.game.core.entity.vo.TechAuthProductVO;
 import com.fulu.game.core.service.MoneyDetailsService;
-import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.ProductService;
 import com.fulu.game.core.service.UserService;
+import com.fulu.game.play.service.impl.PlayMiniAppOrderServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,8 +36,9 @@ public class ProductController extends BaseController {
     private ProductService productService;
     @Autowired
     private MoneyDetailsService moneyDetailsService;
+    @Qualifier("playMiniAppOrderServiceImpl")
     @Autowired
-    private OrderService orderService;
+    private PlayMiniAppOrderServiceImpl orderService;
     @Autowired
     private UserService userService;
 
@@ -52,6 +54,7 @@ public class ProductController extends BaseController {
 
     /**
      * 添加接单方式
+     *
      * @param techAuthId
      * @param price
      * @param unitId
@@ -70,6 +73,7 @@ public class ProductController extends BaseController {
 
     /**
      * 修改接单方式
+     *
      * @param techAuthId
      * @param price
      * @param unitId
@@ -109,6 +113,7 @@ public class ProductController extends BaseController {
 
     /**
      * 技能接单方式激活
+     *
      * @param techAuthId
      * @param status
      * @return
@@ -126,6 +131,7 @@ public class ProductController extends BaseController {
 
     /**
      * 用户所有接单方式列表
+     *
      * @return
      */
     @RequestMapping(value = "/order-receive/tech/list")
@@ -150,6 +156,7 @@ public class ProductController extends BaseController {
 
     /**
      * 查询简单的商品信息
+     *
      * @param productId
      * @return
      */
@@ -201,7 +208,6 @@ public class ProductController extends BaseController {
             return Result.success().msg("关闭");
         }
     }
-
 
 
     /**

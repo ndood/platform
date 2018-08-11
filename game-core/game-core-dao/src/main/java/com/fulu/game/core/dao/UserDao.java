@@ -48,4 +48,10 @@ public interface UserDao extends ICommonDao<User, Integer> {
      * 根据userId获取用户积分
      */
     Integer findUserScoreByUpdate(Integer userId);
+
+    /**
+     * 用户下单数量
+     * @return
+     */
+    Integer countUserOrder(Integer userId);
 }

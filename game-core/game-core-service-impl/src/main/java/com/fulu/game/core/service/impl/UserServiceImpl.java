@@ -16,6 +16,7 @@ import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
+import com.fulu.game.core.service.impl.coupon.DefaultCouponServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import cn.hutool.core.date.DateUtil;
@@ -25,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -52,8 +54,10 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     private ImgUtil imgUtil;
     @Autowired
     private CouponGroupService couponGroupService;
+
     @Autowired
-    private CouponService couponService;
+    private DefaultCouponServiceImpl couponService;
+
     @Autowired
     private SpringThreadPoolExecutor springThreadPoolExecutor;
 
@@ -570,6 +574,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     /**
      * 发放优惠券
+     *
      * @param user  用户Bean
      * @param ipStr 用户ip
      * @return 是否发放成功
@@ -617,5 +622,11 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean isOldUser(Integer userId) {
+        return userDao.countUserOrder(userId) > 0;
+
     }
 }

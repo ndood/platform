@@ -10,6 +10,7 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.ChannelCashDetailsVO;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.impl.order.DefaultOrderServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,7 @@ public class ChannelCashDetailsServiceImpl extends AbsCommonService<ChannelCashD
     @Autowired
     private ChannelService channelService;
     @Autowired
-    private OrderService orderService;
+    private DefaultOrderServiceImpl orderService;
 
     @Override
     public ICommonDao<ChannelCashDetails, Integer> getDao() {

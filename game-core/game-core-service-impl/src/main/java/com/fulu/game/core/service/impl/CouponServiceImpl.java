@@ -10,7 +10,6 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.CouponVO;
 import com.fulu.game.core.service.CouponGroupService;
 import com.fulu.game.core.service.CouponService;
-import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -27,7 +26,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> implements CouponService {
+public abstract class CouponServiceImpl extends AbsCommonService<Coupon, Integer> implements CouponService {
 
     @Autowired
     private CouponDao couponDao;
@@ -35,16 +34,15 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
     private CouponGroupService couponGroupService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private OrderService orderService;
+
 
     /**
      * 发放完优惠券推送消息
+     *
      * @param userId
      * @param deduction
      */
-    public void pushMsgAfterGrantCoupon(int userId, String deduction) {
-    }
+    public abstract void pushMsgAfterGrantCoupon(int userId, String deduction);
 
 
     @Override
@@ -72,7 +70,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         List<Coupon> availableCouponList = new ArrayList<>();
         availableCouponList.addAll(couponList);
         for (Coupon coupon : couponList) {
-            if (orderService.isOldUser(userId) && coupon.getIsNewUser()) {
+            if (userService.isOldUser(userId) && coupon.getIsNewUser()) {
                 availableCouponList.remove(coupon);
             }
         }
@@ -93,7 +91,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
             log.error("优惠券使用错误:过期:{}", coupon.getCouponNo());
             return false;
         }
-        if (orderService.isOldUser(coupon.getUserId()) && coupon.getIsNewUser()) {
+        if (userService.isOldUser(coupon.getUserId()) && coupon.getIsNewUser()) {
             log.error("优惠券使用错误:不能使用新用户专享券:{}", coupon.getCouponNo());
             return false;
         }
@@ -211,7 +209,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
             throw new CouponException(CouponException.ExceptionCode.ALREADY_RECEIVE);
         }
         //新用户专享卷只能新用户领
-        if (orderService.isOldUser(userId) && couponGroup.getIsNewUser()) {
+        if (userService.isOldUser(userId) && couponGroup.getIsNewUser()) {
             throw new CouponException(CouponException.ExceptionCode.NEWUSER_RECEIVE);
         }
         //过期的优惠券不能兑换

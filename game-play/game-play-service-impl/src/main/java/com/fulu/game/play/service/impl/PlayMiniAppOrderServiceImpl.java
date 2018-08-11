@@ -19,6 +19,7 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -40,8 +41,10 @@ public class PlayMiniAppOrderServiceImpl extends OrderServiceImpl {
     private OrderProductService orderProductService;
     @Autowired
     private UserService userService;
+
+    @Qualifier("playCouponServiceImpl")
     @Autowired
-    private CouponService couponService;
+    private PlayCouponServiceImpl couponService;
     @Autowired
     private OrderStatusDetailsService orderStatusDetailsService;
     @Autowired

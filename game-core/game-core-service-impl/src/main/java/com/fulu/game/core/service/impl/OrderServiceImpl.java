@@ -13,9 +13,11 @@ import com.fulu.game.core.entity.vo.OrderEventVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
+import com.fulu.game.core.service.impl.coupon.DefaultCouponServiceImpl;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,7 +28,6 @@ import java.util.List;
 
 import static com.fulu.game.common.enums.OrderStatusEnum.NON_PAYMENT;
 
-@Service
 @Slf4j
 public abstract class OrderServiceImpl extends AbsCommonService<Order, Integer> implements OrderService {
 
@@ -41,7 +42,7 @@ public abstract class OrderServiceImpl extends AbsCommonService<Order, Integer> 
     @Autowired
     private PlatformMoneyDetailsService platformMoneyDetailsService;
     @Autowired
-    private CouponService couponService;
+    private DefaultCouponServiceImpl couponService;
     @Autowired
     private OrderStatusDetailsService orderStatusDetailsService;
     @Autowired
