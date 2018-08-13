@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 
 /**
  * Created by burgl on 2018/8/11.
+ * 此类无实际意义，是为了解决OrderServiceImpl是抽象类，
+ * 在productServiceImpl无法实际使用而建，如有更好的方法，可修改
  */
 @Service
 public class DefaultOrderServiceImpl extends OrderServiceImpl {
