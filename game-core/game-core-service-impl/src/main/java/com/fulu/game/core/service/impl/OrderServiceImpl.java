@@ -20,8 +20,6 @@ import com.fulu.game.core.service.impl.coupon.DefaultCouponServiceImpl;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.math.BigDecimal;

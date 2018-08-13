@@ -10,7 +10,7 @@ import java.math.BigDecimal;
  * Created by burgl on 2018/8/11.
  */
 @Service
-public class DefaultOrderServiceImpl extends OrderServiceImpl{
+public class DefaultOrderServiceImpl extends OrderServiceImpl {
     @Override
     protected void dealOrderAfterPay(Order order) {
 
@@ -18,11 +18,9 @@ public class DefaultOrderServiceImpl extends OrderServiceImpl{
 
     @Override
     protected void shareProfit(Order order) {
-
     }
 
     @Override
     protected void orderRefund(Order order, BigDecimal refundMoney) {
-
     }
 }

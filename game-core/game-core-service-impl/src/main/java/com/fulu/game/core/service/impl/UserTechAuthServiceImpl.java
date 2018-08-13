@@ -87,7 +87,6 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
                 throw new ServiceErrorException("不能添加重复的技能!");
             }
             userTechAuthTO.setCreateTime(new Date());
-
             create(userTechAuthTO);
         }else {
             UserTechAuth oldUserTechAuth = findById(userTechAuthTO.getId());
@@ -107,6 +106,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
             //删除重新认证的商品
             productService.disabledProductByTech(userTechAuthTO.getId());
             //删除重新认证的商品
+
         }
         //创建技能标签关联
         saveTechTag(userTechAuthTO.getId(), userTechAuthTO.getTagIds());
