@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -441,6 +442,17 @@ public class OrderController extends BaseController {
         gradingAdvanceOrderVO.setCategoryName(category.getName());
         gradingAdvanceOrderVO.setCategoryIcon(category.getIcon());
         return gradingAdvanceOrderVO;
+    }
+
+    /**
+     * 获取是否有陪玩师接单状态
+     *
+     * @return 封装结果集
+     */
+    @PostMapping("/accept-order/status")
+    public DeferredResult<Result> getServiceUserAcceptOrderStatus() {
+        DeferredResult<Result> resultDeferredResult = orderService.getServiceUserAcceptOrderStatus();
+        return resultDeferredResult;
     }
 
 }
