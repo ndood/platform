@@ -14,11 +14,6 @@
     <dependencies>
         <dependency>
             <groupId>com.fulu.game</groupId>
-            <artifactId>game-core-service-impl</artifactId>
-            <version>${game.core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fulu.game</groupId>
             <artifactId>game-play-service-impl</artifactId>
             <version>${game.play.service.version}</version>
         </dependency>
