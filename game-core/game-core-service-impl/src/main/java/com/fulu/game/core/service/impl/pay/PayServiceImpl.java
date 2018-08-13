@@ -18,9 +18,6 @@ import java.math.BigDecimal;
 @Slf4j
 public abstract class PayServiceImpl<T> implements PayService {
 
-    @Autowired
-    private DefaultOrderServiceImpl orderService;
-
     @Override
     public Object payOrder(Order order, User user, String requestIp) {
         if (!order.getIsPay() && !order.getStatus().equals(OrderStatusEnum.NON_PAYMENT.getStatus())) {
@@ -29,7 +26,7 @@ public abstract class PayServiceImpl<T> implements PayService {
         Integer totalFee = (order.getActualMoney().multiply(new BigDecimal(100))).intValue();
         //如果订单金额为0,则直接调用支付成功接口
         if (totalFee.equals(0)) {
-            orderService.payOrder(order.getOrderNo(), order.getActualMoney());
+            payOrder(order.getOrderNo(), order.getActualMoney());
             return null;
         }
         try {
@@ -41,6 +38,8 @@ public abstract class PayServiceImpl<T> implements PayService {
         }
     }
 
+    protected abstract void payOrder(String orderNo, BigDecimal actualMoney);
+
     protected abstract Object pay(Order order, User user, String ip);
 
     @Override
@@ -50,7 +49,7 @@ public abstract class PayServiceImpl<T> implements PayService {
             // 结果正确
             String orderNo = getOrderNo(result);
             String totalYuan = getTotal(result);
-            orderService.payOrder(orderNo, new BigDecimal(totalYuan));
+            payOrder(orderNo, new BigDecimal(totalYuan));
             return WxPayNotifyResponse.success("处理成功!");
         } catch (Exception e) {
             log.error("回调报文:{}", xmlResult);

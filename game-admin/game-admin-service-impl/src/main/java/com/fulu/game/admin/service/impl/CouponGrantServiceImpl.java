@@ -7,6 +7,7 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.AbsCommonService;
+import com.fulu.game.core.service.impl.coupon.AdminCouponServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;

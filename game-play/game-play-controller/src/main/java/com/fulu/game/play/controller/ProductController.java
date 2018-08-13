@@ -12,7 +12,7 @@ import com.fulu.game.core.entity.vo.TechAuthProductVO;
 import com.fulu.game.core.service.MoneyDetailsService;
 import com.fulu.game.core.service.ProductService;
 import com.fulu.game.core.service.UserService;
-import com.fulu.game.play.service.impl.PlayMiniAppOrderServiceImpl;
+import com.fulu.game.core.service.impl.order.PlayMiniAppOrderServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

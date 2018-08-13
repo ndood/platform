@@ -1,4 +1,4 @@
-package com.fulu.game.schedule.service.impl;
+package com.fulu.game.core.service.impl.order;
 
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
@@ -14,6 +14,7 @@ import com.fulu.game.core.service.OrderStatusDetailsService;
 import com.fulu.game.core.service.impl.OrderServiceImpl;
 import com.fulu.game.core.service.impl.profit.PlayOrderShareProfitServiceImpl;
 import com.fulu.game.core.service.impl.profit.PointOrderShareProfitServiceImpl;
+import com.fulu.game.core.service.impl.push.SchedulePushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,8 +36,7 @@ public class ScheduleOrderServiceImpl extends OrderServiceImpl {
     private OrderDealService orderDealService;
     @Autowired
     private OrderStatusDetailsService orderStatusDetailsService;
-    @Autowired
-    private OrderShareProfitService orderShareProfitService;
+
     @Autowired
     private OrderEventService orderEventService;
     @Autowired
@@ -167,7 +167,7 @@ public class ScheduleOrderServiceImpl extends OrderServiceImpl {
         //推送通知同意协商
         schedulePushService.consultAgree(order);
         //退款给用户
-        orderShareProfitService.orderRefund(order, orderEvent.getRefundMoney());
+        orderRefund(order, orderEvent.getRefundMoney());
     }
 
     /**

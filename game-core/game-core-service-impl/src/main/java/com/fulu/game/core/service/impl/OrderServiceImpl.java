@@ -192,7 +192,9 @@ public abstract class OrderServiceImpl extends AbsCommonService<Order, Integer> 
         }
         //记录订单流水
         orderMoneyDetailsService.create(order.getOrderNo(), order.getUserId(), DetailsEnum.ORDER_PAY, orderMoney);
+
         dealOrderAfterPay(order);
+
         return orderConvertVo(order);
     }
 

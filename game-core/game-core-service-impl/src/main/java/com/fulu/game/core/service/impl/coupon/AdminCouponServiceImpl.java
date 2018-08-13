@@ -1,4 +1,4 @@
-package com.fulu.game.admin.service.impl;
+package com.fulu.game.core.service.impl.coupon;
 
 import com.fulu.game.core.service.impl.CouponServiceImpl;
 import com.fulu.game.core.service.impl.push.AdminPushServiceImpl;
