@@ -26,7 +26,7 @@ public class PointMiniAppPayServiceImpl extends MiniAppPayServiceImpl {
         WxPayUnifiedOrderRequest orderRequest = buildWxPayRequest(order, requestIp);
         try {
             orderRequest.setOpenid(user.getPointOpenId());
-            return wxMaServiceSupply.playWxPayService().createOrder(orderRequest);
+            return wxMaServiceSupply.pointWxPayService().createOrder(orderRequest);
         } catch (Exception e) {
             log.error("上分订单支付错误", e);
             throw new OrderException(orderRequest.getOutTradeNo(), "上分订单无法支付!");
