@@ -14,5 +14,13 @@ public interface FenqileOrderService {
     <T> T createOrder(FenqileOrderRequest fenqileOrderRequest, Class<T> clazz);
 
 
+    /**
+     * 修改通知回调
+     * @param noticeType
+     * @param noticeUrl
+     * @param clazz
+     * @param <T>
+     * @return
+     */
     <T> T noticeModify(Integer noticeType,String noticeUrl,Class<T> clazz);
 }
