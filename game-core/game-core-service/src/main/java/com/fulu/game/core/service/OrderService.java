@@ -1,5 +1,6 @@
 package com.fulu.game.core.service;
 
+import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.core.entity.ArbitrationDetails;
 import com.fulu.game.core.entity.Order;
@@ -9,6 +10,7 @@ import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import com.github.pagehelper.PageInfo;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -432,4 +434,11 @@ public interface OrderService extends ICommonService<Order, Integer> {
      * @return 订单VO分页列表
      */
     PageInfo<OrderVO> unacceptOrderList(Integer pageNum, Integer pageSize, OrderSearchVO orderSearchVO);
+
+    /**
+     * 获取是否有陪玩师接单状态
+     *
+     * @return
+     */
+    DeferredResult<Result> getServiceUserAcceptOrderStatus();
 }

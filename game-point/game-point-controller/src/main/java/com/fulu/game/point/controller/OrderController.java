@@ -2,12 +2,10 @@ package com.fulu.game.point.controller;
 
 
 import cn.hutool.core.bean.BeanUtil;
-import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.SystemException;
-import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.OrderPointProductTO;
 import com.fulu.game.core.entity.vo.OrderEventVO;
@@ -19,12 +17,12 @@ import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.point.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -436,6 +434,17 @@ public class OrderController extends BaseController {
         gradingAdvanceOrderVO.setCategoryName(category.getName());
         gradingAdvanceOrderVO.setCategoryIcon(category.getIcon());
         return gradingAdvanceOrderVO;
+    }
+
+    /**
+     * 获取是否有陪玩师接单状态
+     *
+     * @return 封装结果集
+     */
+    @PostMapping("/accept-order/status")
+    public DeferredResult<Result> getServiceUserAcceptOrderStatus() {
+        DeferredResult<Result> resultDeferredResult = orderService.getServiceUserAcceptOrderStatus();
+        return resultDeferredResult;
     }
 
 }

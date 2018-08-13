@@ -4,10 +4,12 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.Constant;
+import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
+import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.common.utils.SMSUtil;
@@ -27,12 +29,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static com.fulu.game.common.enums.OrderStatusEnum.NON_PAYMENT;
 import static java.math.BigDecimal.ROUND_HALF_DOWN;
@@ -1616,5 +1616,53 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         PageInfo page = new PageInfo(orderList);
         page.setList(orderVOList);
         return page;
+    }
+
+    @Override
+    public DeferredResult<Result> getServiceUserAcceptOrderStatus() {
+        User user = userService.getCurrentUser();
+        if (user == null) {
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+
+        Integer userId = user.getId();
+        Map<String, Object> resultMap = new HashMap<>(2);
+        resultMap.put("flag", Constant.SERVICE_USER_NOT_ACCEPT_ORDER);
+        Result defaultResult = Result.success().data(resultMap).msg("60秒内没有陪玩师接单！");
+
+        //超时时间:60秒
+        DeferredResult<Result> deferredResult = new DeferredResult<>(Constant.MILLI_SECOND_60, defaultResult);
+
+        Order order = new Order();
+
+        long startTimeMillis = System.currentTimeMillis();
+        while (true) {
+            Long threadSleepTime = 5000L;
+            if (Constant.serviceUserAcceptOrderMap.containsKey(userId)) {
+                order = (Order) Constant.serviceUserAcceptOrderMap.get(userId);
+                log.info("陪玩师id:{}已接单，订单编号:{}！", order.getServiceUserId(), order.getOrderNo());
+                resultMap.put("flag", Constant.SERVICE_USER_ACCEPT_ORDER);
+                Result result = Result.success().data(resultMap).msg("陪玩师已接单！");
+                deferredResult.setResult(result);
+                Constant.serviceUserAcceptOrderMap.remove(userId);
+                return deferredResult;
+            }
+
+            long currentTimeMillis = System.currentTimeMillis();
+            long resultTimeMillis = currentTimeMillis - startTimeMillis;
+            if (resultTimeMillis >= Constant.MILLI_SECOND_60 - 5000L) {
+                threadSleepTime = 1000L;
+            }
+            if (resultTimeMillis >= Constant.MILLI_SECOND_60 - 1000L) {
+                deferredResult.setResult(defaultResult);
+                break;
+            }
+            try {
+                Thread.sleep(threadSleepTime);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return deferredResult;
     }
 }
