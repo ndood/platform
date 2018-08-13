@@ -131,13 +131,13 @@
         <where>
             o.type = 2
             <if test="type == null">
-                and ((o.user_id = #{userId}) OR ( o.service_user_id = #{userId} AND o.`status` NOT IN (100, 101) ))
+                and ((o.user_id = #{userId}) OR ( o.service_user_id = #{userId} AND o.`status` NOT IN (100) ))
             </if>
             <if test="type == 1">
                 and o.user_id = #{userId}
             </if>
             <if test="type == 2">
-                and o.service_user_id = #{userId} AND o.`status` NOT IN (100, 101)
+                and o.service_user_id = #{userId} AND o.`status` NOT IN (100)
             </if>
         </where>
     </select>
@@ -159,13 +159,13 @@
         <where>
             o.type = 1
             <if test="type == null">
-                and ((o.user_id = #{userId}) OR ( o.service_user_id = #{userId} AND o.`status` NOT IN (100, 101) ))
+                and ((o.user_id = #{userId}) OR ( o.service_user_id = #{userId} AND o.`status` NOT IN (100) ))
             </if>
             <if test="type == 1">
                 and o.user_id = #{userId}
             </if>
             <if test="type == 2">
-                and o.service_user_id = #{userId} AND o.`status` NOT IN (100, 101)
+                and o.service_user_id = #{userId} AND o.`status` NOT IN (100)
             </if>
         </where>
     </select>

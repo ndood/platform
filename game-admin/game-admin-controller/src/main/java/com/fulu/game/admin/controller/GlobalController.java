@@ -37,5 +37,11 @@ public class GlobalController extends BaseController{
         return Result.success().msg("批量更新所有商品索引完成!");
     }
 
+    @PostMapping("/bath/delindex")
+    public Result allIndexDel(){
+        productService.deleteAllProductIndex();
+        return Result.success().msg("删除所有索引完成!");
+    }
+
 
 }
