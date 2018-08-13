@@ -1,16 +1,15 @@
 package com.fulu.game.core.service.impl.push;
 
 import com.fulu.game.common.Constant;
-import com.fulu.game.common.enums.*;
+import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.UserScoreEnum;
+import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.WechatFormidService;
 import com.fulu.game.core.service.aop.UserScore;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.fulu.game.core.service.queue.PushMsgQueue;
-import com.sun.org.apache.bcel.internal.generic.PUSH;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,26 +26,29 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
 
     /**
      * 陪玩师开始接单
+     *
      * @param order
      */
-    public void receiveOrder(Order order){
-        push(order.getUserId(),WechatTemplateMsgEnum.ORDER_TOUSER_AFFIRM_RECEIVE);
+    public void receiveOrder(Order order) {
+        push(order.getUserId(), WechatTemplateMsgEnum.ORDER_TOUSER_AFFIRM_RECEIVE);
     }
 
     /**
      * 提醒接单
+     *
      * @param order
      */
-    public void remindReceive(Order order){
-        push(order.getUserId(),WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_RECEIVE);
+    public void remindReceive(Order order) {
+        push(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_RECEIVE);
     }
 
     /**
      * 提醒开始
+     *
      * @param order
      */
-    public void remindStart(Order order){
-        push(order.getUserId(),WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_START_SERVICE);
+    public void remindStart(Order order) {
+        push(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_START_SERVICE);
     }
 
 
@@ -154,15 +156,16 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
 
     /**
      * 发放优惠券
+     *
      * @param userId
      * @param deduction
      */
-    public void grantCouponMsg(int userId,String deduction){
-        push(userId, WechatTemplateMsgEnum.ORDER_TOSERVICE_AFFIRM_SERVER,deduction);
+    public void grantCouponMsg(int userId, String deduction) {
+        push(userId, WechatTemplateMsgEnum.ORDER_TOSERVICE_AFFIRM_SERVER, deduction);
     }
 
 
-    protected abstract void push(int userId, WechatTemplateMsgEnum wechatTemplateMsgEnum,String ... replaces);
+    protected abstract void push(int userId, WechatTemplateMsgEnum wechatTemplateMsgEnum, String... replaces);
 
 
     /**
@@ -195,7 +198,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
         if (time >= 10) {
             return "推送次数太多不能推送!";
         }
-        push(acceptUser.getId(), WechatTemplateMsgEnum.IM_MSG_PUSH,sendUser.getNickname(), content);
+        push(acceptUser.getId(), WechatTemplateMsgEnum.IM_MSG_PUSH, sendUser.getNickname(), content);
         time += 1;
         //推送状态缓存两个小时
         redisOpenService.set(RedisKeyEnum.WX_TEMPLATE_MSG.generateKey(imId + "|" + acceptImId), time + "", Constant.TIME_MINUTES_FIFE);

@@ -51,7 +51,7 @@ public class PointMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
      * @param order
      */
     public void pushPointOrder(Order order) {
-        log.info("推送集市订单:order:{};", order);
+        log.info("推送上分订单:order:{};", order);
         Category category = categoryService.findById(order.getCategoryId());
         //查询所有符合推送条件的用户
         List<UserTechAuth> userTechAuthList = userTechAuthService.findNormalByCategory(order.getCategoryId());

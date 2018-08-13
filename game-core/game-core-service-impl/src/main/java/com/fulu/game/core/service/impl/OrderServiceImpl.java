@@ -8,6 +8,7 @@ import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.OrderDao;
@@ -19,6 +20,7 @@ import com.fulu.game.core.service.aop.UserScore;
 import com.fulu.game.core.service.impl.coupon.DefaultCouponServiceImpl;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.async.DeferredResult;
 
@@ -50,7 +52,10 @@ public abstract class OrderServiceImpl extends AbsCommonService<Order, Integer> 
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
-
+    @Autowired
+    private SpringThreadPoolExecutor springThreadPoolExecutor;
+    @Autowired
+    private ImService imService;
 
     /**
      * 确认订单支付
@@ -651,6 +656,22 @@ public abstract class OrderServiceImpl extends AbsCommonService<Order, Integer> 
             orderStatusDetailsService.create(orderNo, order.getStatus(), 10);
             //增加接单数量
             userAutoReceiveOrderService.addOrderNum(serviceUser.getId(), order.getCategoryId());
+
+            //开启新线程通知老板，陪玩师已接单
+            springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
+                @Override
+                public void run() {
+                    //方案一：长轮询通知老板
+                    order.setServiceUserId(serviceUser.getId());
+                    Constant.serviceUserAcceptOrderMap.put(order.getUserId(), order);
+                    //方案二：发送IM消息通知老板
+                    User bossUser = userService.findById(order.getUserId());
+                    String imId = bossUser.getImId();
+                    if (StringUtils.isNotBlank(imId)) {
+                        imService.sendMsgToImUser(imId, Constant.SERVICE_USER_ACCEPT_ORDER);
+                    }
+                }
+            });
         } finally {
             redisOpenService.unlock(RedisKeyEnum.MARKET_ORDER_RECEIVE_LOCK.generateKey(order.getOrderNo()));
         }

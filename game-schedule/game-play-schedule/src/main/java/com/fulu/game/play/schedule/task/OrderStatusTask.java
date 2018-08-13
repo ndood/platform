@@ -26,7 +26,6 @@ public class OrderStatusTask {
      */
     @Scheduled(cron = "0 0/1 * * * ? ")  //cron接受cron表达式，根据cron表达式确定定时规则
     public void cancelTimeOutOrder() {
-        //todo 处理已付款的订单
         Integer[] statusList = new Integer[]{OrderStatusEnum.NON_PAYMENT.getStatus(),
                 OrderStatusEnum.WAIT_SERVICE.getStatus(),
                 OrderStatusEnum.ALREADY_RECEIVING.getStatus()};

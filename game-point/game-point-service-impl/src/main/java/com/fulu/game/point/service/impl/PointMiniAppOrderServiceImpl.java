@@ -202,13 +202,7 @@ public class PointMiniAppOrderServiceImpl extends OrderServiceImpl {
         orderPointProductService.create(orderPointProductVO);
         //计算订单状态倒计时十分钟
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 10);
-        //推送上分订单消息
-        springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
-            @Override
-            public void run() {
-                pointMiniAppPushService.pushPointOrder(order);
-            }
-        });
+
         return order.getOrderNo();
     }
 
@@ -218,6 +212,13 @@ public class PointMiniAppOrderServiceImpl extends OrderServiceImpl {
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 10);
         //通知
         pointMiniAppPushService.orderPay(order);
+        //推送上分订单消息
+        springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                pointMiniAppPushService.pushPointOrder(order);
+            }
+        });
     }
 
     @Override
