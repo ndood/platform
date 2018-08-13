@@ -1,8 +1,10 @@
 package com.fulu.game.core.service;
 
+import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.entity.vo.*;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -173,4 +175,11 @@ public interface OrderService extends ICommonService<Order, Integer> {
      * 是否是老用户（下单过的）
      */
     Boolean isOldUser(Integer userId);
+
+    /**
+     * 获取是否有陪玩师接单状态
+     *
+     * @return
+     */
+    DeferredResult<Result> getServiceUserAcceptOrderStatus();
 }
