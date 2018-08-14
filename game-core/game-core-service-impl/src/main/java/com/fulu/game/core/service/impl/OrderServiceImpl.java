@@ -634,13 +634,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         orderPointProductService.create(orderPointProductVO);
         //计算订单状态倒计时十分钟
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 10);
-        //推送上分订单消息
-        springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
-            @Override
-            public void run() {
-                wxTemplateMsgService.pushPointOrder(order);
-            }
-        });
+
         return order.getOrderNo();
     }
 
@@ -704,6 +698,13 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             orderMoneyDetailsService.create(order.getOrderNo(), order.getUserId(), DetailsEnum.ORDER_PAY, orderMoney);
             //通知
             wxTemplateMsgService.pushWechatTemplateMsg(order.getUserId(), WechatTemplateMsgEnum.POINT_TOSE_ORDER_RECEIVING);
+            //推送上分订单消息
+            springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
+                @Override
+                public void run() {
+                    wxTemplateMsgService.pushPointOrder(order);
+                }
+            });
         } else {
             //订单状态倒计时
             orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
