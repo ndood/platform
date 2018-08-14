@@ -46,8 +46,8 @@ public class OrderController extends BaseController {
      * @param request     请求
      * @param num         订单数量
      * @param couponNo    优惠券编码
-     * @param sessionkey  sessionkey
-     * @param contactType 联系方式类型
+     * @param sessionkey  sessionkey（相当于下单的令牌）
+     * @param contactType 联系方式类型(1：手机号；2：QQ号；3：微信号)
      * @param contactInfo 联系方式
      * @return 封装结果集
      */
