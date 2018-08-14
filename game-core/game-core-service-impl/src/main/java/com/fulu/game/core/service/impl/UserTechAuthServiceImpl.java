@@ -129,6 +129,8 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         }
         //重置技能好友认证状态
         userTechAuth.setStatus(TechAuthStatusEnum.NO_AUTHENTICATION.getType());
+        userTechAuth.setUpdateTime(new Date());
+        update(userTechAuth);
         //添加拒绝原因
         UserTechAuthReject userTechAuthReject = new UserTechAuthReject();
         userTechAuthReject.setReason(reason);
@@ -180,6 +182,8 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         UserTechAuth userTechAuth = findById(id);
         //重置技能好友认证状态
         userTechAuth.setStatus(TechAuthStatusEnum.FREEZE.getType());
+        userTechAuth.setUpdateTime(new Date());
+        update(userTechAuth);
         //添加拒绝原因
         UserTechAuthReject userTechAuthReject = new UserTechAuthReject();
         userTechAuthReject.setReason(reason);
