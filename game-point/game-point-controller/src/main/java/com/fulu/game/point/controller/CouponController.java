@@ -59,6 +59,7 @@ public class CouponController extends BaseController {
         resultMap.put("isOldUser", isOldUser);
         resultMap.put("pageInfo", pageInfo);
         return Result.success().data(resultMap).msg("查询成功！");
+
     }
 
     /**

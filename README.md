@@ -47,6 +47,9 @@ web端: https://pro.modao.cc/app/KmU8Jxs1hdjFFFBxDUe4Ub0VdD7CmaI#screen=s65673F5
 前端https://pro.modao.cc/app/pXbKqGa8AZZZPhHCX168kIVl4TiC7lI
 后台https://pro.modao.cc/app/CaoYOOGUwrv2hx6SXIUiaZKdDA50dse
 
+### 分期乐原型
+分期乐前端原型：https://pro.modao.cc/app/BPfF8hfMbXILPIlNxFBfHHUe50YbRHq
+分期乐后台原型：https://pro.modao.cc/app/iYMJFWOPAGsuN9EGRTpknyHfiQPjq9L
 
 ##订单状态
 |订单状态|状态注释|
