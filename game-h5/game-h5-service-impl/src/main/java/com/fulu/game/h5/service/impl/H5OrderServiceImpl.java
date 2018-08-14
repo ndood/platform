@@ -2,11 +2,16 @@ package com.fulu.game.h5.service.impl;
 
 import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.enums.OrderTypeEnum;
+import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
+import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.OrderServiceImpl;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -25,6 +31,7 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
     private final OrderProductService orderProductService;
     private final CouponService couponService;
     private final OrderStatusDetailsService orderStatusDetailsService;
+    private final OrderDao orderDao;
 
     @Autowired
     public H5OrderServiceImpl(UserService userService,
@@ -33,7 +40,8 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
                               UserContactService userContactService,
                               OrderProductService orderProductService,
                               CouponService couponService,
-                              OrderStatusDetailsService orderStatusDetailsService) {
+                              OrderStatusDetailsService orderStatusDetailsService,
+                              OrderDao orderDao) {
         this.userService = userService;
         this.productService = productService;
         this.categoryService = categoryService;
@@ -41,6 +49,7 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
         this.orderProductService = orderProductService;
         this.couponService = couponService;
         this.orderStatusDetailsService = orderStatusDetailsService;
+        this.orderDao = orderDao;
     }
 
     @Override
@@ -115,5 +124,23 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
         //计算订单状态倒计时24小时
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
         return order.getOrderNo();
+    }
+
+    public PageInfo<OrderDetailsVO> list(int pageNum, int pageSize) {
+        PageHelper.startPage(pageNum, pageSize, "id DESC");
+        User user = userService.getCurrentUser();
+        List<OrderDetailsVO> list = orderDao.fenqileOrderList(user.getId());
+        for (OrderDetailsVO orderDetailsVO : list) {
+            if (user.getId().equals(orderDetailsVO.getUserId())) {
+                orderDetailsVO.setIdentity(UserTypeEnum.GENERAL_USER.getType());
+            } else {
+                orderDetailsVO.setIdentity(UserTypeEnum.ACCOMPANY_PLAYER.getType());
+            }
+            orderDetailsVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderDetailsVO.getStatus()));
+            orderDetailsVO.setStatusNote(OrderStatusEnum.getNoteByStatus(orderDetailsVO.getStatus()));
+            Long countDown = orderStatusDetailsService.getCountDown(orderDetailsVO.getOrderNo(), orderDetailsVO.getStatus());
+            orderDetailsVO.setCountDown(countDown);
+        }
+        return new PageInfo<>(list);
     }
 }

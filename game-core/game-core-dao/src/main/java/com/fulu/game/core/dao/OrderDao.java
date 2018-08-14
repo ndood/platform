@@ -1,7 +1,6 @@
 package com.fulu.game.core.dao;
 
 import com.fulu.game.core.entity.Order;
-import com.fulu.game.core.entity.vo.MarketOrderVO;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.PointOrderDetailsVO;
@@ -38,6 +37,13 @@ public interface OrderDao extends ICommonDao<Order, Integer> {
 
     List<OrderDetailsVO> listOrderDetails(@Param(value = "type") Integer type, @Param(value = "userId") Integer userId);
 
+    /**
+     * 分期乐订单列表
+     *
+     * @param userId 老板id
+     * @return 订单vo列表
+     */
+    List<OrderDetailsVO> fenqileOrderList(@Param(value = "userId") Integer userId);
 
     List<PointOrderDetailsVO> pointOrderList(@Param(value = "type") Integer type, @Param(value = "userId") Integer userId);
 

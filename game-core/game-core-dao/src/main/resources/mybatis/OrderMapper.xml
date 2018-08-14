@@ -170,6 +170,22 @@
         </where>
     </select>
 
+    <select id="fenqileOrderList" resultMap="OrderDetailsVOMap">
+        SELECT
+            o.*, cu.nickname AS userNickName,
+            pu.nickname AS serverNickName,
+            cu.head_portraits_url AS userHeadUrl,
+            pu.head_portraits_url AS serverHeadUrl,
+            op.product_id AS productId
+        FROM
+            t_order o
+        LEFT JOIN t_user cu ON o.user_id = cu.id
+        LEFT JOIN t_user pu ON o.service_user_id = pu.id
+        LEFT JOIN t_order_product op ON o.order_no = op.order_no
+        WHERE
+            o.type = 3 and o.user_id = #{userId}
+    </select>
+
     <select id="countByParameter" resultType="java.lang.Integer" parameterType="com.fulu.game.core.entity.vo.OrderVO">
         SELECT
         count(1)

@@ -4,10 +4,12 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.SystemException;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.h5.service.impl.H5OrderServiceImpl;
 import com.fulu.game.h5.utils.RequestUtil;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,5 +74,19 @@ public class OrderController extends BaseController {
         } finally {
             redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));
         }
+    }
+
+    /**
+     * 订单列表
+     *
+     * @param pageNum  页码
+     * @param pageSize 每页显示数据条数
+     * @return 封装结果集
+     */
+    @RequestMapping(value = "/list")
+    public Result orderList(@RequestParam Integer pageNum,
+                            @RequestParam Integer pageSize) {
+        PageInfo<OrderDetailsVO> page = orderService.list(pageNum, pageSize);
+        return Result.success().data(page);
     }
 }
