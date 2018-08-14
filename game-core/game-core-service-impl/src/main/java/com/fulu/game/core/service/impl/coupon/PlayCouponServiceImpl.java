@@ -1,6 +1,7 @@
-package com.fulu.game.play.service.impl;
+package com.fulu.game.core.service.impl.coupon;
 
 import com.fulu.game.core.service.impl.CouponServiceImpl;
+import com.fulu.game.core.service.impl.push.PlayMiniAppPushServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -34,12 +34,11 @@ public abstract class PushServiceImpl implements PushService {
     private UserService userService;
     @Autowired
     private WechatFormidService wechatFormidService;
-    @Autowired
-    private RedisOpenServiceImpl redisOpenService;
 
 
     /**
      * 通用模板推送消息
+     * 只有小程序才会用到的推送，应该放miniappPushServiceImpl，但是因为admin也会调用，所以放pushServiceImpl下
      *
      * @param platform
      * @param userId

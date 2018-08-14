@@ -1,7 +1,7 @@
 package com.fulu.game.admin.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.fulu.game.admin.service.impl.AdminOrderServiceImpl;
+import com.fulu.game.core.service.impl.order.AdminOrderServiceImpl;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Channel;

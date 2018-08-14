@@ -1,4 +1,4 @@
-package com.fulu.game.play.service.impl;
+package com.fulu.game.core.service.impl.push;
 
 import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.common.enums.WechatTemplateIdEnum;

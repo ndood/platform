@@ -39,7 +39,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void remindReceive(Order order) {
-        push(order.getUserId(), WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_RECEIVE);
+        push(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_RECEIVE);
     }
 
     /**
@@ -48,7 +48,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void remindStart(Order order) {
-        push(order.getUserId(), WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_START_SERVICE);
+        push(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_START_SERVICE);
     }
 
 
@@ -114,7 +114,9 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void cancelOrderByUser(Order order) {
-        push(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_TOSERVICE_ORDER_CANCEL);
+        if(order.getServiceUserId()!=null){
+            push(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_TOSERVICE_ORDER_CANCEL);
+        }
     }
 
     /**

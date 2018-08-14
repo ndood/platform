@@ -1,4 +1,4 @@
-package com.fulu.game.point.service.impl;
+package com.fulu.game.core.service.impl.push;
 
 import com.fulu.game.common.enums.*;
 import com.fulu.game.core.entity.Category;
@@ -41,7 +41,9 @@ public class PointMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
 
 
     public void orderPay(Order order){
-        push(order.getServiceUserId(),WechatTemplateMsgEnum.POINT_TOSE_ORDER_RECEIVING);
+        if(order.getServiceUserId()!=null){
+            push(order.getServiceUserId(),WechatTemplateMsgEnum.POINT_TOSE_ORDER_RECEIVING);
+        }
     }
 
 
