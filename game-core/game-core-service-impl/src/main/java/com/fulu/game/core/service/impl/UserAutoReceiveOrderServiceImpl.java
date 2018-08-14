@@ -238,6 +238,11 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
 
     @Override
     public List<UserAutoReceiveOrderVO> autoReceiveUserInfoAuthListByVO(UserInfoAuthSearchVO userInfoAuthSearchVO) {
+        String orderBy = userInfoAuthSearchVO.getOrderBy();
+        if (StringUtils.isBlank(orderBy)) {
+            orderBy = "auto.create_time desc";
+        }
+        userInfoAuthSearchVO.setOrderBy(orderBy);
         List<UserAutoReceiveOrderVO> voList =
                 userAutoReceiveOrderDao.findAutoReceiveUserInfoAuthList(userInfoAuthSearchVO);
         if (CollectionUtil.isEmpty(voList)) {
