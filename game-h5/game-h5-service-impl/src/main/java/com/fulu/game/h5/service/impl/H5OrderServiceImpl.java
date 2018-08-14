@@ -73,7 +73,7 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
         //创建订单
         Order order = new Order();
         order.setName(product.getProductName() + " " + num + "*" + product.getUnit());
-        order.setType(OrderTypeEnum.PLATFORM.getType());
+        order.setType(OrderTypeEnum.H5.getType());
         order.setOrderNo(generateOrderNo());
         order.setUserId(user.getId());
         order.setServiceUserId(product.getUserId());
