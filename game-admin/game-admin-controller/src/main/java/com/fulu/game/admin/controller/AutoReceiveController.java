@@ -4,7 +4,6 @@ package com.fulu.game.admin.controller;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
-import com.fulu.game.core.service.impl.order.AdminOrderServiceImpl;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.SettingTypeEnum;
 import com.fulu.game.core.entity.Admin;
@@ -14,6 +13,7 @@ import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.SettingService;
 import com.fulu.game.core.service.UserAutoReceiveOrderService;
+import com.fulu.game.core.service.impl.order.AdminOrderServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -146,8 +146,6 @@ public class AutoReceiveController extends BaseController {
         workbook.write(response.getOutputStream());
         workbook.close();
     }
-
-
 }
 
 
