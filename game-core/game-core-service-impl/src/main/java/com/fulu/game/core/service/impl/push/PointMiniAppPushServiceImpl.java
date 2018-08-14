@@ -41,7 +41,9 @@ public class PointMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
 
 
     public void orderPay(Order order){
-        push(order.getServiceUserId(),WechatTemplateMsgEnum.POINT_TOSE_ORDER_RECEIVING);
+        if(order.getServiceUserId()!=null){
+            push(order.getServiceUserId(),WechatTemplateMsgEnum.POINT_TOSE_ORDER_RECEIVING);
+        }
     }
 
 
