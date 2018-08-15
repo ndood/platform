@@ -154,34 +154,6 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
         return new PageInfo<>(list);
     }
 
-
-    /**
-     * 陪玩师接单
-     *
-     * @return
-     */
-    @UserScore(type = UserScoreEnum.ACCEPT_ORDER)
-    public String serverReceiveOrder(String orderNo) {
-        log.info("执行开始接单接口");
-        log.info("陪玩师接单orderNo:{}", orderNo);
-        Order order = findByOrderNo(orderNo);
-        userService.isCurrentUser(order.getServiceUserId());
-        //只有等待陪玩和已支付的订单才能开始陪玩
-        if (!order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus()) || !order.getIsPay()) {
-            throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES, orderNo);
-        }
-        order.setStatus(OrderStatusEnum.ALREADY_RECEIVING.getStatus());
-        order.setUpdateTime(new Date());
-        order.setReceivingTime(new Date());
-        update(order);
-        //计算订单状态倒计时24小时
-        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
-
-        h5MiniAppPushService.receiveOrder(order);
-
-        return order.getOrderNo();
-    }
-
     /**
      * 获取订单详情
      * @param orderNo

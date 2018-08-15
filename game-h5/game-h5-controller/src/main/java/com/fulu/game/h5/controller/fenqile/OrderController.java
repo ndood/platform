@@ -189,36 +189,6 @@ public class OrderController extends BaseController {
         return Result.success().data(orderNo);
     }
 
-    /**
-     * 陪玩师同意协商
-     *
-     * @param orderNo
-     * @param orderEventId
-     * @return
-     */
-    @RequestMapping(value = "/server/consult-appeal")
-    public Result consultAppeal(@RequestParam(required = true) String orderNo,
-                                Integer orderEventId) {
-        orderService.consultAgreeOrder(orderNo, orderEventId);
-        return Result.success().data(orderNo);
-    }
-
-
-    /**
-     * 陪玩师拒绝协商
-     *
-     * @param orderNo
-     * @param orderEventId
-     * @return
-     */
-    @RequestMapping(value = "/server/consult-reject")
-    public Result consultReject(@RequestParam(required = true) String orderNo,
-                                Integer orderEventId,
-                                String remark,
-                                @RequestParam(required = true) String[] fileUrl) {
-        orderService.consultRejectOrder(orderNo, orderEventId, remark, fileUrl);
-        return Result.success().data(orderNo);
-    }
 
     /**
      * 用户取消协商
@@ -234,30 +204,6 @@ public class OrderController extends BaseController {
         return Result.success().data(orderNo).msg("取消协商成功!");
     }
 
-    /**
-     * 陪玩师接收订单
-     *
-     * @param orderNo
-     * @return
-     */
-    @RequestMapping(value = "/server/receive")
-    public Result serverReceiveOrder(@RequestParam String orderNo,
-                                     String version) {
-        orderService.serverReceiveOrder(orderNo);
-        return Result.success().data(orderNo).msg("接单成功!");
-    }
-
-    /**
-     * 陪玩师开始服务
-     *
-     * @param orderNo
-     * @return
-     */
-    @RequestMapping(value = "/server/start-serve")
-    public Result startServerOrder(@RequestParam(required = true) String orderNo) {
-        orderService.serverStartServeOrder(orderNo);
-        return Result.success().data(orderNo).msg("接单成功!");
-    }
 
     /**
      * 用户验收订单
@@ -269,32 +215,6 @@ public class OrderController extends BaseController {
     public Result userVerifyOrder(@RequestParam(required = true) String orderNo) {
         OrderVO orderVO = orderService.userVerifyOrder(orderNo);
         return Result.success().data(orderVO).msg("订单验收成功!");
-    }
-
-    /**
-     * 陪玩师取消订单
-     *
-     * @param orderNo
-     * @return
-     */
-    @RequestMapping(value = "/server/cancel")
-    public Result serverCancelOrder(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = orderService.serverCancelOrder(orderNo);
-        return Result.success().data(orderVO).msg("取消订单成功!");
-    }
-
-    /**
-     * 陪玩师提交验收订单
-     *
-     * @param orderNo
-     * @return
-     */
-    @RequestMapping(value = "/server/acceptance")
-    public Result serverAcceptanceOrder(@RequestParam(required = true) String orderNo,
-                                        String remark,
-                                        String[] fileUrl) {
-        OrderVO orderVO = orderService.serverAcceptanceOrder(orderNo, remark, fileUrl);
-        return Result.success().data(orderVO).msg("提交订单验收成功!");
     }
 
 
