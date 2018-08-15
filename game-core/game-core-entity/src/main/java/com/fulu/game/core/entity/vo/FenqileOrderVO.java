@@ -141,4 +141,9 @@ public class FenqileOrderVO extends FenqileOrder {
      * 未对账的订单数量
      */
     private Integer unReconCount;
+
+    /**
+     * 分期乐平台佣金
+     */
+    private BigDecimal fenqileCommissionMoney;
 }

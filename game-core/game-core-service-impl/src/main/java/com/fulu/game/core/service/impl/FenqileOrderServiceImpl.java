@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.FenqileOrderDao;
 import com.fulu.game.core.dao.ICommonDao;
@@ -13,6 +14,7 @@ import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
+import org.assertj.core.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,6 +60,12 @@ public class FenqileOrderServiceImpl extends AbsCommonService<FenqileOrder, Inte
         }
 
         PageHelper.startPage(pageNum, pageSize, orderBy);
+
+        Integer status = searchVO.getStatus();
+        Integer[] statusList = OrderStatusGroupEnum.getByValue(status);
+        if (!Arrays.isNullOrEmpty(statusList)) {
+            searchVO.setStatusList(statusList);
+        }
 
         List<FenqileOrderVO> fenqileOrderVOList = fenqileOrderDao.list(searchVO);
         return new PageInfo<>(fenqileOrderVOList);

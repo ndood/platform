@@ -7,6 +7,7 @@
         <result column="order_no" property="orderNo"/>
         <result column="status" property="status"/>
         <result column="amount" property="amount"/>
+        <result column="commission_money" property="commissionMoney"/>
         <result column="process_time" property="processTime"/>
         <result column="admin_id" property="adminId"/>
         <result column="admin_name" property="adminName"/>
@@ -20,7 +21,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,order_no,status,amount,process_time,admin_id,admin_name,remark,update_time,create_time    </sql>
+        id,order_no,status,amount,commission_money,process_time,admin_id,admin_name,remark,update_time,create_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="FenqileReconciliationResultMap">
         select
@@ -51,6 +52,9 @@
             </if>
             <if test="amount != null">
                 and amount = #{amount}
+            </if>
+            <if test="commissionMoney != null">
+                and commission_money = #{commissionMoney}
             </if>
             <if test="processTime != null">
                 and process_time = #{processTime}
@@ -83,9 +87,9 @@
     <insert id="create" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.fulu.game.core.entity.FenqileReconciliation">
         insert into
-        t_fenqile_reconciliation (order_no,status,amount,process_time,admin_id,admin_name,remark,update_time,create_time)
+        t_fenqile_reconciliation (order_no,status,amount,commission_money,process_time,admin_id,admin_name,remark,update_time,create_time)
         values
-        (#{orderNo},#{status},#{amount},#{processTime},#{adminId},#{adminName},#{remark},#{updateTime},#{createTime})
+        (#{orderNo},#{status},#{amount},#{commissionMoney},#{processTime},#{adminId},#{adminName},#{remark},#{updateTime},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.FenqileReconciliation">
@@ -102,6 +106,10 @@
 
             <if test="amount != null">
                 amount = #{amount},
+            </if>
+
+            <if test="commissionMoney != null">
+                commission_money = #{commissionMoney},
             </if>
 
             <if test="processTime != null">
