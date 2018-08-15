@@ -24,6 +24,7 @@
         <game.point.service.version>1.0</game.point.service.version>
         <game.admin.service.version>1.0</game.admin.service.version>
         <game.schedule.service.version>1.0</game.schedule.service.version>
+        <game.third.party.fenqile.version>1.0</game.third.party.fenqile.version>
         <pagehelper.version>4.0.3</pagehelper.version>
         <xerces.version>2.9.1</xerces.version>
         <aliyun.oss.verson>2.8.2</aliyun.oss.verson>
