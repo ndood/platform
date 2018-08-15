@@ -14,9 +14,9 @@ import com.fulu.game.core.service.OrderDealService;
 import com.fulu.game.core.service.OrderEventService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.fulu.game.core.service.impl.order.H5OrderServiceImpl;
-import com.fulu.game.core.service.impl.push.H5MiniAppPushServiceImpl;
-import com.fulu.game.core.service.impl.push.PlayMiniAppPushServiceImpl;
+import com.fulu.game.h5.service.impl.fenqile.FenqilePayServiceImpl;
+import com.fulu.game.h5.service.impl.fenqile.H5OrderServiceImpl;
+import com.fulu.game.h5.service.impl.fenqile.H5PushServiceImpl;
 import com.fulu.game.h5.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -38,23 +38,29 @@ import java.math.BigDecimal;
 @Slf4j
 @RequestMapping("/api/v1/order")
 public class OrderController extends BaseController {
+
     private final UserService userService;
     private final RedisOpenServiceImpl redisOpenService;
     private final H5OrderServiceImpl orderService;
-    private final H5MiniAppPushServiceImpl h5miniAppPushService;
     private final OrderDealService orderDealService;
+    private final FenqilePayServiceImpl fenqilePayService;
+    private final H5PushServiceImpl h5PushService;
+
+
 
     @Autowired
     public OrderController(UserService userService,
                            RedisOpenServiceImpl redisOpenService,
                            H5OrderServiceImpl orderService,
-                           H5MiniAppPushServiceImpl h5miniAppPushService,
-                           OrderDealService orderDealService) {
+                           OrderDealService orderDealService,
+                           FenqilePayServiceImpl fenqilePayService,
+                           H5PushServiceImpl h5PushService) {
         this.userService = userService;
         this.redisOpenService = redisOpenService;
         this.orderService = orderService;
-        this.h5miniAppPushService = h5miniAppPushService;
         this.orderDealService = orderDealService;
+        this.fenqilePayService = fenqilePayService;
+        this.h5PushService = h5PushService;
     }
 
     /**
@@ -148,10 +154,29 @@ public class OrderController extends BaseController {
             return Result.error().msg("不能频繁提醒接单!");
         }
         Order order = orderService.findByOrderNo(orderNo);
-        h5miniAppPushService.remindReceive(order);
+        h5PushService.remindReceive(order);
         redisOpenService.setTimeInterval(orderNo, 5 * 60);
         return Result.success().msg("提醒接单成功!");
     }
+
+    /**
+     * 订单支付接口
+     *
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/pay")
+    @Deprecated
+    public Result pay(@RequestParam(required = true) String orderNo,
+                      HttpServletRequest request) {
+        String ip = RequestUtil.getIpAdrress(request);
+        Order order = orderService.findByOrderNo(orderNo);
+        User user = userService.findById(order.getUserId());
+        Object result = fenqilePayService.payOrder(order, user, ip);
+        return Result.success().data(result);
+    }
+
+
 
     /**
      * 提醒开始服务
@@ -165,7 +190,7 @@ public class OrderController extends BaseController {
             return Result.error().msg("不能频繁提醒开始!");
         }
         Order order = orderService.findByOrderNo(orderNo);
-        h5miniAppPushService.remindStart(order);
+        h5PushService.remindStart(order);
         redisOpenService.setTimeInterval(orderNo, 5 * 60);
         return Result.success().msg("提醒开始成功!");
     }

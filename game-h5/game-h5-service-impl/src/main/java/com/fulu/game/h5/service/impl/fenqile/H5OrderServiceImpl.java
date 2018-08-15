@@ -1,18 +1,18 @@
-package com.fulu.game.core.service.impl.order;
+package com.fulu.game.h5.service.impl.fenqile;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.fulu.game.common.enums.*;
-import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
+import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.service.*;
-import com.fulu.game.core.service.aop.UserScore;
 import com.fulu.game.core.service.impl.OrderServiceImpl;
 import com.fulu.game.core.service.impl.coupon.H5CouponServiceImpl;
-import com.fulu.game.core.service.impl.push.H5MiniAppPushServiceImpl;
+import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
+import com.fulu.game.core.service.impl.push.PlayMiniAppPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -28,16 +28,19 @@ import java.util.List;
 @Service
 @Slf4j
 public class H5OrderServiceImpl extends OrderServiceImpl {
+
     private final UserService userService;
     private final ProductService productService;
     private final CategoryService categoryService;
     private final UserContactService userContactService;
     private final OrderProductService orderProductService;
     private final H5CouponServiceImpl couponService;
-    private final H5MiniAppPushServiceImpl h5MiniAppPushService;
     private final OrderStatusDetailsService orderStatusDetailsService;
     private final OrderDao orderDao;
     private final UserCommentService userCommentService;
+    private final H5PushServiceImpl h5PushService;
+
+    private final H5OrderShareProfitServiceImpl h5OrderShareProfitService;
 
     @Autowired
     public H5OrderServiceImpl(UserService userService,
@@ -46,25 +49,40 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
                               UserContactService userContactService,
                               OrderProductService orderProductService,
                               H5CouponServiceImpl couponService,
-                              H5MiniAppPushServiceImpl h5MiniAppPushService,
                               OrderStatusDetailsService orderStatusDetailsService,
                               OrderDao orderDao,
-                              UserCommentService userCommentService) {
+                              UserCommentService userCommentService,
+                              PlayMiniAppPushServiceImpl playMiniAppPushService,
+                              H5PushServiceImpl h5PushService,
+                              H5OrderShareProfitServiceImpl h5OrderShareProfitService) {
         this.userService = userService;
         this.productService = productService;
         this.categoryService = categoryService;
         this.userContactService = userContactService;
         this.orderProductService = orderProductService;
         this.couponService = couponService;
-        this.h5MiniAppPushService = h5MiniAppPushService;
         this.orderStatusDetailsService = orderStatusDetailsService;
         this.orderDao = orderDao;
         this.userCommentService = userCommentService;
+        this.h5PushService = h5PushService;
+        this.h5OrderShareProfitService = h5OrderShareProfitService;
+    }
+
+
+    @Override
+    protected MiniAppPushServiceImpl getMinAppPushService() {
+        return h5PushService;
     }
 
     @Override
     protected void dealOrderAfterPay(Order order) {
-
+        //订单状态倒计时
+        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
+        //发送短信通知给陪玩师
+        User server = userService.findById(order.getServiceUserId());
+        SMSUtil.sendOrderReceivingRemind(server.getMobile(), order.getName());
+        //推送通知
+        h5PushService.orderPay(order);
     }
 
     @Override
@@ -135,6 +153,8 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
         return order.getOrderNo();
     }
+
+
 
     public PageInfo<OrderDetailsVO> list(int pageNum, int pageSize) {
         PageHelper.startPage(pageNum, pageSize, "id DESC");
@@ -207,4 +227,7 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
         }
         return orderDetailsVO;
     }
+
+
+
 }

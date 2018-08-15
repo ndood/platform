@@ -8,6 +8,7 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 public class PlayUserToken extends UsernamePasswordToken {
 
     private static final long serialVersionUID = 1L;
+
     private String fqlOpenid;
     private Integer sourceId;
     private String accessToken;
@@ -19,7 +20,13 @@ public class PlayUserToken extends UsernamePasswordToken {
     }
 
 
-    public PlayUserToken(String fqlOpenid,String accessToken,Integer sourceId) {
+    public PlayUserToken(String fqlOpenid, String accessToken) {
+        super(fqlOpenid, "");
+        this.fqlOpenid = fqlOpenid;
+        this.accessToken = accessToken;
+    }
+
+    public PlayUserToken(String fqlOpenid, String accessToken, Integer sourceId) {
         super(fqlOpenid, "");
         this.fqlOpenid = fqlOpenid;
         this.accessToken = accessToken;

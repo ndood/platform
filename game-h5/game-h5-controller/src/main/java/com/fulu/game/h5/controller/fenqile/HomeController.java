@@ -80,7 +80,7 @@ public class HomeController extends BaseController {
         session.setAccessToken("tempaccesstoken");
         String openId = session.getUid();
         //1.认证和凭据的token
-        PlayUserToken playUserToken = new PlayUserToken(openId, session.getAccessToken(), sourceId);
+        PlayUserToken playUserToken = new PlayUserToken(openId, session.getAccessToken());
         String ip = RequestUtil.getIpAdrress(request);
         playUserToken.setHost(ip);
         Subject subject = SecurityUtils.getSubject();
