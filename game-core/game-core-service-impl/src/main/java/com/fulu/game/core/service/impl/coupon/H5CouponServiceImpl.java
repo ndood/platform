@@ -1,4 +1,4 @@
-package com.fulu.game.h5.service.impl;
+package com.fulu.game.core.service.impl.coupon;
 
 import com.fulu.game.core.service.impl.CouponServiceImpl;
 import org.springframework.stereotype.Service;

@@ -6,6 +6,7 @@ import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.searchVO.UserAutoOrderSearchVO;
 import com.fulu.game.core.service.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class AssignOrderServiceImpl implements AssignOrderService {
 
     @Autowired
@@ -66,9 +68,8 @@ public class AssignOrderServiceImpl implements AssignOrderService {
         if (userIds.isEmpty()) {
             return new ArrayList<>();
         }
-
-        Integer orderUserId = order.getUserId();
-        userIds.removeIf(userId -> (userId.equals(orderUserId) || isDisabledUser(userId,order.getCategoryId())));
+        userIds.removeIf(userId -> (isDisabledUser(userId,order)));
+        log.info("查询出可以自动派单的用户有:{}",userIds);
         return userService.findByUserIds(userIds, Boolean.TRUE);
     }
 
@@ -77,16 +78,26 @@ public class AssignOrderServiceImpl implements AssignOrderService {
      * @param userId
      * @return
      */
-    private Boolean isDisabledUser(Integer userId,Integer categoryId) {
-        if (redisOpenService.hasKey(RedisKeyEnum.AUTO_ASSIGN_ORDER_USER.generateKey(userId))){
+    private Boolean isDisabledUser(Integer userId,Order order) {
+        if(userId.equals(order.getUserId())){
+            log.info("userId:{},和下单用户一致不能派单",userId);
             return true;
         }
-        List<UserTechAuth> userTechAuths = userTechAuthService.findByCategoryAndUser(userId,categoryId);
+        if (redisOpenService.hasKey(RedisKeyEnum.AUTO_ASSIGN_ORDER_USER.generateKey(userId))){
+            log.info("userId:{},有30分钟派单限制不能派单",userId);
+            return true;
+        }
+        List<UserTechAuth> userTechAuths = userTechAuthService.findByCategoryAndUser(order.getCategoryId(),userId);
         if(userTechAuths.isEmpty()){
+            log.info("userId:{},用户技能为空不能派单",userId);
             return true;
         }
         UserTechAuth userTechAuth = userTechAuths.get(0);
-        return !TechAuthStatusEnum.NORMAL.getType().equals(userTechAuth.getStatus());
+        if(!TechAuthStatusEnum.NORMAL.getType().equals(userTechAuth.getStatus())){
+            log.info("userId:{},用户技能没有认证通过不能派单",userId);
+            return true;
+        }
+       return false;
     }
 
 

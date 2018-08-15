@@ -7,7 +7,7 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.fulu.game.h5.service.impl.H5OrderServiceImpl;
+import com.fulu.game.core.service.impl.order.H5OrderServiceImpl;
 import com.fulu.game.h5.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
