@@ -1,16 +1,18 @@
 package com.fulu.game.core.service.impl.order;
 
-import com.fulu.game.common.enums.OrderStatusEnum;
-import com.fulu.game.common.enums.OrderTypeEnum;
-import com.fulu.game.common.enums.UserTypeEnum;
+import cn.hutool.core.bean.BeanUtil;
+import com.fulu.game.common.enums.*;
+import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.aop.UserScore;
 import com.fulu.game.core.service.impl.OrderServiceImpl;
 import com.fulu.game.core.service.impl.coupon.H5CouponServiceImpl;
+import com.fulu.game.core.service.impl.push.H5MiniAppPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -31,8 +34,10 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
     private final UserContactService userContactService;
     private final OrderProductService orderProductService;
     private final H5CouponServiceImpl couponService;
+    private final H5MiniAppPushServiceImpl h5MiniAppPushService;
     private final OrderStatusDetailsService orderStatusDetailsService;
     private final OrderDao orderDao;
+    private final UserCommentService userCommentService;
 
     @Autowired
     public H5OrderServiceImpl(UserService userService,
@@ -41,16 +46,20 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
                               UserContactService userContactService,
                               OrderProductService orderProductService,
                               H5CouponServiceImpl couponService,
+                              H5MiniAppPushServiceImpl h5MiniAppPushService,
                               OrderStatusDetailsService orderStatusDetailsService,
-                              OrderDao orderDao) {
+                              OrderDao orderDao,
+                              UserCommentService userCommentService) {
         this.userService = userService;
         this.productService = productService;
         this.categoryService = categoryService;
         this.userContactService = userContactService;
         this.orderProductService = orderProductService;
         this.couponService = couponService;
+        this.h5MiniAppPushService = h5MiniAppPushService;
         this.orderStatusDetailsService = orderStatusDetailsService;
         this.orderDao = orderDao;
+        this.userCommentService = userCommentService;
     }
 
     @Override
@@ -143,5 +152,87 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
             orderDetailsVO.setCountDown(countDown);
         }
         return new PageInfo<>(list);
+    }
+
+
+    /**
+     * 陪玩师接单
+     *
+     * @return
+     */
+    @UserScore(type = UserScoreEnum.ACCEPT_ORDER)
+    public String serverReceiveOrder(String orderNo) {
+        log.info("执行开始接单接口");
+        log.info("陪玩师接单orderNo:{}", orderNo);
+        Order order = findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getServiceUserId());
+        //只有等待陪玩和已支付的订单才能开始陪玩
+        if (!order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus()) || !order.getIsPay()) {
+            throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES, orderNo);
+        }
+        order.setStatus(OrderStatusEnum.ALREADY_RECEIVING.getStatus());
+        order.setUpdateTime(new Date());
+        order.setReceivingTime(new Date());
+        update(order);
+        //计算订单状态倒计时24小时
+        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
+
+        h5MiniAppPushService.receiveOrder(order);
+
+        return order.getOrderNo();
+    }
+
+    /**
+     * 获取订单详情
+     * @param orderNo
+     * @return
+     */
+    public OrderDetailsVO findOrderDetails(String orderNo) {
+        OrderDetailsVO orderDetailsVO = new OrderDetailsVO();
+
+        User currentUser = userService.getCurrentUser();
+        Order order = findByOrderNo(orderNo);
+        if (currentUser.getId().equals(order.getUserId())) {
+            orderDetailsVO.setIdentity(UserTypeEnum.GENERAL_USER.getType());
+        } else if (order.getServiceUserId().equals(currentUser.getId())) {
+            orderDetailsVO.setIdentity(UserTypeEnum.ACCOMPANY_PLAYER.getType());
+        } else {
+            throw new ServiceErrorException("用户不匹配!");
+        }
+        OrderProduct orderProduct = orderProductService.findByOrderNo(orderNo);
+        BeanUtil.copyProperties(order, orderDetailsVO);
+
+        List<Integer> invisibleContactList = Arrays.asList(OrderStatusGroupEnum.ORDER_CONTACT_INVISIBLE.getStatusList());
+        if (invisibleContactList.contains(order.getStatus())) {
+            orderDetailsVO.setContactInfo(null);
+        }
+
+        Category category = categoryService.findById(order.getCategoryId());
+
+        orderDetailsVO.setCategoryIcon(category.getIcon());
+        orderDetailsVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderDetailsVO.getStatus()));
+        orderDetailsVO.setStatusNote(OrderStatusEnum.getNoteByStatus(orderDetailsVO.getStatus()));
+        orderDetailsVO.setCategoryName(category.getName());
+
+        User server = userService.findById(order.getServiceUserId());
+        orderDetailsVO.setServerHeadUrl(server.getHeadPortraitsUrl());
+        orderDetailsVO.setServerNickName(server.getNickname());
+
+        User user = userService.findById(order.getUserId());
+        orderDetailsVO.setUserHeadUrl(user.getHeadPortraitsUrl());
+        orderDetailsVO.setUserNickName(user.getNickname());
+
+        //orderStatus
+        long countDown = orderStatusDetailsService.getCountDown(orderNo, order.getStatus());
+        orderDetailsVO.setCountDown(countDown);
+        orderDetailsVO.setProductId(orderProduct.getProductId());
+
+        //用户评论
+        UserComment userComment = userCommentService.findByOrderNo(orderNo);
+        if (userComment != null) {
+            orderDetailsVO.setCommentContent(userComment.getContent());
+            orderDetailsVO.setCommentScore(userComment.getScore());
+        }
+        return orderDetailsVO;
     }
 }
