@@ -1,9 +1,11 @@
 package com.fulu.game.admin.controller;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.core.entity.FenqileReconRecord;
 import com.fulu.game.core.entity.vo.FenqileOrderVO;
 import com.fulu.game.core.entity.vo.searchVO.FenqileOrderSearchVO;
 import com.fulu.game.core.service.impl.FenqileOrderServiceImpl;
+import com.fulu.game.core.service.impl.FenqileReconRecordServiceImpl;
 import com.fulu.game.core.service.impl.FenqileReconciliationServiceImpl;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 分期乐订单Controller
@@ -23,12 +28,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class FenqileOrderController extends BaseController {
     private final FenqileOrderServiceImpl fenqileOrderService;
     private final FenqileReconciliationServiceImpl fenqileReconciliationService;
+    private final FenqileReconRecordServiceImpl fenqileReconRecordService;
 
     @Autowired
     public FenqileOrderController(FenqileOrderServiceImpl fenqileOrderService,
-                                  FenqileReconciliationServiceImpl fenqileReconciliationService) {
+                                  FenqileReconciliationServiceImpl fenqileReconciliationService, FenqileReconRecordServiceImpl fenqileReconRecordService) {
         this.fenqileOrderService = fenqileOrderService;
         this.fenqileReconciliationService = fenqileReconciliationService;
+        this.fenqileReconRecordService = fenqileReconRecordService;
     }
 
     /**
@@ -64,13 +71,34 @@ public class FenqileOrderController extends BaseController {
     /**
      * 对账
      *
-     * @param orderNos 订单号（多个以英文逗号隔开）
-     * @param remark   备注
+     * @param orderNos           订单号（多个以英文逗号隔开）
+     * @param startTime          开始时间
+     * @param endTime            结束时间
+     * @param remark             备注
+     * @param unReconCount       应对账（未对账）订单数量
+     * @param unReconTotalAmount 应对账（未对账）金额
      * @return 封装结果集
      */
     @PostMapping("/recon")
-    public Result recon(String orderNos, String remark) {
-        fenqileReconciliationService.recon(orderNos, remark);
+    public Result recon(String orderNos, Date startTime, Date endTime, String remark,
+                        Integer unReconCount, BigDecimal unReconTotalAmount) {
+        fenqileReconciliationService.recon(orderNos, startTime, endTime, remark, unReconCount, unReconTotalAmount);
         return Result.success().msg("对账成功！");
+    }
+
+    /**
+     * 获取对账记录
+     *
+     * @param startTime 对账开始时间
+     * @param endTime   对账结束时间
+     * @return 封装结果集
+     */
+    @PostMapping("/reconRecord")
+    public Result reconRecord(@RequestParam Integer pageNum,
+                              @RequestParam Integer pageSize,
+                              Date startTime,
+                              Date endTime) {
+        PageInfo<FenqileReconRecord> pageInfo = fenqileReconRecordService.reconRecord(pageNum, pageSize, startTime, endTime);
+        return Result.success().data(pageInfo).msg("查询成功！");
     }
 }
