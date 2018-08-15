@@ -3,72 +3,78 @@
 
 <mapper namespace="com.fulu.game.core.dao.FenqileReconciliationDao">
     <resultMap id="FenqileReconciliationResultMap" type="com.fulu.game.core.entity.FenqileReconciliation">
-                                    <id column="id"  property="id" />
-                                            <result column="order_no"  property="orderNo" />
-                                            <result column="status"  property="status" />
-                                            <result column="amount"  property="amount" />
-                                            <result column="process_time"  property="processTime" />
-                                            <result column="admin_id"  property="adminId" />
-                                            <result column="admin_name"  property="adminName" />
-                                            <result column="remark"  property="remark" />
-                                            <result column="update_time"  property="updateTime" />
-                                            <result column="create_time"  property="createTime" />
-                        </resultMap>
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="status" property="status"/>
+        <result column="amount" property="amount"/>
+        <result column="commission_money" property="commissionMoney"/>
+        <result column="process_time" property="processTime"/>
+        <result column="admin_id" property="adminId"/>
+        <result column="admin_name" property="adminName"/>
+        <result column="remark" property="remark"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
 
-    <resultMap id="FenqileReconciliationResultVOMap" type="com.fulu.game.core.entity.vo.FenqileReconciliationVO" extends="FenqileReconciliationResultMap">
+    <resultMap id="FenqileReconciliationResultVOMap" type="com.fulu.game.core.entity.vo.FenqileReconciliationVO"
+               extends="FenqileReconciliationResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,order_no,status,amount,process_time,admin_id,admin_name,remark,update_time,create_time    </sql>
+        id,order_no,status,amount,commission_money,process_time,admin_id,admin_name,remark,update_time,create_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="FenqileReconciliationResultMap">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from t_fenqile_reconciliation
         <where>
-        id = #{id}
+            id = #{id}
         </where>
     </select>
 
-    <select id="findAll"  resultMap="FenqileReconciliationResultMap">
+    <select id="findAll" resultMap="FenqileReconciliationResultMap">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from t_fenqile_reconciliation
     </select>
 
-    <select id="findByParameter" resultMap="FenqileReconciliationResultMap" parameterType="com.fulu.game.core.entity.vo.FenqileReconciliationVO">
+    <select id="findByParameter" resultMap="FenqileReconciliationResultMap"
+            parameterType="com.fulu.game.core.entity.vo.FenqileReconciliationVO">
         SELECT
         <include refid="Base_Column_List"/>
         FROM t_fenqile_reconciliation
         <where>
-                                                                            <if test="orderNo != null">
-                       and order_no = #{orderNo}
-                    </if>
-                                                                <if test="status != null">
-                       and status = #{status}
-                    </if>
-                                                                <if test="amount != null">
-                       and amount = #{amount}
-                    </if>
-                                                                <if test="processTime != null">
-                       and process_time = #{processTime}
-                    </if>
-                                                                <if test="adminId != null">
-                       and admin_id = #{adminId}
-                    </if>
-                                                                <if test="adminName != null">
-                       and admin_name = #{adminName}
-                    </if>
-                                                                <if test="remark != null">
-                       and remark = #{remark}
-                    </if>
-                                                                <if test="updateTime != null">
-                       and update_time = #{updateTime}
-                    </if>
-                                                                <if test="createTime != null">
-                       and create_time = #{createTime}
-                    </if>
-                                    </where>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="amount != null">
+                and amount = #{amount}
+            </if>
+            <if test="commissionMoney != null">
+                and commission_money = #{commissionMoney}
+            </if>
+            <if test="processTime != null">
+                and process_time = #{processTime}
+            </if>
+            <if test="adminId != null">
+                and admin_id = #{adminId}
+            </if>
+            <if test="adminName != null">
+                and admin_name = #{adminName}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">
@@ -78,55 +84,70 @@
         </where>
     </delete>
 
-    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.FenqileReconciliation">
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.FenqileReconciliation">
         insert into
-        t_fenqile_reconciliation (order_no,status,amount,process_time,admin_id,admin_name,remark,update_time,create_time)
+        t_fenqile_reconciliation (order_no,status,amount,commission_money,process_time,admin_id,admin_name,remark,update_time,create_time)
         values
-        (#{orderNo},#{status},#{amount},#{processTime},#{adminId},#{adminName},#{remark},#{updateTime},#{createTime})
+        (#{orderNo},#{status},#{amount},#{commissionMoney},#{processTime},#{adminId},#{adminName},#{remark},#{updateTime},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.FenqileReconciliation">
         update t_fenqile_reconciliation
         <set>
-                                                        
-                    <if test="orderNo != null">
-                        order_no = #{orderNo},
-                    </if>
-                                            
-                    <if test="status != null">
-                        status = #{status},
-                    </if>
-                                            
-                    <if test="amount != null">
-                        amount = #{amount},
-                    </if>
-                                            
-                    <if test="processTime != null">
-                        process_time = #{processTime},
-                    </if>
-                                            
-                    <if test="adminId != null">
-                        admin_id = #{adminId},
-                    </if>
-                                            
-                    <if test="adminName != null">
-                        admin_name = #{adminName},
-                    </if>
-                                            
-                    <if test="remark != null">
-                        remark = #{remark},
-                    </if>
-                                            
-                    <if test="updateTime != null">
-                        update_time = #{updateTime},
-                    </if>
-                                            
-                    <if test="createTime != null">
-                        create_time = #{createTime},
-                    </if>
-                                    </set>
+
+            <if test="orderNo != null">
+                order_no = #{orderNo},
+            </if>
+
+            <if test="status != null">
+                status = #{status},
+            </if>
+
+            <if test="amount != null">
+                amount = #{amount},
+            </if>
+
+            <if test="commissionMoney != null">
+                commission_money = #{commissionMoney},
+            </if>
+
+            <if test="processTime != null">
+                process_time = #{processTime},
+            </if>
+
+            <if test="adminId != null">
+                admin_id = #{adminId},
+            </if>
+
+            <if test="adminName != null">
+                admin_name = #{adminName},
+            </if>
+
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
         <where>
             id = #{id}
         </where>
     </update>
+
+    <select id="findByOrderNo" resultType="com.fulu.game.core.entity.FenqileReconciliation">
+        SELECT
+            *
+        FROM
+            t_fenqile_reconciliation
+        WHERE
+            order_no = #{orderNo}
+        LIMIT 1;
+    </select>
 </mapper>

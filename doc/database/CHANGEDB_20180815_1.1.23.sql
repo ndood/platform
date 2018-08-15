@@ -17,6 +17,7 @@ CREATE TABLE `t_fenqile_reconciliation` (
   `order_no` varchar(128) NOT NULL COMMENT '订单编号',
   `status` tinyint(1) DEFAULT '0' COMMENT '对账状态（0：未对账（默认）；1：已对账）',
   `amount` decimal(11,2) DEFAULT '0.00' COMMENT '对账金额',
+  `commission_money` decimal(11,2) DEFAULT NULL COMMENT '分期乐平台佣金',
   `process_time` datetime DEFAULT NULL COMMENT '对账时间',
   `admin_id` int(11) DEFAULT NULL COMMENT '对账人id',
   `admin_name` varchar(255) DEFAULT NULL COMMENT '对账人用户名',

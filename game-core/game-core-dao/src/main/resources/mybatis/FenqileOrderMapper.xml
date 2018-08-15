@@ -3,15 +3,16 @@
 
 <mapper namespace="com.fulu.game.core.dao.FenqileOrderDao">
     <resultMap id="FenqileOrderResultMap" type="com.fulu.game.core.entity.FenqileOrder">
-                                    <id column="id"  property="id" />
-                                            <result column="order_no"  property="orderNo" />
-                                            <result column="payment_no"  property="paymentNo" />
-                                            <result column="remark"  property="remark" />
-                                            <result column="update_time"  property="updateTime" />
-                                            <result column="create_time"  property="createTime" />
-                        </resultMap>
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="payment_no" property="paymentNo"/>
+        <result column="remark" property="remark"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
 
-    <resultMap id="FenqileOrderResultVOMap" type="com.fulu.game.core.entity.vo.FenqileOrderVO" extends="FenqileOrderResultMap">
+    <resultMap id="FenqileOrderResultVOMap" type="com.fulu.game.core.entity.vo.FenqileOrderVO"
+               extends="FenqileOrderResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -19,40 +20,41 @@
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="FenqileOrderResultMap">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from t_fenqile_order
         <where>
-        id = #{id}
+            id = #{id}
         </where>
     </select>
 
-    <select id="findAll"  resultMap="FenqileOrderResultMap">
+    <select id="findAll" resultMap="FenqileOrderResultMap">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from t_fenqile_order
     </select>
 
-    <select id="findByParameter" resultMap="FenqileOrderResultMap" parameterType="com.fulu.game.core.entity.vo.FenqileOrderVO">
+    <select id="findByParameter" resultMap="FenqileOrderResultMap"
+            parameterType="com.fulu.game.core.entity.vo.FenqileOrderVO">
         SELECT
         <include refid="Base_Column_List"/>
         FROM t_fenqile_order
         <where>
-                                                                            <if test="orderNo != null">
-                       and order_no = #{orderNo}
-                    </if>
-                                                                <if test="paymentNo != null">
-                       and payment_no = #{paymentNo}
-                    </if>
-                                                                <if test="remark != null">
-                       and remark = #{remark}
-                    </if>
-                                                                <if test="updateTime != null">
-                       and update_time = #{updateTime}
-                    </if>
-                                                                <if test="createTime != null">
-                       and create_time = #{createTime}
-                    </if>
-                                    </where>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="paymentNo != null">
+                and payment_no = #{paymentNo}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">
@@ -72,29 +74,107 @@
     <update id="update" parameterType="com.fulu.game.core.entity.FenqileOrder">
         update t_fenqile_order
         <set>
-                                                        
-                    <if test="orderNo != null">
-                        order_no = #{orderNo},
-                    </if>
-                                            
-                    <if test="paymentNo != null">
-                        payment_no = #{paymentNo},
-                    </if>
-                                            
-                    <if test="remark != null">
-                        remark = #{remark},
-                    </if>
-                                            
-                    <if test="updateTime != null">
-                        update_time = #{updateTime},
-                    </if>
-                                            
-                    <if test="createTime != null">
-                        create_time = #{createTime},
-                    </if>
-                                    </set>
+
+            <if test="orderNo != null">
+                order_no = #{orderNo},
+            </if>
+
+            <if test="paymentNo != null">
+                payment_no = #{paymentNo},
+            </if>
+
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
         <where>
             id = #{id}
         </where>
     </update>
+
+    <select id="list" resultType="com.fulu.game.core.entity.vo.FenqileOrderVO">
+        SELECT
+            tor.order_no,
+            tfo.payment_no,
+            tuser.nickname AS user_nickname,
+            tor.contact_type,
+            tor.contact_info,
+            tuser.mobile AS user_mobile,
+            suser.nickname AS service_user_nickname,
+            suser.mobile AS service_user_mobile,
+            tor.`status` AS order_status,
+            tor. NAME AS product_name,
+            top.unit,
+            top.price,
+            top.amount,
+            IFNULL(tor.coupon_money, 0) AS coupon_money,
+            tor.actual_money,
+            tor.total_money,
+            tor.server_money,
+            tor.commission_money,
+            tor.create_time,
+            tfr.amount AS recon_amount,
+            tfr.commission_money AS fenqile_commission_money,
+            tfr.`status` AS recon_status,
+            tfr.process_time,
+            tfr.admin_name
+        FROM
+            t_order tor
+        LEFT JOIN t_fenqile_order tfo ON tor.order_no = tfo.order_no
+        LEFT JOIN t_user tuser ON tor.user_id = tuser.id
+        LEFT JOIN t_user suser ON tor.service_user_id = suser.id
+        LEFT JOIN t_order_product top ON tor.order_no = top.order_no
+        LEFT JOIN t_fenqile_reconciliation tfr ON tor.order_no
+        AND tfr.order_no
+        WHERE
+            tor.type = 3
+        <if test="startTime != null">
+            and tor.create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            and tor.create_time &lt;= #{endTime}
+        </if>
+        <if test="orderNo != null">
+            AND tor.order_no = #{orderNo}
+        </if>
+        <if test="categoryId != null">
+            AND tor.category_id = #{categoryId}
+        </if>
+        <if test="paymentNo != null">
+            AND tfo.payment_no = #{paymentNo}
+        </if>
+        <if test="reconStatus != null">
+            AND tfr.`status` = #{reconStatus}
+        </if>
+        <if test="statusList != null">
+            and tor.status in
+            <foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="getTotalReconAmount" resultType="com.fulu.game.core.entity.vo.FenqileOrderVO">
+        SELECT
+            count(*) AS un_recon_count,
+            sum(amount) AS un_recon_total_amount,
+            (
+                SELECT
+                    sum(amount)
+                FROM
+                    t_fenqile_reconciliation
+            ) AS total_amount
+        FROM
+            t_fenqile_reconciliation tfr
+        WHERE
+            tfr.`status` = 0;
+    </select>
 </mapper>
