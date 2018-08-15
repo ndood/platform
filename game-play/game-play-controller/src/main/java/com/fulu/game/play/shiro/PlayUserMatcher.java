@@ -30,8 +30,7 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
 
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
-    @Autowired
-    private UserService userService;
+
 
     @Override
     public void afterPropertiesSet() throws Exception {

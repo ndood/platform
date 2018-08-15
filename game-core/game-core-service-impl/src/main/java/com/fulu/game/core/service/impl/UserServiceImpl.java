@@ -219,7 +219,16 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         return new PageInfo(list);
     }
 
-    @Override
+
+    public User createThirdPartyUser(Integer sourceId,String ip){
+        User user = new User();
+        user.setRegistIp(ip);
+        user.setSourceId(sourceId);
+        return createNewUser(user);
+    }
+
+
+
     public User createNewUser(User user) {
         user.setStatus(UserStatusEnum.NORMAL.getType());//默认账户解封状态
         user.setType(UserTypeEnum.GENERAL_USER.getType());//默认普通用户

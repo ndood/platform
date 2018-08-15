@@ -74,9 +74,6 @@ public class AclFilter extends AccessControlFilter {
         }
         Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.PLAY_TOKEN.generateKey(token));
         redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token), map);
-        //sessionKey 时间用户token时间保持一致
-        String sessionKey = redisOpenService.get(RedisKeyEnum.WX_SESSION_KEY.generateKey(token));
-        redisOpenService.set(RedisKeyEnum.WX_SESSION_KEY.generateKey(token),sessionKey);
 
         //已登录的，就保存该token从redis查到的用户信息
         User user = BeanUtil.mapToBean(map, User.class, true);

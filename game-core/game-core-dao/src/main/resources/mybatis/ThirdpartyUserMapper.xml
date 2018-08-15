@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.ThirdpartyUserDao">
+    <resultMap id="ThirdpartyUserResultMap" type="com.fulu.game.core.entity.ThirdpartyUser">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="fql_openid" property="fqlOpenid"/>
+        <result column="fql_mobile" property="fqlMobile"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="ThirdpartyUserResultVOMap" type="com.fulu.game.core.entity.vo.ThirdpartyUserVO"
+               extends="ThirdpartyUserResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,fql_openid,fql_mobile,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="ThirdpartyUserResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_thirdparty_user
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="ThirdpartyUserResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_thirdparty_user
+    </select>
+
+    <select id="findByParameter" resultMap="ThirdpartyUserResultMap"
+            parameterType="com.fulu.game.core.entity.vo.ThirdpartyUserVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_thirdparty_user
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="fqlOpenid != null">
+                and fql_openid = #{fqlOpenid}
+            </if>
+            <if test="fqlMobile != null">
+                and fql_mobile = #{fqlMobile}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_thirdparty_user
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.ThirdpartyUser">
+        insert into
+        t_thirdparty_user (user_id,fql_openid,fql_mobile,create_time,update_time)
+        values
+        (#{userId},#{fqlOpenid},#{fqlMobile},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.ThirdpartyUser">
+        update t_thirdparty_user
+        <set>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="fqlOpenid != null">
+                fql_openid = #{fqlOpenid},
+            </if>
+
+            <if test="fqlMobile != null">
+                fql_mobile = #{fqlMobile},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

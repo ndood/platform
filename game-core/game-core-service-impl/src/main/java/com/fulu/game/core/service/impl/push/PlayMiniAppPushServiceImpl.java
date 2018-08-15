@@ -14,7 +14,7 @@ public class PlayMiniAppPushServiceImpl extends MiniAppPushServiceImpl{
 
     @Override
     protected void push(int userId, WechatTemplateMsgEnum wechatTemplateMsgEnum,String ... replaces ) {
-        pushWechatTemplateMsg(WechatEcoEnum.PLAY.getType(),userId, WechatTemplateIdEnum.PLAY_LEAVE_MSG,wechatTemplateMsgEnum.getPage().getPlayPagePath(),wechatTemplateMsgEnum.getContent());
+        pushWechatTemplateMsg(WechatEcoEnum.PLAY.getType(),userId, WechatTemplateIdEnum.PLAY_LEAVE_MSG,wechatTemplateMsgEnum.getPage().getPlayPagePath(),wechatTemplateMsgEnum.getContent(),replaces);
     }
 
 

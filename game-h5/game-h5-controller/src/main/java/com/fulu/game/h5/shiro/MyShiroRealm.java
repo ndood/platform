@@ -1,7 +1,9 @@
 package com.fulu.game.h5.shiro;
 
 import com.fulu.game.common.enums.WechatEcoEnum;
+import com.fulu.game.core.entity.ThirdpartyUser;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.service.ThirdpartyUserService;
 import com.fulu.game.core.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -17,7 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class MyShiroRealm extends AuthorizingRealm {
 
     @Autowired
-    private UserService userService;
+    private ThirdpartyUserService thirdpartyUserService;
+
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
@@ -45,17 +48,16 @@ public class MyShiroRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) {
         PlayUserToken playUserToken = (PlayUserToken) token;
-        String openId = playUserToken.getOpenId();
-        Integer sourceId = playUserToken.getSourceId();
-        User user = userService.findByOpenId(openId, WechatEcoEnum.PLAY);
-        if (user != null) {
+        String openId = playUserToken.getFqlOpenid();
+        ThirdpartyUser thirdpartyUser = thirdpartyUserService.findByFqlOpenid(openId);
+        if (thirdpartyUser != null) {
             log.info("openId为{} 的用户已存在", openId);
         } else {
             //新创建的用户记录注册的ip
-            String host = playUserToken.getHost();
-            user = userService.createNewUser(WechatEcoEnum.PLAY,openId, sourceId, host);
+            String ip = playUserToken.getHost();
+            thirdpartyUser = thirdpartyUserService.createFenqileUser(openId,ip);
             log.info("创建openId为{}的用户", openId);
         }
-        return new SimpleAuthenticationInfo(user, user.getOpenId(), getName());
+        return new SimpleAuthenticationInfo(thirdpartyUser, openId, getName());
     }
 }

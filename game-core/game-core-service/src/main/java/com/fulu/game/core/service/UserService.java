@@ -116,12 +116,10 @@ public interface UserService extends ICommonService<User, Integer> {
      */
     PageInfo<UserVO> list(UserVO userVO, Integer pageNum, Integer pageSize);
 
-    /**
-     * 新增用户
-     *
-     * @return
-     */
-    User createNewUser(User user);
+
+
+
+    User createThirdPartyUser(Integer sourceId,String ip);
 
     /**
      * 通过openId创建用户
