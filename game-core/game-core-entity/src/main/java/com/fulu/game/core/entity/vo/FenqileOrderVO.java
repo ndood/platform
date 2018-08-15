@@ -110,7 +110,7 @@ public class FenqileOrderVO extends FenqileOrder {
     /**
      * 对账状态（0：未对账（默认）；1：已对账）
      */
-    private Integer status;
+    private Integer reconStatus;
 
     /**
      * 对账时间

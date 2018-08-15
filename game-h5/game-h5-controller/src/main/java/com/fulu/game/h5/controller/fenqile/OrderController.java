@@ -224,7 +224,7 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/user/consult-cancel")
     public Result consultCancel(@RequestParam(required = true) String orderNo,
-                                Integer orderEventId) {
+                                @RequestParam(required = true) Integer orderEventId) {
         orderService.consultCancelOrder(orderNo, orderEventId);
         return Result.success().data(orderNo).msg("取消协商成功!");
     }
@@ -256,7 +256,14 @@ public class OrderController extends BaseController {
     }
 
 
-
+    /**
+     * 创建订单留言
+     * @param orderNo
+     * @param orderEventId
+     * @param remark
+     * @param fileUrl
+     * @return
+     */
     @RequestMapping(value = "/leave-msg")
     public Result orderLeaveMsg(@RequestParam(required = true) String orderNo,
                                 Integer orderEventId,

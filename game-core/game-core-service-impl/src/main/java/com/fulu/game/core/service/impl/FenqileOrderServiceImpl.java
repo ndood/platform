@@ -13,6 +13,7 @@ import com.fulu.game.core.service.FenqileOrderService;
 import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class FenqileOrderServiceImpl extends AbsCommonService<FenqileOrder, Inte
                                          FenqileOrderSearchVO searchVO) {
 
         if (StringUtils.isBlank(orderBy)) {
-            orderBy = "id DESC";
+            orderBy = "tor.id DESC";
         }
         if (searchVO.getUserMobile() != null) {
             User user = userService.findByMobile(searchVO.getUserMobile());
@@ -68,6 +69,13 @@ public class FenqileOrderServiceImpl extends AbsCommonService<FenqileOrder, Inte
         }
 
         List<FenqileOrderVO> fenqileOrderVOList = fenqileOrderDao.list(searchVO);
+        if (CollectionUtils.isNotEmpty(fenqileOrderVOList)) {
+            for (FenqileOrderVO meta : fenqileOrderVOList) {
+                if (meta.getProductName().contains(" ")) {
+                    meta.setProductName(meta.getProductName().split(" ")[0]);
+                }
+            }
+        }
         return new PageInfo<>(fenqileOrderVOList);
     }
 

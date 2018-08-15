@@ -102,40 +102,39 @@
 
     <select id="list" resultType="com.fulu.game.core.entity.vo.FenqileOrderVO">
         SELECT
-            tor.order_no,
-            tfo.payment_no,
-            tuser.nickname AS user_nickname,
-            tor.contact_type,
-            tor.contact_info,
-            tuser.mobile AS user_mobile,
-            suser.nickname AS service_user_nickname,
-            suser.mobile AS service_user_mobile,
-            tor.`status` AS order_status,
-            tor. NAME AS product_name,
-            top.unit,
-            top.price,
-            top.amount,
-            IFNULL(tor.coupon_money, 0) AS coupon_money,
-            tor.actual_money,
-            tor.total_money,
-            tor.server_money,
-            tor.commission_money,
-            tor.create_time,
-            tfr.amount AS recon_amount,
-            tfr.commission_money AS fenqile_commission_money,
-            tfr.`status` AS recon_status,
-            tfr.process_time,
-            tfr.admin_name
+        tor.order_no,
+        tfo.payment_no,
+        tuser.nickname AS user_nickname,
+        tor.contact_type,
+        tor.contact_info,
+        tuser.mobile AS user_mobile,
+        suser.nickname AS service_user_nickname,
+        suser.mobile AS service_user_mobile,
+        tor.`status` AS order_status,
+        tor. NAME AS product_name,
+        tpro.unit,
+        tpro.price,
+        tpro.amount,
+        IFNULL(tor.coupon_money, 0) AS coupon_money,
+        tor.actual_money,
+        tor.total_money,
+        tor.server_money,
+        tor.commission_money,
+        tor.create_time,
+        tfr.amount AS recon_amount,
+        tfr.commission_money AS fenqile_commission_money,
+        tfr.`status` AS recon_status,
+        tfr.process_time,
+        tfr.admin_name
         FROM
-            t_order tor
+        t_order tor
         LEFT JOIN t_fenqile_order tfo ON tor.order_no = tfo.order_no
         LEFT JOIN t_user tuser ON tor.user_id = tuser.id
         LEFT JOIN t_user suser ON tor.service_user_id = suser.id
-        LEFT JOIN t_order_product top ON tor.order_no = top.order_no
-        LEFT JOIN t_fenqile_reconciliation tfr ON tor.order_no
-        AND tfr.order_no
+        LEFT JOIN t_order_product tpro ON tor.order_no = tpro.order_no
+        LEFT JOIN t_fenqile_reconciliation tfr ON tor.order_no = tfr.order_no
         WHERE
-            tor.type = 3
+        tor.type = 3
         <if test="startTime != null">
             and tor.create_time &gt;= #{startTime}
         </if>
@@ -153,6 +152,18 @@
         </if>
         <if test="reconStatus != null">
             AND tfr.`status` = #{reconStatus}
+        </if>
+        <if test="userId != null">
+            and tor.user_id = #{userId}
+        </if>
+        <if test="serviceUserId != null">
+            and tor.service_user_id = #{serviceUserId}
+        </if>
+        <if test="userMobile != null">
+            and tuser.mobile = #{userMobile}
+        </if>
+        <if test="serviceUserMobile != null">
+            and suser.mobile = #{serviceUserMobile}
         </if>
         <if test="statusList != null">
             and tor.status in
