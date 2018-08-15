@@ -567,4 +567,18 @@
             id = #{id}
         </where>
     </update>
+
+    <select id="findDayReconOrders" resultType="com.fulu.game.core.entity.Order">
+        SELECT
+        *
+        FROM
+        t_order
+        WHERE
+        type = 3
+        and status in
+        <foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND DATE_FORMAT(complete_time, '%Y-%m-%d') = CURDATE();
+    </select>
 </mapper>

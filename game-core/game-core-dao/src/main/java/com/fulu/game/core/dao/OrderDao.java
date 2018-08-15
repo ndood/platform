@@ -58,4 +58,11 @@ public interface OrderDao extends ICommonDao<Order, Integer> {
      */
     List<Order> unacceptOrderList(OrderSearchVO orderSearchVO);
 
+    /**
+     * 获取当天的对账状态订单
+     *
+     * @param orderSearchVO
+     * @return
+     */
+    List<Order> findDayReconOrders(OrderSearchVO orderSearchVO);
 }
