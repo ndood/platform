@@ -1,6 +1,6 @@
 datasource:
     playAdminDb:
-        url: jdbc:mysql://10.0.3.105:3306/game_service?autoReconnect=true&failOverReadOnly=false&useUnicode=true&zeroDateTimeBehavior=convertToNull
+        url: jdbc:mysql://10.0.2.190:3306/game_service?autoReconnect=true&failOverReadOnly=false&useUnicode=true&zeroDateTimeBehavior=convertToNull
         username: root
         password: 123456
         driverClassName: com.mysql.jdbc.Driver
@@ -9,7 +9,7 @@ datasource:
 spring:
   redis:
     database: 1
-    host: 10.0.3.105
+    host: 10.0.2.190
     port: 6379
     password:
     timeout: 0
