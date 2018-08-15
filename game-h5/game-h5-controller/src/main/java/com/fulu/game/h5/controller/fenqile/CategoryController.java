@@ -90,34 +90,5 @@ public class CategoryController extends BaseController {
         return Result.success().data(pageInfo);
     }
 
-    /**
-     * 查询游戏所有标签
-     *
-     * @param categoryId 分类id
-     * @return 封装结果集
-     */
-    @PostMapping(value = "/tag/list")
-    public Result techTags(@RequestParam Integer categoryId) {
-        TagVO tagVO = tagService.oldFindTagsByCategoryId(categoryId);
-        if (tagVO == null) {
-            return Result.error().msg("该游戏没有设置标签!");
-        }
-        return Result.success().data(tagVO);
-    }
 
-    /**
-     * 查询游戏所有段位
-     *
-     * @param categoryId 分类id
-     * @return 封装结果集
-     */
-    @PostMapping(value = "/dan/list")
-    public Result danList(@RequestParam Integer categoryId) {
-        TechAttr techAttr = techAttrService.findByCategoryAndType(categoryId, TechAttrTypeEnum.DAN.getType());
-        if (techAttr == null) {
-            return Result.error().msg("该游戏没有设置段位信息!");
-        }
-        List<TechValue> techValueList = techValueService.findByTechAttrId(techAttr.getId());
-        return Result.success().data(techValueList);
-    }
 }
