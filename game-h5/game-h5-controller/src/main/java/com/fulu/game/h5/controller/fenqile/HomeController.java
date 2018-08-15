@@ -4,11 +4,11 @@ import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Banner;
 import com.fulu.game.core.entity.vo.BannerVO;
 import com.fulu.game.core.service.BannerService;
+import com.fulu.game.core.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,7 +21,12 @@ import java.util.List;
 @Controller
 @Slf4j
 public class HomeController extends BaseController {
+
+
     private final BannerService bannerService;
+
+
+
 
     @Autowired
     public HomeController(BannerService bannerService) {
@@ -40,6 +45,14 @@ public class HomeController extends BaseController {
         bannerVO.setDisable(true);
         List<Banner> bannerList = bannerService.findByParam(bannerVO);
         return Result.success().data(bannerList);
+    }
+
+
+    @RequestMapping(value = "/fenqile/login", method = RequestMethod.POST)
+    @ResponseBody
+    public Result login(@RequestParam("code") String code){
+
+        return Result.success();
     }
 
 
