@@ -2,10 +2,8 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.core.entity.GradingPrice;
-import com.fulu.game.core.entity.Order;
-import com.fulu.game.core.entity.OrderPointProduct;
-import com.fulu.game.core.entity.User;
+import com.fulu.game.common.enums.TechAuthStatusEnum;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.searchVO.UserAutoOrderSearchVO;
 import com.fulu.game.core.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +25,13 @@ public class AssignOrderServiceImpl implements AssignOrderService {
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private UserTechAuthService userTechAuthService;
 
 
-    public User getMatchUser(Order order){
+    public User getMatchUser(Order order) {
         List<User> users = findMatchUsers(order);
-        if(users.isEmpty()){
+        if (users.isEmpty()) {
             return null;
         }
         return users.get(0);
@@ -68,8 +68,26 @@ public class AssignOrderServiceImpl implements AssignOrderService {
         }
 
         Integer orderUserId = order.getUserId();
-        userIds.removeIf(userId -> (userId.equals(orderUserId)||redisOpenService.hasKey(RedisKeyEnum.AUTO_ASSIGN_ORDER_USER.generateKey(userId))));
-        return userService.findByUserIds(userIds,Boolean.TRUE);
+        userIds.removeIf(userId -> (userId.equals(orderUserId) || isDisabledUser(userId,order.getCategoryId())));
+        return userService.findByUserIds(userIds, Boolean.TRUE);
     }
+
+    /**
+     * 判断这个用户ID是否可用
+     * @param userId
+     * @return
+     */
+    private Boolean isDisabledUser(Integer userId,Integer categoryId) {
+        if (redisOpenService.hasKey(RedisKeyEnum.AUTO_ASSIGN_ORDER_USER.generateKey(userId))){
+            return true;
+        }
+        List<UserTechAuth> userTechAuths = userTechAuthService.findByCategoryAndUser(userId,categoryId);
+        if(userTechAuths.isEmpty()){
+            return true;
+        }
+        UserTechAuth userTechAuth = userTechAuths.get(0);
+        return !TechAuthStatusEnum.NORMAL.getType().equals(userTechAuth.getStatus());
+    }
+
 
 }

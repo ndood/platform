@@ -29,7 +29,7 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
     private final CategoryService categoryService;
     private final UserContactService userContactService;
     private final OrderProductService orderProductService;
-    private final CouponService couponService;
+    private final H5CouponServiceImpl couponService;
     private final OrderStatusDetailsService orderStatusDetailsService;
     private final OrderDao orderDao;
 
@@ -39,7 +39,7 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
                               CategoryService categoryService,
                               UserContactService userContactService,
                               OrderProductService orderProductService,
-                              CouponService couponService,
+                              H5CouponServiceImpl couponService,
                               OrderStatusDetailsService orderStatusDetailsService,
                               OrderDao orderDao) {
         this.userService = userService;

@@ -67,19 +67,7 @@ public class CategoryController extends BaseController {
         return Result.success().data(categoryList);
     }
 
-    /**
-     * 分页查询分期乐业务
-     *
-     * @param pageNum  页码
-     * @param pageSize 每页显示数据条数
-     * @return 封装结果集
-     */
-    @PostMapping(value = "list")
-    public Result page(@RequestParam Integer pageNum,
-                       @RequestParam Integer pageSize) {
-        PageInfo<Category> categoryList = categoryService.list(pageNum, pageSize);
-        return Result.success().data(categoryList);
-    }
+    
 
     /**
      * 分页查询所有商品
@@ -101,19 +89,6 @@ public class CategoryController extends BaseController {
                 pageSize, orderBy);
         return Result.success().data(pageInfo);
     }
-
-    /**
-     * 根据业务查询游戏销售方式
-     *
-     * @param categoryId 分类id
-     * @return 封装结果集
-     */
-    @PostMapping(value = "/salesmode/list")
-    public Result saleModel(@RequestParam Integer categoryId) {
-        List<SalesMode> salesModeList = salesModeService.findByCategory(categoryId);
-        return Result.success().data(salesModeList);
-    }
-
 
     /**
      * 查询游戏所有标签
