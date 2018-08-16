@@ -52,7 +52,6 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
                               OrderStatusDetailsService orderStatusDetailsService,
                               OrderDao orderDao,
                               UserCommentService userCommentService,
-                              PlayMiniAppPushServiceImpl playMiniAppPushService,
                               H5PushServiceImpl h5PushService,
                               H5OrderShareProfitServiceImpl h5OrderShareProfitService) {
         this.userService = userService;
