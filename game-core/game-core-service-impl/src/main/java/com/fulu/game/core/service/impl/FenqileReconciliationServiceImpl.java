@@ -85,4 +85,9 @@ public class FenqileReconciliationServiceImpl extends AbsCommonService<FenqileRe
         reconciliation.setUpdateTime(DateUtil.date());
         fenqileReconciliationDao.update(reconciliation);
     }
+
+    @Override
+    public FenqileReconciliation findByOrderNo(String orderNo) {
+        return fenqileReconciliationDao.findByOrderNo(orderNo);
+    }
 }

@@ -435,6 +435,12 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
         return new PageInfo<>(list);
     }
 
+    /**
+     * 根据查询条件，查询当天和前一天的订单列表
+     *
+     * @param orderSearchVO 查询VO
+     * @return 订单列表
+     */
     public List<Order> findDayReconOrders(OrderSearchVO orderSearchVO) {
         return orderDao.findDayReconOrders(orderSearchVO);
     }
