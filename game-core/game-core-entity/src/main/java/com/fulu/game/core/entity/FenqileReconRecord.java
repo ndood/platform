@@ -27,6 +27,8 @@ public class FenqileReconRecord implements Serializable {
     private BigDecimal amount;
     //订单数量
     private Integer orderCount;
+    //订单完成时间
+    private Date orderCompleteTime;
     //对账时间
     private Date processTime;
     //对账人id

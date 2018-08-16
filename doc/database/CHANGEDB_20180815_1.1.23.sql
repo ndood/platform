@@ -35,6 +35,7 @@ CREATE TABLE `t_fenqile_recon_record` (
   `end_time` datetime DEFAULT NULL COMMENT '订单结束时间',
   `amount` decimal(11,2) DEFAULT '0.00' COMMENT '对账金额',
   `order_count` int(11) DEFAULT NULL COMMENT '订单数量',
+  `order_complete_time` datetime DEFAULT NULL COMMENT '订单完成时间',
   `process_time` datetime DEFAULT NULL COMMENT '对账时间',
   `admin_id` int(11) DEFAULT NULL COMMENT '对账人id',
   `admin_name` varchar(255) DEFAULT NULL COMMENT '对账人用户名',
