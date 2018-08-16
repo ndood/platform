@@ -59,7 +59,7 @@ CREATE TABLE `t_order_point_product` (
 CREATE TABLE `t_user_contact` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL COMMENT '用户ID',
-  `type` int(11) DEFAULT NULL COMMENT '联系方式类型(1：微信号；2：QQ号；3：手机号)',
+  `type` int(11) DEFAULT NULL COMMENT '联系方式类型(1：手机号；2：QQ号；3：微信号)',
   `contact` varchar(255) DEFAULT NULL COMMENT '联系方式',
   `is_default` tinyint(4) DEFAULT NULL COMMENT '是否默认',
   `create_time` datetime NOT NULL COMMENT '创建时间',

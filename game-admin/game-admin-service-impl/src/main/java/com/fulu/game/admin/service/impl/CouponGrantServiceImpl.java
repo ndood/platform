@@ -1,6 +1,7 @@
 package com.fulu.game.admin.service.impl;
 
 
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.exception.CouponException;
 import com.fulu.game.core.dao.CouponGrantDao;
 import com.fulu.game.core.dao.ICommonDao;
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -43,7 +46,7 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant, Intege
     }
 
     @Override
-    public void create(String redeemCode, List<String> userIds, String remark) {
+    public void create(String redeemCode, String userIds, String remark) {
         Admin admin = adminService.getCurrentUser();
         CouponGroup couponGroup = couponGroupService.findByRedeemCode(redeemCode);
         if (couponGroup == null) {
@@ -65,8 +68,15 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant, Intege
         couponGrant.setAdminId(admin.getId());
         couponGrant.setAdminName(admin.getName());
         couponGrantService.create(couponGrant);
+
+        List<String> userIdList = new ArrayList<>();
+        if(userIds.contains(Constant.DEFAULT_SPLIT_SEPARATOR)) {
+            userIdList = Arrays.asList(userIds.split(Constant.DEFAULT_SPLIT_SEPARATOR));
+        }else {
+            userIdList.add(userIds);
+        }
         //优惠券发放用户
-        grantCoupon2User(couponGrant, userIds);
+        grantCoupon2User(couponGrant, userIdList);
     }
 
 
