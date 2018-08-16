@@ -95,7 +95,7 @@ public class FenqileOrderController extends BaseController {
      * @param endTime   对账结束时间
      * @return 封装结果集
      */
-    @PostMapping("/reconRecord")
+    @PostMapping("/recon-record")
     public Result reconRecord(@RequestParam Integer pageNum,
                               @RequestParam Integer pageSize,
                               Date startTime,
