@@ -57,20 +57,20 @@ public class FenqileReconciliationServiceImpl extends AbsCommonService<FenqileRe
                     break;
                 }
                 updateByOrderNo(reconciliation, admin, remark);
-
-                FenqileReconRecord reconRecord = new FenqileReconRecord();
-                reconRecord.setStartTime(startTime);
-                reconRecord.setEndTime(endTime);
-                reconRecord.setAmount(unReconTotalAmount);
-                reconRecord.setOrderCount(unReconCount);
-                reconRecord.setProcessTime(DateUtil.date());
-                reconRecord.setAdminId(admin.getId());
-                reconRecord.setAdminName(admin.getName());
-                reconRecord.setRemark(remark);
-                reconRecord.setUpdateTime(DateUtil.date());
-                reconRecord.setCreateTime(DateUtil.date());
-                fenqileReconRecordService.create(reconRecord);
             }
+
+            FenqileReconRecord reconRecord = new FenqileReconRecord();
+            reconRecord.setStartTime(startTime);
+            reconRecord.setEndTime(endTime);
+            reconRecord.setAmount(unReconTotalAmount);
+            reconRecord.setOrderCount(unReconCount);
+            reconRecord.setProcessTime(DateUtil.date());
+            reconRecord.setAdminId(admin.getId());
+            reconRecord.setAdminName(admin.getName());
+            reconRecord.setRemark(remark);
+            reconRecord.setUpdateTime(DateUtil.date());
+            reconRecord.setCreateTime(DateUtil.date());
+            fenqileReconRecordService.create(reconRecord);
         } else {
             FenqileReconciliation reconciliation = fenqileReconciliationDao.findByOrderNo(orderNos);
             Integer status = reconciliation.getStatus();

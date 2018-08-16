@@ -72,8 +72,8 @@ public class FenqileOrderController extends BaseController {
      * 对账
      *
      * @param orderNos           订单号（多个以英文逗号隔开）
-     * @param startTime          开始时间
-     * @param endTime            结束时间
+     * @param startTime          订单时间开始区间
+     * @param endTime            订单时间结束区间
      * @param remark             备注
      * @param unReconCount       应对账（未对账）订单数量
      * @param unReconTotalAmount 应对账（未对账）金额
@@ -89,6 +89,8 @@ public class FenqileOrderController extends BaseController {
     /**
      * 获取对账记录
      *
+     * @param pageNum   页码
+     * @param pageSize  每页显示数据条数
      * @param startTime 对账开始时间
      * @param endTime   对账结束时间
      * @return 封装结果集
