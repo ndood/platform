@@ -36,7 +36,7 @@ public class FenqileOrderServiceImpl extends AbsCommonService<FenqileOrder, Inte
         return fenqileOrderDao;
     }
 
-
+    @Override
     public PageInfo<FenqileOrderVO> list(Integer pageNum,
                                          Integer pageSize,
                                          String orderBy,
@@ -79,6 +79,7 @@ public class FenqileOrderServiceImpl extends AbsCommonService<FenqileOrder, Inte
         return new PageInfo<>(fenqileOrderVOList);
     }
 
+    @Override
     public FenqileOrderVO getTotalReconAmount(FenqileOrderSearchVO searchVO) {
         return fenqileOrderDao.getTotalReconAmount(searchVO);
     }

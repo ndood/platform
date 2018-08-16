@@ -45,6 +45,7 @@ public class FenqileReconciliationServiceImpl extends AbsCommonService<FenqileRe
         return fenqileReconciliationDao;
     }
 
+    @Override
     public void recon(String orderNos, Date startTime, Date endTime, String remark, Integer unReconCount, BigDecimal unReconTotalAmount) {
         Admin admin = adminService.getCurrentUser();
 
