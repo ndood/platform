@@ -43,3 +43,15 @@ CREATE TABLE `t_fenqile_recon_record` (
   `create_time` datetime NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
 ) COMMENT='分期乐对账记录表';
+
+CREATE TABLE `t_thirdparty_user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL COMMENT '用户ID',
+  `fql_openid` varchar(255) DEFAULT NULL COMMENT '分期乐openId',
+  `fql_mobile` varchar(255) DEFAULT NULL COMMENT '分期用户手机号',
+  `create_time` datetime NOT NULL,
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id` (`user_id`),
+  UNIQUE KEY `fql_openid` (`fql_openid`)
+) COMMENT='第三方用户信息';

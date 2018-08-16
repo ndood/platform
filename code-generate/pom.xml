@@ -51,6 +51,11 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-common</artifactId>
+            <version>RELEASE</version>
+        </dependency>
     </dependencies>
 
 </project>
