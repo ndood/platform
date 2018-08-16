@@ -19,6 +19,7 @@
         <hutool.version>3.0.6</hutool.version>
         <hutool-all.version>4.0.12</hutool-all.version>
         <game.core.version>1.0</game.core.version>
+        <game.app.service.version>1.0</game.app.service.version>
         <game.play.service.version>1.0</game.play.service.version>
         <game.h5.service.version>1.0</game.h5.service.version>
         <game.point.service.version>1.0</game.point.service.version>
@@ -45,6 +46,7 @@
         <module>../game-point</module>
         <module>../game-third-party</module>
         <module>../game-h5</module>
+        <module>../game-app</module>
     </modules>
 
     <parent>

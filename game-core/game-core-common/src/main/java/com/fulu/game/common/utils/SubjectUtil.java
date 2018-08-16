@@ -9,6 +9,8 @@ public class SubjectUtil {
     private static final ThreadLocal<Object> tl = new ThreadLocal<>();
     private static final ThreadLocal<String> token = new ThreadLocal<>();
 
+
+
     public static Object getCurrentUser() {
         return tl.get();
     }

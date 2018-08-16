@@ -3,7 +3,6 @@ package com.fulu.game.play.controller;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.config.WxMaServiceSupply;
-import com.fulu.game.common.enums.UserStatusEnum;
 import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserException;
