@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -184,15 +185,29 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
                     order.setContactType(0);
                 }
 
-                OrderShareProfit profit = adminOrderShareProfitService.findByOrderNo(order.getOrderNo());
-                if (profit == null) {
-                    continue;
-                }
-                order.setCommissionMoney((order.getCommissionMoney() == null) ? profit.getCommissionMoney() : null);
-                order.setServerMoney((order.getServerMoney() == null) ? profit.getServerMoney() : null);
+                setShareProfitMoney(order);
             }
         }
         return orderList;
+    }
+
+    /**
+     * 获取平台抽成和陪玩师分成金额
+     *
+     * @param order
+     */
+    private void setShareProfitMoney(Order order) {
+        Integer orderStatus = order.getStatus();
+        if (Arrays.asList(OrderStatusGroupEnum.ADMIN_COMPLETE.getStatusList()).contains(orderStatus)) {
+            OrderShareProfit profit = adminOrderShareProfitService.findByOrderNo(order.getOrderNo());
+            if (profit != null) {
+                order.setCommissionMoney((order.getCommissionMoney() == null) ? profit.getCommissionMoney() : order.getCommissionMoney());
+                order.setServerMoney((order.getServerMoney() == null) ? profit.getServerMoney() : order.getServerMoney());
+            }
+        } else {
+            order.setCommissionMoney(null);
+            order.setServerMoney(null);
+        }
     }
 
     /**
@@ -422,13 +437,9 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
 
             OrderShareProfitVO profitVO = new OrderShareProfitVO();
             profitVO.setOrderNo(orderResVO.getOrderNo());
-            OrderShareProfit profit = adminOrderShareProfitService.findByOrderNo(orderResVO.getOrderNo());
-            if (profit == null) {
-                continue;
-            }
 
-            orderResVO.setCommissionMoney((orderResVO.getCommissionMoney() == null) ? profit.getCommissionMoney() : null);
-            orderResVO.setServerMoney((orderResVO.getServerMoney() == null) ? profit.getServerMoney() : null);
+            //订单状态过滤
+            setShareProfitMoney(orderResVO);
         }
         return new PageInfo<>(list);
     }

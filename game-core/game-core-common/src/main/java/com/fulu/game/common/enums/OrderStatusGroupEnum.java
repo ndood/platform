@@ -33,7 +33,7 @@ public enum OrderStatusGroupEnum {
     ADMIN_CHECK("等待验收", "ADMIN", 25, new Integer[]{300}),
     ADMIN_CONSULTING("协商中", "ADMIN", 26, new Integer[]{350, 352, 354, 415, 416}),
     ADMIN_APPEALING("仲裁中", "ADMIN", 27, new Integer[]{400, 401, 410, 420, 502}),
-    ADMIN_COMPLETE("订单完成", "ADMIN", 28, new Integer[]{500, 410, 415, 416, 420, 500, 501, 502, 600}),
+    ADMIN_COMPLETE("订单完成", "ADMIN", 28, new Integer[]{500, 410, 415, 416, 420, 501, 502, 600}),
 
 
     MARKET_ALL("全部", "MARKET", 30, new Integer[]{210, 220, 300, 500, 501, 502, 600}),
