@@ -281,6 +281,9 @@ public abstract class OrderServiceImpl extends AbsCommonService<Order, Integer> 
     @Override
     public OrderEventVO findOrderEvent(String orderNo) {
         Order order = findByOrderNo(orderNo);
+        if(order == null) {
+            throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST, orderNo);
+        }
         int type = OrderEventTypeEnum.CONSULT.getType();
         if (Arrays.asList(OrderStatusGroupEnum.CONSULT_ALL.getStatusList()).contains(order.getStatus())) {
             type = OrderEventTypeEnum.CONSULT.getType();
