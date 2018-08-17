@@ -20,7 +20,6 @@ public interface AdviceService extends ICommonService<Advice, Integer> {
      * @param contact
      * @param advicePicUrls
      */
-    @Transactional
     Advice addAdvice(String content, String contact, String[] advicePicUrls);
 
     /**
