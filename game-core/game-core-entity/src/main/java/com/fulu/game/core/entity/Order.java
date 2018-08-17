@@ -75,35 +75,29 @@ public class Order implements Serializable {
     //备注
     private String remark;
 
-
-    //联系方式类型(1：手机号，2：QQ号，3：微信号)
-    @Excel(name = "联系方式类型", orderNum = "18", replace = {
-            "手机号_1",
-            "QQ号_2",
-            "微信号_3",
-            " _0"}, width = 15)
-    private Integer contactType;
-    //联系方式
-    @Excel(name = "联系方式", orderNum = "19", width = 15)
-    private String contactInfo;
-
     //实付金额
     @Excel(name = "实付金额", orderNum = "8", width = 15)
     private BigDecimal actualMoney;
 
     //优惠券金额
-    @Excel(name = "优惠券金额", orderNum = "10", width = 15)
+    @Excel(name = "优惠券金额", orderNum = "9", width = 15)
     private BigDecimal couponMoney;
     //是否支付(1:已支付,2:未支付)
     @JsonIgnore
-    @Excel(name = "支付状态", orderNum = "11", replace = {"已支付_true", "未支付_false"}, width = 15)
+    @Excel(name = "支付状态", orderNum = "10", replace = {"已支付_true", "未支付_false"}, width = 15)
     private Boolean isPay;
 
     private Boolean isPayCallback;
 
     //订单总额
-    @Excel(name = "订单总额", orderNum = "13", width = 15)
+    @Excel(name = "订单总额", orderNum = "11", width = 15)
     private BigDecimal totalMoney;
+    //陪玩师金额
+    @Excel(name = "支付陪玩师金额", orderNum = "12", width = 15)
+    BigDecimal serverMoney;
+    //佣金
+    @Excel(name = "平台收入", orderNum = "13", width = 15)
+    BigDecimal commissionMoney;
     //佣金比例
     private BigDecimal charges;
     //订单创建时间
@@ -121,14 +115,20 @@ public class Order implements Serializable {
     private Date completeTime;
     @Excel(name = "接单时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "17", width = 35)
     private Date receivingTime;
+
+    //联系方式类型(1：手机号，2：QQ号，3：微信号)
+    @Excel(name = "联系方式类型", orderNum = "18", replace = {
+            "手机号_1",
+            "QQ号_2",
+            "微信号_3",
+            " _0"}, width = 15)
+    private Integer contactType;
+
+    //联系方式
+    @Excel(name = "联系方式", orderNum = "19", width = 15)
+    private String contactInfo;
     //下单IP
     private String orderIp;
-
-    //佣金
-    BigDecimal commissionMoney;
-
-    //陪玩师金额
-    BigDecimal serverMoney;
 
     public String getRemark() {
         if (null == remark) {

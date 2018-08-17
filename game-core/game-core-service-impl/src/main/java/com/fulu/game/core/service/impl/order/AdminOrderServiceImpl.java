@@ -10,7 +10,6 @@ import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.dao.OrderEventDao;
-import com.fulu.game.core.dao.OrderShareProfitDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
@@ -59,8 +58,6 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
     private OrderEventService orderEventService;
     @Autowired
     private OrderEventDao orderEventDao;
-    @Autowired
-    private OrderShareProfitDao orderShareProfitDao;
     @Autowired
     private OrderPointProductService orderPointProductService;
     @Autowired
@@ -186,6 +183,13 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
                 if (order.getContactType() == null) {
                     order.setContactType(0);
                 }
+
+                OrderShareProfit profit = adminOrderShareProfitService.findByOrderNo(order.getOrderNo());
+                if (profit == null) {
+                    continue;
+                }
+                order.setCommissionMoney((order.getCommissionMoney() == null) ? profit.getCommissionMoney() : null);
+                order.setServerMoney((order.getServerMoney() == null) ? profit.getServerMoney() : null);
             }
         }
         return orderList;
@@ -418,19 +422,13 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
 
             OrderShareProfitVO profitVO = new OrderShareProfitVO();
             profitVO.setOrderNo(orderResVO.getOrderNo());
-            List<OrderShareProfit> profitList = orderShareProfitDao.findByParameter(profitVO);
-            if (CollectionUtil.isEmpty(profitList)) {
+            OrderShareProfit profit = adminOrderShareProfitService.findByOrderNo(orderResVO.getOrderNo());
+            if (profit == null) {
                 continue;
             }
-            OrderShareProfit profit = profitList.get(0);
-            BigDecimal commissionMoney = orderResVO.getCommissionMoney();
-            BigDecimal serverMoney = orderResVO.getServerMoney();
-            if (commissionMoney == null) {
-                orderResVO.setCommissionMoney(profit.getCommissionMoney());
-            }
-            if (serverMoney == null) {
-                orderResVO.setServerMoney(profit.getServerMoney());
-            }
+
+            orderResVO.setCommissionMoney((orderResVO.getCommissionMoney() == null) ? profit.getCommissionMoney() : null);
+            orderResVO.setServerMoney((orderResVO.getServerMoney() == null) ? profit.getServerMoney() : null);
         }
         return new PageInfo<>(list);
     }
