@@ -86,7 +86,7 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
 
     @Override
     protected void shareProfit(Order order) {
-
+        h5OrderShareProfitService.shareProfit(order);
     }
 
     @Override
