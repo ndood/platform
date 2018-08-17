@@ -1,8 +1,8 @@
 package com.fulu.game.admin.controller;
 
 import com.fulu.game.common.Result;
-import com.fulu.game.core.entity.FenqileReconRecord;
 import com.fulu.game.core.entity.vo.FenqileOrderVO;
+import com.fulu.game.core.entity.vo.FenqileReconRecordVO;
 import com.fulu.game.core.entity.vo.searchVO.FenqileOrderSearchVO;
 import com.fulu.game.core.service.FenqileOrderService;
 import com.fulu.game.core.service.FenqileReconRecordService;
@@ -103,7 +103,7 @@ public class FenqileOrderController extends BaseController {
                               @RequestParam Integer pageSize,
                               Date startTime,
                               Date endTime) {
-        PageInfo<FenqileReconRecord> pageInfo = fenqileReconRecordService.reconRecord(pageNum, pageSize, startTime, endTime);
+        PageInfo<FenqileReconRecordVO> pageInfo = fenqileReconRecordService.reconRecord(pageNum, pageSize, startTime, endTime);
         return Result.success().data(pageInfo).msg("查询成功！");
     }
 }

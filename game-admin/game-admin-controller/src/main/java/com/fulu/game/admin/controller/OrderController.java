@@ -3,7 +3,6 @@ package com.fulu.game.admin.controller;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
-import com.fulu.game.core.service.impl.order.AdminOrderServiceImpl;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.core.entity.ArbitrationDetails;
@@ -13,6 +12,7 @@ import com.fulu.game.core.entity.vo.OrderStatusDetailsVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
+import com.fulu.game.core.service.impl.order.AdminOrderServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
@@ -43,12 +43,15 @@ public class OrderController extends BaseController {
     /**
      * 管理员-订单列表
      *
-     * @param orderSearchVO
-     * @return
+     * @param pageNum       页码
+     * @param pageSize      每页显示数据条数
+     * @param orderBy       排序字符串
+     * @param orderSearchVO 查询VO
+     * @return 封装结果集
      */
     @RequestMapping("/list")
-    public Result list(@RequestParam(required = true) Integer pageNum,
-                       @RequestParam(required = true) Integer pageSize,
+    public Result list(@RequestParam Integer pageNum,
+                       @RequestParam Integer pageSize,
                        String orderBy,
                        OrderSearchVO orderSearchVO) {
         PageInfo<OrderResVO> orderList = orderService.list(orderSearchVO, pageNum, pageSize, orderBy);
