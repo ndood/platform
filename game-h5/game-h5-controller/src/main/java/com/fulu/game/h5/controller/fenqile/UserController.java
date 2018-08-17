@@ -83,8 +83,9 @@ public class UserController extends BaseController {
 
     /**
      * 提交建议
-     * @param content 建议内容
-     * @param contact 联系方式【电话或者QQ】
+     *
+     * @param content       建议内容
+     * @param contact       联系方式【电话或者QQ】
      * @param advicePicUrls 建议截图
      * @return
      */
@@ -135,7 +136,6 @@ public class UserController extends BaseController {
         user.setRealname(null);
         return Result.success().data(user).msg("个人信息设置成功！");
     }
-
 
 
     @PostMapping("/im/save")
@@ -218,5 +218,14 @@ public class UserController extends BaseController {
         return Result.success().data(userInfoVO).msg("查询聊天对象信息成功！");
     }
 
-
+    /**
+     * 用户-添加评价
+     *
+     * @return
+     */
+    @RequestMapping("/comment/save")
+    public Result save(UserCommentVO commentVO) {
+        commentService.save(commentVO);
+        return Result.success().msg("添加成功！");
+    }
 }
