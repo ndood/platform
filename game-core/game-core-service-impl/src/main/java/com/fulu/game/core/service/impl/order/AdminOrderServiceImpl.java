@@ -200,10 +200,14 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
         Integer orderStatus = order.getStatus();
         if (Arrays.asList(OrderStatusGroupEnum.ADMIN_COMPLETE.getStatusList()).contains(orderStatus)) {
             OrderShareProfit profit = adminOrderShareProfitService.findByOrderNo(order.getOrderNo());
+            BigDecimal commissionMoney = null;
+            BigDecimal serverMoney = null;
             if (profit != null) {
-                order.setCommissionMoney((order.getCommissionMoney() == null) ? profit.getCommissionMoney() : order.getCommissionMoney());
-                order.setServerMoney((order.getServerMoney() == null) ? profit.getServerMoney() : order.getServerMoney());
+                commissionMoney = profit.getCommissionMoney();
+                serverMoney = profit.getServerMoney();
             }
+            order.setCommissionMoney((order.getCommissionMoney() == null) ? commissionMoney : order.getCommissionMoney());
+            order.setServerMoney((order.getServerMoney() == null) ? serverMoney : order.getServerMoney());
         } else {
             order.setCommissionMoney(null);
             order.setServerMoney(null);
