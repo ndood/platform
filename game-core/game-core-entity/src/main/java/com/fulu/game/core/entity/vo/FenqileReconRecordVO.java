@@ -26,4 +26,8 @@ public class FenqileReconRecordVO extends FenqileReconRecord {
      */
     private Date processEndTime;
 
+    /**
+     * 订单区间
+     */
+    private String orderInterval;
 }
