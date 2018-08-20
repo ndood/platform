@@ -185,7 +185,15 @@
             ) AS total_amount
         FROM
             t_fenqile_reconciliation tfr
+        LEFT JOIN `t_order` torder ON tfr.`order_no` = torder.`order_no`
         WHERE
-            tfr.`status` = 0;
+            tfr.`status` = 0
+        AND torder.`type` = 3
+        <if test="statusList != null">
+            and torder.status in
+            <foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
     </select>
 </mapper>
