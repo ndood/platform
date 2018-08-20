@@ -20,6 +20,7 @@ import org.assertj.core.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -85,10 +86,12 @@ public class FenqileOrderServiceImpl extends AbsCommonService<FenqileOrder, Inte
     public FenqileOrderVO getTotalReconAmount(FenqileOrderSearchVO searchVO) {
         searchVO.setStatusList(OrderStatusGroupEnum.RECON_ALL.getStatusList());
         FenqileOrderVO fenqileOrderVO = fenqileOrderDao.getTotalAmount(searchVO);
-        FenqileOrderVO resultVO =  fenqileOrderDao.getTotalReconAmount(searchVO);
-        if(fenqileOrderVO != null) {
-            resultVO.setTotalAmount(fenqileOrderVO.getTotalAmount());
+        FenqileOrderVO resultVO = fenqileOrderDao.getTotalReconAmount(searchVO);
+        if (fenqileOrderVO != null) {
+            resultVO.setTotalAmount(fenqileOrderVO.getTotalAmount() == null ? new BigDecimal(0) : fenqileOrderVO.getTotalAmount());
         }
+        resultVO.setUnReconTotalAmount(resultVO.getUnReconTotalAmount() == null ? new BigDecimal(0) : resultVO.getUnReconTotalAmount());
+        resultVO.setUnReconCount(resultVO.getUnReconCount() == null ? 0 : resultVO.getUnReconCount());
         return resultVO;
     }
 }
