@@ -18,10 +18,10 @@
         <result column="status" property="status"/>
         <result column="contact_type" property="contactType"/>
         <result column="contact_info" property="contactInfo"/>
-        <result column="commission_money"  property="commissionMoney" />
+        <result column="commission_money" property="commissionMoney"/>
         <result column="total_money" property="totalMoney"/>
         <result column="actual_money" property="actualMoney"/>
-        <result column="server_money"  property="serverMoney" />
+        <result column="server_money" property="serverMoney"/>
         <result column="coupon_money" property="couponMoney"/>
         <result column="charges" property="charges"/>
         <result column="create_time" property="createTime"/>
@@ -159,7 +159,7 @@
         LEFT JOIN t_user pu ON o.service_user_id = pu.id
         LEFT JOIN t_order_product op ON o.order_no = op.order_no
         <where>
-            o.type = 1 or o.type =3
+            (o.type = 1 or o.type = 3)
             <if test="type == null">
                 and ((o.user_id = #{userId}) OR ( o.service_user_id = #{userId} AND o.`status` NOT IN (100) ))
             </if>
