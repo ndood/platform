@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.FenqileOrderDao;
@@ -74,6 +75,7 @@ public class FenqileOrderServiceImpl extends AbsCommonService<FenqileOrder, Inte
                 if (meta.getProductName().contains(" ")) {
                     meta.setProductName(meta.getProductName().split(" ")[0]);
                 }
+                meta.setStatusStr(OrderStatusEnum.getMsgByStatus(meta.getOrderStatus()));
             }
         }
         return new PageInfo<>(fenqileOrderVOList);

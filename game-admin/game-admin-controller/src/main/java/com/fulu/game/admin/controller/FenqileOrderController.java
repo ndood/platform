@@ -55,7 +55,7 @@ public class FenqileOrderController extends BaseController {
                        @RequestParam Integer pageSize,
                        String orderBy,
                        FenqileOrderSearchVO searchVO) {
-        PageInfo pageInfo = fenqileOrderService.list(pageNum, pageSize, orderBy, searchVO);
+        PageInfo<FenqileOrderVO> pageInfo = fenqileOrderService.list(pageNum, pageSize, orderBy, searchVO);
         return Result.success().data(pageInfo).msg("查询列表成功！");
     }
 

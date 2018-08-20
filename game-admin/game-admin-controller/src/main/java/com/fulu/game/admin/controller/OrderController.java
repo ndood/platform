@@ -58,7 +58,11 @@ public class OrderController extends BaseController {
         return Result.success().data(orderList).msg("查询列表成功！");
     }
 
-
+    /**
+     * 管理员-所有订单状态位
+     *
+     * @return 封装结果集
+     */
     @RequestMapping("status-all")
     public Result statusList() {
         JSONArray ja = new JSONArray();
