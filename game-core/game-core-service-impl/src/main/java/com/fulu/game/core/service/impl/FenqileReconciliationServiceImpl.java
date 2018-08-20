@@ -53,9 +53,12 @@ public class FenqileReconciliationServiceImpl extends AbsCommonService<FenqileRe
             String[] orderNoList = orderNos.split(Constant.DEFAULT_SPLIT_SEPARATOR);
             for (String orderNo : orderNoList) {
                 FenqileReconciliation reconciliation = fenqileReconciliationDao.findByOrderNo(orderNo);
+                if (reconciliation == null) {
+                    continue;
+                }
                 Integer status = reconciliation.getStatus();
                 if (Constant.IS_RECON.equals(status)) {
-                    break;
+                    continue;
                 }
                 updateByOrderNo(reconciliation, admin, remark);
             }
