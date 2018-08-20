@@ -2,12 +2,14 @@ package com.fulu.game.core.service.impl.order;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
-import com.fulu.game.common.enums.*;
+import com.fulu.game.common.enums.OrderEventTypeEnum;
+import com.fulu.game.common.enums.OrderStatusEnum;
+import com.fulu.game.common.enums.OrderStatusGroupEnum;
+import com.fulu.game.common.enums.UserScoreEnum;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.dao.OrderEventDao;
-import com.fulu.game.core.dao.OrderShareProfitDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
@@ -22,11 +24,11 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -58,17 +60,11 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
     @Autowired
     private OrderEventDao orderEventDao;
     @Autowired
-    private OrderShareProfitDao orderShareProfitDao;
-    @Autowired
     private OrderPointProductService orderPointProductService;
     @Autowired
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
     @Autowired
     private AdminPushServiceImpl adminPushService;
-
-
-
-
 
 
     @Override
@@ -82,13 +78,8 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
 
     @Override
     protected void orderRefund(Order order, BigDecimal refundMoney) {
-        adminOrderShareProfitService.orderRefund(order,refundMoney);
+        adminOrderShareProfitService.orderRefund(order, refundMoney);
     }
-
-
-
-
-
 
 
     public PageInfo<OrderVO> unacceptOrderList(Integer pageNum, Integer pageSize, OrderSearchVO orderSearchVO) {
@@ -193,9 +184,34 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
                 if (order.getContactType() == null) {
                     order.setContactType(0);
                 }
+
+                getShareProfitMoney(order);
             }
         }
         return orderList;
+    }
+
+    /**
+     * 获取平台抽成和陪玩师分成金额
+     *
+     * @param order
+     */
+    private void getShareProfitMoney(Order order) {
+        Integer orderStatus = order.getStatus();
+        if (Arrays.asList(OrderStatusGroupEnum.ADMIN_COMPLETE.getStatusList()).contains(orderStatus)) {
+            OrderShareProfit profit = adminOrderShareProfitService.findByOrderNo(order.getOrderNo());
+            BigDecimal commissionMoney = null;
+            BigDecimal serverMoney = null;
+            if (profit != null) {
+                commissionMoney = profit.getCommissionMoney();
+                serverMoney = profit.getServerMoney();
+            }
+            order.setCommissionMoney((order.getCommissionMoney() == null) ? commissionMoney : order.getCommissionMoney());
+            order.setServerMoney((order.getServerMoney() == null) ? serverMoney : order.getServerMoney());
+        } else {
+            order.setCommissionMoney(null);
+            order.setServerMoney(null);
+        }
     }
 
     /**
@@ -425,22 +441,10 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
 
             OrderShareProfitVO profitVO = new OrderShareProfitVO();
             profitVO.setOrderNo(orderResVO.getOrderNo());
-            List<OrderShareProfit> profitList = orderShareProfitDao.findByParameter(profitVO);
-            if (CollectionUtil.isEmpty(profitList)) {
-                continue;
-            }
-            OrderShareProfit profit = profitList.get(0);
-            BigDecimal commissionMoney = orderResVO.getCommissionMoney();
-            BigDecimal serverMoney = orderResVO.getServerMoney();
-            if (commissionMoney == null) {
-                orderResVO.setCommissionMoney(profit.getCommissionMoney());
-            }
-            if (serverMoney == null) {
-                orderResVO.setServerMoney(profit.getServerMoney());
-            }
+
+            //订单状态过滤
+            getShareProfitMoney(orderResVO);
         }
         return new PageInfo<>(list);
     }
-
-
 }

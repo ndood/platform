@@ -61,6 +61,16 @@
         </where>
     </select>
 
+    <select id="findByOrderNo" resultType="com.fulu.game.core.entity.OrderShareProfit">
+        SELECT
+            *
+        FROM
+            t_order_share_profit
+        WHERE
+            order_no = #{orderNo}
+        LIMIT 1;
+    </select>
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_order_share_profit
         <where>
