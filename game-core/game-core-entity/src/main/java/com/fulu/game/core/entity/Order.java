@@ -89,6 +89,8 @@ public class Order implements Serializable {
 
     private Boolean isPayCallback;
 
+    private Integer payment;  //支付方式
+
     //订单总额
     @Excel(name = "订单总额", orderNum = "11", width = 15)
     private BigDecimal totalMoney;
