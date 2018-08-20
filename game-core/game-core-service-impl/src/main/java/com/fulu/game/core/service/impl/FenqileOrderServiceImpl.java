@@ -84,6 +84,11 @@ public class FenqileOrderServiceImpl extends AbsCommonService<FenqileOrder, Inte
     @Override
     public FenqileOrderVO getTotalReconAmount(FenqileOrderSearchVO searchVO) {
         searchVO.setStatusList(OrderStatusGroupEnum.RECON_ALL.getStatusList());
-        return fenqileOrderDao.getTotalReconAmount(searchVO);
+        FenqileOrderVO fenqileOrderVO = fenqileOrderDao.getTotalAmount(searchVO);
+        FenqileOrderVO resultVO =  fenqileOrderDao.getTotalReconAmount(searchVO);
+        if(fenqileOrderVO != null) {
+            resultVO.setTotalAmount(fenqileOrderVO.getTotalAmount());
+        }
+        return resultVO;
     }
 }

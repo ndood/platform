@@ -22,4 +22,6 @@ public interface FenqileOrderDao extends ICommonDao<FenqileOrder, Integer> {
     List<FenqileOrderVO> list(FenqileOrderSearchVO searchVO);
 
     FenqileOrderVO getTotalReconAmount(FenqileOrderSearchVO searchVO);
+
+    FenqileOrderVO getTotalAmount(FenqileOrderSearchVO searchVO);
 }
