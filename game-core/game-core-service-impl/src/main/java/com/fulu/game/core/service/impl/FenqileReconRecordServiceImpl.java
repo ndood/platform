@@ -62,6 +62,8 @@ public class FenqileReconRecordServiceImpl extends AbsCommonService<FenqileRecon
             }
         }
 
-        return new PageInfo<>(voList);
+        PageInfo page = new PageInfo(list);
+        page.setList(voList);
+        return page;
     }
 }
