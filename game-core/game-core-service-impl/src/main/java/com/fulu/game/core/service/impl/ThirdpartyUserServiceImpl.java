@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.enums.SourceIdEnum;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.ThirdpartyUserVO;
@@ -46,8 +47,7 @@ public class ThirdpartyUserServiceImpl extends AbsCommonService<ThirdpartyUser,I
 
     @Override
     public ThirdpartyUser createFenqileUser(String fqlOpenId,String ip) {
-        //todo 这里需要给分期乐设置一个sourceId
-        User user = userService.createThirdPartyUser(null,ip);
+        User user = userService.createThirdPartyUser(SourceIdEnum.FENQILE.getType(),ip);
         ThirdpartyUser thirdpartyUser = new ThirdpartyUser();
         thirdpartyUser.setFqlOpenid(fqlOpenId);
         thirdpartyUser.setUserId(user.getId());
