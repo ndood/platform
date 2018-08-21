@@ -17,11 +17,7 @@
             <artifactId>game-core-service-impl</artifactId>
             <version>${game.core.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.fulu.game</groupId>
-            <artifactId>game-third-party-fenqile</artifactId>
-            <version>${game.third.party.fenqile.version}</version>
-        </dependency>
+
     </dependencies>
 
 </project>

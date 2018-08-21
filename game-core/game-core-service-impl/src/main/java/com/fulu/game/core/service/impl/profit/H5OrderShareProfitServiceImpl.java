@@ -1,4 +1,4 @@
-package com.fulu.game.h5.service.impl.fenqile;
+package com.fulu.game.core.service.impl.profit;
 
 import com.fulu.game.common.enums.PlatFormMoneyTypeEnum;
 import com.fulu.game.core.entity.Category;

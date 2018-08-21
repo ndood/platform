@@ -18,7 +18,7 @@ public class SchedulePushServiceImpl extends PushServiceImpl {
     public void consultAgree(Order order) {
         if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
             pushWechatTemplateMsg(WechatEcoEnum.PLAY.getType(), order.getUserId(), WechatTemplateIdEnum.PLAY_LEAVE_MSG, WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE.getPage().getPlayPagePath(),WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_USER_WIN.getContent());
-        } else {
+        } else if(OrderTypeEnum.POINT.getType().equals(order.getType())) {
             pushWechatTemplateMsg(WechatEcoEnum.POINT.getType(), order.getUserId(), WechatTemplateIdEnum.POINT_LEAVE_MSG, WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE.getPage().getPointPagePath(),WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_USER_WIN.getContent());
         }
     }
@@ -30,7 +30,7 @@ public class SchedulePushServiceImpl extends PushServiceImpl {
     public void consultCancel(Order order) {
         if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
             pushWechatTemplateMsg(WechatEcoEnum.PLAY.getType(), order.getUserId(), WechatTemplateIdEnum.PLAY_LEAVE_MSG, WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL.getPage().getPlayPagePath(),WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL.getContent());
-        } else {
+        } else if(OrderTypeEnum.POINT.getType().equals(order.getType())){
             pushWechatTemplateMsg(WechatEcoEnum.POINT.getType(), order.getUserId(), WechatTemplateIdEnum.POINT_LEAVE_MSG, WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL.getPage().getPointPagePath(),WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL.getContent());
         }
     }

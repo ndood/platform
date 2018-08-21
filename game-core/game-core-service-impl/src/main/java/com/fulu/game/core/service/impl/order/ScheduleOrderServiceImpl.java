@@ -1,6 +1,9 @@
 package com.fulu.game.core.service.impl.order;
 
-import com.fulu.game.common.enums.*;
+import com.fulu.game.common.enums.OrderDealTypeEnum;
+import com.fulu.game.common.enums.OrderEventTypeEnum;
+import com.fulu.game.common.enums.OrderStatusEnum;
+import com.fulu.game.common.enums.OrderTypeEnum;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.entity.Order;
@@ -9,9 +12,9 @@ import com.fulu.game.core.entity.OrderEvent;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.OrderDealService;
 import com.fulu.game.core.service.OrderEventService;
-import com.fulu.game.core.service.OrderShareProfitService;
 import com.fulu.game.core.service.OrderStatusDetailsService;
 import com.fulu.game.core.service.impl.OrderServiceImpl;
+import com.fulu.game.core.service.impl.profit.H5OrderShareProfitServiceImpl;
 import com.fulu.game.core.service.impl.profit.PlayOrderShareProfitServiceImpl;
 import com.fulu.game.core.service.impl.profit.PointOrderShareProfitServiceImpl;
 import com.fulu.game.core.service.impl.push.SchedulePushServiceImpl;
@@ -44,12 +47,14 @@ public class ScheduleOrderServiceImpl extends OrderServiceImpl {
     @Autowired
     private PointOrderShareProfitServiceImpl pointOrderShareProfitService;
     @Autowired
+    private H5OrderShareProfitServiceImpl h5OrderShareProfitService;
+
+    @Autowired
     private SchedulePushServiceImpl schedulePushService;
 
     @Override
     protected void dealOrderAfterPay(Order order) {
     }
-
 
 
     @Override
@@ -60,6 +65,11 @@ public class ScheduleOrderServiceImpl extends OrderServiceImpl {
         } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
             //上分订单
             playOrderShareProfitService.shareProfit(order);
+        } else if (OrderTypeEnum.H5.getType().equals(order.getType())) {
+            h5OrderShareProfitService.shareProfit(order);
+        }else {
+            log.error("订单类型不匹配:{}",order);
+            throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING,order.getOrderNo());
         }
     }
 
@@ -68,13 +78,20 @@ public class ScheduleOrderServiceImpl extends OrderServiceImpl {
         if (order == null) {
             throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST, "");
         }
-        if (order.getType().equals(1)) {
-            //陪玩订单
+        if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
             playOrderShareProfitService.orderRefund(order, refundMoney);
-        } else if (order.getType().equals(2)) {
+            //陪玩订单
+        } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
             //上分订单
             pointOrderShareProfitService.orderRefund(order, refundMoney);
+        } else if (OrderTypeEnum.H5.getType().equals(order.getType())) {
+            h5OrderShareProfitService.orderRefund(order,refundMoney);
+        }else {
+            log.error("订单类型不匹配:{}",order);
+            throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING,order.getOrderNo());
         }
+
+
     }
 
 
@@ -139,6 +156,7 @@ public class ScheduleOrderServiceImpl extends OrderServiceImpl {
 
     /**
      * 系统自动同意协商
+     *
      * @param orderNo
      * @return
      */
@@ -172,6 +190,7 @@ public class ScheduleOrderServiceImpl extends OrderServiceImpl {
 
     /**
      * 系统自动取消协商
+     *
      * @param orderNo
      * @return
      */

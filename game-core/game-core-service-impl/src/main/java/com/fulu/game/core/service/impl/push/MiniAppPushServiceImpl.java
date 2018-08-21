@@ -192,7 +192,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
             return "用户在线,不推送微信消息!";
         }
         User sendUser = userService.findByImId(imId);
-        if (sendUser == null || sendUser.getOpenId() == null) {
+        if (sendUser == null) {
             throw new ServiceErrorException("IM不存在!");
         }
         String timeStr = redisOpenService.get(RedisKeyEnum.WX_TEMPLATE_MSG.generateKey(imId + "|" + acceptImId));

@@ -1,8 +1,8 @@
-package com.fulu.game.h5.service.impl.fenqile;
+package com.fulu.game.core.service.impl.pay;
 
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.service.impl.pay.PayServiceImpl;
+import com.fulu.game.core.service.impl.order.H5OrderServiceImpl;
 import com.fulu.game.thirdparty.fenqile.entity.FenqileOrderNotice;
 import com.github.binarywang.wxpay.exception.WxPayException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +11,14 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 
 @Service
-public class FenqilePayServiceImpl extends PayServiceImpl<FenqileOrderNotice>{
+public class FenqilePayServiceImpl extends PayServiceImpl<FenqileOrderNotice> {
 
     @Autowired
     private H5OrderServiceImpl h5OrderService;
 
     @Override
     protected void payOrder(String orderNo, BigDecimal actualMoney) {
-        h5OrderService.payOrder(orderNo,actualMoney);
+        h5OrderService.payOrder(orderNo, actualMoney);
     }
 
     @Override
