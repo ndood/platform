@@ -20,6 +20,8 @@ public class SchedulePushServiceImpl extends PushServiceImpl {
             pushWechatTemplateMsg(WechatEcoEnum.PLAY.getType(), order.getUserId(), WechatTemplateIdEnum.PLAY_LEAVE_MSG, WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE.getPage().getPlayPagePath(),WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_USER_WIN.getContent());
         } else if(OrderTypeEnum.POINT.getType().equals(order.getType())) {
             pushWechatTemplateMsg(WechatEcoEnum.POINT.getType(), order.getUserId(), WechatTemplateIdEnum.POINT_LEAVE_MSG, WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE.getPage().getPointPagePath(),WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_USER_WIN.getContent());
+        }else if(OrderTypeEnum.H5.getType().equals(order.getType())){
+            //todo 给用户发留言短信
         }
     }
 
@@ -32,6 +34,8 @@ public class SchedulePushServiceImpl extends PushServiceImpl {
             pushWechatTemplateMsg(WechatEcoEnum.PLAY.getType(), order.getUserId(), WechatTemplateIdEnum.PLAY_LEAVE_MSG, WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL.getPage().getPlayPagePath(),WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL.getContent());
         } else if(OrderTypeEnum.POINT.getType().equals(order.getType())){
             pushWechatTemplateMsg(WechatEcoEnum.POINT.getType(), order.getUserId(), WechatTemplateIdEnum.POINT_LEAVE_MSG, WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL.getPage().getPointPagePath(),WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL.getContent());
+        }else if(OrderTypeEnum.H5.getType().equals(order.getType())){
+            //todo 给用户发留言短信
         }
     }
 
