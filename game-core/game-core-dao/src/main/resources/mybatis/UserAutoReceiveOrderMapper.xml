@@ -155,6 +155,8 @@
         auto.category_id,
         tu.login_time,
         tu.user_score,
+        tu.nickname,
+        tu.mobile,
         cate. NAME,
         auto.remark,
         auto.order_complete_num,
