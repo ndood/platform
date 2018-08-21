@@ -137,10 +137,10 @@
         WHERE
         tor.type = 3
         <if test="startTime != null">
-            and tor.create_time &gt;= #{startTime}
+            AND tor.create_time &gt;= #{startTime}
         </if>
         <if test="endTime != null">
-            and tor.create_time &lt;= #{endTime}
+            AND tor.create_time &lt;= #{endTime}
         </if>
         <if test="orderNo != null">
             AND tor.order_no = #{orderNo}
@@ -155,19 +155,19 @@
             AND tfr.`status` = #{reconStatus}
         </if>
         <if test="userId != null">
-            and tor.user_id = #{userId}
+            AND tor.user_id = #{userId}
         </if>
         <if test="serviceUserId != null">
-            and tor.service_user_id = #{serviceUserId}
+            AND tor.service_user_id = #{serviceUserId}
         </if>
         <if test="userMobile != null">
-            and tuser.mobile = #{userMobile}
+            AND tuser.mobile = #{userMobile}
         </if>
         <if test="serviceUserMobile != null">
-            and suser.mobile = #{serviceUserMobile}
+            AND suser.mobile = #{serviceUserMobile}
         </if>
         <if test="statusList != null">
-            and tor.status in
+            AND tor.status IN
             <foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
@@ -176,65 +176,23 @@
 
     <select id="getTotalReconAmount" resultType="com.fulu.game.core.entity.vo.FenqileOrderVO">
         SELECT
-            count(*) AS un_recon_count,
-            sum(amount) AS un_recon_total_amount
-        FROM
-            t_fenqile_reconciliation tfr
-        LEFT JOIN `t_order` tor ON tfr.`order_no` = tor.`order_no`
-        WHERE
-            tfr.`status` = 0
-        AND tor.`type` = 3
-        <if test="startTime != null">
-            and tor.create_time &gt;= #{startTime}
-        </if>
-        <if test="endTime != null">
-            and tor.create_time &lt;= #{endTime}
-        </if>
-        <if test="orderNo != null">
-            AND tor.order_no = #{orderNo}
-        </if>
-        <if test="categoryId != null">
-            AND tor.category_id = #{categoryId}
-        </if>
-        <if test="paymentNo != null">
-            AND tfo.payment_no = #{paymentNo}
-        </if>
-        <if test="reconStatus != null">
-            AND tfr.`status` = #{reconStatus}
-        </if>
-        <if test="userId != null">
-            and tor.user_id = #{userId}
-        </if>
-        <if test="serviceUserId != null">
-            and tor.service_user_id = #{serviceUserId}
-        </if>
-        <if test="userMobile != null">
-            and tuser.mobile = #{userMobile}
-        </if>
-        <if test="serviceUserMobile != null">
-            and suser.mobile = #{serviceUserMobile}
-        </if>
-        <if test="statusList != null">
-            and tor.status in
-            <foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
-    </select>
-
-    <select id="getTotalAmount" resultType="com.fulu.game.core.entity.vo.FenqileOrderVO">
-        SELECT
-          sum(amount) AS total_amount
+        count(
+        IF (tfr.`status` = 0, TRUE, NULL)
+        ) AS un_recon_count,
+        sum(
+        IF (tfr.`status` = 0, amount, 0)
+        ) AS un_recon_total_amount,
+        sum(amount) AS total_amount
         FROM
         t_fenqile_reconciliation tfr
         LEFT JOIN `t_order` tor ON tfr.`order_no` = tor.`order_no`
         WHERE
         tor.`type` = 3
         <if test="startTime != null">
-            and tor.create_time &gt;= #{startTime}
+            AND tor.create_time &gt;= #{startTime}
         </if>
         <if test="endTime != null">
-            and tor.create_time &lt;= #{endTime}
+            AND tor.create_time &lt;= #{endTime}
         </if>
         <if test="orderNo != null">
             AND tor.order_no = #{orderNo}
@@ -249,19 +207,19 @@
             AND tfr.`status` = #{reconStatus}
         </if>
         <if test="userId != null">
-            and tor.user_id = #{userId}
+            AND tor.user_id = #{userId}
         </if>
         <if test="serviceUserId != null">
-            and tor.service_user_id = #{serviceUserId}
+            AND tor.service_user_id = #{serviceUserId}
         </if>
         <if test="userMobile != null">
-            and tuser.mobile = #{userMobile}
+            AND tuser.mobile = #{userMobile}
         </if>
         <if test="serviceUserMobile != null">
-            and suser.mobile = #{serviceUserMobile}
+            AND suser.mobile = #{serviceUserMobile}
         </if>
         <if test="statusList != null">
-            and tor.status in
+            AND tor.status IN
             <foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
