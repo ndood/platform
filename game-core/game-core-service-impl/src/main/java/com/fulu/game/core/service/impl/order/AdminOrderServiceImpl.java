@@ -185,7 +185,7 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
                     order.setContactType(0);
                 }
 
-                setShareProfitMoney(order);
+                getShareProfitMoney(order);
             }
         }
         return orderList;
@@ -196,7 +196,7 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
      *
      * @param order
      */
-    private void setShareProfitMoney(Order order) {
+    private void getShareProfitMoney(Order order) {
         Integer orderStatus = order.getStatus();
         if (Arrays.asList(OrderStatusGroupEnum.ADMIN_COMPLETE.getStatusList()).contains(orderStatus)) {
             OrderShareProfit profit = adminOrderShareProfitService.findByOrderNo(order.getOrderNo());
@@ -443,7 +443,7 @@ public class AdminOrderServiceImpl extends OrderServiceImpl {
             profitVO.setOrderNo(orderResVO.getOrderNo());
 
             //订单状态过滤
-            setShareProfitMoney(orderResVO);
+            getShareProfitMoney(orderResVO);
         }
         return new PageInfo<>(list);
     }
