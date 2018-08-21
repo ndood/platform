@@ -8,6 +8,7 @@ import com.fulu.game.core.entity.vo.searchVO.UserAutoOrderSearchVO;
 import com.fulu.game.core.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,8 +28,9 @@ public class AssignOrderServiceImpl implements AssignOrderService {
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Qualifier(value = "userTechAuthServiceImpl")
     @Autowired
-    private UserTechAuthService userTechAuthService;
+    private UserTechAuthServiceImpl userTechAuthService;
 
 
     public User getMatchUser(Order order) {

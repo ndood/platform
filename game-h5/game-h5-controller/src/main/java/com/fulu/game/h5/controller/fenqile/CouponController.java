@@ -3,8 +3,8 @@ package com.fulu.game.h5.controller.fenqile;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Coupon;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.service.CouponService;
 import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.impl.coupon.H5CouponServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +27,11 @@ import java.util.Map;
 @Slf4j
 @RequestMapping("/api/v1/coupon")
 public class CouponController extends BaseController {
-    private final H5CouponServiceImpl couponService;
+    private final CouponService couponService;
     private final UserService userService;
 
     @Autowired
-    public CouponController(H5CouponServiceImpl couponService, UserService userService) {
+    public CouponController(CouponService couponService, UserService userService) {
         this.couponService = couponService;
         this.userService = userService;
     }

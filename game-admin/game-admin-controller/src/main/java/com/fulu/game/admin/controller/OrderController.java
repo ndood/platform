@@ -12,7 +12,7 @@ import com.fulu.game.core.entity.vo.OrderStatusDetailsVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
-import com.fulu.game.core.service.impl.order.AdminOrderServiceImpl;
+import com.fulu.game.admin.service.impl.AdminOrderServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;

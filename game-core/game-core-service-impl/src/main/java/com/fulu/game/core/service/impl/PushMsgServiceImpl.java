@@ -14,13 +14,14 @@ import com.fulu.game.core.entity.vo.PushMsgVO;
 import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.PushMsgService;
 import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.impl.push.AdminPushServiceImpl;
+import com.fulu.game.core.service.impl.push.PushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
@@ -41,8 +42,9 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
     private UserService userService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Qualifier(value = "pushServiceImpl")
     @Autowired
-    private AdminPushServiceImpl adminPushService;
+    private PushServiceImpl pushService;
 
     private Lock lock = new ReentrantLock();
 
@@ -105,7 +107,7 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
                     .append(pushMsg.getId()).toString();
             log.info("开始执行推送消息:userId:{};lastPage:{};pushMsg:{};", userIds == null ? "全体用户" : userIds, lastPage, pushMsg);
             long startTime = System.currentTimeMillis();
-            adminPushService.adminPushWxTemplateMsg(pushMsg.getPlatform(), pushMsg.getId(), userIds, lastPage, pushMsg.getContent());
+            pushService.adminPushWxTemplateMsg(pushMsg.getPlatform(), pushMsg.getId(), userIds, lastPage, pushMsg.getContent());
             long endTime = System.currentTimeMillis();
             log.info("pushTask:{}执行wxTemplateMsgService.adminPushWxTemplateMsg方法耗时:{}", pushMsg.getId(), endTime - startTime);
             pushMsg.setTotalNum(count);

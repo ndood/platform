@@ -8,7 +8,7 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.AbsCommonService;
-import com.fulu.game.core.service.impl.coupon.AdminCouponServiceImpl;
+import com.fulu.game.core.service.impl.CouponServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +36,10 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant, Intege
     @Autowired
     private AdminService adminService;
     @Autowired
-    private AdminCouponServiceImpl couponService;
+    private AdminCouponOpenServiceImpl adminCouponOpenServiceImpl;
+    @Autowired
+    private CouponServiceImpl couponService;
+
     @Autowired
     private UserService userService;
 
@@ -103,7 +106,7 @@ public class CouponGrantServiceImpl extends AbsCommonService<CouponGrant, Intege
                 continue;
             }
             try {
-                Coupon coupon = couponService.generateCoupon(redeemCode, user.getId(), new Date(), null);
+                Coupon coupon = adminCouponOpenServiceImpl.generateCoupon(redeemCode, user.getId(), new Date(), null);
                 couponGrantUserService.create(coupon.getCouponNo(), couponGrant.getId(), user.getId(), null, true, null);
             } catch (CouponException e) {
                 String errorCause = "没有可用优惠券!";

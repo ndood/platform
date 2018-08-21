@@ -59,16 +59,7 @@ public interface CouponService extends ICommonService<Coupon, Integer> {
      */
     int updateCouponUseStatus(String orderNo, String userIp, Coupon coupon);
 
-    /**
-     * 通过优惠券兑换码发放优惠券
-     *
-     * @param redeemCode
-     * @param userId
-     * @param receiveTime
-     * @param receiveIp
-     * @return
-     */
-    Coupon generateCoupon(String redeemCode, Integer userId, Date receiveTime, String receiveIp);
+
 
     /**
      * 查询用户优惠券数量

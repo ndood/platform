@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.fulu.game.common.Constant;
 import com.fulu.game.core.dao.ICommonDao;
@@ -15,14 +16,13 @@ import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.UserAutoReceiveOrderService;
 import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.UserTechAuthService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
-import cn.hutool.core.collection.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -33,8 +33,9 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
 
     @Autowired
     private UserAutoReceiveOrderDao userAutoReceiveOrderDao;
+    @Qualifier(value = "userTechAuthServiceImpl")
     @Autowired
-    private UserTechAuthService userTechAuthService;
+    private UserTechAuthServiceImpl userTechAuthService;
     @Autowired
     private AdminService adminService;
     @Autowired
