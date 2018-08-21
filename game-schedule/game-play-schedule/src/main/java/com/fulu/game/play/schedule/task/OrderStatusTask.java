@@ -2,8 +2,9 @@ package com.fulu.game.play.schedule.task;
 
 import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.core.entity.Order;
+import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.OrderStatusDetailsService;
-import com.fulu.game.core.service.impl.order.ScheduleOrderServiceImpl;
+import com.fulu.game.h5.service.impl.ScheduleOrderServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,7 +17,9 @@ import java.util.List;
 public class OrderStatusTask {
 
     @Autowired
-    private ScheduleOrderServiceImpl orderService;
+    private ScheduleOrderServiceImpl scheduleOrderServiceImpl;
+    @Autowired
+    private OrderService orderService;
 
     @Autowired
     private OrderStatusDetailsService orderStatusDetailsService;
@@ -35,7 +38,7 @@ public class OrderStatusTask {
             log.info("订单倒计时orderNo:{};countDown:{}", order.getOrderNo(), countDown);
             if (countDown <= 0) {
                 log.info("订单超时时间到order:{}:", order);
-                orderService.systemCancelOrder(order.getOrderNo());
+                scheduleOrderServiceImpl.systemCancelOrder(order.getOrderNo());
             }
         }
     }
@@ -53,7 +56,7 @@ public class OrderStatusTask {
             log.info("订单倒计时orderNo:{};countDown:{}", order.getOrderNo(), countDown);
             if (countDown <= 0) {
                 log.info("订单完成时间到order:{}:", order);
-                orderService.systemCompleteOrder(order.getOrderNo());
+                scheduleOrderServiceImpl.systemCompleteOrder(order.getOrderNo());
             }
         }
     }
@@ -71,7 +74,7 @@ public class OrderStatusTask {
             log.info("订单超时时间到order:{}:", order);
             if (countDown <= 0) {
                 log.info("系统自动取消协商订单order:{}:", order);
-                orderService.systemConsultCancelOrder(order.getOrderNo());
+                scheduleOrderServiceImpl.systemConsultCancelOrder(order.getOrderNo());
             }
         }
     }
@@ -89,7 +92,7 @@ public class OrderStatusTask {
             log.info("订单超时时间到order:{}:", order);
             if (countDown <= 0) {
                 log.info("系统自动取消协商订单order:{}:", order);
-                orderService.systemConsultAgreeOrder(order.getOrderNo());
+                scheduleOrderServiceImpl.systemConsultAgreeOrder(order.getOrderNo());
             }
         }
     }

@@ -11,6 +11,7 @@ import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.impl.UserInfoAuthServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -43,7 +44,7 @@ public class UserController extends BaseController {
 
     private ImService imService;
 
-    private UserInfoAuthService userInfoAuthService;
+    private UserInfoAuthServiceImpl userInfoAuthService;
 
     private ProductService productService;
 
@@ -53,7 +54,7 @@ public class UserController extends BaseController {
                           UserService userService,
                           OssUtil ossUtil,
                           ImService imService,
-                          UserInfoAuthService userInfoAuthService,
+                          UserInfoAuthServiceImpl userInfoAuthService,
                           ProductService productService) {
         this.commentService = commentService;
         this.adviceService = adviceService;

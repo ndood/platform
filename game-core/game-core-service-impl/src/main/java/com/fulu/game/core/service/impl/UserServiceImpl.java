@@ -16,7 +16,6 @@ import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
-import com.fulu.game.core.service.impl.coupon.DefaultCouponServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import cn.hutool.core.date.DateUtil;
@@ -40,8 +39,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     private UserDao userDao;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Qualifier(value = "userInfoAuthServiceImpl")
     @Autowired
-    private UserInfoAuthService userInfoAuthService;
+    private UserInfoAuthServiceImpl userInfoAuthService;
     @Autowired
     private SharingService sharingService;
     @Autowired
@@ -55,11 +55,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Autowired
     private CouponGroupService couponGroupService;
 
-    @Autowired
-    private DefaultCouponServiceImpl couponService;
 
-    @Autowired
-    private SpringThreadPoolExecutor springThreadPoolExecutor;
 
     @Override
     public ICommonDao<User, Integer> getDao() {
@@ -570,38 +566,12 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             updateRedisUser(user);
             log.info("判断存在上分的用户信息，更新user:{}", user);
 
-            //新线程发放优惠券（避免事务问题：当前方法的事务和优惠券发放的事务，因为都涉及到t_user表的操作，可能造成数据库死锁）
-            springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
-                @Override
-                public void run() {
-                    generateCouponForNewPointUser(user, ipStr);
-                }
-            });
 
             user.setCoupouStatus(Constant.SEND_COUPOU_SUCCESS);
             return user;
         }
     }
 
-    /**
-     * 发放优惠券
-     *
-     * @param user  用户Bean
-     * @param ipStr 用户ip
-     * @return 是否发放成功
-     */
-    private boolean generateCouponForNewPointUser(User user, String ipStr) {
-        if (user == null) {
-            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
-        }
-
-        Coupon coupon = couponService.generateCoupon(Constant.NEW_POINT_USER_COUPON_GROUP_REDEEM_CODE,
-                user.getId(), DateUtil.date(), ipStr);
-        if (coupon == null) {
-            throw new ServiceErrorException("发放优惠券失败！");
-        }
-        return true;
-    }
 
     @Override
     public List<UserVO> findVOByUserIds(List<Integer> userIds) {

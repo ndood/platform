@@ -1,9 +1,7 @@
 package com.fulu.game.core.service.impl;
 
-import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
-import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.utils.CollectionUtil;
@@ -18,7 +16,6 @@ import com.fulu.game.core.entity.vo.TechValueVO;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
 import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
 import com.fulu.game.core.service.*;
-import com.fulu.game.core.service.impl.push.AdminPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import cn.hutool.core.bean.BeanUtil;
@@ -52,15 +49,12 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     @Autowired
     private UserService userService;
     @Autowired
-    private AdminService adminService;
-    @Autowired
     private ProductService productService;
     @Autowired
     private OssUtil ossUtil;
     @Autowired
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
-    @Autowired
-    private AdminPushServiceImpl adminPushService;
+
 
     @Override
     public ICommonDao<UserTechAuth, Integer> getDao() {
@@ -116,103 +110,6 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
 
-
-
-
-    @Override
-    public UserTechAuth reject(Integer id, String reason) {
-        Admin admin = adminService.getCurrentUser();
-        log.info("驳回技能认证信息:adminId:{};adminName:{};authInfoId:{},reason:{}",admin.getId(),admin.getName(),id,reason);
-        UserTechAuth userTechAuth = findById(id);
-        if(userTechAuth.getStatus().equals(TechAuthStatusEnum.FREEZE.getType())){
-            throw new  UserAuthException(UserAuthException.ExceptionCode.USER_TECH_FREEZE);
-        }
-        //重置技能好友认证状态
-        userTechAuth.setStatus(TechAuthStatusEnum.NO_AUTHENTICATION.getType());
-        userTechAuth.setUpdateTime(new Date());
-        update(userTechAuth);
-        //添加拒绝原因
-        UserTechAuthReject userTechAuthReject = new UserTechAuthReject();
-        userTechAuthReject.setReason(reason);
-        userTechAuthReject.setUserTechAuthId(userTechAuth.getStatus());
-        userTechAuthReject.setUserId(userTechAuth.getUserId());
-        userTechAuthReject.setUserTechAuthId(id);
-        userTechAuthReject.setUserTechAuthStatus(userTechAuth.getStatus());
-        userTechAuthReject.setAdminId(admin.getId());
-        userTechAuthReject.setAdminName(admin.getName());
-        userTechAuthReject.setCreateTime(new Date());
-        userTechAuthRejectService.create(userTechAuthReject);
-        //给用户推送通知
-        adminPushService.techAuthAuditFail(userTechAuth.getUserId(),reason);
-
-        //同步下架用户该技能商品
-        productService.disabledProductByTech(userTechAuth.getId());
-
-        return userTechAuth;
-    }
-
-
-    @Override
-    public UserTechAuth pass(Integer id) {
-        try {
-            Admin admin = adminService.getCurrentUser();
-            log.info("技能审核通过:管理员操作:adminId:{};adminName:{};authInfoId:{}",admin.getId(),admin.getName(),id);
-        }catch (Exception e){
-            log.info("技能审核通过:用户好友操作:authInfoId:{}",id);
-        }
-        UserTechAuth userTechAuth = findById(id);
-        if(userTechAuth.getStatus().equals(TechAuthStatusEnum.FREEZE.getType())){
-            throw new  UserAuthException(UserAuthException.ExceptionCode.USER_TECH_FREEZE);
-        }
-        userTechAuth.setStatus(TechAuthStatusEnum.NORMAL.getType());
-        update(userTechAuth);
-        //给用户推送通知
-        adminPushService.techAuthAuditSuccess(userTechAuth.getUserId());
-
-        //技能下商品置为正常
-        productService.recoverProductActivateByTechAuthId(userTechAuth.getId());
-        return userTechAuth;
-    }
-
-    @Override
-    public UserTechAuth freeze(Integer id, String reason) {
-        Admin admin = adminService.getCurrentUser();
-        log.info("冻结技能认证信息:adminId:{};adminName:{};authInfoId:{},reason:{}",admin.getId(),admin.getName(),id,reason);
-        //重置技能好友认证状态
-        UserTechAuth userTechAuth = findById(id);
-        //重置技能好友认证状态
-        userTechAuth.setStatus(TechAuthStatusEnum.FREEZE.getType());
-        userTechAuth.setUpdateTime(new Date());
-        update(userTechAuth);
-        //添加拒绝原因
-        UserTechAuthReject userTechAuthReject = new UserTechAuthReject();
-        userTechAuthReject.setReason(reason);
-        userTechAuthReject.setUserTechAuthId(userTechAuth.getStatus());
-        userTechAuthReject.setUserId(userTechAuth.getUserId());
-        userTechAuthReject.setUserTechAuthStatus(userTechAuth.getStatus());
-        userTechAuthReject.setUserTechAuthId(id);
-        userTechAuthReject.setAdminId(admin.getId());
-        userTechAuthReject.setAdminName(admin.getName());
-        userTechAuthReject.setCreateTime(new Date());
-        userTechAuthRejectService.create(userTechAuthReject);
-
-        //同步下架用户该技能商品
-        productService.disabledProductByTech(userTechAuth.getId());
-        return userTechAuth;
-    }
-
-    @Override
-    public UserTechAuth unFreeze(Integer id) {
-        Admin admin = adminService.getCurrentUser();
-        log.info("解冻技能认证信息:adminId:{};adminName:{};authInfoId:{}",admin.getId(),admin.getName(),id);
-        UserTechAuth userTechAuth = findById(id);
-        userTechAuth.setStatus(TechAuthStatusEnum.AUTHENTICATION_ING.getType());
-        update(userTechAuth);
-
-        //技能下商品置为正常
-        productService.recoverProductActivateByTechAuthId(userTechAuth.getId());
-        return userTechAuth;
-    }
 
     @Override
     public List<UserTechAuth> findByStatusAndUserId(int userId, Integer status) {

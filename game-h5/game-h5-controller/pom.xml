@@ -17,6 +17,7 @@
             <artifactId>game-h5-service-impl</artifactId>
             <version>${game.h5.service.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-spring</artifactId>

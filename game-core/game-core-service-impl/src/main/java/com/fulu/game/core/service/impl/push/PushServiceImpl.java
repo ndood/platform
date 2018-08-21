@@ -6,6 +6,7 @@ import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fulu.game.common.Constant;
+import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.common.enums.WechatTemplateIdEnum;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.entity.User;
@@ -14,7 +15,6 @@ import com.fulu.game.core.entity.vo.WechatFormidVO;
 import com.fulu.game.core.service.PushService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.WechatFormidService;
-import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.queue.PushMsgQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +25,7 @@ import java.util.*;
 
 @Service
 @Slf4j
-public abstract class PushServiceImpl implements PushService {
+public class PushServiceImpl implements PushService {
 
 
     @Autowired
@@ -162,6 +162,26 @@ public abstract class PushServiceImpl implements PushService {
                 }
             }
             return;
+        }
+    }
+
+    /**
+     * 管理员批量推送微信消息
+     * @param platform
+     * @param pushId
+     * @param userIds
+     * @param page
+     * @param cotent
+     */
+    public void adminPushWxTemplateMsg(int platform, int pushId, List<Integer> userIds, String page, String cotent) {
+        String date = DateUtil.format(new Date(), "yyyy年MM月dd日 HH:mm");
+        List<WxMaTemplateMessage.Data> dataList = CollectionUtil.newArrayList(
+                new WxMaTemplateMessage.Data("keyword1", cotent),
+                new WxMaTemplateMessage.Data("keyword2", date));
+        if (WechatEcoEnum.PLAY.getType().equals(platform)) {
+            addTemplateMsg2Queue(platform, pushId, userIds, page, WechatTemplateIdEnum.PLAY_LEAVE_MSG, dataList);
+        } else if (WechatEcoEnum.POINT.getType().equals(platform)) {
+            addTemplateMsg2Queue(platform, pushId, userIds, page, WechatTemplateIdEnum.POINT_LEAVE_MSG, dataList);
         }
     }
 

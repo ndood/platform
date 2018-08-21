@@ -17,6 +17,7 @@ import cn.hutool.core.bean.BeanUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -45,8 +46,9 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
     private OssUtil ossUtil;
     @Autowired
     private ProductService productService;
+    @Qualifier(value = "userTechAuthServiceImpl")
     @Autowired
-    private UserTechAuthService userTechAuthService;
+    private UserTechAuthServiceImpl userTechAuthService;
     @Override
     public ICommonDao<Category, Integer> getDao() {
         return categoryDao;

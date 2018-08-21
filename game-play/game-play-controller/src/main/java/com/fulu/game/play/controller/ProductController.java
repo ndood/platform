@@ -10,9 +10,10 @@ import com.fulu.game.core.entity.vo.ProductDetailsVO;
 import com.fulu.game.core.entity.vo.SimpleProductVO;
 import com.fulu.game.core.entity.vo.TechAuthProductVO;
 import com.fulu.game.core.service.MoneyDetailsService;
+import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.ProductService;
 import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.impl.order.PlayMiniAppOrderServiceImpl;
+import com.fulu.game.h5.service.impl.PlayMiniAppOrderServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,9 @@ public class ProductController extends BaseController {
     private MoneyDetailsService moneyDetailsService;
     @Qualifier("playMiniAppOrderServiceImpl")
     @Autowired
-    private PlayMiniAppOrderServiceImpl orderService;
+    private PlayMiniAppOrderServiceImpl playMiniAppOrderServiceImpl;
+    @Autowired
+    private OrderService orderService;
     @Autowired
     private UserService userService;
 
