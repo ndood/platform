@@ -27,11 +27,15 @@ import java.util.List;
 @Service
 public class FenqileOrderServiceImpl extends AbsCommonService<FenqileOrder, Integer> implements FenqileOrderService {
 
-    @Autowired
-    private FenqileOrderDao fenqileOrderDao;
-    @Autowired
-    private UserService userService;
+    private final FenqileOrderDao fenqileOrderDao;
+    private final UserService userService;
 
+    @Autowired
+    public FenqileOrderServiceImpl(FenqileOrderDao fenqileOrderDao,
+                                   UserService userService) {
+        this.fenqileOrderDao = fenqileOrderDao;
+        this.userService = userService;
+    }
 
     @Override
     public ICommonDao<FenqileOrder, Integer> getDao() {
@@ -85,13 +89,10 @@ public class FenqileOrderServiceImpl extends AbsCommonService<FenqileOrder, Inte
     @Override
     public FenqileOrderVO getTotalReconAmount(FenqileOrderSearchVO searchVO) {
         searchVO.setStatusList(OrderStatusGroupEnum.RECON_ALL.getStatusList());
-        FenqileOrderVO fenqileOrderVO = fenqileOrderDao.getTotalAmount(searchVO);
         FenqileOrderVO resultVO = fenqileOrderDao.getTotalReconAmount(searchVO);
-        if (fenqileOrderVO != null) {
-            resultVO.setTotalAmount(fenqileOrderVO.getTotalAmount() == null ? new BigDecimal(0) : fenqileOrderVO.getTotalAmount());
-        }
         resultVO.setUnReconTotalAmount(resultVO.getUnReconTotalAmount() == null ? new BigDecimal(0) : resultVO.getUnReconTotalAmount());
         resultVO.setUnReconCount(resultVO.getUnReconCount() == null ? 0 : resultVO.getUnReconCount());
+        resultVO.setTotalAmount(resultVO.getTotalAmount() == null ? new BigDecimal(0) : resultVO.getTotalAmount());
         return resultVO;
     }
 }
