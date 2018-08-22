@@ -84,7 +84,7 @@ public class AdminPushServiceImpl extends PushServiceImpl {
      * @param deduction
      */
     public void grantCouponMsg(int userId, String deduction) {
-        pushWechatTemplateMsg(WechatEcoEnum.PLAY.getType(), userId, WechatTemplateIdEnum.PLAY_LEAVE_MSG, WechatTemplateMsgEnum.ORDER_TOSERVICE_AFFIRM_SERVER.getPage().getPlayPagePath(), WechatTemplateMsgEnum.ORDER_TOSERVICE_AFFIRM_SERVER.getContent(), deduction);
+        pushWechatTemplateMsg(WechatEcoEnum.PLAY.getType(), userId, WechatTemplateIdEnum.PLAY_LEAVE_MSG, WechatTemplateMsgEnum.GRANT_COUPON.getPage().getPlayPagePath(), WechatTemplateMsgEnum.GRANT_COUPON.getContent(), deduction);
     }
 
     /**

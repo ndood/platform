@@ -163,7 +163,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param deduction
      */
     public void grantCouponMsg(int userId, String deduction) {
-        push(userId, WechatTemplateMsgEnum.ORDER_TOSERVICE_AFFIRM_SERVER, deduction);
+        push(userId, WechatTemplateMsgEnum.GRANT_COUPON, deduction);
     }
 
 
