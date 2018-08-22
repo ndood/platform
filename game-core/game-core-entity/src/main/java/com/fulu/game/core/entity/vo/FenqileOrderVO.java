@@ -143,7 +143,7 @@ public class FenqileOrderVO extends FenqileOrder {
      * 下单时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Excel(name = "下单时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "11", width = 15)
+    @Excel(name = "下单时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "11", width = 35)
     private Date createTime;
 
     /**
@@ -155,14 +155,14 @@ public class FenqileOrderVO extends FenqileOrder {
     /**
      * 对账状态（0：未对账（默认）；1：已对账）
      */
-    @Excel(name = "是否对账", orderNum = "14", replace = {"是_1", "否_0"}, width = 15)
+    @Excel(name = "是否对账", orderNum = "14", replace = {"是_1", "否_0", "_null"}, width = 15)
     private Integer reconStatus;
 
     /**
      * 对账时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Excel(name = "对账时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "15", width = 15)
+    @Excel(name = "对账时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "15", width = 35)
     private Date processTime;
 
     /**
