@@ -28,9 +28,10 @@ public class PlayMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
                         WechatTemplateMsgTypeEnum wechatTemplateMsgTypeEnum, String... replaces) {
         pushServiceProcessMsg(
                 WechatEcoEnum.PLAY.getType(),
+                userId,
                 order,
                 WechatTemplateIdEnum.PLAY_SERVICE_PROCESS_NOTICE,
-                WechatTemplateMsgEnum.TEMP_ORDER_TOUSER_REJECT_RECEIVE,
+                wechatTemplateMsgEnum,
                 replaces);
     }
 

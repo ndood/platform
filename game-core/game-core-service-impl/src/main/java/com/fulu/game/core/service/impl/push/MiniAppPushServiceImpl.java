@@ -31,7 +31,8 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void receiveOrder(Order order) {
-        push(order.getUserId(), WechatTemplateMsgEnum.ORDER_TOUSER_AFFIRM_RECEIVE);
+        push(order.getUserId(), order, WechatTemplateMsgEnum.ORDER_TOUSER_AFFIRM_RECEIVE,
+                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
     }
 
     /**
@@ -40,7 +41,8 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void remindReceive(Order order) {
-        push(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_RECEIVE);
+        push(order.getServiceUserId(), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_RECEIVE,
+                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
     }
 
     /**
@@ -49,7 +51,8 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void remindStart(Order order) {
-        push(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_START_SERVICE);
+        push(order.getServiceUserId(), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_START_SERVICE,
+                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
     }
 
 
@@ -60,7 +63,8 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @return
      */
     public void start(Order order) {
-        push(order.getUserId(), WechatTemplateMsgEnum.ORDER_TOUSER_START_SERVICE);
+        push(order.getUserId(), order, WechatTemplateMsgEnum.ORDER_TOUSER_START_SERVICE,
+                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
     }
 
 
@@ -70,7 +74,8 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void consult(Order order) {
-        push(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT);
+        push(order.getUserId(), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT,
+                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
     }
 
     /**
@@ -79,7 +84,8 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void rejectConsult(Order order) {
-        push(order.getUserId(), WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_REJECT);
+        push(order.getUserId(), order, WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_REJECT,
+                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
     }
 
     /**
@@ -88,7 +94,8 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void agreeConsult(Order order) {
-        push(order.getUserId(), WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE);
+        push(order.getUserId(), order, WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE,
+                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
     }
 
     /**
@@ -97,7 +104,8 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void cancelConsult(Order order) {
-        push(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL);
+        push(order.getUserId(), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL,
+                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
     }
 
     /**
@@ -106,9 +114,8 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void cancelOrderByServer(Order order) {
-        //fixme
-//        push(order.getUserId(), WechatTemplateMsgEnum.ORDER_TOUSER_REJECT_RECEIVE);
-        push(order.getUserId(), order, WechatTemplateMsgEnum.TEMP_ORDER_TOUSER_REJECT_RECEIVE, WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
+        push(order.getUserId(), order, WechatTemplateMsgEnum.ORDER_TOUSER_REJECT_RECEIVE,
+                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
     }
 
     /**
@@ -118,7 +125,8 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      */
     public void cancelOrderByUser(Order order) {
         if (order.getServiceUserId() != null) {
-            push(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_TOSERVICE_ORDER_CANCEL);
+            push(order.getServiceUserId(), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_ORDER_CANCEL,
+                    WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
         }
     }
 
@@ -128,7 +136,8 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void appealByServer(Order order) {
-        push(order.getUserId(), WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL);
+        push(order.getUserId(), order, WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL,
+                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
     }
 
     /**
@@ -137,7 +146,8 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void appealByUser(Order order) {
-        push(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL);
+        push(order.getServiceUserId(), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL,
+                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
     }
 
     /**
@@ -146,7 +156,8 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void checkOrder(Order order) {
-        push(order.getUserId(), WechatTemplateMsgEnum.ORDER_TOUSER_CHECK);
+        push(order.getUserId(), order, WechatTemplateMsgEnum.ORDER_TOUSER_CHECK,
+                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
     }
 
 
@@ -156,7 +167,8 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void acceptOrder(Order order) {
-        push(order.getUserId(), WechatTemplateMsgEnum.ORDER_TOSERVICE_AFFIRM_SERVER);
+        push(order.getUserId(), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_AFFIRM_SERVER,
+                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
     }
 
     /**

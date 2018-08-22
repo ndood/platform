@@ -22,7 +22,6 @@ import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.WechatFormidService;
 import com.fulu.game.core.service.queue.PushMsgQueue;
 import lombok.extern.slf4j.Slf4j;
-import me.chanjar.weixin.common.exception.WxErrorException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -79,21 +78,20 @@ public class PushServiceImpl implements PushService {
      * @param replaces
      * @return
      */
-    protected Boolean pushServiceProcessMsg(int platform,
-                                            Order order,
-                                            WechatTemplateIdEnum wechatTemplateIdEnum,
-                                            WechatTemplateMsgEnum wechatTemplateMsgEnum,
-                                            String... replaces) {
+    protected void pushServiceProcessMsg(int platform,
+                                         int userId,
+                                         Order order,
+                                         WechatTemplateIdEnum wechatTemplateIdEnum,
+                                         WechatTemplateMsgEnum wechatTemplateMsgEnum,
+                                         String... replaces) {
         String content = wechatTemplateMsgEnum.getContent();
         if (replaces != null && replaces.length > 0) {
             content = StrUtil.format(content, OrderStatusEnum.getMsgByStatus(order.getStatus()));
         }
         String date = DateUtil.format(DateUtil.date(), "yyyy年MM月dd日 HH:mm");
-        User user = userService.findById(order.getUserId());
-        WechatFormid formIdObj = findFormidVOByUserId(WechatEcoEnum.PLAY.getType(), user.getId());
-        if (user == null || formIdObj == null) {
-            log.error("user或者formId为null无法给用户推送消息user:{};content:{};formId:{}", user, content, formIdObj);
-            return null;
+        WechatFormid formIdObj = findFormidVOByUserId(WechatEcoEnum.PLAY.getType(), userId);
+        if (formIdObj == null) {
+            log.error("user或者formId为null无法给用户推送消息userId:{};content:{};formId:{}", userId, content, formIdObj);
         }
 
         String serviceUserNickName = "";
@@ -115,23 +113,25 @@ public class PushServiceImpl implements PushService {
                 new WxMaTemplateMessage.Data("keyword5", serviceUserNickName),
                 //备注（消息模板内容）
                 new WxMaTemplateMessage.Data("keyword6", content));
-        //fixme
-        WxMaTemplateMessage templateMessage = new WxMaTemplateMessage();
-        templateMessage.setTemplateId(wechatTemplateIdEnum.getTemplateId());
-        templateMessage.setToUser(formIdObj.getOpenId());
-        templateMessage.setPage(wechatTemplateMsgEnum.getPage().getPlayPagePath());
-        templateMessage.setFormId(formIdObj.getFormId());
-        templateMessage.setData(dataList);
-        //直接推，不走推送队列
-        try {
-            wxMaServiceSupply.playWxMaService().getMsgService().sendTemplateMsg(templateMessage);
-        } catch (WxErrorException e) {
-            log.error("微信推送挂了！");
-            e.printStackTrace();
-        }
-        return true;
-    }
 
+        addTemplateMsg2Queue(platform, null, Collections.singletonList(userId),
+                wechatTemplateMsgEnum.getPage().getPlayPagePath(), wechatTemplateIdEnum, dataList);
+
+        //FIXME
+//        WxMaTemplateMessage templateMessage = new WxMaTemplateMessage();
+//        templateMessage.setTemplateId(wechatTemplateIdEnum.getTemplateId());
+//        templateMessage.setToUser(formIdObj.getOpenId());
+//        templateMessage.setPage(wechatTemplateMsgEnum.getPage().getPlayPagePath());
+//        templateMessage.setFormId(formIdObj.getFormId());
+//        templateMessage.setData(dataList);
+//        //直接推，不走推送队列
+//        try {
+//            wxMaServiceSupply.playWxMaService().getMsgService().sendTemplateMsg(templateMessage);
+//        } catch (WxErrorException e) {
+//            log.error("微信推送挂了！");
+//            e.printStackTrace();
+//        }
+    }
 
     /**
      * 批量写入推送模板消息
