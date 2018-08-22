@@ -2,10 +2,8 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.util.ObjectUtil;
-import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ParamsException;
-import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
@@ -17,8 +15,6 @@ import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.fulu.game.core.service.*;
-import com.fulu.game.core.service.impl.order.DefaultOrderServiceImpl;
-import com.fulu.game.core.service.impl.push.AdminPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import cn.hutool.core.date.DateUtil;
@@ -39,8 +35,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     @Autowired
     private UserInfoAuthDao userInfoAuthDao;
-    @Autowired
-    private UserInfoAuthRejectService userInfoAuthRejectService;
+
     @Autowired
     private UserService userService;
     @Autowired
@@ -52,17 +47,13 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     @Autowired
     private TagService tagService;
     @Autowired
-    private DefaultOrderServiceImpl orderService;
+    private OrderService orderService;
+    @Qualifier(value = "userTechAuthServiceImpl")
     @Autowired
-    private UserTechAuthService userTechAuthService;
-    @Autowired
-    private AdminService adminService;
-    @Autowired
-    private ProductService productService;
+    private UserTechAuthServiceImpl userTechAuthService;
+
     @Autowired
     private OssUtil ossUtil;
-    @Autowired
-    private AdminPushServiceImpl adminPushService;
     @Autowired
     private UserInfoAuthFileTempDao userInfoAuthFileTempDao;
     @Autowired
@@ -145,98 +136,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
 
     /**
-     * 认证信息驳回
-     *
-     * @param id
-     * @param reason
-     * @return
-     */
-    @Override
-    public UserInfoAuth reject(int id, String reason) {
-        Admin admin = adminService.getCurrentUser();
-        log.info("驳回用户个人认证信息:adminId:{};adminName:{};authInfoId:{},reason:{}", admin.getId(), admin.getName(), id, reason);
-        //修改认证驳回状态
-        UserInfoAuth userInfoAuth = findById(id);
-        if (userInfoAuth == null) {
-            throw new UserAuthException(UserAuthException.ExceptionCode.NOT_EXIST_USER_AUTH);
-        }
-
-        userInfoAuth.setIsRejectSubmit(true);
-        update(userInfoAuth);
-        //修改用户表认证状态信息
-        User user = userService.findById(userInfoAuth.getUserId());
-        //如果是用户冻结状态给错误提示
-        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
-            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE_ADMIN);
-        }
-        user.setUserInfoAuth(UserInfoAuthStatusEnum.NOT_PERFECT.getType());
-        user.setUpdateTime(new Date());
-        userService.update(user);
-        //添加驳回理由
-        UserInfoAuthReject userInfoAuthReject = new UserInfoAuthReject();
-        userInfoAuthReject.setReason(reason);
-        userInfoAuthReject.setUserInfoAuthStatus(user.getUserInfoAuth());
-        userInfoAuthReject.setUserId(userInfoAuth.getUserId());
-        userInfoAuthReject.setAdminId(admin.getId());
-        userInfoAuthReject.setAdminName(admin.getName());
-        userInfoAuthReject.setUserInfoAuthId(id);
-        userInfoAuthReject.setCreateTime(new Date());
-        userInfoAuthRejectService.create(userInfoAuthReject);
-        //同步下架用户该技能商品
-//        productService.disabledProductByUser(userInfoAuth.getUserId());
-        adminPushService.userInfoAuthFail(user.getId(),reason);
-        return userInfoAuth;
-    }
-
-    /**
-     * 技能审核通过
-     *
-     * @param id
-     * @return
-     */
-    @Override
-    public UserInfoAuth pass(int id) {
-        Admin admin = adminService.getCurrentUser();
-        log.info("清除用户认证信息驳回状态:adminId:{};adminName:{};authInfoId:{}", admin.getId(), admin.getName(), id);
-        UserInfoAuth userInfoAuth = findById(id);
-        userInfoAuth.setIsRejectSubmit(false);
-        update(userInfoAuth);
-        //修改用户表认证状态信息
-        User user = userService.findById(userInfoAuth.getUserId());
-        //如果是用户冻结状态给错误提示
-        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
-            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE_ADMIN);
-        }
-        user.setUserInfoAuth(UserInfoAuthStatusEnum.VERIFIED.getType());
-        user.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
-        userService.update(user);
-
-        Integer userId = userInfoAuth.getUserId();
-        UserInfoAuthFileTempVO tempVO = new UserInfoAuthFileTempVO();
-        tempVO.setUserId(userId);
-        List<UserInfoAuthFileTemp> fileTempList = userInfoAuthFileTempDao.findByParameter(tempVO);
-        if (CollectionUtil.isNotEmpty(fileTempList)) {
-            //更新主图
-            for (UserInfoAuthFileTemp fileTemp : fileTempList) {
-                Integer type = fileTemp.getType();
-                if (type.equals(FileTypeEnum.MAIN_PIC.getType())) {
-                    UserInfoAuth infoAuth = new UserInfoAuth();
-                    infoAuth.setId(id);
-                    infoAuth.setUserId(userId);
-                    infoAuth.setMainPicUrl(fileTemp.getUrl());
-                    userInfoAuthDao.update(infoAuth);
-                }
-            }
-            deleteTempFileAndUpdateOrg(userId);
-            userInfoAuthFileTempDao.deleteByUserId(userId);
-        }
-
-        //给用户推送通知
-        adminPushService.userInfoAuthSuccess(userId);
-        return userInfoAuth;
-    }
-
-    /**
      * 根据用户id，将临时表的文件更新到主表中，并且删除临时表的数据
      *
      * @param userId 用户id
@@ -262,62 +161,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
         createAndActivateUserAuthPortrait(portraitUrls, auth.getId());
         createAndActivateUserAuthVoice(voiceFileTemp, auth.getId());
-    }
-
-    /**
-     * 认证信息冻结
-     *
-     * @param id
-     * @param reason
-     * @return
-     */
-    @Override
-    public UserInfoAuth freeze(int id, String reason) {
-        Admin admin = adminService.getCurrentUser();
-        log.info("冻结用户个人认证信息:adminId:{};adminName:{};authInfoId:{},reason:{}", admin.getId(), admin.getName(), id, reason);
-        UserInfoAuth userInfoAuth = findById(id);
-        if (userInfoAuth == null) {
-            throw new UserAuthException(UserAuthException.ExceptionCode.NOT_EXIST_USER_AUTH);
-        }
-        //修改用户表认证状态信息
-        User user = userService.findById(userInfoAuth.getUserId());
-        user.setUserInfoAuth(UserInfoAuthStatusEnum.FREEZE.getType());
-        user.setUpdateTime(new Date());
-        userService.update(user);
-
-        //添加驳回理由
-        UserInfoAuthReject userInfoAuthReject = new UserInfoAuthReject();
-        userInfoAuthReject.setReason(reason);
-        userInfoAuthReject.setUserInfoAuthStatus(user.getUserInfoAuth());
-        userInfoAuthReject.setUserId(userInfoAuth.getUserId());
-        userInfoAuthReject.setUserInfoAuthId(id);
-        userInfoAuthReject.setAdminId(admin.getId());
-        userInfoAuthReject.setAdminName(admin.getName());
-        userInfoAuthReject.setCreateTime(new Date());
-        userInfoAuthRejectService.create(userInfoAuthReject);
-
-        //下架该用户上传的所有商品
-        productService.disabledProductByUser(userInfoAuth.getUserId());
-        return userInfoAuth;
-    }
-
-    @Override
-    public UserInfoAuth unFreeze(int id) {
-        Admin admin = adminService.getCurrentUser();
-        log.info("解冻用户个人认证信息:adminId:{};adminName:{};authInfoId:{};", admin.getId(), admin.getName(), id);
-        UserInfoAuth userInfoAuth = findById(id);
-        //修改用户表认证状态信息
-        User user = userService.findById(userInfoAuth.getUserId());
-        user.setUserInfoAuth(UserInfoAuthStatusEnum.VERIFIED.getType());
-        user.setUpdateTime(new Date());
-        userService.update(user);
-        //同步恢复用户正确技能的商品状态
-        List<UserTechAuth> userTechAuthList = userTechAuthService.findUserNormalTechs(userInfoAuth.getUserId());
-        for (UserTechAuth userTechAuth : userTechAuthList) {
-            productService.recoverProductActivateByTechAuthId(userTechAuth.getId());
-        }
-
-        return userInfoAuth;
     }
 
 
@@ -709,25 +552,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         return false;
     }
 
-    /**
-     * 添加用户身份文件
-     *
-     * @param userId
-     * @param idCardHeadUrl
-     * @param idCardEmblemUrl
-     * @param idCardHandUrl
-     */
-    public void createUserIdCard(Integer userId, String idCardHeadUrl, String idCardEmblemUrl, String idCardHandUrl) {
-        if (idCardHeadUrl != null) {
-            createUserInfoFile(userId, idCardHeadUrl, UserInfoFileTypeEnum.IDCARD_HEAD.getMsg(), UserInfoFileTypeEnum.IDCARD_HEAD.getType());
-        }
-        if (idCardEmblemUrl != null) {
-            createUserInfoFile(userId, idCardEmblemUrl, UserInfoFileTypeEnum.IDCARD_EMBLEM.getMsg(), UserInfoFileTypeEnum.IDCARD_EMBLEM.getType());
-        }
-        if (idCardHandUrl != null) {
-            createUserInfoFile(userId, idCardHandUrl, UserInfoFileTypeEnum.IDCARD_HAND.getMsg(), UserInfoFileTypeEnum.IDCARD_HAND.getType());
-        }
-    }
 
 
     private void createUserInfoFile(Integer userId, String fileUrl, String name, Integer type) {

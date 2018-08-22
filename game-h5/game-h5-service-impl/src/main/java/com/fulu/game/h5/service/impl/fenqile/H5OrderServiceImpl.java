@@ -1,7 +1,10 @@
 package com.fulu.game.h5.service.impl.fenqile;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.fulu.game.common.enums.*;
+import com.fulu.game.common.enums.OrderStatusEnum;
+import com.fulu.game.common.enums.OrderStatusGroupEnum;
+import com.fulu.game.common.enums.OrderTypeEnum;
+import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.utils.SMSUtil;
@@ -9,10 +12,8 @@ import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.service.*;
-import com.fulu.game.core.service.impl.OrderServiceImpl;
-import com.fulu.game.core.service.impl.coupon.H5CouponServiceImpl;
+import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
-import com.fulu.game.core.service.impl.push.PlayMiniAppPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -27,20 +28,20 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class H5OrderServiceImpl extends OrderServiceImpl {
+public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
 
     private final UserService userService;
     private final ProductService productService;
     private final CategoryService categoryService;
     private final UserContactService userContactService;
     private final OrderProductService orderProductService;
-    private final H5CouponServiceImpl couponService;
     private final OrderStatusDetailsService orderStatusDetailsService;
     private final OrderDao orderDao;
     private final UserCommentService userCommentService;
     private final H5PushServiceImpl h5PushService;
-
     private final H5OrderShareProfitServiceImpl h5OrderShareProfitService;
+    private final OrderService orderService;
+    private final CouponService couponService;
 
     @Autowired
     public H5OrderServiceImpl(UserService userService,
@@ -48,23 +49,25 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
                               CategoryService categoryService,
                               UserContactService userContactService,
                               OrderProductService orderProductService,
-                              H5CouponServiceImpl couponService,
                               OrderStatusDetailsService orderStatusDetailsService,
                               OrderDao orderDao,
+                              CouponService couponService,
                               UserCommentService userCommentService,
                               H5PushServiceImpl h5PushService,
-                              H5OrderShareProfitServiceImpl h5OrderShareProfitService) {
+                              H5OrderShareProfitServiceImpl h5OrderShareProfitService,
+                              OrderService orderService) {
         this.userService = userService;
         this.productService = productService;
         this.categoryService = categoryService;
         this.userContactService = userContactService;
         this.orderProductService = orderProductService;
-        this.couponService = couponService;
         this.orderStatusDetailsService = orderStatusDetailsService;
         this.orderDao = orderDao;
         this.userCommentService = userCommentService;
+        this.couponService = couponService;
         this.h5PushService = h5PushService;
         this.h5OrderShareProfitService = h5OrderShareProfitService;
+        this.orderService=orderService;
     }
 
 
@@ -86,7 +89,7 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
 
     @Override
     protected void shareProfit(Order order) {
-
+        h5OrderShareProfitService.shareProfit(order);
     }
 
     @Override
@@ -137,7 +140,7 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
             throw new ServiceErrorException("不能给自己下单哦!");
         }
         //创建订单
-        create(order);
+        orderService.create(order);
 
         //保存联系方式
         userContactService.save(user.getId(), order.getContactType(), order.getContactInfo());
@@ -152,7 +155,6 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
         return order.getOrderNo();
     }
-
 
 
     public PageInfo<OrderDetailsVO> list(int pageNum, int pageSize) {
@@ -175,6 +177,7 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
 
     /**
      * 获取订单详情
+     *
      * @param orderNo
      * @return
      */
@@ -182,7 +185,7 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
         OrderDetailsVO orderDetailsVO = new OrderDetailsVO();
 
         User currentUser = userService.getCurrentUser();
-        Order order = findByOrderNo(orderNo);
+        Order order = orderService.findByOrderNo(orderNo);
         if (currentUser.getId().equals(order.getUserId())) {
             orderDetailsVO.setIdentity(UserTypeEnum.GENERAL_USER.getType());
         } else if (order.getServiceUserId().equals(currentUser.getId())) {
@@ -226,7 +229,6 @@ public class H5OrderServiceImpl extends OrderServiceImpl {
         }
         return orderDetailsVO;
     }
-
 
 
 }

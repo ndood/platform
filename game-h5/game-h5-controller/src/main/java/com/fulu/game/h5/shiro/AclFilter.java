@@ -45,7 +45,11 @@ public class AclFilter extends AccessControlFilter {
      */
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
+
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+        if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
+            return true;
+        }
         String token = httpRequest.getHeader("token");
         log.info("head中的token:{}", token);
         // 没有登录授权 且没有记住我
@@ -55,6 +59,7 @@ public class AclFilter extends AccessControlFilter {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             httpResponse.setCharacterEncoding("UTF-8");
             httpResponse.setContentType("application/json; charset=utf-8");
+            httpResponse.setHeader("Access-Control-Allow-Origin", "*");
             PrintWriter out = null;
             try {
                 out = httpResponse.getWriter();

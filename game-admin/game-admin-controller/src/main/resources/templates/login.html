@@ -18,14 +18,14 @@
 <script>
 
     $("#login").click(function(){
-
-        var username = $("#username").val();
-        var password = $("#password").val();
-
+        var c= ["a","b"];
         $.ajax({
-            url: "http://t-api-h5.wzpeilian.com/api/v1/category/all",
+            url: "http://10.0.2.47:8083/api/v1/order/user/consult",
             type: "POST",
-            data: {username:username,password:password},
+            beforeSend: function(request) {
+                request.setRequestHeader("token", "d1b5ac5066bc4e21a378bbde2e685886");
+            },
+            data: {fileUrl:JSON.stringify(c),orderNo:"dd"},
             dataType: "json",
             success: function (result) {
                 console.log(result)

@@ -11,6 +11,7 @@ import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.impl.UserInfoAuthServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -43,7 +44,7 @@ public class UserController extends BaseController {
 
     private ImService imService;
 
-    private UserInfoAuthService userInfoAuthService;
+    private UserInfoAuthServiceImpl userInfoAuthService;
 
     private ProductService productService;
 
@@ -53,7 +54,7 @@ public class UserController extends BaseController {
                           UserService userService,
                           OssUtil ossUtil,
                           ImService imService,
-                          UserInfoAuthService userInfoAuthService,
+                          UserInfoAuthServiceImpl userInfoAuthService,
                           ProductService productService) {
         this.commentService = commentService;
         this.adviceService = adviceService;
@@ -83,8 +84,9 @@ public class UserController extends BaseController {
 
     /**
      * 提交建议
-     * @param content 建议内容
-     * @param contact 联系方式【电话或者QQ】
+     *
+     * @param content       建议内容
+     * @param contact       联系方式【电话或者QQ】
      * @param advicePicUrls 建议截图
      * @return
      */
@@ -135,7 +137,6 @@ public class UserController extends BaseController {
         user.setRealname(null);
         return Result.success().data(user).msg("个人信息设置成功！");
     }
-
 
 
     @PostMapping("/im/save")
@@ -218,5 +219,14 @@ public class UserController extends BaseController {
         return Result.success().data(userInfoVO).msg("查询聊天对象信息成功！");
     }
 
-
+    /**
+     * 用户-添加评价
+     *
+     * @return
+     */
+    @RequestMapping("/comment/save")
+    public Result save(UserCommentVO commentVO) {
+        commentService.save(commentVO);
+        return Result.success().msg("添加成功！");
+    }
 }

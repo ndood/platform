@@ -6,6 +6,7 @@ import com.fulu.game.common.enums.PointTypeEnum;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.GradingPriceVO;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.impl.UserInfoAuthServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +35,7 @@ public class GradingInfoController extends BaseController {
     @Autowired
     private CategoryService categoryService;
     @Autowired
-    private UserInfoAuthService userInfoAuthService;
+    private UserInfoAuthServiceImpl userInfoAuthService;
 
 
     /**

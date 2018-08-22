@@ -146,4 +146,9 @@ public class FenqileOrderVO extends FenqileOrder {
      * 分期乐平台佣金
      */
     private BigDecimal fenqileCommissionMoney;
+
+    /**
+     * 订单状态位（文字描述）
+     */
+    private String statusStr;
 }

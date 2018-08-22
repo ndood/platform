@@ -46,12 +46,12 @@ public enum UserScoreEnum {
     /**
      * 用户正常完成订单
      */
-    USER_FINISH_ORDER(Constant.USER_FINISH_ORDER, -1),
+    USER_FINISH_ORDER(Constant.USER_FINISH_ORDER, 1),
 
     /**
      * 陪玩师正常完成订单
      */
-    SERVICE_USER_FINISH_ORDER(Constant.SERVICE_USER_FINISH_ORDER, -1),
+    SERVICE_USER_FINISH_ORDER(Constant.SERVICE_USER_FINISH_ORDER, 1),
 
     /**
      * 用户取消订单

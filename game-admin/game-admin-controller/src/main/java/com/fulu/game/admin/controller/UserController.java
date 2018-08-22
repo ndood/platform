@@ -3,6 +3,8 @@ package com.fulu.game.admin.controller;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
+import com.fulu.game.admin.service.AdminUserInfoAuthService;
+import com.fulu.game.admin.service.AdminUserTechAuthService;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.utils.CollectionUtil;
@@ -40,7 +42,7 @@ import java.util.Map;
 public class UserController extends BaseController {
 
     @Autowired
-    private UserInfoAuthService userInfoAuthService;
+    private AdminUserInfoAuthService userInfoAuthService;
     @Autowired
     private UserService userService;
     @Autowired
@@ -48,7 +50,7 @@ public class UserController extends BaseController {
     @Autowired
     private UserInfoAuthFileService userInfoAuthFileService;
     @Autowired
-    private UserTechAuthService userTechAuthService;
+    private AdminUserTechAuthService userTechAuthService;
     @Autowired
     private UserInfoAuthRejectService userInfoAuthRejectService;
     @Autowired

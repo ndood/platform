@@ -13,7 +13,7 @@ import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.SettingService;
 import com.fulu.game.core.service.UserAutoReceiveOrderService;
-import com.fulu.game.core.service.impl.order.AdminOrderServiceImpl;
+import com.fulu.game.admin.service.impl.AdminOrderServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;

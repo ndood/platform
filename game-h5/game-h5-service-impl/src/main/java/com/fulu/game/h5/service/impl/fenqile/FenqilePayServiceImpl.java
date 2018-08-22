@@ -11,14 +11,14 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 
 @Service
-public class FenqilePayServiceImpl extends PayServiceImpl<FenqileOrderNotice>{
+public class FenqilePayServiceImpl extends PayServiceImpl<FenqileOrderNotice> {
 
     @Autowired
     private H5OrderServiceImpl h5OrderService;
 
     @Override
     protected void payOrder(String orderNo, BigDecimal actualMoney) {
-        h5OrderService.payOrder(orderNo,actualMoney);
+        h5OrderService.payOrder(orderNo, actualMoney);
     }
 
     @Override

@@ -15,4 +15,6 @@ import java.util.List;
 public interface OrderShareProfitDao extends ICommonDao<OrderShareProfit, Integer> {
 
     List<OrderShareProfit> findByParameter(OrderShareProfitVO orderShareProfitVO);
+
+    OrderShareProfit findByOrderNo(String orderNo);
 }

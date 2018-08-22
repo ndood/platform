@@ -1,14 +1,12 @@
 package com.fulu.game.h5.service.impl.fenqile;
 
-import com.fulu.game.common.enums.OrderTypeEnum;
 import com.fulu.game.common.enums.PlatFormMoneyTypeEnum;
-import com.fulu.game.core.dao.ArbitrationDetailsDao;
-import com.fulu.game.core.dao.OrderShareProfitDao;
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderShareProfit;
-import com.fulu.game.core.entity.PilotOrder;
-import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.CategoryService;
+import com.fulu.game.core.service.MoneyDetailsService;
+import com.fulu.game.core.service.PlatformMoneyDetailsService;
 import com.fulu.game.core.service.impl.OrderShareProfitServiceImpl;
 import com.github.binarywang.wxpay.exception.WxPayException;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +63,7 @@ public class H5OrderShareProfitServiceImpl extends OrderShareProfitServiceImpl {
 
 
     @Override
-    protected <T> T refund(Order order, BigDecimal actualMoney, BigDecimal refundUserMoney) throws WxPayException {
+    public  <T> T refund(Order order, BigDecimal actualMoney, BigDecimal refundUserMoney) throws WxPayException {
         return null;
     }
 }

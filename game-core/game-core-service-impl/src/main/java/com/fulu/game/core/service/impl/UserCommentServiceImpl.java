@@ -10,10 +10,10 @@ import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserComment;
 import com.fulu.game.core.entity.vo.UserCommentVO;
+import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.UserCommentService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.aop.UserScore;
-import com.fulu.game.core.service.impl.order.DefaultOrderServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
     @Autowired
     private UserCommentDao commentDao;
     @Autowired
-    private DefaultOrderServiceImpl orderService;
+    private OrderService orderService;
     @Autowired
     private UserService userService;
 

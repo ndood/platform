@@ -156,11 +156,11 @@
         t_fenqile_recon_record
         <where>
             <if test="processStartTime != null">
-                process_time &gt;= #{processStartTime}
+                and process_time &gt;= #{processStartTime}
             </if>
 
             <if test="processEndTime != null">
-                process_time &lt;= #{processEndTime}
+                and process_time &lt;= #{processEndTime}
             </if>
         </where>
     </select>

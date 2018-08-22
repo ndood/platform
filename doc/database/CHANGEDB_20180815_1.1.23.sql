@@ -56,3 +56,6 @@ CREATE TABLE `t_thirdparty_user` (
   UNIQUE KEY `user_id` (`user_id`),
   UNIQUE KEY `fql_openid` (`fql_openid`)
 ) COMMENT='第三方用户信息';
+
+--添加订单支付字段
+ALTER TABLE `t_order` ADD COLUMN `payment` tinyint(1)  DEFAULT NULL COMMENT '支付方式(1微信支付，3分期乐支付)' after `is_pay_callback`;

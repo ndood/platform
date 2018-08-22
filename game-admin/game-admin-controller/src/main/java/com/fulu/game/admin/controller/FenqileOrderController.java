@@ -1,9 +1,12 @@
 package com.fulu.game.admin.controller;
 
 import com.fulu.game.common.Result;
-import com.fulu.game.core.entity.FenqileReconRecord;
 import com.fulu.game.core.entity.vo.FenqileOrderVO;
+import com.fulu.game.core.entity.vo.FenqileReconRecordVO;
 import com.fulu.game.core.entity.vo.searchVO.FenqileOrderSearchVO;
+import com.fulu.game.core.service.FenqileOrderService;
+import com.fulu.game.core.service.FenqileReconRecordService;
+import com.fulu.game.core.service.FenqileReconciliationService;
 import com.fulu.game.core.service.impl.FenqileOrderServiceImpl;
 import com.fulu.game.core.service.impl.FenqileReconRecordServiceImpl;
 import com.fulu.game.core.service.impl.FenqileReconciliationServiceImpl;
@@ -26,9 +29,9 @@ import java.util.Date;
 @RestController
 @RequestMapping("/api/v1/fenqile/order")
 public class FenqileOrderController extends BaseController {
-    private final FenqileOrderServiceImpl fenqileOrderService;
-    private final FenqileReconciliationServiceImpl fenqileReconciliationService;
-    private final FenqileReconRecordServiceImpl fenqileReconRecordService;
+    private final FenqileOrderService fenqileOrderService;
+    private final FenqileReconciliationService fenqileReconciliationService;
+    private final FenqileReconRecordService fenqileReconRecordService;
 
     @Autowired
     public FenqileOrderController(FenqileOrderServiceImpl fenqileOrderService,
@@ -52,7 +55,7 @@ public class FenqileOrderController extends BaseController {
                        @RequestParam Integer pageSize,
                        String orderBy,
                        FenqileOrderSearchVO searchVO) {
-        PageInfo pageInfo = fenqileOrderService.list(pageNum, pageSize, orderBy, searchVO);
+        PageInfo<FenqileOrderVO> pageInfo = fenqileOrderService.list(pageNum, pageSize, orderBy, searchVO);
         return Result.success().data(pageInfo).msg("查询列表成功！");
     }
 
@@ -100,7 +103,7 @@ public class FenqileOrderController extends BaseController {
                               @RequestParam Integer pageSize,
                               Date startTime,
                               Date endTime) {
-        PageInfo<FenqileReconRecord> pageInfo = fenqileReconRecordService.reconRecord(pageNum, pageSize, startTime, endTime);
+        PageInfo<FenqileReconRecordVO> pageInfo = fenqileReconRecordService.reconRecord(pageNum, pageSize, startTime, endTime);
         return Result.success().data(pageInfo).msg("查询成功！");
     }
 }

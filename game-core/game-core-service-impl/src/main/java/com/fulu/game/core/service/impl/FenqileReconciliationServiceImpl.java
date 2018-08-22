@@ -13,7 +13,7 @@ import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.FenqileReconRecordService;
 import com.fulu.game.core.service.FenqileReconciliationService;
-import com.fulu.game.core.service.impl.order.AdminOrderServiceImpl;
+import com.fulu.game.core.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,17 +27,17 @@ public class FenqileReconciliationServiceImpl extends AbsCommonService<FenqileRe
     private final FenqileReconciliationDao fenqileReconciliationDao;
     private final AdminService adminService;
     private final FenqileReconRecordService fenqileReconRecordService;
-    private final AdminOrderServiceImpl adminOrderService;
+    private final OrderService orderService;
 
     @Autowired
     public FenqileReconciliationServiceImpl(FenqileReconciliationDao fenqileReconciliationDao,
                                             AdminServiceImpl adminService,
                                             FenqileReconRecordService fenqileReconRecordService,
-                                            AdminOrderServiceImpl adminOrderService) {
+                                            OrderService orderService) {
         this.fenqileReconciliationDao = fenqileReconciliationDao;
         this.adminService = adminService;
         this.fenqileReconRecordService = fenqileReconRecordService;
-        this.adminOrderService = adminOrderService;
+        this.orderService = orderService;
     }
 
     @Override
@@ -45,6 +45,7 @@ public class FenqileReconciliationServiceImpl extends AbsCommonService<FenqileRe
         return fenqileReconciliationDao;
     }
 
+    @Override
     public void recon(String orderNos, Date startTime, Date endTime, String remark, Integer unReconCount, BigDecimal unReconTotalAmount) {
         Admin admin = adminService.getCurrentUser();
 
@@ -52,9 +53,12 @@ public class FenqileReconciliationServiceImpl extends AbsCommonService<FenqileRe
             String[] orderNoList = orderNos.split(Constant.DEFAULT_SPLIT_SEPARATOR);
             for (String orderNo : orderNoList) {
                 FenqileReconciliation reconciliation = fenqileReconciliationDao.findByOrderNo(orderNo);
+                if (reconciliation == null) {
+                    continue;
+                }
                 Integer status = reconciliation.getStatus();
                 if (Constant.IS_RECON.equals(status)) {
-                    break;
+                    continue;
                 }
                 updateByOrderNo(reconciliation, admin, remark);
             }
@@ -79,7 +83,7 @@ public class FenqileReconciliationServiceImpl extends AbsCommonService<FenqileRe
             }
             updateByOrderNo(reconciliation, admin, remark);
 
-            Order order = adminOrderService.findByOrderNo(orderNos);
+            Order order = orderService.findByOrderNo(orderNos);
             if (null == order) {
                 throw new OrderException(order.getOrderNo(), "订单不存在!");
             }

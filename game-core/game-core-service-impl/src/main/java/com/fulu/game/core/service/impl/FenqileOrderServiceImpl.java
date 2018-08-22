@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.FenqileOrderDao;
@@ -19,24 +20,29 @@ import org.assertj.core.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
 @Service
 public class FenqileOrderServiceImpl extends AbsCommonService<FenqileOrder, Integer> implements FenqileOrderService {
 
-    @Autowired
-    private FenqileOrderDao fenqileOrderDao;
-    @Autowired
-    private UserService userService;
+    private final FenqileOrderDao fenqileOrderDao;
+    private final UserService userService;
 
+    @Autowired
+    public FenqileOrderServiceImpl(FenqileOrderDao fenqileOrderDao,
+                                   UserService userService) {
+        this.fenqileOrderDao = fenqileOrderDao;
+        this.userService = userService;
+    }
 
     @Override
     public ICommonDao<FenqileOrder, Integer> getDao() {
         return fenqileOrderDao;
     }
 
-
+    @Override
     public PageInfo<FenqileOrderVO> list(Integer pageNum,
                                          Integer pageSize,
                                          String orderBy,
@@ -74,12 +80,19 @@ public class FenqileOrderServiceImpl extends AbsCommonService<FenqileOrder, Inte
                 if (meta.getProductName().contains(" ")) {
                     meta.setProductName(meta.getProductName().split(" ")[0]);
                 }
+                meta.setStatusStr(OrderStatusEnum.getMsgByStatus(meta.getOrderStatus()));
             }
         }
         return new PageInfo<>(fenqileOrderVOList);
     }
 
+    @Override
     public FenqileOrderVO getTotalReconAmount(FenqileOrderSearchVO searchVO) {
-        return fenqileOrderDao.getTotalReconAmount(searchVO);
+        searchVO.setStatusList(OrderStatusGroupEnum.RECON_ALL.getStatusList());
+        FenqileOrderVO resultVO = fenqileOrderDao.getTotalReconAmount(searchVO);
+        resultVO.setUnReconTotalAmount(resultVO.getUnReconTotalAmount() == null ? new BigDecimal(0) : resultVO.getUnReconTotalAmount());
+        resultVO.setUnReconCount(resultVO.getUnReconCount() == null ? 0 : resultVO.getUnReconCount());
+        resultVO.setTotalAmount(resultVO.getTotalAmount() == null ? new BigDecimal(0) : resultVO.getTotalAmount());
+        return resultVO;
     }
 }

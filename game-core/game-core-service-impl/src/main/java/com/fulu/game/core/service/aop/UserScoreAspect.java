@@ -9,9 +9,9 @@ import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserScoreDetails;
 import com.fulu.game.core.entity.vo.UserCommentVO;
+import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.fulu.game.core.service.impl.order.DefaultOrderServiceImpl;
 import com.fulu.game.core.service.queue.UserScoreQueue;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
@@ -36,7 +36,7 @@ public class UserScoreAspect {
     @Autowired
     private UserScoreQueue userScoreQueue;
     @Autowired
-    private DefaultOrderServiceImpl orderService;
+    private OrderService orderService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
 

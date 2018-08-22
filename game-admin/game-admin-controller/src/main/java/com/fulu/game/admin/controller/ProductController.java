@@ -1,5 +1,6 @@
 package com.fulu.game.admin.controller;
 
+import com.fulu.game.admin.service.impl.AdminUserTechAuthServiceImpl;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.ProductTop;
@@ -9,10 +10,10 @@ import com.fulu.game.core.entity.vo.ProductTopVO;
 import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.ProductTopService;
 import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.UserTechAuthService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,8 +35,9 @@ public class ProductController extends BaseController {
     private AdminService adminService;
     @Autowired
     private UserService userService;
+    @Qualifier(value = "adminUserTechAuthServiceImpl")
     @Autowired
-    private UserTechAuthService userTechAuthService;
+    private AdminUserTechAuthServiceImpl userTechAuthService;
 
 
     @PostMapping(value = "/top/list")
