@@ -73,7 +73,7 @@ public class FenqileOrderController extends BaseController {
      * @param searchVO 查询VO
      * @param response response
      */
-    @PostMapping("/export")
+    @RequestMapping("/export")
     public void export(FenqileOrderSearchVO searchVO, HttpServletResponse response) {
         String title = "分期乐订单列表";
         List<FenqileOrderVO> resultList = fenqileOrderService.list(searchVO);
