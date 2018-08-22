@@ -3,16 +3,15 @@ package com.fulu.game.admin.controller;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
+import com.fulu.game.admin.service.impl.AdminOrderServiceImpl;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.core.entity.ArbitrationDetails;
-import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderStatusDetailsVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
-import com.fulu.game.admin.service.impl.AdminOrderServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
@@ -194,9 +193,9 @@ public class OrderController extends BaseController {
     public void orderExport(HttpServletResponse response,
                             OrderSearchVO orderSearchVO) throws Exception {
         String title = "订单列表";
-        List<Order> orderList = orderService.findBySearchVO(orderSearchVO);
+        List<OrderResVO> orderResVOList = orderService.findBySearchVO(orderSearchVO);
         ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
-        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, Order.class, orderList);
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, OrderResVO.class, orderResVOList);
         response.setCharacterEncoding("UTF-8");
         response.setHeader("content-Type", "application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));

@@ -177,7 +177,7 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
         return voList;
     }
 
-    public List<Order> findBySearchVO(OrderSearchVO orderSearchVO) {
+    public List<OrderResVO> findBySearchVO(OrderSearchVO orderSearchVO) {
         Integer status = orderSearchVO.getStatus();
         orderSearchVO.setStatus(null);
         Integer[] statusList = OrderStatusGroupEnum.getByValue(status);
@@ -185,6 +185,7 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
             orderSearchVO.setStatusList(statusList);
         }
         List<Order> orderList = orderDao.findBySearchVO(orderSearchVO);
+        List<OrderResVO> orderResVOList = new ArrayList<>();
         if (CollectionUtil.isNotEmpty(orderList)) {
             for (Order order : orderList) {
                 if (order.getContactType() == null) {
@@ -192,9 +193,19 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
                 }
 
                 getShareProfitMoney(order);
+
+                //设置应付金额
+                OrderResVO orderResVO = new OrderResVO();
+                Integer orderStatus = order.getStatus();
+                BeanUtil.copyProperties(order, orderResVO);
+                orderResVO.setPayableMoney(orderResVO.getActualMoney());
+                if (OrderStatusEnum.NON_PAYMENT.getStatus().equals(orderStatus)) {
+                    orderResVO.setActualMoney(null);
+                }
+                orderResVOList.add(orderResVO);
             }
         }
-        return orderList;
+        return orderResVOList;
     }
 
     /**
@@ -450,6 +461,13 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
 
             //订单状态过滤
             getShareProfitMoney(orderResVO);
+
+            //设置应付金额
+            Integer orderStatus = orderResVO.getStatus();
+            orderResVO.setPayableMoney(orderResVO.getActualMoney());
+            if (OrderStatusEnum.NON_PAYMENT.getStatus().equals(orderStatus)) {
+                orderResVO.setActualMoney(null);
+            }
         }
         return new PageInfo<>(list);
     }
