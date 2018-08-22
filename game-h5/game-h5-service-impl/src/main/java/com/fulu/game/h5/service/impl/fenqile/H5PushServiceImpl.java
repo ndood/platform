@@ -5,6 +5,7 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.common.enums.WechatTemplateIdEnum;
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
+import com.fulu.game.common.enums.WechatTemplateMsgTypeEnum;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
@@ -35,6 +36,10 @@ public class H5PushServiceImpl extends MiniAppPushServiceImpl {
         }
     }
 
+    @Override
+    protected void push(int userId, Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum, WechatTemplateMsgTypeEnum wechatTemplateMsgTypeEnum, String... replaces) {
+
+    }
 
     public void orderPay(Order order){
         playMiniAppPushService.orderPay(order);

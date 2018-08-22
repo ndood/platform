@@ -6,10 +6,15 @@ import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fulu.game.common.Constant;
+import com.fulu.game.common.config.WxMaServiceSupply;
+import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.common.enums.WechatTemplateIdEnum;
+import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.utils.SMSUtil;
+import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.WechatFormid;
 import com.fulu.game.core.entity.WxMaTemplateMessageVO;
 import com.fulu.game.core.entity.vo.WechatFormidVO;
 import com.fulu.game.core.service.PushService;
@@ -17,6 +22,7 @@ import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.WechatFormidService;
 import com.fulu.game.core.service.queue.PushMsgQueue;
 import lombok.extern.slf4j.Slf4j;
+import me.chanjar.weixin.common.exception.WxErrorException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +40,8 @@ public class PushServiceImpl implements PushService {
     private UserService userService;
     @Autowired
     private WechatFormidService wechatFormidService;
+    @Autowired
+    private WxMaServiceSupply wxMaServiceSupply;
 
 
     /**
@@ -62,6 +70,66 @@ public class PushServiceImpl implements PushService {
         }
 
         addTemplateMsg2Queue(platform, null, Collections.singletonList(userId), wechatPage, templateIdEnum, dataList);
+    }
+
+    /**
+     * 推送“服务进度通知”
+     *
+     * @param wechatTemplateMsgEnum
+     * @param replaces
+     * @return
+     */
+    protected Boolean pushServiceProcessMsg(int platform,
+                                            Order order,
+                                            WechatTemplateIdEnum wechatTemplateIdEnum,
+                                            WechatTemplateMsgEnum wechatTemplateMsgEnum,
+                                            String... replaces) {
+        String content = wechatTemplateMsgEnum.getContent();
+        if (replaces != null && replaces.length > 0) {
+            content = StrUtil.format(content, OrderStatusEnum.getMsgByStatus(order.getStatus()));
+        }
+        String date = DateUtil.format(DateUtil.date(), "yyyy年MM月dd日 HH:mm");
+        User user = userService.findById(order.getUserId());
+        WechatFormid formIdObj = findFormidVOByUserId(WechatEcoEnum.PLAY.getType(), user.getId());
+        if (user == null || formIdObj == null) {
+            log.error("user或者formId为null无法给用户推送消息user:{};content:{};formId:{}", user, content, formIdObj);
+            return null;
+        }
+
+        String serviceUserNickName = "";
+        User serviceUser = userService.findById(order.getServiceUserId());
+        if (serviceUser != null) {
+            serviceUserNickName = serviceUser.getNickname();
+        }
+
+        List<WxMaTemplateMessage.Data> dataList = CollectionUtil.newArrayList(
+                //服务进度（订单状态）
+                new WxMaTemplateMessage.Data("keyword1", OrderStatusEnum.getMsgByStatus(order.getStatus())),
+                //订单编号
+                new WxMaTemplateMessage.Data("keyword2", order.getOrderNo()),
+                //订单金额
+                new WxMaTemplateMessage.Data("keyword3", "￥" + order.getActualMoney().toPlainString()),
+                //通知时间
+                new WxMaTemplateMessage.Data("keyword4", date),
+                //服务人员（陪玩师姓名）
+                new WxMaTemplateMessage.Data("keyword5", serviceUserNickName),
+                //备注（消息模板内容）
+                new WxMaTemplateMessage.Data("keyword6", content));
+        //fixme
+        WxMaTemplateMessage templateMessage = new WxMaTemplateMessage();
+        templateMessage.setTemplateId(wechatTemplateIdEnum.getTemplateId());
+        templateMessage.setToUser(formIdObj.getOpenId());
+        templateMessage.setPage(wechatTemplateMsgEnum.getPage().getPlayPagePath());
+        templateMessage.setFormId(formIdObj.getFormId());
+        templateMessage.setData(dataList);
+        //直接推，不走推送队列
+        try {
+            wxMaServiceSupply.playWxMaService().getMsgService().sendTemplateMsg(templateMessage);
+        } catch (WxErrorException e) {
+            log.error("微信推送挂了！");
+            e.printStackTrace();
+        }
+        return true;
     }
 
 
@@ -129,6 +197,26 @@ public class PushServiceImpl implements PushService {
     }
 
     /**
+     * 根据userId获取formID
+     *
+     * @param platform 平台
+     * @param userId   用户id
+     * @return vo
+     */
+    private WechatFormidVO findFormidVOByUserId(int platform, Integer userId) {
+        Date date = DateUtil.offset(new Date(), DateField.HOUR, (-24 * 7) + 1);
+        wechatFormidService.deleteByExpireTime(date);
+
+        List<Integer> userIds = new ArrayList<>();
+        userIds.add(userId);
+        List<WechatFormidVO> wechatFormidVOS = wechatFormidService.findByUserIds(platform, userIds, 0, 1);
+        if (CollectionUtil.isEmpty(wechatFormidVOS)) {
+            return null;
+        }
+        return wechatFormidVOS.get(0);
+    }
+
+    /**
      * 如果formid无效，补发短信
      *
      * @param userFormId
@@ -167,6 +255,7 @@ public class PushServiceImpl implements PushService {
 
     /**
      * 管理员批量推送微信消息
+     *
      * @param platform
      * @param pushId
      * @param userIds

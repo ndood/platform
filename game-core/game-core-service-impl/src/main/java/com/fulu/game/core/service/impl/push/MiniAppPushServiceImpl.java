@@ -4,6 +4,7 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.UserScoreEnum;
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
+import com.fulu.game.common.enums.WechatTemplateMsgTypeEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
@@ -105,7 +106,9 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void cancelOrderByServer(Order order) {
-        push(order.getUserId(), WechatTemplateMsgEnum.ORDER_TOUSER_REJECT_RECEIVE);
+        //fixme
+//        push(order.getUserId(), WechatTemplateMsgEnum.ORDER_TOUSER_REJECT_RECEIVE);
+        push(order.getUserId(), order, WechatTemplateMsgEnum.TEMP_ORDER_TOUSER_REJECT_RECEIVE, WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
     }
 
     /**
@@ -114,7 +117,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void cancelOrderByUser(Order order) {
-        if(order.getServiceUserId()!=null){
+        if (order.getServiceUserId() != null) {
             push(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_TOSERVICE_ORDER_CANCEL);
         }
     }
@@ -166,9 +169,10 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
         push(userId, WechatTemplateMsgEnum.GRANT_COUPON, deduction);
     }
 
-
     protected abstract void push(int userId, WechatTemplateMsgEnum wechatTemplateMsgEnum, String... replaces);
 
+    protected abstract void push(int userId, Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum,
+                                 WechatTemplateMsgTypeEnum wechatTemplateMsgTypeEnum, String... replaces);
 
     /**
      * 推送IM消息通知

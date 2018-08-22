@@ -17,6 +17,8 @@ public enum WechatTemplateMsgEnum {
 
 
     ORDER_TOUSER_REJECT_RECEIVE(WechatPagePathEnum.ORDER_LIST_PAGE, "【订单状态：订单取消】备注：陪玩师太忙了，为了不耽误您的游戏体验，拒绝了订单，望老板大人理解。"),//拒绝接单
+    TEMP_ORDER_TOUSER_REJECT_RECEIVE(WechatPagePathEnum.ORDER_LIST_PAGE, "陪玩师太忙了，为了不耽误您的游戏体验，拒绝了订单，望老板大人理解。"),//拒绝接单
+
     ORDER_TOUSER_AFFIRM_RECEIVE(WechatPagePathEnum.ORDER_LIST_PAGE, "【订单状态：等待服务】备注：陪玩师已经接单啦，一起谈谈什么时候开始呢？超过24小时未开始，订单将自动取消。"),//已经接单
     ORDER_TOUSER_START_SERVICE(WechatPagePathEnum.ORDER_LIST_PAGE, "【订单状态：陪玩中】备注：陪玩师开始陪玩服务啦，快快上号开始吧。"), //开始服务
     ORDER_TOUSER_CHECK(WechatPagePathEnum.ORDER_LIST_PAGE, "【订单状态：等待验收】 备注：陪玩师向发起了完成服务申请，快去确认吧。"), //提交验收
