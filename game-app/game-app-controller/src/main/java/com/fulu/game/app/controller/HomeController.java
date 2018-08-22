@@ -1,8 +1,8 @@
 package com.fulu.game.app.controller;
 
 
-import com.fulu.game.app.util.WebUtils;
 import com.fulu.game.common.domain.ClientInfo;
+import com.fulu.game.common.utils.SubjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +23,8 @@ public class HomeController extends BaseController {
      */
     @PostMapping(value = "all")
     public void list(HttpServletRequest request) {
-        ClientInfo clientInfo = WebUtils.request2Bean(request, ClientInfo.class);
+        ClientInfo clientInfo = SubjectUtil.getUserClientInfo();
         System.out.println(clientInfo);
     }
+
 }
