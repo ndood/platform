@@ -10,7 +10,7 @@ import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
-import com.fulu.game.h5.service.impl.PlayMiniAppPushServiceImpl;
+import com.fulu.game.play.service.impl.PlayMiniAppPushServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.fulu.game.h5.service.impl;
+package com.fulu.game.point.service.impl;
 
 import com.fulu.game.common.enums.*;
 import com.fulu.game.core.entity.Category;

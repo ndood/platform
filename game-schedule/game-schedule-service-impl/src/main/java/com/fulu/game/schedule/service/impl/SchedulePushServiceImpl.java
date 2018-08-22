@@ -1,4 +1,4 @@
-package com.fulu.game.h5.service.impl;
+package com.fulu.game.schedule.service.impl;
 
 import com.fulu.game.common.enums.OrderTypeEnum;
 import com.fulu.game.common.enums.WechatEcoEnum;

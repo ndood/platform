@@ -5,7 +5,7 @@ import com.fulu.game.core.entity.Coupon;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.CouponService;
 import com.fulu.game.core.service.UserService;
-import com.fulu.game.h5.service.impl.PlayCouponOpenServiceImpl;
+import com.fulu.game.play.service.impl.PlayCouponOpenServiceImpl;
 import com.fulu.game.play.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
