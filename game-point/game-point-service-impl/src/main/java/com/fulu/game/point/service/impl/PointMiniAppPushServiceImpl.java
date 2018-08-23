@@ -44,7 +44,13 @@ public class PointMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
 
     @Override
     protected void push(int userId, Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum, WechatTemplateMsgTypeEnum wechatTemplateMsgTypeEnum, String... replaces) {
-
+        pushServiceProcessMsg(
+                WechatEcoEnum.POINT.getType(),
+                userId,
+                order,
+                WechatTemplateIdEnum.POINT_SERVICE_PROCESS_NOTICE,
+                wechatTemplateMsgEnum,
+                replaces);
     }
 
     public void orderPay(Order order){

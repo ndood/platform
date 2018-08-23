@@ -36,6 +36,9 @@ public class PlayMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
     }
 
     public void orderPay(Order order) {
-        push(order.getServiceUserId(), WechatTemplateMsgEnum.ORDER_TOSERVICE_PAY);
+        push(order.getServiceUserId(),
+                order,
+                WechatTemplateMsgEnum.ORDER_TOSERVICE_PAY,
+                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
     }
 }

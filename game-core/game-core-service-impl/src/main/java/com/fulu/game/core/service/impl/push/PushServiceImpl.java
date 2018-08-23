@@ -86,7 +86,7 @@ public class PushServiceImpl implements PushService {
                                          String... replaces) {
         String content = wechatTemplateMsgEnum.getContent();
         if (replaces != null && replaces.length > 0) {
-            content = StrUtil.format(content, OrderStatusEnum.getMsgByStatus(order.getStatus()));
+            content = StrUtil.format(content, replaces);
         }
         String date = DateUtil.format(DateUtil.date(), "yyyy年MM月dd日 HH:mm");
         WechatFormid formIdObj = findFormidVOByUserId(WechatEcoEnum.PLAY.getType(), userId);
@@ -116,21 +116,6 @@ public class PushServiceImpl implements PushService {
 
         addTemplateMsg2Queue(platform, null, Collections.singletonList(userId),
                 wechatTemplateMsgEnum.getPage().getPlayPagePath(), wechatTemplateIdEnum, dataList);
-
-        //FIXME
-//        WxMaTemplateMessage templateMessage = new WxMaTemplateMessage();
-//        templateMessage.setTemplateId(wechatTemplateIdEnum.getTemplateId());
-//        templateMessage.setToUser(formIdObj.getOpenId());
-//        templateMessage.setPage(wechatTemplateMsgEnum.getPage().getPlayPagePath());
-//        templateMessage.setFormId(formIdObj.getFormId());
-//        templateMessage.setData(dataList);
-//        //直接推，不走推送队列
-//        try {
-//            wxMaServiceSupply.playWxMaService().getMsgService().sendTemplateMsg(templateMessage);
-//        } catch (WxErrorException e) {
-//            log.error("微信推送挂了！");
-//            e.printStackTrace();
-//        }
     }
 
     /**

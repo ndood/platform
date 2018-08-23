@@ -74,7 +74,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void consult(Order order) {
-        push(order.getUserId(), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT,
+        push(order.getServiceUserId(), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT,
                 WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
     }
 
@@ -104,7 +104,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void cancelConsult(Order order) {
-        push(order.getUserId(), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL,
+        push(order.getServiceUserId(), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL,
                 WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
     }
 
