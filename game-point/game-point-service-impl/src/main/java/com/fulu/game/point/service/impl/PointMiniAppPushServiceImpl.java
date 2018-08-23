@@ -55,7 +55,10 @@ public class PointMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
 
     public void orderPay(Order order){
         if(order.getServiceUserId()!=null){
-            push(order.getServiceUserId(),WechatTemplateMsgEnum.POINT_TOSE_ORDER_RECEIVING);
+            push(order.getServiceUserId(),
+                    order,
+                    WechatTemplateMsgEnum.POINT_TOSE_ORDER_RECEIVING,
+                    WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
         }
     }
 
@@ -100,7 +103,11 @@ public class PointMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
                 continue;
             }
             //推送订单消息
-            push(user.getId(), WechatTemplateMsgEnum.POINT_ORDER_PUSH, category.getName());
+            push(user.getId(),
+                    order,
+                    WechatTemplateMsgEnum.POINT_ORDER_PUSH,
+                    WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE,
+                    category.getName());
             Long expire = new BigDecimal(pushTimeInterval).multiply(new BigDecimal(60)).longValue();
             redisOpenService.set(RedisKeyEnum.MARKET_ORDER_IS_PUSH.generateKey(user.getId()), order.getOrderNo(), expire);
             log.info("推送集市订单完成:userInfoAuth:{},order:{}", user, order);
