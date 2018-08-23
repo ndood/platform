@@ -106,7 +106,7 @@ public class PushServiceImpl implements PushService {
                 //订单编号
                 new WxMaTemplateMessage.Data("keyword2", order.getOrderNo()),
                 //订单金额
-                new WxMaTemplateMessage.Data("keyword3", "￥" + order.getActualMoney().toPlainString()),
+                new WxMaTemplateMessage.Data("keyword3", "￥" + order.getTotalMoney().toPlainString()),
                 //通知时间
                 new WxMaTemplateMessage.Data("keyword4", date),
                 //服务人员（陪玩师姓名）
