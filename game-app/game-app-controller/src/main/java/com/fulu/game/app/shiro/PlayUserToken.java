@@ -8,26 +8,23 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 public class PlayUserToken extends UsernamePasswordToken {
 
     private static final long serialVersionUID = 1L;
-    private String openId;
-    private String sessionKey;
-    private Integer sourceId;
-    public PlayUserToken(String openId,String sessionKey,Integer sourceId) {
-        super(openId, "");
-        this.openId = openId;
-        this.sessionKey = sessionKey;
-        this.sourceId = sourceId;
+    private String mobile;
+    private String authCode;
+
+    public PlayUserToken(String mobile, String authCode) {
+        super(mobile, "");
+        this.mobile = mobile;
+        this.authCode = authCode;
     }
 
 
-    public String getOpenId(){
-        return openId;
+    public String getMobile() {
+        return mobile;
     }
 
-    public String getSessionKey() {
-        return sessionKey;
+    public String getAuthCode() {
+        return authCode;
     }
 
-    public Integer getSourceId() {
-        return sourceId;
-    }
+
 }

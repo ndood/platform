@@ -45,7 +45,7 @@ public class MyShiroRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) {
         PlayUserToken playUserToken = (PlayUserToken) token;
-        String openId = playUserToken.getOpenId();
+        String openId = playUserToken.getMobile();
         Integer sourceId = playUserToken.getSourceId();
         User user = userService.findByOpenId(openId, WechatEcoEnum.PLAY);
         if (user != null) {

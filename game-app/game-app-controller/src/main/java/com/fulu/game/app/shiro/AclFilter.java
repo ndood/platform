@@ -1,8 +1,6 @@
 package com.fulu.game.app.shiro;
 
-import com.fulu.game.app.util.WebUtils;
-import com.fulu.game.common.domain.ClientInfo;
-import com.fulu.game.common.utils.SubjectUtil;
+
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.web.filter.AccessControlFilter;
@@ -10,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * 调用小程序服务接口时都会先进入此类的方法
