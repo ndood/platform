@@ -5,6 +5,8 @@ import com.fulu.game.core.entity.vo.FenqileOrderVO;
 import com.fulu.game.core.entity.vo.searchVO.FenqileOrderSearchVO;
 import com.github.pagehelper.PageInfo;
 
+import java.util.List;
+
 
 /**
  * 分期乐订单拓展表
@@ -19,6 +21,8 @@ public interface FenqileOrderService extends ICommonService<FenqileOrder, Intege
                                   Integer pageSize,
                                   String orderBy,
                                   FenqileOrderSearchVO searchVO);
+
+    List<FenqileOrderVO> list(FenqileOrderSearchVO searchVO);
 
     FenqileOrderVO getTotalReconAmount(FenqileOrderSearchVO searchVO);
 }

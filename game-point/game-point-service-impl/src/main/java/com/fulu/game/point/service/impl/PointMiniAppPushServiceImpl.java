@@ -1,4 +1,4 @@
-package com.fulu.game.h5.service.impl;
+package com.fulu.game.point.service.impl;
 
 import com.fulu.game.common.enums.*;
 import com.fulu.game.core.entity.Category;
@@ -42,10 +42,23 @@ public class PointMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
         pushWechatTemplateMsg(WechatEcoEnum.POINT.getType(), userId, WechatTemplateIdEnum.POINT_LEAVE_MSG, wechatTemplateMsgEnum.getPage().getPointPagePath(), wechatTemplateMsgEnum.getContent(),replaces);
     }
 
+    @Override
+    protected void push(int userId, Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum, WechatTemplateMsgTypeEnum wechatTemplateMsgTypeEnum, String... replaces) {
+        pushServiceProcessMsg(
+                WechatEcoEnum.POINT.getType(),
+                userId,
+                order,
+                WechatTemplateIdEnum.POINT_SERVICE_PROCESS_NOTICE,
+                wechatTemplateMsgEnum,
+                replaces);
+    }
 
     public void orderPay(Order order){
         if(order.getServiceUserId()!=null){
-            push(order.getServiceUserId(),WechatTemplateMsgEnum.POINT_TOSE_ORDER_RECEIVING);
+            push(order.getServiceUserId(),
+                    order,
+                    WechatTemplateMsgEnum.POINT_TOSE_ORDER_RECEIVING,
+                    WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
         }
     }
 
@@ -90,7 +103,11 @@ public class PointMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
                 continue;
             }
             //推送订单消息
-            push(user.getId(), WechatTemplateMsgEnum.POINT_ORDER_PUSH, category.getName());
+            push(user.getId(),
+                    order,
+                    WechatTemplateMsgEnum.POINT_ORDER_PUSH,
+                    WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE,
+                    category.getName());
             Long expire = new BigDecimal(pushTimeInterval).multiply(new BigDecimal(60)).longValue();
             redisOpenService.set(RedisKeyEnum.MARKET_ORDER_IS_PUSH.generateKey(user.getId()), order.getOrderNo(), expire);
             log.info("推送集市订单完成:userInfoAuth:{},order:{}", user, order);

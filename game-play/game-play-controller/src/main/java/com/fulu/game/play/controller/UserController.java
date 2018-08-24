@@ -22,7 +22,7 @@ import com.fulu.game.core.entity.vo.WxUserInfo;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
-import com.fulu.game.h5.service.impl.PlayCouponOpenServiceImpl;
+import com.fulu.game.play.service.impl.PlayCouponOpenServiceImpl;
 import com.fulu.game.play.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;

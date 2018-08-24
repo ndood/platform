@@ -7,7 +7,7 @@ import com.fulu.game.core.entity.FenqileReconciliation;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import com.fulu.game.core.service.impl.FenqileReconciliationServiceImpl;
-import com.fulu.game.h5.service.impl.ScheduleOrderServiceImpl;
+import com.fulu.game.schedule.service.impl.ScheduleOrderServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;

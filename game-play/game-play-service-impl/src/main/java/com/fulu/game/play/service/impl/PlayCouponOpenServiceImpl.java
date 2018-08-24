@@ -1,4 +1,4 @@
-package com.fulu.game.h5.service.impl;
+package com.fulu.game.play.service.impl;
 
 import com.fulu.game.core.service.impl.CouponOpenServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;

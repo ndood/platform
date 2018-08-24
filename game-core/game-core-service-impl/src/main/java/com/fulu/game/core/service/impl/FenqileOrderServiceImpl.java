@@ -81,9 +81,47 @@ public class FenqileOrderServiceImpl extends AbsCommonService<FenqileOrder, Inte
                     meta.setProductName(meta.getProductName().split(" ")[0]);
                 }
                 meta.setStatusStr(OrderStatusEnum.getMsgByStatus(meta.getOrderStatus()));
+
+                //设置应付金额
+                Integer orderStatus = meta.getOrderStatus();
+                meta.setPayableMoney(meta.getActualMoney());
+                if (OrderStatusEnum.NON_PAYMENT.getStatus().equals(orderStatus)) {
+                    meta.setActualMoney(null);
+                }
             }
         }
         return new PageInfo<>(fenqileOrderVOList);
+    }
+
+    @Override
+    public List<FenqileOrderVO> list(FenqileOrderSearchVO searchVO) {
+        String orderBy = "tor.create_time desc";
+        searchVO.setOrderBy(orderBy);
+
+        Integer status = searchVO.getStatus();
+        Integer[] statusList = OrderStatusGroupEnum.getByValue(status);
+        if (!Arrays.isNullOrEmpty(statusList)) {
+            searchVO.setStatusList(statusList);
+        }
+
+        List<FenqileOrderVO> fenqileOrderVOList = fenqileOrderDao.list(searchVO);
+        if (CollectionUtils.isNotEmpty(fenqileOrderVOList)) {
+            for (FenqileOrderVO meta : fenqileOrderVOList) {
+                if (meta.getProductName().contains(" ")) {
+                    meta.setProductName(meta.getProductName().split(" ")[0]);
+                }
+                meta.setStatusStr(OrderStatusEnum.getMsgByStatus(meta.getOrderStatus()));
+
+                //设置应付金额
+                Integer orderStatus = meta.getOrderStatus();
+                meta.setPayableMoney(meta.getActualMoney());
+                if (OrderStatusEnum.NON_PAYMENT.getStatus().equals(orderStatus)) {
+                    meta.setActualMoney(null);
+                }
+            }
+        }
+
+        return fenqileOrderVOList;
     }
 
     @Override

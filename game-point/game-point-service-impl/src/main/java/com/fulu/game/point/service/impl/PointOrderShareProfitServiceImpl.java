@@ -1,4 +1,4 @@
-package com.fulu.game.h5.service.impl;
+package com.fulu.game.point.service.impl;
 
 
 import com.fulu.game.core.entity.Order;
@@ -13,13 +13,13 @@ import java.math.BigDecimal;
 
 @Service
 @Slf4j
-public class PlayOrderShareProfitServiceImpl extends OrderShareProfitServiceImpl {
+public class PointOrderShareProfitServiceImpl extends OrderShareProfitServiceImpl {
 
     @Autowired
-    private PlayMiniAppPayServiceImpl playMiniAppPayService;
+    private PointMiniAppPayServiceImpl pointMiniAppPayService;
 
     @Override
     public Boolean refund(Order order, BigDecimal actualMoney, BigDecimal refundUserMoney) throws WxPayException {
-        return playMiniAppPayService.refund(order.getOrderNo(), actualMoney, refundUserMoney);
+        return pointMiniAppPayService.refund(order.getOrderNo(), actualMoney, refundUserMoney);
     }
 }

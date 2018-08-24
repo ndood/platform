@@ -123,6 +123,9 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
             //增加接单数量
             userAutoReceiveOrderService.addOrderNum(serviceUser.getId(), order.getCategoryId());
 
+            //推送通知
+            getMinAppPushService().serviceUserAcceptOrder(order);
+
             //开启新线程通知老板，陪玩师已接单
             springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
                 @Override
@@ -656,7 +659,6 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         getMinAppPushService().acceptOrder(order);
         return orderConvertVo(order);
     }
-
 
 
     @Override

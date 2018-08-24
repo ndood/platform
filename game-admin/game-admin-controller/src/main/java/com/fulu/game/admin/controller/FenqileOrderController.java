@@ -1,5 +1,8 @@
 package com.fulu.game.admin.controller;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.vo.FenqileOrderVO;
 import com.fulu.game.core.entity.vo.FenqileReconRecordVO;
@@ -11,14 +14,19 @@ import com.fulu.game.core.service.impl.FenqileOrderServiceImpl;
 import com.fulu.game.core.service.impl.FenqileReconRecordServiceImpl;
 import com.fulu.game.core.service.impl.FenqileReconciliationServiceImpl;
 import com.github.pagehelper.PageInfo;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 分期乐订单Controller
@@ -57,6 +65,29 @@ public class FenqileOrderController extends BaseController {
                        FenqileOrderSearchVO searchVO) {
         PageInfo<FenqileOrderVO> pageInfo = fenqileOrderService.list(pageNum, pageSize, orderBy, searchVO);
         return Result.success().data(pageInfo).msg("查询列表成功！");
+    }
+
+    /**
+     * 分期乐订单列表导出
+     *
+     * @param searchVO 查询VO
+     * @param response response
+     */
+    @RequestMapping("/export")
+    public void export(FenqileOrderSearchVO searchVO, HttpServletResponse response) {
+        String title = "分期乐订单列表";
+        List<FenqileOrderVO> resultList = fenqileOrderService.list(searchVO);
+        ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, FenqileOrderVO.class, resultList);
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("content-Type", "application/vnd.ms-excel");
+        try {
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));
+            workbook.write(response.getOutputStream());
+            workbook.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
