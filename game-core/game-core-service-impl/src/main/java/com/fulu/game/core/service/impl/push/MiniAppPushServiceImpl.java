@@ -55,6 +55,15 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
                 WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
     }
 
+    /**
+     * 陪玩师已接单
+     *
+     * @param order
+     */
+    public void serviceUserAcceptOrder(Order order) {
+        push(order.getServiceUserId(), order, WechatTemplateMsgEnum.POINT_TOSERVICE_ORDER_RECEIVING,
+                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
+    }
 
     /**
      * 陪玩师开始服务

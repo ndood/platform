@@ -113,9 +113,13 @@ public class PushServiceImpl implements PushService {
                 new WxMaTemplateMessage.Data("keyword5", serviceUserNickName),
                 //备注（消息模板内容）
                 new WxMaTemplateMessage.Data("keyword6", content));
-
-        addTemplateMsg2Queue(platform, null, Collections.singletonList(userId),
-                wechatTemplateMsgEnum.getPage().getPlayPagePath(), wechatTemplateIdEnum, dataList);
+        if (WechatEcoEnum.PLAY.getType().equals(platform)) {
+            addTemplateMsg2Queue(platform, null, Collections.singletonList(userId),
+                    wechatTemplateMsgEnum.getPage().getPlayPagePath(), wechatTemplateIdEnum, dataList);
+        } else if (WechatEcoEnum.POINT.getType().equals(platform)) {
+            addTemplateMsg2Queue(platform, null, Collections.singletonList(userId),
+                    wechatTemplateMsgEnum.getPage().getPointPagePath(), wechatTemplateIdEnum, dataList);
+        }
     }
 
     /**
