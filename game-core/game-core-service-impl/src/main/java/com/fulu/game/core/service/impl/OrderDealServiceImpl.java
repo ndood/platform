@@ -12,7 +12,7 @@ import com.fulu.game.core.entity.OrderDealFile;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.service.OrderDealFileService;
 import com.fulu.game.core.service.OrderDealService;
-import com.fulu.game.core.service.impl.order.DefaultOrderServiceImpl;
+import com.fulu.game.core.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +29,7 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal, Integer> i
     @Autowired
     private OrderDealFileService orderDealFileService;
     @Autowired
-    private DefaultOrderServiceImpl orderService;
+    private OrderService orderService;
     @Autowired
     private OssUtil ossUtil;
 

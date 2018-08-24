@@ -1,10 +1,12 @@
 package com.fulu.game.core.entity.vo.responseVO;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderProduct;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 
@@ -13,6 +15,7 @@ import java.math.BigDecimal;
  * 管理员订单列表查询结果VO
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class OrderResVO extends Order {
 
 
@@ -30,5 +33,9 @@ public class OrderResVO extends Order {
 
     private String statusStr;
 
-
+    /**
+     * 应付金额
+     */
+    @Excel(name = "应付金额", orderNum = "8", width = 15)
+    private BigDecimal payableMoney;
 }

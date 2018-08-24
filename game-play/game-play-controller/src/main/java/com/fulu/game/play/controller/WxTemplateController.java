@@ -7,7 +7,7 @@ import com.fulu.game.core.entity.WechatFormid;
 import com.fulu.game.core.service.PushMsgService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.play.queue.CollectFormIdQueue;
-import com.fulu.game.core.service.impl.push.PlayMiniAppPushServiceImpl;
+import com.fulu.game.play.service.impl.PlayMiniAppPushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

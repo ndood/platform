@@ -12,11 +12,7 @@
     <artifactId>game-point-controller</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>com.fulu.game</groupId>
-            <artifactId>game-core-service-impl</artifactId>
-            <version>${game.core.version}</version>
-        </dependency>
+
         <dependency>
             <groupId>com.fulu.game</groupId>
             <artifactId>game-point-service-impl</artifactId>

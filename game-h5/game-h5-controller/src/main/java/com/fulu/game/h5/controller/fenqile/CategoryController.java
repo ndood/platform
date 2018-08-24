@@ -1,14 +1,10 @@
 package com.fulu.game.h5.controller.fenqile;
 
 import com.fulu.game.common.Result;
-import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.core.entity.Category;
-import com.fulu.game.core.entity.SalesMode;
-import com.fulu.game.core.entity.TechAttr;
-import com.fulu.game.core.entity.TechValue;
 import com.fulu.game.core.entity.vo.ProductShowCaseVO;
-import com.fulu.game.core.entity.vo.TagVO;
-import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.CategoryService;
+import com.fulu.game.core.service.ProductService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,26 +25,15 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/api/v1/category")
 public class CategoryController extends BaseController {
-    private final TechAttrService techAttrService;
     private final CategoryService categoryService;
     private final ProductService productService;
-    private final SalesModeService salesModeService;
-    private final TagService tagService;
-    private final TechValueService techValueService;
 
     @Autowired
-    public CategoryController(TechAttrService techAttrService,
-                              CategoryService categoryService,
-                              ProductService productService,
-                              SalesModeService salesModeService,
-                              TagService tagService,
-                              TechValueService techValueService) {
-        this.techAttrService = techAttrService;
+    public CategoryController(
+            CategoryService categoryService,
+            ProductService productService) {
         this.categoryService = categoryService;
         this.productService = productService;
-        this.salesModeService = salesModeService;
-        this.tagService = tagService;
-        this.techValueService = techValueService;
     }
 
     /**
@@ -67,7 +52,6 @@ public class CategoryController extends BaseController {
         return Result.success().data(categoryList);
     }
 
-    
 
     /**
      * 分页查询所有商品
@@ -90,34 +74,5 @@ public class CategoryController extends BaseController {
         return Result.success().data(pageInfo);
     }
 
-    /**
-     * 查询游戏所有标签
-     *
-     * @param categoryId 分类id
-     * @return 封装结果集
-     */
-    @PostMapping(value = "/tag/list")
-    public Result techTags(@RequestParam Integer categoryId) {
-        TagVO tagVO = tagService.oldFindTagsByCategoryId(categoryId);
-        if (tagVO == null) {
-            return Result.error().msg("该游戏没有设置标签!");
-        }
-        return Result.success().data(tagVO);
-    }
 
-    /**
-     * 查询游戏所有段位
-     *
-     * @param categoryId 分类id
-     * @return 封装结果集
-     */
-    @PostMapping(value = "/dan/list")
-    public Result danList(@RequestParam Integer categoryId) {
-        TechAttr techAttr = techAttrService.findByCategoryAndType(categoryId, TechAttrTypeEnum.DAN.getType());
-        if (techAttr == null) {
-            return Result.error().msg("该游戏没有设置段位信息!");
-        }
-        List<TechValue> techValueList = techValueService.findByTechAttrId(techAttr.getId());
-        return Result.success().data(techValueList);
-    }
 }

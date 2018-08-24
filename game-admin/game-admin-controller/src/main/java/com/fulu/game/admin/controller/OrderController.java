@@ -3,11 +3,10 @@ package com.fulu.game.admin.controller;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
-import com.fulu.game.core.service.impl.order.AdminOrderServiceImpl;
+import com.fulu.game.admin.service.impl.AdminOrderServiceImpl;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.core.entity.ArbitrationDetails;
-import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderStatusDetailsVO;
 import com.fulu.game.core.entity.vo.OrderVO;
@@ -43,19 +42,26 @@ public class OrderController extends BaseController {
     /**
      * 管理员-订单列表
      *
-     * @param orderSearchVO
-     * @return
+     * @param pageNum       页码
+     * @param pageSize      每页显示数据条数
+     * @param orderBy       排序字符串
+     * @param orderSearchVO 查询VO
+     * @return 封装结果集
      */
     @RequestMapping("/list")
-    public Result list(@RequestParam(required = true) Integer pageNum,
-                       @RequestParam(required = true) Integer pageSize,
+    public Result list(@RequestParam Integer pageNum,
+                       @RequestParam Integer pageSize,
                        String orderBy,
                        OrderSearchVO orderSearchVO) {
         PageInfo<OrderResVO> orderList = orderService.list(orderSearchVO, pageNum, pageSize, orderBy);
         return Result.success().data(orderList).msg("查询列表成功！");
     }
 
-
+    /**
+     * 管理员-所有订单状态位
+     *
+     * @return 封装结果集
+     */
     @RequestMapping("status-all")
     public Result statusList() {
         JSONArray ja = new JSONArray();
@@ -187,9 +193,9 @@ public class OrderController extends BaseController {
     public void orderExport(HttpServletResponse response,
                             OrderSearchVO orderSearchVO) throws Exception {
         String title = "订单列表";
-        List<Order> orderList = orderService.findBySearchVO(orderSearchVO);
+        List<OrderResVO> orderResVOList = orderService.findBySearchVO(orderSearchVO);
         ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
-        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, Order.class, orderList);
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, OrderResVO.class, orderResVOList);
         response.setCharacterEncoding("UTF-8");
         response.setHeader("content-Type", "application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));

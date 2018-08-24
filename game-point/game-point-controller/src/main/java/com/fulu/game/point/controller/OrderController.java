@@ -14,13 +14,15 @@ import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.PointOrderDetailsVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.fulu.game.core.service.impl.pay.PointMiniAppPayServiceImpl;
-import com.fulu.game.core.service.impl.order.PointMiniAppOrderServiceImpl;
-import com.fulu.game.core.service.impl.push.PointMiniAppPushServiceImpl;
+import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
+import com.fulu.game.point.service.impl.PointMiniAppPayServiceImpl;
+import com.fulu.game.point.service.impl.PointMiniAppOrderServiceImpl;
+import com.fulu.game.point.service.impl.PointMiniAppPushServiceImpl;
 import com.fulu.game.point.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,7 +41,7 @@ import java.util.List;
 public class OrderController extends BaseController {
 
     @Autowired
-    private PointMiniAppOrderServiceImpl orderService;
+    private PointMiniAppOrderServiceImpl pointMiniAppOrderServiceImpl;
     @Autowired
     private GradingPriceService gradingPriceService;
     @Autowired
@@ -48,8 +50,9 @@ public class OrderController extends BaseController {
     private TechValueService techValueService;
     @Autowired
     private UserService userService;
+    @Qualifier(value = "userTechAuthServiceImpl")
     @Autowired
-    private UserTechAuthService userTechAuthService;
+    private UserTechAuthServiceImpl userTechAuthService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
     @Autowired
@@ -67,7 +70,7 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/details")
     public Result orderDetails(@RequestParam(required = true) String orderNo) {
-        PointOrderDetailsVO orderDetailsVO = orderService.findPointOrderDetails(orderNo);
+        PointOrderDetailsVO orderDetailsVO = pointMiniAppOrderServiceImpl.findPointOrderDetails(orderNo);
         return Result.success().data(orderDetailsVO);
     }
 
@@ -83,7 +86,7 @@ public class OrderController extends BaseController {
     public Result orderList(Integer pageNum,
                             Integer pageSize,
                             Integer type) {
-        PageInfo<PointOrderDetailsVO> pageInfo = orderService.pointOrderList(pageNum, pageSize, type);
+        PageInfo<PointOrderDetailsVO> pageInfo = pointMiniAppOrderServiceImpl.pointOrderList(pageNum, pageSize, type);
         return Result.success().data(pageInfo);
     }
 
@@ -96,7 +99,7 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/new-order-count")
     public Result newOrderCount(Date startDate) {
-        Integer count = orderService.countNewPointOrder(startDate);
+        Integer count = pointMiniAppOrderServiceImpl.countNewPointOrder(startDate);
         return Result.success().data(count);
     }
 
@@ -110,7 +113,7 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/receive/list")
     public Result list(@RequestParam(value = "pageNum") Integer pageNum,
                        @RequestParam(value = "pageSize") Integer pageSize) {
-        PageInfo<PointOrderDetailsVO> pageInfo = orderService.receivingPointOrderList(pageNum, pageSize);
+        PageInfo<PointOrderDetailsVO> pageInfo = pointMiniAppOrderServiceImpl.receivingPointOrderList(pageNum, pageSize);
         return Result.success().data(pageInfo);
     }
 
@@ -151,7 +154,7 @@ public class OrderController extends BaseController {
      */
     @PostMapping(value = "/receive")
     public Result orderReceive(@RequestParam(required = true) String orderNo) {
-        Order order = orderService.findByOrderNo(orderNo);
+        Order order = pointMiniAppOrderServiceImpl.findByOrderNo(orderNo);
         if (order == null) {
             throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST, orderNo);
         }
@@ -163,7 +166,7 @@ public class OrderController extends BaseController {
         if (!techAuthList.contains(order.getCategoryId())) {
             throw new OrderException(OrderException.ExceptionCode.ORDER_USER_NOT_HAS_TECH, order.getOrderNo());
         }
-        orderService.receivePointOrder(order.getOrderNo(), user);
+        pointMiniAppOrderServiceImpl.receivePointOrder(order.getOrderNo(), user);
         return Result.success().data(orderNo).msg("接单成功!");
     }
 
@@ -186,7 +189,7 @@ public class OrderController extends BaseController {
         }
         OrderPointProductVO orderPointProductVO = getAdvanceOrder(orderPointProductTO);
         String orderIp = RequestUtil.getIpAdrress(request);
-        String orderNo = orderService.submitPointOrder(orderPointProductVO,
+        String orderNo = pointMiniAppOrderServiceImpl.submitPointOrder(orderPointProductVO,
                 orderPointProductTO.getCouponNo(),
                 orderPointProductTO.getContactType(),
                 orderPointProductTO.getContactInfo(), orderIp);
@@ -205,7 +208,7 @@ public class OrderController extends BaseController {
     public Result pay(@RequestParam(required = true) String orderNo,
                       HttpServletRequest request) {
         String ip = RequestUtil.getIpAdrress(request);
-        Order order = orderService.findByOrderNo(orderNo);
+        Order order = pointMiniAppOrderServiceImpl.findByOrderNo(orderNo);
         User user = userService.findById(order.getUserId());
         Object result = pointMiniAppPayService.payOrder(order, user, ip);
         return Result.success().data(result);
@@ -219,7 +222,7 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/user/cancel")
     public Result userCancelOrder(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = orderService.userCancelOrder(orderNo);
+        OrderVO orderVO = pointMiniAppOrderServiceImpl.userCancelOrder(orderNo);
         return Result.success().data(orderVO).msg("取消订单成功!");
     }
 
@@ -236,7 +239,7 @@ public class OrderController extends BaseController {
     public Result userAppealOrder(@RequestParam(required = true) String orderNo,
                                   String remark,
                                   @RequestParam(required = true) String[] fileUrl) {
-        orderService.userAppealOrder(orderNo, remark, fileUrl);
+        pointMiniAppOrderServiceImpl.userAppealOrder(orderNo, remark, fileUrl);
         return Result.success().data(orderNo).msg("订单申诉成功!");
     }
 
@@ -252,7 +255,7 @@ public class OrderController extends BaseController {
         if (redisOpenService.isTimeIntervalInside(orderNo)) {
             return Result.error().msg("不能频繁提醒开始!");
         }
-        Order order = orderService.findByOrderNo(orderNo);
+        Order order = pointMiniAppOrderServiceImpl.findByOrderNo(orderNo);
         //发送通知
         pointMiniAppPushService.remindReceive(order);
         redisOpenService.setTimeInterval(orderNo, 5 * 60);
@@ -273,7 +276,7 @@ public class OrderController extends BaseController {
         if (redisOpenService.isTimeIntervalInside(OrderEventService.CANCEL_CONSULT_LIMIT + orderNo)) {
             return Result.error().msg("取消协商后,两个小时内不能重复协商!");
         }
-        orderService.userConsultOrder(orderNo, refundMoney, remark, fileUrl);
+        pointMiniAppOrderServiceImpl.userConsultOrder(orderNo, refundMoney, remark, fileUrl);
         return Result.success().data(orderNo);
     }
 
@@ -288,7 +291,7 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/server/consult-appeal")
     public Result consultAppeal(@RequestParam(required = true) String orderNo,
                                 Integer orderEventId) {
-        orderService.consultAgreeOrder(orderNo, orderEventId);
+        pointMiniAppOrderServiceImpl.consultAgreeOrder(orderNo, orderEventId);
         return Result.success().data(orderNo);
     }
 
@@ -305,7 +308,7 @@ public class OrderController extends BaseController {
                                 Integer orderEventId,
                                 String remark,
                                 @RequestParam(required = true) String[] fileUrl) {
-        orderService.consultRejectOrder(orderNo, orderEventId, remark, fileUrl);
+        pointMiniAppOrderServiceImpl.consultRejectOrder(orderNo, orderEventId, remark, fileUrl);
         return Result.success().data(orderNo);
     }
 
@@ -319,7 +322,7 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/user/consult-cancel")
     public Result consultCancel(@RequestParam(required = true) String orderNo,
                                 Integer orderEventId) {
-        orderService.consultCancelOrder(orderNo, orderEventId);
+        pointMiniAppOrderServiceImpl.consultCancelOrder(orderNo, orderEventId);
         return Result.success().data(orderNo).msg("取消协商成功!");
     }
 
@@ -332,7 +335,7 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/server/start-serve")
     public Result startServerOrder(@RequestParam(required = true) String orderNo) {
-        orderService.serverStartServeOrder(orderNo);
+        pointMiniAppOrderServiceImpl.serverStartServeOrder(orderNo);
         return Result.success().data(orderNo).msg("接单成功!");
     }
 
@@ -345,7 +348,7 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/user/verify")
     public Result userVerifyOrder(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = orderService.userVerifyOrder(orderNo);
+        OrderVO orderVO = pointMiniAppOrderServiceImpl.userVerifyOrder(orderNo);
         return Result.success().data(orderVO).msg("订单验收成功!");
     }
 
@@ -358,7 +361,7 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/server/cancel")
     public Result serverCancelOrder(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = orderService.serverCancelOrder(orderNo);
+        OrderVO orderVO = pointMiniAppOrderServiceImpl.serverCancelOrder(orderNo);
         return Result.success().data(orderVO).msg("取消订单成功!");
     }
 
@@ -372,7 +375,7 @@ public class OrderController extends BaseController {
     public Result serverAcceptanceOrder(@RequestParam(required = true) String orderNo,
                                         String remark,
                                         String[] fileUrl) {
-        OrderVO orderVO = orderService.serverAcceptanceOrder(orderNo, remark, fileUrl);
+        OrderVO orderVO = pointMiniAppOrderServiceImpl.serverAcceptanceOrder(orderNo, remark, fileUrl);
         return Result.success().data(orderVO).msg("提交订单验收成功!");
     }
 
@@ -385,7 +388,7 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/event")
     public Result orderEvent(@RequestParam(required = true) String orderNo) {
-        OrderEventVO orderEventVO = orderService.findOrderEvent(orderNo);
+        OrderEventVO orderEventVO = pointMiniAppOrderServiceImpl.findOrderEvent(orderNo);
         return Result.success().data(orderEventVO);
     }
 
@@ -403,7 +406,7 @@ public class OrderController extends BaseController {
                                 Integer orderEventId,
                                 String remark,
                                 String[] fileUrl) {
-        OrderDeal orderDeal = orderService.eventLeaveMessage(orderNo, orderEventId, remark, fileUrl);
+        OrderDeal orderDeal = pointMiniAppOrderServiceImpl.eventLeaveMessage(orderNo, orderEventId, remark, fileUrl);
         return Result.success().data(orderDeal);
     }
 
@@ -451,7 +454,7 @@ public class OrderController extends BaseController {
      */
     @PostMapping("/accept-order/status")
     public DeferredResult<Result> getServiceUserAcceptOrderStatus() {
-        DeferredResult<Result> resultDeferredResult = orderService.getServiceUserAcceptOrderStatus();
+        DeferredResult<Result> resultDeferredResult = pointMiniAppOrderServiceImpl.getServiceUserAcceptOrderStatus();
         return resultDeferredResult;
     }
 

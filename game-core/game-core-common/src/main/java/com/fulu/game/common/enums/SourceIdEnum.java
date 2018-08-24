@@ -14,7 +14,8 @@ import lombok.Getter;
 public enum SourceIdEnum implements TypeEnum<Integer> {
 
     PILOT(1, "领航"),
-    CHINA_JOY(31, "ChinaJoy");
+    CHINA_JOY(31, "ChinaJoy"),
+    FENQILE(34, "分期乐");
 
     private Integer type;
     private String msg;

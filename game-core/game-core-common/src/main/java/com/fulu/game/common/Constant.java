@@ -168,4 +168,14 @@ public interface Constant {
      * 陪玩师接单
      */
     String SERVICE_USER_ACCEPT_ORDER = "1";
+
+    /**
+     * 分期乐订单--已对账
+     */
+    Integer IS_RECON = 1;
+
+    /**
+     * 分期乐订单--未对账
+     */
+    Integer UN_RECON = 0;
 }

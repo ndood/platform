@@ -3,8 +3,8 @@ package com.fulu.game.point.controller;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Coupon;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.service.CouponService;
 import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.impl.coupon.PointCouponServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +28,15 @@ import java.util.Map;
 @RequestMapping("/api/v1/coupon")
 public class CouponController extends BaseController {
 
-    private final PointCouponServiceImpl couponService;
+    private final CouponService couponService;
     private final UserService userService;
 
     @Autowired
-    public CouponController(PointCouponServiceImpl couponService, UserService userService) {
+    public CouponController(CouponService couponService, UserService userService) {
         this.couponService = couponService;
         this.userService = userService;
     }
+
 
     /**
      * 获取优惠券列表

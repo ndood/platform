@@ -12,7 +12,7 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.AssignOrderService;
 import com.fulu.game.core.service.SettingService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.fulu.game.core.service.impl.order.ScheduleOrderServiceImpl;
+import com.fulu.game.schedule.service.impl.ScheduleOrderServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;

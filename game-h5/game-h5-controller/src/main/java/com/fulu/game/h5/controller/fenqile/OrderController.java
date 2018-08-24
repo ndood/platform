@@ -14,9 +14,9 @@ import com.fulu.game.core.service.OrderDealService;
 import com.fulu.game.core.service.OrderEventService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.fulu.game.core.service.impl.order.H5OrderServiceImpl;
-import com.fulu.game.core.service.impl.push.H5MiniAppPushServiceImpl;
-import com.fulu.game.core.service.impl.push.PlayMiniAppPushServiceImpl;
+import com.fulu.game.h5.service.impl.fenqile.FenqilePayServiceImpl;
+import com.fulu.game.h5.service.impl.fenqile.H5OrderServiceImpl;
+import com.fulu.game.h5.service.impl.fenqile.H5PushServiceImpl;
 import com.fulu.game.h5.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -38,23 +38,29 @@ import java.math.BigDecimal;
 @Slf4j
 @RequestMapping("/api/v1/order")
 public class OrderController extends BaseController {
+
     private final UserService userService;
     private final RedisOpenServiceImpl redisOpenService;
     private final H5OrderServiceImpl orderService;
-    private final H5MiniAppPushServiceImpl h5miniAppPushService;
     private final OrderDealService orderDealService;
+    private final FenqilePayServiceImpl fenqilePayService;
+    private final H5PushServiceImpl h5PushService;
+
+
 
     @Autowired
     public OrderController(UserService userService,
                            RedisOpenServiceImpl redisOpenService,
                            H5OrderServiceImpl orderService,
-                           H5MiniAppPushServiceImpl h5miniAppPushService,
-                           OrderDealService orderDealService) {
+                           OrderDealService orderDealService,
+                           FenqilePayServiceImpl fenqilePayService,
+                           H5PushServiceImpl h5PushService) {
         this.userService = userService;
         this.redisOpenService = redisOpenService;
         this.orderService = orderService;
-        this.h5miniAppPushService = h5miniAppPushService;
         this.orderDealService = orderDealService;
+        this.fenqilePayService = fenqilePayService;
+        this.h5PushService = h5PushService;
     }
 
     /**
@@ -148,10 +154,29 @@ public class OrderController extends BaseController {
             return Result.error().msg("不能频繁提醒接单!");
         }
         Order order = orderService.findByOrderNo(orderNo);
-        h5miniAppPushService.remindReceive(order);
+        h5PushService.remindReceive(order);
         redisOpenService.setTimeInterval(orderNo, 5 * 60);
         return Result.success().msg("提醒接单成功!");
     }
+
+    /**
+     * 订单支付接口
+     *
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/pay")
+    @Deprecated
+    public Result pay(@RequestParam(required = true) String orderNo,
+                      HttpServletRequest request) {
+        String ip = RequestUtil.getIpAdrress(request);
+        Order order = orderService.findByOrderNo(orderNo);
+        User user = userService.findById(order.getUserId());
+        Object result = fenqilePayService.payOrder(order, user, ip);
+        return Result.success().data(result);
+    }
+
+
 
     /**
      * 提醒开始服务
@@ -165,7 +190,7 @@ public class OrderController extends BaseController {
             return Result.error().msg("不能频繁提醒开始!");
         }
         Order order = orderService.findByOrderNo(orderNo);
-        h5miniAppPushService.remindStart(order);
+        h5PushService.remindStart(order);
         redisOpenService.setTimeInterval(orderNo, 5 * 60);
         return Result.success().msg("提醒开始成功!");
     }
@@ -189,36 +214,6 @@ public class OrderController extends BaseController {
         return Result.success().data(orderNo);
     }
 
-    /**
-     * 陪玩师同意协商
-     *
-     * @param orderNo
-     * @param orderEventId
-     * @return
-     */
-    @RequestMapping(value = "/server/consult-appeal")
-    public Result consultAppeal(@RequestParam(required = true) String orderNo,
-                                Integer orderEventId) {
-        orderService.consultAgreeOrder(orderNo, orderEventId);
-        return Result.success().data(orderNo);
-    }
-
-
-    /**
-     * 陪玩师拒绝协商
-     *
-     * @param orderNo
-     * @param orderEventId
-     * @return
-     */
-    @RequestMapping(value = "/server/consult-reject")
-    public Result consultReject(@RequestParam(required = true) String orderNo,
-                                Integer orderEventId,
-                                String remark,
-                                @RequestParam(required = true) String[] fileUrl) {
-        orderService.consultRejectOrder(orderNo, orderEventId, remark, fileUrl);
-        return Result.success().data(orderNo);
-    }
 
     /**
      * 用户取消协商
@@ -229,35 +224,11 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/user/consult-cancel")
     public Result consultCancel(@RequestParam(required = true) String orderNo,
-                                Integer orderEventId) {
+                                @RequestParam(required = true) Integer orderEventId) {
         orderService.consultCancelOrder(orderNo, orderEventId);
         return Result.success().data(orderNo).msg("取消协商成功!");
     }
 
-    /**
-     * 陪玩师接收订单
-     *
-     * @param orderNo
-     * @return
-     */
-    @RequestMapping(value = "/server/receive")
-    public Result serverReceiveOrder(@RequestParam String orderNo,
-                                     String version) {
-        orderService.serverReceiveOrder(orderNo);
-        return Result.success().data(orderNo).msg("接单成功!");
-    }
-
-    /**
-     * 陪玩师开始服务
-     *
-     * @param orderNo
-     * @return
-     */
-    @RequestMapping(value = "/server/start-serve")
-    public Result startServerOrder(@RequestParam(required = true) String orderNo) {
-        orderService.serverStartServeOrder(orderNo);
-        return Result.success().data(orderNo).msg("接单成功!");
-    }
 
     /**
      * 用户验收订单
@@ -269,32 +240,6 @@ public class OrderController extends BaseController {
     public Result userVerifyOrder(@RequestParam(required = true) String orderNo) {
         OrderVO orderVO = orderService.userVerifyOrder(orderNo);
         return Result.success().data(orderVO).msg("订单验收成功!");
-    }
-
-    /**
-     * 陪玩师取消订单
-     *
-     * @param orderNo
-     * @return
-     */
-    @RequestMapping(value = "/server/cancel")
-    public Result serverCancelOrder(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = orderService.serverCancelOrder(orderNo);
-        return Result.success().data(orderVO).msg("取消订单成功!");
-    }
-
-    /**
-     * 陪玩师提交验收订单
-     *
-     * @param orderNo
-     * @return
-     */
-    @RequestMapping(value = "/server/acceptance")
-    public Result serverAcceptanceOrder(@RequestParam(required = true) String orderNo,
-                                        String remark,
-                                        String[] fileUrl) {
-        OrderVO orderVO = orderService.serverAcceptanceOrder(orderNo, remark, fileUrl);
-        return Result.success().data(orderVO).msg("提交订单验收成功!");
     }
 
 
@@ -311,7 +256,14 @@ public class OrderController extends BaseController {
     }
 
 
-
+    /**
+     * 创建订单留言
+     * @param orderNo
+     * @param orderEventId
+     * @param remark
+     * @param fileUrl
+     * @return
+     */
     @RequestMapping(value = "/leave-msg")
     public Result orderLeaveMsg(@RequestParam(required = true) String orderNo,
                                 Integer orderEventId,

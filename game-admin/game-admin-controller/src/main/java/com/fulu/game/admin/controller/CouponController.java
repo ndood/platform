@@ -3,7 +3,6 @@ package com.fulu.game.admin.controller;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
-import com.fulu.game.core.service.impl.coupon.AdminCouponServiceImpl;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Coupon;
 import com.fulu.game.core.entity.CouponGrantUser;
@@ -12,6 +11,8 @@ import com.fulu.game.core.entity.vo.CouponGroupVO;
 import com.fulu.game.core.service.CouponGrantService;
 import com.fulu.game.core.service.CouponGrantUserService;
 import com.fulu.game.core.service.CouponGroupService;
+import com.fulu.game.admin.service.impl.AdminCouponOpenServiceImpl;
+import com.fulu.game.core.service.CouponService;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.net.URLEncoder;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +33,7 @@ public class CouponController extends BaseController {
     @Autowired
     private CouponGroupService couponGroupService;
     @Autowired
-    private AdminCouponServiceImpl couponService;
+    private CouponService couponService;
     @Autowired
     private CouponGrantService couponGrantService;
     @Autowired
@@ -120,31 +120,31 @@ public class CouponController extends BaseController {
         return Result.success().data(pageInfo);
     }
 
-
     /**
-     * 优惠券发放
-     * @param redeemCode
-     * @param userIds
-     * @param remark
-     * @return
+     * 发放优惠券
+     *
+     * @param redeemCode 优惠券兑换码
+     * @param userIds    用户id（多个以英文逗号隔开）
+     * @param remark     备注
+     * @return 封装结果集
      */
     @PostMapping(value = "/grant")
-    public Result couponGrant(@RequestParam(required = true) String redeemCode,
-                              @RequestParam(required = true) String userIds,
-                              @RequestParam(required = true) String remark) {
+    public Result couponGrant(@RequestParam String redeemCode,
+                              @RequestParam String userIds,
+                              @RequestParam String remark) {
         if (StringUtils.isBlank(userIds)) {
             return Result.error().msg("用户ID不能为空");
         }
-        List<String> userIdList = Arrays.asList(userIds.split(","));
-        couponGrantService.create(redeemCode, userIdList, remark);
+        couponGrantService.create(redeemCode, userIds, remark);
         return Result.success().msg("优惠券发放完成，发放失败用户请查看明细!");
     }
 
-
     /**
-     * 优惠券发放记录
+     * 优惠券发放记录列表
      *
-     * @return
+     * @param pageNum  页码
+     * @param pageSize 每页显示数据条数
+     * @return 封装结果集
      */
     @PostMapping(value = "/grant/list")
     public Result couponGrantList(Integer pageNum,

@@ -2,12 +2,15 @@ package com.fulu.game.play.controller;
 
 import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
@@ -18,13 +21,15 @@ import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.WxUserInfo;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
+import com.fulu.game.play.service.impl.PlayCouponOpenServiceImpl;
 import com.fulu.game.play.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
-import cn.hutool.core.bean.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,8 +45,9 @@ import java.util.List;
 @RequestMapping("/api/v1/user")
 public class UserController extends BaseController {
 
+    @Qualifier(value = "userTechAuthServiceImpl")
     @Autowired
-    private UserTechAuthService userTechAuthService;
+    private UserTechAuthServiceImpl userTechAuthService;
     @Autowired
     private UserService userService;
     @Autowired
@@ -60,6 +66,10 @@ public class UserController extends BaseController {
     private ImService imService;
     @Autowired
     private AdviceService adviceService;
+    @Autowired
+    private PlayCouponOpenServiceImpl playCouponOpenServiceImpl;
+    @Autowired
+    private SpringThreadPoolExecutor springThreadPoolExecutor;
 
     @RequestMapping("tech/list")
     public Result userTechList() {
@@ -180,7 +190,7 @@ public class UserController extends BaseController {
         try {
             userService.update(user);
             userService.updateRedisUser(user);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("更新微信手机号错误用户信息:{};手机号:{};", user, user.getMobile());
             return Result.error().msg("手机号已被注册!");
         }
@@ -201,16 +211,16 @@ public class UserController extends BaseController {
         User tempUser = userService.getCurrentUser();
         UserVO user = new UserVO();
         BeanUtil.copyProperties(tempUser, user);
-        WxMaUserInfo wxMaUserInfo =null;
+        WxMaUserInfo wxMaUserInfo = null;
         try {
             String sessionKey = redisOpenService.get(RedisKeyEnum.WX_SESSION_KEY.generateKey(SubjectUtil.getToken()));
-            if( wxUserInfo.getEncryptedData()!=null&&wxUserInfo.getIv()!=null){
+            if (wxUserInfo.getEncryptedData() != null && wxUserInfo.getIv() != null) {
                 wxMaUserInfo = wxMaServiceSupply.playWxMaService().getUserService().getUserInfo(sessionKey, wxUserInfo.getEncryptedData(), wxUserInfo.getIv());
             }
         } catch (Exception e) {
             log.error("获取用户微信异常:wxUserInfo:{};{}", wxUserInfo, e.getMessage());
         }
-        if(wxMaUserInfo!=null){
+        if (wxMaUserInfo != null) {
             user.setUnionId(wxMaUserInfo.getUnionId());
         }
         if (user.getGender() == null) {
@@ -235,12 +245,21 @@ public class UserController extends BaseController {
         String ipStr = RequestUtil.getIpAdrress(request);
 
         User resultUser = null;
-        if(user.getUnionId()==null){
+        if (user.getUnionId() == null) {
             userService.update(user);
             userService.updateRedisUser(user);
             resultUser = user;
-        }else{
+        } else {
             resultUser = userService.updateUnionUser(user, WechatEcoEnum.PLAY, ipStr);
+            if (Constant.SEND_COUPOU_SUCCESS.equals(user.getCoupouStatus())) {
+                //新线程发放优惠券（避免事务问题：当前方法的事务和优惠券发放的事务，因为都涉及到t_user表的操作，可能造成数据库死锁）
+                springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        playCouponOpenServiceImpl.generateCoupon(Constant.NEW_POINT_USER_COUPON_GROUP_REDEEM_CODE, user.getId(), DateUtil.date(), ipStr);
+                    }
+                });
+            }
         }
         return Result.success().data(resultUser);
     }
