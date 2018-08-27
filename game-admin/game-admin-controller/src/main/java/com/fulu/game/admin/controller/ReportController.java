@@ -42,7 +42,7 @@ public class ReportController extends BaseController {
     /**
      * 修改备注信息
      *
-     * @param id     id
+     * @param id     举报id
      * @param remark 备注
      * @return 封装结果集
      */
@@ -59,7 +59,7 @@ public class ReportController extends BaseController {
     /**
      * 修改举报状态
      *
-     * @param id id
+     * @param id 举报id
      * @return 封装结果集
      */
     @RequestMapping("/process")
