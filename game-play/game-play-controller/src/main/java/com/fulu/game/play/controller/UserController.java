@@ -139,21 +139,21 @@ public class UserController extends BaseController {
         //缓存中查找该手机是否有验证码
         if (redisOpenService.hasKey(RedisKeyEnum.SMS.generateKey(mobile))) {
             String times = redisOpenService.get(RedisKeyEnum.SMS.generateKey(mobile));
-            if (Integer.parseInt(times) > Constant.MOBILE_CODE_SEND_TIMES_DEV) {
-                return Result.error().msg("半小时内发送次数不能超过" + Constant.MOBILE_CODE_SEND_TIMES_DEV + "次，请等待！");
+            if (Integer.parseInt(times) > Constant.MOBILE_CODE_SEND_TIMES) {
+                return Result.error().msg("半小时内发送次数不能超过" + Constant.MOBILE_CODE_SEND_TIMES + "次，请等待！");
             } else {
                 String verifyCode = SMSUtil.sendVerificationCode(mobile);
                 log.info("发送验证码{}={}", mobile, verifyCode);
-                redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode, Constant.VERIFYCODE_CACHE_TIME_DEV);
+                redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode, Constant.VERIFYCODE_CACHE_TIME);
                 times = String.valueOf(Integer.parseInt(times) + 1);
-                redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), times, Constant.MOBILE_CACHE_TIME_DEV);
+                redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), times, Constant.MOBILE_CACHE_TIME);
                 return Result.success().msg("验证码发送成功！");
             }
         } else {
             String verifyCode = SMSUtil.sendVerificationCode(mobile);
             log.info("发送验证码{}={}", mobile, verifyCode);
-            redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode, Constant.VERIFYCODE_CACHE_TIME_DEV);
-            redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), "1", Constant.MOBILE_CACHE_TIME_DEV);
+            redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode, Constant.VERIFYCODE_CACHE_TIME);
+            redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), "1", Constant.MOBILE_CACHE_TIME);
             return Result.success().msg("验证码发送成功！");
         }
     }

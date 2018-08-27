@@ -3,7 +3,7 @@ package com.fulu.game.app.config;
 
 import com.fulu.game.app.shiro.AclFilter;
 import com.fulu.game.app.shiro.MyShiroRealm;
-import com.fulu.game.app.shiro.PlayUserMatcher;
+import com.fulu.game.app.shiro.AppUserMatcher;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
@@ -60,7 +60,7 @@ public class ShiroConfig {
      */
     @Bean
     public HashedCredentialsMatcher hashedCredentialsMatcher() {
-        HashedCredentialsMatcher hashedCredentialsMatcher = new PlayUserMatcher();
+        HashedCredentialsMatcher hashedCredentialsMatcher = new AppUserMatcher();
         return hashedCredentialsMatcher;
     }
 

@@ -1,10 +1,7 @@
 package com.fulu.game.h5.shiro;
 
-import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.core.entity.ThirdpartyUser;
-import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.ThirdpartyUserService;
-import com.fulu.game.core.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -44,7 +41,7 @@ public class MyShiroRealm extends AuthorizingRealm {
         } else {
             //新创建的用户记录注册的ip
             String ip = playUserToken.getHost();
-            thirdpartyUser = thirdpartyUserService.createFenqileUser(openId,ip);
+            thirdpartyUser = thirdpartyUserService.createFenqileUser(openId, ip);
             log.info("创建openId为{}的用户", openId);
         }
         return new SimpleAuthenticationInfo(thirdpartyUser, openId, getName());

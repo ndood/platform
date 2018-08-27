@@ -90,6 +90,10 @@ public interface UserService extends ICommonService<User, Integer> {
      */
     List<User> findByUserIds(List<Integer> userIds, Boolean disabled);
 
+    /**
+     * 更新redis用户
+     * @param user
+     */
     void updateRedisUser(User user);
 
     /**
@@ -128,6 +132,9 @@ public interface UserService extends ICommonService<User, Integer> {
      * @return
      */
     User createNewUser(WechatEcoEnum wechatEcoEnum, String openId, Integer sourceId, String host);
+
+
+    User createNewUser(String mobile, String host);
 
     /**
      * 获取当前登录用户
@@ -182,19 +189,6 @@ public interface UserService extends ICommonService<User, Integer> {
      */
     void checkUserInfoAuthStatus(Integer userId, Integer... ignoreAuthStatus);
 
-    /**
-     * 查询imid为空的用户
-     *
-     * @return
-     */
-    List<ImUser> findImNullUser();
-
-    /**
-     * 绑定im信息
-     *
-     * @param imUser
-     */
-    void bindIm(ImUser imUser);
 
     /**
      * 同步用户信息（陪玩上分和陪玩开黑之间的用户数据同步）

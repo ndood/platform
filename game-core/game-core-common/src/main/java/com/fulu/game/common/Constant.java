@@ -11,8 +11,7 @@ public interface Constant {
     Double DEF_RECEIVING_ORDER_PRICE = 1.0;
 
     //手机验证码缓存时间
-    Long VERIFYCODE_CACHE_TIME_DEV = 5 * 60L;
-    Long VERIFYCODE_CACHE_TIME_DEP = 1 * 60L;
+    Long VERIFYCODE_CACHE_TIME = 5 * 60L;
 
     Long TIME_MINUTES_FIFTEEN = 15 * 60L;
 
@@ -26,9 +25,8 @@ public interface Constant {
     Long TIME_MINUTES_FIVE = 5 * 60L;
 
     //手机验证码限定次数和限定时间
-    Integer MOBILE_CODE_SEND_TIMES_DEV = 20;
-    Integer MOBILE_CODE_SEND_TIMES_DEP = 3;
-    Long MOBILE_CACHE_TIME_DEV = 30 * 60L;
+    Integer MOBILE_CODE_SEND_TIMES = 3;
+    Long MOBILE_CACHE_TIME = 30 * 60L;
 
     String WEIXN_JUMP_URL = "https://t-open.wzpeilian.com/pc/weixin.html ";
 

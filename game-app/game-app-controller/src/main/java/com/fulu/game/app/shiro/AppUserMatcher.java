@@ -7,6 +7,7 @@ import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -24,10 +25,13 @@ import java.util.Map;
  * @author LiuPiao
  */
 @Slf4j
-public class PlayUserMatcher extends HashedCredentialsMatcher implements InitializingBean {
+public class AppUserMatcher extends HashedCredentialsMatcher implements InitializingBean {
 
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+
+    @Autowired
+    private UserService userService;
 
 
     @Override
@@ -44,18 +48,18 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
      */
     @Override
     public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
-        PlayUserToken userToken = (PlayUserToken) token;
-        String paramOpenId = userToken.getMobile();
+        AppUserToken userToken = (AppUserToken) token;
         User user = (User) info.getPrincipals().getPrimaryPrincipal();
-        String dBOpenId = user.getOpenId();
-        //登录成功保存token和用户信息到redis
-        if (paramOpenId.equals(dBOpenId)) {
-            if(UserStatusEnum.BANNED.getType().equals(user.getStatus())){
+        String redisVerifyCode = redisOpenService.get(RedisKeyEnum.SMS_VERIFY_CODE.generateKey(user.getMobile()));
+        if (userToken.getVerifyCode().equals(redisVerifyCode)) {
+            if (user.getId() == null) {
+                user = userService.createNewUser(user.getMobile(), userToken.getHost());
+            }
+            if (UserStatusEnum.BANNED.getType().equals(user.getStatus())) {
                 throw new UserException(UserException.ExceptionCode.USER_BANNED_EXCEPTION);
             }
             //匹配完毕更新新的登录时间和IP
-            Map<String, Object> userMap = new HashMap<>();
-            userMap = BeanUtil.beanToMap(user);
+            Map<String, Object> userMap = BeanUtil.beanToMap(user);
             String gToken = GenIdUtil.GetToken();
             redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(gToken), userMap);
             SubjectUtil.setToken(gToken);
@@ -65,5 +69,8 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
         }
         return false;
     }
+
+
+
 
 }

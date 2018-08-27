@@ -5,16 +5,16 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 /**
  * 令牌
  */
-public class PlayUserToken extends UsernamePasswordToken {
+public class AppUserToken extends UsernamePasswordToken {
 
     private static final long serialVersionUID = 1L;
     private String mobile;
-    private String authCode;
+    private String verifyCode ;
 
-    public PlayUserToken(String mobile, String authCode) {
+    public AppUserToken(String mobile, String verifyCode) {
         super(mobile, "");
         this.mobile = mobile;
-        this.authCode = authCode;
+        this.verifyCode = verifyCode;
     }
 
 
@@ -22,9 +22,7 @@ public class PlayUserToken extends UsernamePasswordToken {
         return mobile;
     }
 
-    public String getAuthCode() {
-        return authCode;
+    public String getVerifyCode() {
+        return verifyCode;
     }
-
-
 }

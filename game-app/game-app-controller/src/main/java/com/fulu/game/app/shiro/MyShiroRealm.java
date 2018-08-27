@@ -1,6 +1,5 @@
 package com.fulu.game.app.shiro;
 
-import com.fulu.game.common.enums.WechatEcoEnum;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -23,17 +22,6 @@ public class MyShiroRealm extends AuthorizingRealm {
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         log.info("权限配置-->MyShiroRealm.doGetAuthorizationInfo()");
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-//
-//        SysUser sysUser  = (SysUser)principals.getPrimaryPrincipal();
-//        List<SysRole> sysRoleList =   sysUserRoleService.findSysUserByRoleId(sysUser.getId());
-//
-//        for(SysRole role:sysRoleList){
-//            authorizationInfo.addRole(role.getRole());
-//            List<SysPermission> sysPermissionList = sysRolePermissionService.findSysPermissionByRoleId(role.getId());
-//            for(SysPermission p:sysPermissionList){
-//                authorizationInfo.addStringPermission(p.getPermission());
-//            }
-//        }
         return authorizationInfo;
     }
 
@@ -44,10 +32,14 @@ public class MyShiroRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) {
-        PlayUserToken playUserToken = (PlayUserToken) token;
-        String openId = playUserToken.getMobile();
-        User user = userService.findByOpenId(openId, WechatEcoEnum.PLAY);
-
-        return new SimpleAuthenticationInfo(user, user.getOpenId(), getName());
+        AppUserToken playUserToken = (AppUserToken) token;
+        String mobile = playUserToken.getMobile();
+        String verifyCode = playUserToken.getVerifyCode();
+        User user = userService.findByMobile(mobile);
+        if (user == null) {
+            user = new User();
+            user.setMobile(mobile);
+        }
+        return new SimpleAuthenticationInfo(user, verifyCode, getName());
     }
 }

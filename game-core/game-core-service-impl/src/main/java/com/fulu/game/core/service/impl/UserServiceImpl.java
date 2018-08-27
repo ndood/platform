@@ -256,6 +256,14 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         return createNewUser(user);
     }
 
+    @Override
+    public User createNewUser(String mobile, String host) {
+        User user = new User();
+        user.setRegistIp(host);
+        user.setMobile(mobile);
+        return createNewUser(user);
+    }
+
 
     @Override
     public User getCurrentUser() {
@@ -509,22 +517,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
                 .build();
     }
 
-    @Override
-    public List<ImUser> findImNullUser() {
-        return userDao.findImNullUser();
-    }
 
-    @Override
-    public void bindIm(ImUser imUser) {
-        if (null == imUser || null == imUser.getUserId()) {
-            return;
-        }
-        User user = userDao.findById(imUser.getUserId());
-        user.setImId(imUser.getUsername());
-        user.setImPsw(imUser.getImPsw());
-        user.setUpdateTime(new Date());
-        userDao.update(user);
-    }
 
     @Override
     public User updateUnionUser(UserVO user, WechatEcoEnum wechatEcoEnum, String ipStr) {
@@ -575,6 +568,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public List<UserVO> findVOByUserIds(List<Integer> userIds) {
+        //todo 这个地方要改成userAuthInfo的VO
         if (CollectionUtil.isEmpty(userIds)) {
             return new ArrayList<>();
         }
