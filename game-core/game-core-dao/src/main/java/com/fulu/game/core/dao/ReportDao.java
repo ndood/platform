@@ -18,4 +18,5 @@ public interface ReportDao extends ICommonDao<Report, Integer> {
 
     List<Report> findByParameter(ReportVO reportVO);
 
+    List<ReportVO> list(ReportVO reportVO);
 }

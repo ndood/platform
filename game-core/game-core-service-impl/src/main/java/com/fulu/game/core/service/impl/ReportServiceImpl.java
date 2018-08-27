@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.exception.ParamsException;
@@ -8,17 +9,22 @@ import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.ReportDao;
 import com.fulu.game.core.dao.ReportFileDao;
+import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.Report;
 import com.fulu.game.core.entity.ReportFile;
+import com.fulu.game.core.entity.vo.ReportFileVO;
 import com.fulu.game.core.entity.vo.ReportVO;
+import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.ReportService;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -27,12 +33,17 @@ public class ReportServiceImpl extends AbsCommonService<Report, Integer> impleme
     private final ReportDao reportDao;
     private final ReportFileDao reportFileDao;
     private final OssUtil ossUtil;
+    private final AdminService adminService;
 
     @Autowired
-    public ReportServiceImpl(ReportDao reportDao, ReportFileDao reportFileDao, OssUtil ossUtil) {
+    public ReportServiceImpl(ReportDao reportDao,
+                             ReportFileDao reportFileDao,
+                             OssUtil ossUtil,
+                             AdminService adminService) {
         this.reportDao = reportDao;
         this.reportFileDao = reportFileDao;
         this.ossUtil = ossUtil;
+        this.adminService = adminService;
     }
 
 
@@ -58,7 +69,6 @@ public class ReportServiceImpl extends AbsCommonService<Report, Integer> impleme
         report.setReportedUserId(reportedUserId);
         report.setContent(content);
         report.setStatus(Constant.UN_PROCESSED);
-        report.setProcessTime(DateUtil.date());
         report.setUpdateTime(DateUtil.date());
         report.setCreateTime(DateUtil.date());
         reportDao.create(report);
@@ -78,7 +88,59 @@ public class ReportServiceImpl extends AbsCommonService<Report, Integer> impleme
     }
 
     @Override
-    public PageInfo<ReportVO> list(Integer status, Date startTime, Date endTime) {
-        return null;
+    public PageInfo<ReportVO> list(ReportVO reportVO) {
+        String orderBy = reportVO.getOrderBy();
+        if (StringUtils.isBlank(orderBy)) {
+            orderBy = "report.create_time DESC";
+        }
+
+        PageHelper.startPage(reportVO.getPageNum(), reportVO.getPageSize(), orderBy);
+        List<ReportVO> reportVOList = reportDao.list(reportVO);
+        if (CollectionUtil.isEmpty(reportVOList)) {
+            return null;
+        }
+
+        for (ReportVO vo : reportVOList) {
+            Integer reportId = vo.getId();
+
+            ReportFileVO reportFileVO = new ReportFileVO();
+            reportFileVO.setReportId(reportId);
+            List<ReportFile> fileList = reportFileDao.findByParameter(reportFileVO);
+            if (CollectionUtil.isEmpty(fileList)) {
+                continue;
+            }
+            List<String> fileUrlList = new ArrayList<>();
+            for (ReportFile file : fileList) {
+                fileUrlList.add(file.getUrl());
+            }
+            vo.setFileUrl(fileUrlList.toArray(new String[0]));
+        }
+
+        return new PageInfo<>(reportVOList);
+    }
+
+    @Override
+    public boolean remark(Integer id, String remark) {
+        Report report = new Report();
+        report.setId(id);
+        report.setRemark(remark);
+        report.setUpdateTime(DateUtil.date());
+        int flag = reportDao.update(report);
+        return flag > 0;
+    }
+
+    @Override
+    public boolean process(Integer id) {
+        Admin admin = adminService.getCurrentUser();
+
+        Report report = new Report();
+        report.setId(id);
+        report.setStatus(Constant.IS_PROCESSED);
+        report.setProcessTime(DateUtil.date());
+        report.setAdminId(admin.getId());
+        report.setAdminName(admin.getName());
+        report.setUpdateTime(DateUtil.date());
+        int flag = reportDao.update(report);
+        return flag > 0;
     }
 }

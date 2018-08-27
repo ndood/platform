@@ -137,4 +137,23 @@
             id = #{id}
         </where>
     </update>
+
+    <select id="list" resultType="com.fulu.game.core.entity.vo.ReportVO">
+        SELECT
+        report.*, user.nickname, reported_user.nickname as reported_user_nickname
+        FROM t_report AS report
+        LEFT JOIN t_user AS user ON report.user_id = `user`.id
+        LEFT JOIN t_user AS reported_user ON report.reported_user_id = reported_user.id
+        <where>
+            <if test="status != null">
+                AND report.status = #{status}
+            </if>
+            <if test="startTime != null">
+                AND report.process_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND report.process_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
 </mapper>

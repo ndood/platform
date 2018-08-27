@@ -4,8 +4,6 @@ import com.fulu.game.core.entity.Report;
 import com.fulu.game.core.entity.vo.ReportVO;
 import com.github.pagehelper.PageInfo;
 
-import java.util.Date;
-
 
 /**
  * 举报表
@@ -18,5 +16,9 @@ public interface ReportService extends ICommonService<Report, Integer> {
 
     void submit(ReportVO reportVO);
 
-    PageInfo<ReportVO> list(Integer status, Date startTime, Date endTime);
+    PageInfo<ReportVO> list(ReportVO reportVO);
+
+    boolean remark(Integer id, String remark);
+
+    boolean process(Integer id);
 }
