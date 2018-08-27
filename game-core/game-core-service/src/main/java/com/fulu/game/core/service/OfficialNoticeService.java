@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.OfficialNotice;
+import com.github.pagehelper.PageInfo;
 
 
 /**
@@ -12,4 +13,7 @@ import com.fulu.game.core.entity.OfficialNotice;
  */
 public interface OfficialNoticeService extends ICommonService<OfficialNotice, Integer> {
 
+    PageInfo<OfficialNotice> list(Integer pageNum, Integer pageSize);
+
+    void add(OfficialNotice officialNotice);
 }
