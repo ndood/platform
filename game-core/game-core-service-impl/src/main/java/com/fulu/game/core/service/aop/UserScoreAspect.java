@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.UserScoreEnum;
+import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.core.entity.ArbitrationDetails;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
@@ -60,6 +61,16 @@ public class UserScoreAspect {
             Object[] array = joinPoint.getArgs();
             String acceptImId = (String) array[1];
             String imId = (String) array[2];
+
+            //只处理陪玩师是消息发送方的情况
+            User sendImUser = userService.findByImId(imId);
+            if (sendImUser == null) {
+                return;
+            }
+            if (!UserTypeEnum.ACCOMPANY_PLAYER.equals(sendImUser.getType())) {
+                return;
+            }
+
             String result = redisOpenService.get(imId + "+" + acceptImId);
             if (StringUtils.isNotBlank(result) && result.equals(Constant.IM_DELAY_CALCULATED)) {
                 return;
