@@ -22,11 +22,11 @@ public enum RedisKeyEnum {
     WRITER_SESSION_KEY, //写操作的sessionKey
     MARKET_ORDER_IS_PUSH, //判断集市订单是否推送过
     GLOBAL_FORM_TOKEN, //表单验证token
-    USER_ONLINE_KEY, //表单验证token
+    USER_ONLINE_KEY, //用户在线状态
     TIME_INTERVAL_KEY, //订单状态倒计时
     AUTO_ASSIGN_ORDER_USER, //是否已经自动排单用户
-    SMS_VERIFY_CODE, //APP登录验证码
-    SMS_VERIFY_CODE_TIMES; //APP登录验证码发送次数
+    SMS_VERIFY_CODE, //APP登录验证码1
+    SMS_VERIFY_CODE_TIMES; //APP登录验证码发送次数1
 
 
     public static final String SPLIT = "-";
