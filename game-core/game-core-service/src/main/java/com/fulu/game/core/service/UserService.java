@@ -115,7 +115,7 @@ public interface UserService extends ICommonService<User, Integer> {
      *
      * @param id 客服ID
      */
-    void setSubstitute(int id , int substituteId);
+    void setSubstitute(int id , Integer substituteId);
 
     /**
      * 后台（条件）查询用户列表

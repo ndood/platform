@@ -203,7 +203,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public void setSubstitute(int id , int substituteId) {
+    public void setSubstitute(int id , Integer substituteId) {
         User user = new User();
         user.setId(id);
         user.setUpdateTime(new Date());
