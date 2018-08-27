@@ -46,16 +46,8 @@ public class MyShiroRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) {
         PlayUserToken playUserToken = (PlayUserToken) token;
         String openId = playUserToken.getMobile();
-        Integer sourceId = playUserToken.getSourceId();
         User user = userService.findByOpenId(openId, WechatEcoEnum.PLAY);
-        if (user != null) {
-            log.info("openId为{} 的用户已存在", openId);
-        } else {
-            //新创建的用户记录注册的ip
-            String host = playUserToken.getHost();
-            user = userService.createNewUser(WechatEcoEnum.PLAY,openId, sourceId, host);
-            log.info("创建openId为{}的用户", openId);
-        }
+
         return new SimpleAuthenticationInfo(user, user.getOpenId(), getName());
     }
 }
