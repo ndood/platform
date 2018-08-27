@@ -71,6 +71,8 @@ public class UserController extends BaseController {
     @Autowired
     private SpringThreadPoolExecutor springThreadPoolExecutor;
 
+
+
     @RequestMapping("tech/list")
     public Result userTechList() {
         User user = userService.getCurrentUser();

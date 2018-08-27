@@ -38,4 +38,7 @@ public class GenerateTest {
                 .build();
         generateFactory.generatorCode(tableName);
     }
+
+
+
 }
