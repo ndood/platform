@@ -24,7 +24,9 @@ public enum RedisKeyEnum {
     GLOBAL_FORM_TOKEN, //表单验证token
     USER_ONLINE_KEY, //用户在线状态
     TIME_INTERVAL_KEY, //订单状态倒计时
-    AUTO_ASSIGN_ORDER_USER, //订单状态倒计时
+    AUTO_ASSIGN_ORDER_USER, //是否已经自动排单用户
+    SMS_VERIFY_CODE, //APP登录验证码1
+    SMS_VERIFY_CODE_TIMES, //APP登录验证码发送次数1
     IM_COMPANY_UNREAD; //陪玩师IM未读数据
 
 
