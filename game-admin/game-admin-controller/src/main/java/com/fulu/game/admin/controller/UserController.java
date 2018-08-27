@@ -328,6 +328,18 @@ public class UserController extends BaseController {
     }
 
     /**
+     * 设置用户代聊客服ID
+     *
+     * @param id
+     * @return
+     */
+    @PostMapping("/set-substitute")
+    public Result setSubstitute(@RequestParam("id") Integer id,@RequestParam("substituteId") Integer substituteId) {
+        userService.setSubstitute(id,substituteId);
+        return Result.success().msg("操作成功！");
+    }
+
+    /**
      * 查询-用户-列表
      *
      * @param pageNum
