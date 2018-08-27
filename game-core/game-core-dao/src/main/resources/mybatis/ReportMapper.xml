@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.ReportDao">
+    <resultMap id="ReportResultMap" type="com.fulu.game.core.entity.Report">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="reported_user_id" property="reportedUserId"/>
+        <result column="content" property="content"/>
+        <result column="status" property="status"/>
+        <result column="process_time" property="processTime"/>
+        <result column="remark" property="remark"/>
+        <result column="admin_id" property="adminId"/>
+        <result column="admin_name" property="adminName"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="ReportResultVOMap" type="com.fulu.game.core.entity.vo.ReportVO" extends="ReportResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,reported_user_id,content,status,process_time,remark,admin_id,admin_name,update_time,create_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="ReportResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_report
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="ReportResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_report
+    </select>
+
+    <select id="findByParameter" resultMap="ReportResultMap" parameterType="com.fulu.game.core.entity.vo.ReportVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_report
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="reportedUserId != null">
+                and reported_user_id = #{reportedUserId}
+            </if>
+            <if test="content != null">
+                and content = #{content}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="processTime != null">
+                and process_time = #{processTime}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <if test="adminId != null">
+                and admin_id = #{adminId}
+            </if>
+            <if test="adminName != null">
+                and admin_name = #{adminName}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_report
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Report">
+        insert into
+        t_report (user_id,reported_user_id,content,status,process_time,remark,admin_id,admin_name,update_time,create_time)
+        values
+        (#{userId},#{reportedUserId},#{content},#{status},#{processTime},#{remark},#{adminId},#{adminName},#{updateTime},#{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.Report">
+        update t_report
+        <set>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="reportedUserId != null">
+                reported_user_id = #{reportedUserId},
+            </if>
+
+            <if test="content != null">
+                content = #{content},
+            </if>
+
+            <if test="status != null">
+                status = #{status},
+            </if>
+
+            <if test="processTime != null">
+                process_time = #{processTime},
+            </if>
+
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+
+            <if test="adminId != null">
+                admin_id = #{adminId},
+            </if>
+
+            <if test="adminName != null">
+                admin_name = #{adminName},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+
+    <select id="list" resultType="com.fulu.game.core.entity.vo.ReportVO">
+        SELECT
+        report.*, user.nickname, reported_user.nickname as reported_user_nickname
+        FROM t_report AS report
+        LEFT JOIN t_user AS user ON report.user_id = `user`.id
+        LEFT JOIN t_user AS reported_user ON report.reported_user_id = reported_user.id
+        <where>
+            <if test="status != null">
+                AND report.status = #{status}
+            </if>
+            <if test="startTime != null">
+                AND report.process_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND report.process_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+</mapper>

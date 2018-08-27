@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.ReportFileDao">
+    <resultMap id="ReportFileResultMap" type="com.fulu.game.core.entity.ReportFile">
+        <id column="id" property="id"/>
+        <result column="report_id" property="reportId"/>
+        <result column="url" property="url"/>
+        <result column="remark" property="remark"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="ReportFileResultVOMap" type="com.fulu.game.core.entity.vo.ReportFileVO"
+               extends="ReportFileResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,report_id,url,remark,update_time,create_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="ReportFileResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_report_file
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="ReportFileResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_report_file
+    </select>
+
+    <select id="findByParameter" resultMap="ReportFileResultMap"
+            parameterType="com.fulu.game.core.entity.vo.ReportFileVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_report_file
+        <where>
+            <if test="reportId != null">
+                and report_id = #{reportId}
+            </if>
+            <if test="url != null">
+                and url = #{url}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_report_file
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.ReportFile">
+        insert into
+        t_report_file (report_id,url,remark,update_time,create_time)
+        values
+        (#{reportId},#{url},#{remark},#{updateTime},#{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.ReportFile">
+        update t_report_file
+        <set>
+
+            <if test="reportId != null">
+                report_id = #{reportId},
+            </if>
+
+            <if test="url != null">
+                url = #{url},
+            </if>
+
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

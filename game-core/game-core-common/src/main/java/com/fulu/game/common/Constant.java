@@ -176,4 +176,15 @@ public interface Constant {
      * 分期乐订单--未对账
      */
     Integer UN_RECON = 0;
+
+    //app
+
+    /**
+     * 举报信息未处理（默认）
+     */
+    Integer UN_PROCESSED = 0;
+    /**
+     * 举报信息已处理
+     */
+    Integer IS_PROCESSED = 1;
 }
