@@ -52,6 +52,10 @@ public class HomeController extends BaseController {
             user.setBalance(null);
             Map<String, Object> result = BeanUtil.beanToMap(user);
             result.put("token", SubjectUtil.getToken());
+            if(user.getHeadPortraitsUrl()==null){
+                log.error("新注册用户;user{}",user);
+                return Result.newUser().data(result);
+            }
             return Result.success().data(result).msg("登录成功!");
         } catch (Exception e) {
             if (e.getCause() instanceof UserException) {
