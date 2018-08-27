@@ -46,9 +46,8 @@ public class UserFriendController extends BaseController  {
      */
     @RequestMapping(value = "get-attentions")
     public Result getAttentions(@RequestParam(required = true) Integer pageNum,
-                                @RequestParam(required = true) Integer pageSize,
-                                @RequestParam(required = true) Integer userId) {
-        PageInfo<UserFriendVO> page = userFriendService.getAttentions( pageNum, pageSize, userId);
+                                @RequestParam(required = true) Integer pageSize) {
+        PageInfo<UserFriendVO> page = userFriendService.getAttentions( pageNum, pageSize);
         return Result.success().data(page);
     }
 
@@ -60,9 +59,8 @@ public class UserFriendController extends BaseController  {
      */
     @RequestMapping(value = "get-fans")
     public Result getFans(@RequestParam(required = true) Integer pageNum,
-                                @RequestParam(required = true) Integer pageSize,
-                                @RequestParam(required = true) Integer userId) {
-        PageInfo<UserFriendVO> page = userFriendService.getFans( pageNum, pageSize, userId);
+                                @RequestParam(required = true) Integer pageSize) {
+        PageInfo<UserFriendVO> page = userFriendService.getFans( pageNum, pageSize);
         return Result.success().data(page);
     }
 
@@ -87,22 +85,19 @@ public class UserFriendController extends BaseController  {
      */
     @RequestMapping(value = "get-blacks")
     public Result getBlacks(@RequestParam(required = true) Integer pageNum,
-                                @RequestParam(required = true) Integer pageSize,
-                                @RequestParam(required = true) Integer userId) {
-        PageInfo<UserFriendVO> page = userFriendService.getBlacks( pageNum, pageSize, userId);
+                                @RequestParam(required = true) Integer pageSize) {
+        PageInfo<UserFriendVO> page = userFriendService.getBlacks( pageNum, pageSize);
         return Result.success().data(page);
     }
 
     /**
      * 是否是黑名单用户
-     * @param fromUserId
      * @param toUserId
      * @return
      */
     @RequestMapping(value = "is-black-user")
-    public Result isBlackUser(@RequestParam(required = true) Integer fromUserId,
-                            @RequestParam(required = true) Integer toUserId) {
-        JSONObject jsonObject = userFriendService.isBlackUser( fromUserId, toUserId);
+    public Result isBlackUser(@RequestParam(required = true) Integer toUserId) {
+        JSONObject jsonObject = userFriendService.isBlackUser( toUserId);
         return Result.success().data(jsonObject);
     }
 
@@ -111,16 +106,14 @@ public class UserFriendController extends BaseController  {
      * 查询好友列表（包含关注人和粉丝）
      * @param pageNum
      * @param pageSize
-     * @param userId 当前用户id
      * @param keyWord 待查询用户昵称
      * @return
      */
     @RequestMapping(value = "search-friends")
     public Result searchFriends(@RequestParam(required = true) Integer pageNum,
                                 @RequestParam(required = true) Integer pageSize,
-                                @RequestParam(required = true) Integer userId,
                                 @RequestParam(required = true) String keyWord) {
-        PageInfo<UserFriendVO> page = userFriendService.searchFriends( pageNum, pageSize, userId, keyWord);
+        PageInfo<UserFriendVO> page = userFriendService.searchFriends( pageNum, pageSize, keyWord);
         return Result.success().data(page);
     }
 
@@ -135,9 +128,8 @@ public class UserFriendController extends BaseController  {
     @RequestMapping(value = "search-users")
     public Result searchUsers(@RequestParam(required = true) Integer pageNum,
                                 @RequestParam(required = true) Integer pageSize,
-                                @RequestParam(required = true) Integer userId,
                                 @RequestParam(required = true) String keyWord) {
-        PageInfo<UserFriendVO> page = userFriendService.searchUsers( pageNum, pageSize, userId, keyWord);
+        PageInfo<UserFriendVO> page = userFriendService.searchUsers( pageNum, pageSize, keyWord);
         return Result.success().data(page);
     }
 

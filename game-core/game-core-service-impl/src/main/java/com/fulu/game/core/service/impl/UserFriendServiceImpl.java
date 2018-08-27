@@ -2,11 +2,14 @@ package com.fulu.game.core.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.exception.ParamsException;
+import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.UserFriendDao;
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserFriend;
 import com.fulu.game.core.entity.vo.UserFriendVO;
 import com.fulu.game.core.service.UserFriendService;
+import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +30,9 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
     @Autowired
     private UserFriendDao userFriendDao;
 
+    @Autowired
+    private UserService userService;
+
     @Override
     public ICommonDao<UserFriend, Integer> getDao() {
         return userFriendDao;
@@ -40,6 +46,8 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
         if(userFriendVO == null){
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
+        User user = userService.getCurrentUser();
+        userFriendVO.setFromUserId(user.getId());
         UserFriend friend = userFriendDao.findByFromAndToUserId(userFriendVO);
         userFriendVO.setStatus(1);
         if(friend != null){
@@ -60,17 +68,16 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
      *
      * @param pageNum
      * @param pageSize
-     * @param userId
      * @return
      */
     @Override
-    public PageInfo<UserFriendVO> getAttentions(Integer pageNum, Integer pageSize, Integer userId) {
+    public PageInfo<UserFriendVO> getAttentions(Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize, "id DESC");
-//        User user = userService.getCurrentUser();
+        User user = userService.getCurrentUser();
         UserFriendVO userFriendVO = new UserFriendVO();
         userFriendVO.setIsAttention(1);
         userFriendVO.setIsBlack(0);
-        userFriendVO.setFromUserId(userId);
+        userFriendVO.setFromUserId(user.getId());
         userFriendVO.setType(1);
         List<UserFriendVO> list = userFriendDao.findByParameter(userFriendVO);
         return new PageInfo<>(list);
@@ -81,16 +88,16 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
      *
      * @param pageNum
      * @param pageSize
-     * @param userId
      * @return
      */
     @Override
-    public PageInfo<UserFriendVO> getFans(Integer pageNum, Integer pageSize, Integer userId) {
+    public PageInfo<UserFriendVO> getFans(Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize, "id DESC");
+        User user = userService.getCurrentUser();
         UserFriendVO userFriendVO = new UserFriendVO();
         userFriendVO.setIsAttention(1);
         userFriendVO.setIsBlack(0);
-        userFriendVO.setToUserId(userId);
+        userFriendVO.setToUserId(user.getId());
         userFriendVO.setType(2);
         List<UserFriendVO> list = userFriendDao.findByParameter(userFriendVO);
         return new PageInfo<>(list);
@@ -100,16 +107,15 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
      * 获取黑名单列表
      * @param pageNum
      * @param pageSize
-     * @param userId
      * @return
      */
     @Override
-    public PageInfo<UserFriendVO> getBlacks(Integer pageNum, Integer pageSize, Integer userId) {
+    public PageInfo<UserFriendVO> getBlacks(Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize, "id DESC");
-//        User user = userService.getCurrentUser();
+        User user = userService.getCurrentUser();
         UserFriendVO userFriendVO = new UserFriendVO();
         userFriendVO.setIsBlack(1);
-        userFriendVO.setFromUserId(userId);
+        userFriendVO.setFromUserId(user.getId());
         userFriendVO.setType(1);
         List<UserFriendVO> list = userFriendDao.findByParameter(userFriendVO);
         return new PageInfo<>(list);
@@ -118,19 +124,19 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
     /**
      * 是否是黑名单用户
      *
-     * @param fromUserId
      * @param toUserId
      * @return
      */
     @Override
-    public JSONObject isBlackUser(Integer fromUserId, Integer toUserId) {
+    public JSONObject isBlackUser(Integer toUserId) {
         JSONObject jsonObject = new JSONObject();
+        User user = userService.getCurrentUser();
         jsonObject.put("isBlack",0);
         jsonObject.put("msg","非黑名单用户");
         jsonObject.put("data",new JSONObject());
         UserFriendVO userFriendVO = new UserFriendVO();
         userFriendVO.setIsBlack(1);
-        userFriendVO.setFromUserId(fromUserId);
+        userFriendVO.setFromUserId(user.getId());
         userFriendVO.setToUserId(toUserId);
         userFriendVO.setType(1);
         List<UserFriendVO> list = userFriendDao.findByParameter(userFriendVO);
@@ -146,15 +152,15 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
      * 查询好友列表（包含关注人和粉丝）
      * @param pageNum
      * @param pageSize
-     * @param userId
      * @param keyWord
      * @return
      */
     @Override
-    public PageInfo<UserFriendVO> searchFriends(Integer pageNum, Integer pageSize, Integer userId, String keyWord) {
+    public PageInfo<UserFriendVO> searchFriends(Integer pageNum, Integer pageSize, String keyWord) {
         PageHelper.startPage(pageNum, pageSize, "id DESC");
+        User user = userService.getCurrentUser();
         UserFriendVO userFriendVO = new UserFriendVO();
-        userFriendVO.setUserId(userId);
+        userFriendVO.setUserId(user.getId());
         userFriendVO.setNickname(keyWord);
         List<UserFriendVO> list = userFriendDao.searchFriends(userFriendVO);
         return new PageInfo<>(list);
@@ -164,15 +170,15 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
      * 查询用户列表
      * @param pageNum
      * @param pageSize
-     * @param userId
      * @param keyWord
      * @return
      */
     @Override
-    public PageInfo<UserFriendVO> searchUsers(Integer pageNum, Integer pageSize, Integer userId, String keyWord) {
+    public PageInfo<UserFriendVO> searchUsers(Integer pageNum, Integer pageSize, String keyWord) {
         PageHelper.startPage(pageNum, pageSize, "id DESC");
+        User user = userService.getCurrentUser();
         UserFriendVO userFriendVO = new UserFriendVO();
-        userFriendVO.setUserId(userId);
+        userFriendVO.setUserId(user.getId());
         userFriendVO.setNickname(keyWord);
         List<UserFriendVO> list = userFriendDao.searchUsers(userFriendVO);
         return new PageInfo<>(list);
