@@ -111,6 +111,13 @@ public interface UserService extends ICommonService<User, Integer> {
     void unlock(int id);
 
     /**
+     * 设置客服代聊ID
+     *
+     * @param id 客服ID
+     */
+    void setSubstitute(int id , Integer substituteId);
+
+    /**
      * 后台（条件）查询用户列表
      *
      * @param userVO

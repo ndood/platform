@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.AdminImLogDao">
+    <resultMap id="AdminImLogResultMap" type="com.fulu.game.core.entity.AdminImLog">
+                                    <id column="id"  property="id" />
+                                            <result column="from_im_id"  property="fromImId" />
+                                            <result column="target_im_id"  property="targetImId" />
+                                            <result column="content"  property="content" />
+                                            <result column="sendTime"  property="sendtime" />
+                        </resultMap>
+
+    <resultMap id="AdminImLogResultVOMap" type="com.fulu.game.core.entity.vo.AdminImLogVO" extends="AdminImLogResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,from_im_id,target_im_id,content,sendTime    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="AdminImLogResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_admin_im_log
+        <where>
+        id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll"  resultMap="AdminImLogResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_admin_im_log
+    </select>
+
+    <select id="findByParameter" resultMap="AdminImLogResultMap" parameterType="com.fulu.game.core.entity.vo.AdminImLogVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_admin_im_log
+        <where>
+                                                                       
+                                                                <if test="fromImId != null">
+                       and from_im_id = #{fromImId}
+                    </if>
+                                                                <if test="targetImId != null">
+                       and target_im_id = #{targetImId}
+                    </if>
+                                                                <if test="content != null">
+                       and content = #{content}
+                    </if>
+                                                                <if test="sendtime != null">
+                       and sendTime = #{sendtime}
+                    </if>
+                                    </where>
+    </select>
+
+    <select id="findByImId" resultMap="AdminImLogResultMap" parameterType="java.lang.String">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_admin_im_log
+        <where>
+            from_im_id = #{imId} or target_im_id = #{imId}
+        </where>
+        
+        order by sendTime
+        
+    </select>
+    
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_admin_im_log
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <delete id="deleteByImId" parameterType="java.lang.String">
+        delete from t_admin_im_log
+        <where>
+            from_im_id = #{imId} or target_im_id = #{imId}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.AdminImLog">
+        insert into
+        t_admin_im_log (from_im_id,target_im_id,content,sendTime)
+        values
+        (#{fromImId},#{targetImId},#{content},#{sendtime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.AdminImLog">
+        update t_admin_im_log
+        <set>
+                                            
+                    <if test="fromImId != null">
+                        from_im_id = #{fromImId},
+                    </if>
+                                            
+                    <if test="targetImId != null">
+                        target_im_id = #{targetImId},
+                    </if>
+                                            
+                    <if test="content != null">
+                        content = #{content},
+                    </if>
+                                            
+                    <if test="sendtime != null">
+                        sendTime = #{sendtime},
+                    </if>
+                                    </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

@@ -95,4 +95,6 @@ public class User implements Serializable {
     @Excel(name = "最后登录登录时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "10", width = 35)
     private Date loginTime;
 
+    //代聊客服ID
+    private Integer imSubstituteId;
 }

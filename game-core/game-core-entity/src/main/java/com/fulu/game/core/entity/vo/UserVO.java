@@ -35,5 +35,8 @@ public class UserVO extends User {
 
     @JsonIgnore
     private String orderBy;
+    
+    //未读消息数
+    private long unreadCount;
 
 }

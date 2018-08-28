@@ -203,6 +203,16 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
+    public void setSubstitute(int id , Integer substituteId) {
+        User user = new User();
+        user.setId(id);
+        user.setUpdateTime(new Date());
+        user.setImSubstituteId(substituteId);
+        userDao.update(user);
+        SubjectUtil.setCurrentUser(user);
+    }
+
+    @Override
     public PageInfo<UserVO> list(UserVO userVO, Integer pageNum, Integer pageSize) {
         String orderBy;
         if (StringUtils.isBlank(userVO.getOrderBy())) {
