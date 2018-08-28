@@ -3,12 +3,21 @@ package com.fulu.game.admin.controller;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.exception.UserException;
+import com.fulu.game.core.entity.Product;
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.AdminImLogVO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
+import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.service.AdminImLogService;
+import com.fulu.game.core.service.ProductService;
+import com.fulu.game.core.service.UserInfoAuthService;
+import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +35,9 @@ public class ImController extends BaseController {
     
     @Autowired
     private AdminImLogService adminImLogService;
+
+    @Autowired
+    private UserService userService;
 
     
     //减少未读消息数量
@@ -97,5 +109,31 @@ public class ImController extends BaseController {
 
         return Result.success().msg("操作成功");
     }
-        
+
+
+    @PostMapping(value = "collect")
+    public Result log(String content){
+        log.error("日志收集:{}",content);
+        return Result.success();
+    }
+
+    /**
+     * 用户-根据imId查询聊天对象User
+     *
+     * @return
+     */
+    @PostMapping("/im/get")
+    public Result getImUser(@RequestParam("imId") String imId,
+                            String content) {
+        log.info("根据imId获取用户信息:imId:{};content:{}", imId, content);
+        if (StringUtils.isEmpty(imId)) {
+            throw new UserException(UserException.ExceptionCode.IllEGAL_IMID_EXCEPTION);
+        }
+        User user = userService.findByImId(imId);
+        if (null == user) {
+            return Result.error().msg("未查询到该用户或尚未注册IM");
+        }
+        log.info("根据imId获取用户信息:imId:{};content:{};user:{}", imId, content, user);
+        return Result.success().data(user).msg("查询IM用户成功");
+    }
 }

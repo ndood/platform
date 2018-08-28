@@ -40,3 +40,16 @@ CREATE TABLE `t_user_friend` (
   `status` tinyint(1) DEFAULT '1' COMMENT '状态（1：有效；0：无效）',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='用户朋友关系表';
+
+
+DROP TABLE IF EXISTS `t_admin_im_log`;
+CREATE TABLE `t_admin_im_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `from_im_id` varchar(255) DEFAULT NULL,
+  `target_im_id` varchar(255) DEFAULT NULL,
+  `content` varchar(255) DEFAULT NULL,
+  `sendTime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE `t_user_info_auth` ADD COLUMN `im_substitute_id` int(11)  DEFAULT NULL 
