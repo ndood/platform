@@ -36,7 +36,6 @@
         <result column="regist_ip" property="registIp"/>
         <result column="login_ip" property="loginIp"/>
         <result column="login_time" property="loginTime"/>
-        <result column="im_substitute_id" property="imSubstituteId"/>
     </resultMap>
 
     <resultMap id="UserResultVOMap" type="com.fulu.game.core.entity.vo.UserVO" extends="UserResultMap">
@@ -50,7 +49,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,point_open_id,public_open_id,union_id,city,province,country,score_avg,user_score,constellation,birth,age,im_id,im_psw,source_id,regist_ip,login_ip,login_time,im_substitute_id
+        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,point_open_id,public_open_id,union_id,city,province,country,score_avg,user_score,constellation,birth,age,im_id,im_psw,source_id,regist_ip,login_ip,login_time
     </sql>
 
     <select id="findUserVOByUserIds" resultMap="UserResultVOMap">
@@ -203,9 +202,6 @@
             </if>
             <if test="endTime != null">
                 and u.login_time &lt;= #{endTime}
-            </if>
-            <if test="imSubstituteId != null">
-                u.im_substitute_id = #{imSubstituteId}
             </if>
         </where>
         GROUP BY u.id
@@ -392,9 +388,6 @@
             </if>
             <if test="loginTime != null">
                 login_time = #{loginTime},
-            </if>
-            <if test="imSubstituteId != null">
-                im_substitute_id = #{imSubstituteId},
             </if>
         </set>
         <where>

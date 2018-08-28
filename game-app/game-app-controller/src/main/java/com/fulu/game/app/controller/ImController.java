@@ -5,12 +5,17 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.UserInfoAuth;
+import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.UserVO;
+import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
+import com.fulu.game.core.service.UserInfoAuthService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +30,10 @@ public class ImController extends BaseController {
 
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+
+    @Qualifier(value = "userInfoAuthServiceImpl")
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
     
     @Autowired
     private UserService userService;
@@ -34,13 +43,12 @@ public class ImController extends BaseController {
     @RequestMapping("/send")
     public Result sendMessage(@RequestParam(value = "targetImId", required = false) String targetImId) {
 
-        //获取目标用户信息
-        User u = userService.findByImId(targetImId);
+        UserInfoAuthSearchVO uavo = new UserInfoAuthSearchVO();
+        uavo.setImId(targetImId);
+        List<UserInfoAuthVO> uaList = userInfoAuthService.findBySearchVO(uavo);
 
-        UserVO targetUser = new UserVO();
+        UserInfoAuthVO targetUser = uaList.get(0);
         
-        BeanUtil.copyProperties(u,targetUser);
-
         //判断im目标用户是否为代聊用户
         if (targetUser.getImSubstituteId() != null) {
 
@@ -58,10 +66,10 @@ public class ImController extends BaseController {
                 
                 if(map == null || map.size() == 0){
                     map = new HashMap();
-                    targetUser.setUnreadCount(1);
+                    targetUser.setUnreadCount(new Long(1));
                 }else{
                     if(map.get(targetImId)!=null){
-                        UserVO temp = (UserVO)map.get(targetImId);
+                        UserInfoAuthVO temp = (UserInfoAuthVO)map.get(targetImId);
                         targetUser.setUnreadCount(temp.getUnreadCount() + 1);
                     }
                 }

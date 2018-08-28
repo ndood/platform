@@ -4,7 +4,7 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.core.entity.vo.AdminImLogVO;
-import com.fulu.game.core.entity.vo.UserVO;
+import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.service.AdminImLogService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +41,7 @@ public class ImController extends BaseController {
             
             if(map.get(imId)!=null){
 
-                UserVO temp = (UserVO)map.get(imId);
+                UserInfoAuthVO temp = (UserInfoAuthVO)map.get(imId);
                 
                 long currentCount = temp.getUnreadCount() - actionCount.intValue();
                 temp.setUnreadCount(currentCount);

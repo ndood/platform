@@ -363,7 +363,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             orderBy = "uia.update_time desc";
         }
         PageHelper.startPage(pageNum, pageSize, orderBy);
-        List<UserInfoAuth> userInfoAuths = userInfoAuthDao.findBySearchVO(userInfoAuthSearchVO);
+        List<UserInfoAuthVO> userInfoAuths = userInfoAuthDao.findBySearchVO(userInfoAuthSearchVO);
         for (UserInfoAuth userInfoAuth : userInfoAuths) {
             UserInfoAuthVO userInfoAuthVO = new UserInfoAuthVO();
             BeanUtil.copyProperties(userInfoAuth, userInfoAuthVO);
@@ -384,6 +384,13 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         page.setList(userInfoAuthVOList);
         return page;
     }
+
+    @Override
+    public List<UserInfoAuthVO> findBySearchVO(UserInfoAuthSearchVO userInfoAuthSearchVO) {
+        List<UserInfoAuthVO> userInfoAuths = userInfoAuthDao.findBySearchVO(userInfoAuthSearchVO);
+        return userInfoAuths;
+    }
+    
 
     @Override
     public boolean updateByUserId(UserInfoAuth userInfoAuth) {
