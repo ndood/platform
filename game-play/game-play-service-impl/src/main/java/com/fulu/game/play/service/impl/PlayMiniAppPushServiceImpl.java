@@ -1,6 +1,6 @@
 package com.fulu.game.play.service.impl;
 
-import com.fulu.game.common.enums.WechatEcoEnum;
+import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.enums.WechatTemplateIdEnum;
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.enums.WechatTemplateMsgTypeEnum;
@@ -15,7 +15,7 @@ public class PlayMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
     @Override
     protected void push(int userId, WechatTemplateMsgEnum wechatTemplateMsgEnum, String... replaces) {
         pushWechatTemplateMsg(
-                WechatEcoEnum.PLAY.getType(),
+                PlatformEcoEnum.PLAY.getType(),
                 userId,
                 WechatTemplateIdEnum.PLAY_LEAVE_MSG,
                 wechatTemplateMsgEnum.getPage().getPlayPagePath(),
@@ -27,7 +27,7 @@ public class PlayMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
     protected void push(int userId, Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum,
                         WechatTemplateMsgTypeEnum wechatTemplateMsgTypeEnum, String... replaces) {
         pushServiceProcessMsg(
-                WechatEcoEnum.PLAY.getType(),
+                PlatformEcoEnum.PLAY.getType(),
                 userId,
                 order,
                 WechatTemplateIdEnum.PLAY_SERVICE_PROCESS_NOTICE,

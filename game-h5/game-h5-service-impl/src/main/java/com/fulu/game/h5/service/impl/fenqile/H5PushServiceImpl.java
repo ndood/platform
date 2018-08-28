@@ -2,7 +2,7 @@ package com.fulu.game.h5.service.impl.fenqile;
 
 import cn.hutool.core.util.StrUtil;
 import com.fulu.game.common.Constant;
-import com.fulu.game.common.enums.WechatEcoEnum;
+import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.enums.WechatTemplateIdEnum;
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.enums.WechatTemplateMsgTypeEnum;
@@ -29,7 +29,7 @@ public class H5PushServiceImpl extends MiniAppPushServiceImpl {
     protected void push(int userId, WechatTemplateMsgEnum wechatTemplateMsgEnum, String... replaces) {
         User user =  userService.findById(userId);
         if(user.getOpenId()!=null){
-            pushWechatTemplateMsg(WechatEcoEnum.PLAY.getType(),userId, WechatTemplateIdEnum.PLAY_LEAVE_MSG,wechatTemplateMsgEnum.getPage().getPlayPagePath(),wechatTemplateMsgEnum.getContent(),replaces);
+            pushWechatTemplateMsg(PlatformEcoEnum.PLAY.getType(),userId, WechatTemplateIdEnum.PLAY_LEAVE_MSG,wechatTemplateMsgEnum.getPage().getPlayPagePath(),wechatTemplateMsgEnum.getContent(),replaces);
         }else{
             String content = StrUtil.format(wechatTemplateMsgEnum.getContent(), replaces);
             SMSUtil.sendLeaveInform(user.getMobile(), content, Constant.WEIXN_JUMP_URL);

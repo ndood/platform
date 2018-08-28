@@ -1,7 +1,7 @@
 package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
-import com.fulu.game.common.enums.WechatEcoEnum;
+import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.WechatFormid;
 import com.fulu.game.core.service.PushMsgService;
@@ -43,7 +43,7 @@ public class WxTemplateController extends BaseController{
         wechatFormid.setUserId(user.getId());
         wechatFormid.setFormId(formId);
         wechatFormid.setOpenId(user.getOpenId());
-        wechatFormid.setPlatform(WechatEcoEnum.PLAY.getType());
+        wechatFormid.setPlatform(PlatformEcoEnum.PLAY.getType());
         wechatFormid.setCreateTime(new Date());
         collectFormIdQueue.addFormId(wechatFormid);
         log.info("收集formId成功:formId:{}",formId);

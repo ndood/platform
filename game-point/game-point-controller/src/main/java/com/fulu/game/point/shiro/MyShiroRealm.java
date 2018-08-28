@@ -1,7 +1,7 @@
 package com.fulu.game.point.shiro;
 
 import com.fulu.game.common.enums.UserStatusEnum;
-import com.fulu.game.common.enums.WechatEcoEnum;
+import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.UserService;
@@ -50,7 +50,7 @@ public class MyShiroRealm extends AuthorizingRealm {
         PlayUserToken playUserToken = (PlayUserToken) token;
         String openId = playUserToken.getOpenId();
         Integer sourceId = playUserToken.getSourceId();
-        User user = userService.findByOpenId(openId, WechatEcoEnum.POINT);
+        User user = userService.findByOpenId(openId, PlatformEcoEnum.POINT);
         if (user != null) {
             log.info("openId为{} 的用户已存在", openId);
             if(UserStatusEnum.BANNED.getType().equals(user.getStatus())){
@@ -59,7 +59,7 @@ public class MyShiroRealm extends AuthorizingRealm {
         } else {
             //新创建的用户记录注册的ip
             String host = playUserToken.getHost();
-            user = userService.createNewUser(WechatEcoEnum.POINT,openId, sourceId, host);
+            user = userService.createNewUser(PlatformEcoEnum.POINT,openId, sourceId, host);
             log.info("创建openId为{}的用户", openId);
         }
         return new SimpleAuthenticationInfo(user, user.getOpenId(), getName());

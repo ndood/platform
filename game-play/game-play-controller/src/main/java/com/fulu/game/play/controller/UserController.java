@@ -8,7 +8,7 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.enums.WechatEcoEnum;
+import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.common.utils.OssUtil;
@@ -252,7 +252,7 @@ public class UserController extends BaseController {
             userService.updateRedisUser(user);
             resultUser = user;
         } else {
-            resultUser = userService.updateUnionUser(user, WechatEcoEnum.PLAY, ipStr);
+            resultUser = userService.updateUnionUser(user, PlatformEcoEnum.PLAY, ipStr);
             if (Constant.SEND_COUPOU_SUCCESS.equals(user.getCoupouStatus())) {
                 //新线程发放优惠券（避免事务问题：当前方法的事务和优惠券发放的事务，因为都涉及到t_user表的操作，可能造成数据库死锁）
                 springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
@@ -286,7 +286,7 @@ public class UserController extends BaseController {
             return Result.error().msg("验证码提交错误");
         }
         User currentUser = userService.getCurrentUser();
-        User openIdUser = userService.findByOpenId(currentUser.getOpenId(), WechatEcoEnum.PLAY);
+        User openIdUser = userService.findByOpenId(currentUser.getOpenId(), PlatformEcoEnum.PLAY);
         //如果openId已经绑定手机号
         if (openIdUser != null && openIdUser.getMobile() != null) {
             return Result.error().msg("已经绑定过手机号！");
@@ -337,7 +337,7 @@ public class UserController extends BaseController {
         User user = userService.getCurrentUser();
         String openId = user.getOpenId();
         User newUser = null;
-        User openIdUser = userService.findByOpenId(openId, WechatEcoEnum.PLAY);
+        User openIdUser = userService.findByOpenId(openId, PlatformEcoEnum.PLAY);
         //如果openId已经绑定手机号
         if (openIdUser != null && openIdUser.getMobile() != null) {
             return Result.error().msg("已经绑定过手机号！");

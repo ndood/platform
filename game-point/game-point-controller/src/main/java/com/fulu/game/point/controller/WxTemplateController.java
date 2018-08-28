@@ -1,7 +1,7 @@
 package com.fulu.game.point.controller;
 
 import com.fulu.game.common.Result;
-import com.fulu.game.common.enums.WechatEcoEnum;
+import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.WechatFormid;
 import com.fulu.game.core.service.PushMsgService;
@@ -44,7 +44,7 @@ public class WxTemplateController extends BaseController{
         wechatFormid.setFormId(formId);
         wechatFormid.setCreateTime(new Date());
         wechatFormid.setOpenId(user.getPointOpenId());
-        wechatFormid.setPlatform(WechatEcoEnum.POINT.getType());
+        wechatFormid.setPlatform(PlatformEcoEnum.POINT.getType());
         collectFormIdQueue.addFormId(wechatFormid);
         log.info("收集formId成功:formId:{}",formId);
         return Result.success();

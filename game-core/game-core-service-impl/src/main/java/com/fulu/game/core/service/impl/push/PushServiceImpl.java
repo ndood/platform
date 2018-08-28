@@ -8,7 +8,7 @@ import cn.hutool.core.util.StrUtil;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.enums.OrderStatusEnum;
-import com.fulu.game.common.enums.WechatEcoEnum;
+import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.enums.WechatTemplateIdEnum;
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.utils.SMSUtil;
@@ -89,7 +89,7 @@ public class PushServiceImpl implements PushService {
             content = StrUtil.format(content, replaces);
         }
         String date = DateUtil.format(DateUtil.date(), "yyyy年MM月dd日 HH:mm");
-        WechatFormid formIdObj = findFormidVOByUserId(WechatEcoEnum.PLAY.getType(), userId);
+        WechatFormid formIdObj = findFormidVOByUserId(PlatformEcoEnum.PLAY.getType(), userId);
         if (formIdObj == null) {
             log.error("user或者formId为null无法给用户推送消息userId:{};content:{};formId:{}", userId, content, formIdObj);
         }
@@ -113,10 +113,10 @@ public class PushServiceImpl implements PushService {
                 new WxMaTemplateMessage.Data("keyword5", serviceUserNickName),
                 //备注（消息模板内容）
                 new WxMaTemplateMessage.Data("keyword6", content));
-        if (WechatEcoEnum.PLAY.getType().equals(platform)) {
+        if (PlatformEcoEnum.PLAY.getType().equals(platform)) {
             addTemplateMsg2Queue(platform, null, Collections.singletonList(userId),
                     wechatTemplateMsgEnum.getPage().getPlayPagePath(), wechatTemplateIdEnum, dataList);
-        } else if (WechatEcoEnum.POINT.getType().equals(platform)) {
+        } else if (PlatformEcoEnum.POINT.getType().equals(platform)) {
             addTemplateMsg2Queue(platform, null, Collections.singletonList(userId),
                     wechatTemplateMsgEnum.getPage().getPointPagePath(), wechatTemplateIdEnum, dataList);
         }
@@ -256,9 +256,9 @@ public class PushServiceImpl implements PushService {
         List<WxMaTemplateMessage.Data> dataList = CollectionUtil.newArrayList(
                 new WxMaTemplateMessage.Data("keyword1", cotent),
                 new WxMaTemplateMessage.Data("keyword2", date));
-        if (WechatEcoEnum.PLAY.getType().equals(platform)) {
+        if (PlatformEcoEnum.PLAY.getType().equals(platform)) {
             addTemplateMsg2Queue(platform, pushId, userIds, page, WechatTemplateIdEnum.PLAY_LEAVE_MSG, dataList);
-        } else if (WechatEcoEnum.POINT.getType().equals(platform)) {
+        } else if (PlatformEcoEnum.POINT.getType().equals(platform)) {
             addTemplateMsg2Queue(platform, pushId, userIds, page, WechatTemplateIdEnum.POINT_LEAVE_MSG, dataList);
         }
     }

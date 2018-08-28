@@ -7,7 +7,6 @@ import com.fulu.game.common.exception.ImgException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
-import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.common.utils.ImgUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
@@ -18,7 +17,6 @@ import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -110,14 +108,14 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
 
     @Override
-    public User findByOpenId(String openId, WechatEcoEnum wechatEcoEnum) {
+    public User findByOpenId(String openId, PlatformEcoEnum platformEcoEnum) {
         if (openId == null) {
             return null;
         }
         UserVO userVO = new UserVO();
-        if (WechatEcoEnum.PLAY.equals(wechatEcoEnum)) {
+        if (PlatformEcoEnum.PLAY.equals(platformEcoEnum)) {
             userVO.setOpenId(openId);
-        } else if (WechatEcoEnum.POINT.equals(wechatEcoEnum)) {
+        } else if (PlatformEcoEnum.POINT.equals(platformEcoEnum)) {
             userVO.setPointOpenId(openId);
         } else {
             return null;
@@ -241,12 +239,12 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
 
     @Override
-    public User createNewUser(WechatEcoEnum wechatEcoEnum, String openId, Integer sourceId, String host) {
+    public User createNewUser(PlatformEcoEnum platformEcoEnum, String openId, Integer sourceId, String host) {
         User user = new User();
         user.setRegistIp(host);
-        if (WechatEcoEnum.PLAY.equals(wechatEcoEnum)) {
+        if (PlatformEcoEnum.PLAY.equals(platformEcoEnum)) {
             user.setOpenId(openId);
-        } else if (WechatEcoEnum.POINT.equals(wechatEcoEnum)) {
+        } else if (PlatformEcoEnum.POINT.equals(platformEcoEnum)) {
             user.setPointOpenId(openId);
         } else {
             throw new UserException(UserException.ExceptionCode.NO_WECHATECO_EXCEPTION);
@@ -520,7 +518,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
 
     @Override
-    public User updateUnionUser(UserVO user, WechatEcoEnum wechatEcoEnum, String ipStr) {
+    public User updateUnionUser(UserVO user, PlatformEcoEnum platformEcoEnum, String ipStr) {
         log.info("调用updateUnionUser方法:user:{}", user);
         User unionUser = findByUnionId(user.getUnionId());
         if (unionUser == null) {
@@ -535,7 +533,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             updateRedisUser(user);
             return user;
         }
-        if (WechatEcoEnum.POINT.equals(wechatEcoEnum)) {
+        if (PlatformEcoEnum.POINT.equals(platformEcoEnum)) {
             log.info("判断存在开黑用户信息，更新unionUser:{}", unionUser);
             unionUser.setPointOpenId(user.getPointOpenId());
             //删除上分的用户

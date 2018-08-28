@@ -1,7 +1,7 @@
 package com.fulu.game.schedule.service.impl;
 
 import com.fulu.game.common.enums.OrderTypeEnum;
-import com.fulu.game.common.enums.WechatEcoEnum;
+import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.enums.WechatTemplateIdEnum;
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.core.entity.Order;
@@ -18,13 +18,13 @@ public class SchedulePushServiceImpl extends PushServiceImpl {
      */
     public void consultAgree(Order order) {
         if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
-            pushServiceProcessMsg(WechatEcoEnum.PLAY.getType(),
+            pushServiceProcessMsg(PlatformEcoEnum.PLAY.getType(),
                     order.getUserId(),
                     order,
                     WechatTemplateIdEnum.PLAY_SERVICE_PROCESS_NOTICE,
                     WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE);
         } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
-            pushServiceProcessMsg(WechatEcoEnum.POINT.getType(),
+            pushServiceProcessMsg(PlatformEcoEnum.POINT.getType(),
                     order.getUserId(),
                     order,
                     WechatTemplateIdEnum.POINT_SERVICE_PROCESS_NOTICE,
@@ -41,13 +41,13 @@ public class SchedulePushServiceImpl extends PushServiceImpl {
      */
     public void consultCancel(Order order) {
         if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
-            pushServiceProcessMsg(WechatEcoEnum.PLAY.getType(),
+            pushServiceProcessMsg(PlatformEcoEnum.PLAY.getType(),
                     order.getUserId(),
                     order,
                     WechatTemplateIdEnum.PLAY_SERVICE_PROCESS_NOTICE,
                     WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL);
         } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
-            pushServiceProcessMsg(WechatEcoEnum.POINT.getType(),
+            pushServiceProcessMsg(PlatformEcoEnum.POINT.getType(),
                     order.getUserId(),
                     order,
                     WechatTemplateIdEnum.POINT_SERVICE_PROCESS_NOTICE,

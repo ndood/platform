@@ -62,33 +62,44 @@ public class UserScoreAspect {
             String acceptImId = (String) array[1];
             String imId = (String) array[2];
 
-            //只处理陪玩师是消息发送方的情况
             User sendImUser = userService.findByImId(imId);
             if (sendImUser == null) {
                 return;
             }
-            if (!UserTypeEnum.ACCOMPANY_PLAYER.equals(sendImUser.getType())) {
-                return;
-            }
 
-            String result = redisOpenService.get(imId + "+" + acceptImId);
-            if (StringUtils.isNotBlank(result) && result.equals(Constant.IM_DELAY_CALCULATED)) {
-                return;
-            }
-            if (StringUtils.isBlank(result)) {
+            //消息发送方为老板，只更新时间戳
+            if (UserTypeEnum.GENERAL_USER.getType().equals(sendImUser.getType())) {
+                String result = redisOpenService.get(imId + "+" + acceptImId);
+                if (StringUtils.isNotBlank(result) && result.equals(Constant.IM_DELAY_CALCULATED)) {
+                    return;
+                }
                 redisOpenService.set(imId + "+" + acceptImId,
                         DateUtil.formatDateTime(new Date()), Constant.ONE_DAY);
+                return;
             }
 
-            String value = redisOpenService.get(acceptImId + "+" + imId);
-            long minutes;
-            if (StringUtils.isNotBlank(value) && !value.equals(Constant.IM_DELAY_CALCULATED)) {
-                minutes = DateUtil.between(DateUtil.parseDateTime(value), new Date(), DateUnit.MINUTE);
-                redisOpenService.set(acceptImId + "+" + imId, Constant.IM_DELAY_CALCULATED);
-                User user = userService.findByImId(acceptImId);
-                details.setUserId(user.getId());
-                modifyUserScoreByImReply(details, minutes);
+            //消息发送方为陪玩师，修改陪玩师积分
+            if (UserTypeEnum.ACCOMPANY_PLAYER.getType().equals(sendImUser.getType())) {
+                String result = redisOpenService.get(imId + "+" + acceptImId);
+                if (StringUtils.isNotBlank(result) && result.equals(Constant.IM_DELAY_CALCULATED)) {
+                    return;
+                }
+                if (StringUtils.isBlank(result)) {
+                    redisOpenService.set(imId + "+" + acceptImId,
+                            DateUtil.formatDateTime(new Date()), Constant.ONE_DAY);
+                }
+
+                String value = redisOpenService.get(acceptImId + "+" + imId);
+                long minutes;
+                if (StringUtils.isNotBlank(value) && !value.equals(Constant.IM_DELAY_CALCULATED)) {
+                    minutes = DateUtil.between(DateUtil.parseDateTime(value), new Date(), DateUnit.MINUTE);
+                    redisOpenService.set(acceptImId + "+" + imId, Constant.IM_DELAY_CALCULATED);
+                    details.setUserId(sendImUser.getId());
+                    modifyUserScoreByImReply(details, minutes);
+                }
             }
+
+
         } else if (userScoreEnum.getDescription().equals(Constant.ACCEPT_ORDER)) {
             Object[] array = joinPoint.getArgs();
             String orderNo = (String) array[0];

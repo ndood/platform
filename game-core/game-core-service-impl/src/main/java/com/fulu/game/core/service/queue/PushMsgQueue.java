@@ -3,7 +3,7 @@ package com.fulu.game.core.service.queue;
 
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import com.fulu.game.common.config.WxMaServiceSupply;
-import com.fulu.game.common.enums.WechatEcoEnum;
+import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.core.entity.PushMsg;
 import com.fulu.game.core.entity.WxMaTemplateMessageVO;
 import com.fulu.game.core.service.PushMsgService;
@@ -76,7 +76,7 @@ public class PushMsgQueue implements Runnable {
             log.info("推送消息队列推送消息:wxMaTemplateMessageVO:{}",wxMaTemplateMessageVO);
             WxMaTemplateMessage wxMaTemplateMessage = wxMaTemplateMessageVO.getWxMaTemplateMessage();
             Integer pushId = wxMaTemplateMessageVO.getPushId();
-            if (WechatEcoEnum.POINT.getType().equals(wxMaTemplateMessageVO.getPlatform())) {
+            if (PlatformEcoEnum.POINT.getType().equals(wxMaTemplateMessageVO.getPlatform())) {
                 log.info("上分平台推送消息:wxMaTemplateMessageVO:{}",wxMaTemplateMessageVO);
                 wxMaServiceSupply.pointWxMaService().getMsgService().sendTemplateMsg(wxMaTemplateMessage);
             } else {

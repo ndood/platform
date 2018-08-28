@@ -3,7 +3,7 @@ package com.fulu.game.play.controller;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.config.WxMaServiceSupply;
-import com.fulu.game.common.enums.WechatEcoEnum;
+import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SubjectUtil;
@@ -62,7 +62,7 @@ public class HomeController extends BaseController{
     @RequestMapping(value = "/sys/config", method = RequestMethod.POST)
     @ResponseBody
     public Result sysConfig(@RequestParam(value = "version", required = false) String version) {
-        List<SysConfig> result = sysConfigService.findByVersion(version, WechatEcoEnum.PLAY.getType());
+        List<SysConfig> result = sysConfigService.findByVersion(version, PlatformEcoEnum.PLAY.getType());
         if (CollectionUtil.isEmpty(result)) {
             result = new ArrayList<SysConfig>();
             SysConfig sysConfig1 = new SysConfig();

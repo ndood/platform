@@ -5,7 +5,7 @@ import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.enums.WechatEcoEnum;
+import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.common.utils.SubjectUtil;
@@ -190,7 +190,7 @@ public class UserController extends BaseController {
 
         UserVO userVO = new UserVO();
         BeanUtil.copyProperties(user, userVO);
-        User resultUser = userService.updateUnionUser(userVO, WechatEcoEnum.POINT, null);
+        User resultUser = userService.updateUnionUser(userVO, PlatformEcoEnum.POINT, null);
         return Result.success().data(resultUser);
     }
 
