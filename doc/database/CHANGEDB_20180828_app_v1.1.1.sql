@@ -28,12 +28,13 @@ CREATE TABLE `t_report_file` (
 )  COMMENT='举报文件表';
 
 -- 用户朋友关系表
+DROP TABLE IF EXISTS `t_user_friend`;
 CREATE TABLE `t_user_friend` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `from_user_id` bigint(20) DEFAULT NULL COMMENT '发起关注操作用户id',
   `to_user_id` bigint(20) DEFAULT NULL COMMENT '目标用户id',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   `is_attention` tinyint(4) DEFAULT '1' COMMENT '是否关注（1：是；0：否）',
   `is_black` tinyint(4) DEFAULT '0' COMMENT '是否黑名单（1：是；0：否）',
   `status` tinyint(1) DEFAULT '1' COMMENT '状态（1：有效；0：无效）',
