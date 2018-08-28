@@ -140,6 +140,9 @@
             <if test="imId != null">
                 and u.im_id = #{imId}
             </if>
+            <if test="imSubstituteId != null">
+                and uia.im_substitute_id = #{imSubstituteId}
+            </if>
         </where>
         GROUP BY
         uia.id

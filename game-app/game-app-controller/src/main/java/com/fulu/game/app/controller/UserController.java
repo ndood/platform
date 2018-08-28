@@ -37,8 +37,6 @@ public class UserController extends BaseController {
     @Autowired
     private UserInfoAuthService userInfoAuthService;
     @Autowired
-    private ProductService productService;
-    @Autowired
     private OssUtil ossUtil;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
@@ -168,23 +166,5 @@ public class UserController extends BaseController {
         return Result.success().data(user).msg("查询IM用户成功");
     }
 
-    @PostMapping(value = "collect")
-    public Result log(String content){
-        log.error("日志收集:{}",content);
-        return Result.success();
-    }
-
-    /**
-     * 聊天对象信息获取
-     *
-     * @param id
-     * @return
-     */
-    @PostMapping("/chatwith/get")
-    public Result chatWithGet(@RequestParam("id") Integer id) {
-        UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(id, false, true, true, true);
-        List<Product> productList = productService.findByUserId(id);
-        userInfoVO.setProductList(productList);
-        return Result.success().data(userInfoVO).msg("查询聊天对象信息成功！");
-    }
+    
 }

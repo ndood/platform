@@ -8,6 +8,7 @@ import com.fulu.game.admin.service.AdminUserTechAuthService;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.utils.CollectionUtil;
+import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserInfoAuthReject;
 import com.fulu.game.core.entity.UserTechAuthReject;
@@ -55,7 +56,9 @@ public class UserController extends BaseController {
     private UserInfoAuthRejectService userInfoAuthRejectService;
     @Autowired
     private UserTechAuthRejectService userTechAuthRejectService;
-
+    @Autowired
+    private ProductService productService;
+    
     /**
      * 陪玩师认证信息列表
      *
@@ -335,7 +338,7 @@ public class UserController extends BaseController {
      */
     @PostMapping("/set-substitute")
     public Result setSubstitute(@RequestParam("id") Integer id,@RequestParam("substituteId") Integer substituteId) {
-        userService.setSubstitute(id,substituteId);
+        userInfoAuthService.setSubstitute(id,substituteId);
         return Result.success().msg("操作成功！");
     }
 
@@ -416,4 +419,19 @@ public class UserController extends BaseController {
         workbook.close();
     }
 
+
+    /**
+     * 聊天对象信息获取
+     *
+     * @param id
+     * @return
+     */
+    @PostMapping("/chatwith/get")
+    public Result chatWithGet(@RequestParam("id") Integer id) {
+        UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(id, false, true, true, true);
+        List<Product> productList = productService.findByUserId(id);
+        userInfoVO.setProductList(productList);
+        return Result.success().data(userInfoVO).msg("查询聊天对象信息成功！");
+    }
+    
 }

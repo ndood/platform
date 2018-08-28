@@ -769,4 +769,15 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             personTagService.create(personTag);
         }
     }
+
+    @Override
+    public void setSubstitute(int id , Integer substituteId) {
+
+        UserInfoAuth uia = new UserInfoAuth();
+        uia.setUserId(id);
+        uia.setUpdateTime(new Date());
+        uia.setImSubstituteId(substituteId);
+
+        userInfoAuthDao.updateByUserId(uia);
+    }
 }

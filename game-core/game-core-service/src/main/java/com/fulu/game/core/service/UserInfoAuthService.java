@@ -104,4 +104,12 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
      * @param minute
      */
     void settingPushTimeInterval(float minute);
+
+
+    /**
+     * 设置客服代聊ID
+     *
+     * @param id 客服ID
+     */
+    void setSubstitute(int id , Integer substituteId);
 }
