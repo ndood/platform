@@ -15,8 +15,8 @@ import java.util.List;
  */
 public interface AdminImLogService extends ICommonService<AdminImLog,Integer>{
     
-    List<AdminImLog> findByUserId(int userId);
+    List<AdminImLog> findByImId(String imId);
 
-    int deleteByUserId(int userId);
+    int deleteByImId(String imId);
     
 }

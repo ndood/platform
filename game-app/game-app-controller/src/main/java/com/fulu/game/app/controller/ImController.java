@@ -1,9 +1,11 @@
 package com.fulu.game.app.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +35,11 @@ public class ImController extends BaseController {
     public Result sendMessage(@RequestParam(value = "targetImId", required = false) String targetImId) {
 
         //获取目标用户信息
-        User targetUser = userService.findByImId(targetImId);
+        User u = userService.findByImId(targetImId);
+
+        UserVO targetUser = new UserVO();
+        
+        BeanUtil.copyProperties(u,targetUser);
 
         //判断im目标用户是否为代聊用户
         if (targetUser.getImSubstituteId() != null) {
@@ -48,14 +54,25 @@ public class ImController extends BaseController {
             } else {
                 //增加未读消息数量+1
                 Map map = redisOpenService.hget(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(targetUser.getImSubstituteId().intValue()));
-                map.put(targetImId, Long.parseLong(map.get(targetImId).toString()) + 1);
+                
+                
+                if(map == null || map.size() == 0){
+                    map = new HashMap();
+                    targetUser.setUnreadCount(1);
+                }else{
+                    if(map.get(targetImId)!=null){
+                        UserVO temp = (UserVO)map.get(targetImId);
+                        targetUser.setUnreadCount(temp.getUnreadCount() + 1);
+                    }
+                }
+                map.put(targetImId, targetUser);
                 //更新未读消息数
                 redisOpenService.hset(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(targetUser.getImSubstituteId().intValue()), map, Constant.ONE_DAY * 3);
             }
 
         }
 
-        return Result.success();
+        return Result.success().msg("操作成功");
 
     }
 

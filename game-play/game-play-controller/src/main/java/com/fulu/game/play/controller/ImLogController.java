@@ -38,7 +38,10 @@ public class ImLogController extends BaseController{
 
     @PostMapping(value = "online")
     public Result userOnline(@RequestParam(required = true) Boolean active,String version){
-        User user = userService.getCurrentUser();
+//        User user = userService.getCurrentUser();
+        User user = new User();
+        user.setId(2102);
+        user.setImSubstituteId(1);
         if(active){
             log.info("userId:{}用户上线了!;version:{}",user.getId(),version);
             redisOpenService.set(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()),user.getType()+"");
@@ -49,9 +52,9 @@ public class ImLogController extends BaseController{
             }
 
             //获取代聊天记录
-            List<AdminImLog> list = adminImLogService.findByUserId(user.getId());
+            List<AdminImLog> list = adminImLogService.findByImId(user.getImId());
             //删除带聊天记录
-            adminImLogService.deleteByUserId(user.getId());
+            adminImLogService.deleteByImId(user.getImId());
             return Result.success().data(list).msg("查询成功！");
             
         }else{

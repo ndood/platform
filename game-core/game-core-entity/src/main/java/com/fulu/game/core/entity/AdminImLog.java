@@ -18,11 +18,7 @@ public class AdminImLog implements Serializable {
 	//
 	private Integer id;
 	//
-	private Integer fromUserId;
-	//
 	private String fromImId;
-	//
-	private Integer targetUserId;
 	//
 	private String targetImId;
 	//

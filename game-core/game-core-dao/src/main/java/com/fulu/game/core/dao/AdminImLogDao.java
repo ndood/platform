@@ -18,7 +18,7 @@ public interface AdminImLogDao extends ICommonDao<AdminImLog,Integer>{
 
     List<AdminImLog> findByParameter(AdminImLogVO adminImLogVO);
 
-    int deleteByUserId(int userId);
+    int deleteByImId(String imId);
 
-    List<AdminImLog> findByUserId(int UserId);
+    List<AdminImLog> findByImId(String imId);
 }

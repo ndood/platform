@@ -29,13 +29,13 @@ public class AdminImLogServiceImpl extends AbsCommonService<AdminImLog,Integer> 
     }
 
     @Override
-    public List<AdminImLog> findByUserId(int userId){
-        return adminImLogDao.findByUserId(userId);
+    public List<AdminImLog> findByImId(String imId){
+        return adminImLogDao.findByImId(imId);
     }
 
     @Override
-    public int deleteByUserId(int userId){
-        return adminImLogDao.deleteByUserId(userId);
+    public int deleteByImId(String imId){
+        return adminImLogDao.deleteByImId(imId);
     }
 	
 }

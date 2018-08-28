@@ -4,9 +4,7 @@
 <mapper namespace="com.fulu.game.core.dao.AdminImLogDao">
     <resultMap id="AdminImLogResultMap" type="com.fulu.game.core.entity.AdminImLog">
                                     <id column="id"  property="id" />
-                                            <result column="from_user_id"  property="fromUserId" />
                                             <result column="from_im_id"  property="fromImId" />
-                                            <result column="target_user_id"  property="targetUserId" />
                                             <result column="target_im_id"  property="targetImId" />
                                             <result column="content"  property="content" />
                                             <result column="sendTime"  property="sendtime" />
@@ -16,7 +14,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,from_user_id,from_im_id,target_user_id,target_im_id,content,sendTime    </sql>
+        id,from_im_id,target_im_id,content,sendTime    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="AdminImLogResultMap">
         select
@@ -38,14 +36,9 @@
         <include refid="Base_Column_List"/>
         FROM t_admin_im_log
         <where>
-                                                                            <if test="fromUserId != null">
-                       and from_user_id = #{fromUserId}
-                    </if>
+                                                                       
                                                                 <if test="fromImId != null">
                        and from_im_id = #{fromImId}
-                    </if>
-                                                                <if test="targetUserId != null">
-                       and target_user_id = #{targetUserId}
                     </if>
                                                                 <if test="targetImId != null">
                        and target_im_id = #{targetImId}
@@ -59,12 +52,12 @@
                                     </where>
     </select>
 
-    <select id="findByUserId" resultMap="AdminImLogResultMap" parameterType="java.lang.Integer">
+    <select id="findByImId" resultMap="AdminImLogResultMap" parameterType="java.lang.String">
         SELECT
         <include refid="Base_Column_List"/>
         FROM t_admin_im_log
         <where>
-            from_user_id = #{userId} or target_user_id = #{userId}
+            from_im_id = #{imId} or target_im_id = #{imId}
         </where>
         
         order by sendTime
@@ -79,34 +72,26 @@
         </where>
     </delete>
 
-    <delete id="deleteByUserId" parameterType="java.lang.Integer">
+    <delete id="deleteByImId" parameterType="java.lang.String">
         delete from t_admin_im_log
         <where>
-            from_user_id = #{userId} or target_user_id = #{userId}
+            from_im_id = #{imId} or target_im_id = #{imId}
         </where>
     </delete>
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.AdminImLog">
         insert into
-        t_admin_im_log (from_user_id,from_im_id,target_user_id,target_im_id,content,sendTime)
+        t_admin_im_log (from_im_id,target_im_id,content,sendTime)
         values
-        (#{fromUserId},#{fromImId},#{targetUserId},#{targetImId},#{content},#{sendtime})
+        (#{fromImId},#{targetImId},#{content},#{sendtime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.AdminImLog">
         update t_admin_im_log
         <set>
-                                                        
-                    <if test="fromUserId != null">
-                        from_user_id = #{fromUserId},
-                    </if>
                                             
                     <if test="fromImId != null">
                         from_im_id = #{fromImId},
-                    </if>
-                                            
-                    <if test="targetUserId != null">
-                        target_user_id = #{targetUserId},
                     </if>
                                             
                     <if test="targetImId != null">
