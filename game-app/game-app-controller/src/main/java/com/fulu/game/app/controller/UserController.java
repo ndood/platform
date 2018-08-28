@@ -1,28 +1,21 @@
 package com.fulu.game.app.controller;
 
 import cn.hutool.core.date.DateUtil;
-import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.domain.ClientInfo;
 import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.AdminImLog;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.AdminImLogService;
-import com.fulu.game.core.service.ProductService;
-import com.fulu.game.core.service.UserInfoAuthService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Slf4j
@@ -76,7 +68,7 @@ public class UserController extends BaseController {
         return Result.success().data(user).msg("个人信息设置成功！");
     }
 
-
+    
     @PostMapping(value = "online")
     public Result userOnline(@RequestParam(required = true) Boolean active, String version){
         User user = userService.getCurrentUser();
@@ -115,18 +107,40 @@ public class UserController extends BaseController {
         return Result.success();
     }
 
-    /**
-     * 聊天对象信息获取
-     *
-     * @param id
-     * @return
-     */
-    @PostMapping("/chatwith/get")
-    public Result chatWithGet(@RequestParam("id") Integer id) {
-        UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(id, false, true, true, true);
-        List<Product> productList = productService.findByUserId(id);
-        userInfoVO.setProductList(productList);
-        return Result.success().data(userInfoVO).msg("查询聊天对象信息成功！");
+
+    @PostMapping("/im/save")
+    public Result imSave(@RequestParam("status") Integer status,
+                         @RequestParam("imId") String imId,
+                         @RequestParam("imPsw") String imPsw,
+                         @RequestParam(value = "errorMsg", required = false) String errorMsg) {
+        User user = userService.findById(userService.getCurrentUser().getId());
+        if (null == user) {
+            log.info("当前用户id={}查询数据库不存在，无法绑定", userService.getCurrentUser().getId());
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+        log.info("IM注册请求开始,请求参数status:{},user:{},imId={},imPsw={},errorMsg={}", user, status, imId, imPsw, errorMsg);
+        if (user.getImId() != null) {
+            log.info("用户IM信息已经存在:user:{};", user);
+            return Result.success().data(user).msg("已存在IM账号");
+        }
+        if (status.equals(200)) {
+            user.setImId(imId);
+            user.setImPsw(imPsw);
+            user.setUpdateTime(new Date());
+            userService.update(user);
+            userService.updateRedisUser(user);
+            log.info("用户:{}绑定IM信息成功:user:{};", user.getId(), user);
+        } else if (status.equals(500)) {
+            String newIMId = "s" + imId;
+            ImUser imUser = imService.registerUser(newIMId, imPsw);
+            user.setImId(imUser.getUsername());
+            user.setImPsw(imUser.getImPsw());
+            user.setUpdateTime(new Date());
+            userService.update(user);
+            userService.updateRedisUser(user);
+            log.error("用户:{}绑定IM失败,失败原因:{}", user, errorMsg);
+        }
+        return Result.success().data(user).msg("IM用户信息保存成功！");
     }
 
     /**
@@ -149,11 +163,23 @@ public class UserController extends BaseController {
         return Result.success().data(user).msg("查询IM用户成功");
     }
 
-
     @PostMapping(value = "collect")
     public Result log(String content){
         log.error("日志收集:{}",content);
         return Result.success();
     }
-    
+
+    /**
+     * 聊天对象信息获取
+     *
+     * @param id
+     * @return
+     */
+    @PostMapping("/chatwith/get")
+    public Result chatWithGet(@RequestParam("id") Integer id) {
+        UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(id, false, true, true, true);
+        List<Product> productList = productService.findByUserId(id);
+        userInfoVO.setProductList(productList);
+        return Result.success().data(userInfoVO).msg("查询聊天对象信息成功！");
+    }
 }
