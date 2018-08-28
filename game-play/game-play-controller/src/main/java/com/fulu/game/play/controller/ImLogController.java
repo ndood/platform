@@ -38,10 +38,7 @@ public class ImLogController extends BaseController{
 
     @PostMapping(value = "online")
     public Result userOnline(@RequestParam(required = true) Boolean active,String version){
-//        User user = userService.getCurrentUser();
-        User user = new User();
-        user.setId(2102);
-        user.setImSubstituteId(1);
+        User user = userService.getCurrentUser();
         if(active){
             log.info("userId:{}用户上线了!;version:{}",user.getId(),version);
             redisOpenService.set(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()),user.getType()+"");
