@@ -59,6 +59,14 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
      */
     PageInfo<UserInfoAuthVO> list(Integer pageNum, Integer pageSize, UserInfoAuthSearchVO userInfoAuthSearchVO);
 
+
+    /**
+     * 根据条件获取陪玩师信息
+     * @param userInfoAuthSearchVO
+     * @return
+     */
+    public List<UserInfoAuthVO> findBySearchVO(UserInfoAuthSearchVO userInfoAuthSearchVO);
+
     /**
      * 根据userId更新用户认证信息
      *

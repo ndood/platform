@@ -14,6 +14,7 @@
         <result column="allow_export" property="allowExport"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
+        <result column="im_substitute_id" property="imSubstituteId"/>
     </resultMap>
 
     <resultMap id="UserInfoAuthResultVOMap" type="com.fulu.game.core.entity.vo.UserInfoAuthVO" extends="UserInfoAuthResultMap">
@@ -24,10 +25,13 @@
         <result column="gender" property="gender"/>
         <result column="age" property="age"/>
         <result column="nickname" property="nickname"/>
+        <result column="im_substitute_id" property="imSubstituteId"/>
+        <result column="im_id" property="imId"/>
+        <result column="im_psw" property="imPsw"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,mobile,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,create_time,update_time
+        id,user_id,mobile,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,create_time,update_time,im_substitute_id
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserInfoAuthResultMap">
@@ -92,6 +96,8 @@
         uia.*,
         u.user_info_auth,
         u.head_portraits_url,
+        u.im_id,
+        u.im_psw,
         u.gender,
         u.age,
         u.nickname,
@@ -130,6 +136,9 @@
             </if>
             <if test="endAge != null">
                 and u.age &lt;= #{endAge}
+            </if>
+            <if test="imId != null">
+                and u.im_id = #{imId}
             </if>
         </where>
         GROUP BY
@@ -237,4 +246,5 @@
             user_id = #{userId}
         </where>
     </update>
+    
 </mapper>

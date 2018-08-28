@@ -19,7 +19,7 @@ public interface UserInfoAuthDao extends ICommonDao<UserInfoAuth, Integer> {
 
     List<UserInfoAuth> findByParameter(UserInfoAuthVO userInfoAuthVO);
 
-    List<UserInfoAuth> findBySearchVO(UserInfoAuthSearchVO userInfoAuthSearchVO);
+    List<UserInfoAuthVO> findBySearchVO(UserInfoAuthSearchVO userInfoAuthSearchVO);
 
     List<UserInfoAuth> findByUserIds(@Param(value = "userIds") List<Integer> userIds);
 

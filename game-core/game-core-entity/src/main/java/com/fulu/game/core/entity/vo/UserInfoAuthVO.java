@@ -63,5 +63,10 @@ public class UserInfoAuthVO extends UserInfoAuth {
     public void setUserInfoAuthStr(String userInfoAuthStr) {
         this.userInfoAuthStr = userInfoAuthStr;
     }
+    
+    private String imId;
 
+    private String imPsw;
+    
+    private Long unreadCount;
 }
