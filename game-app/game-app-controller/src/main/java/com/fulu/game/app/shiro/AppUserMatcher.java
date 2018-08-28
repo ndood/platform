@@ -1,6 +1,7 @@
 package com.fulu.game.app.shiro;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.UserStatusEnum;
 import com.fulu.game.common.exception.UserException;
@@ -16,7 +17,6 @@ import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -61,7 +61,7 @@ public class AppUserMatcher extends HashedCredentialsMatcher implements Initiali
             //匹配完毕更新新的登录时间和IP
             Map<String, Object> userMap = BeanUtil.beanToMap(user);
             String gToken = GenIdUtil.GetToken();
-            redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(gToken), userMap);
+            redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(gToken), userMap, Constant.APP_EXPIRE_TIME);
             SubjectUtil.setToken(gToken);
             SubjectUtil.setCurrentUser(user);
             log.info("生成新token=={},shiro验证结束", SubjectUtil.getToken());
@@ -69,8 +69,6 @@ public class AppUserMatcher extends HashedCredentialsMatcher implements Initiali
         }
         return false;
     }
-
-
 
 
 }

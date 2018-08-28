@@ -25,6 +25,7 @@ public class RedisOpenServiceImpl {
     private static final long TIME = 30 * 60;
 
 
+
     private static final String LOCKED ="LOCKED";
 
 

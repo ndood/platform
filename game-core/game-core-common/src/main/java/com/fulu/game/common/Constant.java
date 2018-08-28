@@ -28,6 +28,9 @@ public interface Constant {
     Integer MOBILE_CODE_SEND_TIMES = 3;
     Long MOBILE_CACHE_TIME = 30 * 60L;
 
+    long APP_EXPIRE_TIME = 30 * 24 * 60 * 60;
+
+
     String WEIXN_JUMP_URL = "https://t-open.wzpeilian.com/pc/weixin.html ";
 
 
