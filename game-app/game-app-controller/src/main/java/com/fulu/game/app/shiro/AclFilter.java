@@ -2,6 +2,7 @@ package com.fulu.game.app.shiro;
 
 
 import cn.hutool.core.bean.BeanUtil;
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
@@ -74,13 +75,9 @@ public class AclFilter extends AccessControlFilter {
             return false;
         }
         Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.PLAY_TOKEN.generateKey(token));
-        redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token), map);
-        //sessionKey 时间用户token时间保持一致
-        String sessionKey = redisOpenService.get(RedisKeyEnum.WX_SESSION_KEY.generateKey(token));
-        redisOpenService.set(RedisKeyEnum.WX_SESSION_KEY.generateKey(token),sessionKey);
-
+        redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token), map, Constant.APP_EXPIRE_TIME);
         //已登录的，就保存该token从redis查到的用户信息
-        User user = BeanUtil.mapToBean(map, User.class, true);
+        User user = BeanUtil.mapToBean(map, User.class, Boolean.TRUE);
         SubjectUtil.setCurrentUser(user);
         log.info("AclFilter验证通过，续存token {}", token);
         SubjectUtil.setToken(token);
