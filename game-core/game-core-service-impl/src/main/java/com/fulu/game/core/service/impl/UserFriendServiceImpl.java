@@ -57,6 +57,12 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
         } else {
             userFriendVO.setCreateTime(new Date());
             userFriendVO.setUpdateTime(new Date());
+            if(userFriendVO.getIsAttention() == null){
+                userFriendVO.setIsAttention(0);
+            }
+            if(userFriendVO.getIsBlack() == null){
+                userFriendVO.setIsBlack(0);
+            }
             userFriendDao.create(userFriendVO);
         }
         jsonObject.put("data", userFriendVO);
