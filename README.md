@@ -51,6 +51,10 @@
 分期乐前端原型：https://pro.modao.cc/app/BPfF8hfMbXILPIlNxFBfHHUe50YbRHq
 分期乐后台原型：https://pro.modao.cc/app/iYMJFWOPAGsuN9EGRTpknyHfiQPjq9L
 
+### app+v1.1.1原型
+分期乐前端原型：https://pro.modao.cc/app/2f3dfb774f6cfe0ed6cb2f9ab0b922de5a543931#screen=sA42C9163501535098955667
+分期乐后台原型：https://pro.modao.cc/app/7MCjbsuj3t98vv6tl59a8711Z7Vualw#screen=s45815F3F3F1535076483373
+
 ##订单状态
 |订单状态|状态注释|
 |---|:----:|
