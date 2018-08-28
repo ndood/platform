@@ -65,7 +65,7 @@ public class HomeController extends BaseController {
                 }
             }
             log.error("登录异常",e);
-            return Result.noLogin().msg("测试登录用户验证信息错误！");
+            return Result.noLogin().msg("验证码错误！");
         }
     }
 
