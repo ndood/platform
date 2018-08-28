@@ -1,28 +1,30 @@
 package com.fulu.game.app.controller;
 
 import cn.hutool.core.date.DateUtil;
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.domain.ClientInfo;
 import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.common.utils.SubjectUtil;
-import com.fulu.game.core.entity.AdminImLog;
-import com.fulu.game.core.entity.Product;
-import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
-import com.fulu.game.core.service.AdminImLogService;
-import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -42,6 +44,9 @@ public class UserController extends BaseController {
     private RedisOpenServiceImpl redisOpenService;
     @Autowired
     private AdminImLogService adminImLogService;
+    @Autowired
+    private ImService imService;
+    
 
 
     /**
