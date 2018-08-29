@@ -88,16 +88,19 @@ public class HomeController extends BaseController {
                 redisOpenService.set(RedisKeyEnum.SMS_VERIFY_CODE.generateKey(mobile),  verifyCode, Constant.VERIFYCODE_CACHE_TIME);
                 times = String.valueOf(Integer.parseInt(times) + 1);
                 redisOpenService.set(RedisKeyEnum.SMS_VERIFY_CODE_TIMES.generateKey(mobile), times, Constant.MOBILE_CACHE_TIME);
-                return Result.success().msg("验证码发送成功！");
+                return Result.success().data(verifyCode).msg("验证码发送成功！");
             }
         } else {
             String verifyCode = SMSUtil.sendVerificationCode(mobile);
             log.info("发送验证码{}={}", mobile, verifyCode);
             redisOpenService.set(RedisKeyEnum.SMS_VERIFY_CODE.generateKey(mobile), verifyCode, Constant.VERIFYCODE_CACHE_TIME);
             redisOpenService.set(RedisKeyEnum.SMS_VERIFY_CODE_TIMES.generateKey(mobile), "1", Constant.MOBILE_CACHE_TIME);
-            return Result.success().msg("验证码发送成功！");
+            return Result.success().data(verifyCode).msg("验证码发送成功！");
         }
     }
+
+
+
 
 
 

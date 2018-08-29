@@ -25,7 +25,7 @@ public interface Constant {
     Long TIME_MINUTES_FIVE = 5 * 60L;
 
     //手机验证码限定次数和限定时间
-    Integer MOBILE_CODE_SEND_TIMES = 3;
+    Integer MOBILE_CODE_SEND_TIMES = 100; //todo 方便测试
     Long MOBILE_CACHE_TIME = 30 * 60L;
 
     long APP_EXPIRE_TIME = 30 * 24 * 60 * 60;

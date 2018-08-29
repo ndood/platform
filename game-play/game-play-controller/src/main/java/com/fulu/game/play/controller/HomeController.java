@@ -1,6 +1,8 @@
 package com.fulu.game.play.controller;
 
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.enums.PlatformEcoEnum;
@@ -16,8 +18,6 @@ import com.fulu.game.core.service.SysConfigService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.play.shiro.PlayUserToken;
 import com.fulu.game.play.utils.RequestUtil;
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import org.apache.commons.lang.StringUtils;
@@ -35,7 +35,7 @@ import java.util.Map;
 
 @Controller
 @Slf4j
-public class HomeController extends BaseController{
+public class HomeController extends BaseController {
 
     @Autowired
     private WxMaServiceSupply wxMaServiceSupply;
@@ -57,6 +57,7 @@ public class HomeController extends BaseController{
 
     /**
      * 初始化加载系统配置
+     *
      * @return
      */
     @RequestMapping(value = "/sys/config", method = RequestMethod.POST)
@@ -79,6 +80,7 @@ public class HomeController extends BaseController{
 
     /**
      * 小程序提交参数code
+     *
      * @return
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -107,24 +109,25 @@ public class HomeController extends BaseController{
             Map<String, Object> result = BeanUtil.beanToMap(user);
             result.put("token", SubjectUtil.getToken());
             result.put("userId", user.getId());
-            if(user.getUnionId()==null){
-                log.error("用户没有unionId;user{}",user);
+            if (user.getUnionId() == null) {
+                log.error("用户没有unionId;user{}", user);
                 return Result.newUser().data(result);
             }
             return Result.success().data(result).msg("登录成功!");
-        }
-        catch (AuthenticationException e) {
-            if(e.getCause() instanceof UserException){
-                if(UserException.ExceptionCode.USER_BANNED_EXCEPTION.equals(((UserException) e.getCause()).getExceptionCode())){
+        } catch (AuthenticationException e) {
+            if (e.getCause() instanceof UserException) {
+                if (UserException.ExceptionCode.USER_BANNED_EXCEPTION.equals(((UserException) e.getCause()).getExceptionCode())) {
                     log.error("用户被封禁,openId:{}", openId);
                     return Result.userBanned();
                 }
             }
             return Result.noLogin().msg("测试登录用户验证信息错误！");
-        }  catch (Exception e) {
+        } catch (Exception e) {
             log.error("登录异常!", e);
             return Result.error().msg("登陆异常！");
+
         }
+
     }
 
 
@@ -143,10 +146,9 @@ public class HomeController extends BaseController{
             result.put("token", SubjectUtil.getToken());
             result.put("userId", user.getId());
             return Result.success().data(result).msg("测试登录成功!");
-        }
-        catch (AuthenticationException e) {
-            if(e.getCause() instanceof UserException){
-                if(UserException.ExceptionCode.USER_BANNED_EXCEPTION.equals(((UserException) e.getCause()).getExceptionCode())){
+        } catch (AuthenticationException e) {
+            if (e.getCause() instanceof UserException) {
+                if (UserException.ExceptionCode.USER_BANNED_EXCEPTION.equals(((UserException) e.getCause()).getExceptionCode())) {
                     log.error("用户被封禁,openId:{}", openId);
                     return Result.userBanned();
                 }
