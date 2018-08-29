@@ -2,12 +2,12 @@ package com.fulu.game.core.service.queue;
 
 
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
+import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.core.entity.PushMsg;
 import com.fulu.game.core.entity.WxMaTemplateMessageVO;
 import com.fulu.game.core.service.PushMsgService;
-import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -73,14 +73,17 @@ public class PushMsgQueue implements Runnable {
 
     private void process(WxMaTemplateMessageVO wxMaTemplateMessageVO) {
         try {
-            log.info("推送消息队列推送消息:wxMaTemplateMessageVO:{}",wxMaTemplateMessageVO);
+            log.info("推送消息队列推送消息:wxMaTemplateMessageVO:{}", wxMaTemplateMessageVO);
             WxMaTemplateMessage wxMaTemplateMessage = wxMaTemplateMessageVO.getWxMaTemplateMessage();
             Integer pushId = wxMaTemplateMessageVO.getPushId();
             if (PlatformEcoEnum.POINT.getType().equals(wxMaTemplateMessageVO.getPlatform())) {
-                log.info("上分平台推送消息:wxMaTemplateMessageVO:{}",wxMaTemplateMessageVO);
+                log.info("上分平台推送消息:wxMaTemplateMessageVO:{}", wxMaTemplateMessageVO);
                 wxMaServiceSupply.pointWxMaService().getMsgService().sendTemplateMsg(wxMaTemplateMessage);
+            } else if (PlatformEcoEnum.APP.getType().equals(wxMaTemplateMessageVO.getPlatform())) {
+                //todo APP推送
+
             } else {
-                log.info("陪玩平台推送消息:wxMaTemplateMessageVO:{}",wxMaTemplateMessageVO);
+                log.info("陪玩平台推送消息:wxMaTemplateMessageVO:{}", wxMaTemplateMessageVO);
                 wxMaServiceSupply.playWxMaService().getMsgService().sendTemplateMsg(wxMaTemplateMessage);
             }
             if (pushId != null) {

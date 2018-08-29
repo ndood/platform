@@ -72,8 +72,8 @@ public class PushMsgController extends BaseController {
      * @return
      */
     @RequestMapping("/official-notice/list")
-    public Result officialNoticelList(@RequestParam Integer pageNum,
-                                      @RequestParam Integer pageSize) {
+    public Result officialNoticeList(@RequestParam Integer pageNum,
+                                     @RequestParam Integer pageSize) {
         PageInfo<PushMsg> pageInfo = pushMsgService.officialNoticeList(pageNum, pageSize);
         return Result.success().data(pageInfo).msg("查询成功！");
     }
