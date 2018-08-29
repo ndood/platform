@@ -59,3 +59,6 @@ CREATE TABLE `t_thirdparty_user` (
 
 --添加订单支付字段
 ALTER TABLE `t_order` ADD COLUMN `payment` tinyint(1)  DEFAULT NULL COMMENT '支付方式(1微信支付，3分期乐支付)' after `is_pay_callback`;
+
+--添加title（推送标题）字段
+ALTER TABLE `t_push_msg` ADD COLUMN `title` varchar(255) NOT NULL COMMENT '推送标题' after `touch_time`;
