@@ -240,9 +240,11 @@
             <if test="createTime != null">
                 create_time = #{createTime},
             </if>
-
             <if test="updateTime != null">
                 update_time = #{updateTime},
+            </if>
+            <if test="imSubstituteId != null">
+                im_substitute_id = #{imSubstituteId},
             </if>
         </set>
         <where>
