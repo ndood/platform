@@ -77,9 +77,7 @@ public class ReportServiceImpl extends AbsCommonService<Report, Integer> impleme
             for (String url : fileUrl) {
                 ReportFile file = new ReportFile();
                 file.setReportId(report.getId());
-                //fixme
-//                file.setUrl(ossUtil.activateOssFile(url));
-                file.setUrl(url);
+                file.setUrl(ossUtil.activateOssFile(url));
                 file.setUpdateTime(DateUtil.date());
                 file.setCreateTime(DateUtil.date());
                 reportFileDao.create(file);

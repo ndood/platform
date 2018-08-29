@@ -31,9 +31,9 @@ public class PushMsgController extends BaseController {
     /**
      * 官方公告列表
      *
-     * @param pageNum
-     * @param pageSize
-     * @return
+     * @param pageNum  页码
+     * @param pageSize 每页显示数据条数
+     * @return 封装结果集
      */
     @RequestMapping("/official-notice/list")
     public Result officialNoticeList(@RequestParam Integer pageNum,
