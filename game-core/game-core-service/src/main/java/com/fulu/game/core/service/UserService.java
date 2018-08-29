@@ -1,7 +1,6 @@
 package com.fulu.game.core.service;
 
-import com.fulu.game.common.enums.WechatEcoEnum;
-import com.fulu.game.core.entity.ImUser;
+import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.github.pagehelper.PageInfo;
@@ -55,7 +54,7 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param openId
      * @return
      */
-    User findByOpenId(String openId, WechatEcoEnum wechatEcoEnum);
+    User findByOpenId(String openId, PlatformEcoEnum platformEcoEnum);
 
     /**
      * 根据imId查询user
@@ -131,7 +130,7 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param openId
      * @return
      */
-    User createNewUser(WechatEcoEnum wechatEcoEnum, String openId, Integer sourceId, String host);
+    User createNewUser(PlatformEcoEnum platformEcoEnum, String openId, Integer sourceId, String host);
 
 
     User createNewUser(String mobile, String host);
@@ -194,11 +193,11 @@ public interface UserService extends ICommonService<User, Integer> {
      * 同步用户信息（陪玩上分和陪玩开黑之间的用户数据同步）
      *
      * @param userVO        用户VO
-     * @param wechatEcoEnum 用户来源
+     * @param platformEcoEnum 用户来源
      * @param ipStr         用户ip
      * @return 用户Bean
      */
-    User updateUnionUser(UserVO userVO, WechatEcoEnum wechatEcoEnum, String ipStr);
+    User updateUnionUser(UserVO userVO, PlatformEcoEnum platformEcoEnum, String ipStr);
 
     List<UserVO> findVOByUserIds(List<Integer> userIds);
 

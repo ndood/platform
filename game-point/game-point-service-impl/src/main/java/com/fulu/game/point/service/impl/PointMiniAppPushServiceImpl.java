@@ -7,7 +7,6 @@ import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.CategoryService;
 import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.UserTechAuthService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
@@ -39,13 +38,13 @@ public class PointMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
 
     @Override
     protected void push(int userId, WechatTemplateMsgEnum wechatTemplateMsgEnum,String... replaces) {
-        pushWechatTemplateMsg(WechatEcoEnum.POINT.getType(), userId, WechatTemplateIdEnum.POINT_LEAVE_MSG, wechatTemplateMsgEnum.getPage().getPointPagePath(), wechatTemplateMsgEnum.getContent(),replaces);
+        pushWechatTemplateMsg(PlatformEcoEnum.POINT.getType(), userId, WechatTemplateIdEnum.POINT_LEAVE_MSG, wechatTemplateMsgEnum.getPage().getPointPagePath(), wechatTemplateMsgEnum.getContent(),replaces);
     }
 
     @Override
     protected void push(int userId, Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum, WechatTemplateMsgTypeEnum wechatTemplateMsgTypeEnum, String... replaces) {
         pushServiceProcessMsg(
-                WechatEcoEnum.POINT.getType(),
+                PlatformEcoEnum.POINT.getType(),
                 userId,
                 order,
                 WechatTemplateIdEnum.POINT_SERVICE_PROCESS_NOTICE,

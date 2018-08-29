@@ -1,9 +1,12 @@
 package com.fulu.game.core.service.impl;
 
 
-import com.fulu.game.common.enums.WechatPagePathEnum;
+import cn.hutool.core.date.DateUtil;
+import com.fulu.game.common.Constant;
+import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.enums.PushMsgTypeEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.WechatPagePathEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.PushMsgDao;
@@ -17,7 +20,6 @@ import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.push.PushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -175,5 +179,14 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
 
     }
 
+    @Override
+    public PageInfo<PushMsg> officialNoticeList(Integer pageNum, Integer pageSize) {
+        String orderBy = "create_time DESC";
+        PageHelper.startPage(pageNum, pageSize, orderBy);
 
+        PushMsgVO pushMsgVO = new PushMsgVO();
+        pushMsgVO.setPlatform(PlatformEcoEnum.APP.getType());
+        List<PushMsg> noticeList = pushMsgDao.findByParameter(pushMsgVO);
+        return new PageInfo<>(noticeList);
+    }
 }
