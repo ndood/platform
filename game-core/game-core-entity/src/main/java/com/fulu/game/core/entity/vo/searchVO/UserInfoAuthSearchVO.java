@@ -17,7 +17,6 @@ public class UserInfoAuthSearchVO {
     private Integer endAge;
     private String orderBy;
     private Boolean userAutoSetting;
-    private String imId;
     
     /**
      * 外链id
@@ -33,5 +32,7 @@ public class UserInfoAuthSearchVO {
         return orderBy;
     }
 
+    private String imId;
+    private String imPsw;
     private Integer imSubstituteId;
 }
