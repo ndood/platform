@@ -10,31 +10,27 @@ import java.util.Date;
  * 虚拟商品表
  *
  * @author Gong Zechun
- * @date 2018-08-30 10:01:57
+ * @date 2018-08-30 15:02:01
  */
 @Data
 public class VirtualProduct implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    //主键id
+    //
     private Integer id;
     //商品名称
     private String name;
-    //商品价格（对应钻石数量）
+    //商品价格
     private Integer price;
-    //商品类型(1：虚拟礼物；2：声音；3：套图)
+    //1 礼物  2 私照图片组 3 IM解锁图片组 4 IM解锁语音
     private Integer type;
-    //对应物品链接
+    //商品图片地址
     private String objectUrl;
-    //礼物id
-    private Integer giftId;
-    //套图id
-    private Integer groupPicId;
-    //备注
+    //
     private String remark;
-    //修改时间
+    //
     private Date updateTime;
-    //创建时间
+    //
     private Date createTime;
 
 }
