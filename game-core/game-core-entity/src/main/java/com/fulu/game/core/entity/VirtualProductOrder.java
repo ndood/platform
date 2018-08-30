@@ -21,7 +21,7 @@ public class VirtualProductOrder implements Serializable {
     //订单号
     private String orderNo;
     //虚拟商品id
-    private String virtualProductId;
+    private Integer virtualProductId;
     //虚拟商品价格（对应钻石数量）
     private Integer price;
     //发起人id

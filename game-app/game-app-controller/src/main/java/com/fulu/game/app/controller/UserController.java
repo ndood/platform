@@ -3,21 +3,18 @@ package com.fulu.game.app.controller;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.domain.ClientInfo;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
-import com.fulu.game.core.entity.AdminImLog;
-import com.fulu.game.core.entity.ImUser;
-import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.UserInfoAuth;
+import com.fulu.game.common.utils.SubjectUtil;
+import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
-import com.fulu.game.core.service.AdminImLogService;
-import com.fulu.game.core.service.ImService;
-import com.fulu.game.core.service.UserInfoAuthService;
-import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,16 +44,19 @@ public class UserController extends BaseController {
     private AdminImLogService adminImLogService;
     @Autowired
     private ImService imService;
+    @Qualifier(value = "userTechAuthServiceImpl")
+    @Autowired
+    private UserTechAuthServiceImpl userTechAuthService;
+
 
 
     /**
      * 修改/填写资料
-     *
      * @param userVO
      * @return
      */
     @RequestMapping("update")
-    public Result update(UserVO userVO) {
+    public Result update(UserVO userVO){
         User user = userService.findById(userService.getCurrentUser().getId());
         user.setAge(DateUtil.ageOfNow(userVO.getBirth()));
         user.setGender(userVO.getGender());
@@ -74,26 +74,26 @@ public class UserController extends BaseController {
         return Result.success().data(user).msg("个人信息设置成功！");
     }
 
-
+    
     @PostMapping(value = "online")
-    public Result userOnline(@RequestParam(required = true) Boolean active, String version) {
+    public Result userOnline(@RequestParam(required = true) Boolean active, String version){
         User user = userService.getCurrentUser();
         UserInfoAuth ua = userInfoAuthService.findByUserId(user.getId());
-        if (active) {
-            log.info("userId:{}用户上线了!;version:{}", user.getId(), version);
-            redisOpenService.set(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()), user.getType() + "");
+        if(active){
+            log.info("userId:{}用户上线了!;version:{}",user.getId(),version);
+            redisOpenService.set(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()),user.getType()+"");
 
             //删除陪玩师的未读信息数量
-            if (ua.getImSubstituteId() != null) {
+            if(ua.getImSubstituteId()!=null){
                 Map map = redisOpenService.hget(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()));
 
-                if (map != null && map.size() > 0) {
+                if(map != null && map.size() >0 ){
                     map.remove(user.getImId());
 
-                    if (map.size() < 1) {
+                    if(map.size() <1){
                         redisOpenService.delete(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()));
-                    } else {
-                        redisOpenService.hset(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()), map, Constant.ONE_DAY * 3);
+                    }else{
+                        redisOpenService.hset(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()) , map , Constant.ONE_DAY * 3);
                     }
 
                 }
@@ -106,8 +106,8 @@ public class UserController extends BaseController {
             adminImLogService.deleteByImId(user.getImId());
             return Result.success().data(list).msg("查询成功！");
 
-        } else {
-            log.info("userId:{}用户下线了!version:{}", user.getId(), version);
+        }else{
+            log.info("userId:{}用户下线了!version:{}",user.getId(),version);
             redisOpenService.delete(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()));
         }
         return Result.success();
@@ -167,6 +167,18 @@ public class UserController extends BaseController {
         }
         log.info("根据imId获取用户信息:imId:{};content:{};user:{}", imId, content, user);
         return Result.success().data(user).msg("查询IM用户成功");
+    }
+
+    /**
+     * 获取用户接单技能列表
+     * @return
+     */
+    @RequestMapping("tech/list")
+    public Result userTechList() {
+        User user = userService.getCurrentUser();
+        //查询所有用户认证的技能
+        List<UserTechAuth> techAuthList = userTechAuthService.findUserNormalTechs(user.getId());
+        return Result.success().data(techAuthList);
     }
 
 
