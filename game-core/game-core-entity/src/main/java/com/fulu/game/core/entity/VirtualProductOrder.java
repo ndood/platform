@@ -10,7 +10,7 @@ import java.util.Date;
  * 虚拟商品订单表
  *
  * @author Gong Zechun
- * @date 2018-08-30 10:04:09
+ * @date 2018-08-30 15:03:48
  */
 @Data
 public class VirtualProductOrder implements Serializable {
@@ -28,10 +28,6 @@ public class VirtualProductOrder implements Serializable {
     private Integer fromUserId;
     //接收人id
     private Integer targetUserId;
-    //是否支付（0：否（默认）；1：是）
-    private Integer isPay;
-    //支付时间
-    private Date payTime;
     //备注
     private String remark;
     //修改时间

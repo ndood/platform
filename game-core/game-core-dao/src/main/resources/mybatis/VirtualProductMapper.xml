@@ -8,8 +8,6 @@
         <result column="price" property="price"/>
         <result column="type" property="type"/>
         <result column="object_url" property="objectUrl"/>
-        <result column="gift_id" property="giftId"/>
-        <result column="group_pic_id" property="groupPicId"/>
         <result column="remark" property="remark"/>
         <result column="update_time" property="updateTime"/>
         <result column="create_time" property="createTime"/>
@@ -20,7 +18,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name,price,type,object_url,gift_id,group_pic_id,remark,update_time,create_time    </sql>
+        id,name,price,type,object_url,remark,update_time,create_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="VirtualProductResultMap">
         select
@@ -55,12 +53,6 @@
             <if test="objectUrl != null">
                 and object_url = #{objectUrl}
             </if>
-            <if test="giftId != null">
-                and gift_id = #{giftId}
-            </if>
-            <if test="groupPicId != null">
-                and group_pic_id = #{groupPicId}
-            </if>
             <if test="remark != null">
                 and remark = #{remark}
             </if>
@@ -83,9 +75,9 @@
     <insert id="create" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.fulu.game.core.entity.VirtualProduct">
         insert into
-        t_virtual_product (name,price,type,object_url,gift_id,group_pic_id,remark,update_time,create_time)
+        t_virtual_product (name,price,type,object_url,remark,update_time,create_time)
         values
-        (#{name},#{price},#{type},#{objectUrl},#{giftId},#{groupPicId},#{remark},#{updateTime},#{createTime})
+        (#{name},#{price},#{type},#{objectUrl},#{remark},#{updateTime},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.VirtualProduct">
@@ -106,14 +98,6 @@
 
             <if test="objectUrl != null">
                 object_url = #{objectUrl},
-            </if>
-
-            <if test="giftId != null">
-                gift_id = #{giftId},
-            </if>
-
-            <if test="groupPicId != null">
-                group_pic_id = #{groupPicId},
             </if>
 
             <if test="remark != null">
