@@ -29,4 +29,5 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl{
     protected MiniAppPushServiceImpl getMinAppPushService() {
         return null;
     }
+
 }
