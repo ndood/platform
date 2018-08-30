@@ -16,6 +16,7 @@
         <result column="type" property="type"/>
         <result column="user_info_auth" property="userInfoAuth"/>
         <result column="balance" property="balance"/>
+        <result column="virtual_balance"  property="virtualBalance" />
         <result column="status" property="status"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
@@ -49,7 +50,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,point_open_id,public_open_id,union_id,city,province,country,score_avg,user_score,constellation,birth,age,im_id,im_psw,source_id,regist_ip,login_ip,login_time
+        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,virtual_balance,status,create_time,update_time,open_id,point_open_id,public_open_id,union_id,city,province,country,score_avg,user_score,constellation,birth,age,im_id,im_psw,source_id,regist_ip,login_ip,login_time
     </sql>
 
     <select id="findUserVOByUserIds" resultMap="UserResultVOMap">
@@ -131,6 +132,9 @@
             </if>
             <if test="userInfoAuth != null">
                 and user_info_auth = #{userInfoAuth}
+            </if>
+            <if test="virtualBalance != null">
+                and virtual_balance = #{virtualBalance}
             </if>
             <if test="status != null">
                 and status = #{status}
@@ -270,9 +274,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.User">
         insert into
-        t_user (mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,status,create_time,update_time,open_id,point_open_id,public_open_id,union_id,city,province,country,score_avg,user_score,constellation,birth,im_id,im_psw,source_id,regist_ip,login_ip,login_time)
+        t_user (mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,virtual_balance,status,create_time,update_time,open_id,point_open_id,public_open_id,union_id,city,province,country,score_avg,user_score,constellation,birth,im_id,im_psw,source_id,regist_ip,login_ip,login_time)
         values
-        (#{mobile},#{nickname},#{gender},#{headPortraitsUrl},#{password},#{salt},#{realname},#{idcard},#{type},#{userInfoAuth},#{balance},#{status},#{createTime},#{updateTime},#{openId},#{pointOpenId},#{publicOpenId},#{unionId},#{city},#{province},#{country},#{scoreAvg},#{userScore},#{constellation},#{birth},#{imId},#{imPsw},#{sourceId},#{registIp},#{loginIp},#{loginTime})
+        (#{mobile},#{nickname},#{gender},#{headPortraitsUrl},#{password},#{salt},#{realname},#{idcard},#{type},#{userInfoAuth},#{balance},#{virtualBalance},#{status},#{createTime},#{updateTime},#{openId},#{pointOpenId},#{publicOpenId},#{unionId},#{city},#{province},#{country},#{scoreAvg},#{userScore},#{constellation},#{birth},#{imId},#{imPsw},#{sourceId},#{registIp},#{loginIp},#{loginTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.User">
@@ -321,6 +325,10 @@
 
             <if test="balance != null">
                 balance = #{balance},
+            </if>
+
+            <if test="virtualBalance != null">
+                virtual_balance = #{virtualBalance},
             </if>
 
             <if test="status != null">
