@@ -13,6 +13,7 @@ import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -44,6 +45,9 @@ public class UserController extends BaseController {
     private AdminImLogService adminImLogService;
     @Autowired
     private ImService imService;
+    @Qualifier(value = "userTechAuthServiceImpl")
+    @Autowired
+    private UserTechAuthServiceImpl userTechAuthService;
     
 
 
@@ -164,6 +168,18 @@ public class UserController extends BaseController {
         }
         log.info("根据imId获取用户信息:imId:{};content:{};user:{}", imId, content, user);
         return Result.success().data(user).msg("查询IM用户成功");
+    }
+
+    /**
+     * 获取用户接单技能列表
+     * @return
+     */
+    @RequestMapping("tech/list")
+    public Result userTechList() {
+        User user = userService.getCurrentUser();
+        //查询所有用户认证的技能
+        List<UserTechAuth> techAuthList = userTechAuthService.findUserNormalTechs(user.getId());
+        return Result.success().data(techAuthList);
     }
 
     
