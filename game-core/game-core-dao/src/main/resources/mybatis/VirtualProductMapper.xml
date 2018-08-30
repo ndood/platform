@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.VirtualProductDao">
+    <resultMap id="VirtualProductResultMap" type="com.fulu.game.core.entity.VirtualProduct">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="price" property="price"/>
+        <result column="type" property="type"/>
+        <result column="object_url" property="objectUrl"/>
+        <result column="gift_id" property="giftId"/>
+        <result column="group_pic_id" property="groupPicId"/>
+        <result column="remark" property="remark"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="VirtualProductResultVOMap" type="com.fulu.game.core.entity.vo.VirtualProductVO"
+               extends="VirtualProductResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,price,type,object_url,gift_id,group_pic_id,remark,update_time,create_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="VirtualProductResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_virtual_product
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="VirtualProductResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_virtual_product
+    </select>
+
+    <select id="findByParameter" resultMap="VirtualProductResultMap"
+            parameterType="com.fulu.game.core.entity.vo.VirtualProductVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_virtual_product
+        <where>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="price != null">
+                and price = #{price}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="objectUrl != null">
+                and object_url = #{objectUrl}
+            </if>
+            <if test="giftId != null">
+                and gift_id = #{giftId}
+            </if>
+            <if test="groupPicId != null">
+                and group_pic_id = #{groupPicId}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_virtual_product
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.VirtualProduct">
+        insert into
+        t_virtual_product (name,price,type,object_url,gift_id,group_pic_id,remark,update_time,create_time)
+        values
+        (#{name},#{price},#{type},#{objectUrl},#{giftId},#{groupPicId},#{remark},#{updateTime},#{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.VirtualProduct">
+        update t_virtual_product
+        <set>
+
+            <if test="name != null">
+                name = #{name},
+            </if>
+
+            <if test="price != null">
+                price = #{price},
+            </if>
+
+            <if test="type != null">
+                type = #{type},
+            </if>
+
+            <if test="objectUrl != null">
+                object_url = #{objectUrl},
+            </if>
+
+            <if test="giftId != null">
+                gift_id = #{giftId},
+            </if>
+
+            <if test="groupPicId != null">
+                group_pic_id = #{groupPicId},
+            </if>
+
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>
