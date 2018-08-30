@@ -1,6 +1,9 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.VirtualProduct;
+import com.github.pagehelper.PageInfo;
+
+import java.util.List;
 
 
 /**
@@ -12,4 +15,9 @@ import com.fulu.game.core.entity.VirtualProduct;
  */
 public interface VirtualProductService extends ICommonService<VirtualProduct, Integer> {
 
+    List<VirtualProduct> findAllGift();
+
+    Integer findPriceById(Integer id);
+
+    PageInfo<VirtualProduct> findGiftByPage(Integer pageNum, Integer pageSize);
 }

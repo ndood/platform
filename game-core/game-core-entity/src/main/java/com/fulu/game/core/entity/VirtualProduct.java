@@ -30,11 +30,10 @@ public class VirtualProduct implements Serializable {
     private String objectUrl;
     //
     private String remark;
-    //数据状态  1  正常 0已删除
-    private Integer delFlag;
     //
     private Date updateTime;
     //
     private Date createTime;
-
+    //删除标记(false：未删除；true：已删除）
+    private boolean delFlag;
 }
