@@ -1,5 +1,7 @@
 package com.fulu.game.core.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONObject;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.*;
@@ -17,8 +19,6 @@ import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import org.apache.commons.lang3.StringUtils;
@@ -52,8 +52,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     private ImgUtil imgUtil;
     @Autowired
     private CouponGroupService couponGroupService;
-
-
 
     @Override
     public ICommonDao<User, Integer> getDao() {
@@ -214,7 +212,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
 
-    public User createThirdPartyUser(Integer sourceId,String ip){
+    public User createThirdPartyUser(Integer sourceId, String ip) {
         User user = new User();
         user.setRegistIp(ip);
         user.setSourceId(sourceId);
@@ -222,7 +220,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         user.setHeadPortraitsUrl("http://game-play.oss-cn-hangzhou.aliyuncs.com/2018/8/16/939794a1be2d46e9955db88716e24e54.png");
         return createNewUser(user);
     }
-
 
 
     public User createNewUser(User user) {
@@ -516,7 +513,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
 
-
     @Override
     public User updateUnionUser(UserVO user, PlatformEcoEnum platformEcoEnum, String ipStr) {
         log.info("调用updateUnionUser方法:user:{}", user);
@@ -601,5 +597,10 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     public boolean isOldUser(Integer userId) {
         return userDao.countUserOrder(userId) > 0;
 
+    }
+
+    @Override
+    public boolean calculateVirtualBalance(Integer fromUserId, Integer virtualProductId) {
+        return false;
     }
 }

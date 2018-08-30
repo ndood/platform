@@ -91,6 +91,7 @@ public interface UserService extends ICommonService<User, Integer> {
 
     /**
      * 更新redis用户
+     *
      * @param user
      */
     void updateRedisUser(User user);
@@ -120,9 +121,7 @@ public interface UserService extends ICommonService<User, Integer> {
     PageInfo<UserVO> list(UserVO userVO, Integer pageNum, Integer pageSize);
 
 
-
-
-    User createThirdPartyUser(Integer sourceId,String ip);
+    User createThirdPartyUser(Integer sourceId, String ip);
 
     /**
      * 通过openId创建用户
@@ -192,9 +191,9 @@ public interface UserService extends ICommonService<User, Integer> {
     /**
      * 同步用户信息（陪玩上分和陪玩开黑之间的用户数据同步）
      *
-     * @param userVO        用户VO
+     * @param userVO          用户VO
      * @param platformEcoEnum 用户来源
-     * @param ipStr         用户ip
+     * @param ipStr           用户ip
      * @return 用户Bean
      */
     User updateUnionUser(UserVO userVO, PlatformEcoEnum platformEcoEnum, String ipStr);
@@ -219,4 +218,6 @@ public interface UserService extends ICommonService<User, Integer> {
 
 
     boolean isOldUser(Integer userId);
+
+    boolean calculateVirtualBalance(Integer fromUserId, Integer virtualProductId);
 }
