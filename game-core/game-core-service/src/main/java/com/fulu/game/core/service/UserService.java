@@ -219,5 +219,5 @@ public interface UserService extends ICommonService<User, Integer> {
 
     boolean isOldUser(Integer userId);
 
-    boolean calculateVirtualBalance(Integer fromUserId, Integer virtualProductId);
+    boolean calculateVirtualBalance(Integer fromUserId, Integer price);
 }

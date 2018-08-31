@@ -1,9 +1,10 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.VirtualProduct;
-import com.fulu.game.core.entity.vo.VirtualProductVO;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
+import com.fulu.game.core.entity.vo.VirtualProductVO;
 
 
 /**
@@ -17,4 +18,9 @@ public interface VirtualProductService extends ICommonService<VirtualProduct, In
     
     List<VirtualProductVO> searchByvirtualProductVo(VirtualProductVO vpo);
 
+    List<VirtualProduct> findAllGift();
+
+    Integer findPriceById(Integer id);
+
+    PageInfo<VirtualProduct> findGiftByPage(Integer pageNum, Integer pageSize);
 }

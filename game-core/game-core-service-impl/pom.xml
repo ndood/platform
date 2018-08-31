@@ -17,11 +17,7 @@
             <artifactId>game-core-service</artifactId>
             <version>${game.core.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.fulu.game</groupId>
-            <artifactId>game-core-search</artifactId>
-            <version>${game.core.version}</version>
-        </dependency>
+
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>

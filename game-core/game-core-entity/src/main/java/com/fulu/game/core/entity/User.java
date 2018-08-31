@@ -59,7 +59,7 @@ public class User implements Serializable {
     @JsonIgnore
     private BigDecimal balance;
     //虚拟零钱（对应钻石数量）
-    private Long virtualBalance;
+    private Integer virtualBalance;
     //状态(0封禁,1为解封)
     @Excel(name = "用户状态", orderNum = "5", replace = {"封禁_false", "解封_true"}, width = 15)
     private Integer status;

@@ -73,6 +73,17 @@
         </where>
     </select>
 
+    <select id="findAllGift" resultType="com.fulu.game.core.entity.VirtualProduct">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_virtual_product
+        WHERE
+          type = 1
+        AND del_flag = 0
+        ORDER BY
+          sort ASC;
+    </select>
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_virtual_product
         <where>
