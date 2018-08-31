@@ -166,8 +166,15 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     public Integer countAllNormalUser() {
         UserVO param = new UserVO();
         param.setStatus(UserStatusEnum.NORMAL.getType());
-        int count = userDao.countByParameter(param);
-        return count;
+        return userDao.countByParameter(param);
+    }
+
+    @Override
+    public Integer countAllServiceUser() {
+        UserVO params = new UserVO();
+        params.setStatus(UserStatusEnum.NORMAL.getType());
+        params.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
+        return userDao.countByParameter(params);
     }
 
     @Override
@@ -611,7 +618,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
         User paramUser = new User();
         paramUser.setId(userId);
-        paramUser.setVirtualBalance(user.getVirtualBalance() - price);
+        paramUser.setVirtualBalance(user.getVirtualBalance() + price);
         paramUser.setUpdateTime(DateUtil.date());
         int result = update(paramUser);
         return result > 0;

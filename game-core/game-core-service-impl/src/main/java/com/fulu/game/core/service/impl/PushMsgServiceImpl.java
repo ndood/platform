@@ -2,10 +2,7 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.date.DateUtil;
-import com.fulu.game.common.enums.PlatformEcoEnum;
-import com.fulu.game.common.enums.PushMsgTypeEnum;
-import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.enums.WechatPagePathEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.PushMsgDao;
@@ -191,6 +188,7 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
 
         PushMsgVO pushMsgVO = new PushMsgVO();
         pushMsgVO.setPlatform(PlatformEcoEnum.APP.getType());
+        pushMsgVO.setJumpType(PushMsgJumpTypeEnum.OFFCIAL_NOTE.getType());
         List<PushMsg> noticeList = pushMsgDao.findByParameter(pushMsgVO);
         return new PageInfo<>(noticeList);
     }
