@@ -11,7 +11,7 @@ import java.util.Date;
  * 推送信息表
  *
  * @author wangbin
- * @date 2018-06-06 17:10:37
+ * @date 2018-08-31 14:13:42
  */
 @Data
 public class PushMsg implements Serializable {
@@ -19,11 +19,10 @@ public class PushMsg implements Serializable {
 
     //
     private Integer id;
-    //推送类型
+    //推送类型(1:推送所有用户；2:推送指定用户；3：推送所有陪玩师)
     private Integer type;
-    //平台(1:陪玩;2:开黑;3:H5;4:APP)
-    private Integer platform;
-
+    //跳转类型（1：H5；2：内部跳转页(小程序）；3：官方公告；4：聊天室；5：名片页）
+    private Integer jumpType;
     //落地页
     private String page;
     //推送ID
@@ -31,10 +30,12 @@ public class PushMsg implements Serializable {
     //触发时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date touchTime;
-    //标题
+    //推送标题
     private String title;
     //推送内容
     private String content;
+    //平台(1:陪玩;2:开黑;3:H5;45:APP)
+    private Integer platform;
     //点击数
     private Long hits;
     //成功数
@@ -50,7 +51,7 @@ public class PushMsg implements Serializable {
     //创建时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
-    //
+    //更新时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 }
