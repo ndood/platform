@@ -39,4 +39,15 @@ public class UserVO extends User {
     //未读消息数
     private long unreadCount;
 
+    /** 用户兴趣 */
+    private String interests;
+    /** 用户职业 */
+    private String profession;
+    /** 用户简介 */
+    private String about;
+    /** 用户相册图片集 */
+    private String[] picUrls;
+    /** 用户视频地址 */
+    private String videoUrl;
+
 }
