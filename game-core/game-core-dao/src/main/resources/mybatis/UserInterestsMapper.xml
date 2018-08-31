@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.UserInterestsDao">
+    <resultMap id="UserInterestsResultMap" type="com.fulu.game.core.entity.UserInterests">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="sort" property="sort"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <resultMap id="UserInterestsResultVOMap" type="com.fulu.game.core.entity.vo.UserInterestsVO"
+               extends="UserInterestsResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,sort,create_time,update_time,status    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="UserInterestsResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user_interests
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="UserInterestsResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user_interests
+        where status = 1
+        order by sort
+    </select>
+
+    <select id="findByParameter" resultMap="UserInterestsResultMap"
+            parameterType="com.fulu.game.core.entity.vo.UserInterestsVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_user_interests
+        <where>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="sort != null">
+                and sort = #{sort}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_user_interests
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.UserInterests">
+        insert into
+        t_user_interests (name,sort,create_time,update_time,status)
+        values
+        (#{name},#{sort},#{createTime},#{updateTime},#{status})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.UserInterests">
+        update t_user_interests
+        <set>
+
+            <if test="name != null">
+                name = #{name},
+            </if>
+
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>
