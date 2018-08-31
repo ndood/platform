@@ -135,7 +135,7 @@
             platform = 45
         AND jump_type = 3
         ORDER BY
-            create_time DESC
+            touch_time DESC
         LIMIT 1;
     </select>
 

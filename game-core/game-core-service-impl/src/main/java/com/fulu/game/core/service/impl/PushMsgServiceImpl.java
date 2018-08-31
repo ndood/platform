@@ -183,7 +183,7 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
 
     @Override
     public PageInfo<PushMsg> officialNoticeList(Integer pageNum, Integer pageSize) {
-        String orderBy = "create_time DESC";
+        String orderBy = "touch_time DESC";
         PageHelper.startPage(pageNum, pageSize, orderBy);
 
         PushMsgVO pushMsgVO = new PushMsgVO();
