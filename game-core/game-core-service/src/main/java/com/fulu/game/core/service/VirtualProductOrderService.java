@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface VirtualProductOrderService extends ICommonService<VirtualProductOrder, Integer> {
 
-    boolean sendGift(Integer fromUserId, Integer targetUserId, Integer virtualProductId);
+    VirtualProductOrder sendGift(Integer fromUserId, Integer targetUserId, Integer virtualProductId);
 
     String generateVirtualProductOrderNo();
 

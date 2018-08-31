@@ -798,5 +798,4 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         updateByUserId(auth);
         return true;
     }
-
 }

@@ -59,7 +59,7 @@ public class VirtualDetailsServiceImpl extends AbsCommonService<VirtualDetails, 
             }
             Integer charm = auth.getCharm();
             if (charm != null) {
-                sum = charm;
+                sum = charm + price;
             }
         }
         details.setSum(sum);

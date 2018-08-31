@@ -45,7 +45,7 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
     }
 
     @Override
-    public boolean sendGift(Integer fromUserId, Integer targetUserId, Integer virtualProductId) {
+    public VirtualProductOrder sendGift(Integer fromUserId, Integer targetUserId, Integer virtualProductId) {
         userService.isCurrentUser(fromUserId);
         User fromUser = userService.findById(fromUserId);
         Integer virtualBalance = fromUser.getVirtualBalance();
@@ -91,7 +91,7 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
                 price,
                 VirtualDetailsTypeEnum.CHARM,
                 VirtualProductTypeEnum.VIRTUAL_GIFT);
-        return true;
+        return order;
     }
 
     /**

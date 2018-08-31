@@ -246,6 +246,9 @@
             <if test="wechat != null">
                 wechat = #{wechat},
             </if>
+            <if test="charm != null">
+                charm = #{charm},
+            </if>
             <if test="isRejectSubmit != null">
                 is_reject_submit = #{isRejectSubmit},
             </if>
