@@ -1,6 +1,7 @@
 package com.fulu.game.app.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSON;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
@@ -35,10 +36,6 @@ public class ImController extends BaseController {
     @Autowired
     private UserInfoAuthService userInfoAuthService;
     
-    @Autowired
-    private UserService userService;
-
-    
     //增加陪玩师未读消息数量
     @RequestMapping("/send")
     public Result sendMessage(@RequestParam(value = "targetImId", required = false) String targetImId) {
@@ -48,7 +45,7 @@ public class ImController extends BaseController {
         List<UserInfoAuthVO> uaList = userInfoAuthService.findBySearchVO(uavo);
 
         UserInfoAuthVO targetUser = uaList.get(0);
-        
+
         //判断im目标用户是否为代聊用户
         if (targetUser.getImSubstituteId() != null) {
 
@@ -62,18 +59,19 @@ public class ImController extends BaseController {
             } else {
                 //增加未读消息数量+1
                 Map map = redisOpenService.hget(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(targetUser.getImSubstituteId().intValue()));
-                
-                
+
+
                 if(map == null || map.size() == 0){
                     map = new HashMap();
                     targetUser.setUnreadCount(new Long(1));
                 }else{
                     if(map.get(targetImId)!=null){
-                        UserInfoAuthVO temp = (UserInfoAuthVO)map.get(targetImId);
+
+                        UserInfoAuthVO temp = JSON.parseObject(map.get(targetImId).toString(),UserInfoAuthVO.class);
                         targetUser.setUnreadCount(temp.getUnreadCount() + 1);
                     }
                 }
-                map.put(targetImId, targetUser);
+                map.put(targetImId, JSON.toJSONString(targetUser));
                 //更新未读消息数
                 redisOpenService.hset(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(targetUser.getImSubstituteId().intValue()), map, Constant.ONE_DAY * 3);
             }

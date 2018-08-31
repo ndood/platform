@@ -55,6 +55,9 @@
                 and update_time = #{updateTime}
             </if>
         </where>
+        <if test="orderby != null">
+            ${orderby}
+        </if>
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">

@@ -11,10 +11,13 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.VirtualProductOrderDao;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.VirtualProductOrder;
+import com.fulu.game.core.entity.vo.VirtualProductOrderVO;
 import com.fulu.game.core.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Service
@@ -100,5 +103,10 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
         } else {
             return generateVirtualProductOrderNo();
         }
+    }
+
+    @Override
+    public List<VirtualProductOrder> findByParameter(VirtualProductOrderVO virtualProductOrderVO) {
+        return virtualProductOrderDao.findByParameter(virtualProductOrderVO);
     }
 }

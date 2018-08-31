@@ -31,13 +31,15 @@ public class VirtualDetailsServiceImpl extends AbsCommonService<VirtualDetails, 
     }
 
     @Override
-    public boolean createVirtualDetails(Integer userId, Integer virtualProductId, VirtualProductTypeEnum virtualProductTypeEnum) {
-        Integer price = virtualProductService.findPriceById(virtualProductId);
-
+    public boolean createVirtualDetails(Integer userId,
+                                        Integer virtualProductId,
+                                        Integer price,
+                                        VirtualDetailsTypeEnum virtualDetailsTypeEnum,
+                                        VirtualProductTypeEnum virtualProductTypeEnum) {
         VirtualDetails details = new VirtualDetails();
         details.setUserId(userId);
         details.setSum(userService.findById(userId).getVirtualBalance());
-        details.setMoney(Math.negateExact(price));
+        details.setMoney(price);
         details.setType(VirtualDetailsTypeEnum.VIRTUAL_MONEY.getType());
         details.setRemark(virtualProductTypeEnum.getMsg() + "；礼物id：" + virtualProductId);
         details.setCreateTime(DateUtil.date());

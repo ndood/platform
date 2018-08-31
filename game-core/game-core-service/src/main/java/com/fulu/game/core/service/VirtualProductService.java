@@ -23,4 +23,11 @@ public interface VirtualProductService extends ICommonService<VirtualProduct, In
     Integer findPriceById(Integer id);
 
     PageInfo<VirtualProduct> findGiftByPage(Integer pageNum, Integer pageSize);
+
+    /**
+     * 解锁虚拟商品
+     *
+     * @return
+     */
+    void unlockProduct(Integer userId , Integer virtualProductId);
 }

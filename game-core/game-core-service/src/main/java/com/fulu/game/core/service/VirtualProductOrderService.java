@@ -1,6 +1,9 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.VirtualProductOrder;
+import com.fulu.game.core.entity.vo.VirtualProductOrderVO;
+
+import java.util.List;
 
 
 /**
@@ -15,4 +18,6 @@ public interface VirtualProductOrderService extends ICommonService<VirtualProduc
     boolean sendGift(Integer fromUserId, Integer targetUserId, Integer virtualProductId);
 
     String generateVirtualProductOrderNo();
+
+    List<VirtualProductOrder> findByParameter(VirtualProductOrderVO virtualProductOrderVO);
 }
