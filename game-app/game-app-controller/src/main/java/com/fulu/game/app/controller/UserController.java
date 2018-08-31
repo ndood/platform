@@ -48,6 +48,8 @@ public class UserController extends BaseController {
     @Qualifier(value = "userTechAuthServiceImpl")
     @Autowired
     private UserTechAuthServiceImpl userTechAuthService;
+    @Autowired
+    private AdviceService adviceService;
 
 
 
@@ -180,6 +182,18 @@ public class UserController extends BaseController {
         //查询所有用户认证的技能
         List<UserTechAuth> techAuthList = userTechAuthService.findUserNormalTechs(user.getId());
         return Result.success().data(techAuthList);
+    }
+
+    /** 意见反馈接口 */
+    @PostMapping("/advice/add")
+    public Result addAdvice(@RequestParam("content") String content,
+                            @RequestParam(value = "contact", required = false) String contact,
+                            @RequestParam(value = "advicePicUrls", required = false) String[] advicePicUrls) {
+        if (content == null) {
+            return Result.error().msg("请填写建议内容");
+        }
+        Advice advice = adviceService.addAdvice(content, contact, advicePicUrls);
+        return Result.success().data(advice).msg("提交成功");
     }
 
 
