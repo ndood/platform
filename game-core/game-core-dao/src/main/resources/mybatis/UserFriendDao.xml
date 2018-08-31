@@ -122,6 +122,13 @@
           (tuser.id = #{nickname} or tuser.nickname like CONCAT('%', #{nickname},'%') )
     </select>
 
+    <select id="getAllAttentionsByUserId" resultType="com.fulu.game.core.entity.UserFriend">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_user_friend
+        where from_user_id = #{0}
+    </select>
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_user_friend
         <where>

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/v1/userFriend")
+@RequestMapping("/api/v1/user-friend")
 public class UserFriendController extends BaseController  {
 
     @Autowired
@@ -34,8 +34,8 @@ public class UserFriendController extends BaseController  {
     public Result saveAttention(UserFriendVO userFriendVO) {
         // 保存关注信息时不影响黑名单信息
         userFriendVO.setIsBlack(null);
-        JSONObject jsonObject = userFriendService.save(userFriendVO);
-        return Result.success().data(jsonObject).msg("保存成功！");
+        userFriendService.save(userFriendVO);
+        return Result.success().data(userFriendVO).msg("保存成功！");
     }
 
     /**
@@ -73,8 +73,8 @@ public class UserFriendController extends BaseController  {
     public Result saveBlack(UserFriendVO userFriendVO) {
         // 保存黑名单信息时不影响关注信息
         userFriendVO.setIsAttention(null);
-        JSONObject jsonObject = userFriendService.save(userFriendVO);
-        return Result.success().data(jsonObject).msg("保存成功！");
+        userFriendService.save(userFriendVO);
+        return Result.success().data(userFriendVO).msg("保存成功！");
     }
 
     /**
@@ -97,8 +97,8 @@ public class UserFriendController extends BaseController  {
      */
     @RequestMapping(value = "is-black-user")
     public Result isBlackUser(@RequestParam(required = true) Integer toUserId) {
-        JSONObject jsonObject = userFriendService.isBlackUser( toUserId);
-        return Result.success().data(jsonObject);
+        int isBlack = userFriendService.isBlackUser( toUserId);
+        return Result.success().data(isBlack);
     }
 
 
@@ -121,7 +121,7 @@ public class UserFriendController extends BaseController  {
      * 查询用户列表
      * @param pageNum
      * @param pageSize
-     * @param userId 当前用户id
+     * @param keyWord 当前用户id
      * @param keyWord 待查询用户id或者昵称
      * @return
      */

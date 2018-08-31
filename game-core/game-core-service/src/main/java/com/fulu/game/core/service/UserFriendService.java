@@ -5,6 +5,8 @@ import com.fulu.game.core.entity.UserFriend;
 import com.fulu.game.core.entity.vo.UserFriendVO;
 import com.github.pagehelper.PageInfo;
 
+import java.util.List;
+
 /**
  * @Author: shijiaoyun.
  * @Date: 2018/8/27 11:07.
@@ -17,7 +19,7 @@ public interface UserFriendService extends ICommonService<UserFriend,Integer> {
      * @param userFriendVO
      * @return
      */
-    public JSONObject save(UserFriendVO userFriendVO);
+    public void save(UserFriendVO userFriendVO);
 
     /**
      * 获取关注人列表
@@ -48,7 +50,7 @@ public interface UserFriendService extends ICommonService<UserFriend,Integer> {
      * @param toUserId
      * @return
      */
-    public JSONObject isBlackUser(Integer toUserId);
+    public int isBlackUser(Integer toUserId);
 
     /**
      * 查询好友列表（包含关注人和粉丝）
@@ -67,4 +69,11 @@ public interface UserFriendService extends ICommonService<UserFriend,Integer> {
      * @return
      */
     public PageInfo<UserFriendVO> searchUsers(Integer pageNum, Integer pageSize, String keyWord);
+
+    /**
+     * 获取所有关注人信息
+     * @param id 用户id
+     * @return
+     */
+    public List<UserFriend> getAllAttentionsByUserId(Integer id);
 }
