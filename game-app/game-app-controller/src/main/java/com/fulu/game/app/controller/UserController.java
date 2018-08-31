@@ -74,7 +74,8 @@ public class UserController extends BaseController {
         user.setHeadPortraitsUrl(ossUtil.activateOssFile(userVO.getHeadPortraitsUrl()));
         userService.update(user);
         userService.updateRedisUser(user);
-
+        // 保存用户认证信息
+        saveUserInfoAuth(userVO);
         user.setIdcard(null);
         user.setRealname(null);
         return Result.success().data(user).msg("个人信息设置成功！");
