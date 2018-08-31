@@ -10,9 +10,10 @@ import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
-import com.fulu.game.common.exception.VirtualProductException;
 import com.fulu.game.common.utils.OssUtil;
-import com.fulu.game.core.dao.*;
+import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.dao.UserInfoAuthDao;
+import com.fulu.game.core.dao.UserInfoAuthFileTempDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.vo.*;
@@ -25,7 +26,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -59,7 +59,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     private UserInfoAuthFileTempDao userInfoAuthFileTempDao;
     @Autowired
     private UserInfoAuthFileTempService userInfoAuthFileTempService;
-    
 
 
     @Override
@@ -791,7 +790,11 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
         UserInfoAuth auth = new UserInfoAuth();
         auth.setUserId(userId);
-        auth.setCharm(auth.getCharm() + price);
+        Integer charm = auth.getCharm();
+        if (charm == null) {
+            charm = 0;
+        }
+        auth.setCharm(charm + price);
         updateByUserId(auth);
         return true;
     }

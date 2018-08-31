@@ -1,7 +1,6 @@
 package com.fulu.game.core.service.impl;
 
 
-import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.VirtualProductException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.VirtualProductAttachDao;
@@ -67,7 +66,7 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
         VirtualProduct virtualProduct = virtualProductDao.findById(id);
         if (virtualProduct == null) {
             log.error("虚拟商品id:{}不存在", id);
-            throw new ServiceErrorException("虚拟商品不存在");
+            throw new VirtualProductException(VirtualProductException.ExceptionCode.NOT_EXIST);
         }
         return virtualProduct.getPrice();
     }
@@ -79,7 +78,7 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
 
         try {
 
-            list =  virtualProductDao.findByVirtualProductVo(vpo);
+            list = virtualProductDao.findByVirtualProductVo(vpo);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -91,7 +90,7 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
 
     @Override
     @Transactional
-    public void unlockProduct(Integer userId , Integer virtualProductId) {
+    public void unlockProduct(Integer userId, Integer virtualProductId) {
 
 
         //先获取商品信息
@@ -107,21 +106,21 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
         vpo.setVirtualProductId(virtualProductId);
         List<VirtualProductOrder> vpList = virtualProductOrderService.findByParameter(vpo);
 
-        if(vpList==null || vpList.size() == 0){
+        if (vpList == null || vpList.size() == 0) {
             //判断用户钻石是否充足
 
             //先获取用户信息 和 购买信息
             User user = userService.findById(userId);
             int price = vp.getPrice().intValue();
-            int vritualBalance = 0 ;
-            if(user.getVirtualBalance()!=null){
+            int vritualBalance = 0;
+            if (user.getVirtualBalance() != null) {
                 vritualBalance = user.getVirtualBalance().intValue();
             }
 
-            if(price <= vritualBalance){
+            if (price <= vritualBalance) {
 
                 //扣除用户钻石
-                user.setVirtualBalance(vritualBalance-price);
+                user.setVirtualBalance(vritualBalance - price);
                 userService.update(user);
                 //生成购买订单
                 VirtualProductOrder t = new VirtualProductOrder();
@@ -134,7 +133,7 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
                 t.setCreateTime(new Date());
 
                 virtualProductOrderService.create(t);
-            }else{
+            } else {
 
                 //用户钻石不足
                 throw new VirtualProductException(VirtualProductException.ExceptionCode.BALANCE_NOT_ENOUGH_EXCEPTION);
@@ -142,5 +141,5 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
 
         }
     }
-    
+
 }
