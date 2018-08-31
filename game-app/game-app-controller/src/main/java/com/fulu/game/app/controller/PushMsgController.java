@@ -41,4 +41,15 @@ public class PushMsgController extends BaseController {
         PageInfo<PushMsg> pageInfo = pushMsgService.officialNoticeList(pageNum, pageSize);
         return Result.success().data(pageInfo).msg("查询成功！");
     }
+
+    /**
+     * 获取最新一条官方公告
+     *
+     * @return 封装结果集
+     */
+    @RequestMapping("/official-notice/new")
+    public Result newOfficialNotice() {
+        PushMsg pushMsg = pushMsgService.newOfficialNotice();
+        return Result.success().data(pushMsg).msg("查询成功！");
+    }
 }

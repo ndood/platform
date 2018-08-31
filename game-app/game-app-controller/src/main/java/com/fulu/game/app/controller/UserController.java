@@ -48,6 +48,10 @@ public class UserController extends BaseController {
     @Qualifier(value = "userTechAuthServiceImpl")
     @Autowired
     private UserTechAuthServiceImpl userTechAuthService;
+    @Autowired
+    private AdviceService adviceService;
+    @Autowired
+    private UserInfoAuthFileService userInfoAuthFileService;
 
 
 
@@ -70,9 +74,79 @@ public class UserController extends BaseController {
         user.setHeadPortraitsUrl(ossUtil.activateOssFile(userVO.getHeadPortraitsUrl()));
         userService.update(user);
         userService.updateRedisUser(user);
+        // 保存用户认证信息
+        saveUserInfoAuth(userVO);
         user.setIdcard(null);
         user.setRealname(null);
         return Result.success().data(user).msg("个人信息设置成功！");
+    }
+
+    /**
+     * 保存用户认证信息
+     * @param userVO
+     */
+    private void saveUserInfoAuth(UserVO userVO){
+        User user = userService.getCurrentUser();
+        // 当存在用户认证信息时取修改
+        if(userVO != null && (userVO.getInterests() != null ||
+                userVO.getProfession() != null || userVO.getAbout() != null)){
+            UserInfoAuth  userInfoAuth = new UserInfoAuth();
+            userInfoAuth.setUserId(user.getId());
+            if(userVO.getInterests() != null){
+                userInfoAuth.setInterests(userVO.getInterests());
+            }
+            if(userVO.getProfession() != null){
+                userInfoAuth.setProfession(userVO.getProfession());
+            }
+            if(userVO.getAbout() != null){
+                userInfoAuth.setAbout(userVO.getAbout());
+            }
+            // 判断认证信息是否存在，不存在就新增
+            UserInfoAuth  tmp = userInfoAuthService.findByUserId(user.getId());
+            if(tmp == null){
+                userInfoAuthService.create(userInfoAuth);
+            } else {
+                userInfoAuthService.updateByUserId(userInfoAuth);
+            }
+            saveUserInfoAuthFile(userVO);
+        }
+    }
+
+    /**
+     * 保存用户认证文件信息（相册和视频）
+     * @param userVO
+     */
+    private void saveUserInfoAuthFile(UserVO userVO){
+        User user = userService.getCurrentUser();
+        UserInfoAuth  userInfoAuth = userInfoAuthService.findByUserId(user.getId());
+        if(userInfoAuth != null){
+            // 先删除所有以前图片，然后插入
+            userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(),1);
+            userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(),3);
+            if(userVO != null && (userVO.getPicUrls() != null || userVO.getVideoUrl() != null) ){
+                String[] picUrls = userVO.getPicUrls();
+                if(picUrls != null && picUrls.length > 0){
+                    for (int i = 0; i < picUrls.length; i++){
+                        UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
+                        userInfoAuthFile.setUrl(picUrls[i]);
+                        userInfoAuthFile.setInfoAuthId(userInfoAuth.getId());
+                        userInfoAuthFile.setType(1);
+                        userInfoAuthFile.setName("相册" + 1);
+                        userInfoAuthFile.setCreateTime(new Date());
+                        userInfoAuthFileService.create(userInfoAuthFile);
+                    }
+                }
+                if(userVO != null && userVO.getVideoUrl() != null){
+                    UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
+                    userInfoAuthFile.setUrl(userVO.getVideoUrl());
+                    userInfoAuthFile.setInfoAuthId(userInfoAuth.getId());
+                    userInfoAuthFile.setType(3);
+                    userInfoAuthFile.setName("视频");
+                    userInfoAuthFile.setCreateTime(new Date());
+                    userInfoAuthFileService.create(userInfoAuthFile);
+                }
+            }
+        }
     }
 
     
@@ -180,6 +254,18 @@ public class UserController extends BaseController {
         //查询所有用户认证的技能
         List<UserTechAuth> techAuthList = userTechAuthService.findUserNormalTechs(user.getId());
         return Result.success().data(techAuthList);
+    }
+
+    /** 意见反馈接口 */
+    @PostMapping("/advice/add")
+    public Result addAdvice(@RequestParam("content") String content,
+                            @RequestParam(value = "contact", required = false) String contact,
+                            @RequestParam(value = "advicePicUrls", required = false) String[] advicePicUrls) {
+        if (content == null) {
+            return Result.error().msg("请填写建议内容");
+        }
+        Advice advice = adviceService.addAdvice(content, contact, advicePicUrls);
+        return Result.success().data(advice).msg("提交成功");
     }
 
 

@@ -46,4 +46,11 @@ public class UserInfoAuth implements Serializable {
 
     //代聊客服ID
     private Integer imSubstituteId;
+
+    /** 用户兴趣 */
+    private String interests;
+    /** 用户职业 */
+    private String profession;
+    /** 用户简介 */
+    private String about;
 }

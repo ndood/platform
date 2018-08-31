@@ -1,6 +1,9 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.VirtualProductAttach;
+import com.fulu.game.core.entity.vo.VirtualProductAttachVO;
+
+import java.util.List;
 
 
 /**
@@ -12,4 +15,6 @@ import com.fulu.game.core.entity.VirtualProductAttach;
  */
 public interface VirtualProductAttachService extends ICommonService<VirtualProductAttach, Integer> {
 
+    List<VirtualProductAttach> findByParameter(VirtualProductAttachVO virtualProductAttachVO);
+        
 }

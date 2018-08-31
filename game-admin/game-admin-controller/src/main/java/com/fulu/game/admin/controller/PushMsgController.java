@@ -12,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -23,8 +22,12 @@ import java.util.Date;
 @RequestMapping("/api/v1/pushmsg")
 public class PushMsgController extends BaseController {
 
+    private final PushMsgService pushMsgService;
+
     @Autowired
-    private PushMsgService pushMsgService;
+    public PushMsgController(PushMsgService pushMsgService) {
+        this.pushMsgService = pushMsgService;
+    }
 
     /**
      * 推送微信消息
@@ -54,27 +57,14 @@ public class PushMsgController extends BaseController {
     /**
      * 推送消息列表
      *
-     * @param pageNum
-     * @param pageSize
-     * @return
+     * @param pageNum  页码
+     * @param pageSize 每页显示数据条数
+     * @param platform 平台类型
+     * @return 分页结果集
      */
     @PostMapping(value = "/list")
-    public Result list(Integer pageNum, Integer pageSize) {
-        PageInfo<PushMsg> page = pushMsgService.list(pageNum, pageSize, null);
+    public Result list(Integer pageNum, Integer pageSize, Integer platform) {
+        PageInfo<PushMsg> page = pushMsgService.list(pageNum, pageSize, platform, null);
         return Result.success().data(page);
-    }
-
-    /**
-     * 官方公告列表
-     *
-     * @param pageNum
-     * @param pageSize
-     * @return
-     */
-    @RequestMapping("/official-notice/list")
-    public Result officialNoticeList(@RequestParam Integer pageNum,
-                                     @RequestParam Integer pageSize) {
-        PageInfo<PushMsg> pageInfo = pushMsgService.officialNoticeList(pageNum, pageSize);
-        return Result.success().data(pageInfo).msg("查询成功！");
     }
 }

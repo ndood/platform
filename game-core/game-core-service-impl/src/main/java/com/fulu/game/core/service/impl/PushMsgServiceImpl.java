@@ -2,11 +2,7 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.date.DateUtil;
-import com.fulu.game.common.Constant;
-import com.fulu.game.common.enums.PlatformEcoEnum;
-import com.fulu.game.common.enums.PushMsgTypeEnum;
-import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.enums.WechatPagePathEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.PushMsgDao;
@@ -99,6 +95,8 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
                 log.error("指定用户推送错误:", e);
                 throw new ServiceErrorException("指定用户输入错误!");
             }
+        } else if (PushMsgTypeEnum.ALL_SERVICE_USER.getType().equals(pushMsg.getType())) {
+            count = userService.countAllServiceUser();
         } else {
             throw new ServiceErrorException("推送类型指定错误!");
         }
@@ -137,12 +135,16 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
     }
 
     @Override
-    public PageInfo<PushMsg> list(int pageNum, int pageSize, String orderBy) {
+    public PageInfo<PushMsg> list(Integer pageNum, Integer pageSize, Integer platform, String orderBy) {
         if (StringUtils.isBlank(orderBy)) {
             orderBy = "id desc";
         }
         PageHelper.startPage(pageNum, pageSize, orderBy);
-        List<PushMsg> list = getDao().findAll();
+        PushMsgVO pushMsgVO = new PushMsgVO();
+        if (platform != null) {
+            pushMsgVO.setPlatform(platform);
+        }
+        List<PushMsg> list = pushMsgDao.findByParameter(pushMsgVO);
         PageInfo page = new PageInfo(list);
         return page;
     }
@@ -181,12 +183,18 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
 
     @Override
     public PageInfo<PushMsg> officialNoticeList(Integer pageNum, Integer pageSize) {
-        String orderBy = "create_time DESC";
+        String orderBy = "touch_time DESC";
         PageHelper.startPage(pageNum, pageSize, orderBy);
 
         PushMsgVO pushMsgVO = new PushMsgVO();
         pushMsgVO.setPlatform(PlatformEcoEnum.APP.getType());
+        pushMsgVO.setJumpType(PushMsgJumpTypeEnum.OFFCIAL_NOTE.getType());
         List<PushMsg> noticeList = pushMsgDao.findByParameter(pushMsgVO);
         return new PageInfo<>(noticeList);
+    }
+
+    @Override
+    public PushMsg newOfficialNotice() {
+        return pushMsgDao.newOfficialNotice();
     }
 }

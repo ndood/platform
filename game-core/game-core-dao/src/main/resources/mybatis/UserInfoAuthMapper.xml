@@ -16,6 +16,9 @@
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="im_substitute_id" property="imSubstituteId"/>
+        <result column="interests" property="interests"/>
+        <result column="profession" property="profession"/>
+        <result column="about" property="about"/>
     </resultMap>
 
     <resultMap id="UserInfoAuthResultVOMap" type="com.fulu.game.core.entity.vo.UserInfoAuthVO"
@@ -33,7 +36,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,mobile,qq,wechat,charm,is_reject_submit,main_pic_url,push_time_interval,allow_export,create_time,update_time,im_substitute_id
+        id,user_id,mobile,qq,wechat,charm,is_reject_submit,main_pic_url,push_time_interval,allow_export,create_time,update_time,im_substitute_id,interests,profession,about
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserInfoAuthResultMap">
@@ -163,9 +166,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserInfoAuth">
         insert into
-        t_user_info_auth (user_id,mobile,qq,wechat,charm,is_reject_submit,main_pic_url,push_time_interval,allow_export,create_time,update_time)
+        t_user_info_auth (user_id,mobile,qq,wechat,charm,is_reject_submit,main_pic_url,push_time_interval,allow_export,create_time,update_time,interests,profession,about)
         values
-        (#{userId},#{mobile},#{qq},#{wechat},#{charm},#{isRejectSubmit},#{mainPicUrl},#{pushTimeInterval},#{allowExport},#{createTime},#{updateTime})
+        (#{userId},#{mobile},#{qq},#{wechat},#{charm},#{isRejectSubmit},#{mainPicUrl},#{pushTimeInterval},#{allowExport},#{createTime},#{updateTime},#{interests},#{profession},#{about})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.UserInfoAuth">
@@ -208,6 +211,15 @@
 
             <if test="updateTime != null">
                 update_time = #{updateTime},
+            </if>
+            <if test="interests != null">
+                interests = #{interests},
+            </if>
+            <if test="profession != null">
+                profession = #{profession},
+            </if>
+            <if test="about != null">
+                about = #{about},
             </if>
         </set>
         <where>
@@ -257,6 +269,15 @@
             </if>
             <if test="imSubstituteId != null and imSubstituteId != -1">
                 im_substitute_id = #{imSubstituteId},
+            </if>
+            <if test="interests != null">
+                interests = #{interests},
+            </if>
+            <if test="profession != null">
+                profession = #{profession},
+            </if>
+            <if test="about != null">
+                about = #{about},
             </if>
         </set>
         <where>

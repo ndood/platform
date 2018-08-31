@@ -5,6 +5,7 @@
     <resultMap id="PushMsgResultMap" type="com.fulu.game.core.entity.PushMsg">
         <id column="id" property="id"/>
         <result column="type" property="type"/>
+        <result column="jump_type" property="jumpType"/>
         <result column="page" property="page"/>
         <result column="push_ids" property="pushIds"/>
         <result column="touch_time" property="touchTime"/>
@@ -25,7 +26,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,type,page,push_ids,touch_time,title,content,platform,hits,success_num,total_num,is_pushed,admin_id,admin_name,create_time,update_time    </sql>
+        id,type,jump_type,page,push_ids,touch_time,title,content,platform,hits,success_num,total_num,is_pushed,admin_id,admin_name,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="PushMsgResultMap">
         select
@@ -49,6 +50,9 @@
         <where>
             <if test="type != null">
                 and type = #{type}
+            </if>
+            <if test="jumpType != null">
+                and jump_type = #{jumpType}
             </if>
             <if test="page != null">
                 and page = #{page}
@@ -117,10 +121,23 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.PushMsg">
         insert into
-        t_push_msg (type,page,push_ids,touch_time,title,content,platform,hits,success_num,total_num,is_pushed,admin_id,admin_name,create_time,update_time)
+        t_push_msg (type,jump_type,page,push_ids,touch_time,title,content,platform,hits,success_num,total_num,is_pushed,admin_id,admin_name,create_time,update_time)
         values
-        (#{type},#{page},#{pushIds},#{touchTime},#{title},#{content},#{platform},#{hits},#{successNum},#{totalNum},#{isPushed},#{adminId},#{adminName},#{createTime},#{updateTime})
+        (#{type},#{jumpType},#{page},#{pushIds},#{touchTime},#{title},#{content},#{platform},#{hits},#{successNum},#{totalNum},#{isPushed},#{adminId},#{adminName},#{createTime},#{updateTime})
     </insert>
+
+    <select id="newOfficialNotice" resultType="com.fulu.game.core.entity.PushMsg">
+        SELECT
+	      *
+        FROM
+            t_push_msg
+        WHERE
+            platform = 45
+        AND jump_type = 3
+        ORDER BY
+            touch_time DESC
+        LIMIT 1;
+    </select>
 
     <update id="update" parameterType="com.fulu.game.core.entity.PushMsg">
         update t_push_msg
@@ -128,6 +145,10 @@
 
             <if test="type != null">
                 type = #{type},
+            </if>
+
+            <if test="jumpType != null">
+                jump_type = #{jumpType},
             </if>
 
             <if test="page != null">

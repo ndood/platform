@@ -81,6 +81,13 @@ public interface UserService extends ICommonService<User, Integer> {
     Integer countAllNormalUser();
 
     /**
+     * 查询所有陪玩师的数量
+     *
+     * @return
+     */
+    Integer countAllServiceUser();
+
+    /**
      * 通过UserId查询一批用户
      *
      * @param userIds  userId列表

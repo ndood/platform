@@ -181,5 +181,4 @@ public class AuthController extends BaseController {
         return Result.success().data(list).msg("查询成功");
     }
 
-
 }

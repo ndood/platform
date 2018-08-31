@@ -1,5 +1,6 @@
 package com.fulu.game.admin.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
@@ -53,13 +54,13 @@ public class ImController extends BaseController {
             
             if(map.get(imId)!=null){
 
-                UserInfoAuthVO temp = (UserInfoAuthVO)map.get(imId);
-                
+                UserInfoAuthVO temp = JSON.parseObject(map.get(imId).toString(),UserInfoAuthVO.class);
+
                 long currentCount = temp.getUnreadCount() - actionCount.intValue();
                 temp.setUnreadCount(currentCount);
                 
                 if(currentCount > 0){
-                    map.put(imId, temp);
+                    map.put(imId, JSON.toJSONString(temp));
                 }else{
                     map.remove(imId);
                 }
