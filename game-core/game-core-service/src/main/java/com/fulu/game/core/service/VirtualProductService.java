@@ -1,6 +1,9 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.VirtualProduct;
+import com.fulu.game.core.entity.vo.VirtualProductVO;
+
+import java.util.List;
 
 
 /**
@@ -11,5 +14,7 @@ import com.fulu.game.core.entity.VirtualProduct;
  * @date 2018-08-30 10:01:57
  */
 public interface VirtualProductService extends ICommonService<VirtualProduct, Integer> {
+    
+    List<VirtualProductVO> searchByvirtualProductVo(VirtualProductVO vpo);
 
 }

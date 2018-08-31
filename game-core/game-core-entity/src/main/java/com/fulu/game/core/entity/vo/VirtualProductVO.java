@@ -2,6 +2,7 @@ package com.fulu.game.core.entity.vo;
 
 
 import com.fulu.game.core.entity.VirtualProduct;
+import lombok.Data;
 
 
 /**
@@ -10,6 +11,8 @@ import com.fulu.game.core.entity.VirtualProduct;
  * @author Gong Zechun
  * @date 2018-08-30 10:01:57
  */
+@Data
 public class VirtualProductVO extends VirtualProduct {
 
+    private Integer userId;
 }

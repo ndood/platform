@@ -57,3 +57,29 @@ ALTER TABLE `t_user_info_auth` ADD COLUMN `im_substitute_id` int(11)  DEFAULT NU
 
 --添加title（推送标题）字段
 ALTER TABLE `t_push_msg` ADD COLUMN `title` varchar(255) NOT NULL COMMENT '推送标题' after `touch_time`;
+
+
+CREATE TABLE `t_virtual_product` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL COMMENT '商品名称',
+  `price` int(11) DEFAULT NULL COMMENT '商品价格',
+  `type` tinyint(4) DEFAULT NULL COMMENT '1 礼物  2 私照图片组 3 IM解锁图片组 4 IM解锁语音',
+  `object_url` varchar(255) DEFAULT NULL COMMENT '商品图片地址',
+  `remark` varchar(255) DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `create_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='虚拟商品表';
+
+
+CREATE TABLE `t_virtual_product_attach` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL COMMENT '文件归属人的ID',
+  `virtual_product_id` int(11) DEFAULT NULL COMMENT '虚拟商品ID',
+  `url` varchar(255) DEFAULT NULL COMMENT '文件对应的URL地址',
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+

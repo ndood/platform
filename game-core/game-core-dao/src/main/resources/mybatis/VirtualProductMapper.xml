@@ -15,8 +15,8 @@
         <result column="create_time" property="createTime"/>
     </resultMap>
 
-    <resultMap id="VirtualProductResultVOMap" type="com.fulu.game.core.entity.vo.VirtualProductVO"
-               extends="VirtualProductResultMap">
+    <resultMap id="VirtualProductResultVOMap" type="com.fulu.game.core.entity.vo.VirtualProductVO" extends="VirtualProductResultMap">
+        <result column="user_id" property="userId"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -132,4 +132,33 @@
             id = #{id}
         </where>
     </update>
+
+    <select id="findByVirtualProductVo" resultMap="VirtualProductResultVOMap" parameterType="com.fulu.game.core.entity.vo.VirtualProductVO">
+        SELECT
+        t1.*
+        FROM
+        t_virtual_product t1
+        WHERE
+        <where>
+            <if test="type != null">
+                and t1.type = #{type}
+            </if>
+            <if test="delFlag != null">
+                and t1.del_flag = #{delFlag}
+            </if>
+            <if test="userId != null">
+                AND t1.id IN (
+                    SELECT
+                    virtual_product_id
+                    FROM
+                    t_virtual_product_attach
+                    WHERE
+                    user_id = #{userId}
+                    GROUP BY
+                    virtual_product_id
+                )
+            </if>
+        </where>
+        ORDER BY t1.id
+    </select>
 </mapper>

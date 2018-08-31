@@ -18,4 +18,5 @@ public interface VirtualProductDao extends ICommonDao<VirtualProduct, Integer> {
 
     List<VirtualProduct> findByParameter(VirtualProductVO virtualProductVO);
 
+    List<VirtualProductVO> findByVirtualProductVo(VirtualProductVO virtualProductVO);
 }

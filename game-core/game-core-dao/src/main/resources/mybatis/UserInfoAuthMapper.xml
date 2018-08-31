@@ -243,7 +243,10 @@
             <if test="updateTime != null">
                 update_time = #{updateTime},
             </if>
-            <if test="imSubstituteId != null">
+            <if test='imSubstituteId == -1'>
+                im_substitute_id = null,
+            </if>
+            <if test="imSubstituteId != null and imSubstituteId != -1">
                 im_substitute_id = #{imSubstituteId},
             </if>
         </set>
