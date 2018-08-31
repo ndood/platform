@@ -1,8 +1,12 @@
 package com.fulu.game.core.service.impl;
 
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
-import com.fulu.game.common.enums.*;
+import com.fulu.game.common.enums.FileTypeEnum;
+import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
@@ -17,9 +21,6 @@ import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,7 +133,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
         return userInfoAuth;
     }
-
 
 
     /**
@@ -390,7 +390,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         List<UserInfoAuthVO> userInfoAuths = userInfoAuthDao.findBySearchVO(userInfoAuthSearchVO);
         return userInfoAuths;
     }
-    
+
 
     @Override
     public boolean updateByUserId(UserInfoAuth userInfoAuth) {
@@ -558,7 +558,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         }
         return false;
     }
-
 
 
     private void createUserInfoFile(Integer userId, String fileUrl, String name, Integer type) {
@@ -771,7 +770,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     }
 
     @Override
-    public void setSubstitute(int id , Integer substituteId) {
+    public void setSubstitute(int id, Integer substituteId) {
 
         UserInfoAuth uia = new UserInfoAuth();
         uia.setUserId(id);
@@ -779,5 +778,20 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         uia.setImSubstituteId(substituteId);
 
         userInfoAuthDao.updateByUserId(uia);
+    }
+
+    @Override
+    public boolean modifyCharm(Integer userId, Integer price) {
+        User user = userService.findById(userId);
+        if (user == null) {
+            log.info("当前用户id={}查询数据库不存在", userId);
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+
+        UserInfoAuth auth = new UserInfoAuth();
+        auth.setUserId(userId);
+        auth.setCharm(auth.getCharm() + price);
+        updateByUserId(auth);
+        return true;
     }
 }

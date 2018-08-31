@@ -36,8 +36,6 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
     UserInfoAuth findByUserId(int userId);
 
 
-
-
     /**
      * 查找用户个人认证信息
      *
@@ -62,6 +60,7 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
 
     /**
      * 根据条件获取陪玩师信息
+     *
      * @param userInfoAuthSearchVO
      * @return
      */
@@ -111,5 +110,7 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
      *
      * @param id 客服ID
      */
-    void setSubstitute(int id , Integer substituteId);
+    void setSubstitute(int id, Integer substituteId);
+
+    boolean modifyCharm(Integer userId, Integer price);
 }
