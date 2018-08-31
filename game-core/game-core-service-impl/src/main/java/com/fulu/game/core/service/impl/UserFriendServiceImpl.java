@@ -39,10 +39,7 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
     }
 
     @Override
-    public JSONObject save(UserFriendVO userFriendVO) {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code",1);
-        jsonObject.put("msg","成功");
+    public void save(UserFriendVO userFriendVO) {
         if(userFriendVO == null){
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
@@ -65,8 +62,6 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
             }
             userFriendDao.create(userFriendVO);
         }
-        jsonObject.put("data", userFriendVO);
-        return jsonObject;
     }
 
     /**
@@ -131,15 +126,12 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
      * 是否是黑名单用户
      *
      * @param toUserId
-     * @return
+     * @return 1:是；0：不是；
      */
     @Override
-    public JSONObject isBlackUser(Integer toUserId) {
-        JSONObject jsonObject = new JSONObject();
+    public boolean isBlackUser(Integer toUserId) {
         User user = userService.getCurrentUser();
-        jsonObject.put("isBlack",0);
-        jsonObject.put("msg","非黑名单用户");
-        jsonObject.put("data",new JSONObject());
+        boolean isBlack = false;
         UserFriendVO userFriendVO = new UserFriendVO();
         userFriendVO.setIsBlack(1);
         userFriendVO.setFromUserId(user.getId());
@@ -147,11 +139,9 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
         userFriendVO.setType(1);
         List<UserFriendVO> list = userFriendDao.findByParameter(userFriendVO);
         if(list != null && list.size() > 0){
-            jsonObject.put("isBlack",1);
-            jsonObject.put("msg","黑名单用户");
-            jsonObject.put("data",list.get(0));
+            isBlack = true;
         }
-        return jsonObject;
+        return isBlack;
     }
 
     /**
@@ -188,5 +178,16 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
         userFriendVO.setNickname(keyWord);
         List<UserFriendVO> list = userFriendDao.searchUsers(userFriendVO);
         return new PageInfo<>(list);
+    }
+
+    /**
+     * 获取所有关注人信息
+     *
+     * @param id 用户id
+     * @return
+     */
+    @Override
+    public List<UserFriend> getAllAttentionsByUserId(Integer id) {
+        return userFriendDao.getAllAttentionsByUserId(id);
     }
 }

@@ -36,4 +36,11 @@ public interface UserFriendDao extends ICommonDao<UserFriend,Integer>{
      * @return
      */
     public List<UserFriendVO> searchUsers(UserFriendVO userFriendVO);
+
+    /**
+     * 获取所有关注
+     * @param id
+     * @return
+     */
+    public List<UserFriend> getAllAttentionsByUserId(Integer id);
 }
