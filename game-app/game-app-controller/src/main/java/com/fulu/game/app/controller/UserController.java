@@ -101,7 +101,13 @@ public class UserController extends BaseController {
             if(userVO.getAbout() != null){
                 userInfoAuth.setAbout(userVO.getAbout());
             }
-            userInfoAuthService.updateByUserId(userInfoAuth);
+            // 判断认证信息是否存在，不存在就新增
+            UserInfoAuth  tmp = userInfoAuthService.findByUserId(user.getId());
+            if(tmp == null){
+                userInfoAuthService.create(userInfoAuth);
+            } else {
+                userInfoAuthService.updateByUserId(userInfoAuth);
+            }
             saveUserInfoAuthFile(userVO);
         }
     }
