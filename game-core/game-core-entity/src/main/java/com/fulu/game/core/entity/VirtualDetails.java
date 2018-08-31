@@ -10,7 +10,7 @@ import java.util.Date;
  * 虚拟货币流水表
  *
  * @author Gong Zechun
- * @date 2018-08-30 15:26:37
+ * @date 2018-08-30 19:38:52
  */
 @Data
 public class VirtualDetails implements Serializable {
@@ -20,10 +20,12 @@ public class VirtualDetails implements Serializable {
     private Integer id;
     //用户id
     private Integer userId;
-    //剩余货币
+    //剩余虚拟币或者魅力值余额
     private Integer sum;
-    //消费或者充值金额
+    //虚拟币或魅力值的增加和消费记录
     private Integer money;
+    //类型（1：虚拟币；2：魅力值）
+    private Integer type;
     //备注
     private String remark;
     //创建时间

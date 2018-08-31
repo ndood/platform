@@ -18,6 +18,11 @@
             <version>${game.core.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.fulu.game</groupId>
+            <artifactId>game-core-search</artifactId>
+            <version>${game.core.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.github.binarywang</groupId>
             <artifactId>weixin-java-pay</artifactId>
         </dependency>

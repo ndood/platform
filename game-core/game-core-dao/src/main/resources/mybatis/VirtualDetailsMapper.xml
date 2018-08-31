@@ -7,6 +7,7 @@
         <result column="user_id" property="userId"/>
         <result column="sum" property="sum"/>
         <result column="money" property="money"/>
+        <result column="type" property="type"/>
         <result column="remark" property="remark"/>
         <result column="create_time" property="createTime"/>
     </resultMap>
@@ -16,7 +17,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,sum,money,remark,create_time    </sql>
+        id,user_id,sum,money,type,remark,create_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="VirtualDetailsResultMap">
         select
@@ -48,6 +49,9 @@
             <if test="money != null">
                 and money = #{money}
             </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
             <if test="remark != null">
                 and remark = #{remark}
             </if>
@@ -67,9 +71,9 @@
     <insert id="create" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.fulu.game.core.entity.VirtualDetails">
         insert into
-        t_virtual_details (user_id,sum,money,remark,create_time)
+        t_virtual_details (user_id,sum,money,type,remark,create_time)
         values
-        (#{userId},#{sum},#{money},#{remark},#{createTime})
+        (#{userId},#{sum},#{money},#{type},#{remark},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.VirtualDetails">
@@ -86,6 +90,10 @@
 
             <if test="money != null">
                 money = #{money},
+            </if>
+
+            <if test="type != null">
+                type = #{type},
             </if>
 
             <if test="remark != null">

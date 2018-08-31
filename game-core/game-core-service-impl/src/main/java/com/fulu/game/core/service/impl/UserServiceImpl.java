@@ -2,6 +2,7 @@ package com.fulu.game.core.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.*;
@@ -52,6 +53,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     private ImgUtil imgUtil;
     @Autowired
     private CouponGroupService couponGroupService;
+    @Autowired
+    private VirtualProductService virtualProductService;
 
     @Override
     public ICommonDao<User, Integer> getDao() {
@@ -600,7 +603,17 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public boolean calculateVirtualBalance(Integer fromUserId, Integer virtualProductId) {
-        return false;
+    public boolean calculateVirtualBalance(Integer userId, Integer price) {
+        User user = findById(userId);
+        if (user == null) {
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+
+        User paramUser = new User();
+        paramUser.setId(userId);
+        paramUser.setVirtualBalance(user.getVirtualBalance() - price);
+        paramUser.setUpdateTime(DateUtil.date());
+        int result = update(paramUser);
+        return result > 0;
     }
 }
