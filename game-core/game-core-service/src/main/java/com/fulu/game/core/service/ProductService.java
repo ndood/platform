@@ -228,4 +228,11 @@ public interface ProductService extends ICommonService<Product,Integer>{
     List<TechAuthProductVO> techAuthProductList(int userId);
 
 
+    /**
+     * 推荐商品列表
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    PageInfo<ProductShowCaseVO> getRecommendList(Integer pageNum,Integer pageSize);
 }

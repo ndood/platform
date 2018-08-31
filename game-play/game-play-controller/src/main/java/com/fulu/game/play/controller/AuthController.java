@@ -3,12 +3,14 @@ package com.fulu.game.play.controller;
 import cn.hutool.core.bean.BeanUtil;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
+import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.to.UserTechAuthTO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
+import com.fulu.game.core.entity.vo.VirtualProductVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +41,8 @@ public class AuthController extends BaseController {
     private UserTechAuthServiceImpl userTechAuthService;
     @Autowired
     private UserTechAuthRejectService userTechAuthRejectService;
+    @Autowired
+    private VirtualProductService virtualProductService;
 
 
     /**
@@ -158,6 +162,23 @@ public class AuthController extends BaseController {
         userTechAuthTO.setUserId(user.getId());
         userTechAuthService.save(userTechAuthTO);
         return Result.success().data(userTechAuthTO);
+    }
+
+    /**
+     * 获取陪玩师私照列表
+     * @return
+     */
+    @PostMapping(value = "/private-pic/list")
+    public Result privatePicList(Integer userId) {
+
+        VirtualProductVO vpo = new VirtualProductVO();
+        vpo.setUserId(userId);
+        vpo.setType(VirtualProductTypeEnum.PERSONAL_PICS.getType());
+        vpo.setDelFlag(false);
+
+        List<VirtualProductVO> list = virtualProductService.searchByvirtualProductVo(vpo);
+
+        return Result.success().data(list).msg("查询成功");
     }
 
 

@@ -39,5 +39,5 @@ public interface ProductDao extends ICommonDao<Product,Integer>{
 
     int disabledProductById(Integer id);
 
-
+    List<ProductShowCaseVO> findProductByAuthUserSort();
 }

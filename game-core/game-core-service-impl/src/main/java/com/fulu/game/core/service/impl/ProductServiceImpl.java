@@ -828,5 +828,37 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return productVOS;
     }
 
+    /**
+     * 获取商品推荐列表
+     *
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public PageInfo<ProductShowCaseVO> getRecommendList(Integer pageNum,Integer pageSize) {
+        PageInfo<ProductShowCaseVO> page = null;
+        try {
+            PageHelper.startPage(pageNum, pageSize);
+            List<ProductShowCaseVO> showCaseVOS = productDao.findProductByAuthUserSort();
+            for (ProductShowCaseVO showCaseVO : showCaseVOS) {
+                UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(showCaseVO.getUserId(), false, false, true, false);
+                showCaseVO.setNickName(userInfoVO.getNickName());
+                showCaseVO.setGender(userInfoVO.getGender());
+                showCaseVO.setMainPhoto(userInfoVO.getMainPhotoUrl());
+                showCaseVO.setCity(userInfoVO.getCity());
+                showCaseVO.setPersonTags(userInfoVO.getTags());
+                UserTechInfo userTechInfo = userTechAuthService.findDanInfo(showCaseVO.getTechAuthId());
+                if (userTechInfo != null) {
+                    showCaseVO.setDan(userTechInfo.getValue());
+                }
+                showCaseVO.setOnLine(isProductStartOrderReceivingStatus(showCaseVO.getId()));
+            }
+            page = new PageInfo<ProductShowCaseVO>(showCaseVOS);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return page;
+    }
 
 }

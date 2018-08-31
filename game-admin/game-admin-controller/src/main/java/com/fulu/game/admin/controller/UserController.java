@@ -337,7 +337,7 @@ public class UserController extends BaseController {
      * @return
      */
     @PostMapping("/set-substitute")
-    public Result setSubstitute(@RequestParam("id") Integer id,@RequestParam("substituteId") Integer substituteId) {
+    public Result setSubstitute(@RequestParam("id") Integer id, Integer substituteId) {
         userInfoAuthService.setSubstitute(id,substituteId);
         return Result.success().msg("操作成功！");
     }

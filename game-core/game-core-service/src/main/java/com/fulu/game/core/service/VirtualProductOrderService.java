@@ -13,4 +13,6 @@ import com.fulu.game.core.entity.VirtualProductOrder;
 public interface VirtualProductOrderService extends ICommonService<VirtualProductOrder, Integer> {
 
     boolean sendGift(Integer fromUserId, Integer targetUserId, Integer virtualProductId);
+
+    String generateVirtualProductOrderNo();
 }

@@ -54,4 +54,20 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
         }
         return virtualProduct.getPrice();
     }
+
+    @Override
+    public List<VirtualProductVO> searchByvirtualProductVo(VirtualProductVO vpo) {
+
+        List<VirtualProductVO> list = null;
+
+        try {
+
+            list =  virtualProductDao.findByVirtualProductVo(vpo);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
 }

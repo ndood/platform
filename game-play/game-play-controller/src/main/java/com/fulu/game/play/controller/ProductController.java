@@ -7,6 +7,7 @@ import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.ProductDetailsVO;
+import com.fulu.game.core.entity.vo.ProductShowCaseVO;
 import com.fulu.game.core.entity.vo.SimpleProductVO;
 import com.fulu.game.core.entity.vo.TechAuthProductVO;
 import com.fulu.game.core.service.MoneyDetailsService;
@@ -37,9 +38,6 @@ public class ProductController extends BaseController {
     private ProductService productService;
     @Autowired
     private MoneyDetailsService moneyDetailsService;
-    @Qualifier("playMiniAppOrderServiceImpl")
-    @Autowired
-    private PlayMiniAppOrderServiceImpl playMiniAppOrderServiceImpl;
     @Autowired
     private OrderService orderService;
     @Autowired
@@ -259,5 +257,18 @@ public class ProductController extends BaseController {
         return Result.success().data("已经停止自动接单!");
     }
 
+    /**
+     * 分页查询所有商品
+     *
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @RequestMapping(value = "/recommend/list")
+    public Result getRecommendList(@RequestParam(required = true) Integer pageNum,
+                                      @RequestParam(required = true) Integer pageSize) {
+        PageInfo<ProductShowCaseVO> pageInfo = productService.getRecommendList(pageNum,pageSize);
+        return Result.success().data(pageInfo);
+    }
 
 }
