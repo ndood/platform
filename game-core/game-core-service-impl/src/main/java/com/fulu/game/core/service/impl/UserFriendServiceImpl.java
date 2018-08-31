@@ -129,9 +129,9 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
      * @return 1:是；0：不是；
      */
     @Override
-    public int isBlackUser(Integer toUserId) {
+    public boolean isBlackUser(Integer toUserId) {
         User user = userService.getCurrentUser();
-        int isBlack = 0;
+        boolean isBlack = false;
         UserFriendVO userFriendVO = new UserFriendVO();
         userFriendVO.setIsBlack(1);
         userFriendVO.setFromUserId(user.getId());
@@ -139,7 +139,7 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
         userFriendVO.setType(1);
         List<UserFriendVO> list = userFriendDao.findByParameter(userFriendVO);
         if(list != null && list.size() > 0){
-            isBlack = 1;
+            isBlack = true;
         }
         return isBlack;
     }

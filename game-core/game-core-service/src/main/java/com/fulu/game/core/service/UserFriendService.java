@@ -50,7 +50,7 @@ public interface UserFriendService extends ICommonService<UserFriend,Integer> {
      * @param toUserId
      * @return
      */
-    public int isBlackUser(Integer toUserId);
+    public boolean isBlackUser(Integer toUserId);
 
     /**
      * 查询好友列表（包含关注人和粉丝）

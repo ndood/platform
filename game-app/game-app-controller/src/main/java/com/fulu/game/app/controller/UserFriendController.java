@@ -97,7 +97,7 @@ public class UserFriendController extends BaseController  {
      */
     @RequestMapping(value = "is-black-user")
     public Result isBlackUser(@RequestParam(required = true) Integer toUserId) {
-        int isBlack = userFriendService.isBlackUser( toUserId);
+        boolean isBlack = userFriendService.isBlackUser( toUserId);
         return Result.success().data(isBlack);
     }
 
