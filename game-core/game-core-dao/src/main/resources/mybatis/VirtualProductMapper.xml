@@ -17,6 +17,7 @@
 
     <resultMap id="VirtualProductResultVOMap" type="com.fulu.game.core.entity.vo.VirtualProductVO" extends="VirtualProductResultMap">
         <result column="user_id" property="userId"/>
+        <result column="buy_status" property="buyStatus"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -146,10 +147,11 @@
 
     <select id="findByVirtualProductVo" resultMap="VirtualProductResultVOMap" parameterType="com.fulu.game.core.entity.vo.VirtualProductVO">
         SELECT
-        t1.*
+        t1.*,
+        if(t2.id is not null ,0,1) as buy_status
         FROM
         t_virtual_product t1
-        WHERE
+        LEFT JOIN t_virtual_product_order t2 ON t1.id = t2.virtual_product_id
         <where>
             <if test="type != null">
                 and t1.type = #{type}
@@ -168,6 +170,9 @@
                     GROUP BY
                     virtual_product_id
                 )
+            </if>
+            <if test="targetUserId != null">
+                and t2.target_user_id = #{targetUserId}
             </if>
         </where>
         ORDER BY t1.id
