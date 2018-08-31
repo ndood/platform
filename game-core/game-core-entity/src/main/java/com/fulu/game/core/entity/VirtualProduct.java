@@ -26,6 +26,8 @@ public class VirtualProduct implements Serializable {
     private Integer type;
     //排序
     private Integer sort;
+    //附件数量
+    private Integer attachCount;
     //商品图片地址
     private String objectUrl;
     //

@@ -8,6 +8,7 @@
         <result column="price" property="price"/>
         <result column="type" property="type"/>
         <result column="sort" property="sort"/>
+        <result column="attach_count"  property="attachCount" />
         <result column="object_url" property="objectUrl"/>
         <result column="remark" property="remark"/>
         <result column="del_flag" property="delFlag"/>
@@ -21,7 +22,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,name,price,type,sort,object_url,remark,del_flag,update_time,create_time    </sql>
+        id,name,price,type,sort,attach_count,object_url,remark,del_flag,update_time,create_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="VirtualProductResultMap">
         select
@@ -55,6 +56,9 @@
             </if>
             <if test="sort != null">
                 and sort = #{sort}
+            </if>
+            <if test="attachCount != null">
+                and attach_count = #{attachCount}
             </if>
             <if test="objectUrl != null">
                 and object_url = #{objectUrl}
@@ -95,9 +99,9 @@
     <insert id="create" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.fulu.game.core.entity.VirtualProduct">
         insert into
-        t_virtual_product (name,price,type,sort,object_url,remark,del_flag,update_time,create_time)
+        t_virtual_product (name,price,type,sort,attach_count,object_url,remark,del_flag,update_time,create_time)
         values
-        (#{name},#{price},#{type},#{sort},#{objectUrl},#{remark},#{delFlag},#{updateTime},#{createTime})
+        (#{name},#{price},#{type},#{sort},#{attachCount},#{objectUrl},#{remark},#{delFlag},#{updateTime},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.VirtualProduct">
@@ -118,6 +122,10 @@
 
             <if test="sort != null">
                 sort = #{sort},
+            </if>
+
+            <if test="attachCount != null">
+                attach_count = #{attachCount},
             </if>
 
             <if test="objectUrl != null">
