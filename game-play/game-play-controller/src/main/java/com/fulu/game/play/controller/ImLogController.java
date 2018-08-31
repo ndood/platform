@@ -1,17 +1,19 @@
 package com.fulu.game.play.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.core.entity.AdminImLog;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserInfoAuth;
+import com.fulu.game.core.entity.VirtualProductAttach;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
+import com.fulu.game.core.entity.vo.VirtualProductVO;
 import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
-import com.fulu.game.core.service.AdminImLogService;
-import com.fulu.game.core.service.UserInfoAuthService;
-import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +42,10 @@ public class ImLogController extends BaseController{
     private RedisOpenServiceImpl redisOpenService;
     @Autowired
     private AdminImLogService adminImLogService;
+    @Autowired
+    private VirtualProductService virtualProductService;
+    @Autowired
+    private VirtualProductAttachService virtualProductAttachService;
 
     @PostMapping(value = "collect")
     public Result log(String content){
@@ -61,6 +67,7 @@ public class ImLogController extends BaseController{
                 Map map = redisOpenService.hget(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()));
 
                 if(map != null && map.size() >0 ){
+                    
                     map.remove(user.getImId());
 
                     if(map.size() <1){
@@ -117,11 +124,12 @@ public class ImLogController extends BaseController{
                     targetUser.setUnreadCount(new Long(1));
                 }else{
                     if(map.get(targetImId)!=null){
-                        UserInfoAuthVO temp = (UserInfoAuthVO)map.get(targetImId);
+                        
+                        UserInfoAuthVO temp = JSON.parseObject(map.get(targetImId).toString(),UserInfoAuthVO.class);
                         targetUser.setUnreadCount(temp.getUnreadCount() + 1);
                     }
                 }
-                map.put(targetImId, targetUser);
+                map.put(targetImId, JSON.toJSONString(targetUser));
                 //更新未读消息数
                 redisOpenService.hset(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(targetUser.getImSubstituteId().intValue()), map, Constant.ONE_DAY * 3);
             }
@@ -132,4 +140,44 @@ public class ImLogController extends BaseController{
 
     }
 
+
+    /**
+     * 解锁图片  声音  私照
+     * @return
+     */
+    @PostMapping(value = "/unlock")
+    public Result unlockPrivatePic(Integer virtualProductId) {
+        User user = userService.getCurrentUser();
+        VirtualProductVO vpo = new VirtualProductVO();
+        vpo.setUserId(user.getId());
+        vpo.setType(VirtualProductTypeEnum.PERSONAL_PICS.getType());
+        vpo.setDelFlag(false);
+
+        virtualProductService.unlockProduct(user.getId(),virtualProductId);
+
+        return Result.success().msg("解锁成功");
+        
+    }
+
+
+//    /**
+//     * 查看解锁商品
+//     * @return
+//     */
+//    @PostMapping(value = "/unlock-product/list")
+//    public Result unlockProductList(Integer virtualProductId) {
+//
+//        VirtualProductVO vpo = new VirtualProductVO();
+//        vpo.setUserId(userId);
+//        vpo.setType(VirtualProductTypeEnum.PERSONAL_PICS.getType());
+//        vpo.setDelFlag(false);
+//
+//        virtualProductAttachService.findByParameter()
+//        
+//        
+//        List<VirtualProductVO> list = virtualProductService.searchByvirtualProductVo(vpo);
+//
+//        return Result.success().data(list).msg("查询成功");
+//    }
+    
 }

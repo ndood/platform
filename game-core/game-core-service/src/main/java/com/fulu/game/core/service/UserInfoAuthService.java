@@ -113,4 +113,5 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
     void setSubstitute(int id, Integer substituteId);
 
     boolean modifyCharm(Integer userId, Integer price);
+
 }
