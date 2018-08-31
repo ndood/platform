@@ -70,7 +70,7 @@ public class PushMsgQueue implements Runnable {
         log.info("结束推送微信模板消息");
     }
 
-
+    //todo 改成redis队列
     private void process(WxMaTemplateMessageVO wxMaTemplateMessageVO) {
         try {
             log.info("推送消息队列推送消息:wxMaTemplateMessageVO:{}", wxMaTemplateMessageVO);
