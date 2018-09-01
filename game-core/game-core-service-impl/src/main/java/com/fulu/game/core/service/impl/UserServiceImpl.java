@@ -625,7 +625,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public void loginReceiveVirtualMoney(Integer userId) {
+    public boolean loginReceiveVirtualMoney(Integer userId) {
         User user = findById(userId);
         if (user == null) {
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
@@ -638,10 +638,13 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             if (!isReceived) {
                 modifyVirtualBalance(userId, Constant.LOGIN_VIRTUAL_MONEY);
                 redisOpenService.bitSet(loginKey, userId);
+                return true;
             }
         } else {
             modifyVirtualBalance(userId, Constant.LOGIN_VIRTUAL_MONEY);
             redisOpenService.bitSet(loginKey, userId);
+            return true;
         }
+        return false;
     }
 }

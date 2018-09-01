@@ -44,6 +44,14 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
         return virtualProductOrderDao;
     }
 
+    /**
+     * 赠送礼物
+     *
+     * @param fromUserId       发起人id
+     * @param targetUserId     接收人id
+     * @param virtualProductId 虚拟商品id
+     * @return 虚拟订单Bean
+     */
     @Override
     public VirtualProductOrder sendGift(Integer fromUserId, Integer targetUserId, Integer virtualProductId) {
         userService.isCurrentUser(fromUserId);

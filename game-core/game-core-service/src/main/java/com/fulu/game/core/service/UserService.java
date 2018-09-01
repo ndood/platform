@@ -239,6 +239,7 @@ public interface UserService extends ICommonService<User, Integer> {
      * 登录用户获取虚拟币奖励
      *
      * @param userId 用户id
+     * @return 是否获取
      */
-    void loginReceiveVirtualMoney(Integer userId);
+    boolean loginReceiveVirtualMoney(Integer userId);
 }
