@@ -57,20 +57,7 @@ public class HomeController extends BaseController {
                 return Result.newUser().data(result);
             }
 
-            //fixme 抽象出来
-            String loginKey = RedisKeyEnum.LOGIN_RECEIVE_VIRTUAL_MONEY.generateKey();
-            boolean flag = redisOpenService.hasKey(loginKey);
-            if (flag) {
-                boolean isReceived = redisOpenService.getBitSet(loginKey, user.getId());
-                if (!isReceived) {
-                    userService.modifyVirtualBalance(user.getId(), Constant.LOGIN_VIRTUAL_MONEY);
-                    redisOpenService.bitSet(loginKey, user.getId());
-                }
-            } else {
-                userService.modifyVirtualBalance(user.getId(), Constant.LOGIN_VIRTUAL_MONEY);
-                redisOpenService.bitSet(loginKey, user.getId());
-            }
-
+            userService.loginReceiveVirtualMoney(user.getId());
             return Result.success().data(result).msg("登录成功!");
         } catch (Exception e) {
             if (e.getCause() instanceof UserException) {

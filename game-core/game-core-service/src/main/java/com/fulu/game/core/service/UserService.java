@@ -234,4 +234,11 @@ public interface UserService extends ICommonService<User, Integer> {
      * @return 是否修改成功
      */
     boolean modifyVirtualBalance(Integer userId, Integer price);
+
+    /**
+     * 登录用户获取虚拟币奖励
+     *
+     * @param userId 用户id
+     */
+    void loginReceiveVirtualMoney(Integer userId);
 }

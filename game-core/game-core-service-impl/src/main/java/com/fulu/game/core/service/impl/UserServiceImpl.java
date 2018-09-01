@@ -623,4 +623,25 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         int result = update(paramUser);
         return result > 0;
     }
+
+    @Override
+    public void loginReceiveVirtualMoney(Integer userId) {
+        User user = findById(userId);
+        if (user == null) {
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+
+        String loginKey = RedisKeyEnum.LOGIN_RECEIVE_VIRTUAL_MONEY.generateKey();
+        boolean flag = redisOpenService.hasKey(loginKey);
+        if (flag) {
+            boolean isReceived = redisOpenService.getBitSet(loginKey, userId);
+            if (!isReceived) {
+                modifyVirtualBalance(userId, Constant.LOGIN_VIRTUAL_MONEY);
+                redisOpenService.bitSet(loginKey, userId);
+            }
+        } else {
+            modifyVirtualBalance(userId, Constant.LOGIN_VIRTUAL_MONEY);
+            redisOpenService.bitSet(loginKey, userId);
+        }
+    }
 }
