@@ -53,6 +53,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     private ImgUtil imgUtil;
     @Autowired
     private CouponGroupService couponGroupService;
+    @Autowired
+    private VirtualDetailsService virtualDetailsService;
 
     @Override
     public ICommonDao<User, Integer> getDao() {
@@ -640,26 +642,22 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         boolean flag = redisOpenService.hasKey(loginKey);
         if (flag) {
             boolean isReceived = redisOpenService.getBitSet(loginKey, userId);
-            if (!isReceived) {
-                modifyVirtualBalance(userId, Constant.LOGIN_VIRTUAL_MONEY);
-                redisOpenService.bitSet(loginKey, userId);
-                VirtualDetails details = new VirtualDetails();
-                //fixme
-//                details.setUserId(userId);
-//                details.setSum();
-//                details.setMoney();
-//                details.setType();
-//                details.setRemark();
-//                details.setCreateTime();
-//
-//                virtualDetailsService.create();
-                return true;
+            if (isReceived) {
+                return false;
             }
-        } else {
-            modifyVirtualBalance(userId, Constant.LOGIN_VIRTUAL_MONEY);
-            redisOpenService.bitSet(loginKey, userId);
-            return true;
         }
-        return false;
+
+        User user = modifyVirtualBalance(userId, Constant.LOGIN_VIRTUAL_MONEY);
+        redisOpenService.bitSet(loginKey, userId);
+
+        VirtualDetails details = new VirtualDetails();
+        details.setUserId(userId);
+        details.setSum(user.getVirtualBalance());
+        details.setMoney(Constant.LOGIN_VIRTUAL_MONEY);
+        details.setType(VirtualProductTypeEnum.LOGIN_RECEIVE_BONUS.getType());
+        details.setRemark(VirtualProductTypeEnum.LOGIN_RECEIVE_BONUS.getMsg());
+        details.setCreateTime(DateUtil.date());
+        virtualDetailsService.create(details);
+        return true;
     }
 }

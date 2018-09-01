@@ -3,13 +3,10 @@ package com.fulu.game.app.controller;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
-import com.fulu.game.common.domain.ClientInfo;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
-import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.*;
-import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
@@ -54,14 +51,14 @@ public class UserController extends BaseController {
     private UserInfoAuthFileService userInfoAuthFileService;
 
 
-
     /**
      * 修改/填写资料
+     *
      * @param userVO
      * @return
      */
     @RequestMapping("update")
-    public Result update(UserVO userVO){
+    public Result update(UserVO userVO) {
         User user = userService.findById(userService.getCurrentUser().getId());
         user.setAge(DateUtil.ageOfNow(userVO.getBirth()));
         user.setGender(userVO.getGender());
@@ -83,27 +80,28 @@ public class UserController extends BaseController {
 
     /**
      * 保存用户认证信息
+     *
      * @param userVO
      */
-    private void saveUserInfoAuth(UserVO userVO){
+    private void saveUserInfoAuth(UserVO userVO) {
         User user = userService.getCurrentUser();
         // 当存在用户认证信息时取修改
-        if(userVO != null && (userVO.getInterests() != null ||
-                userVO.getProfession() != null || userVO.getAbout() != null)){
-            UserInfoAuth  userInfoAuth = new UserInfoAuth();
+        if (userVO != null && (userVO.getInterests() != null ||
+                userVO.getProfession() != null || userVO.getAbout() != null)) {
+            UserInfoAuth userInfoAuth = new UserInfoAuth();
             userInfoAuth.setUserId(user.getId());
-            if(userVO.getInterests() != null){
+            if (userVO.getInterests() != null) {
                 userInfoAuth.setInterests(userVO.getInterests());
             }
-            if(userVO.getProfession() != null){
+            if (userVO.getProfession() != null) {
                 userInfoAuth.setProfession(userVO.getProfession());
             }
-            if(userVO.getAbout() != null){
+            if (userVO.getAbout() != null) {
                 userInfoAuth.setAbout(userVO.getAbout());
             }
             // 判断认证信息是否存在，不存在就新增
-            UserInfoAuth  tmp = userInfoAuthService.findByUserId(user.getId());
-            if(tmp == null){
+            UserInfoAuth tmp = userInfoAuthService.findByUserId(user.getId());
+            if (tmp == null) {
                 userInfoAuthService.create(userInfoAuth);
             } else {
                 userInfoAuthService.updateByUserId(userInfoAuth);
@@ -114,19 +112,20 @@ public class UserController extends BaseController {
 
     /**
      * 保存用户认证文件信息（相册和视频）
+     *
      * @param userVO
      */
-    private void saveUserInfoAuthFile(UserVO userVO){
+    private void saveUserInfoAuthFile(UserVO userVO) {
         User user = userService.getCurrentUser();
-        UserInfoAuth  userInfoAuth = userInfoAuthService.findByUserId(user.getId());
-        if(userInfoAuth != null){
+        UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
+        if (userInfoAuth != null) {
             // 先删除所有以前图片，然后插入
-            userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(),1);
-            userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(),3);
-            if(userVO != null && (userVO.getPicUrls() != null || userVO.getVideoUrl() != null) ){
+            userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(), 1);
+            userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(), 3);
+            if (userVO != null && (userVO.getPicUrls() != null || userVO.getVideoUrl() != null)) {
                 String[] picUrls = userVO.getPicUrls();
-                if(picUrls != null && picUrls.length > 0){
-                    for (int i = 0; i < picUrls.length; i++){
+                if (picUrls != null && picUrls.length > 0) {
+                    for (int i = 0; i < picUrls.length; i++) {
                         UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
                         userInfoAuthFile.setUrl(picUrls[i]);
                         userInfoAuthFile.setInfoAuthId(userInfoAuth.getId());
@@ -136,7 +135,7 @@ public class UserController extends BaseController {
                         userInfoAuthFileService.create(userInfoAuthFile);
                     }
                 }
-                if(userVO != null && userVO.getVideoUrl() != null){
+                if (userVO != null && userVO.getVideoUrl() != null) {
                     UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
                     userInfoAuthFile.setUrl(userVO.getVideoUrl());
                     userInfoAuthFile.setInfoAuthId(userInfoAuth.getId());
@@ -149,26 +148,26 @@ public class UserController extends BaseController {
         }
     }
 
-    
+
     @PostMapping(value = "online")
-    public Result userOnline(@RequestParam(required = true) Boolean active, String version){
+    public Result userOnline(@RequestParam(required = true) Boolean active, String version) {
         User user = userService.getCurrentUser();
         UserInfoAuth ua = userInfoAuthService.findByUserId(user.getId());
-        if(active){
-            log.info("userId:{}用户上线了!;version:{}",user.getId(),version);
-            redisOpenService.set(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()),user.getType()+"");
+        if (active) {
+            log.info("userId:{}用户上线了!;version:{}", user.getId(), version);
+            redisOpenService.set(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()), user.getType() + "");
 
             //删除陪玩师的未读信息数量
-            if(ua.getImSubstituteId()!=null){
+            if (ua.getImSubstituteId() != null) {
                 Map map = redisOpenService.hget(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()));
 
-                if(map != null && map.size() >0 ){
+                if (map != null && map.size() > 0) {
                     map.remove(user.getImId());
 
-                    if(map.size() <1){
+                    if (map.size() < 1) {
                         redisOpenService.delete(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()));
-                    }else{
-                        redisOpenService.hset(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()) , map , Constant.ONE_DAY * 3);
+                    } else {
+                        redisOpenService.hset(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()), map, Constant.ONE_DAY * 3);
                     }
 
                 }
@@ -181,8 +180,8 @@ public class UserController extends BaseController {
             adminImLogService.deleteByImId(user.getImId());
             return Result.success().data(list).msg("查询成功！");
 
-        }else{
-            log.info("userId:{}用户下线了!version:{}",user.getId(),version);
+        } else {
+            log.info("userId:{}用户下线了!version:{}", user.getId(), version);
             redisOpenService.delete(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()));
         }
         return Result.success();
@@ -246,6 +245,7 @@ public class UserController extends BaseController {
 
     /**
      * 获取用户接单技能列表
+     *
      * @return
      */
     @RequestMapping("tech/list")
@@ -256,7 +256,9 @@ public class UserController extends BaseController {
         return Result.success().data(techAuthList);
     }
 
-    /** 意见反馈接口 */
+    /**
+     * 意见反馈接口
+     */
     @PostMapping("/advice/add")
     public Result addAdvice(@RequestParam("content") String content,
                             @RequestParam(value = "contact", required = false) String contact,
@@ -268,5 +270,16 @@ public class UserController extends BaseController {
         return Result.success().data(advice).msg("提交成功");
     }
 
-
+    /**
+     * （陪玩师）魅力值提现
+     *
+     * @param userId 陪玩师id
+     * @param charm  魅力值
+     * @return 封装结果集
+     */
+    @PostMapping("/charm/withdraw")
+    public Result withdrawCharm(@RequestParam Integer userId, @RequestParam Integer charm) {
+        userInfoAuthService.withdrawCharm(userId, charm);
+        return Result.success().msg("提现成功");
+    }
 }

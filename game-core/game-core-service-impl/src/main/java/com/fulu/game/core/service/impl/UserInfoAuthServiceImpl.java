@@ -7,6 +7,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.fulu.game.common.enums.FileTypeEnum;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
+import com.fulu.game.common.exception.CashException;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
@@ -801,5 +802,25 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         auth.setCharm((auth.getCharm() == null ? 0 : auth.getCharm()) + price);
         updateByUserId(auth);
         return true;
+    }
+
+    @Override
+    public void withdrawCharm(Integer userId, Integer charm) {
+        //FIXME
+        UserInfoAuth userInfoAuth = findByUserId(userId);
+        if (userInfoAuth == null) {
+            log.error("陪玩师id:{}不存在", userId);
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+
+        Integer totalCharm = userInfoAuth.getCharm();
+        if (charm > totalCharm) {
+            log.error("陪玩师id:{}提现魅力值超出总魅力值", userId);
+            throw new CashException(CashException.ExceptionCode.CHARM_WITHDRAW_FAIL_EXCEPTION);
+        }
+
+        //todo 记录流水 记录分润
+
+
     }
 }
