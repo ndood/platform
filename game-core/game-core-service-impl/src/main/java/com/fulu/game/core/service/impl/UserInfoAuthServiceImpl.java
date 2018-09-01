@@ -798,11 +798,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         }
 
         UserInfoAuth auth = findByUserId(user.getId());
-        Integer charm = auth.getCharm();
-        if (charm == null) {
-            charm = 0;
-        }
-        auth.setCharm(charm + price);
+        auth.setCharm((auth.getCharm() == null ? 0 : auth.getCharm()) + price);
         updateByUserId(auth);
         return true;
     }

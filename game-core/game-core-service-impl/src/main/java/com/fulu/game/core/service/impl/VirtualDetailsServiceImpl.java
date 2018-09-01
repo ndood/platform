@@ -69,7 +69,7 @@ public class VirtualDetailsServiceImpl extends AbsCommonService<VirtualDetails, 
             sum = user.getVirtualBalance();
         } else if (virtualDetailsTypeEnum.equals(VirtualDetailsTypeEnum.CHARM)) {
             if (!UserTypeEnum.ACCOMPANY_PLAYER.getType().equals(user.getType())) {
-                log.error("接收礼物的用户不是陪玩师，userId:{}", user.getId());
+                log.error("非陪玩师不能成为接收礼物的对象，userId:{}", user.getId());
                 throw new UserException(UserException.ExceptionCode.USER_MISMATCH_EXCEPTION);
             }
             UserInfoAuth auth = userInfoAuthService.findByUserId(user.getId());

@@ -65,7 +65,7 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
 
         User targetUser = userService.findById(targetUserId);
         if (targetUser == null) {
-            log.info("当前接收礼物的用户id={}查询数据库不存在", targetUserId);
+            log.info("当前接收礼物的用户id：{}查询数据库不存在", targetUserId);
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
         //发起人扣钻石
@@ -89,9 +89,9 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
                 VirtualDetailsTypeEnum.VIRTUAL_MONEY,
                 VirtualProductTypeEnum.VIRTUAL_GIFT);
         //接收人加魅力值
-        userInfoAuthService.modifyCharm(targetUserId, price);
+        userInfoAuthService.modifyCharm(targetUser, price);
         //记录接收人流水
-        virtualDetailsService.createVirtualDetails(targetUserId,
+        virtualDetailsService.createVirtualDetails(targetUser,
                 virtualProductId,
                 price,
                 VirtualDetailsTypeEnum.CHARM,
