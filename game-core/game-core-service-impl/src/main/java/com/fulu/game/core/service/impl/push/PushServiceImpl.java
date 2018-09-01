@@ -39,8 +39,7 @@ public class PushServiceImpl implements PushService {
     private UserService userService;
     @Autowired
     private WechatFormidService wechatFormidService;
-    @Autowired
-    private WxMaServiceSupply wxMaServiceSupply;
+
 
 
     /**
@@ -242,25 +241,12 @@ public class PushServiceImpl implements PushService {
         }
     }
 
-    /**
-     * 管理员批量推送微信消息
-     *
-     * @param platform
-     * @param pushId
-     * @param userIds
-     * @param page
-     * @param cotent
-     */
-    public void adminPushWxTemplateMsg(int platform, int pushId, List<Integer> userIds, String page, String cotent) {
-        String date = DateUtil.format(new Date(), "yyyy年MM月dd日 HH:mm");
-        List<WxMaTemplateMessage.Data> dataList = CollectionUtil.newArrayList(
-                new WxMaTemplateMessage.Data("keyword1", cotent),
-                new WxMaTemplateMessage.Data("keyword2", date));
-        if (PlatformEcoEnum.PLAY.getType().equals(platform)) {
-            addTemplateMsg2Queue(platform, pushId, userIds, page, WechatTemplateIdEnum.PLAY_LEAVE_MSG, dataList);
-        } else if (PlatformEcoEnum.POINT.getType().equals(platform)) {
-            addTemplateMsg2Queue(platform, pushId, userIds, page, WechatTemplateIdEnum.POINT_LEAVE_MSG, dataList);
-        }
-    }
+
+
+
+
+
+
+
 
 }

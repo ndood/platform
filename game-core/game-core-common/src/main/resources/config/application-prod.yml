@@ -73,3 +73,6 @@ config:
       username: elastic
       password: game20180525ES
       indexDB: prod-gameplay
+    jpush:
+      appKey: fb3c39cc1f8ee7d2a9e7ce1a
+      appSecret: 76beaf2705371b53ee1e46f8

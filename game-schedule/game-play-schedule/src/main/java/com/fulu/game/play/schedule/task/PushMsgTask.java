@@ -1,22 +1,24 @@
 package com.fulu.game.play.schedule.task;
 
+import com.fulu.game.admin.service.AdminPushMsgService;
 import com.fulu.game.core.entity.PushMsg;
 import com.fulu.game.core.service.PushMsgService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.List;
 
 @Component
 @Slf4j
 public class PushMsgTask {
 
+    @Qualifier(value = "adminPushMsgServiceImpl")
     @Autowired
-    private PushMsgService pushMsgService;
+    private AdminPushMsgService pushMsgService;
 
     /**
      * 推送消息

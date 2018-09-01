@@ -25,11 +25,12 @@ public class Config {
 
     private Wechat wechat_poit = new Wechat();
 
-
     private Elasticsearch elasticsearch = new Elasticsearch();
 
     //环信账户配置信息
     private Im im = new Im();
+
+    private Jpush jpush = new Jpush();
 
     @Data
     public static class Evn {
@@ -90,5 +91,11 @@ public class Config {
         private String indexDB;
         private String username;
         private String password;
+    }
+
+    @Data
+    public static class Jpush{
+        private String appKey;
+        private String appSecret;
     }
 }

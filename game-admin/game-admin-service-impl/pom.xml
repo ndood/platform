@@ -27,6 +27,11 @@
             <artifactId>game-point-service-impl</artifactId>
             <version>${game.point.service.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.fulu.game</groupId>
+            <artifactId>game-app-service-impl</artifactId>
+            <version>${game.app.service.version}</version>
+        </dependency>
     </dependencies>
 
 
