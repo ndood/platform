@@ -64,7 +64,7 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
         //发起人扣钻石
-        userService.calculateVirtualBalance(fromUserId, Math.negateExact(price));
+        userService.modifyVirtualBalance(fromUserId, Math.negateExact(price));
         //记录订单
         VirtualProductOrder order = new VirtualProductOrder();
         order.setOrderNo(generateVirtualProductOrderNo());

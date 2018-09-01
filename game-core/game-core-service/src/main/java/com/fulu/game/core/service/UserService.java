@@ -226,5 +226,12 @@ public interface UserService extends ICommonService<User, Integer> {
 
     boolean isOldUser(Integer userId);
 
-    boolean calculateVirtualBalance(Integer fromUserId, Integer price);
+    /**
+     * 修改用户虚拟币余额
+     *
+     * @param userId 用户id
+     * @param price  金额
+     * @return 是否修改成功
+     */
+    boolean modifyVirtualBalance(Integer userId, Integer price);
 }

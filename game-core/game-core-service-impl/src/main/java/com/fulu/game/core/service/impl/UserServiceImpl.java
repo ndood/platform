@@ -610,7 +610,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public boolean calculateVirtualBalance(Integer userId, Integer price) {
+    public boolean modifyVirtualBalance(Integer userId, Integer price) {
         User user = findById(userId);
         if (user == null) {
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
@@ -618,7 +618,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
         User paramUser = new User();
         paramUser.setId(userId);
-        paramUser.setVirtualBalance(user.getVirtualBalance() + price);
+        paramUser.setVirtualBalance(((user.getVirtualBalance() == null) ? 0 : user.getVirtualBalance()) + price);
         paramUser.setUpdateTime(DateUtil.date());
         int result = update(paramUser);
         return result > 0;

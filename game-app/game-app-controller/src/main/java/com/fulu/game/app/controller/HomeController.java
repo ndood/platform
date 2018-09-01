@@ -52,10 +52,25 @@ public class HomeController extends BaseController {
             user.setBalance(null);
             Map<String, Object> result = BeanUtil.beanToMap(user);
             result.put("token", SubjectUtil.getToken());
-            if(user.getHeadPortraitsUrl()==null){
-                log.error("新注册用户;user{}",user);
+            if (user.getHeadPortraitsUrl() == null) {
+                log.error("新注册用户;user{}", user);
                 return Result.newUser().data(result);
             }
+
+            //fixme 抽象出来
+            String loginKey = RedisKeyEnum.LOGIN_RECEIVE_VIRTUAL_MONEY.generateKey();
+            boolean flag = redisOpenService.hasKey(loginKey);
+            if (flag) {
+                boolean isReceived = redisOpenService.getBitSet(loginKey, user.getId());
+                if (!isReceived) {
+                    userService.modifyVirtualBalance(user.getId(), Constant.LOGIN_VIRTUAL_MONEY);
+                    redisOpenService.bitSet(loginKey, user.getId());
+                }
+            } else {
+                userService.modifyVirtualBalance(user.getId(), Constant.LOGIN_VIRTUAL_MONEY);
+                redisOpenService.bitSet(loginKey, user.getId());
+            }
+
             return Result.success().data(result).msg("登录成功!");
         } catch (Exception e) {
             if (e.getCause() instanceof UserException) {
@@ -64,7 +79,7 @@ public class HomeController extends BaseController {
                     return Result.userBanned();
                 }
             }
-            log.error("登录异常",e);
+            log.error("登录异常", e);
             return Result.noLogin().msg("验证码错误！");
         }
     }
@@ -72,6 +87,7 @@ public class HomeController extends BaseController {
 
     /**
      * 点击发送验证码接口
+     *
      * @param mobile
      * @return
      */
@@ -85,7 +101,7 @@ public class HomeController extends BaseController {
             } else {
                 String verifyCode = SMSUtil.sendVerificationCode(mobile);
                 log.info("发送验证码{}={}", mobile, verifyCode);
-                redisOpenService.set(RedisKeyEnum.SMS_VERIFY_CODE.generateKey(mobile),  verifyCode, Constant.VERIFYCODE_CACHE_TIME);
+                redisOpenService.set(RedisKeyEnum.SMS_VERIFY_CODE.generateKey(mobile), verifyCode, Constant.VERIFYCODE_CACHE_TIME);
                 times = String.valueOf(Integer.parseInt(times) + 1);
                 redisOpenService.set(RedisKeyEnum.SMS_VERIFY_CODE_TIMES.generateKey(mobile), times, Constant.MOBILE_CACHE_TIME);
                 return Result.success().data(verifyCode).msg("验证码发送成功！");
@@ -98,10 +114,4 @@ public class HomeController extends BaseController {
             return Result.success().data(verifyCode).msg("验证码发送成功！");
         }
     }
-
-
-
-
-
-
 }
