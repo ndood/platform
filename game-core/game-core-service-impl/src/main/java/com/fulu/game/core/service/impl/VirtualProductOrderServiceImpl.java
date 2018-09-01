@@ -56,10 +56,7 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
     public VirtualProductOrder sendGift(Integer fromUserId, Integer targetUserId, Integer virtualProductId) {
         userService.isCurrentUser(fromUserId);
         User fromUser = userService.findById(fromUserId);
-        Integer virtualBalance = fromUser.getVirtualBalance();
-        if (virtualBalance == null) {
-            virtualBalance = 0;
-        }
+        Integer virtualBalance = fromUser.getVirtualBalance() == null ? 0 : fromUser.getVirtualBalance();
         Integer price = virtualProductService.findPriceById(virtualProductId);
         if (virtualBalance < price) {
             log.error("用户userId：{}的钻石余额不够送礼物，钻石余额：{}，礼物价值：{}", fromUserId, virtualBalance, price);
@@ -72,7 +69,7 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
         //发起人扣钻石
-        userService.modifyVirtualBalance(fromUserId, Math.negateExact(price));
+        fromUser = userService.modifyVirtualBalance(fromUser, Math.negateExact(price));
         //记录订单
         VirtualProductOrder order = new VirtualProductOrder();
         order.setOrderNo(generateVirtualProductOrderNo());
@@ -86,7 +83,7 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
         create(order);
 
         //记录发起人流水
-        virtualDetailsService.createVirtualDetails(fromUserId,
+        virtualDetailsService.createVirtualDetails(fromUser,
                 virtualProductId,
                 Math.negateExact(price),
                 VirtualDetailsTypeEnum.VIRTUAL_MONEY,

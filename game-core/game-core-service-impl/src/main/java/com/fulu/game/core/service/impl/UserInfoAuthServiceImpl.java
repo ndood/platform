@@ -788,7 +788,16 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
 
-        UserInfoAuth auth = findByUserId(userId);
+        return modifyCharm(user, price);
+    }
+
+    @Override
+    public boolean modifyCharm(User user, Integer price) {
+        if (user == null) {
+            return false;
+        }
+
+        UserInfoAuth auth = findByUserId(user.getId());
         Integer charm = auth.getCharm();
         if (charm == null) {
             charm = 0;

@@ -233,7 +233,16 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param price  金额
      * @return 是否修改成功
      */
-    boolean modifyVirtualBalance(Integer userId, Integer price);
+    User modifyVirtualBalance(Integer userId, Integer price);
+
+    /**
+     * 修改用户虚拟币余额
+     *
+     * @param user  用户Bean
+     * @param price 金额
+     * @return 是否修改成功
+     */
+    User modifyVirtualBalance(User user, Integer price);
 
     /**
      * 登录用户获取虚拟币奖励

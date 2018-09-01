@@ -2,17 +2,18 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.date.DateUtil;
+import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.enums.VirtualDetailsTypeEnum;
 import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.VirtualDetailsDao;
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.VirtualDetails;
 import com.fulu.game.core.service.UserInfoAuthService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.VirtualDetailsService;
-import com.fulu.game.core.service.VirtualProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,8 +27,6 @@ public class VirtualDetailsServiceImpl extends AbsCommonService<VirtualDetails, 
     @Autowired
     private VirtualDetailsDao virtualDetailsDao;
     @Autowired
-    private VirtualProductService virtualProductService;
-    @Autowired
     private UserService userService;
     @Qualifier("userInfoAuthServiceImpl")
     @Autowired
@@ -39,33 +38,47 @@ public class VirtualDetailsServiceImpl extends AbsCommonService<VirtualDetails, 
     }
 
     @Override
-    public boolean createVirtualDetails(Integer userId,
-                                        Integer virtualProductId,
-                                        Integer price,
-                                        VirtualDetailsTypeEnum virtualDetailsTypeEnum,
-                                        VirtualProductTypeEnum virtualProductTypeEnum) {
+    public VirtualDetails createVirtualDetails(Integer userId,
+                                               Integer virtualProductId,
+                                               Integer price,
+                                               VirtualDetailsTypeEnum virtualDetailsTypeEnum,
+                                               VirtualProductTypeEnum virtualProductTypeEnum) {
+        User user = userService.findById(userId);
+        if (user == null) {
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+        return createVirtualDetails(user,
+                virtualProductId,
+                price,
+                virtualDetailsTypeEnum,
+                virtualProductTypeEnum);
+    }
+
+    @Override
+    public VirtualDetails createVirtualDetails(User user,
+                                               Integer virtualProductId,
+                                               Integer price,
+                                               VirtualDetailsTypeEnum virtualDetailsTypeEnum,
+                                               VirtualProductTypeEnum virtualProductTypeEnum) {
         VirtualDetails details = new VirtualDetails();
-        details.setUserId(userId);
+        details.setUserId(user.getId());
         details.setMoney(price);
         details.setType(virtualDetailsTypeEnum.getType());
         Integer sum = 0;
         if (virtualDetailsTypeEnum.equals(VirtualDetailsTypeEnum.VIRTUAL_MONEY)) {
-            sum = userService.findById(userId).getVirtualBalance();
+            sum = user.getVirtualBalance();
         } else if (virtualDetailsTypeEnum.equals(VirtualDetailsTypeEnum.CHARM)) {
-            UserInfoAuth auth = userInfoAuthService.findByUserId(userId);
-            if (auth == null) {
-                log.error("陪玩师不存在，userId:{}", userId);
-                throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+            if (!UserTypeEnum.ACCOMPANY_PLAYER.getType().equals(user.getType())) {
+                log.error("接收礼物的用户不是陪玩师，userId:{}", user.getId());
+                throw new UserException(UserException.ExceptionCode.USER_MISMATCH_EXCEPTION);
             }
-            Integer charm = auth.getCharm();
-            if (charm != null) {
-                sum = charm + price;
-            }
+            UserInfoAuth auth = userInfoAuthService.findByUserId(user.getId());
+            sum = auth.getCharm() == null ? 0 : auth.getCharm();
         }
         details.setSum(sum);
-        details.setRemark(virtualProductTypeEnum.getMsg() + "；礼物id：" + virtualProductId);
+        details.setRemark(virtualProductTypeEnum.getMsg() + "id：" + virtualProductId);
         details.setCreateTime(DateUtil.date());
         create(details);
-        return true;
+        return details;
     }
 }

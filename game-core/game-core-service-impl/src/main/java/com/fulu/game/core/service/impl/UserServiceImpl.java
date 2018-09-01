@@ -53,8 +53,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     private ImgUtil imgUtil;
     @Autowired
     private CouponGroupService couponGroupService;
-    @Autowired
-    private VirtualProductService virtualProductService;
 
     @Override
     public ICommonDao<User, Integer> getDao() {
@@ -610,25 +608,32 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public boolean modifyVirtualBalance(Integer userId, Integer price) {
+    public User modifyVirtualBalance(Integer userId, Integer price) {
         User user = findById(userId);
         if (user == null) {
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
 
-        User paramUser = new User();
-        paramUser.setId(userId);
-        paramUser.setVirtualBalance(((user.getVirtualBalance() == null) ? 0 : user.getVirtualBalance()) + price);
-        paramUser.setUpdateTime(DateUtil.date());
-        int result = update(paramUser);
-        return result > 0;
+        return modifyVirtualBalance(user, price);
+    }
+
+    @Override
+    public User modifyVirtualBalance(User user, Integer price) {
+        user.setVirtualBalance(((user.getVirtualBalance() == null) ? 0 : user.getVirtualBalance()) + price);
+        user.setUpdateTime(DateUtil.date());
+        update(user);
+        return user;
     }
 
     @Override
     public boolean loginReceiveVirtualMoney(Integer userId) {
-        User user = findById(userId);
-        if (user == null) {
-            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        UserVO userVO = new UserVO();
+        userVO.setId(userId);
+        userVO.setType(UserTypeEnum.GENERAL_USER.getType());
+        List<User> userList = userDao.findByParameter(userVO);
+
+        if (CollectionUtil.isEmpty(userList)) {
+            return false;
         }
 
         String loginKey = RedisKeyEnum.LOGIN_RECEIVE_VIRTUAL_MONEY.generateKey();
@@ -638,6 +643,16 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             if (!isReceived) {
                 modifyVirtualBalance(userId, Constant.LOGIN_VIRTUAL_MONEY);
                 redisOpenService.bitSet(loginKey, userId);
+                VirtualDetails details = new VirtualDetails();
+                //fixme
+//                details.setUserId(userId);
+//                details.setSum();
+//                details.setMoney();
+//                details.setType();
+//                details.setRemark();
+//                details.setCreateTime();
+//
+//                virtualDetailsService.create();
                 return true;
             }
         } else {
