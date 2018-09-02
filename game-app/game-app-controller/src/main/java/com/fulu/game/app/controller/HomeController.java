@@ -57,7 +57,7 @@ public class HomeController extends BaseController {
                 return Result.newUser().data(result);
             }
 
-            boolean flag = userService.loginReceiveVirtualMoney(user.getId());
+            boolean flag = userService.loginReceiveVirtualMoney(user);
             result.put("bonus", flag ? 1 : 0);
             return Result.success().data(result).msg("登录成功!");
         } catch (Exception e) {

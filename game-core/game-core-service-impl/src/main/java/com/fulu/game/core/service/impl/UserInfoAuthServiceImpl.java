@@ -806,7 +806,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     @Override
     public void withdrawCharm(Integer userId, Integer charm) {
-        //FIXME
         UserInfoAuth userInfoAuth = findByUserId(userId);
         if (userInfoAuth == null) {
             log.error("陪玩师id:{}不存在", userId);
@@ -819,7 +818,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             throw new CashException(CashException.ExceptionCode.CHARM_WITHDRAW_FAIL_EXCEPTION);
         }
 
-        //todo 记录流水 记录分润
+        //todo  记录流水 记录分润
 
 
     }

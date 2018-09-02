@@ -628,30 +628,26 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public boolean loginReceiveVirtualMoney(Integer userId) {
-        UserVO userVO = new UserVO();
-        userVO.setId(userId);
-        userVO.setType(UserTypeEnum.GENERAL_USER.getType());
-        List<User> userList = userDao.findByParameter(userVO);
-
-        if (CollectionUtil.isEmpty(userList)) {
+    public boolean loginReceiveVirtualMoney(User user) {
+        Integer type = user.getType();
+        if (!UserTypeEnum.GENERAL_USER.getType().equals(type)) {
             return false;
         }
 
         String loginKey = RedisKeyEnum.LOGIN_RECEIVE_VIRTUAL_MONEY.generateKey();
         boolean flag = redisOpenService.hasKey(loginKey);
         if (flag) {
-            boolean isReceived = redisOpenService.getBitSet(loginKey, userId);
+            boolean isReceived = redisOpenService.getBitSet(loginKey, user.getId());
             if (isReceived) {
                 return false;
             }
         }
 
-        User user = modifyVirtualBalance(userId, Constant.LOGIN_VIRTUAL_MONEY);
-        redisOpenService.bitSet(loginKey, userId);
+        modifyVirtualBalance(user, Constant.LOGIN_VIRTUAL_MONEY);
+        redisOpenService.bitSet(loginKey, user.getId());
 
         VirtualDetails details = new VirtualDetails();
-        details.setUserId(userId);
+        details.setUserId(user.getId());
         details.setSum(user.getVirtualBalance());
         details.setMoney(Constant.LOGIN_VIRTUAL_MONEY);
         details.setType(VirtualProductTypeEnum.LOGIN_RECEIVE_BONUS.getType());

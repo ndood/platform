@@ -247,8 +247,8 @@ public interface UserService extends ICommonService<User, Integer> {
     /**
      * 登录用户获取虚拟币奖励
      *
-     * @param userId 用户id
+     * @param user 用户Bean
      * @return 是否获取
      */
-    boolean loginReceiveVirtualMoney(Integer userId);
+    boolean loginReceiveVirtualMoney(User user);
 }
