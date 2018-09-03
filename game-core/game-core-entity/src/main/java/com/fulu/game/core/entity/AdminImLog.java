@@ -25,5 +25,6 @@ public class AdminImLog implements Serializable {
 	private String content;
 	//
 	private Date sendtime;
-
+	//
+	private Integer ownerUserId;
 }

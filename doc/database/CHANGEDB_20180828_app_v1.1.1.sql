@@ -49,6 +49,7 @@ CREATE TABLE `t_admin_im_log` (
   `target_im_id` varchar(255) DEFAULT NULL,
   `content` varchar(255) DEFAULT NULL,
   `sendTime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `owner_user_id` int(11) DEFAULT NULL ,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 

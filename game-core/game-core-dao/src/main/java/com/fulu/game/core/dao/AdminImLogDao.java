@@ -21,4 +21,6 @@ public interface AdminImLogDao extends ICommonDao<AdminImLog,Integer>{
     int deleteByImId(String imId);
 
     List<AdminImLog> findByImId(String imId);
+
+    int deleteByOwnerUserId(Integer ownerUserId);
 }

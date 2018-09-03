@@ -10,6 +10,7 @@ import com.fulu.game.core.entity.AdminImLog;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.VirtualProductAttach;
+import com.fulu.game.core.entity.vo.AdminImLogVO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.VirtualProductAttachVO;
 import com.fulu.game.core.entity.vo.VirtualProductVO;
@@ -83,9 +84,11 @@ public class ImLogController extends BaseController{
                 }
 
                 //获取代聊天记录
-                List<AdminImLog> list = adminImLogService.findByImId(user.getImId());
+                AdminImLogVO ail = new AdminImLogVO();
+                ail.setOwnerUserId(user.getId());
+                List<AdminImLog> list = adminImLogService.findByParameter(ail);
                 //删除带聊天记录
-                adminImLogService.deleteByImId(user.getImId());
+                adminImLogService.deleteByOwnerUserId(user.getId());
                 return Result.success().data(list).msg("查询成功！");
                 
             }

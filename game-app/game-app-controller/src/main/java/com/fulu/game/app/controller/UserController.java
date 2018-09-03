@@ -7,6 +7,7 @@ import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.vo.AdminImLogVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
@@ -187,9 +188,11 @@ public class UserController extends BaseController {
                 }
 
                 //获取代聊天记录
-                List<AdminImLog> list = adminImLogService.findByImId(user.getImId());
+                AdminImLogVO ail = new AdminImLogVO();
+                ail.setOwnerUserId(user.getId());
+                List<AdminImLog> list = adminImLogService.findByParameter(ail);
                 //删除带聊天记录
-                adminImLogService.deleteByImId(user.getImId());
+                adminImLogService.deleteByOwnerUserId(user.getId());
                 return Result.success().data(list).msg("查询成功！");
 
             }

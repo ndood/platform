@@ -37,5 +37,14 @@ public class AdminImLogServiceImpl extends AbsCommonService<AdminImLog,Integer> 
     public int deleteByImId(String imId){
         return adminImLogDao.deleteByImId(imId);
     }
-	
+
+    @Override
+    public int deleteByOwnerUserId(Integer ownerUserId){
+        return adminImLogDao.deleteByOwnerUserId(ownerUserId);
+    }
+
+    @Override
+    public List<AdminImLog> findByParameter(AdminImLogVO adminImLogVO) {
+        return adminImLogDao.findByParameter(adminImLogVO);
+    }
 }
