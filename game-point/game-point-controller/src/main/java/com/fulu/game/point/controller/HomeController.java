@@ -91,9 +91,6 @@ public class HomeController extends BaseController{
             subject.login(playUserToken);
             User user = userService.getCurrentUser();
             userService.updateUserIpAndLastTime(ip);
-            user.setOpenId(null);
-            user.setPointOpenId(null);
-            user.setBalance(null);
             Map<String, Object> result = BeanUtil.beanToMap(user);
             result.put("token", SubjectUtil.getToken());
             result.put("userId", user.getId());
@@ -130,8 +127,6 @@ public class HomeController extends BaseController{
         try {
             subject.login(playUserToken);
             User user = userService.getCurrentUser();
-            user.setOpenId(null);
-            user.setBalance(null);
             Map<String, Object> result = BeanUtil.beanToMap(user);
             result.put("token", SubjectUtil.getToken());
             result.put("userId", user.getId());
