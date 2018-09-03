@@ -28,4 +28,10 @@ public class VirtualProductAttachServiceImpl extends AbsCommonService<VirtualPro
     public List<VirtualProductAttach> findByParameter(VirtualProductAttachVO virtualProductAttachVO) {
         return virtualProductAttachDao.findByParameter(virtualProductAttachVO);
     }
+
+    @Override
+    public List<VirtualProductAttach> findByOrderProIdUserId(Integer userId, Integer productId) {
+        return virtualProductAttachDao.findByOrderProIdUserId(userId,productId);
+    }
+
 }

@@ -210,8 +210,8 @@ public class UserController extends BaseController {
      * @return
      */
     @PostMapping(value = "/tech-auth/save")
-    public Result techAuthSave(UserTechAuthTO userTechAuthTO) {
-        userTechAuthService.save(userTechAuthTO);
+    public Result techAuthSave(UserTechAuthTO userTechAuthTO , String privatePicStr) {
+        userTechAuthService.save(userTechAuthTO,privatePicStr);
         return Result.success().data(userTechAuthTO);
     }
 

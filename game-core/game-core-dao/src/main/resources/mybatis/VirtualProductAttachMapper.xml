@@ -13,6 +13,12 @@
 
     <resultMap id="VirtualProductAttachResultVOMap" type="com.fulu.game.core.entity.vo.VirtualProductAttachVO"
                extends="VirtualProductAttachResultMap">
+        <result column="name" property="name"/>
+        <result column="price" property="price"/>
+        <result column="type" property="type"/>
+        <result column="sort" property="sort"/>
+        <result column="attach_count" property="attachCount"/>
+        <result column="object_url" property="objectUrl"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -60,10 +66,57 @@
         </if>
     </select>
 
+    <select id="findByOrderProIdUserId" resultMap="VirtualProductAttachResultMap">
+        SELECT
+            t1.*
+        FROM
+            t_virtual_product_attach t1
+        INNER JOIN t_virtual_product_order t2 ON t2.virtual_product_id = t1.virtual_product_id
+        INNER JOIN t_virtual_product t3 ON t3.id = t2.virtual_product_id and t3.del_flag = 0
+        AND t2.target_user_id = #{userId}
+        AND t2.virtual_product_id = #{productId}
+        ORDER BY
+            t1.id
+    </select>
+
+    <select id="findDetailByVo" resultMap="VirtualProductAttachResultVOMap" parameterType="com.fulu.game.core.entity.vo.VirtualProductAttachVO">
+        SELECT
+            t1.*
+            t2.name,
+            t2.price,
+            t2.type,
+            t2.sort,
+            t2.attach_count,
+            t2.object_url
+        FROM
+            t_virtual_product_attach t1
+        INNER JOIN t_virtual_product t2 ON t1.virtual_product_id = t2.id
+        <where>
+            <if test="delFlag != null">
+                and t2.del_flag = #{delFlag}
+            </if>
+            <if test="type != null">
+                and t2.type = #{type}
+            </if>
+            <if test="userId != null">
+                and t1.user_id = #{userId}
+            </if>
+        </where>
+        order by t2.id
+    </select>
+    
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_virtual_product_attach
         <where>
             id = #{id}
+        </where>
+    </delete>
+
+    <delete id="deleteByVirtualProductId" parameterType="java.lang.Integer">
+        delete from t_virtual_product_attach
+        <where>
+            virtual_product_id = #{virtualProductId}
         </where>
     </delete>
 

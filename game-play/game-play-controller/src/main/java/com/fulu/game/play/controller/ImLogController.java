@@ -11,6 +11,7 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.VirtualProductAttach;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
+import com.fulu.game.core.entity.vo.VirtualProductAttachVO;
 import com.fulu.game.core.entity.vo.VirtualProductVO;
 import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.fulu.game.core.service.*;
@@ -126,7 +127,9 @@ public class ImLogController extends BaseController{
                     if(map.get(targetImId)!=null){
                         
                         UserInfoAuthVO temp = JSON.parseObject(map.get(targetImId).toString(),UserInfoAuthVO.class);
-                        targetUser.setUnreadCount(temp.getUnreadCount() + 1);
+                        targetUser.setUnreadCount(temp.getUnreadCount().longValue() + 1);
+                    }else{
+                        targetUser.setUnreadCount(new Long(1));
                     }
                 }
                 map.put(targetImId, JSON.toJSONString(targetUser));
@@ -160,24 +163,18 @@ public class ImLogController extends BaseController{
     }
 
 
-//    /**
-//     * 查看解锁商品
-//     * @return
-//     */
-//    @PostMapping(value = "/unlock-product/list")
-//    public Result unlockProductList(Integer virtualProductId) {
-//
-//        VirtualProductVO vpo = new VirtualProductVO();
-//        vpo.setUserId(userId);
-//        vpo.setType(VirtualProductTypeEnum.PERSONAL_PICS.getType());
-//        vpo.setDelFlag(false);
-//
-//        virtualProductAttachService.findByParameter()
-//        
-//        
-//        List<VirtualProductVO> list = virtualProductService.searchByvirtualProductVo(vpo);
-//
-//        return Result.success().data(list).msg("查询成功");
-//    }
+    /**
+     * 查看解锁商品
+     * @return
+     */
+    @PostMapping(value = "/unlock-product/list")
+    public Result unlockProductList(Integer virtualProductId) {
+
+        User user = userService.getCurrentUser();
+
+        List<VirtualProductAttach> list = virtualProductAttachService.findByOrderProIdUserId(user.getId(),virtualProductId);
+
+        return Result.success().data(list).msg("查询成功");
+    }
     
 }

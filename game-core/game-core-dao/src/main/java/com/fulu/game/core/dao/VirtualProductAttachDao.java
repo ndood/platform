@@ -3,6 +3,7 @@ package com.fulu.game.core.dao;
 import com.fulu.game.core.entity.VirtualProductAttach;
 import com.fulu.game.core.entity.vo.VirtualProductAttachVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -18,4 +19,10 @@ public interface VirtualProductAttachDao extends ICommonDao<VirtualProductAttach
 
     List<VirtualProductAttach> findByParameter(VirtualProductAttachVO virtualProductAttachVO);
 
+
+    List<VirtualProductAttach> findByOrderProIdUserId(@Param(value = "userId") Integer userId, @Param(value = "productId") Integer productId);
+
+    List<VirtualProductAttachVO> findDetailByVo(VirtualProductAttachVO virtualProductAttachVO);
+
+    public int deleteByVirtualProductId(int virtualProductId);
 }

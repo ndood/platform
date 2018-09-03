@@ -142,5 +142,25 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
 
         }
     }
-    
+
+
+    @Override
+    @Transactional
+    public VirtualProduct createVirtualProduct(VirtualProduct vp, Integer userId, String[] urls) {
+
+        //添加商品信息
+        virtualProductDao.create(vp);
+        
+        //添加商品附件信息
+        for(int i = 0 ; i < urls.length ; i++){
+            VirtualProductAttach vpa = new VirtualProductAttach();
+            vpa.setUserId(userId);
+            vpa.setVirtualProductId(vp.getId());
+            vpa.setUrl(urls[i]);
+            vpa.setCreateTime(new Date());
+            virtualProductAttachDao.create(vpa);
+        }
+        
+        return vp;
+    }
 }
