@@ -3,7 +3,6 @@ package com.fulu.game.app.controller;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.AccessLog;
 import com.fulu.game.core.entity.vo.AccessLogVO;
-import com.fulu.game.core.entity.vo.DynamicCommentVO;
 import com.fulu.game.core.service.AccessLogService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
