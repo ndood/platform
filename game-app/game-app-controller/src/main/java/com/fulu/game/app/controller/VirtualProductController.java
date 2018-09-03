@@ -20,15 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/v1/gift")
-public class GiftController extends BaseController {
+@RequestMapping("/api/v1/virtual-product")
+public class VirtualProductController extends BaseController {
 
     private final VirtualProductService virtualProductService;
     private final VirtualProductOrderService virtualProductOrderService;
 
     @Autowired
-    public GiftController(VirtualProductService virtualProductService,
-                          VirtualProductOrderService virtualProductOrderService) {
+    public VirtualProductController(VirtualProductService virtualProductService,
+                                    VirtualProductOrderService virtualProductOrderService) {
         this.virtualProductService = virtualProductService;
         this.virtualProductOrderService = virtualProductOrderService;
     }
@@ -40,7 +40,7 @@ public class GiftController extends BaseController {
      * @param pageSize 每页显示数据条数
      * @return 封装结果集
      */
-    @PostMapping("/list")
+    @PostMapping("/gift/list")
     public Result findGiftList(@RequestParam Integer pageNum, @RequestParam Integer pageSize) {
         PageInfo<VirtualProduct> pageInfo = virtualProductService.findGiftByPage(pageNum, pageSize);
         return Result.success().data(pageInfo).msg("查询成功！");
@@ -54,7 +54,7 @@ public class GiftController extends BaseController {
      * @param virtualProductId 虚拟商品id
      * @return 封装结果集
      */
-    @PostMapping("/send")
+    @PostMapping("/gift/send")
     public Result sendGift(@RequestParam Integer fromUserId,
                            @RequestParam Integer targetUserId,
                            @RequestParam Integer virtualProductId) {

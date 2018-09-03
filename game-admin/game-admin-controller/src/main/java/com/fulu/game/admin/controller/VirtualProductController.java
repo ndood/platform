@@ -18,13 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
  * @date 2018/9/2 12:47
  */
 @RestController
-@RequestMapping("/api/v1/gift")
-public class GiftController extends BaseController {
+@RequestMapping("/api/v1/virtual-product")
+public class VirtualProductController extends BaseController {
 
     private final VirtualProductService virtualProductService;
 
     @Autowired
-    public GiftController(VirtualProductService virtualProductService) {
+    public VirtualProductController(VirtualProductService virtualProductService) {
         this.virtualProductService = virtualProductService;
     }
 
@@ -35,7 +35,7 @@ public class GiftController extends BaseController {
      * @param pageSize 每页显示数据条数
      * @return 封装结果集
      */
-    @PostMapping("/list")
+    @PostMapping("/gift/list")
     public Result list(@RequestParam Integer pageNum, @RequestParam Integer pageSize) {
         PageInfo<VirtualProduct> pageInfo = virtualProductService.findGiftByPage(pageNum, pageSize);
         return Result.success().data(pageInfo).msg("查询成功！");
@@ -47,7 +47,7 @@ public class GiftController extends BaseController {
      * @param virtualProduct 礼物Bean
      * @return 封装结果集
      */
-    @PostMapping("/add")
+    @PostMapping("/gift/add")
     public Result add(VirtualProduct virtualProduct) {
         VirtualProduct resultVirtualProduct = virtualProductService.add(virtualProduct);
         return Result.success().data(resultVirtualProduct).msg("新增成功！");
@@ -59,7 +59,7 @@ public class GiftController extends BaseController {
      * @param virtualProduct 礼物Bean
      * @return 封装结果集
      */
-    @PostMapping("/update")
+    @PostMapping("/gift/update")
     public Result update(VirtualProduct virtualProduct) {
         virtualProductService.update(virtualProduct);
         return Result.success().msg("编辑成功！");
@@ -71,7 +71,7 @@ public class GiftController extends BaseController {
      * @param id 礼物id
      * @return 封装结果集
      */
-    @PostMapping("/delete")
+    @PostMapping("/gift/delete")
     public Result delete(@RequestParam Integer id) {
         VirtualProduct virtualProduct = new VirtualProduct();
         virtualProduct.setId(id);
