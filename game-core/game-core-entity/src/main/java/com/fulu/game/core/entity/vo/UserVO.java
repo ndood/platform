@@ -53,5 +53,7 @@ public class UserVO extends User {
     private String videoUrl;
     /** 用户接单节能 */
     private List<UserTechAuth> userTechAuths;
+    /** 用户最新动态列表 */
+    private List<DynamicVO> newestDynamics;
 
 }

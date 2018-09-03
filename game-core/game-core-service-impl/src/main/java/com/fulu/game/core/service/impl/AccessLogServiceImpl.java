@@ -4,8 +4,10 @@ package com.fulu.game.core.service.impl;
 import com.fulu.game.common.domain.ClientInfo;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.entity.AccessLogDetail;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.AccessLogVO;
+import com.fulu.game.core.service.AccessLogDetailService;
 import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -29,6 +31,9 @@ public class AccessLogServiceImpl extends AbsCommonService<AccessLog,Long> imple
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private AccessLogDetailService accessLogDetailService;
 
 
 
@@ -85,8 +90,12 @@ public class AccessLogServiceImpl extends AbsCommonService<AccessLog,Long> imple
         List<AccessLogVO> list = accessLogDao.findByParameter(accessLogVO);
         setAccessLogInfo(accessLog);
         if(list != null && !list.isEmpty() && list.size() > 0){
-            if(list.get(0) != null && list.get(0).getCount() != null ) {
-                accessLog.setCount(list.get(0).getCount()  + 1);
+            // TODO shijiaoyun 只有进入首页算次数 && "首页".equals(accessLog.getMenusName())
+            int count = list.get(0) != null && list.get(0).getCount() != null && list.get(0).getCount()  > 0 ? list.get(0).getCount() + 1 : 1;
+            if( "首页".equals(accessLog.getMenusName()) ) {
+                accessLog.setCount(count);
+            } else {
+                accessLog.setCount(null);
             }
             accessLog.setId(list.get(0).getId());
             update(accessLog);
@@ -95,6 +104,16 @@ public class AccessLogServiceImpl extends AbsCommonService<AccessLog,Long> imple
             accessLog.setCreateTime(new Date());
             create(accessLog);
         }
+        // 保存访问日志详情接口
+        AccessLogDetail accessLogDetail = new AccessLogDetail();
+        accessLogDetail.setAccessLogId(accessLog.getId());
+        accessLogDetail.setMenusName(accessLog.getMenusName());
+        accessLogDetail.setCityCode(accessLog.getCityCode());
+        accessLogDetail.setCityName(accessLog.getCityName());
+        accessLogDetail.setCreateTime(new Date());
+        accessLogDetail.setUpdateTime(new Date());
+        accessLogDetail.setStatus(1);
+        accessLogDetailService.create(accessLogDetail);
         return accessLog;
     }
 
