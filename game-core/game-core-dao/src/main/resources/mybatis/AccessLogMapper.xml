@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.AccessLogDao">
+    <resultMap id="AccessLogResultMap" type="com.fulu.game.core.entity.AccessLog">
+        <id column="id" property="id"/>
+        <result column="from_user_id" property="fromUserId"/>
+        <result column="to_user_id" property="toUserId"/>
+        <result column="menus_name" property="menusName"/>
+        <result column="count" property="count"/>
+        <result column="city_code" property="cityCode"/>
+        <result column="city_name" property="cityName"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <resultMap id="AccessLogResultVOMap" type="com.fulu.game.core.entity.vo.AccessLogVO" extends="AccessLogResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,from_user_id,to_user_id,menus_name,count,city_code,city_name,create_time,update_time,status    </sql>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="AccessLogResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_access_log
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="AccessLogResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_access_log
+    </select>
+
+    <select id="findByParameter" resultMap="AccessLogResultVOMap"
+            parameterType="com.fulu.game.core.entity.vo.AccessLogVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_access_log
+        <where>
+            <if test="fromUserId != null">
+                and from_user_id = #{fromUserId}
+            </if>
+            <if test="toUserId != null">
+                and to_user_id = #{toUserId}
+            </if>
+            <if test="menusName != null">
+                and menus_name = #{menusName}
+            </if>
+            <if test="count != null">
+                and count = #{count}
+            </if>
+            <if test="cityCode != null">
+                and city_code = #{cityCode}
+            </if>
+            <if test="cityName != null">
+                and city_name = #{cityName}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <select id="accessList" resultType="com.fulu.game.core.entity.vo.AccessLogVO" parameterType="com.fulu.game.core.entity.vo.AccessLogVO">
+        select
+            access_log.id,
+            access_log.from_user_id,
+            access_log.to_user_id,
+            access_log.menus_name,
+            access_log.count,
+            access_log.city_code,
+            access_log.city_name,
+            access_log.create_time,
+            access_log.update_time,
+            t_user.nickname as from_user_nickname,
+            t_user.head_portraits_url as  from_user_head_url
+        from t_access_log access_log LEFT JOIN t_user t_user
+        on access_log.from_user_id = t_user.id
+        where access_log.to_user_id = #{toUserId} and
+            access_log.status = 1
+    </select>
+
+    <select id="footprintList" resultType="com.fulu.game.core.entity.vo.AccessLogVO" parameterType="com.fulu.game.core.entity.vo.AccessLogVO">
+        select
+            access_log.id,
+            access_log.from_user_id,
+            access_log.to_user_id,
+            access_log.menus_name,
+            access_log.count,
+            access_log.city_code,
+            access_log.city_name,
+            access_log.create_time,
+            access_log.update_time,
+            t_user.nickname as to_user_nickname,
+            t_user.head_portraits_url as  to_user_head_url
+        from t_access_log access_log LEFT JOIN t_user t_user
+        on access_log.to_user_id = t_user.id
+        where access_log.from_user_id = #{fromUserId} and
+            access_log.status = 1
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from t_access_log
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.AccessLog">
+        insert into
+        t_access_log (from_user_id,to_user_id,menus_name,count,city_code,city_name,create_time,update_time,status)
+        values
+        (#{fromUserId},#{toUserId},#{menusName},#{count},#{cityCode},#{cityName},#{createTime},#{updateTime},#{status})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.AccessLog">
+        update t_access_log
+        <set>
+
+            <if test="fromUserId != null">
+                from_user_id = #{fromUserId},
+            </if>
+
+            <if test="toUserId != null">
+                to_user_id = #{toUserId},
+            </if>
+
+            <if test="menusName != null">
+                menus_name = #{menusName},
+            </if>
+
+            <if test="count != null">
+                count = #{count},
+            </if>
+
+            <if test="cityCode != null">
+                city_code = #{cityCode},
+            </if>
+
+            <if test="cityName != null">
+                city_name = #{cityName},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

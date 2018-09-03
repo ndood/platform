@@ -59,6 +59,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Autowired
     private UserInfoAuthFileService userInfoAuthFileService;
 
+    @Autowired
+    private AccessLogService accessLogService;
+
 
     @Override
     public ICommonDao<User, Integer> getDao() {
@@ -672,18 +675,19 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         // 写访问日志
         Integer currentUserId = getCurrentUser().getId();
         if(userId != null && userId > 0){
-            // TODO shijiaoyun 此处需要添加访问日志，待完成
+            // 写访问日志
             AccessLog accessLog = new AccessLog();
             accessLog.setFromUserId(currentUserId.longValue());
             accessLog.setToUserId(userId.longValue());
             accessLog.setMenusName("首页");
+            accessLogService.save(accessLog);
         } else {
             userId = currentUserId;
         }
         UserVO userVO = new UserVO();
         User user = findById(userId);
         userVO = (UserVO) user;
-        // 设置用户扩展信息
+        // 设置用户扩展信息（兴趣、职业、简介、视频、以及相册）
         setUserExtInfo(userVO, userId);
         // 获取新增属性信息
         return userVO;
