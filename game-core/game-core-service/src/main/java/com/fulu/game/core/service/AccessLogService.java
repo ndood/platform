@@ -2,7 +2,6 @@ package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.AccessLog;
 import com.fulu.game.core.entity.vo.AccessLogVO;
-import com.fulu.game.core.entity.vo.DynamicCommentVO;
 import com.github.pagehelper.PageInfo;
 
 
