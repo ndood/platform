@@ -1,6 +1,8 @@
 package com.fulu.game.core.service.impl;
 
 
+import cn.hutool.core.date.DateUtil;
+import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.VirtualProductException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.VirtualProductAttachDao;
@@ -56,9 +58,20 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
         PageHelper.startPage(pageNum, pageSize, orderBy);
 
         VirtualProductVO vo = new VirtualProductVO();
+        vo.setType(VirtualProductTypeEnum.VIRTUAL_GIFT.getType());
         vo.setDelFlag(Boolean.FALSE);
         List<VirtualProduct> productList = virtualProductDao.findByParameter(vo);
         return new PageInfo<>(productList);
+    }
+
+    @Override
+    public VirtualProduct add(VirtualProduct virtualProduct) {
+        virtualProduct.setType(VirtualProductTypeEnum.VIRTUAL_GIFT.getType());
+        virtualProduct.setCreateTime(DateUtil.date());
+        virtualProduct.setUpdateTime(DateUtil.date());
+        virtualProduct.setDelFlag(Boolean.FALSE);
+        virtualProductDao.create(virtualProduct);
+        return virtualProduct;
     }
 
     @Override
