@@ -104,6 +104,11 @@
                 <version>${weixin-java.sdk.verson}</version>
             </dependency>
             <dependency>
+                <groupId>com.github.binarywang</groupId>
+                <artifactId>weixin-java-mp</artifactId>
+                <version>${weixin-java.sdk.verson}</version>
+            </dependency>
+            <dependency>
                 <groupId>cn.afterturn</groupId>
                 <artifactId>easypoi-base</artifactId>
                 <version>${easypoi.version}</version>
