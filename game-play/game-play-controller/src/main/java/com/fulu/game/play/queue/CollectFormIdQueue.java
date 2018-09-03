@@ -1,6 +1,8 @@
 package com.fulu.game.play.queue;
 
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.WechatFormid;
+import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.WechatFormidService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,9 @@ public class CollectFormIdQueue implements Runnable{
 
     @Autowired
     private WechatFormidService wechatFormidService;
+
+    @Autowired
+    private UserService userService;
 
     private AtomicBoolean run = new AtomicBoolean();
 
@@ -72,6 +77,11 @@ public class CollectFormIdQueue implements Runnable{
      */
     private void addFormIdToDB(WechatFormid formid) {
         if(formid.getOpenId()!=null){
+            wechatFormidService.create(formid);
+        }else{
+            log.error("收集formId的时候没有openId:{}",formid);
+            User user = userService.findById(formid.getUserId());
+            formid.setOpenId(user.getOpenId());
             wechatFormidService.create(formid);
         }
     }
