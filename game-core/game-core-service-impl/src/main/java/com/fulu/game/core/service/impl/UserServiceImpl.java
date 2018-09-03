@@ -10,6 +10,7 @@ import com.fulu.game.common.exception.ImgException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.common.utils.ImgUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
@@ -68,6 +69,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Qualifier(value = "userTechAuthServiceImpl")
     @Autowired
     private UserTechAuthServiceImpl userTechAuthService;
+    @Autowired
+    private SpringThreadPoolExecutor springThreadPoolExecutor;
 
 
     @Override
@@ -644,9 +647,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Override
     public boolean loginReceiveVirtualMoney(User user) {
         Integer type = user.getType();
-        if (!UserTypeEnum.GENERAL_USER.getType().equals(type)) {
-            return false;
-        }
 
         String loginKey = RedisKeyEnum.LOGIN_RECEIVE_VIRTUAL_MONEY.generateKey();
         boolean flag = redisOpenService.hasKey(loginKey);
@@ -657,17 +657,22 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             }
         }
 
-        modifyVirtualBalance(user, Constant.LOGIN_VIRTUAL_MONEY);
-        redisOpenService.bitSet(loginKey, user.getId());
+        springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                modifyVirtualBalance(user, Constant.LOGIN_VIRTUAL_MONEY);
+                redisOpenService.bitSet(loginKey, user.getId());
 
-        VirtualDetails details = new VirtualDetails();
-        details.setUserId(user.getId());
-        details.setSum(user.getVirtualBalance());
-        details.setMoney(Constant.LOGIN_VIRTUAL_MONEY);
-        details.setType(VirtualProductTypeEnum.LOGIN_RECEIVE_BONUS.getType());
-        details.setRemark(VirtualProductTypeEnum.LOGIN_RECEIVE_BONUS.getMsg());
-        details.setCreateTime(DateUtil.date());
-        virtualDetailsService.create(details);
+                VirtualDetails details = new VirtualDetails();
+                details.setUserId(user.getId());
+                details.setSum(user.getVirtualBalance());
+                details.setMoney(Constant.LOGIN_VIRTUAL_MONEY);
+                details.setType(VirtualProductTypeEnum.LOGIN_RECEIVE_BONUS.getType());
+                details.setRemark(VirtualProductTypeEnum.LOGIN_RECEIVE_BONUS.getMsg());
+                details.setCreateTime(DateUtil.date());
+                virtualDetailsService.create(details);
+            }
+        });
         return true;
     }
 
@@ -681,7 +686,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     public UserVO getUserInfo(Integer userId) {
         // 写访问日志
         Integer currentUserId = getCurrentUser().getId();
-        if(userId != null && userId > 0){
+        if (userId != null && userId > 0) {
             // 写访问日志
             AccessLog accessLog = new AccessLog();
             accessLog.setFromUserId(currentUserId.longValue());
@@ -702,25 +707,26 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     /**
      * 设置用户扩展信息
+     *
      * @param userVO
      * @param userId
      */
-    private void setUserExtInfo(UserVO userVO,Integer userId){
+    private void setUserExtInfo(UserVO userVO, Integer userId) {
         UserInfoAuth userInfoAuth = userInfoAuthService.findById(userId);
-        if(userInfoAuth != null){
+        if (userInfoAuth != null) {
             userVO.setInterests(userInfoAuth.getInterests());
             userVO.setAbout(userInfoAuth.getAbout());
             userVO.setProfession(userInfoAuth.getProfession());
-            List<UserInfoAuthFile> videoFiles = userInfoAuthFileService.findByUserAuthIdAndType(userId,3);
+            List<UserInfoAuthFile> videoFiles = userInfoAuthFileService.findByUserAuthIdAndType(userId, 3);
             //设置用户视频
-            if(videoFiles != null && !videoFiles.isEmpty()){
+            if (videoFiles != null && !videoFiles.isEmpty()) {
                 userVO.setVideoUrl(videoFiles.get(0).getUrl());
             }
-            List<UserInfoAuthFile> picFiles = userInfoAuthFileService.findByUserAuthIdAndType(userId,1);
+            List<UserInfoAuthFile> picFiles = userInfoAuthFileService.findByUserAuthIdAndType(userId, 1);
             //设置用户相册
-            if(picFiles != null && !picFiles.isEmpty()){
+            if (picFiles != null && !picFiles.isEmpty()) {
                 String[] picArr = new String[picFiles.size()];
-                for(int i = 0; i < picFiles.size(); i++){
+                for (int i = 0; i < picFiles.size(); i++) {
                     picArr[i] = picFiles.get(i).getUrl();
                 }
                 userVO.setPicUrls(picArr);
