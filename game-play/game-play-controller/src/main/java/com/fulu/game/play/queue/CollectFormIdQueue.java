@@ -71,7 +71,9 @@ public class CollectFormIdQueue implements Runnable{
      * 添加收集到的formid到数据库
      */
     private void addFormIdToDB(WechatFormid formid) {
-        wechatFormidService.create(formid);
+        if(formid.getOpenId()!=null){
+            wechatFormidService.create(formid);
+        }
     }
 
 
