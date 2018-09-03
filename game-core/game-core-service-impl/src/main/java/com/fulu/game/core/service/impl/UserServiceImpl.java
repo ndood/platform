@@ -62,6 +62,10 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Autowired
     private AccessLogService accessLogService;
 
+    @Qualifier(value = "userTechAuthServiceImpl")
+    @Autowired
+    private UserTechAuthServiceImpl userTechAuthService;
+
 
     @Override
     public ICommonDao<User, Integer> getDao() {
@@ -718,6 +722,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
                 }
                 userVO.setPicUrls(picArr);
             }
+            List<UserTechAuth> techAuthList = userTechAuthService.findUserNormalTechs(userId);
+            userVO.setUserTechAuths(techAuthList);
+            // TODO 还需要获取用户动态信息
         }
     }
 }

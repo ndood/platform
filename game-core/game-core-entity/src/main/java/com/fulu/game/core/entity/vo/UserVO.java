@@ -2,10 +2,12 @@ package com.fulu.game.core.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.UserTechAuth;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 用户表
@@ -49,5 +51,7 @@ public class UserVO extends User {
     private String[] picUrls;
     /** 用户视频地址 */
     private String videoUrl;
+    /** 用户接单节能 */
+    private List<UserTechAuth> userTechAuths;
 
 }
