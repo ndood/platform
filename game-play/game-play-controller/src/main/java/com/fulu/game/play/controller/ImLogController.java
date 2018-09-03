@@ -65,7 +65,7 @@ public class ImLogController extends BaseController{
             redisOpenService.set(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()),user.getType()+"");
 
             
-            if(ua.getImSubstituteId()!=null){
+            if(ua!=null && ua.getImSubstituteId()!=null){
 
 
                 //删除陪玩师的未读信息数量
