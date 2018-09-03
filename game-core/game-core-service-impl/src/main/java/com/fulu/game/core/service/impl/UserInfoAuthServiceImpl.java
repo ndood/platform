@@ -16,6 +16,7 @@ import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserInfoAuthDao;
 import com.fulu.game.core.dao.UserInfoAuthFileTempDao;
+import com.fulu.game.core.dao.VirtualProductAttachDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.vo.*;

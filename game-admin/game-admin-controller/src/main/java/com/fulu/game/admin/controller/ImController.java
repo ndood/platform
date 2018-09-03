@@ -7,13 +7,11 @@ import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.VirtualProduct;
 import com.fulu.game.core.entity.vo.AdminImLogVO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.UserInfoVO;
-import com.fulu.game.core.service.AdminImLogService;
-import com.fulu.game.core.service.ProductService;
-import com.fulu.game.core.service.UserInfoAuthService;
-import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +37,9 @@ public class ImController extends BaseController {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private VirtualProductService virtualProductService;
 
     
     //减少未读消息数量
@@ -56,7 +57,7 @@ public class ImController extends BaseController {
 
                 UserInfoAuthVO temp = JSON.parseObject(map.get(imId).toString(),UserInfoAuthVO.class);
 
-                long currentCount = temp.getUnreadCount() - actionCount.intValue();
+                long currentCount = temp.getUnreadCount().longValue() - actionCount.longValue();
                 temp.setUnreadCount(currentCount);
                 
                 if(currentCount > 0){
@@ -136,5 +137,25 @@ public class ImController extends BaseController {
         }
         log.info("根据imId获取用户信息:imId:{};content:{};user:{}", imId, content, user);
         return Result.success().data(user).msg("查询IM用户成功");
+    }
+
+    //发送解锁
+    @RequestMapping("/send-lock")
+    public Result sendLock(Integer userId ,String name, Integer price, Integer type, Integer sort, String[] urls){
+
+        VirtualProduct vp = new VirtualProduct();
+        vp.setName(name);
+        vp.setPrice(price);
+        vp.setType(type);
+        vp.setSort(sort);
+        if(urls == null){
+            vp.setAttachCount(0);
+        }else{
+            vp.setAttachCount(urls.length);
+        }
+        
+        virtualProductService.createVirtualProduct(vp,userId,urls);
+
+        return Result.success().msg("操作成功");
     }
 }
