@@ -5,6 +5,8 @@ import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.DynamicLikeVO;
+import com.fulu.game.core.search.component.DynamicSearchComponent;
+import com.fulu.game.core.service.DynamicService;
 import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -29,6 +31,9 @@ public class DynamicLikeServiceImpl extends AbsCommonService<DynamicLike,Long> i
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private DynamicService dynamicService;
 
 
     @Override
@@ -66,9 +71,9 @@ public class DynamicLikeServiceImpl extends AbsCommonService<DynamicLike,Long> i
         }
         // TODO shijiaoyun 修改动态信息的点赞次数（以及ES中存是否已点赞信息：likeUserId）
         if(status != null && status == 0){//取消点赞
-
+            dynamicService.updateIndexFilesById(dynamicLikeVO.getId(), false, -1, 0,false);
         } else {//点赞
-
+            dynamicService.updateIndexFilesById(dynamicLikeVO.getId(), false, 1, 0,false);
         }
     }
 

@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.BitSet;
 import java.util.List;
 
 /**
@@ -37,7 +38,7 @@ public class DynamicSearchComponent  extends AbsSearchComponent<DynamicDoc, Long
     private JestClient jestClient;
 
     enum OrderType{
-        geohash,geohashShort,createTime
+        geohash,geohashShort,createTime,id
     }
 
     /**
@@ -47,6 +48,68 @@ public class DynamicSearchComponent  extends AbsSearchComponent<DynamicDoc, Long
      */
     public boolean saveDynamicIndex(DynamicDoc dynamicDoc) {
         return createIndex(dynamicDoc);
+    }
+
+    /**
+     * 修改动态中实时变化的值
+     * @param id 动态id
+     * @param rewards 是否自增打赏次数（true：自增；false：不自增）
+     * @param likes 点赞次数 (取消点赞： -1；点赞：1)
+     * @param comments 评论次数 (删除评论： -1；评论：1)
+     * @param clicks 是否自增点击次数（true：自增；false：不自增）
+     * @param userId 点赞的时候需要传userId
+     * @return
+     */
+    public boolean updateIndexFilesById(Long id, boolean rewards, Integer likes,Integer comments,boolean clicks, Integer userId){
+        DynamicDoc dynamicDoc = searchById(id, DynamicDoc.class);
+        if(dynamicDoc != null ){
+            log.info("修改动态索引异常，未找到id： {}", id);
+            return false;
+        }
+        if(rewards ){
+            if(dynamicDoc.getRewards() != null ){
+                dynamicDoc.setRewards(dynamicDoc.getRewards() + 1);
+            } else {
+                dynamicDoc.setRewards( 1L);
+            }
+        }
+        if(likes != null ){
+            boolean flag = false;
+            if(likes.intValue() > 0){
+                flag = true;
+            }
+            if(dynamicDoc.getLikes() != null){
+                dynamicDoc.setLikes(dynamicDoc.getLikes() + likes);
+            } else {
+                dynamicDoc.setLikes(1L);
+                flag = true;
+            }
+            if(dynamicDoc.getLikeUserIds() == null){
+                BitSet bitSet = new BitSet();
+                bitSet.set(userId, flag);
+                dynamicDoc.setLikeUserIds(bitSet);
+            } else {
+                BitSet bitSet = dynamicDoc.getLikeUserIds();
+                bitSet.set(userId, flag);
+                dynamicDoc.setLikeUserIds(bitSet);
+            }
+        }
+        if(comments != null ){
+            if(dynamicDoc.getComments() != null){
+                dynamicDoc.setComments(dynamicDoc.getComments() + comments);
+            } else {
+                dynamicDoc.setComments(1L);
+            }
+        }
+        if(clicks ){
+            if(dynamicDoc.getClicks() != null){
+                dynamicDoc.setClicks(dynamicDoc.getClicks() + 1);
+            } else {
+                dynamicDoc.setClicks(1L);
+            }
+        }
+        updateIndex(dynamicDoc,id);
+        return true;
     }
 
     /**
@@ -89,7 +152,9 @@ public class DynamicSearchComponent  extends AbsSearchComponent<DynamicDoc, Long
             boolQueryBuilder.filter(QueryBuilders.rangeQuery("id").lt(id));
         }
         //关注用户id包含自己id
-        boolQueryBuilder.filter(QueryBuilders.termsQuery("userId", userIdList));
+        if(userIdList != null){
+            boolQueryBuilder.filter(QueryBuilders.termsQuery("userId", userIdList));
+        }
         searchSourceBuilder.query(boolQueryBuilder);
         //排序
         //在线状态排在前面
@@ -100,7 +165,7 @@ public class DynamicSearchComponent  extends AbsSearchComponent<DynamicDoc, Long
 //        searchSourceBuilder.sort(topSort);
         //切换排序规则
         if (StringUtils.isBlank(orderBy)) {
-            orderBy = OrderType.createTime.name();
+            orderBy = OrderType.id.name();
         }
         FieldSortBuilder sorter = SortBuilders.fieldSort(orderBy).order(SortOrder.DESC);
         searchSourceBuilder.sort(sorter);
