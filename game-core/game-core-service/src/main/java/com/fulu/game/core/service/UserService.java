@@ -251,4 +251,11 @@ public interface UserService extends ICommonService<User, Integer> {
      * @return 是否获取
      */
     boolean loginReceiveVirtualMoney(User user);
+
+    /**
+     * 获取用户信息
+     * @param userId 非必传，当未传时查询当前用户信息，否则查询所传递用户信息
+     * @return
+     */
+    UserVO getUserInfo(Integer userId);
 }

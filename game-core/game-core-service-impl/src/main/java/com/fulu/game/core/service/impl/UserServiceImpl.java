@@ -56,6 +56,10 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Autowired
     private VirtualDetailsService virtualDetailsService;
 
+    @Autowired
+    private UserInfoAuthFileService userInfoAuthFileService;
+
+
     @Override
     public ICommonDao<User, Integer> getDao() {
         return userDao;
@@ -655,5 +659,61 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         details.setCreateTime(DateUtil.date());
         virtualDetailsService.create(details);
         return true;
+    }
+
+    /**
+     * 获取用户信息
+     *
+     * @param userId 非必传，当未传时查询当前用户信息，否则查询所传递用户信息
+     * @return
+     */
+    @Override
+    public UserVO getUserInfo(Integer userId) {
+        // 写访问日志
+        Integer currentUserId = getCurrentUser().getId();
+        if(userId != null && userId > 0){
+            // TODO shijiaoyun 此处需要添加访问日志，待完成
+            AccessLog accessLog = new AccessLog();
+            accessLog.setFromUserId(currentUserId.longValue());
+            accessLog.setToUserId(userId.longValue());
+            accessLog.setMenusName("首页");
+        } else {
+            userId = currentUserId;
+        }
+        UserVO userVO = new UserVO();
+        User user = findById(userId);
+        userVO = (UserVO) user;
+        // 设置用户扩展信息
+        setUserExtInfo(userVO, userId);
+        // 获取新增属性信息
+        return userVO;
+    }
+
+    /**
+     * 设置用户扩展信息
+     * @param userVO
+     * @param userId
+     */
+    private void setUserExtInfo(UserVO userVO,Integer userId){
+        UserInfoAuth userInfoAuth = userInfoAuthService.findById(userId);
+        if(userInfoAuth != null){
+            userVO.setInterests(userInfoAuth.getInterests());
+            userVO.setAbout(userInfoAuth.getAbout());
+            userVO.setProfession(userInfoAuth.getProfession());
+            List<UserInfoAuthFile> videoFiles = userInfoAuthFileService.findByUserAuthIdAndType(userId,3);
+            //设置用户视频
+            if(videoFiles != null && !videoFiles.isEmpty()){
+                userVO.setVideoUrl(videoFiles.get(0).getUrl());
+            }
+            List<UserInfoAuthFile> picFiles = userInfoAuthFileService.findByUserAuthIdAndType(userId,1);
+            //设置用户相册
+            if(picFiles != null && !picFiles.isEmpty()){
+                String[] picArr = new String[picFiles.size()];
+                for(int i = 0; i < picFiles.size(); i++){
+                    picArr[i] = picFiles.get(i).getUrl();
+                }
+                userVO.setPicUrls(picArr);
+            }
+        }
     }
 }
