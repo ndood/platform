@@ -6,7 +6,6 @@ import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.AccessLogVO;
-import com.fulu.game.core.entity.vo.DynamicCommentVO;
 import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
