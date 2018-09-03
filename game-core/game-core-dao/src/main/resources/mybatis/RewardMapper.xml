@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.RewardDao">
+    <resultMap id="RewardResultMap" type="com.fulu.game.core.entity.Reward">
+        <id column="id" property="id"/>
+        <result column="resource_id" property="resourceId"/>
+        <result column="resource_type" property="resourceType"/>
+        <result column="gift_id" property="giftId"/>
+        <result column="gift_url" property="giftUrl"/>
+        <result column="from_user_id" property="fromUserId"/>
+        <result column="from_user_head_url" property="fromUserHeadUrl"/>
+        <result column="from_user_nickname" property="fromUserNickname"/>
+        <result column="from_user_gender" property="fromUserGender"/>
+        <result column="to_user_id" property="toUserId"/>
+        <result column="to_user_head_url" property="toUserHeadUrl"/>
+        <result column="to_user_nickname" property="toUserNickname"/>
+        <result column="to_user_gender" property="toUserGender"/>
+        <result column="create_time" property="createTime"/>
+        <result column="status" property="status"/>
+        <result column="order_no" property="orderNo"/>
+    </resultMap>
+
+    <resultMap id="RewardResultVOMap" type="com.fulu.game.core.entity.vo.RewardVO" extends="RewardResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,resource_id,resource_type,gift_id,gift_url,from_user_id,from_user_head_url,from_user_nickname,from_user_gender,to_user_id,to_user_head_url,to_user_nickname,to_user_gender,create_time,status, order_no    </sql>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="RewardResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_reward
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="RewardResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_reward
+    </select>
+
+    <select id="findByParameter" resultMap="RewardResultMap" parameterType="com.fulu.game.core.entity.vo.RewardVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_reward
+        <where>
+            <if test="resourceId != null">
+                and resource_id = #{resourceId}
+            </if>
+            <if test="resourceType != null">
+                and resource_type = #{resourceType}
+            </if>
+            <if test="giftId != null">
+                and gift_id = #{giftId}
+            </if>
+            <if test="gitUrl != null">
+                and git_url = #{gitUrl}
+            </if>
+            <if test="fromUserId != null">
+                and from_user_id = #{fromUserId}
+            </if>
+            <if test="fromUserHeadUrl != null">
+                and from_user_head_url = #{fromUserHeadUrl}
+            </if>
+            <if test="fromUserNickname != null">
+                and from_user_nickname = #{fromUserNickname}
+            </if>
+            <if test="fromUserGender != null">
+                and from_user_gender = #{fromUserGender}
+            </if>
+            <if test="toUserId != null">
+                and to_user_id = #{toUserId}
+            </if>
+            <if test="toUserHeadUrl != null">
+                and to_user_head_url = #{toUserHeadUrl}
+            </if>
+            <if test="toUserNickname != null">
+                and to_user_nickname = #{toUserNickname}
+            </if>
+            <if test="toUserGender != null">
+                and to_user_gender = #{toUserGender}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from t_reward
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Reward">
+        insert into
+        t_reward (resource_id,resource_type,gift_id,git_url,from_user_id,from_user_head_url,from_user_nickname,from_user_gender,to_user_id,to_user_head_url,to_user_nickname,to_user_gender,create_time,status)
+        values
+        (#{resourceId},#{resourceType},#{giftId},#{gitUrl},#{fromUserId},#{fromUserHeadUrl},#{fromUserNickname},#{fromUserGender},#{toUserId},#{toUserHeadUrl},#{toUserNickname},#{toUserGender},#{createTime},#{status})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.Reward">
+        update t_reward
+        <set>
+
+            <if test="resourceId != null">
+                resource_id = #{resourceId},
+            </if>
+
+            <if test="resourceType != null">
+                resource_type = #{resourceType},
+            </if>
+
+            <if test="giftId != null">
+                gift_id = #{giftId},
+            </if>
+
+            <if test="gitUrl != null">
+                git_url = #{gitUrl},
+            </if>
+
+            <if test="fromUserId != null">
+                from_user_id = #{fromUserId},
+            </if>
+
+            <if test="fromUserHeadUrl != null">
+                from_user_head_url = #{fromUserHeadUrl},
+            </if>
+
+            <if test="fromUserNickname != null">
+                from_user_nickname = #{fromUserNickname},
+            </if>
+
+            <if test="fromUserGender != null">
+                from_user_gender = #{fromUserGender},
+            </if>
+
+            <if test="toUserId != null">
+                to_user_id = #{toUserId},
+            </if>
+
+            <if test="toUserHeadUrl != null">
+                to_user_head_url = #{toUserHeadUrl},
+            </if>
+
+            <if test="toUserNickname != null">
+                to_user_nickname = #{toUserNickname},
+            </if>
+
+            <if test="toUserGender != null">
+                to_user_gender = #{toUserGender},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

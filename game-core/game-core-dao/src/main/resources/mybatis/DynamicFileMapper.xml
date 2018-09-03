@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.DynamicFileDao">
+    <resultMap id="DynamicFileResultMap" type="com.fulu.game.core.entity.DynamicFile">
+        <id column="id" property="id"/>
+        <result column="dynamic_id" property="dynamicId"/>
+        <result column="url" property="url"/>
+        <result column="type" property="type"/>
+        <result column="play_count" property="playCount"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <resultMap id="DynamicFileResultVOMap" type="com.fulu.game.core.entity.vo.DynamicFileVO"
+               extends="DynamicFileResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,dynamic_id,url,type,play_count,create_time,update_time,status    </sql>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="DynamicFileResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_dynamic_file
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="DynamicFileResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_dynamic_file
+    </select>
+
+    <select id="findByParameter" resultMap="DynamicFileResultMap"
+            parameterType="com.fulu.game.core.entity.vo.DynamicFileVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_dynamic_file
+        <where>
+            <if test="dynamicId != null">
+                and dynamic_id = #{dynamicId}
+            </if>
+            <if test="url != null">
+                and url = #{url}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="playCount != null">
+                and play_count = #{playCount}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from t_dynamic_file
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.DynamicFile">
+        insert into
+        t_dynamic_file (dynamic_id,url,type,play_count,create_time,update_time,status)
+        values
+        (#{dynamicId},#{url},#{type},#{playCount},#{createTime},#{updateTime},#{status})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.DynamicFile">
+        update t_dynamic_file
+        <set>
+
+            <if test="dynamicId != null">
+                dynamic_id = #{dynamicId},
+            </if>
+
+            <if test="url != null">
+                url = #{url},
+            </if>
+
+            <if test="type != null">
+                type = #{type},
+            </if>
+
+            <if test="playCount != null">
+                play_count = #{playCount},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

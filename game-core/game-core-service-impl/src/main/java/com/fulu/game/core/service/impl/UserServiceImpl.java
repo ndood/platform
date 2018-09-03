@@ -62,6 +62,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Autowired
     private AccessLogService accessLogService;
 
+    @Autowired
+    private DynamicService dynamicService;
+
     @Qualifier(value = "userTechAuthServiceImpl")
     @Autowired
     private UserTechAuthServiceImpl userTechAuthService;
@@ -724,7 +727,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             }
             List<UserTechAuth> techAuthList = userTechAuthService.findUserNormalTechs(userId);
             userVO.setUserTechAuths(techAuthList);
-            // TODO 还需要获取用户动态信息
+            List<DynamicVO> newestDynamicList = dynamicService.getNewestDynamicList(userId);
+            userVO.setNewestDynamics(newestDynamicList);
         }
     }
 }

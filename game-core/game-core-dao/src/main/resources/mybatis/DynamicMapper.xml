@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.DynamicDao">
+    <resultMap id="DynamicResultMap" type="com.fulu.game.core.entity.Dynamic">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="tech_info_id" property="techInfoId"/>
+        <result column="content" property="content"/>
+        <result column="type" property="type"/>
+        <result column="city_code" property="cityCode"/>
+        <result column="city_name" property="cityName"/>
+        <result column="geohash" property="geohash"/>
+        <result column="geohash_short" property="geohashShort"/>
+        <result column="lon" property="lon"/>
+        <result column="lat" property="lat"/>
+        <result column="is_top" property="isTop"/>
+        <result column="is_hot" property="isHot"/>
+        <result column="rewards" property="rewards"/>
+        <result column="likes" property="likes"/>
+        <result column="comments" property="comments"/>
+        <result column="reports" property="reports"/>
+        <result column="clicks" property="clicks"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <resultMap id="DynamicResultVOMap" type="com.fulu.game.core.entity.vo.DynamicVO" extends="DynamicResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,tech_info_id,content,type,city_code,city_name,geohash,geohash_short,lon,lat,is_top,is_hot,rewards,likes,comments,reports,clicks,create_time,update_time,status    </sql>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="DynamicResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_dynamic
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="DynamicResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_dynamic
+    </select>
+
+    <select id="findByParameter" resultMap="DynamicResultMap" parameterType="com.fulu.game.core.entity.vo.DynamicVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_dynamic
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="techInfoId != null">
+                and tech_info_id = #{techInfoId}
+            </if>
+            <if test="content != null">
+                and content = #{content}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="cityCode != null">
+                and city_code = #{cityCode}
+            </if>
+            <if test="cityName != null">
+                and city_name = #{cityName}
+            </if>
+            <if test="geohash != null">
+                and geohash = #{geohash}
+            </if>
+            <if test="geohashShort != null">
+                and geohash_short = #{geohashShort}
+            </if>
+            <if test="lon != null">
+                and lon = #{lon}
+            </if>
+            <if test="lat != null">
+                and lat = #{lat}
+            </if>
+            <if test="isTop != null">
+                and is_top = #{isTop}
+            </if>
+            <if test="isHot != null">
+                and is_hot = #{isHot}
+            </if>
+            <if test="rewards != null">
+                and rewards = #{rewards}
+            </if>
+            <if test="likes != null">
+                and likes = #{likes}
+            </if>
+            <if test="comments != null">
+                and comments = #{comments}
+            </if>
+            <if test="reports != null">
+                and reports = #{reports}
+            </if>
+            <if test="clicks != null">
+                and clicks = #{clicks}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from t_dynamic
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Dynamic">
+        insert into
+        t_dynamic (user_id,tech_info_id,content,type,city_code,city_name,geohash,geohash_short,lon,lat,is_top,is_hot,rewards,likes,comments,reports,clicks,create_time,update_time,status)
+        values
+        (#{userId},#{techInfoId},#{content},#{type},#{cityCode},#{cityName},#{geohash},#{geohashShort},#{lon},#{lat},#{isTop},#{isHot},0,0,0,0,0,NOW(),NOW(),1)
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.Dynamic">
+        update t_dynamic
+        <set>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="techInfoId != null">
+                tech_info_id = #{techInfoId},
+            </if>
+
+            <if test="content != null">
+                content = #{content},
+            </if>
+
+            <if test="type != null">
+                type = #{type},
+            </if>
+
+            <if test="cityCode != null">
+                city_code = #{cityCode},
+            </if>
+
+            <if test="cityName != null">
+                city_name = #{cityName},
+            </if>
+
+            <if test="geohash != null">
+                geohash = #{geohash},
+            </if>
+
+            <if test="geohashShort != null">
+                geohash_short = #{geohashShort},
+            </if>
+
+            <if test="lon != null">
+                lon = #{lon},
+            </if>
+
+            <if test="lat != null">
+                lat = #{lat},
+            </if>
+
+            <if test="isTop != null">
+                is_top = #{isTop},
+            </if>
+
+            <if test="isHot != null">
+                is_hot = #{isHot},
+            </if>
+
+            <if test="rewards != null">
+                rewards = #{rewards},
+            </if>
+
+            <if test="likes != null">
+                likes = #{likes},
+            </if>
+
+            <if test="comments != null">
+                comments = #{comments},
+            </if>
+
+            <if test="reports != null">
+                reports = #{reports},
+            </if>
+
+            <if test="clicks != null">
+                clicks = #{clicks},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>
