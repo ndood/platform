@@ -118,7 +118,7 @@
     </update>
 
     <delete id="deleteByOwnerUserId" parameterType="java.lang.Integer">
-        delete from deleteByOwnerUserId
+        delete from t_admin_im_log
         <where>
             owner_user_id = #{ownerUserId}
         </where>
