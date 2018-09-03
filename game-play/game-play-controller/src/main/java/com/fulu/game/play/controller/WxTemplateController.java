@@ -45,6 +45,11 @@ public class WxTemplateController extends BaseController{
         wechatFormid.setOpenId(user.getOpenId());
         wechatFormid.setPlatform(WechatEcoEnum.PLAY.getType());
         wechatFormid.setCreateTime(new Date());
+        if(wechatFormid.getOpenId()==null){
+            log.error("收集formId的时候没有改用户没有openId,user:{}",user);
+            User dbUser = userService.findById(user.getId());
+            wechatFormid.setOpenId(dbUser.getOpenId());
+        }
         collectFormIdQueue.addFormId(wechatFormid);
         log.info("收集formId成功:formId:{}",formId);
         return Result.success();
