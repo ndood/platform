@@ -7,27 +7,48 @@ import com.fulu.game.common.utils.ApplicationContextRegister;
  * redis key 前缀
  */
 public enum RedisKeyEnum {
-
-    PRODUCT_ENABLE_KEY,  //商品状态
-    USER_ORDER_RECEIVE_TIME_KEY, //陪玩师接单设置状态
-    USER_ORDER_ALREADY_SERVICE_KEY, //陪玩师是已经开始服务key
-    ADMIN_TOKEN,//管理员token
-    PLAY_TOKEN,//用户token
-    WX_SESSION_KEY,//用户token
-    SMS, //短信
-    WX_TEMPLATE_MSG, //微信消息推送
-    BITSET_PUSH_MSG_HITS, //微信推送点击去重
-    MARKET_ORDER_RECEIVE_LOCK, //市场订单接单锁
-    MARKET_ORDER, //市场订单
-    WRITER_SESSION_KEY, //写操作的sessionKey
-    MARKET_ORDER_IS_PUSH, //判断集市订单是否推送过
-    GLOBAL_FORM_TOKEN, //表单验证token
-    USER_ONLINE_KEY, //用户在线状态
-    TIME_INTERVAL_KEY, //订单状态倒计时
-    AUTO_ASSIGN_ORDER_USER, //是否已经自动排单用户
-    SMS_VERIFY_CODE, //APP登录验证码1
-    SMS_VERIFY_CODE_TIMES, //APP登录验证码发送次数1
-    IM_COMPANY_UNREAD; //陪玩师IM未读数据
+    //商品状态
+    PRODUCT_ENABLE_KEY,
+    //陪玩师接单设置状态
+    USER_ORDER_RECEIVE_TIME_KEY,
+    //陪玩师是已经开始服务key
+    USER_ORDER_ALREADY_SERVICE_KEY,
+    //管理员token
+    ADMIN_TOKEN,
+    //用户token
+    PLAY_TOKEN,
+    //用户token
+    WX_SESSION_KEY,
+    //短信
+    SMS,
+    //微信消息推送
+    WX_TEMPLATE_MSG,
+    //微信推送点击去重
+    BITSET_PUSH_MSG_HITS,
+    //市场订单接单锁
+    MARKET_ORDER_RECEIVE_LOCK,
+    //市场订单
+    MARKET_ORDER,
+    //写操作的sessionKey
+    WRITER_SESSION_KEY,
+    //判断集市订单是否推送过
+    MARKET_ORDER_IS_PUSH,
+    //表单验证token
+    GLOBAL_FORM_TOKEN,
+    //用户在线状态
+    USER_ONLINE_KEY,
+    //订单状态倒计时
+    TIME_INTERVAL_KEY,
+    //是否已经自动排单用户
+    AUTO_ASSIGN_ORDER_USER,
+    //APP登录验证码1
+    SMS_VERIFY_CODE,
+    //APP登录验证码发送次数1
+    SMS_VERIFY_CODE_TIMES,
+    //陪玩师IM未读数据
+    IM_COMPANY_UNREAD,
+    //登录的小程序和APP用户是否领过钻石
+    LOGIN_RECEIVE_VIRTUAL_MONEY;
 
 
     public static final String SPLIT = "-";
@@ -46,10 +67,11 @@ public enum RedisKeyEnum {
 
     /**
      * 获取环境定义的前缀
+     *
      * @return
      */
     private String getEvnPrefix() {
-        Config config = ApplicationContextRegister.getBean("configProperties",Config.class);
+        Config config = ApplicationContextRegister.getBean("configProperties", Config.class);
         return config.getEvn().getPrefix();
     }
 

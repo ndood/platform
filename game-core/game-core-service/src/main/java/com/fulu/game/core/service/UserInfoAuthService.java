@@ -1,5 +1,6 @@
 package com.fulu.game.core.service;
 
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
@@ -114,4 +115,13 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
 
     boolean modifyCharm(Integer userId, Integer price);
 
+    boolean modifyCharm(User user, Integer price);
+
+    /**
+     * 陪玩师魅力值提现
+     *
+     * @param userId 陪玩师id
+     * @param charm  魅力值
+     */
+    void withdrawCharm(Integer userId, Integer charm);
 }

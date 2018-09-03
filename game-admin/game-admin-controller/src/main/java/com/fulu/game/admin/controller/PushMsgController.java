@@ -1,6 +1,7 @@
 package com.fulu.game.admin.controller;
 
 import cn.hutool.core.date.DateUtil;
+import com.fulu.game.admin.service.AdminPushMsgService;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.PushMsgTypeEnum;
 import com.fulu.game.core.entity.PushMsg;
@@ -22,11 +23,11 @@ import java.util.Date;
 @RequestMapping("/api/v1/pushmsg")
 public class PushMsgController extends BaseController {
 
-    private final PushMsgService pushMsgService;
+    private final AdminPushMsgService adminPushMsgService;
 
     @Autowired
-    public PushMsgController(PushMsgService pushMsgService) {
-        this.pushMsgService = pushMsgService;
+    public PushMsgController(AdminPushMsgService adminPushMsgService) {
+        this.adminPushMsgService = adminPushMsgService;
     }
 
     /**
@@ -48,7 +49,7 @@ public class PushMsgController extends BaseController {
             }
         }
         long startTime = System.currentTimeMillis();
-        pushMsgService.push(pushMsgVO);
+        adminPushMsgService.push(pushMsgVO);
         long endTime = System.currentTimeMillis();
         log.info("pushmsg.push方法耗时:{}", endTime - startTime);
         return Result.success();
@@ -64,7 +65,7 @@ public class PushMsgController extends BaseController {
      */
     @PostMapping(value = "/list")
     public Result list(Integer pageNum, Integer pageSize, Integer platform) {
-        PageInfo<PushMsg> page = pushMsgService.list(pageNum, pageSize, platform, null);
+        PageInfo<PushMsg> page = adminPushMsgService.list(pageNum, pageSize, platform, null);
         return Result.success().data(page);
     }
 }

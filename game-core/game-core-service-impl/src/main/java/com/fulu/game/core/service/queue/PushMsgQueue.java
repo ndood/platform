@@ -28,8 +28,9 @@ public class PushMsgQueue implements Runnable {
 
     @Autowired
     private WxMaServiceSupply wxMaServiceSupply;
+
     @Autowired
-    private PushMsgService pushMsgService;
+    private PushMsgService pushMsgServiceImpl;
 
     @PostConstruct
     public void init() {
@@ -70,7 +71,7 @@ public class PushMsgQueue implements Runnable {
         log.info("结束推送微信模板消息");
     }
 
-
+    //todo 改成redis队列
     private void process(WxMaTemplateMessageVO wxMaTemplateMessageVO) {
         try {
             log.info("推送消息队列推送消息:wxMaTemplateMessageVO:{}", wxMaTemplateMessageVO);
@@ -101,14 +102,14 @@ public class PushMsgQueue implements Runnable {
      * @param pushId
      */
     private void countPushSuccessNum(int pushId) {
-        PushMsg pushMsg = pushMsgService.findById(pushId);
+        PushMsg pushMsg = pushMsgServiceImpl.findById(pushId);
         int successNum = pushMsg.getSuccessNum();
 
         PushMsg paramPushMsg = new PushMsg();
         paramPushMsg.setId(pushId);
         paramPushMsg.setSuccessNum(successNum + 1);
         paramPushMsg.setUpdateTime(DateUtil.date());
-        pushMsgService.update(paramPushMsg);
+        pushMsgServiceImpl.update(paramPushMsg);
         log.info("更新消息推送成功数:{}", paramPushMsg);
     }
 }

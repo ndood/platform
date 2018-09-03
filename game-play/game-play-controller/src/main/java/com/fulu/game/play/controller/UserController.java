@@ -129,6 +129,7 @@ public class UserController extends BaseController {
         return Result.success().data(user).msg("个人信息设置成功！");
     }
 
+
     /**
      * 点击发送验证码接口
      *

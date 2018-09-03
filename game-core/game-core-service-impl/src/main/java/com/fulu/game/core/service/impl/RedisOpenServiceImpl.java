@@ -25,8 +25,7 @@ public class RedisOpenServiceImpl {
     private static final long TIME = 30 * 60;
 
 
-
-    private static final String LOCKED ="LOCKED";
+    private static final String LOCKED = "LOCKED";
 
 
     /**
@@ -42,25 +41,24 @@ public class RedisOpenServiceImpl {
 
     /**
      * 添加一个BitSet
+     *
      * @param key
      * @param val
      */
-    public void bitSet(String key,long val){
-        redisTemplate.opsForValue().setBit(key, val,true);
+    public void bitSet(String key, long val) {
+        redisTemplate.opsForValue().setBit(key, val, true);
     }
 
     /**
      * 判断bitSet值(Value是在bit中存在)
+     *
      * @param key
      * @param val
      * @return
      */
-    public Boolean getBitSet(String key,long val){
-        return redisTemplate.opsForValue().getBit(key,val);
+    public Boolean getBitSet(String key, long val) {
+        return redisTemplate.opsForValue().getBit(key, val);
     }
-
-
-
 
     /**
      * 设置某个key的值
@@ -143,6 +141,7 @@ public class RedisOpenServiceImpl {
 
     /**
      * 根据key获取整个hashtable
+     *
      * @param key
      * @return
      */
@@ -172,11 +171,12 @@ public class RedisOpenServiceImpl {
 
     /**
      * redis锁
+     *
      * @param key
      * @param expireTime
      */
-    public boolean lock(String key,long expireTime) {
-        if (redisTemplate.opsForValue().setIfAbsent(key,LOCKED)) {
+    public boolean lock(String key, long expireTime) {
+        if (redisTemplate.opsForValue().setIfAbsent(key, LOCKED)) {
             redisTemplate.expire(key, expireTime, TimeUnit.SECONDS);
             return true;
         }
@@ -185,6 +185,7 @@ public class RedisOpenServiceImpl {
 
     /**
      * 释放锁
+     *
      * @param key
      */
     public void unlock(String key) {
@@ -194,23 +195,24 @@ public class RedisOpenServiceImpl {
 
     /**
      * 存储时间间隔
+     *
      * @param key
      * @param time
      */
-    public void setTimeInterval(String key,long time){
-        set(RedisKeyEnum.TIME_INTERVAL_KEY.generateKey(key),new Date().getTime()+"",time);
+    public void setTimeInterval(String key, long time) {
+        set(RedisKeyEnum.TIME_INTERVAL_KEY.generateKey(key), new Date().getTime() + "", time);
     }
 
 
     /**
      * 判断时间间隔
+     *
      * @param key
      * @return
      */
-    public Boolean isTimeIntervalInside(String key){
+    public Boolean isTimeIntervalInside(String key) {
         return hasKey(RedisKeyEnum.TIME_INTERVAL_KEY.generateKey(key));
     }
-
 
 
 }

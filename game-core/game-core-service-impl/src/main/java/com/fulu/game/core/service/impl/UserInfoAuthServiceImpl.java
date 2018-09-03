@@ -7,12 +7,15 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.fulu.game.common.enums.FileTypeEnum;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
+import com.fulu.game.common.exception.CashException;
 import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
-import com.fulu.game.core.dao.*;
+import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.dao.UserInfoAuthDao;
+import com.fulu.game.core.dao.UserInfoAuthFileTempDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.vo.*;
@@ -827,11 +830,37 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
 
-        UserInfoAuth auth = new UserInfoAuth();
-        auth.setUserId(userId);
-        auth.setCharm(auth.getCharm() + price);
+        return modifyCharm(user, price);
+    }
+
+    @Override
+    public boolean modifyCharm(User user, Integer price) {
+        if (user == null) {
+            return false;
+        }
+
+        UserInfoAuth auth = findByUserId(user.getId());
+        auth.setCharm((auth.getCharm() == null ? 0 : auth.getCharm()) + price);
         updateByUserId(auth);
         return true;
     }
 
+    @Override
+    public void withdrawCharm(Integer userId, Integer charm) {
+        UserInfoAuth userInfoAuth = findByUserId(userId);
+        if (userInfoAuth == null) {
+            log.error("陪玩师id:{}不存在", userId);
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+
+        Integer totalCharm = userInfoAuth.getCharm();
+        if (charm > totalCharm) {
+            log.error("陪玩师id:{}提现魅力值超出总魅力值", userId);
+            throw new CashException(CashException.ExceptionCode.CHARM_WITHDRAW_FAIL_EXCEPTION);
+        }
+
+        //todo  记录流水 记录分润
+
+
+    }
 }

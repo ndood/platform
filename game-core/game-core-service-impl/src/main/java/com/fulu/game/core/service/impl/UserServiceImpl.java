@@ -54,7 +54,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Autowired
     private CouponGroupService couponGroupService;
     @Autowired
-    private VirtualProductService virtualProductService;
+    private VirtualDetailsService virtualDetailsService;
 
     @Override
     public ICommonDao<User, Integer> getDao() {
@@ -610,17 +610,50 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public boolean calculateVirtualBalance(Integer userId, Integer price) {
+    public User modifyVirtualBalance(Integer userId, Integer price) {
         User user = findById(userId);
         if (user == null) {
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
 
-        User paramUser = new User();
-        paramUser.setId(userId);
-        paramUser.setVirtualBalance(user.getVirtualBalance() + price);
-        paramUser.setUpdateTime(DateUtil.date());
-        int result = update(paramUser);
-        return result > 0;
+        return modifyVirtualBalance(user, price);
+    }
+
+    @Override
+    public User modifyVirtualBalance(User user, Integer price) {
+        user.setVirtualBalance(((user.getVirtualBalance() == null) ? 0 : user.getVirtualBalance()) + price);
+        user.setUpdateTime(DateUtil.date());
+        update(user);
+        return user;
+    }
+
+    @Override
+    public boolean loginReceiveVirtualMoney(User user) {
+        Integer type = user.getType();
+        if (!UserTypeEnum.GENERAL_USER.getType().equals(type)) {
+            return false;
+        }
+
+        String loginKey = RedisKeyEnum.LOGIN_RECEIVE_VIRTUAL_MONEY.generateKey();
+        boolean flag = redisOpenService.hasKey(loginKey);
+        if (flag) {
+            boolean isReceived = redisOpenService.getBitSet(loginKey, user.getId());
+            if (isReceived) {
+                return false;
+            }
+        }
+
+        modifyVirtualBalance(user, Constant.LOGIN_VIRTUAL_MONEY);
+        redisOpenService.bitSet(loginKey, user.getId());
+
+        VirtualDetails details = new VirtualDetails();
+        details.setUserId(user.getId());
+        details.setSum(user.getVirtualBalance());
+        details.setMoney(Constant.LOGIN_VIRTUAL_MONEY);
+        details.setType(VirtualProductTypeEnum.LOGIN_RECEIVE_BONUS.getType());
+        details.setRemark(VirtualProductTypeEnum.LOGIN_RECEIVE_BONUS.getMsg());
+        details.setCreateTime(DateUtil.date());
+        virtualDetailsService.create(details);
+        return true;
     }
 }

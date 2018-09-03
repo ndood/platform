@@ -190,4 +190,9 @@ public interface Constant {
      * 举报信息已处理
      */
     Integer IS_PROCESSED = 1;
+
+    /**
+     * 登录用户获取的虚拟币数量
+     */
+    Integer LOGIN_VIRTUAL_MONEY = 10;
 }

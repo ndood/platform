@@ -52,10 +52,13 @@ public class HomeController extends BaseController {
             user.setBalance(null);
             Map<String, Object> result = BeanUtil.beanToMap(user);
             result.put("token", SubjectUtil.getToken());
-            if(user.getHeadPortraitsUrl()==null){
-                log.error("新注册用户;user{}",user);
+            if (user.getHeadPortraitsUrl() == null) {
+                log.error("新注册用户;user{}", user);
                 return Result.newUser().data(result);
             }
+
+            boolean flag = userService.loginReceiveVirtualMoney(user);
+            result.put("bonus", flag ? 1 : 0);
             return Result.success().data(result).msg("登录成功!");
         } catch (Exception e) {
             if (e.getCause() instanceof UserException) {
@@ -64,7 +67,7 @@ public class HomeController extends BaseController {
                     return Result.userBanned();
                 }
             }
-            log.error("登录异常",e);
+            log.error("登录异常", e);
             return Result.noLogin().msg("验证码错误！");
         }
     }
@@ -72,6 +75,7 @@ public class HomeController extends BaseController {
 
     /**
      * 点击发送验证码接口
+     *
      * @param mobile
      * @return
      */
@@ -85,7 +89,7 @@ public class HomeController extends BaseController {
             } else {
                 String verifyCode = SMSUtil.sendVerificationCode(mobile);
                 log.info("发送验证码{}={}", mobile, verifyCode);
-                redisOpenService.set(RedisKeyEnum.SMS_VERIFY_CODE.generateKey(mobile),  verifyCode, Constant.VERIFYCODE_CACHE_TIME);
+                redisOpenService.set(RedisKeyEnum.SMS_VERIFY_CODE.generateKey(mobile), verifyCode, Constant.VERIFYCODE_CACHE_TIME);
                 times = String.valueOf(Integer.parseInt(times) + 1);
                 redisOpenService.set(RedisKeyEnum.SMS_VERIFY_CODE_TIMES.generateKey(mobile), times, Constant.MOBILE_CACHE_TIME);
                 return Result.success().data(verifyCode).msg("验证码发送成功！");
@@ -98,10 +102,4 @@ public class HomeController extends BaseController {
             return Result.success().data(verifyCode).msg("验证码发送成功！");
         }
     }
-
-
-
-
-
-
 }
