@@ -1,4 +1,4 @@
-package com.fulu.game.app.controller;
+package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
 import lombok.extern.slf4j.Slf4j;
