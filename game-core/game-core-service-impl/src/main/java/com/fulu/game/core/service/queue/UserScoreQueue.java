@@ -1,13 +1,14 @@
 package com.fulu.game.core.service.queue;
 
+import cn.hutool.core.date.DateUtil;
 import com.fulu.game.core.dao.UserScoreDetailsDao;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserScoreDetails;
 import com.fulu.game.core.service.UserService;
-import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -23,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Component
 @Slf4j
+@Transactional
 public class UserScoreQueue implements Runnable {
     private BlockingQueue<UserScoreDetails> userScoreQueue = new LinkedBlockingDeque<>(50000);
 
@@ -60,12 +62,12 @@ public class UserScoreQueue implements Runnable {
         while (run.get()) {
             try {
                 UserScoreDetails details = userScoreQueue.poll();
-                if(details == null) {
+                if (details == null) {
                     Thread.sleep(300L);
                     continue;
                 }
                 process(details);
-            }catch (Exception e){
+            } catch (Exception e) {
                 log.error("修改用户积分队列异常", e);
             }
         }
@@ -93,6 +95,7 @@ public class UserScoreQueue implements Runnable {
             userScoreDetailsDao.create(details);
             log.info("修改用户积分，userId:{}，修改后用户总积分:{}", details.getUserId(), user.getUserScore());
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("修改用户积分出错!", e);
         }
     }

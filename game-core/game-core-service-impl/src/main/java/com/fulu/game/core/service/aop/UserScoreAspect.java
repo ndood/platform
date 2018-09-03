@@ -192,8 +192,8 @@ public class UserScoreAspect {
             details.setScore(UserScoreEnum.IM_REPLY_DELAY_0_TO_5.getScore());
             details.setDescription(Constant.IM_REPLY_DELAY_0_TO_5);
         } else if (minutes > 5 && minutes <= 60) {
-//            details.setScore(UserScoreEnum.IM_REPLY_DELAY_5_TO_60.getScore());
-//            details.setDescription(Constant.IM_REPLY_DELAY_5_TO_60);
+            details.setScore(UserScoreEnum.IM_REPLY_DELAY_5_TO_60.getScore());
+            details.setDescription(Constant.IM_REPLY_DELAY_5_TO_60);
         } else if (minutes > 60 && minutes <= 120) {
             details.setScore(UserScoreEnum.IM_REPLY_DELAY_60_TO_120.getScore());
             details.setDescription(Constant.IM_REPLY_DELAY_60_TO_120);
@@ -223,8 +223,8 @@ public class UserScoreAspect {
             details.setScore(UserScoreEnum.USER_COMMENT_2_STAR.getScore());
             details.setDescription(Constant.USER_COMMENT_2_STAR + "，orderNo: " + orderNo);
         } else if (commentScore.equals(3)) {
-//            details.setScore(UserScoreEnum.USER_COMMENT_3_STAR.getScore());
-//            details.setDescription(UserScoreEnum.USER_COMMENT_3_STAR.getDescription());
+            details.setScore(UserScoreEnum.USER_COMMENT_3_STAR.getScore());
+            details.setDescription(UserScoreEnum.USER_COMMENT_3_STAR.getDescription());
         } else if (commentScore.equals(4)) {
             details.setScore(UserScoreEnum.USER_COMMENT_4_STAR.getScore());
             details.setDescription(Constant.USER_COMMENT_4_STAR + "，orderNo: " + orderNo);
