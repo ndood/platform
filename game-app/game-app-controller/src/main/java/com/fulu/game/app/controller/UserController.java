@@ -79,6 +79,17 @@ public class UserController extends BaseController {
     }
 
     /**
+     * 获取用户信息
+     * @param userId 非必传，当未传时查询当前用户信息，否则查询所传递用户信息
+     * @return
+     */
+    @RequestMapping("get")
+    public Result get(@RequestParam(required = false) Integer userId) {
+        UserVO userVO = userService.getUserInfo(userId);
+        return Result.success().data(userVO).msg("获取个人信息成功！");
+    }
+
+    /**
      * 保存用户认证信息
      *
      * @param userVO
