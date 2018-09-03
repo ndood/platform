@@ -212,8 +212,8 @@ public class UserScoreAspect {
             details.setScore(UserScoreEnum.USER_COMMENT_2_STAR.getScore());
             details.setDescription(Constant.USER_COMMENT_2_STAR + "，orderNo: " + orderNo);
         } else if (commentScore.equals(3)) {
-//            details.setScore(UserScoreEnum.USER_COMMENT_3_STAR.getScore());
-//            details.setDescription(UserScoreEnum.USER_COMMENT_3_STAR.getDescription());
+            details.setScore(UserScoreEnum.USER_COMMENT_3_STAR.getScore());
+            details.setDescription(UserScoreEnum.USER_COMMENT_3_STAR.getDescription());
         } else if (commentScore.equals(4)) {
             details.setScore(UserScoreEnum.USER_COMMENT_4_STAR.getScore());
             details.setDescription(Constant.USER_COMMENT_4_STAR + "，orderNo: " + orderNo);
