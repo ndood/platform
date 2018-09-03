@@ -63,8 +63,11 @@ public class ImLogController extends BaseController{
             log.info("userId:{}用户上线了!;version:{}",user.getId(),version);
             redisOpenService.set(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()),user.getType()+"");
 
-            //删除陪玩师的未读信息数量
+            
             if(ua.getImSubstituteId()!=null){
+
+
+                //删除陪玩师的未读信息数量
                 Map map = redisOpenService.hget(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()));
 
                 if(map != null && map.size() >0 ){
@@ -79,13 +82,15 @@ public class ImLogController extends BaseController{
 
                 }
 
+                //获取代聊天记录
+                List<AdminImLog> list = adminImLogService.findByImId(user.getImId());
+                //删除带聊天记录
+                adminImLogService.deleteByImId(user.getImId());
+                return Result.success().data(list).msg("查询成功！");
+                
             }
 
-            //获取代聊天记录
-            List<AdminImLog> list = adminImLogService.findByImId(user.getImId());
-            //删除带聊天记录
-            adminImLogService.deleteByImId(user.getImId());
-            return Result.success().data(list).msg("查询成功！");
+            return Result.success().msg("查询成功！");
 
         }else{
             log.info("userId:{}用户下线了!version:{}",user.getId(),version);
