@@ -181,8 +181,8 @@ public class UserScoreAspect {
             details.setScore(UserScoreEnum.IM_REPLY_DELAY_0_TO_5.getScore());
             details.setDescription(Constant.IM_REPLY_DELAY_0_TO_5);
         } else if (minutes > 5 && minutes <= 60) {
-//            details.setScore(UserScoreEnum.IM_REPLY_DELAY_5_TO_60.getScore());
-//            details.setDescription(Constant.IM_REPLY_DELAY_5_TO_60);
+            details.setScore(UserScoreEnum.IM_REPLY_DELAY_5_TO_60.getScore());
+            details.setDescription(Constant.IM_REPLY_DELAY_5_TO_60);
         } else if (minutes > 60 && minutes <= 120) {
             details.setScore(UserScoreEnum.IM_REPLY_DELAY_60_TO_120.getScore());
             details.setDescription(Constant.IM_REPLY_DELAY_60_TO_120);
