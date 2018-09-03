@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.VirtualPayOrderDao">
+    <resultMap id="VirtualPayOrderResultMap" type="com.fulu.game.core.entity.VirtualPayOrder">
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="user_id" property="userId"/>
+        <result column="actual_money" property="actualMoney"/>
+        <result column="virtual_money" property="virtualMoney"/>
+        <result column="is_pay_callback" property="isPayCallback"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="VirtualPayOrderResultVOMap" type="com.fulu.game.core.entity.vo.VirtualPayOrderVO"
+               extends="VirtualPayOrderResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,order_no,user_id,actual_money,virtual_money,is_pay_callback,update_time,create_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="VirtualPayOrderResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_virtual_pay_order
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="VirtualPayOrderResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_virtual_pay_order
+    </select>
+
+    <select id="findByParameter" resultMap="VirtualPayOrderResultMap"
+            parameterType="com.fulu.game.core.entity.vo.VirtualPayOrderVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_virtual_pay_order
+        <where>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="actualMoney != null">
+                and actual_money = #{actualMoney}
+            </if>
+            <if test="virtualMoney != null">
+                and virtual_money = #{virtualMoney}
+            </if>
+            <if test="isPayCallback != null">
+                and is_pay_callback = #{isPayCallback}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_virtual_pay_order
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.VirtualPayOrder">
+        insert into
+        t_virtual_pay_order (order_no,user_id,actual_money,virtual_money,is_pay_callback,update_time,create_time)
+        values
+        (#{orderNo},#{userId},#{actualMoney},#{virtualMoney},#{isPayCallback},#{updateTime},#{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.VirtualPayOrder">
+        update t_virtual_pay_order
+        <set>
+
+            <if test="orderNo != null">
+                order_no = #{orderNo},
+            </if>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="actualMoney != null">
+                actual_money = #{actualMoney},
+            </if>
+
+            <if test="virtualMoney != null">
+                virtual_money = #{virtualMoney},
+            </if>
+
+            <if test="isPayCallback != null">
+                is_pay_callback = #{isPayCallback},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

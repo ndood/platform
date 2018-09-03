@@ -8,13 +8,14 @@
                                             <result column="target_im_id"  property="targetImId" />
                                             <result column="content"  property="content" />
                                             <result column="sendTime"  property="sendtime" />
+                                            <result column="owner_user_id"  property="ownerUserId" />
                         </resultMap>
 
     <resultMap id="AdminImLogResultVOMap" type="com.fulu.game.core.entity.vo.AdminImLogVO" extends="AdminImLogResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,from_im_id,target_im_id,content,sendTime    </sql>
+        id,from_im_id,target_im_id,content,sendTime,owner_user_id    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="AdminImLogResultMap">
         select
@@ -36,20 +37,22 @@
         <include refid="Base_Column_List"/>
         FROM t_admin_im_log
         <where>
-                                                                       
-                                                                <if test="fromImId != null">
-                       and from_im_id = #{fromImId}
-                    </if>
-                                                                <if test="targetImId != null">
-                       and target_im_id = #{targetImId}
-                    </if>
-                                                                <if test="content != null">
-                       and content = #{content}
-                    </if>
-                                                                <if test="sendtime != null">
-                       and sendTime = #{sendtime}
-                    </if>
-                                    </where>
+            <if test="fromImId != null">
+                and from_im_id = #{fromImId}
+            </if>
+            <if test="targetImId != null">
+                and target_im_id = #{targetImId}
+            </if>
+            <if test="content != null">
+                and content = #{content}
+            </if>
+            <if test="sendtime != null">
+                and sendTime = #{sendtime}
+            </if>
+            <if test="ownerUserId != null">
+                and owner_user_id = #{ownerUserId}
+            </if>
+        </where>
     </select>
 
     <select id="findByImId" resultMap="AdminImLogResultMap" parameterType="java.lang.String">
@@ -81,9 +84,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.AdminImLog">
         insert into
-        t_admin_im_log (from_im_id,target_im_id,content,sendTime)
+        t_admin_im_log (from_im_id,target_im_id,content,sendTime,owner_user_id)
         values
-        (#{fromImId},#{targetImId},#{content},#{sendtime})
+        (#{fromImId},#{targetImId},#{content},#{sendtime},#{ownerUserId})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.AdminImLog">
@@ -105,9 +108,19 @@
                     <if test="sendtime != null">
                         sendTime = #{sendtime},
                     </if>
+                    <if test="ownerUserId != null">
+                        owner_user_id = #{ownerUserId},
+                    </if>
                                     </set>
         <where>
             id = #{id}
         </where>
     </update>
+
+    <delete id="deleteByOwnerUserId" parameterType="java.lang.Integer">
+        delete from t_admin_im_log
+        <where>
+            owner_user_id = #{ownerUserId}
+        </where>
+    </delete>
 </mapper>

@@ -18,5 +18,8 @@ public interface AdminImLogService extends ICommonService<AdminImLog,Integer>{
     List<AdminImLog> findByImId(String imId);
 
     int deleteByImId(String imId);
-    
+
+    int deleteByOwnerUserId(Integer ownerUserId);
+
+    List<AdminImLog> findByParameter(AdminImLogVO adminImLogVO);
 }
