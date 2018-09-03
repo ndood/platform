@@ -8,6 +8,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.fulu.game.common.enums.FileTypeEnum;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
 import com.fulu.game.common.exception.CashException;
+import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
@@ -15,6 +16,7 @@ import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserInfoAuthDao;
 import com.fulu.game.core.dao.UserInfoAuthFileTempDao;
+import com.fulu.game.core.dao.VirtualProductAttachDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.vo.*;
@@ -60,6 +62,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     private UserInfoAuthFileTempDao userInfoAuthFileTempDao;
     @Autowired
     private UserInfoAuthFileTempService userInfoAuthFileTempService;
+    @Autowired
+    private VirtualProductAttachDao virtualProductAttachDao;
+    
 
 
     @Override
@@ -194,6 +199,43 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         //查询用户所有标签
         List<TagVO> allPersonTagVos = findAllUserTagSelected(userId, false);
         userInfoAuthVO.setGroupTags(allPersonTagVos);
+        
+        //查询用户的所有私密照片
+        VirtualProductAttachVO vpav = new VirtualProductAttachVO();
+        vpav.setDelFlag(false);
+        vpav.setType(VirtualProductTypeEnum.PERSONAL_PICS.getType());
+        vpav.setUserId(userId);
+        List<VirtualProductAttachVO> attachList = virtualProductAttachDao.findDetailByVo(vpav);
+        
+        //将私密照片分组归类
+        boolean exitsFlag = false;
+        for(int i = 0 ; i < attachList.size() ; i++){
+            
+            exitsFlag = false;
+            
+            List<PicGroupVO> groupList = userInfoAuthVO.getGroupList();
+            PicGroupVO temp = null;
+            for(int j = 0 ; j < groupList.size(); j++){
+                if(attachList.get(i).getVirtualProductId().intValue() == groupList.get(i).getVirtualProductId().intValue()){
+                    exitsFlag = true;
+                    temp = groupList.get(i);
+                    break;
+                }
+            }
+            
+            if(exitsFlag){
+                temp.getUrls().add(attachList.get(i).getUrl());
+            }else{
+                temp = new PicGroupVO();
+                temp.setName(attachList.get(i).getName());
+                temp.setPrice(attachList.get(i).getPrice());
+                temp.setVirtualProductId(attachList.get(i).getVirtualProductId());
+                temp.getUrls().add(attachList.get(i).getUrl());
+                groupList.add(temp);
+            }
+            
+        }
+        
         return userInfoAuthVO;
     }
 

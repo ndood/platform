@@ -69,6 +69,8 @@ public class ImController extends BaseController {
 
                         UserInfoAuthVO temp = JSON.parseObject(map.get(targetImId).toString(),UserInfoAuthVO.class);
                         targetUser.setUnreadCount(temp.getUnreadCount() + 1);
+                    }else{
+                        targetUser.setUnreadCount(new Long(1));
                     }
                 }
                 map.put(targetImId, JSON.toJSONString(targetUser));

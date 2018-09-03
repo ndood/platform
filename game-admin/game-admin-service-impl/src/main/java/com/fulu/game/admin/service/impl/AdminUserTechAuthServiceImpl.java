@@ -1,15 +1,20 @@
 package com.fulu.game.admin.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.admin.service.AdminUserTechAuthService;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
+import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserTechAuthDao;
+import com.fulu.game.core.dao.VirtualProductAttachDao;
+import com.fulu.game.core.dao.VirtualProductDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserTechAuthTO;
 import com.fulu.game.core.entity.vo.TagVO;
@@ -26,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -61,6 +67,10 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
     @Autowired
     private AdminPushServiceImpl adminPushService;
+    @Autowired
+    private VirtualProductDao virtualProductDao;
+    @Autowired
+    private VirtualProductAttachDao virtualProductAttachDao;
 
     @Override
     public ICommonDao<UserTechAuth, Integer> getDao() {
@@ -70,7 +80,8 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
 
 
     @Override
-    public UserTechAuthTO save(UserTechAuthTO userTechAuthTO) {
+    @Transactional
+    public UserTechAuthTO save(UserTechAuthTO userTechAuthTO , String privatePicStr ) {
         log.info("修改认证技能:userTechAuthVO:{}",userTechAuthTO);
         User user = userService.getCurrentUser();
         Category category = categoryService.findById(userTechAuthTO.getCategoryId());
@@ -112,6 +123,85 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
         saveTechTag(userTechAuthTO.getId(), userTechAuthTO.getTagIds());
         //创建游戏段位
         saveTechAttr(userTechAuthTO);
+
+        //设置陪玩师的私密照
+        if(StringUtils.isNotBlank(privatePicStr)){
+
+            JSONObject privatePicJson = JSONObject.parseObject(privatePicStr);
+
+            //获取需要删除的私密照组
+            JSONArray delIds = privatePicJson.getJSONArray("virtualProductDao");
+
+            for(int i = 0 ; i < delIds.size() ; i++){
+                VirtualProduct t = new VirtualProduct();
+                t.setId(delIds.getIntValue(i));
+                t.setDelFlag(true);
+                virtualProductDao.update(t);
+            }
+
+            //修改私密照
+            JSONArray updateList = privatePicJson.getJSONArray("updateList");
+            for(int i  = 0 ; i < updateList.size() ; i++){
+
+                //修改商品信息
+                JSONObject groupInfo = updateList.getJSONObject(i);
+                VirtualProduct t = new VirtualProduct();
+                t.setId(groupInfo.getIntValue("vartualProductId"));
+                t.setName(groupInfo.getString("name"));
+                t.setPrice(groupInfo.getIntValue("price"));
+                t.setSort(groupInfo.getIntValue("sort"));
+                t.setAttachCount(groupInfo.getJSONArray("urls").size());
+                t.setUpdateTime(new Date());
+
+                virtualProductDao.update(t);
+
+                //修改附件信息
+                JSONArray urls =groupInfo.getJSONArray("urls");
+                //删除旧附件
+                virtualProductAttachDao.deleteByVirtualProductId(t.getId());
+                //添加新的附件信息
+                for(int j = 0 ; j < urls.size() ; j++){
+                    VirtualProductAttach vpa = new VirtualProductAttach();
+                    vpa.setUserId(user.getId());
+                    vpa.setVirtualProductId(t.getId());
+                    vpa.setUrl(urls.getString(j));
+                    vpa.setCreateTime(new Date());
+                    virtualProductAttachDao.create(vpa);
+                }
+            }
+
+            //添加新的私密照
+            JSONArray addList = privatePicJson.getJSONArray("addList");
+            for(int i  = 0 ; i < addList.size() ; i++){
+
+                //添加商品信息
+                JSONObject groupInfo = addList.getJSONObject(i);
+                VirtualProduct t = new VirtualProduct();
+                t.setName(groupInfo.getString("name"));
+                t.setPrice(groupInfo.getIntValue("price"));
+                t.setSort(groupInfo.getIntValue("sort"));
+                t.setType(VirtualProductTypeEnum.PERSONAL_PICS.getType());
+                t.setAttachCount(groupInfo.getJSONArray("urls").size());
+                t.setDelFlag(false);
+                t.setCreateTime(new Date());
+
+                virtualProductDao.create(t);
+
+                //获取附件信息
+                JSONArray urls =groupInfo.getJSONArray("urls");
+                //添加附件信息
+                for(int j = 0 ; j < urls.size() ; j++){
+                    VirtualProductAttach vpa = new VirtualProductAttach();
+                    vpa.setUserId(user.getId());
+                    vpa.setVirtualProductId(t.getId());
+                    vpa.setUrl(urls.getString(j));
+                    vpa.setCreateTime(new Date());
+                    virtualProductAttachDao.create(vpa);
+                }
+            }
+        }
+        
+        
         return userTechAuthTO;
     }
 

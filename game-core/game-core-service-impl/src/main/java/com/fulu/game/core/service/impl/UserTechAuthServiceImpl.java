@@ -1,13 +1,19 @@
 package com.fulu.game.core.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
+import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserTechAuthDao;
+import com.fulu.game.core.dao.VirtualProductAttachDao;
+import com.fulu.game.core.dao.VirtualProductDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserTechAuthTO;
 import com.fulu.game.core.entity.vo.TagVO;
@@ -23,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -54,6 +61,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     private OssUtil ossUtil;
     @Autowired
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
+    
 
 
     @Override
@@ -64,7 +72,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
 
     @Override
-    public UserTechAuthTO save(UserTechAuthTO userTechAuthTO) {
+    public UserTechAuthTO save(UserTechAuthTO userTechAuthTO , String privatePicStr) {
         log.info("修改认证技能:userTechAuthVO:{}",userTechAuthTO);
         User user = userService.getCurrentUser();
         Category category = categoryService.findById(userTechAuthTO.getCategoryId());
@@ -106,9 +114,10 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         saveTechTag(userTechAuthTO.getId(), userTechAuthTO.getTagIds());
         //创建游戏段位
         saveTechAttr(userTechAuthTO);
+
+
         return userTechAuthTO;
     }
-
 
 
     @Override

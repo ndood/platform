@@ -8,6 +8,7 @@ import com.fulu.game.core.entity.UserTechAuth;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -69,4 +70,6 @@ public class UserInfoAuthVO extends UserInfoAuth {
     private String imPsw;
     
     private Long unreadCount;
+    
+    private List<PicGroupVO> groupList = new ArrayList<>();
 }

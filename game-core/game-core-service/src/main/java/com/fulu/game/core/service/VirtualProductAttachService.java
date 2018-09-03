@@ -16,5 +16,8 @@ import java.util.List;
 public interface VirtualProductAttachService extends ICommonService<VirtualProductAttach, Integer> {
 
     List<VirtualProductAttach> findByParameter(VirtualProductAttachVO virtualProductAttachVO);
-        
+
+
+    List<VirtualProductAttach> findByOrderProIdUserId(Integer userId , Integer productId);
+
 }

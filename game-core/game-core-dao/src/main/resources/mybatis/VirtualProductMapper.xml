@@ -183,6 +183,6 @@
                 and t2.target_user_id = #{targetUserId}
             </if>
         </where>
-        ORDER BY t1.id
+        ORDER BY t1.sort is null
     </select>
 </mapper>

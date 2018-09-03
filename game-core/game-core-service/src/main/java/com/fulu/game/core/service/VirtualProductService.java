@@ -44,5 +44,13 @@ public interface VirtualProductService extends ICommonService<VirtualProduct, In
      *
      * @return
      */
-    void unlockProduct(Integer userId, Integer virtualProductId);
+    void unlockProduct(Integer userId , Integer virtualProductId);
+
+
+    /**
+     * 创建虚拟商品
+     *
+     * @return
+     */
+    VirtualProduct createVirtualProduct(VirtualProduct vp, Integer userId, String[] urls);
 }
