@@ -153,9 +153,9 @@ public class ImController extends BaseController {
         }else{
             vp.setAttachCount(urls.length);
         }
-        
-        virtualProductService.createVirtualProduct(vp,userId,urls);
 
-        return Result.success().msg("操作成功");
+        vp = virtualProductService.createVirtualProduct(vp,userId,urls);
+
+        return Result.success().data(vp).msg("操作成功");
     }
 }
