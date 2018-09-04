@@ -30,14 +30,14 @@ public class DynamicDoc {
     private Integer userAge;
     /** 动态类型（0：文字；1：图片；2：视频） */
     private Integer type;
-    /** 技能id */
-    private Integer techInfoId;
-    /** 技能名称 */
-    private String techInfoName;
-    /** 技能价格 */
-    private BigDecimal techInfoPrice;
-    /** 技能单位 */
-    private String techInfoUnit;
+    /** 商品id */
+    private Integer productId;
+    /** 商品名称 */
+    private String productName;
+    /** 商品价格 */
+    private BigDecimal productPrice;
+    /** 商品单位 */
+    private String productUnit;
     /** 动态内容 */
     private String content;
     /** 城市编码（用于查询附近的动态） */

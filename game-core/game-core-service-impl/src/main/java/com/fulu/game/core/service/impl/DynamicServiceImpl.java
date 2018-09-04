@@ -413,15 +413,15 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
         dynamicDoc.setCreateTime(dynamicVO.getCreateTime());
         dynamicDoc.setUpdateTime(dynamicVO.getUpdateTime());
         dynamicDoc.setStatus(dynamicVO.getStatus());
-        dynamicDoc.setTechInfoId(dynamicVO.getTechInfoId());
+        dynamicDoc.setProductId(dynamicVO.getProductId());
         dynamicDoc.setGeohash(dynamicVO.getGeohash());
         dynamicDoc.setGethashShort(dynamicVO.getGeohashShort());
-        if(dynamicVO.getTechInfoId() != null && dynamicVO.getTechInfoId() > 0){
-            //TODO shijiaoyun 此处需要获取下单技能信息
-//            UserTechInfo userTechInfo = userTechInfoService.findById(dynamicVO.getTechInfoId());
-//            Product product = productService.findById(dynamicVO.getTechInfoId());
-//            dynamicDoc.setTechInfoId(userTechInfo.getTechAttrId());
-//            dynamicDoc.setTechInfoName(userTechInfo.get);
+        if(dynamicVO.getProductId() != null && dynamicVO.getProductId() > 0){
+            //获取商品信息、设置动态下单商品信息
+            Product product = productService.findById(dynamicVO.getProductId());
+            dynamicDoc.setProductName(product.getProductName());
+            dynamicDoc.setProductPrice(product.getPrice());
+            dynamicDoc.setProductUnit(product.getUnit());
         }
         if(dynamicVO.getDynamicFiles() != null){
             List<DynamicFileDoc> list = new ArrayList<>();
