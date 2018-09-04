@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -93,6 +94,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
      * @return
      */
     @Override
+    @Transactional
     public UserInfoAuth save(UserInfoAuthTO userInfoAuthTO) {
         log.info("保存用户认证信息:UserInfoAuthTO:{}", userInfoAuthTO);
         User user = userService.findById(userInfoAuthTO.getUserId());

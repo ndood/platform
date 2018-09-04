@@ -67,10 +67,6 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
     @Autowired
     private AdminPushServiceImpl adminPushService;
-    @Autowired
-    private VirtualProductDao virtualProductDao;
-    @Autowired
-    private VirtualProductAttachDao virtualProductAttachDao;
 
     @Override
     public ICommonDao<UserTechAuth, Integer> getDao() {
