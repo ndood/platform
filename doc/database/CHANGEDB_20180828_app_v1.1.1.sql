@@ -305,3 +305,11 @@ create table t_user_interests
 -- 修改打赏记录表：添加钻石数冗余字段
 ALTER TABLE `t_reward` ADD COLUMN `gift_price` int(11) DEFAULT '0'
 COMMENT '礼物钻石数' after `gift_url`;
+
+-- 修改动态表，添加是否
+ALTER TABLE `t_dynamic` ADD COLUMN `order_count` int(11) DEFAULT '0'
+COMMENT '下单数' after `is_hot`;
+ALTER TABLE `t_dynamic` ADD COLUMN `operator_id` int(11) DEFAULT '0'
+COMMENT '后端操作者id' after `order_count`;
+ALTER TABLE `t_dynamic` ADD COLUMN `operator_name` varchar(64) DEFAULT NULL
+COMMENT '后端操作者名称' after `operator_id`;
