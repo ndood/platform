@@ -66,9 +66,9 @@
         </if>
     </select>
 
-    <select id="findByOrderProIdUserId" resultMap="VirtualProductAttachResultMap">
+    <select id="findByOrderProIdUserId" resultMap="VirtualProductAttachResultVOMap">
         SELECT
-            t1.*
+            t1.*,t3.type
         FROM
             t_virtual_product_attach t1
         INNER JOIN t_virtual_product_order t2 ON t2.virtual_product_id = t1.virtual_product_id
@@ -81,7 +81,7 @@
 
     <select id="findDetailByVo" resultMap="VirtualProductAttachResultVOMap" parameterType="com.fulu.game.core.entity.vo.VirtualProductAttachVO">
         SELECT
-            t1.*
+            t1.*,
             t2.name,
             t2.price,
             t2.type,

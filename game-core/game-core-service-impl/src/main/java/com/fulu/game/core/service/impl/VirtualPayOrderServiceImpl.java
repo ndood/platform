@@ -37,30 +37,7 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
         return virtualPayOrderDao;
     }
 
-    @Override
-    public void login(String code, String mobile) {
-        if (StringUtils.isBlank(code)) {
-            throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
-        }
 
-        WxMpService wxMpService = wxMpServiceSupply.getWxMpService();
-        WxMpOAuth2AccessToken token;
-        String openId = null;
-        String unionId = null;
-        try {
-            token = wxMpService.oauth2getAccessToken(code);
-            openId = token.getOpenId();
-            WxMpUser wxMpUser = wxMpService.oauth2getUserInfo(token, null);
-            unionId = wxMpUser.getUnionId();
-            //todo
-
-
-
-        } catch (WxErrorException e) {
-            e.printStackTrace();
-            log.error("获取公众号用户信息出错", e);
-        }
-    }
 
     @Override
     public VirtualPayOrder charge(String code, BigDecimal actualMoney, Integer virtualMoney, String mobile) {

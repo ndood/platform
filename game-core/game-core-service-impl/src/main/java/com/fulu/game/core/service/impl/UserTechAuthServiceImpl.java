@@ -72,7 +72,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
 
     @Override
-    public UserTechAuthTO save(UserTechAuthTO userTechAuthTO , String privatePicStr) {
+    public UserTechAuthTO save(UserTechAuthTO userTechAuthTO) {
         log.info("修改认证技能:userTechAuthVO:{}",userTechAuthTO);
         User user = userService.getCurrentUser();
         Category category = categoryService.findById(userTechAuthTO.getCategoryId());

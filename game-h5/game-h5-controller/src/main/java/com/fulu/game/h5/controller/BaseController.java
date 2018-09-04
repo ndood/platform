@@ -1,4 +1,4 @@
-package com.fulu.game.h5.controller.mp;
+package com.fulu.game.h5.controller;
 
 import com.fulu.game.h5.config.editor.*;
 import org.springframework.web.bind.WebDataBinder;

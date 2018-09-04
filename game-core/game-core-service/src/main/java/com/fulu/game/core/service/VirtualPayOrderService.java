@@ -19,5 +19,4 @@ public interface VirtualPayOrderService extends ICommonService<VirtualPayOrder, 
 
     VirtualPayOrder findByOrderNo(String orderNo);
 
-    void login(String code, String mobile);
 }

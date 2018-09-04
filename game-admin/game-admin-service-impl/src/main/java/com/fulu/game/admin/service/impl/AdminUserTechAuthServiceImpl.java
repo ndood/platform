@@ -81,7 +81,7 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
 
     @Override
     @Transactional
-    public UserTechAuthTO save(UserTechAuthTO userTechAuthTO , String privatePicStr ) {
+    public UserTechAuthTO save(UserTechAuthTO userTechAuthTO) {
         log.info("修改认证技能:userTechAuthVO:{}",userTechAuthTO);
         User user = userService.getCurrentUser();
         Category category = categoryService.findById(userTechAuthTO.getCategoryId());
@@ -124,13 +124,15 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
         //创建游戏段位
         saveTechAttr(userTechAuthTO);
 
+        String privatePicStr = userTechAuthTO.getPrivatePicStr();
+        
         //设置陪玩师的私密照
         if(StringUtils.isNotBlank(privatePicStr)){
 
             JSONObject privatePicJson = JSONObject.parseObject(privatePicStr);
 
             //获取需要删除的私密照组
-            JSONArray delIds = privatePicJson.getJSONArray("virtualProductDao");
+            JSONArray delIds = privatePicJson.getJSONArray("delList");
 
             for(int i = 0 ; i < delIds.size() ; i++){
                 VirtualProduct t = new VirtualProduct();
@@ -162,7 +164,7 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
                 //添加新的附件信息
                 for(int j = 0 ; j < urls.size() ; j++){
                     VirtualProductAttach vpa = new VirtualProductAttach();
-                    vpa.setUserId(user.getId());
+                    vpa.setUserId(userTechAuthTO.getUserId());
                     vpa.setVirtualProductId(t.getId());
                     vpa.setUrl(urls.getString(j));
                     vpa.setCreateTime(new Date());
@@ -192,7 +194,7 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
                 //添加附件信息
                 for(int j = 0 ; j < urls.size() ; j++){
                     VirtualProductAttach vpa = new VirtualProductAttach();
-                    vpa.setUserId(user.getId());
+                    vpa.setUserId(userTechAuthTO.getUserId());
                     vpa.setVirtualProductId(t.getId());
                     vpa.setUrl(urls.getString(j));
                     vpa.setCreateTime(new Date());

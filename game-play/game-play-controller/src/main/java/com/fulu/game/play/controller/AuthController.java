@@ -160,7 +160,7 @@ public class AuthController extends BaseController {
             userService.isCurrentUser(userTechAuth.getUserId());
         }
         userTechAuthTO.setUserId(user.getId());
-        userTechAuthService.save(userTechAuthTO,null);
+        userTechAuthService.save(userTechAuthTO);
         return Result.success().data(userTechAuthTO);
     }
 
