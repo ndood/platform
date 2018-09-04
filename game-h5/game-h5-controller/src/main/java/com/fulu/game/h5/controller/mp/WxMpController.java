@@ -1,4 +1,4 @@
-package com.fulu.game.play.controller;
+package com.fulu.game.h5.controller.mp;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.core.service.VirtualPayOrderService;
@@ -25,6 +25,15 @@ public class WxMpController extends BaseController {
     @Autowired
     private VirtualPayOrderService virtualPayOrderService;
 
+    @PostMapping("/login")
+    public Result login(@RequestParam String code, @RequestParam String mobile) {
+        virtualPayOrderService.login(code, mobile);
+        return null;
+
+    }
+
+
+
 
     @PostMapping("/charge")
     public Result charge(@RequestParam String code,
@@ -36,5 +45,4 @@ public class WxMpController extends BaseController {
 
         return null;
     }
-
 }
