@@ -37,6 +37,8 @@ public class UserInfoAuth implements Serializable {
     private Float pushTimeInterval;
     //是否允许导出
     private Boolean allowExport;
+    //推荐位排序字段
+    private Integer sort;
     //
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
