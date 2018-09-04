@@ -8,6 +8,7 @@
         <result column="user_id" property="userId"/>
         <result column="actual_money" property="actualMoney"/>
         <result column="virtual_money" property="virtualMoney"/>
+        <result column="order_ip"  property="orderIp" />
         <result column="is_pay_callback" property="isPayCallback"/>
         <result column="update_time" property="updateTime"/>
         <result column="create_time" property="createTime"/>
@@ -18,7 +19,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,order_no,user_id,actual_money,virtual_money,is_pay_callback,update_time,create_time    </sql>
+        id,order_no,user_id,actual_money,virtual_money,order_ip,is_pay_callback,update_time,create_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="VirtualPayOrderResultMap">
         select
@@ -53,6 +54,9 @@
             <if test="virtualMoney != null">
                 and virtual_money = #{virtualMoney}
             </if>
+            <if test="orderIp != null">
+                and order_ip = #{orderIp}
+            </if>
             <if test="isPayCallback != null">
                 and is_pay_callback = #{isPayCallback}
             </if>
@@ -84,9 +88,9 @@
     <insert id="create" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.fulu.game.core.entity.VirtualPayOrder">
         insert into
-        t_virtual_pay_order (order_no,user_id,actual_money,virtual_money,is_pay_callback,update_time,create_time)
+        t_virtual_pay_order (order_no,user_id,actual_money,virtual_money,order_ip,is_pay_callback,update_time,create_time)
         values
-        (#{orderNo},#{userId},#{actualMoney},#{virtualMoney},#{isPayCallback},#{updateTime},#{createTime})
+        (#{orderNo},#{userId},#{actualMoney},#{virtualMoney},#{orderIp},#{isPayCallback},#{updateTime},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.VirtualPayOrder">
@@ -107,6 +111,10 @@
 
             <if test="virtualMoney != null">
                 virtual_money = #{virtualMoney},
+            </if>
+
+            <if test="orderIp != null">
+                order_ip = #{orderIp},
             </if>
 
             <if test="isPayCallback != null">

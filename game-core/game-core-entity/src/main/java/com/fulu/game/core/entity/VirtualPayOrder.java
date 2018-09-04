@@ -26,8 +26,10 @@ public class VirtualPayOrder implements Serializable {
 	private BigDecimal actualMoney;
 	//虚拟商品价格（对应钻石数量）
 	private Integer virtualMoney;
+	//下单IP
+	private String orderIp;
 	//是否接收过微信支付回调(1:已接收,0:未接收)
-	private Integer isPayCallback;
+	private Boolean isPayCallback;
 	//更新时间
 	private Date updateTime;
 	//订单创建时间

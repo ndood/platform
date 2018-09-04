@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 
 @Service
-public class FenqilePayServiceImpl extends PayServiceImpl<FenqileOrderNotice> {
+public class H5PayServiceImpl extends PayServiceImpl<FenqileOrderNotice> {
 
     @Autowired
     private H5OrderServiceImpl h5OrderService;
