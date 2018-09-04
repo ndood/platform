@@ -23,8 +23,6 @@ public class CollectFormIdQueue implements Runnable{
     @Autowired
     private WechatFormidService wechatFormidService;
 
-    @Autowired
-    private UserService userService;
 
     private AtomicBoolean run = new AtomicBoolean();
 

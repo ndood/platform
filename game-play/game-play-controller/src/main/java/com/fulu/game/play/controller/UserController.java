@@ -3,6 +3,7 @@ package com.fulu.game.play.controller;
 import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
@@ -182,14 +183,16 @@ public class UserController extends BaseController {
             log.error("未获取用户微信手机号:phoneNoInfo:{};encryptedData:{};iv:{};sessionKey:{};", phoneNoInfo, encryptedData, iv, sessionKey);
             throw new UserException(UserException.ExceptionCode.WX_PHONE_NOT_EXIST_EXCEPTION);
         }
+        User cacheUser = userService.getCurrentUser();
         User user = new User();
-        user.setId(userService.getCurrentUser().getId());
+        user.setId(cacheUser.getId());
         log.info("获取用户微信手机号,原用户信息:{}", user);
         user.setMobile(phoneNoInfo.getPurePhoneNumber());
         user.setUpdateTime(new Date());
         try {
             userService.update(user);
-            userService.updateRedisUser(user);
+            BeanUtil.copyProperties(user, cacheUser, CopyOptions.create().setIgnoreNullValue(true));
+            userService.updateRedisUser(cacheUser);
         } catch (Exception e) {
             log.error("更新微信手机号错误用户信息:{};手机号:{};", user, user.getMobile());
             return Result.error().msg("手机号已被注册!");
