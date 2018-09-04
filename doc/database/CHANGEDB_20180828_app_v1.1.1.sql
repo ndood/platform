@@ -51,7 +51,7 @@ CREATE TABLE `t_admin_im_log` (
   `sendTime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `owner_user_id` int(11) DEFAULT NULL ,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+) COMMENT='im消息同步表';
 
 ALTER TABLE `t_user_info_auth` ADD COLUMN `im_substitute_id` int(11)  DEFAULT NULL ;
 
@@ -89,7 +89,7 @@ CREATE TABLE `t_virtual_product_attach` (
   `create_time` datetime DEFAULT NULL,
   `update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) COMMENT='虚拟商品附件表';
 
 
 DROP TABLE IF EXISTS `t_virtual_product_order`;
