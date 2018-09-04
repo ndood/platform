@@ -422,7 +422,10 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             userInfoAuthVO.setUserTechAuthList(userTechAuthList);
 
             ProductShowCaseVO psv = productDao.findRecommendProductByUserId(userInfoAuth.getUserId());
-            userInfoAuthVO.setRecommendProductId(psv.getId());
+            if(psv !=null){
+                userInfoAuthVO.setRecommendProductId(psv.getId());
+            }
+            
             
             //获取每个陪玩师的私密照套数
             VirtualProductVO vpv = new VirtualProductVO();
