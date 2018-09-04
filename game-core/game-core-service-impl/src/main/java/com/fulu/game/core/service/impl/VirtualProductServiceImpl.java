@@ -20,6 +20,7 @@ import com.fulu.game.core.service.VirtualProductService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -156,16 +157,15 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
     }
 
 
-
     @Override
     @Transactional
     public VirtualProduct createVirtualProduct(VirtualProduct vp, Integer userId, String[] urls) {
 
         //添加商品信息
         virtualProductDao.create(vp);
-        
+
         //添加商品附件信息
-        for(int i = 0 ; i < urls.length ; i++){
+        for (int i = 0; i < urls.length; i++) {
             VirtualProductAttach vpa = new VirtualProductAttach();
             vpa.setUserId(userId);
             vpa.setVirtualProductId(vp.getId());
@@ -173,7 +173,16 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
             vpa.setCreateTime(new Date());
             virtualProductAttachDao.create(vpa);
         }
-        
+
         return vp;
+    }
+
+    @Override
+    public VirtualProduct findByOrderNo(String orderNo) {
+        if (StringUtils.isBlank(orderNo)) {
+            return null;
+        }
+
+        return virtualProductDao.findByOrderNo(orderNo);
     }
 }

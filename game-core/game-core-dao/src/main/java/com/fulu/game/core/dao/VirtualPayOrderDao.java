@@ -18,4 +18,5 @@ public interface VirtualPayOrderDao extends ICommonDao<VirtualPayOrder, Integer>
 
     List<VirtualPayOrder> findByParameter(VirtualPayOrderVO virtualPayOrderVO);
 
+    VirtualPayOrder findByOrderNo(String orderNo);
 }

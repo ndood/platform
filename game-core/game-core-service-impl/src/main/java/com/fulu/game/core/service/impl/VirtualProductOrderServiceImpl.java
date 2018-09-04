@@ -36,8 +36,6 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
     @Qualifier("userInfoAuthServiceImpl")
     @Autowired
     private UserInfoAuthService userInfoAuthService;
-    @Autowired
-    private OrderService orderService;
 
     @Override
     public ICommonDao<VirtualProductOrder, Integer> getDao() {
@@ -107,7 +105,7 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
     @Override
     public String generateVirtualProductOrderNo() {
         String orderNo = "V_" + GenIdUtil.GetOrderNo();
-        if (orderService.findByOrderNo(orderNo) == null) {
+        if (virtualProductService.findByOrderNo(orderNo) == null) {
             return orderNo;
         } else {
             return generateVirtualProductOrderNo();

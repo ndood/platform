@@ -64,17 +64,21 @@ ALTER TABLE `t_user_info_auth` ADD COLUMN `charm` bigint(20) unsigned DEFAULT NU
 ALTER TABLE `t_user_info_auth` ADD COLUMN `sort` int(11) DEFAULT NULL COMMENT '推荐位排序字段' after `allow_export`;
 
 
+DROP TABLE IF EXISTS `t_virtual_product`;
 CREATE TABLE `t_virtual_product` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL COMMENT '商品名称',
   `price` int(11) DEFAULT NULL COMMENT '商品价格',
   `type` tinyint(4) DEFAULT NULL COMMENT '1 礼物  2 私照图片组 3 IM解锁图片组 4 IM解锁语音',
+  `sort` int(11) DEFAULT NULL COMMENT '排序',
+  `attach_count` int(11) DEFAULT NULL COMMENT '附件数量',
   `object_url` varchar(255) DEFAULT NULL COMMENT '商品图片地址',
   `remark` varchar(255) DEFAULT NULL,
-  `update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `del_flag` tinyint(1) DEFAULT '0' COMMENT '删除标记(0：未删除；1：已删除）',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='虚拟商品表';
+)  COMMENT='虚拟商品表';
 
 
 CREATE TABLE `t_virtual_product_attach` (
@@ -88,6 +92,7 @@ CREATE TABLE `t_virtual_product_attach` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
+DROP TABLE IF EXISTS `t_virtual_product_order`;
 CREATE TABLE `t_virtual_product_order` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `order_no` varchar(128) NOT NULL COMMENT '订单号',
@@ -99,8 +104,9 @@ CREATE TABLE `t_virtual_product_order` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='虚拟商品订单表';
+) COMMENT='虚拟商品订单表';
 
+DROP TABLE IF EXISTS `t_virtual_details`;
 CREATE TABLE `t_virtual_details` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `user_id` int(11) NOT NULL COMMENT '用户id',
@@ -110,7 +116,7 @@ CREATE TABLE `t_virtual_details` (
   `remark` varchar(255) DEFAULT NULL COMMENT '备注',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='虚拟货币流水表';
+) COMMENT='虚拟货币流水表';
 
 ALTER TABLE `t_push_msg` ADD COLUMN `jump_type` tinyint(1) DEFAULT NULL COMMENT '跳转类型（1：H5；2：内部跳转页(小程序）；3：官方公告；4：聊天室；5：名片页）' after `type`;
 
