@@ -32,7 +32,7 @@ public class WxMpController extends BaseController {
                          @RequestParam Integer virtualMoney,
                          @RequestParam String mobile) {
 
-//        virtualPayOrderService.charge(code, actualMoney, virtualMoney, mobile);
+        virtualPayOrderService.charge(code, actualMoney, virtualMoney, mobile);
 
         return null;
     }

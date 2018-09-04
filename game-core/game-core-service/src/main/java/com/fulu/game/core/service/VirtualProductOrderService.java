@@ -20,4 +20,6 @@ public interface VirtualProductOrderService extends ICommonService<VirtualProduc
     String generateVirtualProductOrderNo();
 
     List<VirtualProductOrder> findByParameter(VirtualProductOrderVO virtualProductOrderVO);
+
+    VirtualProductOrder findByOrderNo(String orderNo);
 }

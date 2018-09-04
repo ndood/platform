@@ -188,13 +188,4 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
 
         return vp;
     }
-
-    @Override
-    public VirtualProduct findByOrderNo(String orderNo) {
-        if (StringUtils.isBlank(orderNo)) {
-            return null;
-        }
-
-        return virtualProductDao.findByOrderNo(orderNo);
-    }
 }

@@ -14,6 +14,7 @@ import com.fulu.game.core.entity.VirtualProductOrder;
 import com.fulu.game.core.entity.vo.VirtualProductOrderVO;
 import com.fulu.game.core.service.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -105,11 +106,20 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
     @Override
     public String generateVirtualProductOrderNo() {
         String orderNo = "V_" + GenIdUtil.GetOrderNo();
-        if (virtualProductService.findByOrderNo(orderNo) == null) {
+        if (findByOrderNo(orderNo) == null) {
             return orderNo;
         } else {
             return generateVirtualProductOrderNo();
         }
+    }
+
+    @Override
+    public VirtualProductOrder findByOrderNo(String orderNo) {
+        if (StringUtils.isBlank(orderNo)) {
+            return null;
+        }
+
+        return virtualProductOrderDao.findByOrderNo(orderNo);
     }
 
     @Override

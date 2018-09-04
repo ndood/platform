@@ -53,12 +53,4 @@ public interface VirtualProductService extends ICommonService<VirtualProduct, In
      * @return
      */
     VirtualProduct createVirtualProduct(VirtualProduct vp, Integer userId, String[] urls);
-
-    /**
-     * 根据订单编号查询虚拟商品
-     *
-     * @param orderNo 订单编号
-     * @return 虚拟商品Bean
-     */
-    VirtualProduct findByOrderNo(String orderNo);
 }
