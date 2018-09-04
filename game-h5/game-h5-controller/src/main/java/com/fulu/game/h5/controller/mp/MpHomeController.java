@@ -28,10 +28,11 @@ public class MpHomeController extends BaseController {
 
     @PostMapping("/login")
     public Result login(@RequestParam String code, @RequestParam String mobile) {
-        virtualPayOrderService.login(code, mobile);
+//        virtualPayOrderService.login(code, mobile);
         return null;
 
     }
+
 
 
 
