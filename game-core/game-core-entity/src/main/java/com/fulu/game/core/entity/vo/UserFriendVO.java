@@ -31,4 +31,6 @@ public class UserFriendVO extends UserFriend {
     private Integer gender;
     /** 搜索用户时，获取到的用户id */
     private Integer userId;
+    /** 获取imId  */
+    private String imId;
 }
