@@ -302,3 +302,6 @@ create table t_user_interests
    primary key (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户兴趣表';
 
+-- 修改打赏记录表：添加钻石数冗余字段
+ALTER TABLE `t_reward` ADD COLUMN `gift_price` int(11) DEFAULT '0'
+COMMENT '礼物钻石数' after `gift_url`;

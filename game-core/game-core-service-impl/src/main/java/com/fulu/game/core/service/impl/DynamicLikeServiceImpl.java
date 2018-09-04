@@ -60,13 +60,14 @@ public class DynamicLikeServiceImpl extends AbsCommonService<DynamicLike,Long> i
         dynamicLikeVO.setFromUserId(user.getId().longValue());
         List<DynamicLike> list = dynamicLikeDao.findByParameter(dynamicLikeVO);
         dynamicLikeVO.setStatus(status);
-        dynamicLikeVO.setCreateTime(new Date());
         dynamicLikeVO.setFromUserHeadUrl(user.getHeadPortraitsUrl());
         dynamicLikeVO.setFromUserNickname(user.getNickname());
 
         if(list != null && !list.isEmpty()){
+            dynamicLikeVO.setId(list.get(0).getId());
             dynamicLikeDao.update(dynamicLikeVO);
         } else {
+            dynamicLikeVO.setCreateTime(new Date());
             create(dynamicLikeVO);
         }
         // TODO shijiaoyun 修改动态信息的点赞次数（以及ES中存是否已点赞信息：likeUserId）

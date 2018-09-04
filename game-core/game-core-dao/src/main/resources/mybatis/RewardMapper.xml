@@ -8,6 +8,7 @@
         <result column="resource_type" property="resourceType"/>
         <result column="gift_id" property="giftId"/>
         <result column="gift_url" property="giftUrl"/>
+        <result column="gift_price" property="giftPrice"/>
         <result column="from_user_id" property="fromUserId"/>
         <result column="from_user_head_url" property="fromUserHeadUrl"/>
         <result column="from_user_nickname" property="fromUserNickname"/>
@@ -25,7 +26,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,resource_id,resource_type,gift_id,gift_url,from_user_id,from_user_head_url,from_user_nickname,from_user_gender,to_user_id,to_user_head_url,to_user_nickname,to_user_gender,create_time,status, order_no    </sql>
+        id,resource_id,resource_type,gift_id,gift_url,gift_price,from_user_id,from_user_head_url,from_user_nickname,from_user_gender,to_user_id,to_user_head_url,to_user_nickname,to_user_gender,create_time,status, order_no    </sql>
 
     <select id="findById" parameterType="java.lang.Long" resultMap="RewardResultMap">
         select
@@ -56,8 +57,8 @@
             <if test="giftId != null">
                 and gift_id = #{giftId}
             </if>
-            <if test="gitUrl != null">
-                and git_url = #{gitUrl}
+            <if test="giftUrl != null">
+                and gift_url = #{giftUrl}
             </if>
             <if test="fromUserId != null">
                 and from_user_id = #{fromUserId}
@@ -101,9 +102,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Reward">
         insert into
-        t_reward (resource_id,resource_type,gift_id,git_url,from_user_id,from_user_head_url,from_user_nickname,from_user_gender,to_user_id,to_user_head_url,to_user_nickname,to_user_gender,create_time,status)
+        t_reward (resource_id,resource_type,gift_id,gift_url,gift_price,from_user_id,from_user_head_url,from_user_nickname,from_user_gender,to_user_id,to_user_head_url,to_user_nickname,to_user_gender,create_time,status)
         values
-        (#{resourceId},#{resourceType},#{giftId},#{gitUrl},#{fromUserId},#{fromUserHeadUrl},#{fromUserNickname},#{fromUserGender},#{toUserId},#{toUserHeadUrl},#{toUserNickname},#{toUserGender},#{createTime},#{status})
+        (#{resourceId},#{resourceType},#{giftId},#{giftUrl},#{gift_price},#{fromUserId},#{fromUserHeadUrl},#{fromUserNickname},#{fromUserGender},#{toUserId},#{toUserHeadUrl},#{toUserNickname},#{toUserGender},#{createTime},#{status})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Reward">
@@ -122,10 +123,12 @@
                 gift_id = #{giftId},
             </if>
 
-            <if test="gitUrl != null">
-                git_url = #{gitUrl},
+            <if test="giftUrl != null">
+                gift_url = #{giftUrl},
             </if>
-
+            <if test="giftPrice != null" >
+                gift_price = #{giftPrice}
+            </if>
             <if test="fromUserId != null">
                 from_user_id = #{fromUserId},
             </if>

@@ -41,15 +41,16 @@ public class RewardController extends BaseController {
      * 获取打赏记录列表接口
      * @param pageNum
      * @param pageSize
-     * @param dynamicId 动态id
+     * @param resourceId 动打赏来源id
+     * @param resourceType 打赏来源类型（1：动态打赏；）
      * @return
      */
     @RequestMapping(value = "list")
     public Result list(@RequestParam(required = true) Integer pageNum,
                        @RequestParam(required = true) Integer pageSize,
-                       @RequestParam(required = true) Long dynamicId) {
-        PageInfo<Reward> page = rewardService.list( pageNum, pageSize, dynamicId);
+                       @RequestParam(required = true) Long resourceId,
+                       @RequestParam(required = false, defaultValue = "1") Integer resourceType) {
+        PageInfo<Reward> page = rewardService.list(pageNum, pageSize, resourceId, resourceType);
         return Result.success().data(page);
     }
-
 }

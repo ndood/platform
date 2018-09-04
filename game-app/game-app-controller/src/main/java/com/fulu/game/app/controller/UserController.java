@@ -113,7 +113,9 @@ public class UserController extends BaseController {
             }
             // 判断认证信息是否存在，不存在就新增
             UserInfoAuth tmp = userInfoAuthService.findByUserId(user.getId());
+            userInfoAuth.setUpdateTime(new Date());
             if (tmp == null) {
+                userInfoAuth.setCreateTime(new Date());
                 userInfoAuthService.create(userInfoAuth);
             } else {
                 userInfoAuthService.updateByUserId(userInfoAuth);
