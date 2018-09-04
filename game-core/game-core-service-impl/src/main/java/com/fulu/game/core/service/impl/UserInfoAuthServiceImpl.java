@@ -13,10 +13,7 @@ import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
-import com.fulu.game.core.dao.ICommonDao;
-import com.fulu.game.core.dao.UserInfoAuthDao;
-import com.fulu.game.core.dao.UserInfoAuthFileTempDao;
-import com.fulu.game.core.dao.VirtualProductAttachDao;
+import com.fulu.game.core.dao.*;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.vo.*;
@@ -64,6 +61,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     private UserInfoAuthFileTempService userInfoAuthFileTempService;
     @Autowired
     private VirtualProductAttachDao virtualProductAttachDao;
+    @Autowired
+    private VirtualProductDao virtualProductDao;
     
 
 
@@ -419,8 +418,17 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             //查询用户认证的所有技能
             List<UserTechAuth> userTechAuthList = userTechAuthService.findByUserId(userInfoAuth.getUserId());
             userInfoAuthVO.setUserTechAuthList(userTechAuthList);
+            
+            //获取每个陪玩师的私密照套数
+            VirtualProductVO vpv = new VirtualProductVO();
+            vpv.setUserId(userInfoAuthVO.getUserId());
+            vpv.setDelFlag(false);
+            vpv.setType(VirtualProductTypeEnum.PERSONAL_PICS.getType());
+            List<VirtualProductVO> vpList = virtualProductDao.findByVirtualProductVo(vpv);
+            userInfoAuthVO.setGroupPicCount(vpList.size());
 
             userInfoAuthVOList.add(userInfoAuthVO);
+            
         }
 
         PageInfo page = new PageInfo(userInfoAuths);

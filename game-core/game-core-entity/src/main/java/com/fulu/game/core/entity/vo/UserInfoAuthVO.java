@@ -71,5 +71,7 @@ public class UserInfoAuthVO extends UserInfoAuth {
     
     private Long unreadCount;
     
+    private Integer groupPicCount;
+    
     private List<PicGroupVO> groupList = new ArrayList<>();
 }
