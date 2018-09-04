@@ -49,16 +49,14 @@ public class VirtualProductController extends BaseController {
     /**
      * 赠送礼物
      *
-     * @param fromUserId       发起人id
      * @param targetUserId     接收人id
      * @param virtualProductId 虚拟商品id
      * @return 封装结果集
      */
     @PostMapping("/gift/send")
-    public Result sendGift(@RequestParam Integer fromUserId,
-                           @RequestParam Integer targetUserId,
+    public Result sendGift(@RequestParam Integer targetUserId,
                            @RequestParam Integer virtualProductId) {
-        virtualProductOrderService.sendGift(fromUserId, targetUserId, virtualProductId);
+        virtualProductOrderService.sendGift(targetUserId, virtualProductId);
         return Result.success().msg("送礼物成功！");
     }
 }
