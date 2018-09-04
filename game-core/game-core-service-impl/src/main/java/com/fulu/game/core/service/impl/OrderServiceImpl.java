@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -80,4 +81,17 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         return orderDao.countByParameter(orderVO) > 0;
     }
 
+    @Override
+    public List<Order> findWaitSendEmailOrder(Integer status , Integer waitMins) {
+
+        OrderVO params = new OrderVO();
+        params.setStatus(status);
+        Calendar rightNow = Calendar.getInstance();
+        rightNow.setTime(new Date());
+        rightNow.add(Calendar.MINUTE,waitMins.intValue()*-1);
+        params.setEndTime(rightNow.getTime());
+        
+        return orderDao.findByParameter(params);
+    }
+    
 }

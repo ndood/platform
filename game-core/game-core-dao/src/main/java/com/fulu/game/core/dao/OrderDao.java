@@ -65,4 +65,5 @@ public interface OrderDao extends ICommonDao<Order, Integer> {
      * @return
      */
     List<Order> findDayReconOrders(OrderSearchVO orderSearchVO);
+
 }

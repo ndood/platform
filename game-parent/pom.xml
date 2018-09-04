@@ -34,6 +34,8 @@
         <springboot.version>1.5.4.RELEASE</springboot.version>
         <easypoi.version>3.0.3</easypoi.version>
         <searchbox.jest>5.3.3</searchbox.jest>
+        <javax.mail>1.4.7</javax.mail>
+        <com.sun.mail>1.5.4</com.sun.mail>
         <main.basedir>${basedir}</main.basedir>
     </properties>
 
@@ -127,6 +129,16 @@
                 <groupId>io.searchbox</groupId>
                 <artifactId>jest</artifactId>
                 <version>${searchbox.jest}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.mail</groupId>
+                <artifactId>mail</artifactId>
+                <version>${javax.mail}</version>
+            </dependency>
+            <dependency >
+                <groupId>com.sun.mail</groupId>
+                <artifactId>javax.mail</artifactId>
+                <version>${com.sun.mail}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
