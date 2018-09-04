@@ -1,4 +1,4 @@
-package com.fulu.game.h5.controller.fenqile;
+package com.fulu.game.h5.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.exception.UserException;
@@ -12,6 +12,7 @@ import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.UserInfoAuthServiceImpl;
+import com.fulu.game.h5.controller.BaseController;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

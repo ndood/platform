@@ -1,4 +1,4 @@
-package com.fulu.game.h5.controller.fenqile;
+package com.fulu.game.h5.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
@@ -14,6 +14,7 @@ import com.fulu.game.core.service.OrderDealService;
 import com.fulu.game.core.service.OrderEventService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.h5.controller.BaseController;
 import com.fulu.game.h5.service.impl.fenqile.FenqilePayServiceImpl;
 import com.fulu.game.h5.service.impl.fenqile.H5OrderServiceImpl;
 import com.fulu.game.h5.service.impl.fenqile.H5PushServiceImpl;
