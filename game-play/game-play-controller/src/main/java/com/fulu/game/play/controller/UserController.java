@@ -193,12 +193,12 @@ public class UserController extends BaseController {
             userService.update(user);
             BeanUtil.copyProperties(user, cacheUser, CopyOptions.create().setIgnoreNullValue(true));
             userService.updateRedisUser(cacheUser);
-        } catch (Exception e) {
+        }catch (Exception e) {
             log.error("更新微信手机号错误用户信息:{};手机号:{};", user, user.getMobile());
             return Result.error().msg("手机号已被注册!");
         }
         log.info("获取用户微信手机号,更新后用户信息:{};手机号:{};", user, user.getMobile());
-        return Result.success().data(user);
+        return Result.success().data(cacheUser);
 
     }
 
@@ -246,7 +246,6 @@ public class UserController extends BaseController {
         }
         user.setUpdateTime(new Date());
         String ipStr = RequestUtil.getIpAdrress(request);
-
         User resultUser = null;
         if (user.getUnionId() == null) {
             userService.update(user);
