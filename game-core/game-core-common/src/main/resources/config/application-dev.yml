@@ -61,6 +61,20 @@ config:
       keyPath: E:\cert\apiclient_cert.p12
       tradeType: JSAPI
       notifyUrl: http://z3tfsd.natappfree.cc/wechat/pay/callback
+#    fixme 公众号配置
+    wechat_mp:
+      appId:
+      secret:
+      token:
+      aesKey:
+      msgDataFormat:
+      mchId:
+      mchKey:
+      subAppId:
+      subMchId:
+      keyPath:
+      tradeType:
+      notifyUrl:
     im:
       urlPrefix: http://a1.easemob.com
       appKey: 1183180421228734#game-test
