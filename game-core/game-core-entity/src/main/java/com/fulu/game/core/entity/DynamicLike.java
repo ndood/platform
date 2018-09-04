@@ -2,6 +2,8 @@ package com.fulu.game.core.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 
@@ -26,6 +28,7 @@ public class DynamicLike implements Serializable {
 	//点赞用户昵称（冗余字段，提高查询效率）
 	private String fromUserNickname;
 	//创建时间
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date createTime;
 	//状态（1：有效；0：取消赞）
 	private Integer status;
