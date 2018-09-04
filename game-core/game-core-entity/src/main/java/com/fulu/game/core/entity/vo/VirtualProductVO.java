@@ -17,4 +17,6 @@ public class VirtualProductVO extends VirtualProduct {
     private Integer userId;
     
     private Integer buyStatus;
+    
+    private Integer targetUserId;
 }
