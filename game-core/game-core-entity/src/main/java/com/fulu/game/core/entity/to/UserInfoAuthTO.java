@@ -29,5 +29,5 @@ public class UserInfoAuthTO extends UserInfoAuth {
     //标签
     private Integer[] tags;
 
-
+    private String privatePicStr;
 }
