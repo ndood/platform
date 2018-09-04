@@ -44,7 +44,7 @@ public interface VirtualProductService extends ICommonService<VirtualProduct, In
      *
      * @return
      */
-    void unlockProduct(Integer userId , Integer virtualProductId);
+    void unlockProduct(Integer userId, Integer virtualProductId);
 
 
     /**

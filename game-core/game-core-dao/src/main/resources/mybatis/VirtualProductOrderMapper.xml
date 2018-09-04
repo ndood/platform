@@ -124,4 +124,13 @@
             id = #{id}
         </where>
     </update>
+
+    <select id="findByOrderNo" resultType="com.fulu.game.core.entity.VirtualProductOrder">
+        select
+        <include refid="Base_Column_List"/>
+        from t_virtual_product_order
+        <where>
+            order_no = #{orderNo} for update
+        </where>
+    </select>
 </mapper>

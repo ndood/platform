@@ -8,7 +8,7 @@
         <result column="price" property="price"/>
         <result column="type" property="type"/>
         <result column="sort" property="sort"/>
-        <result column="attach_count"  property="attachCount" />
+        <result column="attach_count" property="attachCount"/>
         <result column="object_url" property="objectUrl"/>
         <result column="remark" property="remark"/>
         <result column="del_flag" property="delFlag"/>
@@ -16,7 +16,8 @@
         <result column="create_time" property="createTime"/>
     </resultMap>
 
-    <resultMap id="VirtualProductResultVOMap" type="com.fulu.game.core.entity.vo.VirtualProductVO" extends="VirtualProductResultMap">
+    <resultMap id="VirtualProductResultVOMap" type="com.fulu.game.core.entity.vo.VirtualProductVO"
+               extends="VirtualProductResultMap">
         <result column="user_id" property="userId"/>
         <result column="buy_status" property="buyStatus"/>
     </resultMap>
@@ -83,10 +84,10 @@
         <include refid="Base_Column_List"/>
         FROM t_virtual_product
         WHERE
-          type = 1
+        type = 1
         AND del_flag = 0
         ORDER BY
-          sort ASC;
+        sort ASC;
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">
@@ -153,7 +154,8 @@
         </where>
     </update>
 
-    <select id="findByVirtualProductVo" resultMap="VirtualProductResultVOMap" parameterType="com.fulu.game.core.entity.vo.VirtualProductVO">
+    <select id="findByVirtualProductVo" resultMap="VirtualProductResultVOMap"
+            parameterType="com.fulu.game.core.entity.vo.VirtualProductVO">
         SELECT
         t1.*,
         if(t2.id is not null ,0,1) as buy_status
@@ -169,14 +171,14 @@
             </if>
             <if test="userId != null">
                 AND t1.id IN (
-                    SELECT
-                    virtual_product_id
-                    FROM
-                    t_virtual_product_attach
-                    WHERE
-                    user_id = #{userId}
-                    GROUP BY
-                    virtual_product_id
+                SELECT
+                virtual_product_id
+                FROM
+                t_virtual_product_attach
+                WHERE
+                user_id = #{userId}
+                GROUP BY
+                virtual_product_id
                 )
             </if>
             <if test="targetUserId != null">

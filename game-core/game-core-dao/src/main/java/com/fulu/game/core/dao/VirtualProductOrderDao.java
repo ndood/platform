@@ -18,4 +18,5 @@ public interface VirtualProductOrderDao extends ICommonDao<VirtualProductOrder, 
 
     List<VirtualProductOrder> findByParameter(VirtualProductOrderVO virtualProductOrderVO);
 
+    VirtualProductOrder findByOrderNo(String orderNo);
 }

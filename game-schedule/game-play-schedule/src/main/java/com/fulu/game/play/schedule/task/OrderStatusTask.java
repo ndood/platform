@@ -1,6 +1,7 @@
 package com.fulu.game.play.schedule.task;
 
 import com.fulu.game.common.enums.OrderStatusEnum;
+import com.fulu.game.common.utils.MailUtil;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.OrderStatusDetailsService;
@@ -98,4 +99,26 @@ public class OrderStatusTask {
     }
 
 
+    /**
+     * 轮询查出8分钟未接单的订单，并发送邮件通知给运营
+     */
+    @Scheduled(cron = "0 0/1 * * * ? ")  //cron接受cron表达式，根据cron表达式确定定时规则
+    public void autoSendEmailWaitServiceOrder() {
+        List<Order> orderList = orderService.findWaitSendEmailOrder(OrderStatusEnum.WAIT_SERVICE.getStatus(),8);
+
+        //拼接邮件内容
+        StringBuffer mailContent = new StringBuffer();
+        mailContent.append("陪玩师8分钟仍然未接单，订单号分别为：");
+        for (int i = 0 ; i < orderList.size() ; i++) {
+
+            if(i+1 < orderList.size()){
+                mailContent.append(orderList.get(i).getOrderNo()+" ， ");
+            }else{
+                mailContent.append(orderList.get(i).getOrderNo());
+            }
+        }
+
+        //发送邮件
+        MailUtil.sendMail("陪玩师8分钟仍然未接单",mailContent.toString(),new String[]{"yangxudong@fulu.com"});
+    }
 }

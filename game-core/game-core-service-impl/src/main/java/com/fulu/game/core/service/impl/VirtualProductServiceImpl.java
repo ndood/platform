@@ -2,24 +2,24 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.date.DateUtil;
+import com.fulu.game.common.enums.VirtualDetailsTypeEnum;
 import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.VirtualProductException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.VirtualProductAttachDao;
 import com.fulu.game.core.dao.VirtualProductDao;
-import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.VirtualProduct;
-import com.fulu.game.core.entity.VirtualProductAttach;
-import com.fulu.game.core.entity.VirtualProductOrder;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.VirtualProductAttachVO;
 import com.fulu.game.core.entity.vo.VirtualProductOrderVO;
 import com.fulu.game.core.entity.vo.VirtualProductVO;
 import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.service.VirtualDetailsService;
 import com.fulu.game.core.service.VirtualProductOrderService;
 import com.fulu.game.core.service.VirtualProductService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +38,8 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
     private VirtualProductAttachDao virtualProductAttachDao;
     @Autowired
     private VirtualProductOrderService virtualProductOrderService;
+    @Autowired
+    private VirtualDetailsService virtualDetailsService;
     @Autowired
     private UserService userService;
 
@@ -146,6 +148,17 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
                 t.setCreateTime(new Date());
 
                 virtualProductOrderService.create(t);
+                
+                //添加钻石流水记录
+                VirtualDetails vd = new VirtualDetails();
+                vd.setUserId(userId);
+                vd.setSum(vritualBalance - price);
+                vd.setMoney(price*-1);
+                vd.setType(VirtualDetailsTypeEnum.VIRTUAL_MONEY.getType());
+                vd.setRemark("解锁 "+vp.getId()+"-"+vp.getName()+" 花费了 "+(price*-1)+"钻石");
+                vd.setCreateTime(new Date());
+
+                virtualDetailsService.create(vd);
             } else {
 
                 //用户钻石不足
@@ -156,16 +169,15 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
     }
 
 
-
     @Override
     @Transactional
     public VirtualProduct createVirtualProduct(VirtualProduct vp, Integer userId, String[] urls) {
 
         //添加商品信息
         virtualProductDao.create(vp);
-        
+
         //添加商品附件信息
-        for(int i = 0 ; i < urls.length ; i++){
+        for (int i = 0; i < urls.length; i++) {
             VirtualProductAttach vpa = new VirtualProductAttach();
             vpa.setUserId(userId);
             vpa.setVirtualProductId(vp.getId());
@@ -173,7 +185,7 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
             vpa.setCreateTime(new Date());
             virtualProductAttachDao.create(vpa);
         }
-        
+
         return vp;
     }
 }

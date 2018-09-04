@@ -1,6 +1,9 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.VirtualPayOrder;
+import me.chanjar.weixin.common.exception.WxErrorException;
+
+import java.math.BigDecimal;
 
 
 /**
@@ -12,4 +15,7 @@ import com.fulu.game.core.entity.VirtualPayOrder;
  */
 public interface VirtualPayOrderService extends ICommonService<VirtualPayOrder, Integer> {
 
+    VirtualPayOrder charge(String code, BigDecimal actualMoney, Integer virtualMoney, String mobile);
+
+    VirtualPayOrder findByOrderNo(String orderNo);
 }

@@ -609,4 +609,5 @@
         AND DATE_FORMAT(complete_time, '%Y-%m-%d') = CURDATE()
         OR DATE_FORMAT(complete_time, '%Y-%m-%d') = date_sub(curdate(), INTERVAL 1 DAY);
     </select>
+
 </mapper>
