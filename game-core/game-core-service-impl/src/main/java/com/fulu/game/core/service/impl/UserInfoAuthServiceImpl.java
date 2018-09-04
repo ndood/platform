@@ -5,6 +5,8 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.enums.FileTypeEnum;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
 import com.fulu.game.common.exception.CashException;
@@ -26,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -91,6 +94,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
      * @return
      */
     @Override
+    @Transactional
     public UserInfoAuth save(UserInfoAuthTO userInfoAuthTO) {
         log.info("保存用户认证信息:UserInfoAuthTO:{}", userInfoAuthTO);
         User user = userService.findById(userInfoAuthTO.getUserId());
@@ -107,10 +111,14 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         user.setUserInfoAuth(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType());
         user.setUpdateTime(new Date());
         userService.update(user);
+        
 
         UserInfoAuth userInfoAuth = new UserInfoAuth();
         BeanUtil.copyProperties(userInfoAuthTO, userInfoAuth);
         userInfoAuth.setUpdateTime(new Date());
+        
+        userInfoAuthDao.update(userInfoAuth);
+        
         //主图不存userInfoAuth，改为存入临时表
         userInfoAuth.setMainPicUrl(null);
         if (userInfoAuth.getId() == null) {
@@ -137,6 +145,86 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         createUserAuthVoice(userInfoAuthTO.getVoiceUrl(), user.getId(), userInfoAuthTO.getDuration());
         //添加用户信息标签
         createUserInfoTags(userInfoAuthTO.getTags(), user.getId());
+
+
+        String privatePicStr = userInfoAuthTO.getPrivatePicStr();
+
+        //设置陪玩师的私密照
+        if(StringUtils.isNotBlank(privatePicStr)){
+
+            JSONObject privatePicJson = JSONObject.parseObject(privatePicStr);
+
+            //获取需要删除的私密照组
+            JSONArray delIds = privatePicJson.getJSONArray("delList");
+
+            for(int i = 0 ; i < delIds.size() ; i++){
+                VirtualProduct t = new VirtualProduct();
+                t.setId(delIds.getIntValue(i));
+                t.setDelFlag(true);
+                virtualProductDao.update(t);
+            }
+
+            //修改私密照
+            JSONArray updateList = privatePicJson.getJSONArray("updateList");
+            for(int i  = 0 ; i < updateList.size() ; i++){
+
+                //修改商品信息
+                JSONObject groupInfo = updateList.getJSONObject(i);
+                VirtualProduct t = new VirtualProduct();
+                t.setId(groupInfo.getIntValue("vartualProductId"));
+                t.setName(groupInfo.getString("name"));
+                t.setPrice(groupInfo.getIntValue("price"));
+                t.setSort(groupInfo.getIntValue("sort"));
+                t.setAttachCount(groupInfo.getJSONArray("urls").size());
+                t.setUpdateTime(new Date());
+
+                virtualProductDao.update(t);
+
+                //修改附件信息
+                JSONArray urls =groupInfo.getJSONArray("urls");
+                //删除旧附件
+                virtualProductAttachDao.deleteByVirtualProductId(t.getId());
+                //添加新的附件信息
+                for(int j = 0 ; j < urls.size() ; j++){
+                    VirtualProductAttach vpa = new VirtualProductAttach();
+                    vpa.setUserId(userInfoAuthTO.getUserId());
+                    vpa.setVirtualProductId(t.getId());
+                    vpa.setUrl(urls.getString(j));
+                    vpa.setCreateTime(new Date());
+                    virtualProductAttachDao.create(vpa);
+                }
+            }
+
+            //添加新的私密照
+            JSONArray addList = privatePicJson.getJSONArray("addList");
+            for(int i  = 0 ; i < addList.size() ; i++){
+
+                //添加商品信息
+                JSONObject groupInfo = addList.getJSONObject(i);
+                VirtualProduct t = new VirtualProduct();
+                t.setName(groupInfo.getString("name"));
+                t.setPrice(groupInfo.getIntValue("price"));
+                t.setSort(groupInfo.getIntValue("sort"));
+                t.setType(VirtualProductTypeEnum.PERSONAL_PICS.getType());
+                t.setAttachCount(groupInfo.getJSONArray("urls").size());
+                t.setDelFlag(false);
+                t.setCreateTime(new Date());
+
+                virtualProductDao.create(t);
+
+                //获取附件信息
+                JSONArray urls =groupInfo.getJSONArray("urls");
+                //添加附件信息
+                for(int j = 0 ; j < urls.size() ; j++){
+                    VirtualProductAttach vpa = new VirtualProductAttach();
+                    vpa.setUserId(userInfoAuthTO.getUserId());
+                    vpa.setVirtualProductId(t.getId());
+                    vpa.setUrl(urls.getString(j));
+                    vpa.setCreateTime(new Date());
+                    virtualProductAttachDao.create(vpa);
+                }
+            }
+        }
 
         return userInfoAuth;
     }
