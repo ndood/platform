@@ -65,6 +65,15 @@
         </where>
     </select>
 
+    <select id="findByOrderNo" resultType="com.fulu.game.core.entity.VirtualPayOrder">
+        select
+        <include refid="Base_Column_List"/>
+        from t_virtual_pay_order
+        <where>
+            order_no = #{orderNo} for update
+        </where>
+    </select>
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_virtual_pay_order
         <where>
