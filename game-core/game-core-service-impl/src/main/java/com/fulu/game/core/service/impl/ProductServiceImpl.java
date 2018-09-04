@@ -861,4 +861,20 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return page;
     }
 
+    /**
+     * 获取用户商品列表
+     *
+     * @param pageNum
+     * @param pageSize
+     * @param userId
+     * @return
+     */
+    @Override
+    public PageInfo<Product> userProductList(Integer pageNum, Integer pageSize, Integer userId) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<Product> list = findByUserId(userId);
+        PageInfo page = new PageInfo(list);
+        return page;
+    }
+
 }

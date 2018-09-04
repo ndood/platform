@@ -18,4 +18,11 @@ public interface DynamicDao extends ICommonDao<Dynamic,Long>{
 
     List<Dynamic> findByParameter(DynamicVO dynamicVO);
 
+    /**
+     * 后端获取动态列表
+     * @param dynamicVO
+     * @return
+     */
+    List<DynamicVO> adminList(DynamicVO dynamicVO);
+
 }

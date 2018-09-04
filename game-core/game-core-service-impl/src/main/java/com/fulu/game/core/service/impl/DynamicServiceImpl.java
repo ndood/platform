@@ -18,8 +18,10 @@ import com.fulu.game.core.search.domain.DynamicDoc;
 import com.fulu.game.core.search.domain.DynamicFileDoc;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,6 +59,9 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
     @Autowired
     private UserFriendService userFriendService;
 
+    @Autowired
+    private AdminService adminService;
+
 
     @Override
     public ICommonDao<Dynamic, Long> getDao() {
@@ -74,8 +79,10 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
         if(dynamicVO == null){
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
-        User user = userService.getCurrentUser();
-        dynamicVO.setUserId(user.getId());
+        if(dynamicVO.getUserId() == null || dynamicVO.getUserId().intValue() < 0){
+            User user = userService.getCurrentUser();
+            dynamicVO.setUserId(user.getId());
+        }
         ClientInfo clientInfo = SubjectUtil.getUserClientInfo();
         if(clientInfo != null ){
             dynamicVO.setCityCode(clientInfo.get_ipCity());
@@ -96,7 +103,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
         dynamicVO.setStatus(1);
         saveDynamic(dynamicVO);
         saveDynamicFiles(dynamicVO);
-        saveDynamicES(dynamicVO, user);
+        saveDynamicES(dynamicVO);
         return null;
     }
 
@@ -197,10 +204,11 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
     /**
      * 通过ID删除动态信息
      * @param id
+     * @param verifyUser 是否验证用户信息是否匹配（true：验证；false：不验证）
      * @return
      */
     @Override
-    public int deleteDynamicById(Long id){
+    public int deleteDynamicById(Long id, boolean verifyUser){
         Dynamic dynamic = findById(id);
         // 记录不存在
         if(dynamic == null){
@@ -208,7 +216,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
         }
         User user = userService.getCurrentUser();
         // 用户不匹配
-        if(user.getId().intValue() != dynamic.getUserId().intValue()){
+        if(verifyUser && user.getId().intValue() != dynamic.getUserId().intValue()){
             throw new UserException(UserException.ExceptionCode.USER_MISMATCH_EXCEPTION);
         }
         deleteDynamicEsById(id);
@@ -267,6 +275,29 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
         // 修改ES信息
         dynamicSearchComponent.updateIndexFilesById( id, rewards, likes, comments, clicks, userId);
         return true;
+    }
+
+    /**
+     * 后端获取动态列表
+     *
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public PageInfo<DynamicVO> adminList(Integer pageNum, Integer pageSize, String keyword, String startTime, String endTime) {
+        String orderBy =  "id desc";
+        PageHelper.startPage(pageNum,pageSize,orderBy);
+        Admin admin = adminService.getCurrentUser();
+        DynamicVO dynamicVO = new DynamicVO();
+        dynamicVO.setOperatorId(admin.getId());
+        dynamicVO.setKeyword(keyword);
+        dynamicVO.setStartTime(startTime);
+        dynamicVO.setEndTime(endTime);
+        dynamicVO.setStatus(1);
+        List<DynamicVO> couponGroupList =  dynamicDao.adminList(dynamicVO);
+        PageInfo page = new PageInfo(couponGroupList);
+        return page;
     }
 
     /**
@@ -360,7 +391,8 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
      * 保存动态ES信息
      * @param dynamicVO
      */
-    private void saveDynamicES(DynamicVO dynamicVO, User user){
+    private void saveDynamicES(DynamicVO dynamicVO){
+        User user = userService.findById(dynamicVO.getUserId());
         DynamicDoc dynamicDoc = new DynamicDoc();
         dynamicDoc.setId(dynamicVO.getId());
         dynamicDoc.setUserId(user.getId());
