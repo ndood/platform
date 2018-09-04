@@ -686,7 +686,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     public UserVO getUserInfo(Integer userId) {
         // 写访问日志
         Integer currentUserId = getCurrentUser().getId();
-        if (userId != null && userId > 0) {
+        // 非当前用户才插入访问记录
+        if (userId != null && userId > 0 && userId.intValue() != currentUserId.intValue()) {
             // 写访问日志
             AccessLog accessLog = new AccessLog();
             accessLog.setFromUserId(currentUserId.longValue());
@@ -698,7 +699,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         }
         UserVO userVO = new UserVO();
         User user = findById(userId);
-        userVO = (UserVO) user;
+        String userStr = com.alibaba.fastjson.JSONObject.toJSONString(user);
+        userVO = com.alibaba.fastjson.JSONObject.parseObject(userStr, UserVO.class);
+        userVO.setImPsw("");
         // 设置用户扩展信息（兴趣、职业、简介、视频、以及相册）
         setUserExtInfo(userVO, userId);
         // 获取新增属性信息
@@ -712,17 +715,17 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
      * @param userId
      */
     private void setUserExtInfo(UserVO userVO, Integer userId) {
-        UserInfoAuth userInfoAuth = userInfoAuthService.findById(userId);
+        UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(userId);
         if (userInfoAuth != null) {
             userVO.setInterests(userInfoAuth.getInterests());
             userVO.setAbout(userInfoAuth.getAbout());
             userVO.setProfession(userInfoAuth.getProfession());
-            List<UserInfoAuthFile> videoFiles = userInfoAuthFileService.findByUserAuthIdAndType(userId, 3);
+            List<UserInfoAuthFile> videoFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(), 3);
             //设置用户视频
             if (videoFiles != null && !videoFiles.isEmpty()) {
                 userVO.setVideoUrl(videoFiles.get(0).getUrl());
             }
-            List<UserInfoAuthFile> picFiles = userInfoAuthFileService.findByUserAuthIdAndType(userId, 1);
+            List<UserInfoAuthFile> picFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(), 1);
             //设置用户相册
             if (picFiles != null && !picFiles.isEmpty()) {
                 String[] picArr = new String[picFiles.size()];

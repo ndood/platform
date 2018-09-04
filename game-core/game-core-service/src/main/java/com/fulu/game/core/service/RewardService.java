@@ -25,8 +25,9 @@ public interface RewardService extends ICommonService<Reward,Long>{
      * 获取打赏记录列表
      * @param pageNum
      * @param pageSize
-     * @param dynamicId
+     * @param resourceId   打赏来源id
+     * @param resourceType 打赏来源类型（1：动态打赏）
      * @return
      */
-    public PageInfo<Reward> list(Integer pageNum, Integer pageSize, Long dynamicId);
+    public PageInfo<Reward> list(Integer pageNum, Integer pageSize, Long resourceId, Integer resourceType);
 }

@@ -89,6 +89,7 @@ public class AccessLogServiceImpl extends AbsCommonService<AccessLog,Long> imple
         accessLogVO.setToUserId(accessLog.getToUserId());
         List<AccessLogVO> list = accessLogDao.findByParameter(accessLogVO);
         setAccessLogInfo(accessLog);
+        accessLog.setStatus(1);
         if(list != null && !list.isEmpty() && list.size() > 0){
             // TODO shijiaoyun 只有进入首页算次数 && "首页".equals(accessLog.getMenusName())
             int count = list.get(0) != null && list.get(0).getCount() != null && list.get(0).getCount()  > 0 ? list.get(0).getCount() + 1 : 1;

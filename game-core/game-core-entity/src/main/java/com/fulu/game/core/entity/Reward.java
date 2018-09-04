@@ -25,6 +25,8 @@ public class Reward implements Serializable {
 	private Long giftId;
 	//礼物图标（冗余字段，提高查询效率）
 	private String giftUrl;
+	//礼物钻石数
+	private Integer giftPrice;
 	//给打赏用户id
 	private Long fromUserId;
 	//给打赏用户头像URL（冗余字段，提高查询效率）
