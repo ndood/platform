@@ -17,6 +17,7 @@
         <result column="head_portraits_url" property="headPortraitsUrl"/>
         <result column="nickname" property="nickname"/>
         <result column="gender" property="gender"/>
+        <result column="im_id" property="imId"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -63,7 +64,8 @@
         friend.status,
         tuser.head_portraits_url,
         tuser.nickname,
-        tuser.gender
+        tuser.gender,
+        tuser.im_id
         from t_user_friend friend
         left join t_user tuser
         <choose>
@@ -96,7 +98,8 @@
         tuser.id as userId,
         tuser.head_portraits_url,
         tuser.nickname,
-        tuser.gender
+        tuser.gender,
+        tuser.im_id
         from t_user_friend friend
         left join t_user tuser
         on (friend.to_user_id = tuser.id or friend.from_user_id = tuser.id)
@@ -113,6 +116,7 @@
             tuser.head_portraits_url,
             tuser.nickname,
             tuser.gender,
+            tuser.im_id,
             IFNULL(friend.is_attention,0) as is_attention,
             IFNULL(friend.is_black,0) as is_black
         from  t_user tuser

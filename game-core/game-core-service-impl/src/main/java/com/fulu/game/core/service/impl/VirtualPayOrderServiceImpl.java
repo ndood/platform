@@ -57,7 +57,6 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
             log.error("通过公众号获取用户信息出错", e);
         }
 
-
         //fixme 先判断mobile 然后openId 然后unionId（非空判断）
 
         return null;

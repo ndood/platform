@@ -15,7 +15,7 @@ import java.math.BigDecimal;
  */
 public interface VirtualPayOrderService extends ICommonService<VirtualPayOrder, Integer> {
 
-    VirtualPayOrder charge(String code, BigDecimal actualMoney, Integer virtualMoney, String mobile) throws WxErrorException;
+    VirtualPayOrder charge(String code, BigDecimal actualMoney, Integer virtualMoney, String mobile);
 
     VirtualPayOrder findByOrderNo(String orderNo);
 }

@@ -187,13 +187,4 @@
         </where>
         ORDER BY t1.sort is null
     </select>
-
-    <select id="findByOrderNo" resultType="com.fulu.game.core.entity.VirtualProduct">
-        select
-        <include refid="Base_Column_List"/>
-        from t_virtual_product
-        <where>
-            order_no = #{orderNo} for update
-        </where>
-    </select>
 </mapper>

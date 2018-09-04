@@ -15,9 +15,11 @@ import java.util.List;
  */
 public interface VirtualProductOrderService extends ICommonService<VirtualProductOrder, Integer> {
 
-    VirtualProductOrder sendGift(Integer fromUserId, Integer targetUserId, Integer virtualProductId);
+    VirtualProductOrder sendGift(Integer targetUserId, Integer virtualProductId);
 
     String generateVirtualProductOrderNo();
 
     List<VirtualProductOrder> findByParameter(VirtualProductOrderVO virtualProductOrderVO);
+
+    VirtualProductOrder findByOrderNo(String orderNo);
 }

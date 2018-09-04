@@ -55,6 +55,10 @@
 前端原型：https://pro.modao.cc/app/2f3dfb774f6cfe0ed6cb2f9ab0b922de5a543931#screen=sA42C9163501535098955667
 后台原型：https://pro.modao.cc/app/7MCjbsuj3t98vv6tl59a8711Z7Vualw#screen=s45815F3F3F1535076483373
 
+### 小程序礼物功能
+
+钱包 https://pro.modao.cc/app/dGOKfjJTZvxJLcxzGUVKP5YFgeGau5C#screen=s7D5BC18A481535961237793
+
 ##订单状态
 |订单状态|状态注释|
 |---|:----:|
