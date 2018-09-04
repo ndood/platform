@@ -7,8 +7,8 @@ import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.config.WxMaServiceSupply;
-import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.PlatformEcoEnum;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.common.utils.OssUtil;
@@ -38,7 +38,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -70,7 +72,6 @@ public class UserController extends BaseController {
     private PlayCouponOpenServiceImpl playCouponOpenServiceImpl;
     @Autowired
     private SpringThreadPoolExecutor springThreadPoolExecutor;
-
 
 
     @RequestMapping("tech/list")
@@ -551,5 +552,16 @@ public class UserController extends BaseController {
         return Result.success().data(advice).msg("提交成功");
     }
 
-
+    /**
+     * 用户-查询虚拟零钱余额
+     *
+     * @return
+     */
+    @PostMapping("/virtual-balance/get")
+    public Result getVirtualBalance() {
+        User user = userService.findById(userService.getCurrentUser().getId());
+        Map<String, Object> resultMap = new HashMap<>(2);
+        resultMap.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
+        return Result.success().data(resultMap).msg("查询成功！");
+    }
 }
