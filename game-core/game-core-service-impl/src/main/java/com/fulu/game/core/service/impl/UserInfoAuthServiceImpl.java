@@ -63,6 +63,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     private VirtualProductAttachDao virtualProductAttachDao;
     @Autowired
     private VirtualProductDao virtualProductDao;
+    @Autowired
+    private ProductDao productDao;
     
 
 
@@ -215,9 +217,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             List<PicGroupVO> groupList = userInfoAuthVO.getGroupList();
             PicGroupVO temp = null;
             for(int j = 0 ; j < groupList.size(); j++){
-                if(attachList.get(i).getVirtualProductId().intValue() == groupList.get(i).getVirtualProductId().intValue()){
+                if(attachList.get(i).getVirtualProductId().intValue() == groupList.get(j).getVirtualProductId().intValue()){
                     exitsFlag = true;
-                    temp = groupList.get(i);
+                    temp = groupList.get(j);
                     break;
                 }
             }
@@ -418,6 +420,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             //查询用户认证的所有技能
             List<UserTechAuth> userTechAuthList = userTechAuthService.findByUserId(userInfoAuth.getUserId());
             userInfoAuthVO.setUserTechAuthList(userTechAuthList);
+
+            ProductShowCaseVO psv = productDao.findRecommendProductByUserId(userInfoAuth.getUserId());
+            userInfoAuthVO.setRecommendProductId(psv.getId());
             
             //获取每个陪玩师的私密照套数
             VirtualProductVO vpv = new VirtualProductVO();

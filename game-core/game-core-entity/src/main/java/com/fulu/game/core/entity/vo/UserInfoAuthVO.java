@@ -73,5 +73,7 @@ public class UserInfoAuthVO extends UserInfoAuth {
     
     private Integer groupPicCount;
     
+    private Integer recommendProductId;
+    
     private List<PicGroupVO> groupList = new ArrayList<>();
 }
