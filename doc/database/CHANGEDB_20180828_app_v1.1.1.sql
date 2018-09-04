@@ -39,7 +39,7 @@ CREATE TABLE `t_user_friend` (
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   `status` tinyint(1) DEFAULT '1' COMMENT '状态（1：有效；0：无效）',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='用户朋友关系表';
+) COMMENT='用户朋友关系表';
 
 
 DROP TABLE IF EXISTS `t_admin_im_log`;
@@ -59,7 +59,7 @@ ALTER TABLE `t_user_info_auth` ADD COLUMN `im_substitute_id` int(11)  DEFAULT NU
 --添加title（推送标题）字段
 ALTER TABLE `t_push_msg` ADD COLUMN `title` varchar(255) NOT NULL COMMENT '推送标题' after `touch_time`;
 
-ALTER TABLE `t_user` ADD COLUMN `virtual_balance` bigint(20) unsigned DEFAULT NULL COMMENT '虚拟零钱（对应钻石数量）' after `balance`;
+ALTER TABLE `t_user` ADD COLUMN `virtual_balance` int(11) unsigned DEFAULT '0' COMMENT '虚拟零钱（对应钻石数量）' after `balance`;
 ALTER TABLE `t_user_info_auth` ADD COLUMN `charm` bigint(20) unsigned DEFAULT NULL COMMENT '魅力值' after `wechat`;
 ALTER TABLE `t_user_info_auth` ADD COLUMN `sort` int(11) DEFAULT NULL COMMENT '推荐位排序字段' after `allow_export`;
 
@@ -118,6 +118,9 @@ CREATE TABLE `t_virtual_details` (
   PRIMARY KEY (`id`)
 ) COMMENT='虚拟货币流水表';
 
+
+ALTER TABLE `t_push_msg` MODIFY COLUMN `type` tinyint(4) comment '推送类型(1:推送所有用户；2:推送指定用户；3：推送所有陪玩师)';
+ALTER TABLE `t_push_msg` MODIFY COLUMN `platform` tinyint(1) comment '平台(1:陪玩;2:开黑;3:H5;45:APP)';
 ALTER TABLE `t_push_msg` ADD COLUMN `jump_type` tinyint(1) DEFAULT NULL COMMENT '跳转类型（1：H5；2：内部跳转页(小程序）；3：官方公告；4：聊天室；5：名片页）' after `type`;
 
 -- 修改用户认证表
