@@ -38,7 +38,7 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
     }
 
     @Override
-    public VirtualPayOrder charge(String code, BigDecimal actualMoney, Integer virtualMoney, String mobile) {
+    public void login(String code, String mobile) {
         if (StringUtils.isBlank(code)) {
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
@@ -52,10 +52,35 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
             openId = token.getOpenId();
             WxMpUser wxMpUser = wxMpService.oauth2getUserInfo(token, null);
             unionId = wxMpUser.getUnionId();
+            //todo
+
+
+
         } catch (WxErrorException e) {
             e.printStackTrace();
-            log.error("通过公众号获取用户信息出错", e);
+            log.error("获取公众号用户信息出错", e);
         }
+    }
+
+    @Override
+    public VirtualPayOrder charge(String code, BigDecimal actualMoney, Integer virtualMoney, String mobile) {
+//        if (StringUtils.isBlank(code)) {
+//            throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
+//        }
+//
+//        WxMpService wxMpService = wxMpServiceSupply.getWxMpService();
+//        WxMpOAuth2AccessToken token;
+//        String openId = null;
+//        String unionId = null;
+//        try {
+//            token = wxMpService.oauth2getAccessToken(code);
+//            openId = token.getOpenId();
+//            WxMpUser wxMpUser = wxMpService.oauth2getUserInfo(token, null);
+//            unionId = wxMpUser.getUnionId();
+//        } catch (WxErrorException e) {
+//            e.printStackTrace();
+//            log.error("通过公众号获取用户信息出错", e);
+//        }
 
         //fixme 先判断mobile 然后openId 然后unionId（非空判断）
 
