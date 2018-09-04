@@ -46,19 +46,17 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
     /**
      * 赠送礼物
      *
-     * @param fromUserId       发起人id
      * @param targetUserId     接收人id
      * @param virtualProductId 虚拟商品id
      * @return 虚拟订单Bean
      */
     @Override
-    public VirtualProductOrder sendGift(Integer fromUserId, Integer targetUserId, Integer virtualProductId) {
-        userService.isCurrentUser(fromUserId);
-        User fromUser = userService.findById(fromUserId);
+    public VirtualProductOrder sendGift(Integer targetUserId, Integer virtualProductId) {
+        User fromUser = userService.getCurrentUser();
         Integer virtualBalance = fromUser.getVirtualBalance() == null ? 0 : fromUser.getVirtualBalance();
         Integer price = virtualProductService.findPriceById(virtualProductId);
         if (virtualBalance < price) {
-            log.error("用户userId：{}的钻石余额不够送礼物，钻石余额：{}，礼物价值：{}", fromUserId, virtualBalance, price);
+            log.error("用户userId：{}的钻石余额不够送礼物，钻石余额：{}，礼物价值：{}", fromUser.getId(), virtualBalance, price);
             throw new VirtualProductException(VirtualProductException.ExceptionCode.BALANCE_NOT_ENOUGH_EXCEPTION);
         }
 
@@ -74,7 +72,7 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
         order.setOrderNo(generateVirtualProductOrderNo());
         order.setVirtualProductId(virtualProductId);
         order.setPrice(price);
-        order.setFromUserId(fromUserId);
+        order.setFromUserId(fromUser.getId());
         order.setTargetUserId(targetUserId);
         order.setRemark(VirtualProductTypeEnum.VIRTUAL_GIFT.getMsg());
         order.setUpdateTime(DateUtil.date());
