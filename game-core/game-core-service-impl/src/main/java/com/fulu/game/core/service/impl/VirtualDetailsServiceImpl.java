@@ -2,7 +2,6 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.date.DateUtil;
-import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.enums.VirtualDetailsTypeEnum;
 import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.UserException;
@@ -68,10 +67,6 @@ public class VirtualDetailsServiceImpl extends AbsCommonService<VirtualDetails, 
         if (virtualDetailsTypeEnum.equals(VirtualDetailsTypeEnum.VIRTUAL_MONEY)) {
             sum = user.getVirtualBalance();
         } else if (virtualDetailsTypeEnum.equals(VirtualDetailsTypeEnum.CHARM)) {
-            if (!UserTypeEnum.ACCOMPANY_PLAYER.getType().equals(user.getType())) {
-                log.error("非陪玩师不能成为接收礼物的对象，userId:{}", user.getId());
-                throw new UserException(UserException.ExceptionCode.USER_MISMATCH_EXCEPTION);
-            }
             UserInfoAuth auth = userInfoAuthService.findByUserId(user.getId());
             sum = auth.getCharm() == null ? 0 : auth.getCharm();
         }

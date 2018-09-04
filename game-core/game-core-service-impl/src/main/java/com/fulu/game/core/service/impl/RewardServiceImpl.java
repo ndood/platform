@@ -7,9 +7,8 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.VirtualProductOrder;
 import com.fulu.game.core.entity.vo.RewardVO;
 import com.fulu.game.core.entity.vo.UserFriendVO;
-import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.VirtualProductOrderService;
-import com.fulu.game.core.service.VirtualProductService;
+import com.fulu.game.core.search.component.DynamicSearchComponent;
+import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import com.fulu.game.core.dao.RewardDao;
 import com.fulu.game.core.entity.Reward;
-import com.fulu.game.core.service.RewardService;
 
 import java.util.List;
 
@@ -35,6 +33,9 @@ public class RewardServiceImpl extends AbsCommonService<Reward, Long> implements
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private DynamicService dynamicService;
 
     @Override
     public ICommonDao<Reward, Long> getDao() {
@@ -53,13 +54,14 @@ public class RewardServiceImpl extends AbsCommonService<Reward, Long> implements
         if (rewardVO == null) {
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
-        // TODO shijiaoyun 生存订单号，插入订单表，然后在插入打赏记录表
         User user = userService.getCurrentUser();
         log.info("打赏记录：打赏用户Id：{}，接收奖励用户id：{}，礼物id：{}", user.getId(), rewardVO.getToUserId(), rewardVO.getGiftId());
         VirtualProductOrder virtualProductOrder = virtualProductOrderService.sendGift(user.getId(), rewardVO.getToUserId().intValue(), rewardVO.getGiftId().intValue());
         if(virtualProductOrder != null ){
             rewardVO.setOrderNo(virtualProductOrder.getOrderNo());
             create(rewardVO);
+            //修改动态点赞次数
+            dynamicService.updateIndexFilesById(rewardVO.getResourceId(),true, 0, 0,false);
         } else {
             log.error("打赏记录：打赏用户Id：{}，接收奖励用户id：{}，礼物id：{}，调用虚拟商品订单接口失败", user.getId(), rewardVO.getToUserId(), rewardVO.getGiftId());
         }

@@ -21,4 +21,6 @@ public interface VirtualProductDao extends ICommonDao<VirtualProduct, Integer> {
     List<VirtualProduct> findAllGift();
     
     List<VirtualProductVO> findByVirtualProductVo(VirtualProductVO virtualProductVO);
+
+    VirtualProduct findByOrderNo(String orderNo);
 }

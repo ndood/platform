@@ -3,6 +3,7 @@ package com.fulu.game.core.service.impl;
 
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.vo.DynamicCommentVO;
+import com.fulu.game.core.service.DynamicService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class DynamicCommentServiceImpl extends AbsCommonService<DynamicComment,L
     @Autowired
 	private DynamicCommentDao dynamicCommentDao;
 
+    @Autowired
+    private DynamicService dynamicService;
+
 
 
     @Override
@@ -37,6 +41,7 @@ public class DynamicCommentServiceImpl extends AbsCommonService<DynamicComment,L
     @Override
     public void save(DynamicCommentVO dynamicCommentVO) {
         dynamicCommentDao.create(dynamicCommentVO);
+        dynamicService.updateIndexFilesById(dynamicCommentVO.getId(), false, 0, 1,false);
         // TODO shijiaoyun 此处需要发送Jpush消息，通知被评论用户
 
     }

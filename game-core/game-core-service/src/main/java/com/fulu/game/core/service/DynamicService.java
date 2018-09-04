@@ -58,4 +58,22 @@ public interface DynamicService extends ICommonService<Dynamic,Long>{
      * @return
      */
     public List<DynamicVO> getNewestDynamicList(Integer userId);
+
+    /**
+     * 删除动态
+     * @param id
+     * @return
+     */
+    public int deleteDynamicById(Long id);
+
+    /**
+     * 修改动态中实时变化的值
+     * @param id 动态id
+     * @param rewards 是否自增打赏次数（true：自增；false：不自增）
+     * @param likes 点赞次数 (取消点赞： -1；点赞：1)
+     * @param comments 评论次数 (删除评论： -1；评论：1)
+     * @param clicks 是否自增点击次数（true：自增；false：不自增）
+     * @return
+     */
+    public boolean updateIndexFilesById(Long id, boolean rewards, Integer likes,Integer comments,boolean clicks);
 }

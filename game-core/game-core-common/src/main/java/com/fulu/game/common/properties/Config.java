@@ -24,6 +24,8 @@ public class Config {
     private Wechat wechat_game = new Wechat();
 
     private Wechat wechat_poit = new Wechat();
+    //微信公众号
+    private Wechat wechat_mp = new Wechat();
 
     private Elasticsearch elasticsearch = new Elasticsearch();
 
@@ -85,7 +87,7 @@ public class Config {
     }
 
     @Data
-    public static class Elasticsearch{
+    public static class Elasticsearch {
         private String host;
         private int readTimeout;
         private String indexDB;
@@ -94,7 +96,7 @@ public class Config {
     }
 
     @Data
-    public static class Jpush{
+    public static class Jpush {
         private String appKey;
         private String appSecret;
     }
