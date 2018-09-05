@@ -60,7 +60,7 @@ ALTER TABLE `t_user_info_auth` ADD COLUMN `im_substitute_id` int(11)  DEFAULT NU
 ALTER TABLE `t_push_msg` ADD COLUMN `title` varchar(255) NOT NULL COMMENT '推送标题' after `touch_time`;
 
 ALTER TABLE `t_user` ADD COLUMN `virtual_balance` int(11) unsigned DEFAULT '0' COMMENT '虚拟零钱（对应钻石数量）' after `balance`;
-ALTER TABLE `t_user_info_auth` ADD COLUMN `charm` bigint(20) unsigned DEFAULT NULL COMMENT '魅力值' after `wechat`;
+ALTER TABLE `t_user` ADD COLUMN `charm` int(11) unsigned DEFAULT '0' COMMENT '魅力值' after `virtual_balance`;
 ALTER TABLE `t_user_info_auth` ADD COLUMN `sort` int(11) DEFAULT NULL COMMENT '推荐位排序字段' after `allow_export`;
 
 
