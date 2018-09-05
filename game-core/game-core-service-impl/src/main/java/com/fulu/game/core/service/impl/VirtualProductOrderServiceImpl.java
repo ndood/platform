@@ -2,6 +2,7 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.date.DateUtil;
+import com.fulu.game.common.enums.VirtualDetailsRemarkEnum;
 import com.fulu.game.common.enums.VirtualDetailsTypeEnum;
 import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.UserException;
@@ -10,6 +11,7 @@ import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.VirtualProductOrderDao;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.VirtualDetails;
 import com.fulu.game.core.entity.VirtualProductOrder;
 import com.fulu.game.core.entity.vo.VirtualProductOrderVO;
 import com.fulu.game.core.service.*;
@@ -49,7 +51,7 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
      */
     @Override
     public VirtualProductOrder sendGift(Integer targetUserId, Integer virtualProductId) {
-        User fromUser = userService.getCurrentUser();
+        User fromUser = userService.findById(userService.getCurrentUser().getId());
         Integer virtualBalance = fromUser.getVirtualBalance() == null ? 0 : fromUser.getVirtualBalance();
         Integer price = virtualProductService.findPriceById(virtualProductId);
         if (virtualBalance < price) {
@@ -77,19 +79,29 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
         create(order);
 
         //记录发起人流水
-        virtualDetailsService.createVirtualDetails(fromUser,
-                virtualProductId,
-                Math.negateExact(price),
-                VirtualDetailsTypeEnum.VIRTUAL_MONEY,
-                VirtualProductTypeEnum.VIRTUAL_GIFT);
+        VirtualDetails details = new VirtualDetails();
+        details.setUserId(fromUser.getId());
+        details.setRelevantNo(order.getOrderNo());
+        details.setSum(fromUser.getVirtualBalance());
+        details.setMoney(Math.negateExact(price));
+        details.setType(VirtualDetailsTypeEnum.VIRTUAL_MONEY.getType());
+        details.setRemark(VirtualDetailsRemarkEnum.GIFT_COST.getMsg());
+        details.setCreateTime(DateUtil.date());
+        virtualDetailsService.create(details);
+
         //接收人加魅力值
-        userService.modifyCharm(targetUser, price);
+        targetUser = userService.modifyCharm(targetUser, price);
         //记录接收人流水
-        virtualDetailsService.createVirtualDetails(targetUser,
-                virtualProductId,
-                price,
-                VirtualDetailsTypeEnum.CHARM,
-                VirtualProductTypeEnum.VIRTUAL_GIFT);
+        VirtualDetails targetDetails = new VirtualDetails();
+        targetDetails.setUserId(targetUser.getId());
+        targetDetails.setRelevantNo(order.getOrderNo());
+        targetDetails.setSum(targetUser.getCharm());
+        targetDetails.setMoney(price);
+        targetDetails.setType(VirtualDetailsTypeEnum.CHARM.getType());
+        targetDetails.setRemark(VirtualDetailsRemarkEnum.GIFT_RECEIVE.getMsg());
+        targetDetails.setCreateTime(DateUtil.date());
+        virtualDetailsService.create(targetDetails);
+
         return order;
     }
 

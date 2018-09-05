@@ -16,7 +16,8 @@ public enum VirtualDetailsRemarkEnum implements TypeEnum<Integer> {
     UNLOCK_PERSONAL_PICS(2, "解锁私密照"),
     UNLOCK_PICS(3, "解锁图片"),
     UNLOCK_VOICE(4, "解锁语音"),
-    LOGIN_BOUNS(5, "登录奖励");
+    LOGIN_BOUNS(5, "登录奖励"),
+    GIFT_RECEIVE(6, "接收礼物");
 
     private Integer type;
     private String msg;
