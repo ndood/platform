@@ -329,3 +329,7 @@ UPDATE `t_sales_mode` SET `platform_show` = 1 WHERE `type` = 2;
 UPDATE `t_product` pro SET `platform_show` = (SELECT `platform_show` FROM `t_sales_mode` sm WHERE pro.sales_mode_id = sm.id) ;
 
 --  修改价格多平台显示部分结束 --
+
+
+-- 修改动态表的技能id为商品id
+alter table t_dynamic change  column tech_info_id product_id bigint(20)
