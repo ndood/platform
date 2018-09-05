@@ -1,18 +1,12 @@
 package com.fulu.game.core.service.impl;
 
 
-import com.fulu.game.common.config.WxMpServiceSupply;
-import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.VirtualPayOrderDao;
 import com.fulu.game.core.entity.VirtualPayOrder;
 import com.fulu.game.core.service.VirtualPayOrderService;
 import lombok.extern.slf4j.Slf4j;
-import me.chanjar.weixin.common.exception.WxErrorException;
-import me.chanjar.weixin.mp.api.WxMpService;
-import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
-import me.chanjar.weixin.mp.bean.result.WxMpUser;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,15 +22,12 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
     private VirtualPayOrderDao virtualPayOrderDao;
     @Autowired
     private VirtualPayOrderService virtualPayOrderService;
-    @Autowired
-    private WxMpServiceSupply wxMpServiceSupply;
 
 
     @Override
     public ICommonDao<VirtualPayOrder, Integer> getDao() {
         return virtualPayOrderDao;
     }
-
 
 
     @Override
