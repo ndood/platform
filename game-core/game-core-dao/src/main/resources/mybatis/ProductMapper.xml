@@ -331,7 +331,7 @@
                 category_id
         ) t2 ON t2.id = t1.sales_mode_id
         AND t1.user_id = #{userId}
-        GROUP BY userId limit 1,1
+        GROUP BY user_Id limit 0,1
         
     </select>
 
