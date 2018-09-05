@@ -6,6 +6,7 @@ import com.fulu.game.core.entity.VirtualPayOrder;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.VirtualPayOrderService;
 import com.fulu.game.h5.controller.BaseController;
+import com.fulu.game.h5.service.impl.mp.MpPayServiceImpl;
 import com.fulu.game.h5.utils.RequestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +28,14 @@ import java.util.Map;
  */
 @RestController
 @Slf4j
-@RequestMapping("/mp/order")
+@RequestMapping("/api/v1/virtual-pay-order")
 public class OrderController extends BaseController {
     @Autowired
-    private VirtualPayOrderService virtualPayOrderService;
-    @Autowired
     private UserService userService;
+    @Autowired
+    private MpPayServiceImpl payService;
+    @Autowired
+    private VirtualPayOrderService virtualPayOrderService;
 
     /**
      * 提交充值订单
@@ -49,7 +52,7 @@ public class OrderController extends BaseController {
                          @RequestParam BigDecimal actualMoney,
                          @RequestParam Integer virtualMoney) {
         String ip = RequestUtil.getIpAdrress(request);
-        String orderNo = virtualPayOrderService.submit(sessionkey, actualMoney, virtualMoney, ip);
+        String orderNo = payService.submit(sessionkey, actualMoney, virtualMoney, ip);
         Map<String, Object> resultMap = new HashMap<>(2);
         resultMap.put("orderNo", orderNo);
         return Result.success().data(resultMap).msg("创建订单成功!");
@@ -71,19 +74,19 @@ public class OrderController extends BaseController {
     }
 
     /**
-     * 订单微信支付
+     * 微信支付订单
      *
      * @param request request
      * @param orderNo 订单编号
      * @return 封装结果集
      */
-    @RequestMapping(value = "/pay")
-    public Result pay(HttpServletRequest request,
-                      @RequestParam String orderNo) {
+    @RequestMapping(value = "/wechat/pay")
+    public Result wechatPay(HttpServletRequest request,
+                            @RequestParam String orderNo) {
         String ip = RequestUtil.getIpAdrress(request);
         VirtualPayOrder order = virtualPayOrderService.findByOrderNo(orderNo);
         User user = userService.findById(order.getUserId());
-        Object result = virtualPayOrderService.payOrder(order, user, ip);
+        Object result = payService.payOrder(order, user, ip);
         return Result.success().data(result);
     }
 }

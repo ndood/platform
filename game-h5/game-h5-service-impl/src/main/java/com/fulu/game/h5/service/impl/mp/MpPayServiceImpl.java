@@ -1,5 +1,4 @@
-package com.fulu.game.core.service.impl;
-
+package com.fulu.game.h5.service.impl.mp;
 
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.config.WxMpServiceSupply;
@@ -9,7 +8,6 @@ import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.SystemException;
 import com.fulu.game.common.utils.GenIdUtil;
-import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.VirtualPayOrderDao;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.VirtualPayOrder;
@@ -17,42 +15,52 @@ import com.fulu.game.core.service.OrderMoneyDetailsService;
 import com.fulu.game.core.service.PlatformMoneyDetailsService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.VirtualPayOrderService;
+import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.core.service.impl.VirtualPayOrderServiceImpl;
 import com.github.binarywang.wxpay.bean.order.WxPayMpOrderResult;
 import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-
+/**
+ * todo：描述文字
+ *
+ * @author Gong ZeChun
+ * @date 2018/9/5 14:14
+ */
 @Service
 @Slf4j
-public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder, Integer> implements VirtualPayOrderService {
-
+public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
     @Autowired
-    private VirtualPayOrderDao virtualPayOrderDao;
+    private PlatformMoneyDetailsService platformMoneyDetailsService;
+    @Autowired
+    private OrderMoneyDetailsService orderMoneyDetailsService;
+    @Qualifier("virtualPayOrderServiceImpl")
     @Autowired
     private VirtualPayOrderService virtualPayOrderService;
-
-    @Autowired
-    private WxMpServiceSupply wxMpServiceSupply;
     @Autowired
     private UserService userService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
     @Autowired
-    private PlatformMoneyDetailsService platformMoneyDetailsService;
-    @Autowired
-    private OrderMoneyDetailsService orderMoneyDetailsService;
+    private WxMpServiceSupply wxMpServiceSupply;
 
+    /**
+     * 提交充值订单
+     *
+     * @param sessionkey   订单校验令牌
+     * @param actualMoney  实付金额（人民币）
+     * @param virtualMoney 充值虚拟币金额（钻石）
+     * @param ip           ip
+     * @return 订单号
+     */
     @Override
-    public ICommonDao<VirtualPayOrder, Integer> getDao() {
-        return virtualPayOrderDao;
-    }
-
     public String submit(String sessionkey, BigDecimal actualMoney, Integer virtualMoney, String ip) {
         User user = userService.getCurrentUser();
         if (!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))) {
@@ -73,15 +81,9 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
         order.setCreateTime(DateUtil.date());
 
         //创建订单
-        virtualPayOrderDao.create(order);
+        virtualPayOrderService.create(order);
         redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));
         return order.getOrderNo();
-    }
-
-    public Object pay(String orderNo, String ip) {
-        VirtualPayOrder order = findByOrderNo(orderNo);
-        User user = userService.findById(order.getUserId());
-        return payOrder(order, user, ip);
     }
 
     public Object payOrder(VirtualPayOrder order, User user, String requestIp) {
@@ -105,47 +107,6 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
     }
 
     /**
-     * 支付成功
-     *
-     * @param orderNo     订单号
-     * @param actualMoney 实付金额
-     * @return 订单Bean
-     */
-    private VirtualPayOrder payOrder(String orderNo, BigDecimal actualMoney) {
-        log.info("用户支付订单orderNo:{},actualMoney:{}", orderNo, actualMoney);
-        VirtualPayOrder order = findByOrderNo(orderNo);
-        if (order.getIsPayCallback()) {
-            throw new OrderException(orderNo, "重复支付订单![" + order.toString() + "]");
-        }
-        order.setIsPayCallback(true);
-        order.setPayTime(DateUtil.date());
-        order.setUpdateTime(DateUtil.date());
-        order.setCreateTime(DateUtil.date());
-        update(order);
-        //记录平台流水
-        platformMoneyDetailsService.createOrderDetails(
-                PlatFormMoneyTypeEnum.VIRTUAL_ORDER_PAY,
-                order.getOrderNo(),
-                order.getActualMoney());
-
-        //记录订单流水
-        orderMoneyDetailsService.create(order.getOrderNo(), order.getUserId(), DetailsEnum.VIRTUAL_ORDER_PAY, actualMoney);
-        //fixme 留言通知推送
-        return order;
-    }
-
-    private WxPayMpOrderResult pay(VirtualPayOrder order, User user, String ip) {
-        WxPayUnifiedOrderRequest orderRequest = buildWxPayRequest(order, ip);
-        try {
-            orderRequest.setOpenid(user.getOpenId());
-            return wxMpServiceSupply.wxMpPayService().createOrder(orderRequest);
-        } catch (Exception e) {
-            log.error("虚拟订单支付错误", e);
-            throw new OrderException(orderRequest.getOutTradeNo(), "虚拟订单无法支付!");
-        }
-    }
-
-    /**
      * 构造微信支付请求request
      *
      * @param order 订单
@@ -162,40 +123,48 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
         return orderRequest;
     }
 
-    public VirtualPayOrder charge(String code, BigDecimal actualMoney, Integer virtualMoney, String mobile) {
-//        if (StringUtils.isBlank(code)) {
-//            throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
-//        }
-//
-//        WxMpService wxMpService = wxMpServiceSupply.getWxMpService();
-//        WxMpOAuth2AccessToken token;
-//        String openId = null;
-//        String unionId = null;
-//        try {
-//            token = wxMpService.oauth2getAccessToken(code);
-//            openId = token.getOpenId();
-//            WxMpUser wxMpUser = wxMpService.oauth2getUserInfo(token, null);
-//            unionId = wxMpUser.getUnionId();
-//        } catch (WxErrorException e) {
-//            e.printStackTrace();
-//            log.error("通过公众号获取用户信息出错", e);
-//        }
-
-        //fixme 先判断mobile 然后openId 然后unionId（非空判断）
-
-        return null;
-    }
-
-    @Override
-    public VirtualPayOrder findByOrderNo(String orderNo) {
-        if (StringUtils.isBlank(orderNo)) {
-            return null;
+    private WxPayMpOrderResult pay(VirtualPayOrder order, User user, String ip) {
+        WxPayUnifiedOrderRequest orderRequest = buildWxPayRequest(order, ip);
+        try {
+            orderRequest.setOpenid(user.getOpenId());
+            return wxMpServiceSupply.wxMpPayService().createOrder(orderRequest);
+        } catch (Exception e) {
+            log.error("虚拟订单支付错误", e);
+            throw new OrderException(orderRequest.getOutTradeNo(), "虚拟订单无法支付!");
         }
-
-        return virtualPayOrderDao.findByOrderNo(orderNo);
     }
 
-    private String generateVirtualPayOrderNo() {
+    /**
+     * 支付成功
+     *
+     * @param orderNo     订单号
+     * @param actualMoney 实付金额
+     * @return 订单Bean
+     */
+    public VirtualPayOrder payOrder(String orderNo, BigDecimal actualMoney) {
+        log.info("用户支付订单orderNo:{},actualMoney:{}", orderNo, actualMoney);
+        VirtualPayOrder order = virtualPayOrderService.findByOrderNo(orderNo);
+        if (order.getIsPayCallback()) {
+            throw new OrderException(orderNo, "重复支付订单![" + order.toString() + "]");
+        }
+        order.setIsPayCallback(true);
+        order.setPayTime(DateUtil.date());
+        order.setUpdateTime(DateUtil.date());
+        order.setCreateTime(DateUtil.date());
+        virtualPayOrderService.update(order);
+        //记录平台流水
+        platformMoneyDetailsService.createOrderDetails(
+                PlatFormMoneyTypeEnum.VIRTUAL_ORDER_PAY,
+                order.getOrderNo(),
+                order.getActualMoney());
+
+        //记录订单流水
+        orderMoneyDetailsService.create(order.getOrderNo(), order.getUserId(), DetailsEnum.VIRTUAL_ORDER_PAY, actualMoney);
+        //fixme 留言通知推送
+        return order;
+    }
+
+    public String generateVirtualPayOrderNo() {
         String orderNo = "C_" + GenIdUtil.GetOrderNo();
         if (virtualPayOrderService.findByOrderNo(orderNo) == null) {
             return orderNo;

@@ -36,9 +36,6 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
     private VirtualDetailsService virtualDetailsService;
     @Autowired
     private VirtualProductService virtualProductService;
-    @Qualifier("userInfoAuthServiceImpl")
-    @Autowired
-    private UserInfoAuthService userInfoAuthService;
 
     @Override
     public ICommonDao<VirtualProductOrder, Integer> getDao() {
