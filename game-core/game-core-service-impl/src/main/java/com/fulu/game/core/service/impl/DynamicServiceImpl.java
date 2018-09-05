@@ -2,10 +2,12 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.domain.ClientInfo;
 import com.fulu.game.common.exception.CommonException;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.utils.HttpUtils;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.common.utils.geo.GeoHashUtil;
 import com.fulu.game.common.utils.geo.Point;
@@ -162,7 +164,9 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
      */
     @Override
     public DynamicDoc getDynamicDocById(Long id) {
-        return dynamicSearchComponent.searchById(id, DynamicDoc.class);
+        DynamicDoc dynamicDoc = dynamicSearchComponent.searchById(id, DynamicDoc.class);
+        setFileInfo(dynamicDoc);
+        return dynamicDoc;
     }
 
     /**
@@ -241,14 +245,14 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
             log.info("修改动态索引异常，未找到id： {}", id);
             return false;
         }
-        if(rewards ){
+        if( rewards ){
             if(dynamic.getRewards() != null){
                 dynamic.setRewards(dynamic.getRewards() + 1);
             } else {
                 dynamic.setRewards( 1L);
             }
         }
-        if(likes != null ){
+        if(likes != null && likes.intValue() != 0){
             if(dynamic.getLikes() != null){
                 dynamic.setLikes(dynamic.getLikes() + likes);
             } else {
@@ -264,7 +268,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
                 dynamic.setComments(1L);
             }
         }
-        if(clicks ){
+        if( clicks ){
             if(dynamic.getClicks() != null){
                 dynamic.setClicks(dynamic.getClicks() + 1);
             } else {
@@ -336,6 +340,33 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
                 dynamicDoc.setIsLike(1);
             } else {
                 dynamicDoc.setIsLike(0);
+            }
+            setFileInfo(dynamicDoc);
+        }
+    }
+
+    /**
+     * 设置图片长宽信息
+     * @param dynamicDoc
+     */
+    private void setFileInfo(DynamicDoc dynamicDoc){
+        if(dynamicDoc != null && dynamicDoc.getFiles() != null && dynamicDoc.getFiles().size() == 1){
+            DynamicFileDoc dynamicFileDoc = dynamicDoc.getFiles().get(0);
+            try {
+                if(dynamicFileDoc.getType().intValue() == 1 ){
+                    //获取图片信息接口
+                    String imgUrl = dynamicFileDoc.getUrl() + "?x-oss-process=image/info";
+                    String imgInfoStr = HttpUtils.get(imgUrl,null);
+                    JSONObject jsonObject = JSONObject.parseObject(imgInfoStr);
+                    dynamicFileDoc.setHeight(Integer.parseInt(jsonObject.getJSONObject("ImageHeight").getString("value")));
+                    dynamicFileDoc.setWidth(Integer.parseInt(jsonObject.getJSONObject("ImageWidth").getString("value")));
+                    List<DynamicFileDoc> list = new ArrayList<>();
+                    list.add(dynamicFileDoc);
+                    dynamicDoc.setFiles(list);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+                log.warn("获取图片信息发生异常，图片地址：{}，异常信息：{}",dynamicFileDoc.getUrl() + "?x-oss-process=image/info", e.getMessage());
             }
         }
     }

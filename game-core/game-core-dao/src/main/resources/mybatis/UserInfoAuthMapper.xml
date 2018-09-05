@@ -8,7 +8,6 @@
         <result column="mobile" property="mobile"/>
         <result column="qq" property="qq"/>
         <result column="wechat" property="wechat"/>
-        <result column="charm" property="charm"/>
         <result column="is_reject_submit" property="isRejectSubmit"/>
         <result column="main_pic_url" property="mainPicUrl"/>
         <result column="push_time_interval" property="pushTimeInterval"/>
@@ -37,7 +36,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,mobile,qq,wechat,charm,is_reject_submit,main_pic_url,push_time_interval,allow_export,sort,create_time,update_time,im_substitute_id,interests,profession,about
+        id,user_id,mobile,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,sort,create_time,update_time,im_substitute_id,interests,profession,about
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserInfoAuthResultMap">
@@ -84,9 +83,6 @@
             </if>
             <if test="wechat != null">
                 and wechat = #{wechat}
-            </if>
-            <if test="charm != null">
-                and charm = #{charm}
             </if>
             <if test="interests != null">
                 and interests = #{interests}
@@ -191,9 +187,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserInfoAuth">
         insert into
-        t_user_info_auth (user_id,mobile,qq,wechat,charm,is_reject_submit,main_pic_url,push_time_interval,allow_export,sort,create_time,update_time,interests,profession,about)
+        t_user_info_auth (user_id,mobile,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,sort,create_time,update_time,interests,profession,about)
         values
-        (#{userId},#{mobile},#{qq},#{wechat},#{charm},#{isRejectSubmit},#{mainPicUrl},#{pushTimeInterval},#{allowExport},#{sort},#{createTime},#{updateTime},#{interests},#{profession},#{about})
+        (#{userId},#{mobile},#{qq},#{wechat},#{isRejectSubmit},#{mainPicUrl},#{pushTimeInterval},#{allowExport},#{sort},#{createTime},#{updateTime},#{interests},#{profession},#{about})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.UserInfoAuth">
@@ -214,9 +210,6 @@
 
             <if test="wechat != null">
                 wechat = #{wechat},
-            </if>
-            <if test="charm != null">
-                charm = #{charm},
             </if>
             <if test="isRejectSubmit != null">
                 is_reject_submit = #{isRejectSubmit},
@@ -273,9 +266,6 @@
 
             <if test="wechat != null">
                 wechat = #{wechat},
-            </if>
-            <if test="charm != null">
-                charm = #{charm},
             </if>
             <if test="isRejectSubmit != null">
                 is_reject_submit = #{isRejectSubmit},
