@@ -122,6 +122,15 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         }
     }
 
+    @Override
+    public Product findAppProductByTech(Integer techId){
+        List<Product> productList = productDao.findAppProductByTech(techId);
+        if(productList.isEmpty()){
+            return null;
+        }
+        return productList.get(0);
+    }
+
 
     @Override
     public Product update(Integer id, Integer techAuthId, BigDecimal price, Integer unitId) {

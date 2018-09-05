@@ -28,6 +28,12 @@ public interface ProductService extends ICommonService<Product,Integer>{
 
     void deleteAllProductIndex();
 
+    /**
+     * 通过陪玩师技能查询对应的app显示商品
+     * @param techId
+     * @return
+     */
+    Product findAppProductByTech(Integer techId);
 
     /**
      * 陪玩师新建接单方式

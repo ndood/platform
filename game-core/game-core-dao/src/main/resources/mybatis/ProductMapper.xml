@@ -14,6 +14,7 @@
         <result column="unit" property="unit"/>
         <result column="sales_mode_id" property="salesModeId"/>
         <result column="sales_mode_rank" property="salesModeRank"/>
+        <result column="platform_show" property="platformShow"/>
         <result column="status" property="status"/>
         <result column="is_activate" property="isActivate"/>
         <result column="create_time" property="createTime"/>
@@ -25,7 +26,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,category_id,gender,product_name,category_icon,tech_auth_id,price,unit,sales_mode_id,sales_mode_rank,status,is_activate,create_time,update_time,del_flag
+        id,user_id,category_id,gender,product_name,category_icon,tech_auth_id,price,unit,sales_mode_id,sales_mode_rank,platform_show,status,is_activate,create_time,update_time,del_flag
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="ProductResultMap">
@@ -34,6 +35,15 @@
         from t_product
         <where>
             id = #{id} and del_flag = false and is_activate = true
+        </where>
+    </select>
+
+    <select id="findAppProductByTech" parameterType="java.lang.Integer"  resultMap="ProductResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_product
+        <where>
+            tech_auth_id = #{techAuthId} and (platform_show = 2 or platform_show = 3)
         </where>
     </select>
 
@@ -77,6 +87,9 @@
             </if>
             <if test="salesModeRank != null">
                 and sales_mode_rank = #{salesModeRank}
+            </if>
+            <if test="platformShow != null">
+                and platform_show = #{platformShow}
             </if>
             <if test="status != null">
                 and status = #{status}
@@ -148,9 +161,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Product">
         insert into
-        t_product (user_id,category_id,gender,product_name,category_icon,tech_auth_id,price,unit,sales_mode_id,sales_mode_rank,status,is_activate,create_time,update_time,del_flag)
+        t_product (user_id,category_id,gender,product_name,category_icon,tech_auth_id,price,unit,sales_mode_id,sales_mode_rank,platform_show,status,is_activate,create_time,update_time,del_flag)
         values
-        (#{userId},#{categoryId},#{gender},#{productName},#{categoryIcon},#{techAuthId},#{price},#{unit},#{salesModeId},#{salesModeRank},#{status},#{isActivate},#{createTime},#{updateTime},#{delFlag})
+        (#{userId},#{categoryId},#{gender},#{productName},#{categoryIcon},#{techAuthId},#{price},#{unit},#{salesModeId},#{salesModeRank},#{platformShow},#{status},#{isActivate},#{createTime},#{updateTime},#{delFlag})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Product">
@@ -193,6 +206,10 @@
 
             <if test="salesModeRank != null">
                 sales_mode_rank = #{salesModeRank},
+            </if>
+
+            <if test="platformShow != null">
+                platform_show = #{platformShow},
             </if>
 
             <if test="status != null">
@@ -243,6 +260,9 @@
             </if>
             <if test="rank != null">
                 sales_mode_rank = #{rank},
+            </if>
+            <if test="platformShow != null">
+                platform_show = #{platformShow},
             </if>
         </set>
         <where>

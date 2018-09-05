@@ -313,3 +313,18 @@ ALTER TABLE `t_dynamic` ADD COLUMN `operator_id` int(11) DEFAULT '0'
 COMMENT '后端操作者id' after `order_count`;
 ALTER TABLE `t_dynamic` ADD COLUMN `operator_name` varchar(64) DEFAULT NULL
 COMMENT '后端操作者名称' after `operator_id`;
+
+
+--  修改价格多平台显示部分开始 --
+-- 销售方式添加显示平台字段
+ALTER TABLE `t_sales_mode` ADD COLUMN `platform_show` tinyint(1) DEFAULT NULL COMMENT '显示平台(1小程序，2APP，3都显示)' after `type`;
+-- 商品表添加显示平台字段
+ALTER TABLE `t_product` ADD COLUMN `platform_show` tinyint(1) DEFAULT NULL COMMENT '冗余sales_mode表(显示平台(1小程序，2APP，3都显示))' after `sales_mode_rank`;
+
+--
+UPDATE `t_sales_mode` SET `platform_show` = 3 WHERE `type` = 1;
+UPDATE `t_sales_mode` SET `platform_show` = 1 WHERE `type` = 2;
+
+UPDATE `t_product` pro SET `platform_show` = (SELECT `platform_show` FROM `t_sales_mode` sm WHERE pro.sales_mode_id = sm.id) ;
+
+--  修改价格多平台显示部分结束 --

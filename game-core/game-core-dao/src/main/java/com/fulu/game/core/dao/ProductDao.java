@@ -42,4 +42,12 @@ public interface ProductDao extends ICommonDao<Product,Integer>{
     List<ProductShowCaseVO> findProductByAuthUserSort();
 
     ProductShowCaseVO findRecommendProductByUserId(Integer userId);
+
+    /**
+     * 通过陪玩师的techId查询app显示商品
+     * @param techId
+     * @return
+     */
+    List<Product> findAppProductByTech(Integer techId);
+
 }
