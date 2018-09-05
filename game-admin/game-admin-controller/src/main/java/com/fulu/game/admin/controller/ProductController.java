@@ -117,12 +117,15 @@ public class ProductController extends BaseController {
         return Result.success().msg(msg);
     }
 
+    /**
+     * 获取用户商品列表
+     * @param userId
+     * @return
+     */
     @PostMapping(value = "/user/list")
-    public Result productList(Integer pageNum,
-                          Integer pageSize,
-                          Integer  userId) {
-        PageInfo<Product> pageInfo = productService.userProductList(pageNum,pageSize,userId);
-        return Result.success().data(pageInfo);
+    public Result productList(Integer  userId) {
+        List<Product> list = productService.findAppProductList(userId);
+        return Result.success().data(list);
     }
 
 }

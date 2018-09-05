@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * @Author: shijiaoyun.
  * @Date: 2018/9/4 18:42.
@@ -30,21 +32,17 @@ public class ProductController extends BaseController {
 
     /**
      * 获取商品列表
-     * @param pageNum
-     * @param pageSize
      * @param userId
      * @return
      */
     @PostMapping(value = "/user/list")
-    public Result productList(@RequestParam Integer pageNum,
-                              @RequestParam Integer pageSize,
-                              @RequestParam(required = false) Integer  userId) {
+    public Result productList(@RequestParam(required = false) Integer  userId) {
         if(userId == null || userId.intValue() < 0){
             User user = userService.getCurrentUser();
             userId = user.getId();
         }
-        PageInfo<Product> pageInfo = productService.userProductList(pageNum,pageSize,userId);
-        return Result.success().data(pageInfo);
+        List<Product> list = productService.findAppProductList(userId);
+        return Result.success().data(list);
     }
 
 }
