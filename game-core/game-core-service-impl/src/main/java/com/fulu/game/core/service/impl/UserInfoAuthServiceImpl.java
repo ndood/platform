@@ -111,14 +111,14 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         user.setUserInfoAuth(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType());
         user.setUpdateTime(new Date());
         userService.update(user);
-        
+
 
         UserInfoAuth userInfoAuth = new UserInfoAuth();
         BeanUtil.copyProperties(userInfoAuthTO, userInfoAuth);
         userInfoAuth.setUpdateTime(new Date());
-        
+
         userInfoAuthDao.update(userInfoAuth);
-        
+
         //主图不存userInfoAuth，改为存入临时表
         userInfoAuth.setMainPicUrl(null);
         if (userInfoAuth.getId() == null) {
@@ -171,7 +171,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
                 //修改商品信息
                 JSONObject groupInfo = updateList.getJSONObject(i);
                 VirtualProduct t = new VirtualProduct();
-                t.setId(groupInfo.getIntValue("vartualProductId"));
+                t.setId(groupInfo.getIntValue("virtualProductId"));
                 t.setName(groupInfo.getString("name"));
                 t.setPrice(groupInfo.getIntValue("price"));
                 t.setSort(groupInfo.getIntValue("sort"));
@@ -226,7 +226,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             }
         }
 
-        return userInfoAuth;
+        return null;
     }
 
 
