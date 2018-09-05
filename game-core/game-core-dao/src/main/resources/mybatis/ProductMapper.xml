@@ -89,7 +89,7 @@
             </if>
             and is_activate = true and del_flag = false
         </where>
-        ORDER BY sales_mode_rank DESC ;
+        ORDER BY sales_mode_rank DESC
     </select>
 
     <select id="findProductShowCase" resultType="com.fulu.game.core.entity.vo.ProductShowCaseVO">

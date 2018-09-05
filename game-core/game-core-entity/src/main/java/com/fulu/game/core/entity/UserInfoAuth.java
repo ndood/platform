@@ -27,8 +27,6 @@ public class UserInfoAuth implements Serializable {
     private String qq;
     //微信号
     private String wechat;
-    //魅力值
-    private Integer charm;
     //是否是驳回提交
     private Boolean isRejectSubmit;
     //主图
@@ -49,10 +47,16 @@ public class UserInfoAuth implements Serializable {
     //代聊客服ID
     private Integer imSubstituteId;
 
-    /** 用户兴趣 */
+    /**
+     * 用户兴趣
+     */
     private String interests;
-    /** 用户职业 */
+    /**
+     * 用户职业
+     */
     private String profession;
-    /** 用户简介 */
+    /**
+     * 用户简介
+     */
     private String about;
 }

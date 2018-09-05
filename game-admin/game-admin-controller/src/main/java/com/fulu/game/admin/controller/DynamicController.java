@@ -1,8 +1,10 @@
 package com.fulu.game.admin.controller;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.Dynamic;
 import com.fulu.game.core.entity.vo.DynamicVO;
+import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.DynamicService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,9 @@ public class DynamicController extends BaseController {
     @Autowired
     private DynamicService dynamicService;
 
+    @Autowired
+    private AdminService adminService;
+
 
     /**
      * 保存动态接口
@@ -31,6 +36,9 @@ public class DynamicController extends BaseController {
      */
     @RequestMapping(value = "save")
     public Result save(DynamicVO dynamicVO) {
+        Admin admin = adminService.getCurrentUser();
+        dynamicVO.setOperatorId(admin.getId());
+        dynamicVO.setOperatorName(admin.getName());
         Dynamic dynamic = dynamicService.save(dynamicVO);
         return Result.success().data(dynamic).msg("成功！");
     }

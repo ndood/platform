@@ -8,7 +8,6 @@ import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.VirtualDetailsDao;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.VirtualDetails;
 import com.fulu.game.core.service.UserInfoAuthService;
 import com.fulu.game.core.service.UserService;
@@ -67,8 +66,7 @@ public class VirtualDetailsServiceImpl extends AbsCommonService<VirtualDetails, 
         if (virtualDetailsTypeEnum.equals(VirtualDetailsTypeEnum.VIRTUAL_MONEY)) {
             sum = user.getVirtualBalance();
         } else if (virtualDetailsTypeEnum.equals(VirtualDetailsTypeEnum.CHARM)) {
-            UserInfoAuth auth = userInfoAuthService.findByUserId(user.getId());
-            sum = auth.getCharm() == null ? 0 : auth.getCharm();
+            sum = user.getCharm() == null ? 0 : user.getCharm();
         }
         details.setSum(sum);
         details.setRemark(virtualProductTypeEnum.getMsg() + "id：" + virtualProductId);
