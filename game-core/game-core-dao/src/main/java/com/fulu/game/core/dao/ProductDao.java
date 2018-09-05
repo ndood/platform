@@ -50,4 +50,7 @@ public interface ProductDao extends ICommonDao<Product,Integer>{
      */
     List<Product> findAppProductByTech(Integer techId);
 
+    List<Product> findAppProductList(Integer userId);
+
+
 }

@@ -47,6 +47,15 @@
         </where>
     </select>
 
+    <select id="findAppProductList" parameterType="java.lang.Integer"  resultMap="ProductResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_product
+        <where>
+            user_id = #{userId} and (platform_show = 2 or platform_show = 3)
+        </where>
+    </select>
+
     <select id="findAll" resultMap="ProductResultMap">
         select
         <include refid="Base_Column_List"/>

@@ -36,6 +36,13 @@ public interface ProductService extends ICommonService<Product,Integer>{
     Product findAppProductByTech(Integer techId);
 
     /**
+     * app需要显示的商品列表
+     * @param userId
+     * @return
+     */
+    List<Product> findAppProductList(Integer userId);
+
+    /**
      * 陪玩师新建接单方式
      * @param techAuthId
      * @param price

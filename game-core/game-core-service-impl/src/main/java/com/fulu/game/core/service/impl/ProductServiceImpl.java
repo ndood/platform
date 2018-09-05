@@ -133,6 +133,13 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
 
     @Override
+    public List<Product> findAppProductList(Integer userId) {
+        List<Product> productList = productDao.findAppProductList(userId);
+        return productList;
+    }
+
+
+    @Override
     public Product update(Integer id, Integer techAuthId, BigDecimal price, Integer unitId) {
         User user = userService.getCurrentUser();
         log.info("修改接单方式:userId:{};techAuthId:{};price:{};unitId:{}", user.getId(), techAuthId, price, unitId);

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum PlatformShowEnum implements TypeEnum<String>{
+public enum PlatformShowEnum implements TypeEnum<Integer>{
 
     PLAY(1, "开黑陪玩"),
     APP(2, "APP"),

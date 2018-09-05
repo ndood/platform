@@ -90,6 +90,19 @@ public class UserController extends BaseController {
         return Result.success().data(userVO).msg("获取个人信息成功！");
     }
 
+
+    /**
+     * 获取用户的基础信息
+     * @param userId
+     * @return
+     */
+    @RequestMapping("info")
+    public Result getInfo(Integer userId){
+        User user = userService.findById(userId);
+        return Result.success().data(user);
+    }
+
+
     /**
      * 保存用户认证信息
      *
