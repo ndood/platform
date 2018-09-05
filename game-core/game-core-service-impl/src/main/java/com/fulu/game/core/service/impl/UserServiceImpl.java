@@ -624,6 +624,18 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
+    public User modifyCharm(User user, Integer price) {
+        if (user == null) {
+            return null;
+        }
+
+        user.setCharm((user.getCharm() == null ? 0 : user.getCharm()) + price);
+        user.setUpdateTime(DateUtil.date());
+        update(user);
+        return user;
+    }
+
+    @Override
     public User modifyVirtualBalance(Integer userId, Integer price) {
         User user = findById(userId);
         if (user == null) {

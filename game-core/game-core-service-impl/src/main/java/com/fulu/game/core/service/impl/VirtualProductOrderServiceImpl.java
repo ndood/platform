@@ -86,7 +86,7 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
                 VirtualDetailsTypeEnum.VIRTUAL_MONEY,
                 VirtualProductTypeEnum.VIRTUAL_GIFT);
         //接收人加魅力值
-        userInfoAuthService.modifyCharm(targetUser, price);
+        userService.modifyCharm(targetUser, price);
         //记录接收人流水
         virtualDetailsService.createVirtualDetails(targetUser,
                 virtualProductId,
