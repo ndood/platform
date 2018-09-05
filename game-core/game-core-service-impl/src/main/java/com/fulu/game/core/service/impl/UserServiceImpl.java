@@ -66,9 +66,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Autowired
     private DynamicService dynamicService;
 
-    @Qualifier(value = "userTechAuthServiceImpl")
-    @Autowired
-    private UserTechAuthServiceImpl userTechAuthService;
     @Autowired
     private SpringThreadPoolExecutor springThreadPoolExecutor;
 
@@ -734,8 +731,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
                 }
                 userVO.setPicUrls(picArr);
             }
-            List<UserTechAuth> techAuthList = userTechAuthService.findUserNormalTechs(userId);
-            userVO.setUserTechAuths(techAuthList);
+            List<Product> productList = productService.findByUserId(userId);
+            userVO.setUserProducts(productList);
             List<DynamicVO> newestDynamicList = dynamicService.getNewestDynamicList(userId);
             userVO.setNewestDynamics(newestDynamicList);
         }

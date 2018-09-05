@@ -1,6 +1,7 @@
 package com.fulu.game.core.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserTechAuth;
 import lombok.Data;
@@ -52,7 +53,7 @@ public class UserVO extends User {
     /** 用户视频地址 */
     private String videoUrl;
     /** 用户接单节能 */
-    private List<UserTechAuth> userTechAuths;
+    private List<Product> userProducts;
     /** 用户最新动态列表 */
     private List<DynamicVO> newestDynamics;
 
