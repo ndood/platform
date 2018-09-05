@@ -92,7 +92,7 @@ public class UserController extends BaseController {
     @PostMapping("/balance/get")
     public Result getBalance() {
         User user = userService.findById(userService.getCurrentUser().getId());
-        return Result.success().data(user.getBalance()).msg("查询成功！");
+        return Result.success().data(user).msg("查询成功！");
     }
 
     /**
