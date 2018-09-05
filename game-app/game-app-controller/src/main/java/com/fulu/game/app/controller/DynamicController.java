@@ -66,7 +66,7 @@ public class DynamicController extends BaseController {
      */
     @RequestMapping(value = "delete")
     public Result delete(@RequestParam(required = true) Long id) {
-        dynamicService.deleteDynamicById(id);
+        dynamicService.deleteDynamicById(id, true);
         return Result.success().msg("删除成功！");
     }
 

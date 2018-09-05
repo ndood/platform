@@ -62,9 +62,10 @@ public interface DynamicService extends ICommonService<Dynamic,Long>{
     /**
      * 删除动态
      * @param id
+     * @param verifyUser 是否验证用户信息是否匹配（true：验证；false：不验证）
      * @return
      */
-    public int deleteDynamicById(Long id);
+    public int deleteDynamicById(Long id, boolean verifyUser);
 
     /**
      * 修改动态中实时变化的值
@@ -76,4 +77,6 @@ public interface DynamicService extends ICommonService<Dynamic,Long>{
      * @return
      */
     public boolean updateIndexFilesById(Long id, boolean rewards, Integer likes,Integer comments,boolean clicks);
+
+    PageInfo<DynamicVO> adminList(Integer pageNum, Integer pageSize, String keyword, String startTime, String endTime);
 }

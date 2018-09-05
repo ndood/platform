@@ -21,8 +21,8 @@ public class Dynamic implements Serializable {
 	private Long id;
 	//动态发布用户id
 	private Integer userId;
-	//技能id
-	private Integer techInfoId;
+	//商品id
+	private Integer productId;
 	//动态内容
 	private String content;
 	//动态类型(0：文字；1：图片；2：视频)
@@ -61,5 +61,12 @@ public class Dynamic implements Serializable {
 	private Date updateTime;
 	//动态状态（1：有效；0：无效）
 	private Integer status;
+
+	/** 下单数 */
+	private Integer orderCount;
+	/** 后端操作者id */
+	private Integer operatorId;
+	/** 后端操作者名称 */
+	private String operatorName;
 
 }

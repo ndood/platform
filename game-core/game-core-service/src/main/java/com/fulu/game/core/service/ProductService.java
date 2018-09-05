@@ -2,6 +2,7 @@ package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.Product;
+import com.fulu.game.core.entity.ProductTop;
 import com.fulu.game.core.entity.SalesMode;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.ProductDetailsVO;
@@ -235,4 +236,13 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * @return
      */
     PageInfo<ProductShowCaseVO> getRecommendList(Integer pageNum,Integer pageSize);
+
+    /**
+     * 获取用户商品列表
+     * @param pageNum
+     * @param pageSize
+     * @param userId
+     * @return
+     */
+    PageInfo<Product> userProductList(Integer pageNum, Integer pageSize, Integer userId);
 }

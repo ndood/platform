@@ -104,7 +104,7 @@
         insert into
         t_reward (resource_id,resource_type,gift_id,gift_url,gift_price,from_user_id,from_user_head_url,from_user_nickname,from_user_gender,to_user_id,to_user_head_url,to_user_nickname,to_user_gender,create_time,status)
         values
-        (#{resourceId},#{resourceType},#{giftId},#{giftUrl},#{gift_price},#{fromUserId},#{fromUserHeadUrl},#{fromUserNickname},#{fromUserGender},#{toUserId},#{toUserHeadUrl},#{toUserNickname},#{toUserGender},#{createTime},#{status})
+        (#{resourceId},#{resourceType},#{giftId},#{giftUrl},#{giftPrice},#{fromUserId},#{fromUserHeadUrl},#{fromUserNickname},#{fromUserGender},#{toUserId},#{toUserHeadUrl},#{toUserNickname},#{toUserGender},#{createTime},#{status})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Reward">

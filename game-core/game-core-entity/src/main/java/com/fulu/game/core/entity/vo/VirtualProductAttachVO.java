@@ -19,7 +19,7 @@ public class VirtualProductAttachVO extends VirtualProductAttach {
     private Integer price;
     private Integer type;
     private Integer sort;
-    private Integer accachCount;
+    private Integer attachCount;
     private String objectUrl;
     private boolean delFlag;
 }

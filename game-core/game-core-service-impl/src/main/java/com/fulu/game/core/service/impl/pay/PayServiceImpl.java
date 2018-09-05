@@ -18,7 +18,7 @@ public abstract class PayServiceImpl<T> implements PayService {
 
     @Override
     public Object payOrder(Order order, User user, String requestIp) {
-        if (!order.getIsPay() && !order.getStatus().equals(OrderStatusEnum.NON_PAYMENT.getStatus())) {
+        if (order.getIsPay() && !order.getStatus().equals(OrderStatusEnum.NON_PAYMENT.getStatus())) {
             throw new OrderException(order.getOrderNo(), "已支付的订单不能支付!");
         }
         Integer totalFee = (order.getActualMoney().multiply(new BigDecimal(100))).intValue();

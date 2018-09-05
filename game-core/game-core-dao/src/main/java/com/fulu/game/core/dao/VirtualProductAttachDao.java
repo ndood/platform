@@ -20,7 +20,7 @@ public interface VirtualProductAttachDao extends ICommonDao<VirtualProductAttach
     List<VirtualProductAttach> findByParameter(VirtualProductAttachVO virtualProductAttachVO);
 
 
-    List<VirtualProductAttach> findByOrderProIdUserId(@Param(value = "userId") Integer userId, @Param(value = "productId") Integer productId);
+    List<VirtualProductAttachVO> findByOrderProIdUserId(@Param(value = "userId") Integer userId, @Param(value = "productId") Integer productId);
 
     List<VirtualProductAttachVO> findDetailByVo(VirtualProductAttachVO virtualProductAttachVO);
 

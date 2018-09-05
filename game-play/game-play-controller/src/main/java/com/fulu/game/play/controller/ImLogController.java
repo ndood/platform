@@ -180,7 +180,7 @@ public class ImLogController extends BaseController{
 
         User user = userService.getCurrentUser();
 
-        List<VirtualProductAttach> list = virtualProductAttachService.findByOrderProIdUserId(user.getId(),virtualProductId);
+        List<VirtualProductAttachVO> list = virtualProductAttachService.findByOrderProIdUserId(user.getId(),virtualProductId);
 
         return Result.success().data(list).msg("查询成功");
     }

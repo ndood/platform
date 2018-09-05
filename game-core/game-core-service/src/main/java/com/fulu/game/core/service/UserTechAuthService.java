@@ -25,7 +25,7 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
      * @param userTechAuthTO
      * @return
      */
-    UserTechAuthTO save(UserTechAuthTO userTechAuthTO , String privatePicStr);
+    UserTechAuthTO save(UserTechAuthTO userTechAuthTO);
 
 
 
