@@ -110,7 +110,7 @@ CREATE TABLE `t_virtual_product_order` (
 CREATE TABLE `t_virtual_details` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `user_id` int(11) NOT NULL COMMENT '用户id',
-  `relevant_no` int(11) DEFAULT NULL COMMENT '关联编号',
+  `relevant_no` varchar(128) NOT NULL COMMENT '关联编号',
   `sum` int(11) DEFAULT NULL COMMENT '剩余虚拟币或者魅力值余额',
   `money` int(11) DEFAULT NULL COMMENT '虚拟币或魅力值的增加和消费记录',
   `type` tinyint(1) DEFAULT NULL COMMENT '类型（1：虚拟币；2：魅力值）',
