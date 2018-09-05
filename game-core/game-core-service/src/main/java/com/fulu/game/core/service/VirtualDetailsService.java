@@ -7,7 +7,7 @@ import com.fulu.game.core.entity.VirtualDetails;
 
 
 /**
- * 虚拟货币流水表
+ * 虚拟币和魅力值详情流水表
  *
  * @author Gong Zechun
  * @email ${email}

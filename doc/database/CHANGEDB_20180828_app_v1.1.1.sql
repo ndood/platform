@@ -106,17 +106,18 @@ CREATE TABLE `t_virtual_product_order` (
   PRIMARY KEY (`id`)
 ) COMMENT='虚拟商品订单表';
 
-DROP TABLE IF EXISTS `t_virtual_details`;
+--t_virtual_details
 CREATE TABLE `t_virtual_details` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `user_id` int(11) NOT NULL COMMENT '用户id',
+  `relevant_no` int(11) DEFAULT NULL COMMENT '关联编号',
   `sum` int(11) DEFAULT NULL COMMENT '剩余虚拟币或者魅力值余额',
   `money` int(11) DEFAULT NULL COMMENT '虚拟币或魅力值的增加和消费记录',
   `type` tinyint(1) DEFAULT NULL COMMENT '类型（1：虚拟币；2：魅力值）',
   `remark` varchar(255) DEFAULT NULL COMMENT '备注',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
-) COMMENT='虚拟货币流水表';
+) COMMENT='虚拟币和魅力值详情流水表';
 
 
 ALTER TABLE `t_push_msg` MODIFY COLUMN `type` tinyint(4) comment '推送类型(1:推送所有用户；2:推送指定用户；3：推送所有陪玩师)';
