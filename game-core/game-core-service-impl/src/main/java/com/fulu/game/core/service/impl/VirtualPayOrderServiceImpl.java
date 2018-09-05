@@ -1,10 +1,16 @@
 package com.fulu.game.core.service.impl;
 
 
+import cn.hutool.core.date.DateUtil;
+import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.exception.OrderException;
+import com.fulu.game.common.exception.SystemException;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.VirtualPayOrderDao;
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.VirtualPayOrder;
+import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.VirtualPayOrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -23,8 +29,6 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
     @Autowired
     private VirtualPayOrderService virtualPayOrderService;
 
-    @Autowired
-    private WxMpServiceSupply wxMpServiceSupply;
     @Autowired
     private UserService userService;
     @Autowired
