@@ -6,9 +6,8 @@ import com.fulu.game.common.enums.DetailsEnum;
 import com.fulu.game.common.enums.PlatFormMoneyTypeEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.OrderException;
-import com.fulu.game.common.exception.SystemException;
+import com.fulu.game.common.exception.DataException;
 import com.fulu.game.common.utils.GenIdUtil;
-import com.fulu.game.core.dao.VirtualPayOrderDao;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.VirtualPayOrder;
 import com.fulu.game.core.service.OrderMoneyDetailsService;
@@ -20,7 +19,6 @@ import com.fulu.game.core.service.impl.VirtualPayOrderServiceImpl;
 import com.github.binarywang.wxpay.bean.order.WxPayMpOrderResult;
 import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -66,7 +64,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         if (!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))) {
             log.error("验证sessionkey错误:sessionkey:{};actualMoney:{};virtualMoney:{};ip:{};userId:{}",
                     sessionkey, actualMoney, virtualMoney, ip, user.getId());
-            throw new SystemException(SystemException.ExceptionCode.NO_FORM_TOKEN_ERROR);
+            throw new DataException(DataException.ExceptionCode.NO_FORM_TOKEN_ERROR);
         }
 
         VirtualPayOrder order = new VirtualPayOrder();

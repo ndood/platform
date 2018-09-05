@@ -146,14 +146,14 @@ public class ExceptionHandlerAdvice {
     }
 
     /**
-     * 系统异常
+     * 数据异常
      * @param e
      * @return
      */
-    @ExceptionHandler(SystemException.class)
-    public Result handleSystemException(SystemException e) {
+    @ExceptionHandler(DataException.class)
+    public Result handleSystemException(DataException e) {
         log.error("系统异常:{}", e.getMessage());
-        return Result.error(e.getCode()).msg(e.getMessage());
+        return Result.error().data("errcode", e.getCode()).msg(e.getMessage());
     }
 
     /**

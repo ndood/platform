@@ -127,19 +127,34 @@ public interface UserService extends ICommonService<User, Integer> {
      */
     PageInfo<UserVO> list(UserVO userVO, Integer pageNum, Integer pageSize);
 
-
+    /**
+     * 第三方(分期乐)创建用户接口
+     *
+     * @param sourceId
+     * @param ip
+     * @return
+     */
     User createThirdPartyUser(Integer sourceId, String ip);
 
     /**
-     * 通过openId创建用户
+     * 微信小程序通过openId创建用户
      *
      * @param openId
      * @return
      */
     User createNewUser(PlatformEcoEnum platformEcoEnum, String openId, Integer sourceId, String host);
 
-
+    /**
+     * app通过手机号创建用户
+     *
+     * @param mobile
+     * @param host
+     * @return
+     */
     User createNewUser(String mobile, String host);
+
+
+    User createNewUser(String mobile, String mpOpenId, String unionId, String host);
 
     /**
      * 获取当前登录用户

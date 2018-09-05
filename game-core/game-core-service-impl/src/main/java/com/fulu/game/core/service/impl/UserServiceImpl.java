@@ -128,12 +128,16 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             return null;
         }
         UserVO userVO = new UserVO();
-        if (PlatformEcoEnum.PLAY.equals(platformEcoEnum)) {
-            userVO.setOpenId(openId);
-        } else if (PlatformEcoEnum.POINT.equals(platformEcoEnum)) {
-            userVO.setPointOpenId(openId);
-        } else {
-            return null;
+        switch (platformEcoEnum){
+            case PLAY:
+                userVO.setOpenId(openId);
+            break;
+            case POINT:
+                userVO.setPointOpenId(openId);
+            break;
+            case MP:
+                userVO.setPublicOpenId(openId);
+            break;
         }
         List<User> users = userDao.findByParameter(userVO);
         if (CollectionUtil.isEmpty(users)) {
@@ -246,7 +250,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
 
-    public User createNewUser(User user) {
+    private User createNewUser(User user) {
         user.setStatus(UserStatusEnum.NORMAL.getType());//默认账户解封状态
         user.setType(UserTypeEnum.GENERAL_USER.getType());//默认普通用户
         user.setUserInfoAuth(UserInfoAuthStatusEnum.NOT_PERFECT.getType());//默认未审核
@@ -280,6 +284,16 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         User user = new User();
         user.setRegistIp(host);
         user.setMobile(mobile);
+        return createNewUser(user);
+    }
+
+    @Override
+    public User createNewUser(String mobile, String mpOpenId, String unionId, String host) {
+        User user = new User();
+        user.setPublicOpenId(mpOpenId);
+        user.setMobile(mobile);
+        user.setUnionId(unionId);
+        user.setRegistIp(host);
         return createNewUser(user);
     }
 
