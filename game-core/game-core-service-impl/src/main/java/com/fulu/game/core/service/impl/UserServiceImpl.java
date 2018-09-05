@@ -655,8 +655,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public boolean loginReceiveVirtualMoney(User user) {
-        Integer type = user.getType();
-
         String loginKey = RedisKeyEnum.LOGIN_RECEIVE_VIRTUAL_MONEY.generateKey();
         boolean flag = redisOpenService.hasKey(loginKey);
         if (flag) {
@@ -676,8 +674,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
                 details.setUserId(user.getId());
                 details.setSum(user.getVirtualBalance());
                 details.setMoney(Constant.LOGIN_VIRTUAL_MONEY);
-                details.setType(VirtualProductTypeEnum.LOGIN_RECEIVE_BONUS.getType());
-                details.setRemark(VirtualProductTypeEnum.LOGIN_RECEIVE_BONUS.getMsg());
+                details.setType(VirtualDetailsTypeEnum.VIRTUAL_MONEY.getType());
+                details.setRemark(VirtualDetailsRemarkEnum.LOGIN_BOUNS.getMsg());
                 details.setCreateTime(DateUtil.date());
                 virtualDetailsService.create(details);
             }

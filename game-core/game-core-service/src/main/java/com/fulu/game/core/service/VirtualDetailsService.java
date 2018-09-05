@@ -1,8 +1,5 @@
 package com.fulu.game.core.service;
 
-import com.fulu.game.common.enums.VirtualDetailsTypeEnum;
-import com.fulu.game.common.enums.VirtualProductTypeEnum;
-import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.VirtualDetails;
 
 
@@ -15,15 +12,4 @@ import com.fulu.game.core.entity.VirtualDetails;
  */
 public interface VirtualDetailsService extends ICommonService<VirtualDetails, Integer> {
 
-    VirtualDetails createVirtualDetails(Integer fromUserId,
-                                        Integer virtualProductId,
-                                        Integer price,
-                                        VirtualDetailsTypeEnum virtualDetailsTypeEnum,
-                                        VirtualProductTypeEnum virtualProductTypeEnum);
-
-    VirtualDetails createVirtualDetails(User user,
-                                        Integer virtualProductId,
-                                        Integer price,
-                                        VirtualDetailsTypeEnum virtualDetailsTypeEnum,
-                                        VirtualProductTypeEnum virtualProductTypeEnum);
 }
