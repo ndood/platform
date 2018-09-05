@@ -5,6 +5,7 @@ import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.config.WxMaServiceSupply;
@@ -92,7 +93,11 @@ public class UserController extends BaseController {
     @PostMapping("/balance/get")
     public Result getBalance() {
         User user = userService.findById(userService.getCurrentUser().getId());
-        return Result.success().data(user).msg("查询成功！");
+        JSONObject data = new JSONObject();
+        data.put("balance",user.getBalance());
+        data.put("virtualBalance",user.getVirtualBalance());
+        data.put("charm",user.getCharm());
+        return Result.success().data(data).msg("查询成功！");
     }
 
     /**
