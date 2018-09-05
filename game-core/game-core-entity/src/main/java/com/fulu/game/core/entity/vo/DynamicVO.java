@@ -24,4 +24,9 @@ public class DynamicVO  extends Dynamic {
     private String fileUrls;
 
     private String keyword;
+
+    private String productName;
+    private String productPrice;
+    private String productUnit;
+    private String userNickname;
 }

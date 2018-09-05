@@ -110,7 +110,7 @@ CREATE TABLE `t_virtual_product_order` (
 CREATE TABLE `t_virtual_details` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `user_id` int(11) NOT NULL COMMENT '用户id',
-  `relevant_no` int(11) DEFAULT NULL COMMENT '关联编号',
+  `relevant_no` varchar(128) NOT NULL COMMENT '关联编号',
   `sum` int(11) DEFAULT NULL COMMENT '剩余虚拟币或者魅力值余额',
   `money` int(11) DEFAULT NULL COMMENT '虚拟币或魅力值的增加和消费记录',
   `type` tinyint(1) DEFAULT NULL COMMENT '类型（1：虚拟币；2：魅力值）',
@@ -314,3 +314,22 @@ ALTER TABLE `t_dynamic` ADD COLUMN `operator_id` int(11) DEFAULT '0'
 COMMENT '后端操作者id' after `order_count`;
 ALTER TABLE `t_dynamic` ADD COLUMN `operator_name` varchar(64) DEFAULT NULL
 COMMENT '后端操作者名称' after `operator_id`;
+
+
+--  修改价格多平台显示部分开始 --
+-- 销售方式添加显示平台字段
+ALTER TABLE `t_sales_mode` ADD COLUMN `platform_show` tinyint(1) DEFAULT NULL COMMENT '显示平台(1小程序，2APP，3都显示)' after `type`;
+-- 商品表添加显示平台字段
+ALTER TABLE `t_product` ADD COLUMN `platform_show` tinyint(1) DEFAULT NULL COMMENT '冗余sales_mode表(显示平台(1小程序，2APP，3都显示))' after `sales_mode_rank`;
+
+--
+UPDATE `t_sales_mode` SET `platform_show` = 3 WHERE `type` = 1;
+UPDATE `t_sales_mode` SET `platform_show` = 1 WHERE `type` = 2;
+
+UPDATE `t_product` pro SET `platform_show` = (SELECT `platform_show` FROM `t_sales_mode` sm WHERE pro.sales_mode_id = sm.id) ;
+
+--  修改价格多平台显示部分结束 --
+
+
+-- 修改动态表的技能id为商品id
+alter table t_dynamic change  column tech_info_id product_id bigint(20)

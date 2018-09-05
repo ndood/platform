@@ -60,7 +60,7 @@ public class DynamicCommentServiceImpl extends AbsCommonService<DynamicComment,L
         dynamicCommentVO.setCreateTime(new Date());
         dynamicCommentVO.setStatus(1);
         dynamicCommentDao.create(dynamicCommentVO);
-        dynamicService.updateIndexFilesById(dynamicCommentVO.getId(), false, 0, 1,false);
+        dynamicService.updateIndexFilesById(dynamicCommentVO.getDynamicId(), false, 0, 1,false);
         // TODO shijiaoyun 此处需要发送Jpush消息，通知被评论用户
 
     }

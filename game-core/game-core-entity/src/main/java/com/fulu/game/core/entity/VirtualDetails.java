@@ -32,4 +32,5 @@ public class VirtualDetails implements Serializable {
     private String remark;
     //创建时间
     private Date createTime;
+
 }
