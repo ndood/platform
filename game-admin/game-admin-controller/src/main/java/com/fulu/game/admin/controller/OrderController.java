@@ -58,6 +58,24 @@ public class OrderController extends BaseController {
     }
 
     /**
+     * 管理员-延迟未接订单列表（八分钟未接的订单）
+     *
+     * @param pageNum       页码
+     * @param pageSize      每页显示数据条数
+     * @param orderBy       排序字符串
+     * @param orderSearchVO 查询VO
+     * @return 封装结果集
+     */
+    @RequestMapping("/delay/list")
+    public Result delayList(@RequestParam Integer pageNum,
+                            @RequestParam Integer pageSize,
+                            String orderBy,
+                            OrderSearchVO orderSearchVO) {
+        PageInfo<OrderResVO> orderList = orderService.delayList(orderSearchVO, pageNum, pageSize, orderBy);
+        return Result.success().data(orderList).msg("查询列表成功！");
+    }
+
+    /**
      * 管理员-所有订单状态位
      *
      * @return 封装结果集
