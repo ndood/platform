@@ -6,7 +6,6 @@ import com.fulu.game.core.entity.VirtualPayOrder;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.VirtualPayOrderService;
 import com.fulu.game.h5.controller.BaseController;
-import com.fulu.game.h5.service.impl.fenqile.H5PayServiceImpl;
 import com.fulu.game.h5.utils.RequestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 公众号订单Controller
@@ -49,11 +50,27 @@ public class OrderController extends BaseController {
                          @RequestParam Integer virtualMoney) {
         String ip = RequestUtil.getIpAdrress(request);
         String orderNo = virtualPayOrderService.submit(sessionkey, actualMoney, virtualMoney, ip);
-        return Result.success().data(orderNo).msg("创建订单成功!");
+        Map<String, Object> resultMap = new HashMap<>(2);
+        resultMap.put("orderNo", orderNo);
+        return Result.success().data(resultMap).msg("创建订单成功!");
     }
 
     /**
-     * 订单支付
+     * 订单余额支付
+     *
+     * @param request
+     * @param orderNo
+     * @return
+     */
+    @PostMapping("/balance/pay")
+    public Result balancePay(HttpServletRequest request,
+                             @RequestParam String orderNo) {
+        String ip = RequestUtil.getIpAdrress(request);
+        return null;
+    }
+
+    /**
+     * 订单微信支付
      *
      * @param request request
      * @param orderNo 订单编号

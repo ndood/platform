@@ -19,7 +19,7 @@ public class GenerateTest {
 
     @Test
     public void test3() {
-        codeGenerateForTable("Gong Zechun","t_order");
+        codeGenerateForTable("Gong Zechun","t_virtual_pay_order");
     }
 
     public void codeGenerateForTable(String author,String ... tableName){

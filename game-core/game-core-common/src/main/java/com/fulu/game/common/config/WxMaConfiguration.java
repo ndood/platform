@@ -4,6 +4,8 @@ import cn.binarywang.wx.miniapp.config.WxMaConfig;
 import cn.binarywang.wx.miniapp.config.WxMaInMemoryConfig;
 import com.fulu.game.common.properties.Config;
 import com.github.binarywang.wxpay.config.WxPayConfig;
+import me.chanjar.weixin.mp.api.WxMpConfigStorage;
+import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -77,6 +79,16 @@ public class WxMaConfiguration {
     }
 
 
+    @Bean(value = "mpConfig")
+    @Qualifier(value = "mpConfig")
+    public WxMpConfigStorage mpConfig() {
+        WxMpInMemoryConfigStorage config = new WxMpInMemoryConfigStorage();
+        config.setAppId(configProperties.getWechat_mp().getAppId());
+        config.setSecret(configProperties.getWechat_mp().getSecret());
+        config.setToken(configProperties.getWechat_mp().getToken());
+        config.setAesKey(configProperties.getWechat_mp().getAesKey());
+        return config;
+    }
 
 
 
