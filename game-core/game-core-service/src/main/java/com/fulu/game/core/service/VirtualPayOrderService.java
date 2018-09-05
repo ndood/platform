@@ -15,13 +15,13 @@ import java.math.BigDecimal;
  */
 public interface VirtualPayOrderService extends ICommonService<VirtualPayOrder, Integer> {
 
-    VirtualPayOrder charge(String code, BigDecimal actualMoney, Integer virtualMoney, String mobile);
-
+//    VirtualPayOrder charge(String code, BigDecimal actualMoney, Integer virtualMoney, String mobile);
+//
     VirtualPayOrder findByOrderNo(String orderNo);
-
-    String submit(String sessionkey, BigDecimal actualMoney, Integer virtualMoney, String ip);
-
-    Object pay(String orderNo, String ip);
-
-    Object payOrder(VirtualPayOrder order, User user, String requestIp);
+//
+//    String submit(String sessionkey, BigDecimal actualMoney, Integer virtualMoney, String ip);
+//
+//    Object pay(String orderNo, String ip);
+//
+//    Object payOrder(VirtualPayOrder order, User user, String requestIp);
 }

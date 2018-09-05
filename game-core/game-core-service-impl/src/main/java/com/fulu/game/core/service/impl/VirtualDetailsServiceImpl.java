@@ -55,6 +55,7 @@ public class VirtualDetailsServiceImpl extends AbsCommonService<VirtualDetails, 
     @Override
     public VirtualDetails createVirtualDetails(User user,
                                                Integer virtualProductId,
+                                               Integer
                                                Integer price,
                                                VirtualDetailsTypeEnum virtualDetailsTypeEnum,
                                                VirtualProductTypeEnum virtualProductTypeEnum) {
