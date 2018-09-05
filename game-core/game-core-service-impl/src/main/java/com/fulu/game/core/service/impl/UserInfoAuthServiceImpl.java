@@ -226,7 +226,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             }
         }
 
-        return null;
+        return userInfoAuth;
     }
 
 
