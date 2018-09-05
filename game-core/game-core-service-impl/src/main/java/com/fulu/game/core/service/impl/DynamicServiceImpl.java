@@ -245,14 +245,14 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
             log.info("修改动态索引异常，未找到id： {}", id);
             return false;
         }
-        if(rewards ){
+        if( rewards ){
             if(dynamic.getRewards() != null){
                 dynamic.setRewards(dynamic.getRewards() + 1);
             } else {
                 dynamic.setRewards( 1L);
             }
         }
-        if(likes != null ){
+        if(likes != null && likes.intValue() != 0){
             if(dynamic.getLikes() != null){
                 dynamic.setLikes(dynamic.getLikes() + likes);
             } else {
@@ -268,7 +268,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
                 dynamic.setComments(1L);
             }
         }
-        if(clicks ){
+        if( clicks ){
             if(dynamic.getClicks() != null){
                 dynamic.setClicks(dynamic.getClicks() + 1);
             } else {

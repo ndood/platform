@@ -62,7 +62,7 @@ public class DynamicSearchComponent  extends AbsSearchComponent<DynamicDoc, Long
      */
     public boolean updateIndexFilesById(Long id, boolean rewards, Integer likes,Integer comments,boolean clicks, Integer userId){
         DynamicDoc dynamicDoc = searchById(id, DynamicDoc.class);
-        if(dynamicDoc != null ){
+        if(dynamicDoc == null ){
             log.info("修改动态索引异常，未找到id： {}", id);
             return false;
         }
@@ -73,7 +73,7 @@ public class DynamicSearchComponent  extends AbsSearchComponent<DynamicDoc, Long
                 dynamicDoc.setRewards( 1L);
             }
         }
-        if(likes != null ){
+        if(likes != null && likes.intValue() != 0){
             boolean flag = false;
             if(likes.intValue() > 0){
                 flag = true;
@@ -108,8 +108,7 @@ public class DynamicSearchComponent  extends AbsSearchComponent<DynamicDoc, Long
                 dynamicDoc.setClicks(1L);
             }
         }
-        updateIndex(dynamicDoc,id);
-        return true;
+        return createIndex(dynamicDoc);
     }
 
     /**
