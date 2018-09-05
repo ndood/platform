@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Controller
 @Slf4j
-@RequestMapping("/mp")
+@RequestMapping("/api/v1/mp")
 public class MpHomeController extends BaseController {
 
     @Autowired

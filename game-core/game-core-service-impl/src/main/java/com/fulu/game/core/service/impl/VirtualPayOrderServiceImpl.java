@@ -53,7 +53,6 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
         return virtualPayOrderDao;
     }
 
-    @Override
     public String submit(String sessionkey, BigDecimal actualMoney, Integer virtualMoney, String ip) {
         User user = userService.getCurrentUser();
         if (!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))) {
@@ -79,14 +78,12 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
         return order.getOrderNo();
     }
 
-    @Override
     public Object pay(String orderNo, String ip) {
         VirtualPayOrder order = findByOrderNo(orderNo);
         User user = userService.findById(order.getUserId());
         return payOrder(order, user, ip);
     }
 
-    @Override
     public Object payOrder(VirtualPayOrder order, User user, String requestIp) {
         if (order.getIsPayCallback()) {
             throw new OrderException(order.getOrderNo(), "已支付的订单不能支付!");
@@ -165,7 +162,6 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
         return orderRequest;
     }
 
-    @Override
     public VirtualPayOrder charge(String code, BigDecimal actualMoney, Integer virtualMoney, String mobile) {
 //        if (StringUtils.isBlank(code)) {
 //            throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);

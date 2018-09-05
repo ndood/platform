@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @RestController
 @Slf4j
-@RequestMapping("/mp/order")
+@RequestMapping("/api/v1/virtual-pay-order")
 public class OrderController extends BaseController {
     @Autowired
     private UserService userService;

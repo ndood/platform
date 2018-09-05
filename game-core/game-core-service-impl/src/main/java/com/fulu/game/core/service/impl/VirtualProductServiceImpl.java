@@ -165,8 +165,6 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
                     vd.setRemark(VirtualDetailsRemarkEnum.UNLOCK_PICS.getMsg());
                 }else if(vp.getType().intValue() == VirtualProductTypeEnum.IM_PROTECTED_VOICE.getType().intValue()){
                     vd.setRemark(VirtualDetailsRemarkEnum.UNLOCK_VOICE.getMsg());
-                }else if(vp.getType().intValue() == VirtualProductTypeEnum.LOGIN_RECEIVE_BONUS.getType().intValue()){
-                    vd.setRemark(VirtualDetailsRemarkEnum.LOGIN_BOUNS.getMsg());
                 }
                 
                 vd.setCreateTime(new Date());
