@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 
 /**
- * 虚拟货币流水表
+ * 虚拟币和魅力值详情流水表
  *
  * @author Gong Zechun
  * @email ${email}
