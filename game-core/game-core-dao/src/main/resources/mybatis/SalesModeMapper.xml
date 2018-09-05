@@ -6,6 +6,7 @@
         <id column="id" property="id"/>
         <result column="category_id" property="categoryId"/>
         <result column="type" property="type"/>
+        <result column="platform_show" property="platformShow"/>
         <result column="name" property="name"/>
         <result column="price" property="price"/>
         <result column="rank" property="rank"/>
@@ -18,7 +19,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,category_id,type,name,price,rank,create_time,update_time,del_flag
+        id,category_id,type,platform_show,name,price,rank,create_time,update_time,del_flag
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="SalesModeResultMap">
@@ -52,6 +53,9 @@
             <if test="type != null">
                 and type = #{type}
             </if>
+            <if test="platformShow != null">
+                and platform_show = #{platformShow}
+            </if>
             <if test="name != null">
                 and name = #{name}
             </if>
@@ -82,9 +86,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.SalesMode">
         insert into
-        t_sales_mode (category_id,type,name,price,rank,create_time,update_time,del_flag)
+        t_sales_mode (category_id,type,platform_show,name,price,rank,create_time,update_time,del_flag)
         values
-        (#{categoryId},#{type},#{name},#{price},#{rank},#{createTime},#{updateTime},#{delFlag})
+        (#{categoryId},#{type},#{platformShow},#{name},#{price},#{rank},#{createTime},#{updateTime},#{delFlag})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.SalesMode">
@@ -97,19 +101,18 @@
             <if test="type != null">
                 type = #{type},
             </if>
-
+            <if test="platformShow != null">
+                platform_show = #{platformShow},
+            </if>
             <if test="name != null">
                 name = #{name},
             </if>
-
             <if test="price != null">
                 price = #{price},
             </if>
-
             <if test="rank != null">
                 rank = #{rank},
             </if>
-
             <if test="createTime != null">
                 create_time = #{createTime},
             </if>

@@ -2,6 +2,7 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.date.DateUtil;
+import com.fulu.game.common.enums.VirtualDetailsRemarkEnum;
 import com.fulu.game.common.enums.VirtualDetailsTypeEnum;
 import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.VirtualProductException;
@@ -154,8 +155,20 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
                 vd.setUserId(userId);
                 vd.setSum(vritualBalance - price);
                 vd.setMoney(price*-1);
+                vd.setRelevantNo(t.getOrderNo());
                 vd.setType(VirtualDetailsTypeEnum.VIRTUAL_MONEY.getType());
-                vd.setRemark("解锁 "+vp.getId()+"-"+vp.getName()+" 花费了 "+(price*-1)+"钻石");
+                if(vp.getType().intValue() == VirtualProductTypeEnum.VIRTUAL_GIFT.getType().intValue()){
+                    vd.setRemark(VirtualDetailsRemarkEnum.GIFT_COST.getMsg());
+                }else if(vp.getType().intValue() == VirtualProductTypeEnum.PERSONAL_PICS.getType().intValue()){
+                    vd.setRemark(VirtualDetailsRemarkEnum.UNLOCK_PERSONAL_PICS.getMsg());
+                }else if(vp.getType().intValue() == VirtualProductTypeEnum.IM_PROTECTED_PICS.getType().intValue()){
+                    vd.setRemark(VirtualDetailsRemarkEnum.UNLOCK_PICS.getMsg());
+                }else if(vp.getType().intValue() == VirtualProductTypeEnum.IM_PROTECTED_VOICE.getType().intValue()){
+                    vd.setRemark(VirtualDetailsRemarkEnum.UNLOCK_VOICE.getMsg());
+                }else if(vp.getType().intValue() == VirtualProductTypeEnum.LOGIN_RECEIVE_BONUS.getType().intValue()){
+                    vd.setRemark(VirtualDetailsRemarkEnum.LOGIN_BOUNS.getMsg());
+                }
+                
                 vd.setCreateTime(new Date());
 
                 virtualDetailsService.create(vd);

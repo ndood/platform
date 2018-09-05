@@ -21,7 +21,7 @@ public class VirtualDetails implements Serializable {
     //用户id
     private Integer userId;
     //关联编号
-    private Integer relevantNo;
+    private String relevantNo;
     //剩余虚拟币或者魅力值余额
     private Integer sum;
     //虚拟币或魅力值的增加和消费记录
@@ -32,4 +32,5 @@ public class VirtualDetails implements Serializable {
     private String remark;
     //创建时间
     private Date createTime;
+
 }

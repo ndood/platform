@@ -16,8 +16,8 @@
         <result column="type" property="type"/>
         <result column="user_info_auth" property="userInfoAuth"/>
         <result column="balance" property="balance"/>
-        <result column="virtual_balance" property="virtualBalance"/>
-        <result column="charm" property="charm"/>
+        <result column="virtual_balance" property="virtualBalance" />
+        <result column="charm" property="charm" />
         <result column="status" property="status"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>

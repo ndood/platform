@@ -20,6 +20,8 @@ public class SalesMode implements Serializable {
 	private Integer categoryId;
 	//种类
 	private Integer type;
+	//平台(1小程序，2APP，3都显示)
+	private Integer platformShow;
 	//单位
 	private String name;
 	//价格

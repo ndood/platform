@@ -17,4 +17,8 @@ public class DynamicFileDoc {
     private Integer type;
     /** 播放次数 */
     private Long playCount;
+    /** 图片宽度 */
+    private Integer width;
+    /** 图片高度 */
+    private Integer height;
 }

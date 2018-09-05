@@ -43,6 +43,8 @@ public class Product implements Serializable {
 	private Integer salesModeId;
 	//销售单位权重
 	private Integer salesModeRank;
+	//显示平台
+	private Integer platformShow;
 	//状态
 	private Boolean status;
 	//创建时间
