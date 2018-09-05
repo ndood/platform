@@ -25,6 +25,8 @@ public class VirtualPayOrder implements Serializable {
     private String name;
     //用户id
     private Integer userId;
+    //支付方式（1：虚拟币；2：余额）
+    private Integer payType;
     //实付金额
     private BigDecimal actualMoney;
     //虚拟商品价格（对应钻石数量）
