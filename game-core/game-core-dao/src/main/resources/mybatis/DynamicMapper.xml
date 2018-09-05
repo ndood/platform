@@ -119,7 +119,7 @@
     </select>
 
     <select id="adminList" resultType="com.fulu.game.core.entity.vo.DynamicVO" parameterType="com.fulu.game.core.entity.vo.DynamicVO">
-        SELECT dynamic.*,tu.nickname,product.product_name as productName,product.price as productPrice,product.unit as productUnit, GROUP_CONCAT( df.url ) as fileUrls
+        SELECT dynamic.*,tu.nickname as userNickname,product.product_name as productName,product.price as productPrice,product.unit as productUnit, GROUP_CONCAT( df.url ) as fileUrls
         FROM t_dynamic dynamic
         LEFT JOIN t_user tu ON dynamic.user_id = tu.id
         LEFT JOIN t_product product ON dynamic.product_id = product.id
