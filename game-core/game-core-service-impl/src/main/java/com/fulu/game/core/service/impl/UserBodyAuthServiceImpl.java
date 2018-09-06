@@ -53,7 +53,7 @@ public class UserBodyAuthServiceImpl extends AbsCommonService<UserBodyAuth, Inte
 
             UserBodyAuth resultUba = resultList.get(0);
             //判断用户是否是需要认证的
-            if (resultUba.getAuthStatus().intValue() == 1) {
+            if (resultUba.getAuthStatus().intValue() == UserBodyAuthStatusEnum.AUTH_SUCCESS.getType().intValue()) {
                 log.error("提交认证异常，当前操作用户已经通过了身份认证，不可再次提交认证");
                 throw new UserException(UserException.ExceptionCode.BODY_ALREADY_AUTH);
             }

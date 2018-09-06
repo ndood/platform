@@ -5,6 +5,7 @@ import cn.hutool.core.date.Week;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.CashProcessStatusEnum;
 import com.fulu.game.common.enums.MoneyOperateTypeEnum;
+import com.fulu.game.common.enums.UserBodyAuthStatusEnum;
 import com.fulu.game.common.exception.CashException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.CashDrawsDao;
@@ -19,6 +20,7 @@ import com.github.pagehelper.PageInfo;
 
 import cn.hutool.core.bean.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -74,14 +76,14 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         uba.setUserId(user.getId());
         List<UserBodyAuth> list = userBodyAuthService.findByParameter(uba);
 
-        int authStatus = 0;
+        int authStatus = UserBodyAuthStatusEnum.NO_AUTH.getType().intValue();
         
-        if(list != null && list.size() > 0){
+        if(CollectionUtils.isNotEmpty(list)){
             UserBodyAuth authInfo = list.get(0);
             authStatus = authInfo.getAuthStatus().intValue();
         }
         
-        if (authStatus == 0) {
+        if (authStatus != UserBodyAuthStatusEnum.AUTH_SUCCESS.getType().intValue()) {
             log.error("提款申请异常，当前操作用户未进行身份认证");
             throw new UserException(UserException.ExceptionCode.BODY_NO_AUTH);
         }
