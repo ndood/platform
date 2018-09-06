@@ -83,6 +83,11 @@ public class UserController extends BaseController {
     @PostMapping(value = "/info-auth/save")
     public Result userInfoAuthCreate(UserInfoAuthTO userInfoAuthTO) {
         userInfoAuthService.save(userInfoAuthTO);
+        
+        if(userInfoAuthTO.getSort() == null){
+            userInfoAuthService.saveSort(userInfoAuthTO);
+        }
+        
         return Result.success().data(userInfoAuthTO);
     }
 

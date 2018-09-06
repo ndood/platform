@@ -30,9 +30,9 @@ CREATE TABLE `t_report_file` (
 -- 用户朋友关系表
 DROP TABLE IF EXISTS `t_user_friend`;
 CREATE TABLE `t_user_friend` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `from_user_id` bigint(20) DEFAULT NULL COMMENT '发起关注操作用户id',
-  `to_user_id` bigint(20) DEFAULT NULL COMMENT '目标用户id',
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `from_user_id` int(11) DEFAULT NULL COMMENT '发起关注操作用户id',
+  `to_user_id` int(11) DEFAULT NULL COMMENT '目标用户id',
   `is_attention` tinyint(4) DEFAULT '1' COMMENT '是否关注（1：是；0：否）',
   `is_black` tinyint(4) DEFAULT '0' COMMENT '是否黑名单（1：是；0：否）',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -141,9 +141,9 @@ drop table if exists t_dynamic;
 /*==============================================================*/
 create table t_dynamic
 (
-   id                   bigint not null auto_increment comment '动态id',
-   user_id              bigint comment '动态发布用户id',
-   tech_info_id         bigint comment '技能id',
+   id                   int(11) not null auto_increment comment '动态id',
+   user_id              int(11) comment '动态发布用户id',
+   tech_info_id         int(11) comment '技能id',
    content              varchar(1024) comment '动态内容',
    type                 tinyint(1) comment '动态类型(0：文字；1：图片；2：视频)',
    city_code            varchar(32) comment '城市编码（用于查询附近的动态）',
@@ -154,11 +154,11 @@ create table t_dynamic
    lat                  double(10,5) comment '纬度（用于计算距离）',
    is_top               tinyint(1) default 0 comment '是否置顶（1：是；0：否）',
    is_hot               tinyint(1) default 0 comment '是否热门（1：是；0：否，预留）',
-   rewards              bigint default 0 comment '打赏次数',
-   likes                bigint default 0 comment '点赞次数',
-   comments             bigint default 0 comment '评论次数',
-   reports              bigint comment '举报次数（预留）',
-   clicks               bigint comment '点击次数（预留）',
+   rewards              int(11) default 0 comment '打赏次数',
+   likes                int(11) default 0 comment '点赞次数',
+   comments             int(11) default 0 comment '评论次数',
+   reports              int(11) comment '举报次数（预留）',
+   clicks               int(11) comment '点击次数（预留）',
    create_time          datetime comment '创建时间',
    update_time          datetime default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment '修改时间（预留，暂不确定是否有修改功能）',
    status               tinyint(1) default 1 comment '动态状态（1：有效；0：无效）',
@@ -172,11 +172,11 @@ drop table if exists t_dynamic_file;
 /*==============================================================*/
 create table t_dynamic_file
 (
-   id                   bigint not null auto_increment,
-   dynamic_id           bigint comment '动态id',
+   id                   int(11) not null auto_increment,
+   dynamic_id           int(11) comment '动态id',
    url                  varchar(512) comment '文件链接地址',
    type                 tinyint(1) default 1 comment '文件类型(1：图片；2：视频，由于同一条动态不能同时选图片和视频，因此将此属性放到主表中)',
-   play_count           bigint comment '播放次数（视频才会有）',
+   play_count           int(11) comment '播放次数（视频才会有）',
    create_time          datetime comment '创建时间（预留）',
    update_time          datetime default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment '修改时间',
    status               tinyint(1) comment '状态（1：有效；0：无效）',
@@ -189,9 +189,9 @@ drop table if exists t_dynamic_like;
 /*==============================================================*/
 create table t_dynamic_like
 (
-   id                   bigint not null auto_increment comment '评论id',
-   dynamic_id           bigint comment '动态id',
-   from_user_id         bigint comment '点赞用户id',
+   id                   int(11) not null auto_increment comment '评论id',
+   dynamic_id           int(11) comment '动态id',
+   from_user_id         int(11) comment '点赞用户id',
    from_user_head_url   varchar(512) comment '点赞用户头像URL（冗余字段，提高查询效率）',
    from_user_nickname   varchar(32) comment '点赞用户昵称（冗余字段，提高查询效率）',
    create_time          datetime comment '创建时间',
@@ -207,16 +207,16 @@ drop table if exists t_reward;
 /*==============================================================*/
 create table t_reward
 (
-   id                   bigint not null auto_increment,
-   resource_id          bigint comment '来源id',
+   id                   int(11) not null auto_increment,
+   resource_id          int(11) comment '来源id',
    resource_type        smallint comment '来源类型（1：动态打赏；）',
-   gift_id              bigint comment '礼物id',
+   gift_id              int(11) comment '礼物id',
    gift_url              varchar(512) comment '礼物图标（冗余字段，提高查询效率）',
-   from_user_id         bigint comment '给打赏用户id',
+   from_user_id         int(11) comment '给打赏用户id',
    from_user_head_url   varchar(512) comment '给打赏用户头像URL（冗余字段，提高查询效率）',
    from_user_nickname   varchar(32) comment '给打赏用户昵称（冗余字段，提高查询效率）',
    from_user_gender     tinyint(1) comment '给打赏用户性别(默认0：不公开；1：男；2：女)',
-   to_user_id           bigint comment '获得打赏用户id(预留)',
+   to_user_id           int(11) comment '获得打赏用户id(预留)',
    to_user_head_url     varchar(512) comment '获得打赏用户头像URL（冗余字段，提高查询效率）',
    to_user_nickname     varchar(32) comment '获得打赏用户昵称（冗余字段，提高查询效率）',
    to_user_gender       tinyint(1) comment '获得打赏用户性别(默认0：不公开；1：男；2：女)',
@@ -231,16 +231,16 @@ drop table if exists t_dynamic_comment;
 /*==============================================================*/
 create table t_dynamic_comment
 (
-   id                   bigint not null auto_increment comment 'id',
-   dynamic_id           bigint comment '动态id(用户查询评论的所有回复信息)',
-   comment_id           bigint comment '目标id（当reply_type=1时为评论id，回复的父id）',
+   id                   int(11) not null auto_increment comment 'id',
+   dynamic_id           int(11) comment '动态id(用户查询评论的所有回复信息)',
+   comment_id           int(11) comment '目标id（当reply_type=1时为评论id，回复的父id）',
    comment_type         smallint comment '类型（1：评论动态；2：评论动态的评论）',
    content              varchar(1024) comment '评论的内容',
-   from_user_id         bigint comment '用户id',
+   from_user_id         int(11) comment '用户id',
    from_user_head_url   varchar(512) comment '用户头像URL（冗余字段，提高查询效率）',
    from_user_nickname   varchar(32) comment '用户昵称（冗余字段，提高查询效率）',
    from_user_gender     tinyint(1) comment '用户性别(默认0：不公开；1：男；2：女)',
-   to_user_id           bigint comment '目标用户id',
+   to_user_id           int(11) comment '目标用户id',
    to_user_head_url     varchar(512) comment '目标用户头像URL（冗余字段，提高查询效率）',
    to_user_nickname     varchar(32) comment '目标用户昵称（冗余字段，提高查询效率）',
    to_user_gender       tinyint(1) comment '目标用户性别(默认0：不公开；1：男；2：女)',
@@ -255,9 +255,9 @@ drop table if exists t_access_log;
 /*==============================================================*/
 create table t_access_log
 (
-   id                   bigint not null auto_increment comment 'id自增',
-   from_user_id         bigint comment '访问者id',
-   to_user_id           bigint comment '被访问者id',
+   id                   int(11) not null auto_increment comment 'id自增',
+   from_user_id         int(11) comment '访问者id',
+   to_user_id           int(11) comment '被访问者id',
    menus_name           varchar(512) comment '访问菜单名称逗号间隔',
    count                int default 1 comment '访问次数',
    city_code            varchar(16) comment '城市编码',
@@ -275,8 +275,8 @@ drop table if exists t_access_log_detail;
 /*==============================================================*/
 create table t_access_log_detail
 (
-   id                   bigint not null auto_increment comment 'id自增',
-   access_log_id        bigint comment '访问日志id',
+   id                   int(11) not null auto_increment comment 'id自增',
+   access_log_id        int(11) comment '访问日志id',
    menus_name           varchar(512) comment '访问过的菜单名称逗号间隔',
    city_code            varchar(16) comment '城市编码',
    city_name            varchar(16) comment '城市名称',
@@ -333,7 +333,7 @@ UPDATE `t_product` pro SET `platform_show` = (SELECT `platform_show` FROM `t_sal
 
 
 -- 修改动态表的技能id为商品id
-alter table t_dynamic change  column tech_info_id product_id bigint(20);
+alter table t_dynamic change  column tech_info_id product_id int(11);
 
 ALTER TABLE `t_admin` ADD COLUMN `im_id` varchar(128) DEFAULT NULL COMMENT 'IM账号' after `status`;
 ALTER TABLE `t_admin` ADD COLUMN `im_pwd` varchar(128) DEFAULT NULL COMMENT 'IM密码' after `im_id`;
