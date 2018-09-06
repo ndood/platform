@@ -15,9 +15,9 @@ import lombok.Data;
 public class UserBodyAuth implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	//
+	//主键id
 	private Integer id;
-	//
+	//用户id
 	private Integer userId;
 	//用户认证的名字
 	private String userName;
@@ -29,11 +29,14 @@ public class UserBodyAuth implements Serializable {
 	private String cardHandUrl;
 	//认证状态  0 未认证  1已通过  2未通过
 	private Integer authStatus;
-	//
+	//管理员id
+	private Integer adminId;
+	//管理员名称
+	private String adminName;
+	//备注
 	private String remarks;
-	//
+	//创建时间
 	private Date createTime;
-	//
+	//更新时间
 	private Date updateTime;
-
 }
