@@ -29,4 +29,12 @@ public interface UserInfoAuthDao extends ICommonDao<UserInfoAuth, Integer> {
      * @return 数据库返回操作结果
      */
     int updateByUserId(UserInfoAuth userInfoAuth);
+
+    /**
+     * 更新陪玩师的排序号
+     * @param userId
+     * @param sort
+     * @return
+     */
+    int updateUserSort(Integer userId , Integer sort);
 }
