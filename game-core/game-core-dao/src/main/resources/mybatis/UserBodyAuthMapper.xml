@@ -216,6 +216,12 @@
             <if test="mobile != null">
                 and t2.mobile = #{mobile}
             </if>
+            <if test="startTime != null">
+                <![CDATA[ and t1.create_time >= #{startTime} ]]>
+            </if>
+            <if test="endTime != null">
+                <![CDATA[ and t1.create_time <= #{endTime} ]]>
+            </if>
         </where>
     </select>
     
