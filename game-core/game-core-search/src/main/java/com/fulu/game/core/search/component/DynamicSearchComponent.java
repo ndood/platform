@@ -205,7 +205,7 @@ public class DynamicSearchComponent  extends AbsSearchComponent<DynamicDoc, Long
 
     @Override
     protected String getIndexDB() {
-        return configProperties.getEvn().getPrefix() + INDEX_DB;
+        return configProperties.getEvn().getPrefix().toLowerCase() + "-" + INDEX_DB;
     }
 
     @Override
