@@ -25,7 +25,10 @@ public class UserException extends BizException {
         WX_PHONE_NOT_EXIST_EXCEPTION(21002, "未获取用户手机号"),
         LOCK_SELF_EXCEPTION(21003, "试图禁用正在登录管理员"),
         LOCK_DENY_EXCEPTION(21004, "已被禁用，无此权限"),
-        NO_WECHATECO_EXCEPTION(21005, "没有匹配的微信生态类型");
+        NO_WECHATECO_EXCEPTION(21005, "没有匹配的微信生态类型"),
+        BODY_NO_AUTH(21006, "用户未进行身份验证"),
+        BODY_ALREADY_AUTH(21007, "用户已经认证了身份");
+        
         private int code;
         private String msg;
     }

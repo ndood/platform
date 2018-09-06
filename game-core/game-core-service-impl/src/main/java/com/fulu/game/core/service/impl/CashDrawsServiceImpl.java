@@ -9,15 +9,10 @@ import com.fulu.game.common.exception.CashException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.CashDrawsDao;
 import com.fulu.game.core.dao.ICommonDao;
-import com.fulu.game.core.entity.Admin;
-import com.fulu.game.core.entity.CashDraws;
-import com.fulu.game.core.entity.MoneyDetails;
-import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.CashDrawsVO;
-import com.fulu.game.core.service.AdminService;
-import com.fulu.game.core.service.CashDrawsService;
-import com.fulu.game.core.service.MoneyDetailsService;
-import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.entity.vo.UserBodyAuthVO;
+import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
@@ -43,6 +38,8 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
     private AdminService adminService;
     @Autowired
     private MoneyDetailsService mdService;
+    @Autowired
+    private UserBodyAuthService userBodyAuthService;
 
     @Override
     public ICommonDao<CashDraws, Integer> getDao() {
@@ -72,6 +69,24 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
             log.error("提款申请异常，提款金额小于0，用户id:{}", user.getId());
             throw new CashException(CashException.ExceptionCode.CASH_NEGATIVE_EXCEPTION);
         }
+
+        UserBodyAuthVO uba = new UserBodyAuthVO();
+        uba.setUserId(user.getId());
+        List<UserBodyAuth> list = userBodyAuthService.findByParameter(uba);
+
+        int authStatus = 0;
+        
+        if(list != null && list.size() > 0){
+            UserBodyAuth authInfo = list.get(0);
+            authStatus = authInfo.getAuthStatus().intValue();
+        }
+        
+        if (authStatus == 0) {
+            log.error("提款申请异常，当前操作用户未进行身份认证");
+            throw new UserException(UserException.ExceptionCode.BODY_NO_AUTH);
+        }
+        
+        
         user = userService.findById(user.getId());
         BigDecimal balance = user.getBalance();
         if (money.compareTo(balance) == 1) {

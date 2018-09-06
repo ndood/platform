@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.UserBodyAuthDao">
+    <resultMap id="UserBodyAuthResultMap" type="com.fulu.game.core.entity.UserBodyAuth">
+                                    <id column="id"  property="id" />
+                                            <result column="user_id"  property="userId" />
+                                            <result column="user_name"  property="userName" />
+                                            <result column="card_no"  property="cardNo" />
+                                            <result column="card_front_url"  property="cardFrontUrl" />
+                                            <result column="card_back_url"  property="cardBackUrl" />
+                                            <result column="auth_status"  property="authStatus" />
+                                            <result column="remarks"  property="remarks" />
+                                            <result column="create_time"  property="createTime" />
+                                            <result column="update_time"  property="updateTime" />
+                        </resultMap>
+
+    <resultMap id="UserBodyAuthResultVOMap" type="com.fulu.game.core.entity.vo.UserBodyAuthVO" extends="UserBodyAuthResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,user_name,card_no,card_front_url,card_back_url,auth_status,remarks,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="UserBodyAuthResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_user_body_auth
+        <where>
+        id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll"  resultMap="UserBodyAuthResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_user_body_auth
+    </select>
+
+    <select id="findByParameter" resultMap="UserBodyAuthResultMap" parameterType="com.fulu.game.core.entity.vo.UserBodyAuthVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_user_body_auth
+        <where>
+                                                                            <if test="userId != null">
+                       and user_id = #{userId}
+                    </if>
+                                                                <if test="userName != null">
+                       and user_name = #{userName}
+                    </if>
+                                                                <if test="cardNo != null">
+                       and card_no = #{cardNo}
+                    </if>
+                                                                <if test="cardFrontUrl != null">
+                       and card_front_url = #{cardFrontUrl}
+                    </if>
+                                                                <if test="cardBackUrl != null">
+                       and card_back_url = #{cardBackUrl}
+                    </if>
+                                                                <if test="authStatus != null">
+                       and auth_status = #{authStatus}
+                    </if>
+                                                                <if test="remarks != null">
+                       and remarks = #{remarks}
+                    </if>
+                                                                <if test="createTime != null">
+                       and create_time = #{createTime}
+                    </if>
+                                                                <if test="updateTime != null">
+                       and update_time = #{updateTime}
+                    </if>
+                                    </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_user_body_auth
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserBodyAuth">
+        insert into
+        t_user_body_auth (user_id,user_name,card_no,card_front_url,card_back_url,auth_status,remarks,create_time,update_time)
+        values
+        (#{userId},#{userName},#{cardNo},#{cardFrontUrl},#{cardBackUrl},#{authStatus},#{remarks},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.UserBodyAuth">
+        update t_user_body_auth
+        <set>
+                                                        
+                    <if test="userId != null">
+                        user_id = #{userId},
+                    </if>
+                                            
+                    <if test="userName != null">
+                        user_name = #{userName},
+                    </if>
+                                            
+                    <if test="cardNo != null">
+                        card_no = #{cardNo},
+                    </if>
+                                            
+                    <if test="cardFrontUrl != null">
+                        card_front_url = #{cardFrontUrl},
+                    </if>
+                                            
+                    <if test="cardBackUrl != null">
+                        card_back_url = #{cardBackUrl},
+                    </if>
+                                            
+                    <if test="authStatus != null">
+                        auth_status = #{authStatus},
+                    </if>
+                                            
+                    <if test="remarks != null">
+                        remarks = #{remarks},
+                    </if>
+                                            
+                    <if test="createTime != null">
+                        create_time = #{createTime},
+                    </if>
+                                            
+                    <if test="updateTime != null">
+                        update_time = #{updateTime},
+                    </if>
+                                    </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

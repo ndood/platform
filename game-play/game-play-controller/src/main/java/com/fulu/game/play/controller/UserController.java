@@ -17,10 +17,7 @@ import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.*;
-import com.fulu.game.core.entity.vo.UserCommentVO;
-import com.fulu.game.core.entity.vo.UserInfoVO;
-import com.fulu.game.core.entity.vo.UserVO;
-import com.fulu.game.core.entity.vo.WxUserInfo;
+import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
@@ -74,7 +71,8 @@ public class UserController extends BaseController {
     private PlayCouponOpenServiceImpl playCouponOpenServiceImpl;
     @Autowired
     private SpringThreadPoolExecutor springThreadPoolExecutor;
-
+    @Autowired
+    private UserBodyAuthService userBodyAuthService;
 
     @RequestMapping("tech/list")
     public Result userTechList() {
@@ -571,4 +569,50 @@ public class UserController extends BaseController {
         resultMap.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
         return Result.success().data(resultMap).msg("查询成功！");
     }
+
+
+    /**
+     * 用户-获取用户认证信息
+     *
+     * @return
+     */
+    @PostMapping("/auth-status/get")
+    public Result getUserAuthStatus() {
+        User user = userService.getCurrentUser();
+
+        UserBodyAuthVO uba = new UserBodyAuthVO();
+        uba.setUserId(user.getId());
+        List<UserBodyAuth> list = userBodyAuthService.findByParameter(uba);
+        
+        UserBodyAuth authInfo = null;
+        
+        if(list != null && list.size() > 0){
+            authInfo = list.get(0);
+        }
+        
+        return Result.success().data(authInfo).msg("查询成功！");
+    }
+
+
+    /**
+     * 用户-提交用户认证信息
+     *
+     * @return
+     */
+    @PostMapping("/body-auth/save")
+    public Result getUserAuthStatus(String userName,String cardNo,String cardFrontUrl,String cardBackUrl) {
+        User user = userService.getCurrentUser();
+        UserBodyAuthVO uba = new UserBodyAuthVO();
+        uba.setUserId(user.getId());
+        uba.setUserName(userName);
+        uba.setCardNo(cardNo);
+        uba.setCardFrontUrl(cardFrontUrl);
+        uba.setCardBackUrl(cardBackUrl);
+        uba.setAuthStatus(0);
+
+        userBodyAuthService.submitUserBodyAuthInfo(uba);
+
+        return Result.success().msg("提交成功！");
+    }
+    
 }
