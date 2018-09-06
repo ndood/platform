@@ -80,6 +80,7 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
         userFriendVO.setIsBlack(0);
         userFriendVO.setFromUserId(user.getId());
         userFriendVO.setType(1);
+        log.info("检测空指针：userFriendVO.toJSONString: {}, pageNum: {}, pageSize: {}",JSONObject.toJSONString(userFriendVO),pageNum,pageSize);
         List<UserFriendVO> list = userFriendDao.findByParameter(userFriendVO);
         return new PageInfo<>(list);
     }
@@ -100,6 +101,7 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
         userFriendVO.setIsBlack(0);
         userFriendVO.setToUserId(user.getId());
         userFriendVO.setType(2);
+        log.info("检测空指针：userFriendVO.toJSONString: {}, pageNum: {}, pageSize: {}",JSONObject.toJSONString(userFriendVO),pageNum,pageSize);
         List<UserFriendVO> list = userFriendDao.findByParameter(userFriendVO);
         return new PageInfo<>(list);
     }
@@ -118,6 +120,7 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
         userFriendVO.setIsBlack(1);
         userFriendVO.setFromUserId(user.getId());
         userFriendVO.setType(1);
+        log.info("检测空指针：userFriendVO.toJSONString: {}, pageNum: {}, pageSize: {}",JSONObject.toJSONString(userFriendVO),pageNum,pageSize);
         List<UserFriendVO> list = userFriendDao.findByParameter(userFriendVO);
         return new PageInfo<>(list);
     }
@@ -137,6 +140,7 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
         userFriendVO.setFromUserId(user.getId());
         userFriendVO.setToUserId(toUserId);
         userFriendVO.setType(1);
+        log.info("检测空指针：userFriendVO.toJSONString: {}",JSONObject.toJSONString(userFriendVO));
         List<UserFriendVO> list = userFriendDao.findByParameter(userFriendVO);
         if(list != null && list.size() > 0){
             isBlack = true;
@@ -158,6 +162,7 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
         UserFriendVO userFriendVO = new UserFriendVO();
         userFriendVO.setUserId(user.getId());
         userFriendVO.setNickname(keyWord);
+        log.info("检测空指针：userFriendVO.toJSONString: {}, pageNum: {}, pageSize: {}",JSONObject.toJSONString(userFriendVO),pageNum,pageSize);
         List<UserFriendVO> list = userFriendDao.searchFriends(userFriendVO);
         return new PageInfo<>(list);
     }
@@ -176,6 +181,7 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
         UserFriendVO userFriendVO = new UserFriendVO();
         userFriendVO.setUserId(user.getId());
         userFriendVO.setNickname(keyWord);
+        log.info("检测空指针：userFriendVO.toJSONString: {}, pageNum: {}, pageSize: {}",JSONObject.toJSONString(userFriendVO),pageNum,pageSize);
         List<UserFriendVO> list = userFriendDao.searchUsers(userFriendVO);
         return new PageInfo<>(list);
     }
