@@ -9,9 +9,9 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 用户身份认证信息表
- * @author jaycee.Deng
+ * @author jaycee Deng
  * @email ${email}
- * @date 2018-09-05 17:40:37
+ * @date 2018-09-06 14:29:30
  */
 @Mapper
 public interface UserBodyAuthDao extends ICommonDao<UserBodyAuth,Integer>{

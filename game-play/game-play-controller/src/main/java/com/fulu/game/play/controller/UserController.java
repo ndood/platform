@@ -600,14 +600,14 @@ public class UserController extends BaseController {
      * @return
      */
     @PostMapping("/body-auth/save")
-    public Result getUserAuthStatus(String userName,String cardNo,String cardFrontUrl,String cardBackUrl) {
+    public Result getUserAuthStatus(String userName,String cardNo,String cardUrl,String cardHandUrl) {
         User user = userService.getCurrentUser();
         UserBodyAuthVO uba = new UserBodyAuthVO();
         uba.setUserId(user.getId());
         uba.setUserName(userName);
         uba.setCardNo(cardNo);
-        uba.setCardFrontUrl(cardFrontUrl);
-        uba.setCardBackUrl(cardBackUrl);
+        uba.setCardUrl(cardUrl);
+        uba.setCardHandUrl(cardHandUrl);
         uba.setAuthStatus(0);
 
         userBodyAuthService.submitUserBodyAuthInfo(uba);
