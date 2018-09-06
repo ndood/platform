@@ -14,8 +14,8 @@ import com.fulu.game.core.service.UserBodyAuthService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,8 +50,8 @@ public class UserBodyAuthServiceImpl extends AbsCommonService<UserBodyAuth, Inte
 
         List<UserBodyAuth> resultList = userBodyAuthDao.findByParameter(param);
 
-        
-        if(CollectionUtils.isNotEmpty(resultList)){
+
+        if (CollectionUtils.isNotEmpty(resultList)) {
 
             UserBodyAuth resultUba = resultList.get(0);
             //判断用户是否是需要认证的
@@ -72,6 +72,9 @@ public class UserBodyAuthServiceImpl extends AbsCommonService<UserBodyAuth, Inte
         Admin admin = adminService.getCurrentUser();
 
         UserBodyAuth auth = userBodyAuthDao.findByUserId(userId);
+        if (auth == null) {
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
         auth.setAuthStatus(UserBodyAuthStatusEnum.AUTH_SUCCESS.getType());
         auth.setAdminId(admin.getId());
         auth.setAdminName(admin.getName());
@@ -99,9 +102,14 @@ public class UserBodyAuthServiceImpl extends AbsCommonService<UserBodyAuth, Inte
     @Override
     public PageInfo<UserBodyAuthVO> findByVO(Integer pageNum, Integer pageSize, UserBodyAuthVO userBodyAuthVO) {
         PageHelper.startPage(pageNum, pageSize, " t1.create_time desc");
-        
-        List<UserBodyAuthVO> list = userBodyAuthDao.findByVO(userBodyAuthVO);
-        
+
+        List<UserBodyAuthVO> list = list(userBodyAuthVO);
+
         return new PageInfo<UserBodyAuthVO>(list);
+    }
+
+    @Override
+    public List<UserBodyAuthVO> list(UserBodyAuthVO userBodyAuthVO) {
+        return userBodyAuthDao.findByVO(userBodyAuthVO);
     }
 }
