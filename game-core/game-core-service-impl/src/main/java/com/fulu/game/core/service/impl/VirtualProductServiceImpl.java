@@ -20,6 +20,7 @@ import com.fulu.game.core.service.VirtualProductService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -122,7 +123,7 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
         vpo.setVirtualProductId(virtualProductId);
         List<VirtualProductOrder> vpList = virtualProductOrderService.findByParameter(vpo);
 
-        if (vpList == null || vpList.size() == 0) {
+        if (CollectionUtils.isEmpty(vpList)) {
             //判断用户钻石是否充足
 
             //先获取用户信息 和 购买信息

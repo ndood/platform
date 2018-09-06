@@ -178,46 +178,10 @@ public class UserController extends BaseController {
 
     @PostMapping(value = "online")
     public Result userOnline(@RequestParam(required = true) Boolean active, String version) {
-        User user = userService.getCurrentUser();
-        UserInfoAuth ua = userInfoAuthService.findByUserId(user.getId());
-        if (active) {
-            log.info("userId:{}用户上线了!;version:{}", user.getId(), version);
-            redisOpenService.set(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()), user.getType() + "");
+        
+        List<AdminImLog> list = userService.userOnline(active,version);
 
-            if(ua!=null && ua.getImSubstituteId()!=null){
-
-
-                //删除陪玩师的未读信息数量
-                Map map = redisOpenService.hget(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()));
-
-                if(map != null && map.size() >0 ){
-
-                    map.remove(user.getImId());
-
-                    if(map.size() <1){
-                        redisOpenService.delete(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()));
-                    }else{
-                        redisOpenService.hset(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()) , map , Constant.ONE_DAY * 3);
-                    }
-
-                }
-
-                //获取代聊天记录
-                AdminImLogVO ail = new AdminImLogVO();
-                ail.setOwnerUserId(user.getId());
-                List<AdminImLog> list = adminImLogService.findByParameter(ail);
-                //删除带聊天记录
-                adminImLogService.deleteByOwnerUserId(user.getId());
-                return Result.success().data(list).msg("查询成功！");
-
-            }
-
-            return Result.success().msg("查询成功！");
-        } else {
-            log.info("userId:{}用户下线了!version:{}", user.getId(), version);
-            redisOpenService.delete(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()));
-        }
-        return Result.success();
+        return Result.success().data(list).msg("查询成功！");
     }
 
 

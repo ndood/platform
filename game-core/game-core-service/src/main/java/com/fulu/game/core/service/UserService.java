@@ -1,10 +1,12 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.common.enums.PlatformEcoEnum;
+import com.fulu.game.core.entity.AdminImLog;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.github.pagehelper.PageInfo;
 import me.chanjar.weixin.common.exception.WxErrorException;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.util.Date;
@@ -283,4 +285,7 @@ public interface UserService extends ICommonService<User, Integer> {
      * @return
      */
     UserVO getUserInfo(Integer userId);
+
+
+    List<AdminImLog> userOnline(Boolean active, String version);
 }

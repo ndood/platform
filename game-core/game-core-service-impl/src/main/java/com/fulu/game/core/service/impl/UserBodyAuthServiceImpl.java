@@ -5,6 +5,7 @@ import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.vo.UserBodyAuthVO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,9 +45,9 @@ public class UserBodyAuthServiceImpl extends AbsCommonService<UserBodyAuth,Integ
         param.setUserId(userBodyAuthVO.getUserId());
 
         List<UserBodyAuth> resultList = userBodyAuthDao.findByParameter(userBodyAuthVO);
+
         
-        
-        if(resultList !=null && resultList.size() >0){
+        if(CollectionUtils.isNotEmpty(resultList)){
 
             UserBodyAuth resultUba = resultList.get(0);
             //判断用户是否是需要认证的
