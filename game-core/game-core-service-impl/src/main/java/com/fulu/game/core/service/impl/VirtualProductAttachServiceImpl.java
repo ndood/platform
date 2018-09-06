@@ -34,4 +34,13 @@ public class VirtualProductAttachServiceImpl extends AbsCommonService<VirtualPro
         return virtualProductAttachDao.findByOrderProIdUserId(userId,productId);
     }
 
+    @Override
+    public int deleteByVirtualProductId(int virtualProductId) {
+        return virtualProductAttachDao.deleteByVirtualProductId(virtualProductId);
+    }
+
+    @Override
+    public List<VirtualProductAttachVO> findDetailByVo(VirtualProductAttachVO virtualProductAttachVO) {
+        return virtualProductAttachDao.findDetailByVo(virtualProductAttachVO);
+    }
 }

@@ -1,6 +1,8 @@
 package com.fulu.game.common.utils;
 
 import cn.hutool.core.date.DateUtil;
+import com.fulu.game.common.properties.Config;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -14,7 +16,7 @@ import java.util.Properties;
 public class MailUtil {
 
 
-    public static boolean sendMail(String emailTitle,String emailContent , String[] targetEmail){
+    public static boolean sendMail(String fromEmail , String fromEmailPwd,String emailTitle,String emailContent , String[] targetEmail){
 
         try {
             Properties pr = new Properties();
@@ -29,7 +31,8 @@ public class MailUtil {
             // 获取邮件对象
             Message message = new MimeMessage(session);
             // 设置发件人邮箱地址
-            message.setFrom(new InternetAddress("yangxudong@fulu.com"));
+//            message.setFrom(new InternetAddress("yangxudong@fulu.com"));
+            message.setFrom(new InternetAddress(fromEmail));
             // 设置收件人邮箱地址 
             InternetAddress[] ia = new InternetAddress[targetEmail.length];
             for(int i = 0 ; i < ia.length ; i++){
@@ -43,7 +46,8 @@ public class MailUtil {
             // 得到邮差对象
             Transport transport = session.getTransport();
             // 连接自己的邮箱账户
-            transport.connect("yangxudong@fulu.com", "Yang37520");// 密码为QQ邮箱开通的stmp服务后得到的客户端授权码
+//            transport.connect("yangxudong@fulu.com", "Yang37520");// 密码为QQ邮箱开通的stmp服务后得到的客户端授权码
+            transport.connect(fromEmail, fromEmailPwd);// 密码为QQ邮箱开通的stmp服务后得到的客户端授权码
             // 发送邮件
             transport.sendMessage(message, message.getAllRecipients());
             transport.close();

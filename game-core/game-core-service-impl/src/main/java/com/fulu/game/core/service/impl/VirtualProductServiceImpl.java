@@ -199,4 +199,9 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
 
         return vp;
     }
+
+    @Override
+    public List<VirtualProductVO> findByVirtualProductVo(VirtualProductVO virtualProductVO) {
+        return virtualProductDao.findByVirtualProductVo(virtualProductVO);
+    }
 }
