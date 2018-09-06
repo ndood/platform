@@ -13,7 +13,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum VirtualPayOrderTypeEnum implements TypeEnum<Integer> {
     WECHAT_PAY(1, "微信支付"),
-    balance_pay(2, "余额支付");
+    BALANCE_PAY(2, "余额支付");
 
     private Integer type;
     private String msg;

@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 公众号支付服务类
@@ -58,7 +60,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
      * @param ip           ip
      * @return 订单号
      */
-    public String submit(String sessionkey, BigDecimal actualMoney, Integer virtualMoney, String ip, Integer payType) {
+    public Map<String, Object> submit(String sessionkey, BigDecimal actualMoney, Integer virtualMoney, String ip, Integer payType) {
         User user = userService.getCurrentUser();
         if (!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))) {
             log.error("验证sessionkey错误:sessionkey:{};actualMoney:{};virtualMoney:{};ip:{};userId:{}",
@@ -81,11 +83,18 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         virtualPayOrderService.create(order);
         redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));
 
+        Map<String, Object> resultMap = new HashMap<>(4);
         if (payType.equals(VirtualPayOrderTypeEnum.WECHAT_PAY.getType())) {
-            return order.getOrderNo();
+            order.setPayType(VirtualPayOrderTypeEnum.WECHAT_PAY.getType());
+            resultMap.put("orderNo", order.getOrderNo());
+            resultMap.put("paySuccess", 0);
         } else {
-            return balancePay(order.getOrderNo()).getOrderNo();
+            order.setPayType(VirtualPayOrderTypeEnum.BALANCE_PAY.getType());
+            balancePay(order.getOrderNo());
+            resultMap.put("orderNo", order.getOrderNo());
+            resultMap.put("paySuccess", 1);
         }
+        return resultMap;
     }
 
     public Object payOrder(VirtualPayOrder order, User user, String requestIp) {
