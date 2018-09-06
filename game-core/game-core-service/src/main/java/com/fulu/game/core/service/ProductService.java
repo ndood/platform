@@ -258,4 +258,11 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * @return
      */
     PageInfo<Product> userProductList(Integer pageNum, Integer pageSize, Integer userId);
+
+    /**
+     * 获取用户的推荐商品ID
+     * @param userId
+     * @return
+     */
+    ProductShowCaseVO findRecommendProductByUserId(Integer userId);
 }

@@ -162,6 +162,9 @@
         FROM
         t_virtual_product t1
         LEFT JOIN t_virtual_product_order t2 ON t1.id = t2.virtual_product_id
+        <if test="targetUserId != null">
+            and t2.target_user_id = #{targetUserId}
+        </if>
         <where>
             <if test="type != null">
                 and t1.type = #{type}
@@ -180,9 +183,6 @@
                 GROUP BY
                 virtual_product_id
                 )
-            </if>
-            <if test="targetUserId != null">
-                and t2.target_user_id = #{targetUserId}
             </if>
         </where>
         ORDER BY t1.sort is null

@@ -893,4 +893,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return page;
     }
 
+    @Override
+    public ProductShowCaseVO findRecommendProductByUserId(Integer userId) {
+        return productDao.findRecommendProductByUserId(userId);
+    }
 }

@@ -1,6 +1,7 @@
 package com.fulu.game.core.search.component;
 
 import com.fulu.game.common.exception.SearchException;
+import com.fulu.game.common.properties.Config;
 import com.fulu.game.core.search.domain.DynamicDoc;
 import com.fulu.game.core.search.domain.ProductShowCaseDoc;
 import com.github.pagehelper.Page;
@@ -36,6 +37,9 @@ public class DynamicSearchComponent  extends AbsSearchComponent<DynamicDoc, Long
 
     @Autowired
     private JestClient jestClient;
+
+    @Autowired
+    private Config configProperties;
 
     enum OrderType{
         geohash,geohashShort,createTime,id
@@ -201,7 +205,7 @@ public class DynamicSearchComponent  extends AbsSearchComponent<DynamicDoc, Long
 
     @Override
     protected String getIndexDB() {
-        return INDEX_DB;
+        return configProperties.getEvn().getPrefix().toLowerCase() + "-" + INDEX_DB;
     }
 
     @Override
