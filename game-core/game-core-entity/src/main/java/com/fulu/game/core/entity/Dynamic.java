@@ -18,7 +18,7 @@ public class Dynamic implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	//动态id
-	private Long id;
+	private Integer id;
 	//动态发布用户id
 	private Integer userId;
 	//商品id
@@ -44,15 +44,15 @@ public class Dynamic implements Serializable {
 	//是否热门（1：是；0：否，预留）
 	private Integer isHot;
 	//打赏次数
-	private Long rewards;
+	private Integer rewards;
 	//点赞次数
-	private Long likes;
+	private Integer likes;
 	//评论次数
-	private Long comments;
+	private Integer comments;
 	//举报次数（预留）
-	private Long reports;
+	private Integer reports;
 	//点击次数（预留）
-	private Long clicks;
+	private Integer clicks;
 	//创建时间
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date createTime;

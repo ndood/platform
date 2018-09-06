@@ -14,7 +14,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @date 2018-08-30 10:31:41
  */
 @Mapper
-public interface DynamicDao extends ICommonDao<Dynamic,Long>{
+public interface DynamicDao extends ICommonDao<Dynamic,Integer>{
 
     List<Dynamic> findByParameter(DynamicVO dynamicVO);
 

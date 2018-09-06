@@ -16,7 +16,7 @@ public class DynamicFileDoc {
     /** 文件类型(1：图片；2：视频) */
     private Integer type;
     /** 播放次数 */
-    private Long playCount;
+    private Integer playCount;
     /** 图片宽度 */
     private Integer width;
     /** 图片高度 */

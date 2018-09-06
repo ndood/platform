@@ -14,7 +14,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @date 2018-08-30 11:14:29
  */
 @Mapper
-public interface RewardDao extends ICommonDao<Reward,Long>{
+public interface RewardDao extends ICommonDao<Reward,Integer>{
 
     List<Reward> findByParameter(RewardVO rewardVO);
 

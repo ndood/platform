@@ -48,7 +48,7 @@ public class RewardController extends BaseController {
     @RequestMapping(value = "list")
     public Result list(@RequestParam(required = true) Integer pageNum,
                        @RequestParam(required = true) Integer pageSize,
-                       @RequestParam(required = true) Long resourceId,
+                       @RequestParam(required = true) Integer resourceId,
                        @RequestParam(required = false, defaultValue = "1") Integer resourceType) {
         PageInfo<Reward> page = rewardService.list(pageNum, pageSize, resourceId, resourceType);
         return Result.success().data(page);
