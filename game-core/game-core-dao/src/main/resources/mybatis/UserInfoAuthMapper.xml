@@ -306,4 +306,9 @@
         </where>
     </update>
 
+
+    <update id="updateUserSort" parameterType="com.fulu.game.core.entity.UserInfoAuth">
+        update t_user_info_auth set sort = #{sort} where user_id = #{userId}
+    </update>
+    
 </mapper>
