@@ -60,7 +60,11 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
      * @param ip           ip
      * @return 订单号
      */
-    public Map<String, Object> submit(String sessionkey, BigDecimal actualMoney, Integer virtualMoney, String ip, Integer payType) {
+    public Map<String, Object> submit(String sessionkey,
+                                      BigDecimal actualMoney,
+                                      Integer virtualMoney,
+                                      String ip,
+                                      Integer payType) {
         User user = userService.getCurrentUser();
         if (!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))) {
             log.error("验证sessionkey错误:sessionkey:{};actualMoney:{};virtualMoney:{};ip:{};userId:{}",
