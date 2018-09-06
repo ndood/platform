@@ -334,4 +334,7 @@ UPDATE `t_product` pro SET `platform_show` = (SELECT `platform_show` FROM `t_sal
 
 
 -- 修改动态表的技能id为商品id
-alter table t_dynamic change  column tech_info_id product_id bigint(20)
+alter table t_dynamic change  column tech_info_id product_id bigint(20);
+
+ALTER TABLE `t_admin` ADD COLUMN `im_id` varchar(128) DEFAULT NULL COMMENT 'IM账号' after `status`;
+ALTER TABLE `t_admin` ADD COLUMN `im_pwd` varchar(128) DEFAULT NULL COMMENT 'IM密码' after `im_id`;

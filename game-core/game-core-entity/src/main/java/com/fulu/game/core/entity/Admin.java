@@ -30,6 +30,11 @@ public class Admin implements Serializable {
 	private String salt;
 	//状态(0失效,1启用)
 	private Integer status;
+
+	private String imId;
+
+	private String imPwd;
+
 	//生成时间
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date createTime;
