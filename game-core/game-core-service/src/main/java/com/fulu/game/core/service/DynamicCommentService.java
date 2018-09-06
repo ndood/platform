@@ -12,7 +12,7 @@ import com.github.pagehelper.PageInfo;
  * @email ${email}
  * @date 2018-08-30 11:21:42
  */
-public interface DynamicCommentService extends ICommonService<DynamicComment,Long>{
+public interface DynamicCommentService extends ICommonService<DynamicComment,Integer>{
 
     /**
      * 评论接口
@@ -27,5 +27,5 @@ public interface DynamicCommentService extends ICommonService<DynamicComment,Lon
      * @param dynamicId
      * @return
      */
-    public PageInfo<DynamicCommentVO> list(Integer pageNum, Integer pageSize, Long dynamicId);
+    public PageInfo<DynamicCommentVO> list(Integer pageNum, Integer pageSize, Integer dynamicId);
 }

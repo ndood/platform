@@ -697,8 +697,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         if (userId != null && userId > 0 && userId.intValue() != currentUserId.intValue()) {
             // 写访问日志
             AccessLog accessLog = new AccessLog();
-            accessLog.setFromUserId(currentUserId.longValue());
-            accessLog.setToUserId(userId.longValue());
+            accessLog.setFromUserId(currentUserId);
+            accessLog.setToUserId(userId);
             accessLog.setMenusName("首页");
             accessLogService.save(accessLog);
         } else {

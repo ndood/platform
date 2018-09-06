@@ -42,7 +42,7 @@ public class DynamicCommentController extends BaseController {
      * @return
      */
     @RequestMapping(value = "delete")
-    public Result delete(@RequestParam(required = true) Long id) {
+    public Result delete(@RequestParam(required = true) Integer id) {
         dynamicCommentService.deleteById(id);
         return Result.success().msg("删除成功！");
     }
@@ -57,7 +57,7 @@ public class DynamicCommentController extends BaseController {
     @RequestMapping(value = "list")
     public Result list(@RequestParam(required = true) Integer pageNum,
                        @RequestParam(required = true) Integer pageSize,
-                       @RequestParam(required = true) Long dynamicId) {
+                       @RequestParam(required = true) Integer dynamicId) {
         PageInfo<DynamicCommentVO> page = dynamicCommentService.list( pageNum, pageSize, dynamicId);
         return Result.success().data(page);
     }

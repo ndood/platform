@@ -21,7 +21,7 @@ import java.util.List;
 
 
 @Service("dynamicCommentService")
-public class DynamicCommentServiceImpl extends AbsCommonService<DynamicComment,Long> implements DynamicCommentService {
+public class DynamicCommentServiceImpl extends AbsCommonService<DynamicComment,Integer> implements DynamicCommentService {
 
     @Autowired
 	private DynamicCommentDao dynamicCommentDao;
@@ -35,7 +35,7 @@ public class DynamicCommentServiceImpl extends AbsCommonService<DynamicComment,L
 
 
     @Override
-    public ICommonDao<DynamicComment, Long> getDao() {
+    public ICommonDao<DynamicComment, Integer> getDao() {
         return dynamicCommentDao;
     }
 
@@ -47,7 +47,7 @@ public class DynamicCommentServiceImpl extends AbsCommonService<DynamicComment,L
     @Override
     public void save(DynamicCommentVO dynamicCommentVO) {
         User user = userService.getCurrentUser();
-        dynamicCommentVO.setFromUserId(user.getId().longValue());
+        dynamicCommentVO.setFromUserId(user.getId());
         dynamicCommentVO.setFromUserGender(user.getGender());
         dynamicCommentVO.setFromUserHeadUrl(user.getHeadPortraitsUrl());
         dynamicCommentVO.setFromUserNickname(user.getNickname());
@@ -74,7 +74,7 @@ public class DynamicCommentServiceImpl extends AbsCommonService<DynamicComment,L
      * @return
      */
     @Override
-    public PageInfo<DynamicCommentVO> list(Integer pageNum, Integer pageSize, Long dynamicId) {
+    public PageInfo<DynamicCommentVO> list(Integer pageNum, Integer pageSize, Integer dynamicId) {
         PageHelper.startPage(pageNum, pageSize, "id DESC");
         DynamicCommentVO dynamicCommentVO = new DynamicCommentVO();
         dynamicCommentVO.setDynamicId(dynamicId);

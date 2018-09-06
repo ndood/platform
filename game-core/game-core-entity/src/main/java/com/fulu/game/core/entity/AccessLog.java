@@ -18,11 +18,11 @@ public class AccessLog implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	//id自增
-	private Long id;
+	private Integer id;
 	//访问者id
-	private Long fromUserId;
+	private Integer fromUserId;
 	//被访问者id
-	private Long toUserId;
+	private Integer toUserId;
 	//访问菜单名称逗号间隔
 	private String menusName;
 	//访问次数

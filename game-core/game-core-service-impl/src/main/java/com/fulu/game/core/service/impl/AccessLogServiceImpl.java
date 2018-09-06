@@ -54,7 +54,7 @@ public class AccessLogServiceImpl extends AbsCommonService<AccessLog,Long> imple
         PageHelper.startPage(pageNum, pageSize, "id DESC");
         User user = userService.getCurrentUser();
         AccessLogVO accessLogVO = new AccessLogVO();
-        accessLogVO.setToUserId(user.getId().longValue());
+        accessLogVO.setToUserId(user.getId());
         List<AccessLogVO> list = accessLogDao.accessList(accessLogVO);
         return new PageInfo<>(list);
     }
@@ -71,7 +71,7 @@ public class AccessLogServiceImpl extends AbsCommonService<AccessLog,Long> imple
         PageHelper.startPage(pageNum, pageSize, "id DESC");
         User user = userService.getCurrentUser();
         AccessLogVO accessLogVO = new AccessLogVO();
-        accessLogVO.setFromUserId(user.getId().longValue());
+        accessLogVO.setFromUserId(user.getId());
         List<AccessLogVO> list = accessLogDao.footprintList(accessLogVO);
         return new PageInfo<>(list);
     }
