@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum PushMsgJumpTypeEnum implements TypeEnum<Integer> {
     H5(1, "H5"),
     PAGE(2, "内部跳转页(小程序）"),
-    OFFCIAL_NOTE(3, "官方公告"),
+    OFFICIAL_NOTE(3, "官方公告"),
     CHAT_ROOM(4, "聊天室"),
     CARD_PAGE(5, "名片页");
 
