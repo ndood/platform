@@ -37,7 +37,7 @@ import java.util.Map;
  */
 @Controller
 @Slf4j
-@RequestMapping("/api/v1/mp")
+@RequestMapping("/mp")
 public class MpHomeController extends BaseController {
 
     @Autowired
@@ -47,7 +47,36 @@ public class MpHomeController extends BaseController {
     @Autowired
     private UserService userService;
 
-
+    @RequestMapping(value = "/test/login", method = RequestMethod.POST)
+    @ResponseBody
+    public Result testLogin(String openId,
+                            @RequestParam(value = "sourceId", required = false) Integer sourceId,
+                            HttpServletRequest request) {
+        log.info("==调用/test/login方法==");
+        PlayUserToken playUserToken = PlayUserToken.newBuilder(PlayUserToken.Platform.FENQILE).fqlOpenid(openId).build();
+        String ip = RequestUtil.getIpAdrress(request);
+        playUserToken.setHost(ip);
+        Subject subject = SecurityUtils.getSubject();
+        try {
+            subject.login(playUserToken);
+            User user = userService.getCurrentUser();
+            Map<String, Object> result = BeanUtil.beanToMap(user);
+            result.put("token", SubjectUtil.getToken());
+            result.put("userId", user.getId());
+            return Result.success().data(result).msg("测试登录成功!");
+        } catch (AuthenticationException e) {
+            if (e.getCause() instanceof UserException) {
+                if (UserException.ExceptionCode.USER_BANNED_EXCEPTION.equals(((UserException) e.getCause()).getExceptionCode())) {
+                    log.error("用户被封禁,openId:{}", openId);
+                    return Result.userBanned();
+                }
+            }
+            return Result.noLogin().msg("测试登录用户验证信息错误！");
+        } catch (Exception e) {
+            log.error("测试登录异常!", e);
+            return Result.error().msg("测试登陆异常！");
+        }
+    }
 
 
     @PostMapping(value = "login")
@@ -95,6 +124,7 @@ public class MpHomeController extends BaseController {
 
     /**
      * 点击发送验证码接口
+     *
      * @param mobile
      * @return
      */

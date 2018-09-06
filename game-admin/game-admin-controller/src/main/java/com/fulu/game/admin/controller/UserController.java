@@ -27,9 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 用户Controller
@@ -58,7 +56,9 @@ public class UserController extends BaseController {
     private UserTechAuthRejectService userTechAuthRejectService;
     @Autowired
     private ProductService productService;
-    
+    @Autowired
+    private UserBodyAuthService userBodyAuthService;
+
     /**
      * 陪玩师认证信息列表
      *
@@ -83,11 +83,11 @@ public class UserController extends BaseController {
     @PostMapping(value = "/info-auth/save")
     public Result userInfoAuthCreate(UserInfoAuthTO userInfoAuthTO) {
         userInfoAuthService.save(userInfoAuthTO);
-        
-        if(userInfoAuthTO.getSort() == null){
+
+        if (userInfoAuthTO.getSort() == null) {
             userInfoAuthService.saveSort(userInfoAuthTO);
         }
-        
+
         return Result.success().data(userInfoAuthTO);
     }
 
@@ -206,6 +206,31 @@ public class UserController extends BaseController {
             return Result.error().msg("手机号查询错误!");
         }
         return Result.success().data(user);
+    }
+
+    /**
+     * 实名认证审核--通过
+     *
+     * @param userId 用户id
+     * @return 封装结果集
+     */
+    @PostMapping(value = "/body-auth/pass")
+    public Result bodyAuthPass(@RequestParam Integer userId) {
+        userBodyAuthService.pass(userId);
+        return Result.success().msg("通过成功！");
+    }
+
+    /**
+     * 实名认证审核--拒绝或驳回
+     *
+     * @param userId 用户id
+     * @param remark 备注
+     * @return 封装结果集
+     */
+    @PostMapping(value = "/body-auth/reject")
+    public Result bodyAuthReject(@RequestParam Integer userId, String remark) {
+        userBodyAuthService.reject(userId, remark);
+        return Result.success().msg("操作成功！");
     }
 
     /**
@@ -343,7 +368,7 @@ public class UserController extends BaseController {
      */
     @PostMapping("/set-substitute")
     public Result setSubstitute(@RequestParam("id") Integer id, Integer substituteId) {
-        userInfoAuthService.setSubstitute(id,substituteId);
+        userInfoAuthService.setSubstitute(id, substituteId);
         return Result.success().msg("操作成功！");
     }
 
@@ -438,5 +463,5 @@ public class UserController extends BaseController {
         userInfoVO.setProductList(productList);
         return Result.success().data(userInfoVO).msg("查询聊天对象信息成功！");
     }
-    
+
 }
