@@ -44,34 +44,37 @@ public class OrderController extends BaseController {
      * @param sessionkey   sessionkey
      * @param actualMoney  实付金额（人民币）
      * @param virtualMoney 充值虚拟币金额（钻石）
+     * @param payType      支付方式（1：虚拟币；2：余额）
      * @return 封装结果集
      */
     @PostMapping("/submit")
     public Result submit(HttpServletRequest request,
                          @RequestParam String sessionkey,
                          @RequestParam BigDecimal actualMoney,
-                         @RequestParam Integer virtualMoney) {
+                         @RequestParam Integer virtualMoney,
+                         @RequestParam Integer payType) {
         String ip = RequestUtil.getIpAdrress(request);
-        String orderNo = payService.submit(sessionkey, actualMoney, virtualMoney, ip);
+        String orderNo = payService.submit(sessionkey, actualMoney, virtualMoney, ip, payType);
         Map<String, Object> resultMap = new HashMap<>(2);
         resultMap.put("orderNo", orderNo);
         return Result.success().data(resultMap).msg("创建订单成功!");
     }
 
-    /**
-     * 订单余额支付
-     *
-     * @param request
-     * @param orderNo
-     * @return
-     */
-    @PostMapping("/balance/pay")
-    public Result balancePay(HttpServletRequest request,
-                             @RequestParam String orderNo) {
-        String ip = RequestUtil.getIpAdrress(request);
-
-        return null;
-    }
+//    /**
+//     * 订单余额支付
+//     *
+//     * @param request
+//     * @param orderNo
+//     * @return
+//     */
+//    @PostMapping("/balance/pay")
+//    public Result balancePay(HttpServletRequest request,
+//                             @RequestParam String orderNo) {
+//        String ip = RequestUtil.getIpAdrress(request);
+//        payService.balancePay(orderNo, ip);
+//
+//        return null;
+//    }
 
     /**
      * 微信支付订单

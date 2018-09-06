@@ -2,25 +2,21 @@ package com.fulu.game.h5.service.impl.mp;
 
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.config.WxMpServiceSupply;
-import com.fulu.game.common.enums.DetailsEnum;
-import com.fulu.game.common.enums.PlatFormMoneyTypeEnum;
-import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.*;
+import com.fulu.game.common.exception.DataException;
 import com.fulu.game.common.exception.OrderException;
-import com.fulu.game.common.exception.SystemException;
+import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.exception.VirtualProductException;
 import com.fulu.game.common.utils.GenIdUtil;
-import com.fulu.game.core.dao.VirtualPayOrderDao;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.VirtualDetails;
 import com.fulu.game.core.entity.VirtualPayOrder;
-import com.fulu.game.core.service.OrderMoneyDetailsService;
-import com.fulu.game.core.service.PlatformMoneyDetailsService;
-import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.VirtualPayOrderService;
+import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.VirtualPayOrderServiceImpl;
 import com.github.binarywang.wxpay.bean.order.WxPayMpOrderResult;
 import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -29,7 +25,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * todo：描述文字
+ * 公众号支付服务类
  *
  * @author Gong ZeChun
  * @date 2018/9/5 14:14
@@ -50,6 +46,8 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
     private RedisOpenServiceImpl redisOpenService;
     @Autowired
     private WxMpServiceSupply wxMpServiceSupply;
+    @Autowired
+    private VirtualDetailsService virtualDetailsService;
 
     /**
      * 提交充值订单
@@ -60,13 +58,12 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
      * @param ip           ip
      * @return 订单号
      */
-    @Override
-    public String submit(String sessionkey, BigDecimal actualMoney, Integer virtualMoney, String ip) {
+    public String submit(String sessionkey, BigDecimal actualMoney, Integer virtualMoney, String ip, Integer payType) {
         User user = userService.getCurrentUser();
         if (!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))) {
             log.error("验证sessionkey错误:sessionkey:{};actualMoney:{};virtualMoney:{};ip:{};userId:{}",
                     sessionkey, actualMoney, virtualMoney, ip, user.getId());
-            throw new SystemException(SystemException.ExceptionCode.NO_FORM_TOKEN_ERROR);
+            throw new DataException(DataException.ExceptionCode.NO_FORM_TOKEN_ERROR);
         }
 
         VirtualPayOrder order = new VirtualPayOrder();
@@ -83,7 +80,12 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         //创建订单
         virtualPayOrderService.create(order);
         redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));
-        return order.getOrderNo();
+
+        if (payType.equals(VirtualPayOrderTypeEnum.WECHAT_PAY.getType())) {
+            return order.getOrderNo();
+        } else {
+            return balancePay(order.getOrderNo()).getOrderNo();
+        }
     }
 
     public Object payOrder(VirtualPayOrder order, User user, String requestIp) {
@@ -94,7 +96,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         Integer totalFee = (order.getActualMoney().multiply(new BigDecimal(100))).intValue();
         //如果订单金额为0,则直接调用支付成功接口
         if (totalFee.equals(0)) {
-            payOrder(order.getOrderNo(), order.getActualMoney());
+            successPayOrder(order.getOrderNo(), order.getActualMoney());
             return null;
         }
         try {
@@ -129,8 +131,8 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
             orderRequest.setOpenid(user.getOpenId());
             return wxMpServiceSupply.wxMpPayService().createOrder(orderRequest);
         } catch (Exception e) {
-            log.error("虚拟订单支付错误", e);
-            throw new OrderException(orderRequest.getOutTradeNo(), "虚拟订单无法支付!");
+            log.error("虚拟币充值订单支付错误", e);
+            throw new OrderException(orderRequest.getOutTradeNo(), "虚拟币充值订单无法支付!");
         }
     }
 
@@ -141,7 +143,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
      * @param actualMoney 实付金额
      * @return 订单Bean
      */
-    public VirtualPayOrder payOrder(String orderNo, BigDecimal actualMoney) {
+    private VirtualPayOrder successPayOrder(String orderNo, BigDecimal actualMoney) {
         log.info("用户支付订单orderNo:{},actualMoney:{}", orderNo, actualMoney);
         VirtualPayOrder order = virtualPayOrderService.findByOrderNo(orderNo);
         if (order.getIsPayCallback()) {
@@ -164,12 +166,64 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         return order;
     }
 
-    public String generateVirtualPayOrderNo() {
+    private String generateVirtualPayOrderNo() {
         String orderNo = "C_" + GenIdUtil.GetOrderNo();
         if (virtualPayOrderService.findByOrderNo(orderNo) == null) {
             return orderNo;
         } else {
             return generateVirtualPayOrderNo();
         }
+    }
+
+    private VirtualPayOrder balancePay(String orderNo) {
+        Integer userId = userService.getCurrentUser().getId();
+        User user = userService.findById(userId);
+        if (user == null) {
+            log.info("当前用户id：{}查询数据库不存在", userId);
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+
+        BigDecimal balance = user.getBalance();
+        VirtualPayOrder order = virtualPayOrderService.findByOrderNo(orderNo);
+        BigDecimal actualMoney = order.getActualMoney();
+        if (balance.compareTo(actualMoney) <= 0) {
+            log.error("用户userId：{}的账户余额不够充钻石，余额：{}，应付金额：{}", userId, balance, actualMoney);
+            throw new VirtualProductException(VirtualProductException.ExceptionCode.BALANCE_NOT_ENOUGH_EXCEPTION);
+        }
+
+        order.setIsPayCallback(true);
+        order.setPayTime(DateUtil.date());
+        order.setUpdateTime(DateUtil.date());
+        virtualPayOrderService.update(order);
+
+        user.setBalance(balance.subtract(actualMoney));
+        user.setVirtualBalance((user.getVirtualBalance() == null ? 0 : user.getVirtualBalance())
+                + order.getVirtualMoney());
+        user.setUpdateTime(DateUtil.date());
+        userService.update(user);
+
+        //记录虚拟币流水
+        VirtualDetails details = new VirtualDetails();
+        details.setUserId(userId);
+        details.setRelevantNo(order.getOrderNo());
+        details.setSum(user.getVirtualBalance());
+        details.setMoney(order.getVirtualMoney());
+        details.setType(VirtualDetailsTypeEnum.VIRTUAL_MONEY.getType());
+        details.setRemark(VirtualDetailsRemarkEnum.CHARGE.getMsg());
+        details.setCreateTime(DateUtil.date());
+        virtualDetailsService.create(details);
+
+        //记录平台流水
+        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.VIRTUAL_ORDER_PAY,
+                order.getOrderNo(),
+                order.getActualMoney());
+
+        //记录订单流水
+        orderMoneyDetailsService.create(order.getOrderNo(),
+                order.getUserId(),
+                DetailsEnum.VIRTUAL_ORDER_PAY,
+                actualMoney);
+
+        return order;
     }
 }

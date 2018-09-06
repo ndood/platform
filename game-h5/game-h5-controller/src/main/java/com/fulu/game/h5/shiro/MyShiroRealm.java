@@ -33,17 +33,17 @@ public class MyShiroRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) {
-        PlayUserToken playUserToken = (PlayUserToken) token;
-        String openId = playUserToken.getFqlOpenid();
-        ThirdpartyUser thirdpartyUser = thirdpartyUserService.findByFqlOpenid(openId);
-        if (thirdpartyUser != null) {
-            log.info("openId为{} 的用户已存在", openId);
-        } else {
-            //新创建的用户记录注册的ip
-            String ip = playUserToken.getHost();
-            thirdpartyUser = thirdpartyUserService.createFenqileUser(openId, ip);
-            log.info("创建openId为{}的用户", openId);
-        }
-        return new SimpleAuthenticationInfo(thirdpartyUser, openId, getName());
+//        PlayUserToken playUserToken = (PlayUserToken) token;
+//        String openId = playUserToken.getFqlOpenid();
+//        ThirdpartyUser thirdpartyUser = thirdpartyUserService.findByFqlOpenid(openId);
+//        if (thirdpartyUser != null) {
+//            log.info("openId为{} 的用户已存在", openId);
+//        } else {
+//            //新创建的用户记录注册的ip
+//            String ip = playUserToken.getHost();
+//            thirdpartyUser = thirdpartyUserService.createFenqileUser(openId, ip);
+//            log.info("创建openId为{}的用户", openId);
+//        }
+        return new SimpleAuthenticationInfo("","", getName());
     }
 }
