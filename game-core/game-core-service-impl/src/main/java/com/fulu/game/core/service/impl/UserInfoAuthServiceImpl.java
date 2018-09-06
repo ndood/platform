@@ -229,6 +229,20 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
 
     /**
+     * 保存用户认证的个人信息的排序号
+     *
+     * @param userInfoAuthTO
+     * @return
+     */
+    @Override
+    public void saveSort(UserInfoAuthTO userInfoAuthTO) {
+
+        userInfoAuthDao.updateUserSort(userInfoAuthTO.getUserId(),userInfoAuthTO.getSort());
+
+    }
+
+
+    /**
      * 根据用户id，将临时表的文件更新到主表中，并且删除临时表的数据
      *
      * @param userId 用户id
