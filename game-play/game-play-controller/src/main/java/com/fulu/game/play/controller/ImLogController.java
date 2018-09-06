@@ -38,7 +38,6 @@ public class ImLogController extends BaseController{
 
     @Autowired
     private UserService userService;
-    
     @Autowired
     private VirtualProductService virtualProductService;
     @Autowired
@@ -57,12 +56,12 @@ public class ImLogController extends BaseController{
     public Result userOnline(@RequestParam(required = true) Boolean active, String version){
 
         List<AdminImLog> list = userService.userOnline(active,version);
-        
+
         return Result.success().data(list).msg("查询成功！");
     }
 
 
-    
+
     
 
 

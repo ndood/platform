@@ -222,6 +222,7 @@ public class ImServiceImpl implements ImService {
         return ja.toString();
     }
 
+
     @Override
     public void addUnreadCount(String targetImId) {
         UserInfoAuthSearchVO uavo = new UserInfoAuthSearchVO();
@@ -267,4 +268,5 @@ public class ImServiceImpl implements ImService {
 
         }
     }
+
 }

@@ -171,5 +171,4 @@ public class ImController extends BaseController {
         String result = playMiniAppPushService.pushIMWxTemplateMsg(content,acceptImId,imId);
         return Result.success().msg(result);
     }
-    
 }

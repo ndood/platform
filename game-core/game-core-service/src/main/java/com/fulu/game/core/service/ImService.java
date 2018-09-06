@@ -40,7 +40,6 @@ public interface ImService {
      */
     boolean sendMsgToImUser(String imId, String action);
 
-
     /**
      * 增加陪玩师未读消息
      * @param targetImId

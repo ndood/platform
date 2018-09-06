@@ -18,7 +18,7 @@ import java.util.List;
 @ToString
 public class DynamicDoc {
     @JestId
-    private Long id;
+    private Integer id;
     private Integer userId;
     /** '评论用户头像URL（冗余字段，提高查询效率）' */
     private String userHeadUrl;
@@ -55,13 +55,13 @@ public class DynamicDoc {
     /** 是否置顶（1：是；0：否） */
     private Integer isTop;
     /** 打赏次数 */
-    private Long rewards;
+    private Integer rewards;
     /** 点赞次数 */
-    private Long likes;
+    private Integer likes;
     /** 评论次数，预留 */
-    private Long comments;
+    private Integer comments;
     /** 点击次数 */
-    private Long clicks;
+    private Integer clicks;
     /** 是否热门（1：是；0：否） */
     private Integer isHot;
     /** 创建时间 */

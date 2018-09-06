@@ -21,7 +21,7 @@ import java.util.List;
 
 @Slf4j
 @Service("rewardService")
-public class RewardServiceImpl extends AbsCommonService<Reward, Long> implements RewardService {
+public class RewardServiceImpl extends AbsCommonService<Reward, Integer> implements RewardService {
 
     @Autowired
     private RewardDao rewardDao;
@@ -39,7 +39,7 @@ public class RewardServiceImpl extends AbsCommonService<Reward, Long> implements
     private VirtualProductService virtualProductService;
 
     @Override
-    public ICommonDao<Reward, Long> getDao() {
+    public ICommonDao<Reward, Integer> getDao() {
         return rewardDao;
     }
 
@@ -60,7 +60,7 @@ public class RewardServiceImpl extends AbsCommonService<Reward, Long> implements
         VirtualProductOrder virtualProductOrder = virtualProductOrderService.sendGift(rewardVO.getToUserId().intValue(), rewardVO.getGiftId().intValue());
         rewardVO.setFromUserGender(user.getGender());
         rewardVO.setFromUserHeadUrl(user.getHeadPortraitsUrl());
-        rewardVO.setFromUserId(user.getId().longValue());
+        rewardVO.setFromUserId(user.getId());
         rewardVO.setFromUserNickname(user.getNickname());
         User toUser = userService.findById(rewardVO.getToUserId().intValue());
         rewardVO.setToUserGender(toUser.getGender());
@@ -89,7 +89,7 @@ public class RewardServiceImpl extends AbsCommonService<Reward, Long> implements
      * @return
      */
     @Override
-    public PageInfo<Reward> list(Integer pageNum, Integer pageSize, Long resourceId, Integer resourceType) {
+    public PageInfo<Reward> list(Integer pageNum, Integer pageSize, Integer resourceId, Integer resourceType) {
         PageHelper.startPage(pageNum, pageSize, "id DESC");
         RewardVO rewardVO = new RewardVO();
         rewardVO.setResourceId(resourceId);
