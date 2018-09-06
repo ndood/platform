@@ -12,7 +12,7 @@ import com.github.pagehelper.PageInfo;
  * @email ${email}
  * @date 2018-08-30 11:14:29
  */
-public interface RewardService extends ICommonService<Reward,Long>{
+public interface RewardService extends ICommonService<Reward,Integer>{
 
     /**
      * 保存打赏记录
@@ -29,5 +29,5 @@ public interface RewardService extends ICommonService<Reward,Long>{
      * @param resourceType 打赏来源类型（1：动态打赏）
      * @return
      */
-    public PageInfo<Reward> list(Integer pageNum, Integer pageSize, Long resourceId, Integer resourceType);
+    public PageInfo<Reward> list(Integer pageNum, Integer pageSize, Integer resourceId, Integer resourceType);
 }

@@ -65,7 +65,7 @@ public class DynamicController extends BaseController {
      * @return
      */
     @RequestMapping(value = "delete")
-    public Result delete(@RequestParam(required = true) Long id) {
+    public Result delete(@RequestParam(required = true) Integer id) {
         dynamicService.deleteDynamicById(id, true);
         return Result.success().msg("删除成功！");
     }
@@ -112,7 +112,7 @@ public class DynamicController extends BaseController {
      * @return
      */
     @RequestMapping(value = "detail")
-    public Result detail(@RequestParam( required = true) Long id) {
+    public Result detail(@RequestParam( required = true) Integer id) {
         DynamicDoc dynamicDoc = dynamicService.getDynamicDocById(id);
         return Result.success().data(dynamicDoc);
     }

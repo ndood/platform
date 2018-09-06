@@ -18,9 +18,9 @@ public class AccessLogDetail implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	//id自增
-	private Long id;
+	private Integer id;
 	//访问日志id
-	private Long accessLogId;
+	private Integer accessLogId;
 	//访问过的菜单名称逗号间隔
 	private String menusName;
 	//城市编码

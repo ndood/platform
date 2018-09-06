@@ -18,19 +18,19 @@ public class Reward implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	//
-	private Long id;
+	private Integer id;
 	//来源id
-	private Long resourceId;
+	private Integer resourceId;
 	//来源类型（1：动态打赏；）
 	private Integer resourceType;
 	//礼物id
-	private Long giftId;
+	private Integer giftId;
 	//礼物图标（冗余字段，提高查询效率）
 	private String giftUrl;
 	//礼物钻石数
 	private Integer giftPrice;
 	//给打赏用户id
-	private Long fromUserId;
+	private Integer fromUserId;
 	//给打赏用户头像URL（冗余字段，提高查询效率）
 	private String fromUserHeadUrl;
 	//给打赏用户昵称（冗余字段，提高查询效率）
@@ -38,7 +38,7 @@ public class Reward implements Serializable {
 	//给打赏用户性别(默认0：不公开；1：男；2：女)
 	private Integer fromUserGender;
 	//获得打赏用户id(预留)
-	private Long toUserId;
+	private Integer toUserId;
 	//获得打赏用户头像URL（冗余字段，提高查询效率）
 	private String toUserHeadUrl;
 	//获得打赏用户昵称（冗余字段，提高查询效率）

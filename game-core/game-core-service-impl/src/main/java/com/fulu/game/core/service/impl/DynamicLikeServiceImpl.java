@@ -23,7 +23,7 @@ import java.util.List;
 
 
 @Service("dynamicLikeService")
-public class DynamicLikeServiceImpl extends AbsCommonService<DynamicLike,Long> implements DynamicLikeService {
+public class DynamicLikeServiceImpl extends AbsCommonService<DynamicLike,Integer> implements DynamicLikeService {
 
     @Autowired
 	private DynamicLikeDao dynamicLikeDao;
@@ -37,7 +37,7 @@ public class DynamicLikeServiceImpl extends AbsCommonService<DynamicLike,Long> i
 
 
     @Override
-    public ICommonDao<DynamicLike, Long> getDao() {
+    public ICommonDao<DynamicLike, Integer> getDao() {
         return dynamicLikeDao;
     }
 
@@ -57,7 +57,7 @@ public class DynamicLikeServiceImpl extends AbsCommonService<DynamicLike,Long> i
         }
         dynamicLikeVO.setStatus(null);
         User user = userService.getCurrentUser();
-        dynamicLikeVO.setFromUserId(user.getId().longValue());
+        dynamicLikeVO.setFromUserId(user.getId());
         List<DynamicLike> list = dynamicLikeDao.findByParameter(dynamicLikeVO);
         dynamicLikeVO.setStatus(status);
         dynamicLikeVO.setFromUserHeadUrl(user.getHeadPortraitsUrl());
@@ -87,7 +87,7 @@ public class DynamicLikeServiceImpl extends AbsCommonService<DynamicLike,Long> i
      * @return
      */
     @Override
-    public PageInfo<DynamicLike> list(Integer pageNum, Integer pageSize, Long dynamicId) {
+    public PageInfo<DynamicLike> list(Integer pageNum, Integer pageSize, Integer dynamicId) {
         PageHelper.startPage(pageNum, pageSize, "id DESC");
         DynamicLikeVO dynamicLikeVO = new DynamicLikeVO();
         dynamicLikeVO.setDynamicId(dynamicId);

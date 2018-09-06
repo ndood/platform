@@ -2,7 +2,6 @@ package com.fulu.game.common.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.omg.CORBA.PUBLIC_MEMBER;
 
 @Getter
 @AllArgsConstructor

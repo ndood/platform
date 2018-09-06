@@ -36,5 +36,5 @@ public interface UserInfoAuthDao extends ICommonDao<UserInfoAuth, Integer> {
      * @param sort
      * @return
      */
-    int updateUserSort(Integer userId , Integer sort);
+    int updateUserSort(@Param(value = "userId")Integer userId , @Param(value = "sort")Integer sort);
 }

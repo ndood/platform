@@ -18,11 +18,11 @@ public class DynamicLike implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	//评论id
-	private Long id;
+	private Integer id;
 	//动态id
-	private Long dynamicId;
+	private Integer dynamicId;
 	//点赞用户id
-	private Long fromUserId;
+	private Integer fromUserId;
 	//点赞用户头像URL（冗余字段，提高查询效率）
 	private String fromUserHeadUrl;
 	//点赞用户昵称（冗余字段，提高查询效率）

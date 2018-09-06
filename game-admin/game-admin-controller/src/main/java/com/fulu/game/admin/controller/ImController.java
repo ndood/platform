@@ -13,6 +13,7 @@ import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.play.service.impl.PlayMiniAppPushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,9 @@ public class ImController extends BaseController {
     
     @Autowired
     private VirtualProductService virtualProductService;
+
+    @Autowired
+    private PlayMiniAppPushServiceImpl playMiniAppPushService;
 
     
     //减少未读消息数量
@@ -157,5 +161,14 @@ public class ImController extends BaseController {
         vp = virtualProductService.createVirtualProduct(vp,userId,urls);
 
         return Result.success().data(vp).msg("操作成功");
+    }
+
+    @RequestMapping("/push")
+    public Result pushWechatMsg(String content,
+                                String acceptImId,
+                                String imId)throws Exception{
+        log.info("推送模板消息imId:{},acceptImId:{},content:{}",imId,acceptImId,content);
+        String result = playMiniAppPushService.pushIMWxTemplateMsg(content,acceptImId,imId);
+        return Result.success().msg(result);
     }
 }

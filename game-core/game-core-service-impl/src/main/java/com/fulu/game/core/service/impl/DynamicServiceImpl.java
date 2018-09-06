@@ -38,7 +38,7 @@ import java.util.List;
 
 @Slf4j
 @Service("dynamicService")
-public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implements DynamicService {
+public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implements DynamicService {
 
     @Autowired
 	private DynamicDao dynamicDao;
@@ -66,7 +66,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
 
 
     @Override
-    public ICommonDao<Dynamic, Long> getDao() {
+    public ICommonDao<Dynamic, Integer> getDao() {
         return dynamicDao;
     }
 
@@ -163,7 +163,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
      * @return
      */
     @Override
-    public DynamicDoc getDynamicDocById(Long id) {
+    public DynamicDoc getDynamicDocById(Integer id) {
         DynamicDoc dynamicDoc = dynamicSearchComponent.searchById(id, DynamicDoc.class);
         setFileInfo(dynamicDoc);
         return dynamicDoc;
@@ -212,7 +212,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
      * @return
      */
     @Override
-    public int deleteDynamicById(Long id, boolean verifyUser){
+    public int deleteDynamicById(Integer id, boolean verifyUser){
         Dynamic dynamic = findById(id);
         // 记录不存在
         if(dynamic == null){
@@ -238,7 +238,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
      * @return
      */
     @Override
-    public boolean updateIndexFilesById(Long id, boolean rewards, Integer likes, Integer comments, boolean clicks) {
+    public boolean updateIndexFilesById(int id, boolean rewards, Integer likes, Integer comments, boolean clicks) {
         Integer userId = 0;
         Dynamic dynamic = findById(id);
         if(dynamic == null){
@@ -249,14 +249,14 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
             if(dynamic.getRewards() != null){
                 dynamic.setRewards(dynamic.getRewards() + 1);
             } else {
-                dynamic.setRewards( 1L);
+                dynamic.setRewards( 1);
             }
         }
         if(likes != null && likes.intValue() != 0){
             if(dynamic.getLikes() != null){
                 dynamic.setLikes(dynamic.getLikes() + likes);
             } else {
-                dynamic.setLikes(1L);
+                dynamic.setLikes(1);
             }
             User user = userService.getCurrentUser();
             userId = user.getId();
@@ -265,14 +265,14 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
             if(dynamic.getComments() != null){
                 dynamic.setComments(dynamic.getComments() + comments);
             } else {
-                dynamic.setComments(1L);
+                dynamic.setComments(1);
             }
         }
         if( clicks ){
             if(dynamic.getClicks() != null){
                 dynamic.setClicks(dynamic.getClicks() + 1);
             } else {
-                dynamic.setClicks(1L);
+                dynamic.setClicks(1);
             }
         }
         update(dynamic);
@@ -409,7 +409,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
                     dynamicFileVO.setCreateTime(DateUtil.date());
                     dynamicFileVO.setUpdateTime(DateUtil.date());
                     dynamicFileVO.setStatus(1);
-                    dynamicFileVO.setPlayCount(0L);
+                    dynamicFileVO.setPlayCount(0);
                     dynamicFiles.add(dynamicFileVO);
                     dynamicFileService.save(dynamicFileVO);
                 }
@@ -472,7 +472,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
      * 删除动态ES信息
      * @param id
      */
-    private void deleteDynamicEsById(Long id){
+    private void deleteDynamicEsById(Integer id){
         dynamicSearchComponent.deleteIndex(id);
     }
 

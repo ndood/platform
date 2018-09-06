@@ -30,7 +30,7 @@ import java.util.List;
  */
 @Component
 @Slf4j
-public class DynamicSearchComponent  extends AbsSearchComponent<DynamicDoc, Long>  {
+public class DynamicSearchComponent  extends AbsSearchComponent<DynamicDoc, Integer>  {
 
     public final static String INDEX_TYPE = "dynamic";
     public final static String INDEX_DB = "dynamic";
@@ -64,7 +64,7 @@ public class DynamicSearchComponent  extends AbsSearchComponent<DynamicDoc, Long
      * @param userId 点赞的时候需要传userId
      * @return
      */
-    public boolean updateIndexFilesById(Long id, boolean rewards, Integer likes,Integer comments,boolean clicks, Integer userId){
+    public boolean updateIndexFilesById(int id, boolean rewards, Integer likes,Integer comments,boolean clicks, Integer userId){
         DynamicDoc dynamicDoc = searchById(id, DynamicDoc.class);
         if(dynamicDoc == null ){
             log.info("修改动态索引异常，未找到id： {}", id);
@@ -74,7 +74,7 @@ public class DynamicSearchComponent  extends AbsSearchComponent<DynamicDoc, Long
             if(dynamicDoc.getRewards() != null ){
                 dynamicDoc.setRewards(dynamicDoc.getRewards() + 1);
             } else {
-                dynamicDoc.setRewards( 1L);
+                dynamicDoc.setRewards( 1);
             }
         }
         if(likes != null && likes.intValue() != 0){
@@ -85,7 +85,7 @@ public class DynamicSearchComponent  extends AbsSearchComponent<DynamicDoc, Long
             if(dynamicDoc.getLikes() != null){
                 dynamicDoc.setLikes(dynamicDoc.getLikes() + likes);
             } else {
-                dynamicDoc.setLikes(1L);
+                dynamicDoc.setLikes(1);
                 flag = true;
             }
             if(dynamicDoc.getLikeUserIds() == null){
@@ -102,14 +102,14 @@ public class DynamicSearchComponent  extends AbsSearchComponent<DynamicDoc, Long
             if(dynamicDoc.getComments() != null){
                 dynamicDoc.setComments(dynamicDoc.getComments() + comments);
             } else {
-                dynamicDoc.setComments(1L);
+                dynamicDoc.setComments(1);
             }
         }
         if(clicks ){
             if(dynamicDoc.getClicks() != null){
                 dynamicDoc.setClicks(dynamicDoc.getClicks() + 1);
             } else {
-                dynamicDoc.setClicks(1L);
+                dynamicDoc.setClicks(1);
             }
         }
         return createIndex(dynamicDoc);
