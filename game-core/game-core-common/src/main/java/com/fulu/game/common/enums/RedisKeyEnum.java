@@ -47,7 +47,7 @@ public enum RedisKeyEnum {
     SMS_VERIFY_CODE_TIMES,
     //陪玩师IM未读数据
     IM_COMPANY_UNREAD,
-    //登录的小程序和APP用户是否领过钻石
+    //登录用户是否领取过登录奖励
     LOGIN_RECEIVE_VIRTUAL_MONEY;
 
 
