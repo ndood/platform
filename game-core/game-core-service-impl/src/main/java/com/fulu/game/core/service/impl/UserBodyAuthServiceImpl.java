@@ -48,7 +48,7 @@ public class UserBodyAuthServiceImpl extends AbsCommonService<UserBodyAuth, Inte
         UserBodyAuthVO param = new UserBodyAuthVO();
         param.setUserId(userBodyAuthVO.getUserId());
 
-        List<UserBodyAuth> resultList = userBodyAuthDao.findByParameter(userBodyAuthVO);
+        List<UserBodyAuth> resultList = userBodyAuthDao.findByParameter(param);
 
         
         if(CollectionUtils.isNotEmpty(resultList)){

@@ -210,8 +210,8 @@
             <if test="updateTime != null">
                 and t1.update_time = #{updateTime}
             </if>
-            <if test="nickname != null">
-                and t2.nickname = #{nickname}
+            <if test="nickName != null">
+                and t2.nickname = #{nickName}
             </if>
             <if test="mobile != null">
                 and t2.mobile = #{mobile}
