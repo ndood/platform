@@ -48,7 +48,9 @@ public enum RedisKeyEnum {
     //陪玩师IM未读数据
     IM_COMPANY_UNREAD,
     //登录用户是否领取过登录奖励
-    LOGIN_RECEIVE_VIRTUAL_MONEY;
+    LOGIN_RECEIVE_VIRTUAL_MONEY,
+    //未接单的订单ID
+    ORDER_WAITING_SERVICE_ID;
 
 
     public static final String SPLIT = "-";
