@@ -160,15 +160,15 @@
         LEFT JOIN t_user pu ON o.service_user_id = pu.id
         LEFT JOIN t_order_product op ON o.order_no = op.order_no
         <where>
-            (o.type = 1 or o.type = 3)
+            o.type = 1
             <if test="type == null">
-                and ((o.user_id = #{userId}) OR ( o.service_user_id = #{userId} AND o.`status` NOT IN (100) ))
+                and ((o.user_id = #{userId}) OR ( o.service_user_id = #{userId} AND o.`status` NOT IN (100,200) ))
             </if>
             <if test="type == 1">
                 and o.user_id = #{userId}
             </if>
             <if test="type == 2">
-                and o.service_user_id = #{userId} AND o.`status` NOT IN (100)
+                and o.service_user_id = #{userId} AND o.`status` NOT IN (100,200)
             </if>
         </where>
     </select>
