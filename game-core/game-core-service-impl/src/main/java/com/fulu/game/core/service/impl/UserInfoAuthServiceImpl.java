@@ -62,12 +62,11 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     @Autowired
     private UserInfoAuthFileTempService userInfoAuthFileTempService;
     @Autowired
-    private VirtualProductAttachDao virtualProductAttachDao;
+    private VirtualProductService virtualProductService;
     @Autowired
-    private VirtualProductDao virtualProductDao;
+    private VirtualProductAttachService virtualProductAttachService;
     @Autowired
-    private ProductDao productDao;
-
+    private ProductService productService;
 
     @Override
     public ICommonDao<UserInfoAuth, Integer> getDao() {
@@ -159,7 +158,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
                 VirtualProduct t = new VirtualProduct();
                 t.setId(delIds.getIntValue(i));
                 t.setDelFlag(true);
-                virtualProductDao.update(t);
+
+                virtualProductService.update(t);
             }
 
             //修改私密照
@@ -176,12 +176,12 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
                 t.setAttachCount(groupInfo.getJSONArray("urls").size());
                 t.setUpdateTime(new Date());
 
-                virtualProductDao.update(t);
+                virtualProductService.update(t);
 
                 //修改附件信息
                 JSONArray urls = groupInfo.getJSONArray("urls");
                 //删除旧附件
-                virtualProductAttachDao.deleteByVirtualProductId(t.getId());
+                virtualProductAttachService.deleteByVirtualProductId(t.getId());
                 //添加新的附件信息
                 for (int j = 0; j < urls.size(); j++) {
                     VirtualProductAttach vpa = new VirtualProductAttach();
@@ -189,7 +189,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
                     vpa.setVirtualProductId(t.getId());
                     vpa.setUrl(urls.getString(j));
                     vpa.setCreateTime(new Date());
-                    virtualProductAttachDao.create(vpa);
+                    virtualProductAttachService.create(vpa);
                 }
             }
 
@@ -208,7 +208,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
                 t.setDelFlag(false);
                 t.setCreateTime(new Date());
 
-                virtualProductDao.create(t);
+                virtualProductService.create(t);
 
                 //获取附件信息
                 JSONArray urls = groupInfo.getJSONArray("urls");
@@ -219,7 +219,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
                     vpa.setVirtualProductId(t.getId());
                     vpa.setUrl(urls.getString(j));
                     vpa.setCreateTime(new Date());
-                    virtualProductAttachDao.create(vpa);
+                    virtualProductAttachService.create(vpa);
                 }
             }
         }
@@ -292,7 +292,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         vpav.setDelFlag(false);
         vpav.setType(VirtualProductTypeEnum.PERSONAL_PICS.getType());
         vpav.setUserId(userId);
-        List<VirtualProductAttachVO> attachList = virtualProductAttachDao.findDetailByVo(vpav);
+        
+        List<VirtualProductAttachVO> attachList = virtualProductAttachService.findDetailByVo(vpav);
 
         //将私密照片分组归类
         boolean exitsFlag = false;
@@ -507,7 +508,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             List<UserTechAuth> userTechAuthList = userTechAuthService.findByUserId(userInfoAuth.getUserId());
             userInfoAuthVO.setUserTechAuthList(userTechAuthList);
 
-            ProductShowCaseVO psv = productDao.findRecommendProductByUserId(userInfoAuth.getUserId());
+            ProductShowCaseVO psv = productService.findRecommendProductByUserId(userInfoAuth.getUserId());
             if (psv != null) {
                 userInfoAuthVO.setRecommendProductId(psv.getId());
             }
@@ -518,7 +519,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             vpv.setUserId(userInfoAuthVO.getUserId());
             vpv.setDelFlag(false);
             vpv.setType(VirtualProductTypeEnum.PERSONAL_PICS.getType());
-            List<VirtualProductVO> vpList = virtualProductDao.findByVirtualProductVo(vpv);
+            
+            List<VirtualProductVO> vpList = virtualProductService.findByVirtualProductVo(vpv);
             userInfoAuthVO.setGroupPicCount(vpList.size());
 
             userInfoAuthVOList.add(userInfoAuthVO);

@@ -7,6 +7,7 @@ import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.properties.Config;
 import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.common.utils.MailUtil;
@@ -61,6 +62,8 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
     private ImService imService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private Config configProperties;
 
 
     /**
@@ -535,7 +538,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         }
         
         //发送邮件
-        MailUtil.sendMail("陪玩师取消了订单："+orderNo,"陪玩师取消了订单，订单号"+orderNo,new String[]{"yangxudong@fulu.com"});
+        MailUtil.sendMail(configProperties.getOrdermail().getAddress(),configProperties.getOrdermail().getPassword(),"陪玩师取消了订单："+orderNo,"陪玩师取消了订单，订单号"+orderNo,new String[]{configProperties.getOrdermail().getAddress()});
         return orderConvertVo(order);
     }
     

@@ -20,4 +20,9 @@ public interface VirtualProductAttachService extends ICommonService<VirtualProdu
 
     List<VirtualProductAttachVO> findByOrderProIdUserId(Integer userId , Integer productId);
 
+    
+    int deleteByVirtualProductId(int virtualProductId);
+
+    
+    List<VirtualProductAttachVO> findDetailByVo(VirtualProductAttachVO virtualProductAttachVO);
 }

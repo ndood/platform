@@ -34,6 +34,8 @@ public class Config {
 
     private Jpush jpush = new Jpush();
 
+    private Ordermail ordermail = new Ordermail();
+
     @Data
     public static class Evn {
         private String prefix;
@@ -99,5 +101,11 @@ public class Config {
     public static class Jpush {
         private String appKey;
         private String appSecret;
+    }
+    
+    @Data
+    public static class Ordermail {
+        private String address;
+        private String password;
     }
 }

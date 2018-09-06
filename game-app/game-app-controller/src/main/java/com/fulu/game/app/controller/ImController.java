@@ -44,7 +44,10 @@ public class ImController extends BaseController {
         uavo.setImId(targetImId);
         List<UserInfoAuthVO> uaList = userInfoAuthService.findBySearchVO(uavo);
 
-        UserInfoAuthVO targetUser = uaList.get(0);
+        UserInfoAuthVO targetUser = new UserInfoAuthVO();
+        if(uaList!=null && uaList.size() > 0){
+            targetUser = uaList.get(0);
+        }
 
         //判断im目标用户是否为代聊用户
         if (targetUser.getImSubstituteId() != null) {

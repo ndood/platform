@@ -1,9 +1,9 @@
 package com.fulu.game.admin.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Admin;
-import cn.hutool.core.bean.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -36,6 +36,8 @@ public class HomeController {
             Subject subject = SecurityUtils.getSubject();
             subject.login(token);
             Admin admin = (Admin) subject.getPrincipal();
+            admin.setPassword(null);
+            admin.setSalt(null);
             Map<String, Object> map = BeanUtil.beanToMap(admin);
             map.put("token", SubjectUtil.getToken());
             return Result.success().data(map).msg("登录成功!");
