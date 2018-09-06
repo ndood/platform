@@ -3,7 +3,6 @@ package com.fulu.game.core.service;
 import com.fulu.game.core.entity.UserBodyAuth;
 import com.fulu.game.core.entity.vo.UserBodyAuthVO;
 import com.github.pagehelper.PageInfo;
-import org.elasticsearch.search.aggregations.metrics.geobounds.InternalGeoBounds;
 
 import java.util.List;
 
@@ -41,4 +40,6 @@ public interface UserBodyAuthService extends ICommonService<UserBodyAuth, Intege
 
 
     PageInfo<UserBodyAuthVO> findByVO(Integer pageNum, Integer pageSize, UserBodyAuthVO userBodyAuthVO);
+
+    List<UserBodyAuthVO> list(UserBodyAuthVO userBodyAuthVO);
 }

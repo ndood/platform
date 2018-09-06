@@ -237,8 +237,8 @@ public class UserController extends BaseController {
     /**
      * 用户身份认证信息
      *
-     * @param pageNum              页码
-     * @param pageSize             每页显示数据条数
+     * @param pageNum  页码
+     * @param pageSize 每页显示数据条数
      * @return 封装结果集
      */
     @PostMapping(value = "/body-auth/list")
@@ -248,7 +248,27 @@ public class UserController extends BaseController {
         PageInfo<UserBodyAuthVO> pageInfo = userBodyAuthService.findByVO(pageNum, pageSize, userBodyAuthVO);
         return Result.success().data(pageInfo);
     }
-    
+
+    /**
+     * 用户身份认证信息列表导出
+     *
+     * @param response
+     * @throws Exception
+     */
+    @RequestMapping("/body-auth/export")
+    public void orderExport(HttpServletResponse response,
+                            UserBodyAuthVO userBodyAuthVO) throws Exception {
+        String title = "用户身份认证信息列表";
+        List<UserBodyAuthVO> voList = userBodyAuthService.list(userBodyAuthVO);
+        ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, UserBodyAuthVO.class, voList);
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("content-Type", "application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));
+        workbook.write(response.getOutputStream());
+        workbook.close();
+    }
+
 
     /**
      * 用户技能认证信息添加和修改
