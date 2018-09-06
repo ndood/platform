@@ -4,7 +4,6 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Admin;
 import cn.hutool.core.bean.BeanUtil;
-import com.fulu.game.core.service.queue.Msg;
 import com.fulu.game.core.service.queue.RedisTaskContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;

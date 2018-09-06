@@ -32,6 +32,8 @@ public class Config {
 
     private Jpush jpush = new Jpush();
 
+    private Queue queue = new Queue();
+
     @Data
     public static class Evn {
         private String prefix;
@@ -97,5 +99,13 @@ public class Config {
     public static class Jpush{
         private String appKey;
         private String appSecret;
+    }
+
+    @Data
+    public static class Queue{
+        private boolean miniappPush;
+        private boolean appPush;
+        private boolean userScore;
+        private boolean formId;
     }
 }

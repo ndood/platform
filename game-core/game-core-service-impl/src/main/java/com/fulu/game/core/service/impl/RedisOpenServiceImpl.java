@@ -2,13 +2,21 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.common.enums.RedisKeyEnum;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.BoundListOperations;
+import org.springframework.data.redis.core.RedisConnectionUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * redis操作封装类
@@ -27,6 +35,9 @@ public class RedisOpenServiceImpl {
 
     private static final String LOCKED = "LOCKED";
 
+    private static Lock lock = new ReentrantLock();//基于底层IO阻塞考虑
+
+    private byte[] rawKey;
 
     /**
      * 获取某个key的值
@@ -214,5 +225,56 @@ public class RedisOpenServiceImpl {
         return hasKey(RedisKeyEnum.TIME_INTERVAL_KEY.generateKey(key));
     }
 
+    /**
+     * 获取listOps来操作list
+     * @param key
+     * @return
+     */
+    public <T, S> BoundListOperations<T, S> getListOps(String key) {
+        rawKey = redisTemplate.getKeySerializer().serialize(key);
+        return redisTemplate.boundListOps(key);
+    }
+
+    /**
+     * blocking 一直阻塞直到队列里边有数据
+     * remove and get last item from queue:BRPOP
+     * @return
+     */
+    public <T> T takeFromTail(int timeout) throws InterruptedException{
+        lock.lockInterruptibly();
+        RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
+        RedisConnection connection = connectionFactory.getConnection();
+        try{
+            List<byte[]> results = connection.bRPop(timeout, rawKey);
+            if(CollectionUtils.isEmpty(results)){
+                return null;
+            }
+            return (T)redisTemplate.getValueSerializer().deserialize(results.get(1));
+        }finally{
+            lock.unlock();
+            RedisConnectionUtils.releaseConnection(connection, connectionFactory);
+        }
+    }
+
+    /**
+     * blocking 一直阻塞直到队列里边有数据
+     * remove and get first item from queue:BLPOP
+     * @return
+     */
+    public <T> T takeFromHead(int timeout) throws InterruptedException{
+        lock.lockInterruptibly();
+        RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
+        RedisConnection connection = connectionFactory.getConnection();
+        try{
+            List<byte[]> results = connection.bLPop(timeout, rawKey);
+            if(CollectionUtils.isEmpty(results)){
+                return null;
+            }
+            return (T)redisTemplate.getValueSerializer().deserialize(results.get(1));
+        }finally{
+            lock.unlock();
+            RedisConnectionUtils.releaseConnection(connection, connectionFactory);
+        }
+    }
 
 }
