@@ -1,13 +1,18 @@
 package com.fulu.game.play.schedule.task;
 
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.OrderStatusEnum;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.properties.Config;
 import com.fulu.game.common.utils.MailUtil;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.OrderStatusDetailsService;
+import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.play.schedule.queue.CollectOrderMailQueue;
 import com.fulu.game.schedule.service.impl.ScheduleOrderServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -27,7 +32,9 @@ public class OrderStatusTask {
     private OrderStatusDetailsService orderStatusDetailsService;
 
     @Autowired
-    private Config configProperties;
+    private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private CollectOrderMailQueue collectOrderMailQueue;
 
     /**
      * 取消平台超时订单
@@ -110,19 +117,15 @@ public class OrderStatusTask {
     public void autoSendEmailWaitServiceOrder() {
         List<Order> orderList = orderService.findWaitSendEmailOrder(OrderStatusEnum.WAIT_SERVICE.getStatus(),8);
 
-        //拼接邮件内容
-        StringBuffer mailContent = new StringBuffer();
-        mailContent.append("陪玩师8分钟仍然未接单，订单号分别为：");
+        
+        //筛选订单，并将订单信息加入邮件队列
         for (int i = 0 ; i < orderList.size() ; i++) {
-
-            if(i+1 < orderList.size()){
-                mailContent.append(orderList.get(i).getOrderNo()+" ， ");
-            }else{
-                mailContent.append(orderList.get(i).getOrderNo());
+            String checkOrderId = redisOpenService.get(RedisKeyEnum.ORDER_WAITING_SERVICE_ID.generateKey(orderList.get(i).getId()));
+            if(StringUtils.isBlank(checkOrderId)){
+                collectOrderMailQueue.addOrderInfo(orderList.get(i));
+                redisOpenService.set(RedisKeyEnum.ORDER_WAITING_SERVICE_ID.generateKey(orderList.get(i).getId()),String.valueOf(orderList.get(i).getId().intValue()), Constant.ONE_DAY);
             }
         }
-
-        //发送邮件
-        MailUtil.sendMail(configProperties.getOrdermail().getAddress(),configProperties.getOrdermail().getPassword(),"陪玩师8分钟仍然未接单",mailContent.toString(),new String[]{configProperties.getOrdermail().getAddress()});
+        
     }
 }
