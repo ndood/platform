@@ -2,6 +2,8 @@ package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.UserBodyAuth;
 import com.fulu.game.core.entity.vo.UserBodyAuthVO;
+import com.github.pagehelper.PageInfo;
+import org.elasticsearch.search.aggregations.metrics.geobounds.InternalGeoBounds;
 
 import java.util.List;
 
@@ -36,4 +38,7 @@ public interface UserBodyAuthService extends ICommonService<UserBodyAuth, Intege
      * @return 是否操作成功
      */
     boolean reject(Integer userId, String remark);
+
+
+    PageInfo<UserBodyAuthVO> findByVO(Integer pageNum, Integer pageSize, UserBodyAuthVO userBodyAuthVO);
 }

@@ -1,16 +1,20 @@
 CREATE TABLE `t_user_body_auth` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+  `user_id` int(11) DEFAULT NULL COMMENT '用户id',
   `user_name` varchar(50) DEFAULT '' COMMENT '用户认证的名字',
   `card_no` varchar(50) DEFAULT NULL COMMENT '用户身份证号',
   `card_url` varchar(255) DEFAULT NULL COMMENT '用户身份证正面照片',
   `card_hand_url` varchar(255) DEFAULT NULL COMMENT '用户手持身份证照片',
   `auth_status` tinyint(4) DEFAULT '0' COMMENT '认证状态  0 未认证  1已通过  2未通过',
-  `remarks` varchar(1000) DEFAULT NULL,
-  `create_time` datetime DEFAULT NULL,
-  `update_time` datetime DEFAULT NULL,
+  `admin_id` int(11) DEFAULT NULL COMMENT '管理员id',
+  `admin_name` varchar(255) DEFAULT NULL COMMENT '管理员名称',
+  `remarks` varchar(1000) DEFAULT NULL COMMENT '备注',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) COMMENT='用户身份认证信息表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户身份认证信息表';
+
+
 
 
 CREATE TABLE `t_virtual_pay_order` (

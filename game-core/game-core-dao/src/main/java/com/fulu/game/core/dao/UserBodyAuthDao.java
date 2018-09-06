@@ -19,4 +19,6 @@ public interface UserBodyAuthDao extends ICommonDao<UserBodyAuth, Integer> {
     List<UserBodyAuth> findByParameter(UserBodyAuthVO userBodyAuthVO);
 
     UserBodyAuth findByUserId(Integer userId);
+
+    List<UserBodyAuthVO> findByVO(UserBodyAuthVO userBodyAuthVO);
 }

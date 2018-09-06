@@ -233,6 +233,23 @@ public class UserController extends BaseController {
         return Result.success().msg("操作成功！");
     }
 
+
+    /**
+     * 用户身份认证信息
+     *
+     * @param pageNum              页码
+     * @param pageSize             每页显示数据条数
+     * @return 封装结果集
+     */
+    @PostMapping(value = "/body-auth/list")
+    public Result userBodyAuthList(@RequestParam("pageNum") Integer pageNum,
+                                   @RequestParam("pageSize") Integer pageSize,
+                                   UserBodyAuthVO userBodyAuthVO) {
+        PageInfo<UserBodyAuthVO> pageInfo = userBodyAuthService.findByVO(pageNum, pageSize, userBodyAuthVO);
+        return Result.success().data(pageInfo);
+    }
+    
+
     /**
      * 用户技能认证信息添加和修改
      *

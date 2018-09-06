@@ -11,6 +11,8 @@ import com.fulu.game.core.entity.UserBodyAuth;
 import com.fulu.game.core.entity.vo.UserBodyAuthVO;
 import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.UserBodyAuthService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -92,5 +94,14 @@ public class UserBodyAuthServiceImpl extends AbsCommonService<UserBodyAuth, Inte
         auth.setUpdateTime(DateUtil.date());
 
         return update(auth) > 0;
+    }
+
+    @Override
+    public PageInfo<UserBodyAuthVO> findByVO(Integer pageNum, Integer pageSize, UserBodyAuthVO userBodyAuthVO) {
+        PageHelper.startPage(pageNum, pageSize, " t1.create_time desc");
+        
+        List<UserBodyAuthVO> list = userBodyAuthDao.findByVO(userBodyAuthVO);
+        
+        return new PageInfo<UserBodyAuthVO>(list);
     }
 }
