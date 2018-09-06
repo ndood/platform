@@ -4,16 +4,23 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import com.alibaba.fastjson.JSON;
 import com.fulu.game.common.Constant;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.IMException;
 import com.fulu.game.common.utils.HttpUtils;
 import com.fulu.game.common.utils.IMUtil;
 import com.fulu.game.core.entity.ImUser;
 import com.fulu.game.core.entity.vo.ImUserVo;
+import com.fulu.game.core.entity.vo.UserInfoAuthVO;
+import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.fulu.game.core.service.ImService;
+import com.fulu.game.core.service.UserInfoAuthService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -25,6 +32,12 @@ public class ImServiceImpl implements ImService {
 
     @Autowired
     private IMUtil imUtil;
+
+    @Qualifier(value = "userInfoAuthServiceImpl")
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
 
     @Override
     public String getToken() {
@@ -208,6 +221,53 @@ public class ImServiceImpl implements ImService {
         jo.put("password", imPsw);
         ja.add(jo);
         return ja.toString();
+    }
+
+
+    @Override
+    public void addUnreadCount(String targetImId) {
+        UserInfoAuthSearchVO uavo = new UserInfoAuthSearchVO();
+        uavo.setImId(targetImId);
+        List<UserInfoAuthVO> uaList = userInfoAuthService.findBySearchVO(uavo);
+
+        UserInfoAuthVO targetUser = new UserInfoAuthVO();
+        if(uaList!=null && uaList.size() > 0){
+            targetUser = uaList.get(0);
+        }
+
+        //判断im目标用户是否为代聊用户
+        if (targetUser.getImSubstituteId() != null) {
+
+            //判断目标用户是否在线
+            String onlineStatus = redisOpenService.get(RedisKeyEnum.USER_ONLINE_KEY.generateKey(targetUser.getId()));
+
+            if (StringUtils.isNotBlank(onlineStatus)) {
+                //删除目标用户的未读信息
+                redisOpenService.delete(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(targetUser.getImSubstituteId().intValue()));
+
+            } else {
+                //增加未读消息数量+1
+                Map<String,Object> map = redisOpenService.hget(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(targetUser.getImSubstituteId().intValue()));
+
+
+                if(MapUtils.isEmpty(map)){
+                    map = new HashMap<String,Object>();
+                    targetUser.setUnreadCount(new Long(1));
+                }else{
+                    if(MapUtils.isNotEmpty(map)){
+
+                        UserInfoAuthVO temp = JSON.parseObject(map.get(targetImId).toString(),UserInfoAuthVO.class);
+                        targetUser.setUnreadCount(temp.getUnreadCount().longValue() + 1);
+                    }else{
+                        targetUser.setUnreadCount(new Long(1));
+                    }
+                }
+                map.put(targetImId, JSON.toJSONString(targetUser));
+                //更新未读消息数
+                redisOpenService.hset(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(targetUser.getImSubstituteId().intValue()), map, Constant.ONE_DAY * 3);
+            }
+
+        }
     }
 
 }

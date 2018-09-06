@@ -23,6 +23,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -68,6 +69,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Autowired
     private SpringThreadPoolExecutor springThreadPoolExecutor;
+
+    @Autowired
+    private AdminImLogService adminImLogService;
 
 
     @Override
@@ -746,5 +750,52 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             List<DynamicVO> newestDynamicList = dynamicService.getNewestDynamicList(userId);
             userVO.setNewestDynamics(newestDynamicList);
         }
+    }
+
+
+    @Override
+    public List<AdminImLog> userOnline(Boolean active, String version) {
+        User user = this.getCurrentUser();
+        UserInfoAuth ua = userInfoAuthService.findByUserId(user.getId());
+        if(active){
+            log.info("userId:{}用户上线了!;version:{}",user.getId(),version);
+            redisOpenService.set(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()),user.getType()+"");
+
+
+            if(ua!=null && ua.getImSubstituteId()!=null){
+
+
+                //删除陪玩师的未读信息数量
+                Map<String,Object> map = redisOpenService.hget(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()));
+
+                if(MapUtils.isNotEmpty(map) ){
+
+                    map.remove(user.getImId());
+
+                    if(MapUtils.isEmpty(map)){
+                        redisOpenService.delete(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()));
+                    }else{
+                        redisOpenService.hset(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()) , map , Constant.ONE_DAY * 3);
+                    }
+
+                }
+
+                //获取代聊天记录
+                AdminImLogVO ail = new AdminImLogVO();
+                ail.setOwnerUserId(user.getId());
+                List<AdminImLog> list = adminImLogService.findByParameter(ail);
+                //删除带聊天记录
+                adminImLogService.deleteByOwnerUserId(user.getId());
+                return list;
+
+            }
+
+            return null;
+
+        }else{
+            log.info("userId:{}用户下线了!version:{}",user.getId(),version);
+            redisOpenService.delete(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()));
+        }
+        return null;
     }
 }
