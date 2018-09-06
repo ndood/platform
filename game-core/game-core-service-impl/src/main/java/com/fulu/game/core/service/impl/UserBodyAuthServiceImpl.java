@@ -55,20 +55,10 @@ public class UserBodyAuthServiceImpl extends AbsCommonService<UserBodyAuth,Integ
                 throw new UserException(UserException.ExceptionCode.BODY_ALREADY_AUTH);
             }
             
-            //更新认证信息
-            userBodyAuthVO.setId(resultList.get(0).getId());
-            
-            userBodyAuthVO.setUpdateTime(new Date());
-            
-            userBodyAuthDao.update(userBodyAuthVO);
-        }else{
-            //新增认证信息
-            userBodyAuthVO.setCreateTime(new Date());
-
-            userBodyAuthDao.create(userBodyAuthVO);
-            
-            
+            //删除旧的认证信息
+            userBodyAuthDao.deleteById(resultUba.getId());
         }
         
+        userBodyAuthDao.create(userBodyAuthVO);
     }
 }

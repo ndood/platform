@@ -11,6 +11,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.UserBodyAuthStatusEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.common.utils.OssUtil;
@@ -608,7 +609,8 @@ public class UserController extends BaseController {
         uba.setCardNo(cardNo);
         uba.setCardUrl(cardUrl);
         uba.setCardHandUrl(cardHandUrl);
-        uba.setAuthStatus(0);
+        uba.setAuthStatus(UserBodyAuthStatusEnum.NO_AUTH.getType());
+        uba.setCreateTime(new Date());
 
         userBodyAuthService.submitUserBodyAuthInfo(uba);
 
