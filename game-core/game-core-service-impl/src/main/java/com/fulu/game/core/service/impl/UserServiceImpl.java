@@ -74,9 +74,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Autowired
     private AdminImLogService adminImLogService;
 
-    @Autowired
-    private AdminImLogService adminImLogService;
-
 
     @Override
     public ICommonDao<User, Integer> getDao() {
