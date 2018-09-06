@@ -53,4 +53,7 @@ public interface VirtualProductService extends ICommonService<VirtualProduct, In
      * @return
      */
     VirtualProduct createVirtualProduct(VirtualProduct vp, Integer userId, String[] urls);
+
+
+    List<VirtualProductVO> findByVirtualProductVo(VirtualProductVO virtualProductVO);
 }

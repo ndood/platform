@@ -1,6 +1,7 @@
 package com.fulu.game.play.schedule.task;
 
 import com.fulu.game.common.enums.OrderStatusEnum;
+import com.fulu.game.common.properties.Config;
 import com.fulu.game.common.utils.MailUtil;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.service.OrderService;
@@ -24,6 +25,9 @@ public class OrderStatusTask {
 
     @Autowired
     private OrderStatusDetailsService orderStatusDetailsService;
+
+    @Autowired
+    private Config configProperties;
 
     /**
      * 取消平台超时订单
@@ -119,6 +123,6 @@ public class OrderStatusTask {
         }
 
         //发送邮件
-        MailUtil.sendMail("陪玩师8分钟仍然未接单",mailContent.toString(),new String[]{"yangxudong@fulu.com"});
+        MailUtil.sendMail(configProperties.getOrdermail().getAddress(),configProperties.getOrdermail().getPassword(),"陪玩师8分钟仍然未接单",mailContent.toString(),new String[]{configProperties.getOrdermail().getAddress()});
     }
 }

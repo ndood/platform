@@ -24,5 +24,5 @@ public interface VirtualProductAttachDao extends ICommonDao<VirtualProductAttach
 
     List<VirtualProductAttachVO> findDetailByVo(VirtualProductAttachVO virtualProductAttachVO);
 
-    public int deleteByVirtualProductId(int virtualProductId);
+    int deleteByVirtualProductId(int virtualProductId);
 }

@@ -171,10 +171,13 @@ public class AuthController extends BaseController {
     @PostMapping(value = "/private-pic/list")
     public Result privatePicList(Integer userId) {
 
+        User user = userService.getCurrentUser();
+        
         VirtualProductVO vpo = new VirtualProductVO();
         vpo.setUserId(userId);
         vpo.setType(VirtualProductTypeEnum.PERSONAL_PICS.getType());
         vpo.setDelFlag(false);
+        vpo.setTargetUserId(user.getId());
 
         List<VirtualProductVO> list = virtualProductService.searchByvirtualProductVo(vpo);
 
