@@ -10,6 +10,7 @@ import com.fulu.game.h5.service.impl.mp.MpPayServiceImpl;
 import com.fulu.game.h5.utils.RequestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -29,11 +29,12 @@ import java.util.Map;
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/virtual-pay-order")
-public class OrderController extends BaseController {
+public class MpOrderController extends BaseController {
     @Autowired
     private UserService userService;
     @Autowired
     private MpPayServiceImpl payService;
+    @Qualifier("virtualPayOrderServiceImpl")
     @Autowired
     private VirtualPayOrderService virtualPayOrderService;
 
@@ -54,27 +55,9 @@ public class OrderController extends BaseController {
                          @RequestParam Integer virtualMoney,
                          @RequestParam Integer payType) {
         String ip = RequestUtil.getIpAdrress(request);
-        String orderNo = payService.submit(sessionkey, actualMoney, virtualMoney, ip, payType);
-        Map<String, Object> resultMap = new HashMap<>(2);
-        resultMap.put("orderNo", orderNo);
+        Map<String, Object> resultMap = payService.submit(sessionkey, actualMoney, virtualMoney, ip, payType);
         return Result.success().data(resultMap).msg("创建订单成功!");
     }
-
-//    /**
-//     * 订单余额支付
-//     *
-//     * @param request
-//     * @param orderNo
-//     * @return
-//     */
-//    @PostMapping("/balance/pay")
-//    public Result balancePay(HttpServletRequest request,
-//                             @RequestParam String orderNo) {
-//        String ip = RequestUtil.getIpAdrress(request);
-//        payService.balancePay(orderNo, ip);
-//
-//        return null;
-//    }
 
     /**
      * 微信支付订单
