@@ -212,7 +212,7 @@ create table t_reward
    resource_id          bigint comment '来源id',
    resource_type        smallint comment '来源类型（1：动态打赏；）',
    gift_id              bigint comment '礼物id',
-   git_url              varchar(512) comment '礼物图标（冗余字段，提高查询效率）',
+   gift_url              varchar(512) comment '礼物图标（冗余字段，提高查询效率）',
    from_user_id         bigint comment '给打赏用户id',
    from_user_head_url   varchar(512) comment '给打赏用户头像URL（冗余字段，提高查询效率）',
    from_user_nickname   varchar(32) comment '给打赏用户昵称（冗余字段，提高查询效率）',
