@@ -1,4 +1,4 @@
---举报表
+-- 举报表
 DROP TABLE IF EXISTS `t_report`;
 CREATE TABLE `t_report` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
@@ -15,7 +15,7 @@ CREATE TABLE `t_report` (
   PRIMARY KEY (`id`)
 ) COMMENT='举报表';
 
---举报文件表
+-- 举报文件表
 DROP TABLE IF EXISTS `t_report_file`;
 CREATE TABLE `t_report_file` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -53,10 +53,10 @@ CREATE TABLE `t_admin_im_log` (
   PRIMARY KEY (`id`)
 ) COMMENT='im消息同步表';
 
-ALTER TABLE `t_user_info_auth` ADD COLUMN `im_substitute_id` int(11)  DEFAULT NULL ;
+ALTER TABLE `t_user_info_auth` ADD COLUMN `im_substitute_id` int(11)  DEFAULT NULL;
 
 
---添加title（推送标题）字段
+-- 添加title（推送标题）字段
 ALTER TABLE `t_push_msg` ADD COLUMN `title` varchar(255) NOT NULL COMMENT '推送标题' after `touch_time`;
 
 ALTER TABLE `t_user` ADD COLUMN `virtual_balance` int(11) unsigned DEFAULT '0' COMMENT '虚拟零钱（对应钻石数量）' after `balance`;
@@ -106,7 +106,7 @@ CREATE TABLE `t_virtual_product_order` (
   PRIMARY KEY (`id`)
 ) COMMENT='虚拟商品订单表';
 
---t_virtual_details
+-- t_virtual_details
 CREATE TABLE `t_virtual_details` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `user_id` int(11) NOT NULL COMMENT '用户id',
