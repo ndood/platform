@@ -1,6 +1,12 @@
 package com.fulu.game.core.service.queue;
 
+import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
+import cn.hutool.core.date.DateUtil;
+import com.fulu.game.common.config.WxMaServiceSupply;
+import com.fulu.game.common.enums.PlatformEcoEnum;
+import com.fulu.game.core.entity.PushMsg;
 import com.fulu.game.core.entity.WxMaTemplateMessageVO;
+import com.fulu.game.core.service.PushMsgService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +34,11 @@ public class MiniAppPushContainer extends RedisTaskContainer {
 
     private RedisConsumer redisConsumer;
 
+    @Autowired
+    private WxMaServiceSupply wxMaServiceSupply;
+    @Autowired
+    private PushMsgService pushMsgServiceImpl;
+
     @PostConstruct
     private void init() {
         if (!configProperties.getQueue().isMiniappPush()) {
@@ -38,8 +49,7 @@ public class MiniAppPushContainer extends RedisTaskContainer {
         redisQueue = new RedisQueue<WxMaTemplateMessageVO>(MINI_APP_PUSH_QUEQUE, redisOpenService);
 
         Consumer<WxMaTemplateMessageVO> consumer = (data) -> {
-            // do something
-            System.out.println(data);
+            process(data);
         };
 
         //提交线程
@@ -47,6 +57,47 @@ public class MiniAppPushContainer extends RedisTaskContainer {
             redisConsumer = new RedisConsumer<>(this, consumer);
             es.execute(redisConsumer);
         }
+    }
+
+    private void process(WxMaTemplateMessageVO wxMaTemplateMessageVO) {
+        //TODO 直接贴的之前的消费小程序推送队列的代码，因为之前代码是把app和小程序推送揉到一起，所以这里需要拆分出来，
+        //TODO app的要单独拆开放到appPushContainer的process里
+        try {
+            log.info("推送消息队列推送消息:wxMaTemplateMessageVO:{}", wxMaTemplateMessageVO);
+            WxMaTemplateMessage wxMaTemplateMessage = wxMaTemplateMessageVO.getWxMaTemplateMessage();
+            Integer pushId = wxMaTemplateMessageVO.getPushId();
+            if (PlatformEcoEnum.POINT.getType().equals(wxMaTemplateMessageVO.getPlatform())) {
+                log.info("上分平台推送消息:wxMaTemplateMessageVO:{}", wxMaTemplateMessageVO);
+                wxMaServiceSupply.pointWxMaService().getMsgService().sendTemplateMsg(wxMaTemplateMessage);
+            } else if (PlatformEcoEnum.APP.getType().equals(wxMaTemplateMessageVO.getPlatform())) {
+                //todo APP推送
+            } else {
+                log.info("陪玩平台推送消息:wxMaTemplateMessageVO:{}", wxMaTemplateMessageVO);
+                wxMaServiceSupply.playWxMaService().getMsgService().sendTemplateMsg(wxMaTemplateMessage);
+            }
+            if (pushId != null) {
+                countPushSuccessNum(wxMaTemplateMessageVO.getPushId());
+            }
+            log.info("推送微信模板消息:{}", wxMaTemplateMessage.toJson());
+        } catch (Exception e) {
+            log.error("推送消息出错!", e);
+        }
+    }
+
+    /**
+     * 计算消息推送成功数
+     *
+     * @param pushId
+     */
+    private void countPushSuccessNum(int pushId) {
+        PushMsg pushMsg = pushMsgServiceImpl.findById(pushId);
+        int successNum = pushMsg.getSuccessNum();
+        PushMsg paramPushMsg = new PushMsg();
+        paramPushMsg.setId(pushId);
+        paramPushMsg.setSuccessNum(successNum + 1);
+        paramPushMsg.setUpdateTime(DateUtil.date());
+        pushMsgServiceImpl.update(paramPushMsg);
+        log.info("更新消息推送成功数:{}", paramPushMsg);
     }
 
     /**

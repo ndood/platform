@@ -39,7 +39,7 @@ public class AppPushContainer extends RedisTaskContainer {
 
 //        Consumer<Msg> consumer = (data) -> {
 //            // do something
-//            System.out.println(data);
+//            process(data);
 //        };
 //
 //        //提交线程
@@ -48,6 +48,10 @@ public class AppPushContainer extends RedisTaskContainer {
 //            es.execute(redisConsumer);
 //        }
     }
+
+//    private void process(){
+//
+//    }
 
     /**
      * 添加app推送对象到队列
