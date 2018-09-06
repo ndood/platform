@@ -7,7 +7,7 @@ spring:
           max-request-size: 5MB
 config:
     queue:
-        miniappPush: false
+        miniappPush: true
         appPush: false
-        userScore: false
-        formId: false
+        userScore: true
+        formId: true

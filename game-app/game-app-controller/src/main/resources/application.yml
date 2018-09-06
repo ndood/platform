@@ -8,6 +8,6 @@ spring:
 config:
     queue:
         miniappPush: false
-        appPush: false
-        userScore: false
+        appPush: true
+        userScore: true
         formId: false

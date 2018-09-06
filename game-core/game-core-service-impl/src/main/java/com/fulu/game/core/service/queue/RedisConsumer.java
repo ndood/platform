@@ -46,5 +46,4 @@ public class RedisConsumer<T> extends Thread {
         run.set(false);
     }
 
-    ;
 }
