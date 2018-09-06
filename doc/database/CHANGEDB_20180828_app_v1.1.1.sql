@@ -123,6 +123,8 @@ CREATE TABLE `t_virtual_details` (
 ALTER TABLE `t_push_msg` MODIFY COLUMN `type` tinyint(4) comment '推送类型(1:推送所有用户；2:推送指定用户；3：推送所有陪玩师)';
 ALTER TABLE `t_push_msg` MODIFY COLUMN `platform` tinyint(1) comment '平台(1:陪玩;2:开黑;3:H5;45:APP)';
 ALTER TABLE `t_push_msg` ADD COLUMN `jump_type` tinyint(1) DEFAULT NULL COMMENT '跳转类型（1：H5；2：内部跳转页(小程序）；3：官方公告；4：聊天室；5：名片页）' after `type`;
+ALTER TABLE `t_virtual_details` ADD COLUMN `relevant_no` varchar(128) DEFAULT NULL COMMENT '关联编号' after `user_id`;
+
 
 -- 修改用户认证表
 ALTER TABLE `t_user_info_auth` ADD COLUMN `interests` varchar(64) DEFAULT NULL
