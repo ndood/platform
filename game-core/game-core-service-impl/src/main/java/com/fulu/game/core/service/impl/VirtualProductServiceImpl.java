@@ -7,21 +7,15 @@ import com.fulu.game.common.enums.VirtualDetailsTypeEnum;
 import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.VirtualProductException;
 import com.fulu.game.core.dao.ICommonDao;
-import com.fulu.game.core.dao.VirtualProductAttachDao;
 import com.fulu.game.core.dao.VirtualProductDao;
 import com.fulu.game.core.entity.*;
-import com.fulu.game.core.entity.vo.VirtualProductAttachVO;
 import com.fulu.game.core.entity.vo.VirtualProductOrderVO;
 import com.fulu.game.core.entity.vo.VirtualProductVO;
-import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.VirtualDetailsService;
-import com.fulu.game.core.service.VirtualProductOrderService;
-import com.fulu.game.core.service.VirtualProductService;
+import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,13 +31,13 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
     @Autowired
     private VirtualProductDao virtualProductDao;
     @Autowired
-    private VirtualProductAttachDao virtualProductAttachDao;
-    @Autowired
     private VirtualProductOrderService virtualProductOrderService;
     @Autowired
     private VirtualDetailsService virtualDetailsService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private VirtualProductAttachService virtualProductAttachService;
 
 
     @Override
@@ -113,17 +107,12 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
         //先获取商品信息
         VirtualProduct vp = virtualProductDao.findById(virtualProductId);
         //获取附件信息
-        VirtualProductAttachVO vpav = new VirtualProductAttachVO();
-        vpav.setVirtualProductId(virtualProductId);
-        List<VirtualProductAttach> vpaList = virtualProductAttachDao.findByParameter(vpav);
+        List<VirtualProductAttach> vpaList = virtualProductAttachService.findByProductId(virtualProductId);
 
         //判断用户是否已经解锁过私照
-        VirtualProductOrderVO vpo = new VirtualProductOrderVO();
-        vpo.setTargetUserId(userId);
-        vpo.setVirtualProductId(virtualProductId);
-        List<VirtualProductOrder> vpList = virtualProductOrderService.findByParameter(vpo);
+        boolean isUnlock = virtualProductOrderService.isAlreadyUnlock(userId,virtualProductId);
 
-        if (CollectionUtils.isEmpty(vpList)) {
+        if (!isUnlock) {
             //判断用户钻石是否充足
 
             //先获取用户信息 和 购买信息
@@ -195,7 +184,7 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
             vpa.setVirtualProductId(vp.getId());
             vpa.setUrl(urls[i]);
             vpa.setCreateTime(new Date());
-            virtualProductAttachDao.create(vpa);
+            virtualProductAttachService.create(vpa);
         }
 
         return vp;

@@ -16,6 +16,7 @@ import com.fulu.game.core.entity.VirtualProductOrder;
 import com.fulu.game.core.entity.vo.VirtualProductOrderVO;
 import com.fulu.game.core.service.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -135,5 +136,19 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
     @Override
     public List<VirtualProductOrder> findByParameter(VirtualProductOrderVO virtualProductOrderVO) {
         return virtualProductOrderDao.findByParameter(virtualProductOrderVO);
+    }
+
+
+    @Override
+    public boolean isAlreadyUnlock(Integer userId, Integer virtualProductId) {
+        VirtualProductOrderVO vpo = new VirtualProductOrderVO();
+        vpo.setTargetUserId(userId);
+        vpo.setVirtualProductId(virtualProductId);
+        List<VirtualProductOrder> vpList = virtualProductOrderDao.findByParameter(vpo);
+        if (CollectionUtils.isEmpty(vpList)) {
+            return false;
+        }else{
+            return true;
+        }
     }
 }

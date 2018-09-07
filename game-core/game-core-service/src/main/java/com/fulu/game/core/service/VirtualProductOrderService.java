@@ -22,4 +22,7 @@ public interface VirtualProductOrderService extends ICommonService<VirtualProduc
     List<VirtualProductOrder> findByParameter(VirtualProductOrderVO virtualProductOrderVO);
 
     VirtualProductOrder findByOrderNo(String orderNo);
+    
+    
+    boolean isAlreadyUnlock(Integer userId , Integer virtualProductId);
 }
