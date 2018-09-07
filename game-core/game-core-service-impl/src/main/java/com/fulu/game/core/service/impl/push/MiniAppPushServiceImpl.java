@@ -216,19 +216,28 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
         if (redisOpenService.hasKey(RedisKeyEnum.USER_ONLINE_KEY.generateKey(acceptUser.getId()))) {
             return "用户在线,不推送微信消息!";
         }
-        User sendUser = userService.findByImId(imId);
-        if (sendUser == null) {
-            throw new ServiceErrorException("IM不存在!");
+
+        String  sendUserName = "";
+        if("zhouxj".equals(imId)){
+            sendUserName ="小秘书";
+        }else{
+            User sendUser = userService.findByImId(imId);
+            if (sendUser == null) {
+                throw new ServiceErrorException("IM不存在!");
+            }
+            sendUserName = sendUser.getNickname();
         }
+
         String timeStr = redisOpenService.get(RedisKeyEnum.WX_TEMPLATE_MSG.generateKey(imId + "|" + acceptImId));
         int time = (timeStr == null ? 0 : Integer.valueOf(timeStr));
         if (time >= 10) {
             return "推送次数太多不能推送!";
         }
-        push(acceptUser.getId(), WechatTemplateMsgEnum.IM_MSG_PUSH, sendUser.getNickname(), content);
+        push(acceptUser.getId(), WechatTemplateMsgEnum.IM_MSG_PUSH,sendUserName, content);
         time += 1;
         //推送状态缓存两个小时
         redisOpenService.set(RedisKeyEnum.WX_TEMPLATE_MSG.generateKey(imId + "|" + acceptImId), time + "", Constant.TIME_MINUTES_FIFE);
         return "消息推送成功!";
     }
+
 }
