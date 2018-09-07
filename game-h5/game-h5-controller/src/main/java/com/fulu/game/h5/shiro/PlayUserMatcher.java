@@ -13,13 +13,13 @@ import com.fulu.game.core.service.ThirdpartyUserService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -72,19 +72,39 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
                 String mpOpenId = userToken.getMpOpenId();
                 String unionId = userToken.getUnionId();
                 user = userService.findByOpenId(mpOpenId, PlatformEcoEnum.MP);
-                if(user==null){
-                    user = userService.findByUnionId(unionId);
-                }
-                if(user ==null){
-                    user = userService.findByMobile(mobile);
-                }
-                if(user==null){
-                    user = userService.createNewUser(mobile,mpOpenId,unionId,userToken.getHost());
-                }
-                break;
 
+                if (user != null) {
+                    String dbMobile = user.getMobile();
+                    if (StringUtils.isNotBlank(dbMobile) && !dbMobile.equals(mobile)) {
+                        throw new UserException(UserException.ExceptionCode.MOBILE_NOT_MATCH_EXCEPTION);
+                    }
+
+                    user = completeUser(user, user.getMobile(), null, user.getUnionId());
+                    userService.update(user);
+                }
+
+                user = userService.findByUnionId(unionId);
+                if (user != null) {
+                    String dbMobile = user.getMobile();
+                    if (StringUtils.isNotBlank(dbMobile) && !dbMobile.equals(mobile)) {
+                        throw new UserException(UserException.ExceptionCode.MOBILE_NOT_MATCH_EXCEPTION);
+                    }
+                    user = completeUser(user, user.getMobile(), user.getPublicOpenId(), null);
+                    userService.update(user);
+                }
+
+                user = userService.findByMobile(mobile);
+                if (user != null) {
+                    user = completeUser(user, null, user.getPublicOpenId(), user.getUnionId());
+                    userService.update(user);
+                }
+
+                user = userService.createNewUser(mobile, mpOpenId, unionId, userToken.getHost());
+                break;
+            default:
+                break;
         }
-        if(user==null){
+        if (user == null) {
             return false;
         }
         if (UserStatusEnum.BANNED.getType().equals(user.getStatus())) {
@@ -100,4 +120,31 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
         return true;
     }
 
+    /**
+     * 补全用户信息
+     *
+     * @param user         用户bean
+     * @param mobile       手机号
+     * @param publicOpenId 公众号openId
+     * @param unionId      unionId
+     * @return 用户bean
+     */
+    private User completeUser(User user, String mobile, String publicOpenId, String unionId) {
+        String orgMobile = user.getMobile();
+        String orgPublicOpenId = user.getPublicOpenId();
+        String orgUnionId = user.getUnionId();
+
+        if (StringUtils.isBlank(orgMobile) && StringUtils.isNotBlank(mobile)) {
+            user.setMobile(mobile);
+        }
+        if (StringUtils.isBlank(orgPublicOpenId) && StringUtils.isNotBlank(publicOpenId)) {
+            user.setPublicOpenId(publicOpenId);
+        }
+
+        if (StringUtils.isBlank(orgUnionId) && StringUtils.isNotBlank(unionId)) {
+            user.setUnionId(unionId);
+        }
+
+        return user;
+    }
 }

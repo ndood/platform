@@ -27,8 +27,9 @@ public class UserException extends BizException {
         LOCK_DENY_EXCEPTION(21004, "已被禁用，无此权限"),
         NO_WECHATECO_EXCEPTION(21005, "没有匹配的微信生态类型"),
         BODY_NO_AUTH(21006, "用户未进行身份验证"),
-        BODY_ALREADY_AUTH(21007, "用户已经认证了身份");
-        
+        BODY_ALREADY_AUTH(21007, "用户已经认证了身份"),
+        MOBILE_NOT_MATCH_EXCEPTION(21008, "登录手机号不匹配");
+
         private int code;
         private String msg;
     }
