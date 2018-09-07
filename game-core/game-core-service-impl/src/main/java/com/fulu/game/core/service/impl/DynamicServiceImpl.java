@@ -263,7 +263,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
             User user = userService.getCurrentUser();
             userId = user.getId();
         }
-        if(comments != null ){
+        if(comments != null && comments.intValue() != 0){
             if(dynamic.getComments() != null){
                 dynamic.setComments(dynamic.getComments() + comments);
             } else {

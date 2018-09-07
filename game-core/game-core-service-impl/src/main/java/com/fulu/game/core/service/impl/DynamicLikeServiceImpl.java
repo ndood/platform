@@ -72,9 +72,9 @@ public class DynamicLikeServiceImpl extends AbsCommonService<DynamicLike,Integer
         }
         // TODO shijiaoyun 修改动态信息的点赞次数（以及ES中存是否已点赞信息：likeUserId）
         if(status != null && status == 0){//取消点赞
-            dynamicService.updateIndexFilesById(dynamicLikeVO.getId(), false, -1, 0,false);
+            dynamicService.updateIndexFilesById(dynamicLikeVO.getDynamicId(), false, -1, 0,false);
         } else {//点赞
-            dynamicService.updateIndexFilesById(dynamicLikeVO.getId(), false, 1, 0,false);
+            dynamicService.updateIndexFilesById(dynamicLikeVO.getDynamicId(), false, 1, 0,false);
         }
     }
 
