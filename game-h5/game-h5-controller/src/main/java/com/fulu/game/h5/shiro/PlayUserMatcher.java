@@ -81,6 +81,7 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
 
                     user = completeUser(user, user.getMobile(), null, user.getUnionId());
                     userService.update(user);
+                    break;
                 }
 
                 user = userService.findByUnionId(unionId);
@@ -91,12 +92,14 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
                     }
                     user = completeUser(user, user.getMobile(), user.getPublicOpenId(), null);
                     userService.update(user);
+                    break;
                 }
 
                 user = userService.findByMobile(mobile);
                 if (user != null) {
                     user = completeUser(user, null, user.getPublicOpenId(), user.getUnionId());
                     userService.update(user);
+                    break;
                 }
 
                 user = userService.createNewUser(mobile, mpOpenId, unionId, userToken.getHost());
