@@ -105,6 +105,7 @@ public class AdminPushMsgServiceImpl extends PushMsgServiceImpl implements Admin
             pushMsg.setTotalNum(count);
             pushMsg.setIsPushed(true);
             pushMsg.setUpdateTime(new Date());
+            pushMsg.setTouchTime(new Date());
             update(pushMsg);
         } catch (Exception e) {
             log.error("消息推送urlencode exp", e);
