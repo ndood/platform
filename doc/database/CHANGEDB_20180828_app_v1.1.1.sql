@@ -103,12 +103,15 @@ ALTER TABLE `t_product` ADD COLUMN `platform_show` tinyint(1) DEFAULT NULL COMME
 -- 更新数据
 UPDATE `t_sales_mode` SET `platform_show` = 3 WHERE `type` = 1;
 UPDATE `t_sales_mode` SET `platform_show` = 1 WHERE `type` = 2;
-UPDATE `t_product` pro SET `platform_show` = (SELECT `platform_show` FROM `t_sales_mode` sm WHERE pro.sales_mode_id = sm.id) ;
 
 
 --  添加管理员im账号
 ALTER TABLE `t_admin` ADD COLUMN `im_id` varchar(128) DEFAULT NULL COMMENT 'IM账号' after `status`;
 ALTER TABLE `t_admin` ADD COLUMN `im_pwd` varchar(128) DEFAULT NULL COMMENT 'IM密码' after `im_id`;
+
+
+
+UPDATE `t_product` pro SET `platform_show` = (SELECT `platform_show` FROM `t_sales_mode` sm WHERE pro.sales_mode_id = sm.id) ;
 
 
 -- ----2018年9月7日上线准备sql结束--------
