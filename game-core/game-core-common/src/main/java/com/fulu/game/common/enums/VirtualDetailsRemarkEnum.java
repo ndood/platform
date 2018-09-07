@@ -21,4 +21,13 @@ public enum VirtualDetailsRemarkEnum implements TypeEnum<Integer> {
 
     private Integer type;
     private String msg;
+
+    public static String getMsgByType(Integer type) {
+        for (VirtualDetailsRemarkEnum remarkEnum : VirtualDetailsRemarkEnum.values()) {
+            if (remarkEnum.type.equals(type)) {
+                return remarkEnum.msg;
+            }
+        }
+        return null;
+    }
 }

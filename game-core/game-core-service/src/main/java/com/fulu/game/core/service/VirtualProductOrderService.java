@@ -22,4 +22,14 @@ public interface VirtualProductOrderService extends ICommonService<VirtualProduc
     List<VirtualProductOrder> findByParameter(VirtualProductOrderVO virtualProductOrderVO);
 
     VirtualProductOrder findByOrderNo(String orderNo);
+
+    /**
+     * 创建虚拟订单
+     *
+     * @param fromUserId       发起人id
+     * @param targetUserId     接收人id
+     * @param virtualProductId 虚拟商品id
+     * @return 虚拟商品订单
+     */
+    VirtualProductOrder createVirtualOrder(Integer fromUserId, Integer targetUserId, Integer virtualProductId);
 }
