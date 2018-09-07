@@ -54,7 +54,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     @Qualifier(value = "userTechAuthServiceImpl")
     @Autowired
     private UserTechAuthServiceImpl userTechAuthService;
-
     @Autowired
     private OssUtil ossUtil;
     @Autowired
@@ -67,6 +66,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     private VirtualProductAttachService virtualProductAttachService;
     @Autowired
     private ProductService productService;
+    
+    
 
     @Override
     public ICommonDao<UserInfoAuth, Integer> getDao() {
@@ -187,7 +188,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
                     VirtualProductAttach vpa = new VirtualProductAttach();
                     vpa.setUserId(userInfoAuthTO.getUserId());
                     vpa.setVirtualProductId(t.getId());
-                    vpa.setUrl(urls.getString(j));
+                    vpa.setUrl(ossUtil.activateOssFile(urls.getString(j)));
                     vpa.setCreateTime(new Date());
                     virtualProductAttachService.create(vpa);
                 }
@@ -217,7 +218,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
                     VirtualProductAttach vpa = new VirtualProductAttach();
                     vpa.setUserId(userInfoAuthTO.getUserId());
                     vpa.setVirtualProductId(t.getId());
-                    vpa.setUrl(urls.getString(j));
+                    vpa.setUrl(ossUtil.activateOssFile(urls.getString(j)));
                     vpa.setCreateTime(new Date());
                     virtualProductAttachService.create(vpa);
                 }
