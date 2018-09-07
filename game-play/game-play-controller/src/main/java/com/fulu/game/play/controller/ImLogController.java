@@ -1,39 +1,29 @@
 package com.fulu.game.play.controller;
 
 
-import com.alibaba.fastjson.JSON;
-import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
-import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.core.entity.AdminImLog;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.UserInfoAuth;
-import com.fulu.game.core.entity.VirtualProductAttach;
-import com.fulu.game.core.entity.vo.AdminImLogVO;
-import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.VirtualProductAttachVO;
 import com.fulu.game.core.entity.vo.VirtualProductVO;
-import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
-import com.fulu.game.core.service.*;
-import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.core.service.ImService;
+import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.service.VirtualProductAttachService;
+import com.fulu.game.core.service.VirtualProductService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/v1/imlog")
 @Slf4j
-public class ImLogController extends BaseController{
+public class ImLogController extends BaseController {
 
     @Autowired
     private UserService userService;
@@ -45,23 +35,19 @@ public class ImLogController extends BaseController{
     private ImService imService;
 
     @PostMapping(value = "collect")
-    public Result log(String content){
-        log.error("日志收集:{}",content);
+    public Result log(String content) {
+        log.error("日志收集:{}", content);
         return Result.success();
     }
 
 
     @PostMapping(value = "online")
-    public Result userOnline(@RequestParam(required = true) Boolean active, String version){
+    public Result userOnline(@RequestParam(required = true) Boolean active, String version) {
 
-        List<AdminImLog> list = userService.userOnline(active,version);
+        List<AdminImLog> list = userService.userOnline(active, version);
 
         return Result.success().data(list).msg("查询成功！");
     }
-
-
-
-
 
 
     //增加陪玩师未读消息数量
@@ -77,6 +63,7 @@ public class ImLogController extends BaseController{
 
     /**
      * 解锁图片  声音  私照
+     *
      * @return
      */
     @PostMapping(value = "/unlock")
@@ -87,15 +74,16 @@ public class ImLogController extends BaseController{
         vpo.setType(VirtualProductTypeEnum.PERSONAL_PICS.getType());
         vpo.setDelFlag(false);
 
-        virtualProductService.unlockProduct(user.getId(),virtualProductId);
+        virtualProductService.unlockProduct(user.getId(), virtualProductId);
 
         return Result.success().msg("解锁成功");
-        
+
     }
 
 
     /**
      * 查看解锁商品
+     *
      * @return
      */
     @PostMapping(value = "/unlock-product/list")
@@ -103,9 +91,9 @@ public class ImLogController extends BaseController{
 
         User user = userService.getCurrentUser();
 
-        List<VirtualProductAttachVO> list = virtualProductAttachService.findByOrderProIdUserId(user.getId(),virtualProductId);
+        List<VirtualProductAttachVO> list = virtualProductAttachService.findByOrderProIdUserId(user.getId(), virtualProductId);
 
         return Result.success().data(list).msg("查询成功");
     }
-    
+
 }

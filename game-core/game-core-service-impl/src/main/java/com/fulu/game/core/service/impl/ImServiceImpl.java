@@ -254,7 +254,7 @@ public class ImServiceImpl implements ImService {
                     map = new HashMap<String,Object>();
                     targetUser.setUnreadCount(new Long(1));
                 }else{
-                    if(MapUtils.isNotEmpty(map)){
+                    if(map.get(targetImId)!=null){
 
                         UserInfoAuthVO temp = JSON.parseObject(map.get(targetImId).toString(),UserInfoAuthVO.class);
                         targetUser.setUnreadCount(temp.getUnreadCount().longValue() + 1);
