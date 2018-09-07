@@ -103,9 +103,6 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
     @Transactional
     public void unlockProduct(Integer userId, Integer virtualProductId) {
 
-
-        //先获取商品信息
-        VirtualProduct vp = virtualProductDao.findById(virtualProductId);
         //获取附件信息
         List<VirtualProductAttach> vpaList = virtualProductAttachService.findByProductId(virtualProductId);
 
@@ -113,59 +110,8 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
         boolean isUnlock = virtualProductOrderService.isAlreadyUnlock(userId,virtualProductId);
 
         if (!isUnlock) {
-            //判断用户钻石是否充足
-
-            //先获取用户信息 和 购买信息
-            User user = userService.findById(userId);
-            int price = vp.getPrice().intValue();
-            int vritualBalance = 0;
-            if (user.getVirtualBalance() != null) {
-                vritualBalance = user.getVirtualBalance().intValue();
-            }
-
-            if (price <= vritualBalance) {
-
-                //扣除用户钻石
-                user.setVirtualBalance(vritualBalance - price);
-                userService.update(user);
-                //生成购买订单
-                VirtualProductOrder t = new VirtualProductOrder();
-                t.setOrderNo(virtualProductOrderService.generateVirtualProductOrderNo());
-                t.setVirtualProductId(vp.getId());
-                t.setPrice(price);
-                t.setVirtualProductId(virtualProductId);
-                t.setFromUserId(vpaList.get(0).getUserId());
-                t.setTargetUserId(userId);
-                t.setCreateTime(new Date());
-
-                virtualProductOrderService.create(t);
-                
-                //添加钻石流水记录
-                VirtualDetails vd = new VirtualDetails();
-                vd.setUserId(userId);
-                vd.setSum(vritualBalance - price);
-                vd.setMoney(price*-1);
-                vd.setRelevantNo(t.getOrderNo());
-                vd.setType(VirtualDetailsTypeEnum.VIRTUAL_MONEY.getType());
-                if(vp.getType().intValue() == VirtualProductTypeEnum.VIRTUAL_GIFT.getType().intValue()){
-                    vd.setRemark(VirtualDetailsRemarkEnum.GIFT_COST.getMsg());
-                }else if(vp.getType().intValue() == VirtualProductTypeEnum.PERSONAL_PICS.getType().intValue()){
-                    vd.setRemark(VirtualDetailsRemarkEnum.UNLOCK_PERSONAL_PICS.getMsg());
-                }else if(vp.getType().intValue() == VirtualProductTypeEnum.IM_PROTECTED_PICS.getType().intValue()){
-                    vd.setRemark(VirtualDetailsRemarkEnum.UNLOCK_PICS.getMsg());
-                }else if(vp.getType().intValue() == VirtualProductTypeEnum.IM_PROTECTED_VOICE.getType().intValue()){
-                    vd.setRemark(VirtualDetailsRemarkEnum.UNLOCK_VOICE.getMsg());
-                }
-                
-                vd.setCreateTime(new Date());
-
-                virtualDetailsService.create(vd);
-            } else {
-
-                //用户钻石不足
-                throw new VirtualProductException(VirtualProductException.ExceptionCode.BALANCE_NOT_ENOUGH_EXCEPTION);
-            }
-
+            virtualProductOrderService.createVirtualOrder(userId,vpaList.get(0).getUserId(),virtualProductId);
+            
         }
     }
 
