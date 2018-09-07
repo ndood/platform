@@ -1,8 +1,8 @@
 package com.fulu.game.core.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.ParamsException;
-import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.UserFriendDao;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.User;
@@ -33,6 +33,9 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
+
     @Override
     public ICommonDao<UserFriend, Integer> getDao() {
         return userFriendDao;
@@ -45,6 +48,8 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
         }
         User user = userService.getCurrentUser();
         userFriendVO.setFromUserId(user.getId());
+        // 设置关注的Redis信息，必须有fromUserId和toUserId
+        saveAttentionInfo(userFriendVO);
         UserFriend friend = userFriendDao.findByFromAndToUserId(userFriendVO);
         userFriendVO.setStatus(1);
         if(friend != null){
@@ -62,6 +67,25 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
             }
             userFriendDao.create(userFriendVO);
         }
+
+    }
+
+    /**
+     * 保存关注信息
+     * @param userFriendVO
+     */
+    private void saveAttentionInfo(UserFriendVO userFriendVO){
+        if(userFriendVO == null || userFriendVO.getFromUserId() == null || userFriendVO.getToUserId() == null
+                || userFriendVO.getIsAttention() == null){
+            return ;
+        }
+        Integer fromUserId = userFriendVO.getFromUserId();
+        Integer toUserId = userFriendVO.getToUserId();
+        boolean isAttention = userFriendVO.getIsAttention().intValue() == 0 ? false : true;
+        // 保存用户关注那些用户信息
+        redisOpenService.bitSet(RedisKeyEnum.ATTENTION_USERS.generateKey(fromUserId),toUserId,isAttention);
+        // 保存用户被那些用户关注
+        redisOpenService.bitSet(RedisKeyEnum.ATTENTIONED_USERS.generateKey(toUserId),fromUserId,isAttention);
     }
 
     /**
