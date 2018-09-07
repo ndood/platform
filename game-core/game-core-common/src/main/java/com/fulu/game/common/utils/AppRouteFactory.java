@@ -1,5 +1,7 @@
 package com.fulu.game.common.utils;
 
+import lombok.Getter;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,11 +11,19 @@ import java.util.Map;
 public class AppRouteFactory {
 
 
-
+    @Getter
     public enum RouteType{
-        OFFICIAL_NOTICE, //官方公告
-        INDEX, //首页
-        WEBVIEW
+        OFFICIAL_NOTICE("fulu://IM_GonggaoActivity","fulu://KHOfficialNoticeViewController"), //官方公告
+        INDEX("androidRoute","iosRoute"), //首页
+        WEBVIEW("androidRoute","iosRoute");
+
+        private String androidRoute;
+        private String iosRoute;
+
+        RouteType(String androidRoute, String iosRoute) {
+            this.androidRoute =androidRoute;
+            this.iosRoute = iosRoute;
+        }
     }
 
 
@@ -55,7 +65,8 @@ public class AppRouteFactory {
      */
     private static Map<String,String> newRoute(RouteType routeType){
         Map<String,String> route = new HashMap<>();
-        route.put("routeType",routeType.name());
+        route.put("androidRoute",routeType.androidRoute);
+        route.put("iosRoute",routeType.androidRoute);
         return route;
     }
 
