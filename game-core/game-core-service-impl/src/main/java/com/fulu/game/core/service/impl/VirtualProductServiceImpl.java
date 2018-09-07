@@ -2,21 +2,20 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.date.DateUtil;
-import com.fulu.game.common.enums.VirtualDetailsRemarkEnum;
-import com.fulu.game.common.enums.VirtualDetailsTypeEnum;
 import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.VirtualProductException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.VirtualProductDao;
-import com.fulu.game.core.entity.*;
-import com.fulu.game.core.entity.vo.VirtualProductOrderVO;
+import com.fulu.game.core.entity.VirtualProduct;
+import com.fulu.game.core.entity.VirtualProductAttach;
 import com.fulu.game.core.entity.vo.VirtualProductVO;
-import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.VirtualProductAttachService;
+import com.fulu.game.core.service.VirtualProductOrderService;
+import com.fulu.game.core.service.VirtualProductService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,6 +63,7 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
     @Override
     public VirtualProduct add(VirtualProduct virtualProduct) {
         virtualProduct.setType(VirtualProductTypeEnum.VIRTUAL_GIFT.getType());
+        virtualProduct.setObjectUrl(ossUtil.activateOssFile(virtualProduct.getObjectUrl()));
         virtualProduct.setCreateTime(DateUtil.date());
         virtualProduct.setUpdateTime(DateUtil.date());
         virtualProduct.setDelFlag(Boolean.FALSE);
@@ -106,11 +106,11 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
         List<VirtualProductAttach> vpaList = virtualProductAttachService.findByProductId(virtualProductId);
 
         //判断用户是否已经解锁过私照
-        boolean isUnlock = virtualProductOrderService.isAlreadyUnlock(userId,virtualProductId);
+        boolean isUnlock = virtualProductOrderService.isAlreadyUnlock(userId, virtualProductId);
 
         if (!isUnlock) {
-            virtualProductOrderService.createVirtualOrder(userId,vpaList.get(0).getUserId(),virtualProductId);
-            
+            virtualProductOrderService.createVirtualOrder(userId, vpaList.get(0).getUserId(), virtualProductId);
+
         }
     }
 

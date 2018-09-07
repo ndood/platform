@@ -1,5 +1,6 @@
 package com.fulu.game.common.utils;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -63,12 +64,19 @@ public class AppRouteFactory {
      * @param routeType
      * @return
      */
-    private static Map<String,String> newRoute(RouteType routeType){
+    private static Map<String,String> newRoute(RouteType routeType,Map<String,String> params){
+        String paramStr = "";
+        if(!params.isEmpty()){
+            paramStr = "params="+ JSONObject.toJSONString(params);
+        }
         Map<String,String> route = new HashMap<>();
-        route.put("androidRoute",routeType.androidRoute);
-        route.put("iosRoute",routeType.androidRoute);
+        route.put("androidRoute",routeType.getAndroidRoute()+paramStr);
+        route.put("iosRoute",routeType.getIosRoute()+paramStr);
         return route;
     }
 
+    private static Map<String,String> newRoute(RouteType routeType){
+        return newRoute(routeType,new HashMap<>());
+    }
 
 }
