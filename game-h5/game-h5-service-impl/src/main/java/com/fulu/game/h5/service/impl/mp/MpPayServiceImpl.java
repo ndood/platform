@@ -199,7 +199,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         BigDecimal balance = user.getBalance();
         VirtualPayOrder order = virtualPayOrderService.findByOrderNo(orderNo);
         BigDecimal actualMoney = order.getActualMoney();
-        if (balance.compareTo(actualMoney) <= 0) {
+        if (balance.compareTo(actualMoney) < 0) {
             log.error("用户userId：{}的账户余额不够充钻石，余额：{}，应付金额：{}", userId, balance, actualMoney);
             throw new VirtualProductException(VirtualProductException.ExceptionCode.BALANCE_NOT_ENOUGH_EXCEPTION);
         }

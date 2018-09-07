@@ -93,9 +93,9 @@ public class UserController extends BaseController {
     public Result getBalance() {
         User user = userService.findById(userService.getCurrentUser().getId());
         JSONObject data = new JSONObject();
-        data.put("balance",user.getBalance());
-        data.put("virtualBalance",user.getVirtualBalance());
-        data.put("charm",user.getCharm());
+        data.put("balance", user.getBalance());
+        data.put("virtualBalance", user.getVirtualBalance());
+        data.put("charm", user.getCharm());
         return Result.success().data(data).msg("查询成功！");
     }
 
@@ -201,7 +201,7 @@ public class UserController extends BaseController {
             userService.update(user);
             BeanUtil.copyProperties(user, cacheUser, CopyOptions.create().setIgnoreNullValue(true));
             userService.updateRedisUser(cacheUser);
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("更新微信手机号错误用户信息:{};手机号:{};", user, user.getMobile());
             return Result.error().msg("手机号已被注册!");
         }
@@ -584,13 +584,13 @@ public class UserController extends BaseController {
         UserBodyAuthVO uba = new UserBodyAuthVO();
         uba.setUserId(user.getId());
         List<UserBodyAuth> list = userBodyAuthService.findByParameter(uba);
-        
+
         UserBodyAuth authInfo = null;
-        
-        if(list != null && list.size() > 0){
+
+        if (list != null && list.size() > 0) {
             authInfo = list.get(0);
         }
-        
+
         return Result.success().data(authInfo).msg("查询成功！");
     }
 
@@ -601,14 +601,14 @@ public class UserController extends BaseController {
      * @return
      */
     @PostMapping("/body-auth/save")
-    public Result getUserAuthStatus(String userName,String cardNo,String cardUrl,String cardHandUrl) {
+    public Result getUserAuthStatus(String userName, String cardNo, String cardUrl, String cardHandUrl) {
         User user = userService.getCurrentUser();
         UserBodyAuthVO uba = new UserBodyAuthVO();
         uba.setUserId(user.getId());
         uba.setUserName(userName);
         uba.setCardNo(cardNo);
-        uba.setCardUrl(cardUrl);
-        uba.setCardHandUrl(cardHandUrl);
+        uba.setCardUrl(ossUtil.activateOssFile(cardUrl));
+        uba.setCardHandUrl(ossUtil.activateOssFile(cardHandUrl));
         uba.setAuthStatus(UserBodyAuthStatusEnum.NO_AUTH.getType());
         uba.setCreateTime(new Date());
 
@@ -616,5 +616,5 @@ public class UserController extends BaseController {
 
         return Result.success().msg("提交成功！");
     }
-    
+
 }
