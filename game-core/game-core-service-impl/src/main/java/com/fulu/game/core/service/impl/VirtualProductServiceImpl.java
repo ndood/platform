@@ -6,6 +6,7 @@ import com.fulu.game.common.enums.VirtualDetailsRemarkEnum;
 import com.fulu.game.common.enums.VirtualDetailsTypeEnum;
 import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.VirtualProductException;
+import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.VirtualProductDao;
 import com.fulu.game.core.entity.*;
@@ -33,11 +34,9 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
     @Autowired
     private VirtualProductOrderService virtualProductOrderService;
     @Autowired
-    private VirtualDetailsService virtualDetailsService;
-    @Autowired
-    private UserService userService;
-    @Autowired
     private VirtualProductAttachService virtualProductAttachService;
+    @Autowired
+    private OssUtil ossUtil;
 
 
     @Override
@@ -128,7 +127,7 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
             VirtualProductAttach vpa = new VirtualProductAttach();
             vpa.setUserId(userId);
             vpa.setVirtualProductId(vp.getId());
-            vpa.setUrl(urls[i]);
+            vpa.setUrl(ossUtil.activateOssFile(urls[i]));
             vpa.setCreateTime(new Date());
             virtualProductAttachService.create(vpa);
         }
