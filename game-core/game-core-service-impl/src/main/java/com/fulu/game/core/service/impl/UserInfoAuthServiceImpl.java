@@ -218,7 +218,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
                     VirtualProductAttach vpa = new VirtualProductAttach();
                     vpa.setUserId(userInfoAuthTO.getUserId());
                     vpa.setVirtualProductId(t.getId());
-                    vpa.setUrl(ossUtil.activateOssFile(urls.getString(j))));
+                    vpa.setUrl(ossUtil.activateOssFile(urls.getString(j)));
                     vpa.setCreateTime(new Date());
                     virtualProductAttachService.create(vpa);
                 }
