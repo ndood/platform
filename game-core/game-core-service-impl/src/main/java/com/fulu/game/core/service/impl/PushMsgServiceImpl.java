@@ -90,8 +90,8 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
         } finally {
             lock.unlock();
         }
-
     }
+
 
     @Override
     public PageInfo<PushMsg> officialNoticeList(Integer pageNum, Integer pageSize) {
@@ -100,7 +100,7 @@ public class PushMsgServiceImpl extends AbsCommonService<PushMsg, Integer> imple
 
         PushMsgVO pushMsgVO = new PushMsgVO();
         pushMsgVO.setPlatform(PlatformEcoEnum.APP.getType());
-        pushMsgVO.setJumpType(PushMsgJumpTypeEnum.OFFCIAL_NOTE.getType());
+        pushMsgVO.setJumpType(PushMsgJumpTypeEnum.OFFICIAL_NOTICE.getType());
         List<PushMsg> noticeList = pushMsgDao.findByParameter(pushMsgVO);
         return new PageInfo<>(noticeList);
     }
