@@ -4,6 +4,7 @@ package com.fulu.game.core.service.impl;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.domain.ClientInfo;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.CommonException;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserException;
@@ -56,13 +57,13 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
     private ProductService productService;
 
     @Autowired
-    private UserTechInfoService userTechInfoService;
-
-    @Autowired
     private UserFriendService userFriendService;
 
     @Autowired
     private AdminService adminService;
+
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
 
 
     @Override
@@ -165,7 +166,8 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
     @Override
     public DynamicDoc getDynamicDocById(Integer id) {
         DynamicDoc dynamicDoc = dynamicSearchComponent.searchById(id, DynamicDoc.class);
-        setFileInfo(dynamicDoc);
+        User user = userService.getCurrentUser();
+        setDynamicDocUserExt(dynamicDoc, user);
         return dynamicDoc;
     }
 
@@ -261,7 +263,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
             User user = userService.getCurrentUser();
             userId = user.getId();
         }
-        if(comments != null ){
+        if(comments != null && comments.intValue() != 0){
             if(dynamic.getComments() != null){
                 dynamic.setComments(dynamic.getComments() + comments);
             } else {
@@ -320,29 +322,46 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
         } catch (IOException e) {
             e.printStackTrace();
         }
-        userIsLike(page, user);
+        setDynamicDocsUserExt(page, user);
         return page;
     }
 
     /**
-     * 判断用户是否点赞
+     * 设置多动态的用户扩展信息
+     * 包含是否点赞、是否关注等信息
      * @param pages
      * @param user
      */
-    private void userIsLike(Page<DynamicDoc> pages, User user){
-        if(pages == null){
+    private void setDynamicDocsUserExt(Page<DynamicDoc> pages, User user){
+        if(pages == null || user == null){
+            return ;
+        }
+        for(DynamicDoc dynamicDoc: pages){
+            setDynamicDocUserExt(dynamicDoc,user);
+        }
+    }
+
+    /**
+     * 设置单动态的用户扩展信息
+     * 包含是否点赞、是否关注等信息
+     * @param dynamicDoc
+     * @param user
+     */
+    private void setDynamicDocUserExt(DynamicDoc dynamicDoc, User user){
+        if(dynamicDoc == null || user == null){
             return ;
         }
         int userId = user.getId();
-        for(DynamicDoc dynamicDoc: pages){
-            BitSet bitSet = dynamicDoc.getLikeUserIds();
-            if(bitSet != null && bitSet.get(userId)){
-                dynamicDoc.setIsLike(1);
-            } else {
-                dynamicDoc.setIsLike(0);
-            }
-            setFileInfo(dynamicDoc);
+        BitSet bitSet = dynamicDoc.getLikeUserIds();
+        if(bitSet != null && bitSet.get(userId)){
+            dynamicDoc.setIsLike(1);
+        } else {
+            dynamicDoc.setIsLike(0);
         }
+        Integer isAttention = redisOpenService.getBitSet(RedisKeyEnum.ATTENTION_USERS.generateKey(userId),dynamicDoc.getUserId()) ? 1: 0;
+        dynamicDoc.setIsAttention(isAttention);
+        // 设置动态文件信息
+        setFileInfo(dynamicDoc);
     }
 
     /**

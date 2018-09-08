@@ -98,7 +98,7 @@ public class DynamicSearchComponent  extends AbsSearchComponent<DynamicDoc, Inte
                 dynamicDoc.setLikeUserIds(bitSet);
             }
         }
-        if(comments != null ){
+        if(comments != null && comments.intValue() != 0){
             if(dynamicDoc.getComments() != null){
                 dynamicDoc.setComments(dynamicDoc.getComments() + comments);
             } else {

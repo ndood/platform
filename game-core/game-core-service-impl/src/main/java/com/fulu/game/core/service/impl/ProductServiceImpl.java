@@ -100,6 +100,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         product.setSalesModeId(salesMode.getId());
         product.setUnit(salesMode.getName());
         product.setSalesModeRank(salesMode.getRank() == null ? 0 : salesMode.getRank());
+        product.setPlatformShow(salesMode.getPlatformShow());
         product.setUserId(userTechAuth.getUserId());
         product.setPrice(price);
         product.setStatus(false);

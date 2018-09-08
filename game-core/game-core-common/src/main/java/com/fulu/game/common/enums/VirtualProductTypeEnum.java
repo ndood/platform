@@ -19,4 +19,13 @@ public enum VirtualProductTypeEnum implements TypeEnum<Integer> {
 
     private Integer type;
     private String msg;
+
+    public static String getMsgByType(Integer type) {
+        for (VirtualProductTypeEnum typeEnum : VirtualProductTypeEnum.values()) {
+            if (typeEnum.type.equals(type)) {
+                return typeEnum.msg;
+            }
+        }
+        return null;
+    }
 }

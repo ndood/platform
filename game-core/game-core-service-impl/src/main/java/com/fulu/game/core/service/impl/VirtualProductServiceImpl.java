@@ -2,26 +2,20 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.date.DateUtil;
-import com.fulu.game.common.enums.VirtualDetailsRemarkEnum;
-import com.fulu.game.common.enums.VirtualDetailsTypeEnum;
 import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.VirtualProductException;
+import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
-import com.fulu.game.core.dao.VirtualProductAttachDao;
 import com.fulu.game.core.dao.VirtualProductDao;
-import com.fulu.game.core.entity.*;
-import com.fulu.game.core.entity.vo.VirtualProductAttachVO;
-import com.fulu.game.core.entity.vo.VirtualProductOrderVO;
+import com.fulu.game.core.entity.VirtualProduct;
+import com.fulu.game.core.entity.VirtualProductAttach;
 import com.fulu.game.core.entity.vo.VirtualProductVO;
-import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.VirtualDetailsService;
+import com.fulu.game.core.service.VirtualProductAttachService;
 import com.fulu.game.core.service.VirtualProductOrderService;
 import com.fulu.game.core.service.VirtualProductService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,13 +31,11 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
     @Autowired
     private VirtualProductDao virtualProductDao;
     @Autowired
-    private VirtualProductAttachDao virtualProductAttachDao;
-    @Autowired
     private VirtualProductOrderService virtualProductOrderService;
     @Autowired
-    private VirtualDetailsService virtualDetailsService;
+    private VirtualProductAttachService virtualProductAttachService;
     @Autowired
-    private UserService userService;
+    private OssUtil ossUtil;
 
 
     @Override
@@ -71,6 +63,7 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
     @Override
     public VirtualProduct add(VirtualProduct virtualProduct) {
         virtualProduct.setType(VirtualProductTypeEnum.VIRTUAL_GIFT.getType());
+        virtualProduct.setObjectUrl(ossUtil.activateOssFile(virtualProduct.getObjectUrl()));
         virtualProduct.setCreateTime(DateUtil.date());
         virtualProduct.setUpdateTime(DateUtil.date());
         virtualProduct.setDelFlag(Boolean.FALSE);
@@ -109,73 +102,14 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
     @Transactional
     public void unlockProduct(Integer userId, Integer virtualProductId) {
 
-
-        //先获取商品信息
-        VirtualProduct vp = virtualProductDao.findById(virtualProductId);
         //获取附件信息
-        VirtualProductAttachVO vpav = new VirtualProductAttachVO();
-        vpav.setVirtualProductId(virtualProductId);
-        List<VirtualProductAttach> vpaList = virtualProductAttachDao.findByParameter(vpav);
+        List<VirtualProductAttach> vpaList = virtualProductAttachService.findByProductId(virtualProductId);
 
         //判断用户是否已经解锁过私照
-        VirtualProductOrderVO vpo = new VirtualProductOrderVO();
-        vpo.setTargetUserId(userId);
-        vpo.setVirtualProductId(virtualProductId);
-        List<VirtualProductOrder> vpList = virtualProductOrderService.findByParameter(vpo);
+        boolean isUnlock = virtualProductOrderService.isAlreadyUnlock(userId, virtualProductId);
 
-        if (CollectionUtils.isEmpty(vpList)) {
-            //判断用户钻石是否充足
-
-            //先获取用户信息 和 购买信息
-            User user = userService.findById(userId);
-            int price = vp.getPrice().intValue();
-            int vritualBalance = 0;
-            if (user.getVirtualBalance() != null) {
-                vritualBalance = user.getVirtualBalance().intValue();
-            }
-
-            if (price <= vritualBalance) {
-
-                //扣除用户钻石
-                user.setVirtualBalance(vritualBalance - price);
-                userService.update(user);
-                //生成购买订单
-                VirtualProductOrder t = new VirtualProductOrder();
-                t.setOrderNo(virtualProductOrderService.generateVirtualProductOrderNo());
-                t.setVirtualProductId(vp.getId());
-                t.setPrice(price);
-                t.setVirtualProductId(virtualProductId);
-                t.setFromUserId(vpaList.get(0).getUserId());
-                t.setTargetUserId(userId);
-                t.setCreateTime(new Date());
-
-                virtualProductOrderService.create(t);
-                
-                //添加钻石流水记录
-                VirtualDetails vd = new VirtualDetails();
-                vd.setUserId(userId);
-                vd.setSum(vritualBalance - price);
-                vd.setMoney(price*-1);
-                vd.setRelevantNo(t.getOrderNo());
-                vd.setType(VirtualDetailsTypeEnum.VIRTUAL_MONEY.getType());
-                if(vp.getType().intValue() == VirtualProductTypeEnum.VIRTUAL_GIFT.getType().intValue()){
-                    vd.setRemark(VirtualDetailsRemarkEnum.GIFT_COST.getMsg());
-                }else if(vp.getType().intValue() == VirtualProductTypeEnum.PERSONAL_PICS.getType().intValue()){
-                    vd.setRemark(VirtualDetailsRemarkEnum.UNLOCK_PERSONAL_PICS.getMsg());
-                }else if(vp.getType().intValue() == VirtualProductTypeEnum.IM_PROTECTED_PICS.getType().intValue()){
-                    vd.setRemark(VirtualDetailsRemarkEnum.UNLOCK_PICS.getMsg());
-                }else if(vp.getType().intValue() == VirtualProductTypeEnum.IM_PROTECTED_VOICE.getType().intValue()){
-                    vd.setRemark(VirtualDetailsRemarkEnum.UNLOCK_VOICE.getMsg());
-                }
-                
-                vd.setCreateTime(new Date());
-
-                virtualDetailsService.create(vd);
-            } else {
-
-                //用户钻石不足
-                throw new VirtualProductException(VirtualProductException.ExceptionCode.BALANCE_NOT_ENOUGH_EXCEPTION);
-            }
+        if (!isUnlock) {
+            virtualProductOrderService.createVirtualOrder(userId, vpaList.get(0).getUserId(), virtualProductId);
 
         }
     }
@@ -193,9 +127,9 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
             VirtualProductAttach vpa = new VirtualProductAttach();
             vpa.setUserId(userId);
             vpa.setVirtualProductId(vp.getId());
-            vpa.setUrl(urls[i]);
+            vpa.setUrl(ossUtil.activateOssFile(urls[i]));
             vpa.setCreateTime(new Date());
-            virtualProductAttachDao.create(vpa);
+            virtualProductAttachService.create(vpa);
         }
 
         return vp;

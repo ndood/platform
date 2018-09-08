@@ -162,8 +162,8 @@
         FROM
         t_virtual_product t1
         LEFT JOIN t_virtual_product_order t2 ON t1.id = t2.virtual_product_id
-        <if test="targetUserId != null">
-            and t2.target_user_id = #{targetUserId}
+        <if test="fromUserId != null">
+            and t2.from_user_id = #{fromUserId}
         </if>
         <where>
             <if test="type != null">

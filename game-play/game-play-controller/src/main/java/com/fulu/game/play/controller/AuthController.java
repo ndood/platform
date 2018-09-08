@@ -177,7 +177,7 @@ public class AuthController extends BaseController {
         vpo.setUserId(userId);
         vpo.setType(VirtualProductTypeEnum.PERSONAL_PICS.getType());
         vpo.setDelFlag(false);
-        vpo.setTargetUserId(user.getId());
+        vpo.setFromUserId(user.getId());
 
         List<VirtualProductVO> list = virtualProductService.searchByvirtualProductVo(vpo);
 

@@ -25,4 +25,12 @@ public interface VirtualProductAttachService extends ICommonService<VirtualProdu
 
     
     List<VirtualProductAttachVO> findDetailByVo(VirtualProductAttachVO virtualProductAttachVO);
+
+
+    /**
+     * 根据商品ID获取附件信息
+     * @param virtualProductId
+     * @return
+     */
+    List<VirtualProductAttach> findByProductId(Integer virtualProductId);
 }

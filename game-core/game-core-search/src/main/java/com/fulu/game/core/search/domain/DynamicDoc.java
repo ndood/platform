@@ -75,5 +75,7 @@ public class DynamicDoc {
     /** 点赞用户id */
     private BitSet likeUserIds;
     /** 是否已点赞（1：是；0：否） */
-    private int isLike;
+    private int isLike = 0;
+    /** 是否已关注（1：是；0：否） */
+    private int isAttention = 0;
 }

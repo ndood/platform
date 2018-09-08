@@ -1,69 +1,36 @@
--- 举报表
-DROP TABLE IF EXISTS `t_report`;
-CREATE TABLE `t_report` (
-  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
-  `user_id` int(11) NOT NULL COMMENT '举报人id',
-  `reported_user_id` int(11) NOT NULL COMMENT '被举报人id',
-  `content` varchar(128) DEFAULT NULL COMMENT '举报内容',
-  `status` tinyint(1) DEFAULT '0' COMMENT '处理状态(0：未处理（默认），1：已处理)',
-  `process_time` datetime DEFAULT NULL COMMENT '处理时间',
-  `remark` varchar(1000) DEFAULT NULL COMMENT '备注',
-  `admin_id` int(11) DEFAULT NULL COMMENT '管理员id',
-  `admin_name` varchar(255) DEFAULT NULL COMMENT '管理员用户名',
-  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  PRIMARY KEY (`id`)
-) COMMENT='举报表';
+-- 2018年9月7日上线准备sql
 
--- 举报文件表
-DROP TABLE IF EXISTS `t_report_file`;
-CREATE TABLE `t_report_file` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `report_id` int(11) NOT NULL COMMENT '举报id',
-  `url` varchar(255) DEFAULT NULL,
-  `remark` varchar(1000) DEFAULT NULL COMMENT '备注',
-  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  PRIMARY KEY (`id`)
-)  COMMENT='举报文件表';
-
--- 用户朋友关系表
-DROP TABLE IF EXISTS `t_user_friend`;
-CREATE TABLE `t_user_friend` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `from_user_id` int(11) DEFAULT NULL COMMENT '发起关注操作用户id',
-  `to_user_id` int(11) DEFAULT NULL COMMENT '目标用户id',
-  `is_attention` tinyint(4) DEFAULT '1' COMMENT '是否关注（1：是；0：否）',
-  `is_black` tinyint(4) DEFAULT '0' COMMENT '是否黑名单（1：是；0：否）',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-  `status` tinyint(1) DEFAULT '1' COMMENT '状态（1：有效；0：无效）',
-  PRIMARY KEY (`id`)
-) COMMENT='用户朋友关系表';
+ALTER TABLE `t_user_info_auth` ADD COLUMN `im_substitute_id` int(11)  DEFAULT NULL  COMMENT '代聊客服ID';  -- 没有注释
 
 
+-- 修改推送功能
+ALTER TABLE `t_push_msg` ADD COLUMN `title` varchar(255) NOT NULL COMMENT '推送标题' after `touch_time`;
+ALTER TABLE `t_push_msg` MODIFY COLUMN `type` tinyint(4) comment '推送类型(1:推送所有用户；2:推送指定用户；3：推送所有陪玩师)';
+ALTER TABLE `t_push_msg` MODIFY COLUMN `platform` tinyint(1) comment '平台(1:陪玩;2:开黑;3:H5;45:APP)';
+ALTER TABLE `t_push_msg` ADD COLUMN `jump_type` tinyint(1) DEFAULT NULL COMMENT '跳转类型（1：H5；2：内部跳转页(小程序）；3：官方公告；4：聊天室；5：名片页）' after `type`;
+
+
+-- 用户表添加虚拟货币字段
+ALTER TABLE `t_user` ADD COLUMN `virtual_balance` int(11) unsigned DEFAULT '0' COMMENT '虚拟零钱（对应钻石数量）' after `balance`;
+ALTER TABLE `t_user` ADD COLUMN `charm` int(11) unsigned DEFAULT '0' COMMENT '魅力值' after `virtual_balance`;
+
+-- 添加陪玩师推荐字段
+ALTER TABLE `t_user_info_auth` ADD COLUMN `sort` int(11) DEFAULT NULL COMMENT '推荐位排序字段' after `allow_export`;
+
+-- IM消息同步功能
 DROP TABLE IF EXISTS `t_admin_im_log`;
 CREATE TABLE `t_admin_im_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `from_im_id` varchar(255) DEFAULT NULL,
-  `target_im_id` varchar(255) DEFAULT NULL,
-  `content` varchar(255) DEFAULT NULL,
+  `from_im_id` varchar(255) DEFAULT NULL COMMENT '消息发送者',
+  `target_im_id` varchar(255) DEFAULT NULL COMMENT '消息接收者',
+  `content` varchar(255) DEFAULT NULL COMMENT '内容',
   `sendTime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `owner_user_id` int(11) DEFAULT NULL ,
+  `owner_user_id` int(11) DEFAULT NULL COMMENT '谁可以同步这个消息',
   PRIMARY KEY (`id`)
 ) COMMENT='im消息同步表';
 
-ALTER TABLE `t_user_info_auth` ADD COLUMN `im_substitute_id` int(11)  DEFAULT NULL;
 
-
--- 添加title（推送标题）字段
-ALTER TABLE `t_push_msg` ADD COLUMN `title` varchar(255) NOT NULL COMMENT '推送标题' after `touch_time`;
-
-ALTER TABLE `t_user` ADD COLUMN `virtual_balance` int(11) unsigned DEFAULT '0' COMMENT '虚拟零钱（对应钻石数量）' after `balance`;
-ALTER TABLE `t_user` ADD COLUMN `charm` int(11) unsigned DEFAULT '0' COMMENT '魅力值' after `virtual_balance`;
-ALTER TABLE `t_user_info_auth` ADD COLUMN `sort` int(11) DEFAULT NULL COMMENT '推荐位排序字段' after `allow_export`;
-
-
+-- 虚拟商品功能
 DROP TABLE IF EXISTS `t_virtual_product`;
 CREATE TABLE `t_virtual_product` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -73,7 +40,7 @@ CREATE TABLE `t_virtual_product` (
   `sort` int(11) DEFAULT NULL COMMENT '排序',
   `attach_count` int(11) DEFAULT NULL COMMENT '附件数量',
   `object_url` varchar(255) DEFAULT NULL COMMENT '商品图片地址',
-  `remark` varchar(255) DEFAULT NULL,
+  `remark` varchar(255) DEFAULT NULL COMMENT '备注',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `del_flag` tinyint(1) DEFAULT '0' COMMENT '删除标记(0：未删除；1：已删除）',
@@ -119,19 +86,89 @@ CREATE TABLE `t_virtual_details` (
   PRIMARY KEY (`id`)
 ) COMMENT='虚拟币和魅力值详情流水表';
 
-ALTER TABLE `t_push_msg` MODIFY COLUMN `type` tinyint(4) comment '推送类型(1:推送所有用户；2:推送指定用户；3：推送所有陪玩师)';
-ALTER TABLE `t_push_msg` MODIFY COLUMN `platform` tinyint(1) comment '平台(1:陪玩;2:开黑;3:H5;45:APP)';
-ALTER TABLE `t_push_msg` ADD COLUMN `jump_type` tinyint(1) DEFAULT NULL COMMENT '跳转类型（1：H5；2：内部跳转页(小程序）；3：官方公告；4：聊天室；5：名片页）' after `type`;
-ALTER TABLE `t_virtual_details` ADD COLUMN `relevant_no` varchar(128) DEFAULT NULL COMMENT '关联编号' after `user_id`;
-
 
 -- 修改用户认证表
-ALTER TABLE `t_user_info_auth` ADD COLUMN `interests` varchar(64) DEFAULT NULL
-COMMENT '用户兴趣' after `charm`;
-ALTER TABLE `t_user_info_auth` ADD COLUMN `profession` varchar(32) DEFAULT NULL
-COMMENT '用户职业' after `interests`;
-ALTER TABLE `t_user_info_auth` ADD COLUMN `about` varchar(64) DEFAULT NULL
-COMMENT '用户简介' after `profession`;
+ALTER TABLE `t_user_info_auth` ADD COLUMN `interests` varchar(64) DEFAULT NULL COMMENT '用户兴趣' after `charm`;
+ALTER TABLE `t_user_info_auth` ADD COLUMN `profession` varchar(32) DEFAULT NULL COMMENT '用户职业' after `interests`;
+ALTER TABLE `t_user_info_auth` ADD COLUMN `about` varchar(64) DEFAULT NULL COMMENT '用户简介' after `profession`;
+
+
+
+--  修改价格多平台显示部分开始 --
+-- 销售方式添加显示平台字段
+ALTER TABLE `t_sales_mode` ADD COLUMN `platform_show` tinyint(1) DEFAULT NULL COMMENT '显示平台(1小程序，2APP，3都显示)' after `type`;
+-- 商品表添加显示平台字段
+ALTER TABLE `t_product` ADD COLUMN `platform_show` tinyint(1) DEFAULT NULL COMMENT '冗余sales_mode表(显示平台(1小程序，2APP，3都显示))' after `sales_mode_rank`;
+
+-- 更新数据
+UPDATE `t_sales_mode` SET `platform_show` = 3 WHERE `type` = 1;
+UPDATE `t_sales_mode` SET `platform_show` = 1 WHERE `type` = 2;
+
+
+--  添加管理员im账号
+ALTER TABLE `t_admin` ADD COLUMN `im_id` varchar(128) DEFAULT NULL COMMENT 'IM账号' after `status`;
+ALTER TABLE `t_admin` ADD COLUMN `im_pwd` varchar(128) DEFAULT NULL COMMENT 'IM密码' after `im_id`;
+
+
+
+UPDATE `t_product` pro SET `platform_show` = (SELECT `platform_show` FROM `t_sales_mode` sm WHERE pro.sales_mode_id = sm.id) ;
+
+
+-- ----2018年9月7日上线准备sql结束--------
+
+
+
+
+
+
+
+
+
+-- 举报表
+DROP TABLE IF EXISTS `t_report`;
+CREATE TABLE `t_report` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+  `user_id` int(11) NOT NULL COMMENT '举报人id',
+  `reported_user_id` int(11) NOT NULL COMMENT '被举报人id',
+  `content` varchar(128) DEFAULT NULL COMMENT '举报内容',
+  `status` tinyint(1) DEFAULT '0' COMMENT '处理状态(0：未处理（默认），1：已处理)',
+  `process_time` datetime DEFAULT NULL COMMENT '处理时间',
+  `remark` varchar(1000) DEFAULT NULL COMMENT '备注',
+  `admin_id` int(11) DEFAULT NULL COMMENT '管理员id',
+  `admin_name` varchar(255) DEFAULT NULL COMMENT '管理员用户名',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) COMMENT='举报表';
+
+-- 举报文件表
+DROP TABLE IF EXISTS `t_report_file`;
+CREATE TABLE `t_report_file` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `report_id` int(11) NOT NULL COMMENT '举报id',
+  `url` varchar(255) DEFAULT NULL,
+  `remark` varchar(1000) DEFAULT NULL COMMENT '备注',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+)  COMMENT='举报文件表';
+
+-- 用户朋友关系表
+DROP TABLE IF EXISTS `t_user_friend`;
+CREATE TABLE `t_user_friend` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `from_user_id` int(11) DEFAULT NULL COMMENT '发起关注操作用户id',
+  `to_user_id` int(11) DEFAULT NULL COMMENT '目标用户id',
+  `is_attention` tinyint(4) DEFAULT '1' COMMENT '是否关注（1：是；0：否）',
+  `is_black` tinyint(4) DEFAULT '0' COMMENT '是否黑名单（1：是；0：否）',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  `status` tinyint(1) DEFAULT '1' COMMENT '状态（1：有效；0：无效）',
+  PRIMARY KEY (`id`)
+) COMMENT='用户朋友关系表';
+
+
+
 
 
 
@@ -317,23 +354,9 @@ ALTER TABLE `t_dynamic` ADD COLUMN `operator_name` varchar(64) DEFAULT NULL
 COMMENT '后端操作者名称' after `operator_id`;
 
 
---  修改价格多平台显示部分开始 --
--- 销售方式添加显示平台字段
-ALTER TABLE `t_sales_mode` ADD COLUMN `platform_show` tinyint(1) DEFAULT NULL COMMENT '显示平台(1小程序，2APP，3都显示)' after `type`;
--- 商品表添加显示平台字段
-ALTER TABLE `t_product` ADD COLUMN `platform_show` tinyint(1) DEFAULT NULL COMMENT '冗余sales_mode表(显示平台(1小程序，2APP，3都显示))' after `sales_mode_rank`;
-
---
-UPDATE `t_sales_mode` SET `platform_show` = 3 WHERE `type` = 1;
-UPDATE `t_sales_mode` SET `platform_show` = 1 WHERE `type` = 2;
-
-UPDATE `t_product` pro SET `platform_show` = (SELECT `platform_show` FROM `t_sales_mode` sm WHERE pro.sales_mode_id = sm.id) ;
-
---  修改价格多平台显示部分结束 --
 
 
 -- 修改动态表的技能id为商品id
 alter table t_dynamic change  column tech_info_id product_id int(11);
 
-ALTER TABLE `t_admin` ADD COLUMN `im_id` varchar(128) DEFAULT NULL COMMENT 'IM账号' after `status`;
-ALTER TABLE `t_admin` ADD COLUMN `im_pwd` varchar(128) DEFAULT NULL COMMENT 'IM密码' after `im_id`;
+
