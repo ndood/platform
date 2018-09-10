@@ -96,6 +96,7 @@ public class UserController extends BaseController {
         data.put("balance", user.getBalance());
         data.put("virtualBalance", user.getVirtualBalance());
         data.put("charm", user.getCharm());
+        data.put("chargeBalance", user.getChargeBalance());
         return Result.success().data(data).msg("查询成功！");
     }
 
@@ -581,15 +582,7 @@ public class UserController extends BaseController {
     public Result getUserAuthStatus() {
         User user = userService.getCurrentUser();
 
-        UserBodyAuthVO uba = new UserBodyAuthVO();
-        uba.setUserId(user.getId());
-        List<UserBodyAuth> list = userBodyAuthService.findByParameter(uba);
-
-        UserBodyAuth authInfo = null;
-
-        if (list != null && list.size() > 0) {
-            authInfo = list.get(0);
-        }
+        UserBodyAuth authInfo = userBodyAuthService.findByUserId(user.getId());
 
         return Result.success().data(authInfo).msg("查询成功！");
     }
@@ -616,5 +609,5 @@ public class UserController extends BaseController {
 
         return Result.success().msg("提交成功！");
     }
-
+    
 }

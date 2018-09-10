@@ -145,7 +145,15 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
     @Override
     public PageInfo<CashDraws> list(CashDrawsVO cashDrawsVO, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize, "create_time DESC");
-        List<CashDraws> list = cashDrawsDao.findByParameter(cashDrawsVO);
+        List<CashDrawsVO> list = cashDrawsDao.findDetailByParameter(cashDrawsVO);
+        
+        //转换魅力值的可提现金额   魅力值除以10*70%就是可提现金额
+        for(int i = 0 ; i < list.size() ; i++){
+            BigDecimal charm = list.get(i).getCharm();
+            charm.multiply(new BigDecimal("0.07"));
+            list.get(i).setCharm(charm);
+        }
+        
         return new PageInfo(list);
     }
 

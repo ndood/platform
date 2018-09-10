@@ -42,4 +42,14 @@ public interface UserBodyAuthService extends ICommonService<UserBodyAuth, Intege
     PageInfo<UserBodyAuthVO> findByVO(Integer pageNum, Integer pageSize, UserBodyAuthVO userBodyAuthVO);
 
     List<UserBodyAuthVO> list(UserBodyAuthVO userBodyAuthVO);
+
+
+    UserBodyAuth findByUserId(Integer userId);
+
+    /**
+     * 用户是否已认证
+     * @param userId
+     * @return
+     */
+    boolean userAlreadyAuth(Integer userId);
 }

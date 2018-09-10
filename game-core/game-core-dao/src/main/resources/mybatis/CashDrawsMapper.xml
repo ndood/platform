@@ -19,6 +19,13 @@
     </resultMap>
 
     <resultMap id="CashDrawsResultVOMap" type="com.fulu.game.core.entity.vo.CashDrawsVO" extends="CashDrawsResultMap">
+        
+        <result column="realName" property="realName"/>
+        <result column="card_no" property="cardNo"/>
+        <result column="open_id" property="openId"/>
+        <result column="charm" property="charm"/>
+        <result column="balance" property="balance"/>
+        
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -62,6 +69,42 @@
             </if>
             <if test="createEndTime != null">
                 and create_time <![CDATA[<=]]> #{createEndTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="findDetailByParameter" resultMap="CashDrawsResultVOMap"
+            parameterType="com.fulu.game.core.entity.vo.CashDrawsVO">
+        SELECT
+        t1.*,
+        t3.user_name realName,
+        t3.card_no,
+        t2.open_id,
+        t2.charm,
+        t2.balance
+        FROM
+        t_cash_draws t1
+        INNER JOIN t_user t2 ON t1.user_id = t2.id
+        LEFT JOIN t_user_body_auth t3 ON t3.user_id = t2.id
+        AND t3.auth_status = 1
+        <where>
+            <if test="userId != null">
+                and t1.user_id = #{userId}
+            </if>
+            <if test="mobile != null">
+                and t1.mobile = #{mobile}
+            </if>
+            <if test="cashStatus != null">
+                and t1.cash_status = #{cashStatus}
+            </if>
+            <if test="nickname != null">
+                and t1.nickname like CONCAT('%', #{nickname},'%')
+            </if>
+            <if test="createStartTime != null">
+                and t1.create_time <![CDATA[>=]]> #{createStartTime}
+            </if>
+            <if test="createEndTime != null">
+                and t1.create_time <![CDATA[<=]]> #{createEndTime}
             </if>
         </where>
     </select>
