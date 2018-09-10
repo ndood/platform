@@ -29,4 +29,6 @@ public class DynamicVO  extends Dynamic {
     private String productPrice;
     private String productUnit;
     private String userNickname;
+    //提交的文件信息的JSONString如 "[{"url":"http://www.baidu.com/jpg/1.jpg","width":"100","height":"80","duration":"80"}]"
+    private String files;
 }

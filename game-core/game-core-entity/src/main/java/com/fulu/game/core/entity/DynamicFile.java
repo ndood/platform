@@ -35,5 +35,11 @@ public class DynamicFile implements Serializable {
 	private Date updateTime;
 	//状态（1：有效；0：无效）
 	private Integer status;
+	// 图片、视频宽度
+	private Integer width;
+	// 图片、视频高度
+	private Integer height;
+	// 视频时长（单位秒）
+	private Integer duration;
 
 }

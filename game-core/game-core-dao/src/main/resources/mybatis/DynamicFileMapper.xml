@@ -8,6 +8,9 @@
         <result column="url" property="url"/>
         <result column="type" property="type"/>
         <result column="play_count" property="playCount"/>
+        <result column="width" property="width"/>
+        <result column="height" property="height"/>
+        <result column="duration" property="duration"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="status" property="status"/>
@@ -18,7 +21,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,dynamic_id,url,type,play_count,create_time,update_time,status    </sql>
+        id,dynamic_id,url,type,play_count,width,height,duration,create_time,update_time,status    </sql>
 
     <select id="findById" parameterType="java.lang.Long" resultMap="DynamicFileResultMap">
         select
@@ -74,9 +77,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.DynamicFile">
         insert into
-        t_dynamic_file (dynamic_id,url,type,play_count,create_time,update_time,status)
+        t_dynamic_file (dynamic_id,url,type,play_count, width, height, duration,create_time,update_time,status)
         values
-        (#{dynamicId},#{url},#{type},#{playCount},#{createTime},#{updateTime},#{status})
+        (#{dynamicId},#{url},#{type},#{playCount}, #{width}, #{height}, #{duration}, #{createTime},#{updateTime},#{status})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.DynamicFile">
@@ -97,6 +100,18 @@
 
             <if test="playCount != null">
                 play_count = #{playCount},
+            </if>
+
+            <if test="width != null">
+                width = #{width},
+            </if>
+
+            <if test="height != null">
+                height = #{height},
+            </if>
+
+            <if test="duration != null">
+                duration = #{duration},
             </if>
 
             <if test="createTime != null">

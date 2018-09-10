@@ -21,4 +21,6 @@ public class DynamicFileDoc {
     private Integer width;
     /** 图片高度 */
     private Integer height;
+    /** 视频时长 */
+    private Integer duration;
 }

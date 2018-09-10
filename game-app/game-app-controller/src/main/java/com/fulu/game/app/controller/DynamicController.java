@@ -59,6 +59,16 @@ public class DynamicController extends BaseController {
         return Result.success().data(dynamic).msg("成功！");
     }
 
+    /**
+     * 删除动态接口
+     * @return
+     */
+    @RequestMapping(value = "delete-all-es")
+    public Result deleteAll() {
+        dynamicService.deleteAll();
+        return Result.success().msg("删除成功！");
+    }
+
 
     /**
      * 删除动态接口
