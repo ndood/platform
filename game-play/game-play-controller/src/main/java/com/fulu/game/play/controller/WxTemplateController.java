@@ -6,7 +6,7 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.WechatFormid;
 import com.fulu.game.core.service.PushMsgService;
 import com.fulu.game.core.service.UserService;
-import com.fulu.game.play.queue.CollectFormIdQueue;
+import com.fulu.game.core.service.queue.FormIdContainer;
 import com.fulu.game.play.service.impl.PlayMiniAppPushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class WxTemplateController extends BaseController{
     @Autowired
     private UserService userService;
     @Autowired
-    private CollectFormIdQueue collectFormIdQueue;
+    private FormIdContainer formIdContainer;
     @Autowired
     private PushMsgService pushMsgService;
     @Autowired
@@ -33,25 +33,26 @@ public class WxTemplateController extends BaseController{
 
     /**
      * 收集用户的formID
+     *
      * @param formId
      * @return
      */
     @RequestMapping("/collect")
-    public Result collectFormId(String formId){
-        User user =userService.getCurrentUser();
+    public Result collectFormId(String formId) {
+        User user = userService.getCurrentUser();
         WechatFormid wechatFormid = new WechatFormid();
         wechatFormid.setUserId(user.getId());
         wechatFormid.setFormId(formId);
         wechatFormid.setOpenId(user.getOpenId());
         wechatFormid.setPlatform(PlatformEcoEnum.PLAY.getType());
         wechatFormid.setCreateTime(new Date());
-        if(wechatFormid.getOpenId()==null){
-            log.error("收集formId的时候没有该用户的openId,user:{}",user);
+        if (wechatFormid.getOpenId() == null) {
+            log.error("收集formId的时候没有改用户没有openId,user:{}", user);
             User dbUser = userService.findById(user.getId());
             wechatFormid.setOpenId(dbUser.getOpenId());
         }
-        collectFormIdQueue.addFormId(wechatFormid);
-        log.info("收集formId成功:formId:{}",formId);
+        formIdContainer.add(wechatFormid);
+        log.info("收集formId成功:formId:{}", formId);
         return Result.success();
     }
 
@@ -59,21 +60,18 @@ public class WxTemplateController extends BaseController{
     @RequestMapping("/push")
     public Result pushWechatMsg(String content,
                                 String acceptImId,
-                                String imId)throws Exception{
-        log.info("推送模板消息imId:{},acceptImId:{},content:{}",imId,acceptImId,content);
-        String result = playMiniAppPushService.pushIMWxTemplateMsg(content,acceptImId,imId);
+                                String imId) throws Exception {
+        log.info("推送模板消息imId:{},acceptImId:{},content:{}", imId, acceptImId, content);
+        String result = playMiniAppPushService.pushIMWxTemplateMsg(content, acceptImId, imId);
         return Result.success().msg(result);
     }
 
 
-
     @RequestMapping("/pushmsg/hits")
-    public Result pushMsgHits(@RequestParam(required = true) Integer pushId)throws Exception{
+    public Result pushMsgHits(@RequestParam(required = true) Integer pushId) throws Exception {
         pushMsgService.hitsStatistics(pushId);
         return Result.success();
     }
-
-
 
 
 }

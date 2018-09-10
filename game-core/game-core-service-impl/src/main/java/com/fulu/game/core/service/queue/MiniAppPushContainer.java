@@ -1,6 +1,5 @@
 package com.fulu.game.core.service.queue;
 
-
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.config.WxMaServiceSupply;
@@ -8,71 +7,61 @@ import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.core.entity.PushMsg;
 import com.fulu.game.core.entity.WxMaTemplateMessageVO;
 import com.fulu.game.core.service.PushMsgService;
+import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
-@Component
 @Slf4j
-public class PushMsgQueue implements Runnable {
+@Component
+public class MiniAppPushContainer extends RedisTaskContainer {
 
-    private BlockingQueue<WxMaTemplateMessageVO> templateMessageQueue = new LinkedBlockingDeque<>(50000);
+    private static final String MINI_APP_PUSH_QUEQUE = "miniapp:push:queue";
 
-    private AtomicBoolean run = new AtomicBoolean();
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
+
+    private static int runTaskThreadNum = 1;
+
+    //使用一个统一维护的线程池来管理隔离线程
+    protected static ExecutorService es = Executors.newFixedThreadPool(runTaskThreadNum);
+
+    private RedisConsumer redisConsumer;
 
     @Autowired
     private WxMaServiceSupply wxMaServiceSupply;
-
     @Autowired
     private PushMsgService pushMsgServiceImpl;
 
     @PostConstruct
-    public void init() {
-        run.set(true);
-        Thread thread = new Thread(this);
-        thread.setDaemon(true);
-        thread.setName("推送微信模板消息开启");
-        thread.start();
-    }
-
-
-    @PreDestroy
-    public void destroy() {
-        run.set(false);
-    }
-
-
-    public void addTemplateMessage(WxMaTemplateMessageVO wxMaTemplateMessageVO) {
-        templateMessageQueue.add(wxMaTemplateMessageVO);
-    }
-
-
-    @Override
-    public void run() {
-        log.info("开始推送微信模板消息");
-        while (run.get()) {
-            try {
-                WxMaTemplateMessageVO wxMaTemplateMessageVO = templateMessageQueue.poll();
-                if (wxMaTemplateMessageVO == null) {
-                    Thread.sleep(300L);
-                    continue;
-                }
-                process(wxMaTemplateMessageVO);
-            } catch (Exception e) {
-                log.error("推送微信模板消息异常", e);
-            }
+    private void init() {
+        if (!configProperties.getQueue().isMiniappPush()) {
+            log.info("无需开启小程序推送队列线程");
+            es.shutdown();
+            return;
         }
-        log.info("结束推送微信模板消息");
+        redisQueue = new RedisQueue<WxMaTemplateMessageVO>(MINI_APP_PUSH_QUEQUE, redisOpenService);
+
+        Consumer<WxMaTemplateMessageVO> consumer = (data) -> {
+            process(data);
+        };
+
+        //提交线程
+        for (int i = 0; i < runTaskThreadNum; i++) {
+            redisConsumer = new RedisConsumer<>(this, consumer);
+            es.execute(redisConsumer);
+        }
     }
 
-    //todo 改成redis队列
     private void process(WxMaTemplateMessageVO wxMaTemplateMessageVO) {
+        //TODO 直接贴的之前的消费小程序推送队列的代码，因为之前代码是把app和小程序推送揉到一起，所以这里需要拆分出来，
+        //TODO app的要单独拆开放到appPushContainer的process里
         try {
             log.info("推送消息队列推送消息:wxMaTemplateMessageVO:{}", wxMaTemplateMessageVO);
             WxMaTemplateMessage wxMaTemplateMessage = wxMaTemplateMessageVO.getWxMaTemplateMessage();
@@ -82,7 +71,6 @@ public class PushMsgQueue implements Runnable {
                 wxMaServiceSupply.pointWxMaService().getMsgService().sendTemplateMsg(wxMaTemplateMessage);
             } else if (PlatformEcoEnum.APP.getType().equals(wxMaTemplateMessageVO.getPlatform())) {
                 //todo APP推送
-
             } else {
                 log.info("陪玩平台推送消息:wxMaTemplateMessageVO:{}", wxMaTemplateMessageVO);
                 wxMaServiceSupply.playWxMaService().getMsgService().sendTemplateMsg(wxMaTemplateMessage);
@@ -104,12 +92,29 @@ public class PushMsgQueue implements Runnable {
     private void countPushSuccessNum(int pushId) {
         PushMsg pushMsg = pushMsgServiceImpl.findById(pushId);
         int successNum = pushMsg.getSuccessNum();
-
         PushMsg paramPushMsg = new PushMsg();
         paramPushMsg.setId(pushId);
         paramPushMsg.setSuccessNum(successNum + 1);
         paramPushMsg.setUpdateTime(DateUtil.date());
         pushMsgServiceImpl.update(paramPushMsg);
         log.info("更新消息推送成功数:{}", paramPushMsg);
+    }
+
+    /**
+     * 添加小程序推送元素到队列
+     */
+    public void add(WxMaTemplateMessageVO wxMaTemplateMessageVO) {
+        redisQueue.pushFromHead(wxMaTemplateMessageVO);
+    }
+
+    @PreDestroy
+    public void destroy() {
+        log.info("小程序推送队列销毁");
+        if (es != null) {
+            es.shutdown();
+        }
+        if (redisConsumer != null) {
+            redisConsumer.shutdown();
+        }
     }
 }

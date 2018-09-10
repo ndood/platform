@@ -89,11 +89,11 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
 
         Map<String, Object> resultMap = new HashMap<>(4);
         if (payType.equals(VirtualPayOrderTypeEnum.WECHAT_PAY.getType())) {
-            order.setPayType(VirtualPayOrderTypeEnum.WECHAT_PAY.getType());
+            order.setPayment(VirtualPayOrderTypeEnum.WECHAT_PAY.getType());
             resultMap.put("orderNo", order.getOrderNo());
             resultMap.put("paySuccess", 0);
         } else {
-            order.setPayType(VirtualPayOrderTypeEnum.BALANCE_PAY.getType());
+            order.setPayment(VirtualPayOrderTypeEnum.BALANCE_PAY.getType());
             balancePay(order.getOrderNo());
             resultMap.put("orderNo", order.getOrderNo());
             resultMap.put("paySuccess", 1);
@@ -188,6 +188,12 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         }
     }
 
+    /**
+     * 余额支付虚拟币的充值订单
+     *
+     * @param orderNo 订单号
+     * @return 虚拟币充值订单Bean
+     */
     private VirtualPayOrder balancePay(String orderNo) {
         Integer userId = userService.getCurrentUser().getId();
         User user = userService.findById(userId);

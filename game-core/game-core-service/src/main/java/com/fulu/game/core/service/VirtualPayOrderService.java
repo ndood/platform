@@ -4,7 +4,7 @@ import com.fulu.game.core.entity.VirtualPayOrder;
 
 
 /**
- * 虚拟货币充值订单表
+ * 虚拟币和余额充值订单表
  *
  * @author Gong Zechun
  * @email ${email}

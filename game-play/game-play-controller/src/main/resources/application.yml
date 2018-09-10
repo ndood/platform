@@ -5,3 +5,9 @@ spring:
        multipart:
           max-file-size: 5MB
           max-request-size: 5MB
+config:
+    queue:
+        miniappPush: true
+        appPush: false
+        userScore: true
+        formId: true
