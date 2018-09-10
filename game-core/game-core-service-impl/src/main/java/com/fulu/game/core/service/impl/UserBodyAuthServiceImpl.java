@@ -112,4 +112,20 @@ public class UserBodyAuthServiceImpl extends AbsCommonService<UserBodyAuth, Inte
     public List<UserBodyAuthVO> list(UserBodyAuthVO userBodyAuthVO) {
         return userBodyAuthDao.findByVO(userBodyAuthVO);
     }
+
+
+    @Override
+    public UserBodyAuth findByUserId(Integer userId) {
+        return userBodyAuthDao.findByUserId(userId);
+    }
+
+
+    @Override
+    public boolean userAlreadyAuth(Integer userId) {
+        UserBodyAuth uba = userBodyAuthDao.findByUserId(userId);
+        if(uba.getAuthStatus().intValue() == UserBodyAuthStatusEnum.AUTH_SUCCESS.getType().intValue()){
+            return true;
+        }
+        return false;
+    }
 }

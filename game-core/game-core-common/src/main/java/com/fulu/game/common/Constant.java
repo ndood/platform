@@ -195,4 +195,9 @@ public interface Constant {
      * 登录用户获取的虚拟币数量
      */
     Integer LOGIN_VIRTUAL_MONEY = 10;
+
+    /**
+     * 魅力值转化为可提现金额的比例
+     */
+    BigDecimal CHARM_TO_MONEY_RATE = new BigDecimal(0.07);
 }

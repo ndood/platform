@@ -9,10 +9,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.utils.CollectionUtil;
-import com.fulu.game.core.entity.Product;
-import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.UserInfoAuthReject;
-import com.fulu.game.core.entity.UserTechAuthReject;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.to.UserTechAuthTO;
 import com.fulu.game.core.entity.vo.*;
@@ -64,6 +61,8 @@ public class UserController extends BaseController {
     private UserBodyAuthService userBodyAuthService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private VirtualDetailsService virtualDetailsService;
 
     /**
      * 陪玩师认证信息列表
@@ -531,4 +530,20 @@ public class UserController extends BaseController {
         return Result.success().data(list).msg("查询成功！");
     }
 
+
+    @RequestMapping("/virtual-detail/list")
+    public Result virtualDetailList(Integer type,
+                                    @RequestParam("pageSize") Integer pageSize,
+                                    @RequestParam("pageNum") Integer pageNum) {
+        User user = userService.getCurrentUser();
+
+        VirtualDetailsVO vd = new VirtualDetailsVO();
+        vd.setUserId(user.getId());
+        vd.setType(type);
+        
+        PageInfo<VirtualDetails> list = virtualDetailsService.findByParameterWithPage(vd , pageSize , pageNum , " create_time desc" );
+
+        return Result.success().data(list).msg("查询列表成功！");
+    }
+    
 }
