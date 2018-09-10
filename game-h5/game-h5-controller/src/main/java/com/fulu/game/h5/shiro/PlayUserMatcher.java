@@ -74,30 +74,21 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
                 user = userService.findByOpenId(mpOpenId, PlatformEcoEnum.MP);
 
                 if (user != null) {
-                    String dbMobile = user.getMobile();
-                    if (StringUtils.isNotBlank(dbMobile) && !dbMobile.equals(mobile)) {
-                        throw new UserException(UserException.ExceptionCode.MOBILE_NOT_MATCH_EXCEPTION);
-                    }
-
-                    user = completeUser(user, user.getMobile(), null, user.getUnionId());
+                    user = completeUser(user, mobile, null, unionId);
                     userService.update(user);
                     break;
                 }
 
                 user = userService.findByUnionId(unionId);
                 if (user != null) {
-                    String dbMobile = user.getMobile();
-                    if (StringUtils.isNotBlank(dbMobile) && !dbMobile.equals(mobile)) {
-                        throw new UserException(UserException.ExceptionCode.MOBILE_NOT_MATCH_EXCEPTION);
-                    }
-                    user = completeUser(user, user.getMobile(), user.getPublicOpenId(), null);
+                    user = completeUser(user, mobile, mpOpenId, null);
                     userService.update(user);
                     break;
                 }
 
                 user = userService.findByMobile(mobile);
                 if (user != null) {
-                    user = completeUser(user, null, user.getPublicOpenId(), user.getUnionId());
+                    user = completeUser(user, null, mpOpenId, unionId);
                     userService.update(user);
                     break;
                 }
@@ -136,6 +127,10 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
         String orgMobile = user.getMobile();
         String orgPublicOpenId = user.getPublicOpenId();
         String orgUnionId = user.getUnionId();
+
+        if (StringUtils.isNotBlank(orgMobile) && StringUtils.isNotBlank(mobile) && !orgMobile.equals(mobile)) {
+            throw new UserException(UserException.ExceptionCode.MOBILE_NOT_MATCH_EXCEPTION);
+        }
 
         if (StringUtils.isBlank(orgMobile) && StringUtils.isNotBlank(mobile)) {
             user.setMobile(mobile);

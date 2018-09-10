@@ -5,7 +5,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
 import com.fulu.game.common.Constant;
-import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ImgException;
 import com.fulu.game.common.exception.ServiceErrorException;
@@ -70,7 +69,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Autowired
     private SpringThreadPoolExecutor springThreadPoolExecutor;
-    
+
     @Autowired
     private AdminImLogService adminImLogService;
 
@@ -133,16 +132,18 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             return null;
         }
         UserVO userVO = new UserVO();
-        switch (platformEcoEnum){
+        switch (platformEcoEnum) {
             case PLAY:
                 userVO.setOpenId(openId);
-            break;
+                break;
             case POINT:
                 userVO.setPointOpenId(openId);
-            break;
+                break;
             case MP:
                 userVO.setPublicOpenId(openId);
-            break;
+                break;
+            default:
+                break;
         }
         List<User> users = userDao.findByParameter(userVO);
         if (CollectionUtil.isEmpty(users)) {
@@ -772,25 +773,25 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     public List<AdminImLog> userOnline(Boolean active, String version) {
         User user = this.getCurrentUser();
         UserInfoAuth ua = userInfoAuthService.findByUserId(user.getId());
-        if(active){
-            log.info("userId:{}用户上线了!;version:{}",user.getId(),version);
-            redisOpenService.set(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()),user.getType()+"");
+        if (active) {
+            log.info("userId:{}用户上线了!;version:{}", user.getId(), version);
+            redisOpenService.set(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()), user.getType() + "");
 
 
-            if(ua!=null && ua.getImSubstituteId()!=null){
+            if (ua != null && ua.getImSubstituteId() != null) {
 
 
                 //删除陪玩师的未读信息数量
-                Map<String,Object> map = redisOpenService.hget(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()));
+                Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()));
 
-                if(MapUtils.isNotEmpty(map) ){
+                if (MapUtils.isNotEmpty(map)) {
 
                     map.remove(user.getImId());
 
-                    if(MapUtils.isEmpty(map)){
+                    if (MapUtils.isEmpty(map)) {
                         redisOpenService.delete(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()));
-                    }else{
-                        redisOpenService.hset(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()) , map , Constant.ONE_DAY * 3);
+                    } else {
+                        redisOpenService.hset(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()), map, Constant.ONE_DAY * 3);
                     }
 
                 }
@@ -807,8 +808,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
             return null;
 
-        }else{
-            log.info("userId:{}用户下线了!version:{}",user.getId(),version);
+        } else {
+            log.info("userId:{}用户下线了!version:{}", user.getId(), version);
             redisOpenService.delete(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()));
         }
         return null;
