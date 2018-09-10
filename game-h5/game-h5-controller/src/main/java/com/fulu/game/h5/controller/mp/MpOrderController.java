@@ -39,13 +39,13 @@ public class MpOrderController extends BaseController {
     private VirtualPayOrderService virtualPayOrderService;
 
     /**
-     * 提交充值订单
+     * 提交虚拟币充值订单
      *
      * @param request      request
      * @param sessionkey   sessionkey
      * @param actualMoney  实付金额（人民币）
      * @param virtualMoney 充值虚拟币金额（钻石）
-     * @param payType      支付方式（1：虚拟币；2：余额）
+     * @param payType      支付方式（1：微信支付；2：余额支付）
      * @return 封装结果集
      */
     @PostMapping("/submit")
