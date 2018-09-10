@@ -6,6 +6,7 @@ import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.fulu.game.admin.service.AdminUserInfoAuthService;
 import com.fulu.game.admin.service.AdminUserTechAuthService;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.core.entity.Product;
@@ -18,14 +19,17 @@ import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -58,6 +62,8 @@ public class UserController extends BaseController {
     private ProductService productService;
     @Autowired
     private UserBodyAuthService userBodyAuthService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
 
     /**
      * 陪玩师认证信息列表
@@ -499,6 +505,30 @@ public class UserController extends BaseController {
         List<Product> productList = productService.findByUserId(id);
         userInfoVO.setProductList(productList);
         return Result.success().data(userInfoVO).msg("查询聊天对象信息成功！");
+    }
+
+    /**
+     * 获取用户在线状态
+     * @return
+     */
+    @PostMapping("/online-status/get")
+    public Result chatWithGet(Integer userIds[]) {
+
+        List<UserOnlineStatusVo> list = new ArrayList<>();
+        
+        for(int i = 0 ; i < userIds.length ; i++){
+            String onlineStr = redisOpenService.get(RedisKeyEnum.USER_ONLINE_KEY.generateKey(userIds[i]));
+            
+            UserOnlineStatusVo uos = new UserOnlineStatusVo();
+            uos.setUserId(userIds[i]);
+            uos.setIsOnLine(true);
+            if(StringUtils.isBlank(onlineStr)){
+                uos.setIsOnLine(false);
+            }
+            list.add(uos);
+        }
+        
+        return Result.success().data(list).msg("查询成功！");
     }
 
 }
