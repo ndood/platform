@@ -1,7 +1,9 @@
 package com.fulu.game.core.service.queue;
 
 import com.fulu.game.core.entity.WechatFormid;
+import com.fulu.game.core.entity.vo.AppPushMsgVO;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.core.service.impl.push.MobileAppPushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,6 +23,9 @@ public class AppPushContainer extends RedisTaskContainer {
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
 
+    @Autowired
+    private MobileAppPushServiceImpl mobileAppPushService;
+
     private static int runTaskThreadNum = 1;
 
     //使用一个统一维护的线程池来管理隔离线程
@@ -35,23 +40,24 @@ public class AppPushContainer extends RedisTaskContainer {
             es.shutdown();
             return;
         }
-        redisQueue = new RedisQueue<>(APP_PUSH_QUEQUE, redisOpenService);
+        redisQueue = new RedisQueue<AppPushMsgVO>(APP_PUSH_QUEQUE, redisOpenService);
 
-//        Consumer<Msg> consumer = (data) -> {
-//            // do something
-//            process(data);
-//        };
-//
-//        //提交线程
-//        for (int i = 0; i < runTaskThreadNum; i++) {
-//            redisConsumer = new RedisConsumer<>(this, consumer);
-//            es.execute(redisConsumer);
-//        }
+        Consumer<AppPushMsgVO> consumer = (data) -> {
+            // do something
+            process(data);
+        };
+
+        //提交线程
+        for (int i = 0; i < runTaskThreadNum; i++) {
+            redisConsumer = new RedisConsumer<>(this, consumer);
+            es.execute(redisConsumer);
+        }
     }
 
-//    private void process(){
-//
-//    }
+
+    private void process(AppPushMsgVO appPushMsgVO){
+        mobileAppPushService.pushMsg(appPushMsgVO);
+    }
 
     /**
      * 添加app推送对象到队列

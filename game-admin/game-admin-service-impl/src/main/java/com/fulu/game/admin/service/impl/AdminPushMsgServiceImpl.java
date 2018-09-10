@@ -4,7 +4,8 @@ import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.admin.service.AdminPushMsgService;
-import com.fulu.game.app.service.impl.MobileAppPushServiceImpl;
+import com.fulu.game.core.entity.vo.AppPushMsgVO;
+import com.fulu.game.core.service.impl.push.MobileAppPushServiceImpl;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.utils.AppRouteFactory;
@@ -21,10 +22,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -144,12 +142,14 @@ public class AdminPushMsgServiceImpl extends PushMsgServiceImpl implements Admin
                 default:
                     extras = AppRouteFactory.buildIndexRoute();
             }
-
+            AppPushMsgVO appPushMsgVO = null;
             if (PushMsgTypeEnum.ALL_USER.getType().equals(pushMsg.getType())) {
-                mobileAppPushService.pushMsg(pushMsg.getTitle(), pushMsg.getContent(), extras);
+                appPushMsgVO = AppPushMsgVO.newSendAllBuilder().title(pushMsg.getTitle()).alert(pushMsg.getContent()).extras(extras).build();
             } else {
-                mobileAppPushService.pushMsg(pushMsg.getTitle(), pushMsg.getContent(), extras, userIds.toArray(new Integer[]{}));
+                appPushMsgVO = AppPushMsgVO.newBuilder(userIds.toArray(new Integer[]{})).title(pushMsg.getTitle()).alert(pushMsg.getContent()).extras(extras).build();
             }
+            mobileAppPushService.pushMsg(appPushMsgVO);
+
         }
     }
 
