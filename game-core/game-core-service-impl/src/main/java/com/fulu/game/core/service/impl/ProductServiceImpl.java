@@ -100,6 +100,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         product.setSalesModeId(salesMode.getId());
         product.setUnit(salesMode.getName());
         product.setSalesModeRank(salesMode.getRank() == null ? 0 : salesMode.getRank());
+        product.setPlatformShow(salesMode.getPlatformShow());
         product.setUserId(userTechAuth.getUserId());
         product.setPrice(price);
         product.setStatus(false);
@@ -120,6 +121,22 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         } else {
             return update(product.getId(), techAuthId, price, unitId);
         }
+    }
+
+    @Override
+    public Product findAppProductByTech(Integer techId){
+        List<Product> productList = productDao.findAppProductByTech(techId);
+        if(productList.isEmpty()){
+            return null;
+        }
+        return productList.get(0);
+    }
+
+
+    @Override
+    public List<Product> findAppProductList(Integer userId) {
+        List<Product> productList = productDao.findAppProductList(userId);
+        return productList;
     }
 
 
@@ -861,4 +878,24 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return page;
     }
 
+    /**
+     * 获取用户商品列表
+     *
+     * @param pageNum
+     * @param pageSize
+     * @param userId
+     * @return
+     */
+    @Override
+    public PageInfo<Product> userProductList(Integer pageNum, Integer pageSize, Integer userId) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<Product> list = findByUserId(userId);
+        PageInfo page = new PageInfo(list);
+        return page;
+    }
+
+    @Override
+    public ProductShowCaseVO findRecommendProductByUserId(Integer userId) {
+        return productDao.findRecommendProductByUserId(userId);
+    }
 }

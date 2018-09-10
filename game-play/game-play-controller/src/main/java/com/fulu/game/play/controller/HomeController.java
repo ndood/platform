@@ -106,13 +106,21 @@ public class HomeController extends BaseController {
             Map<String, Object> result = BeanUtil.beanToMap(user);
             result.put("token", SubjectUtil.getToken());
             result.put("userId", user.getId());
+
+            //对已授权用户判断是否赠送登录奖励
+            String unionId = user.getUnionId();
+            boolean flag;
+            if (StringUtils.isBlank(unionId)) {
+                flag = false;
+            } else {
+                flag = userService.loginReceiveVirtualMoney(user);
+            }
+            result.put("bonus", flag ? 1 : 0);
+
             if (user.getUnionId() == null) {
                 log.error("用户没有unionId;user{}", user);
                 return Result.newUser().data(result);
             }
-
-            boolean flag = userService.loginReceiveVirtualMoney(user);
-            result.put("bonus", flag ? 1 : 0);
             return Result.success().data(result).msg("登录成功!");
         } catch (AuthenticationException e) {
             if (e.getCause() instanceof UserException) {

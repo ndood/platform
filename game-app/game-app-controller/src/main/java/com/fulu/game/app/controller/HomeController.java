@@ -56,7 +56,6 @@ public class HomeController extends BaseController {
                 log.error("新注册用户;user{}", user);
                 return Result.newUser().data(result);
             }
-
             return Result.success().data(result).msg("登录成功!");
         } catch (Exception e) {
             if (e.getCause() instanceof UserException) {
@@ -66,14 +65,13 @@ public class HomeController extends BaseController {
                 }
             }
             log.error("登录异常", e);
-            return Result.noLogin().msg("验证码错误！");
+            return Result.error().msg("验证码错误！");
         }
     }
 
 
     /**
      * 点击发送验证码接口
-     *
      * @param mobile
      * @return
      */

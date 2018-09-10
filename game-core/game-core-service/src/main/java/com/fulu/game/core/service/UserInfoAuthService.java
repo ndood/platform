@@ -1,6 +1,5 @@
 package com.fulu.game.core.service;
 
-import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
@@ -27,6 +26,15 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
      * @return
      */
     UserInfoAuth save(UserInfoAuthTO userInfoAuthTO);
+
+
+    /**
+     * 保存用户认证个人信息的序号
+     *
+     * @param userInfoAuthTO
+     * @return
+     */
+    void saveSort(UserInfoAuthTO userInfoAuthTO);
 
     /**
      * 通过用户ID查询用户认证信息
@@ -112,10 +120,6 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
      * @param id 客服ID
      */
     void setSubstitute(int id, Integer substituteId);
-
-    boolean modifyCharm(Integer userId, Integer price);
-
-    boolean modifyCharm(User user, Integer price);
 
     /**
      * 陪玩师魅力值提现

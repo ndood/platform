@@ -5,7 +5,7 @@
     <resultMap id="DynamicResultMap" type="com.fulu.game.core.entity.Dynamic">
         <id column="id" property="id"/>
         <result column="user_id" property="userId"/>
-        <result column="tech_info_id" property="techInfoId"/>
+        <result column="product_id" property="productId"/>
         <result column="content" property="content"/>
         <result column="type" property="type"/>
         <result column="city_code" property="cityCode"/>
@@ -16,6 +16,9 @@
         <result column="lat" property="lat"/>
         <result column="is_top" property="isTop"/>
         <result column="is_hot" property="isHot"/>
+        <result column="order_count" property="orderCount"/>
+        <result column="operator_id" property="operatorId"/>
+        <result column="operator_name" property="operatorName"/>
         <result column="rewards" property="rewards"/>
         <result column="likes" property="likes"/>
         <result column="comments" property="comments"/>
@@ -30,7 +33,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,tech_info_id,content,type,city_code,city_name,geohash,geohash_short,lon,lat,is_top,is_hot,rewards,likes,comments,reports,clicks,create_time,update_time,status    </sql>
+        id,user_id,product_id,content,type,city_code,city_name,geohash,geohash_short,lon,lat,is_top,is_hot,rewards,likes,comments,reports,clicks,create_time,update_time,status    </sql>
 
     <select id="findById" parameterType="java.lang.Long" resultMap="DynamicResultMap">
         select
@@ -55,8 +58,8 @@
             <if test="userId != null">
                 and user_id = #{userId}
             </if>
-            <if test="techInfoId != null">
-                and tech_info_id = #{techInfoId}
+            <if test="productId != null">
+                and product_id = #{productId}
             </if>
             <if test="content != null">
                 and content = #{content}
@@ -115,6 +118,32 @@
         </where>
     </select>
 
+    <select id="adminList" resultType="com.fulu.game.core.entity.vo.DynamicVO" parameterType="com.fulu.game.core.entity.vo.DynamicVO">
+        SELECT dynamic.*,tu.nickname as userNickname,product.product_name as productName,product.price as productPrice,product.unit as productUnit, GROUP_CONCAT( df.url ) as fileUrls
+        FROM t_dynamic dynamic
+        LEFT JOIN t_user tu ON dynamic.user_id = tu.id
+        LEFT JOIN t_product product ON dynamic.product_id = product.id
+        LEFT JOIN t_dynamic_file df ON dynamic.id = df.dynamic_id
+        <where>
+            <if test="operatorId != null">
+                and dynamic.operator_id = #{operatorId}
+            </if>
+            <if test="keyword != null">
+                and ( dynamic.user_id = #{keyword} OR tu.nickname LIKE CONCAT ('%', #{keyword},'%'))
+            </if>
+            <if test="startTime != null">
+                and dynamic.create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and dynamic.create_time &lt;= #{endTime}
+            </if>
+            <if test="status != null">
+                and dynamic.status = #{status}
+            </if>
+        </where>
+        GROUP BY dynamic.id
+    </select>
+
     <delete id="deleteById" parameterType="java.lang.Long">
         delete from t_dynamic
         <where>
@@ -124,9 +153,29 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Dynamic">
         insert into
-        t_dynamic (user_id,tech_info_id,content,type,city_code,city_name,geohash,geohash_short,lon,lat,is_top,is_hot,rewards,likes,comments,reports,clicks,create_time,update_time,status)
+        t_dynamic (user_id,product_id,content,type,city_code,city_name,geohash,geohash_short,lon,lat,is_top,is_hot,
+        <if test="orderCount != null">
+            order_count,
+        </if>
+        <if test="operatorId != null">
+            operator_id,
+        </if>
+        <if test="operatorName != null">
+            operator_name,
+        </if>
+        rewards,likes,comments,reports,clicks,create_time,update_time,status)
         values
-        (#{userId},#{techInfoId},#{content},#{type},#{cityCode},#{cityName},#{geohash},#{geohashShort},#{lon},#{lat},#{isTop},#{isHot},0,0,0,0,0,NOW(),NOW(),1)
+        (#{userId},#{productId},#{content},#{type},#{cityCode},#{cityName},#{geohash},#{geohashShort},#{lon},#{lat},#{isTop},#{isHot},
+        <if test="orderCount != null">
+            #{orderCount},
+        </if>
+        <if test="operatorId != null">
+            #{operatorId},
+        </if>
+        <if test="operatorName != null">
+            #{operatorName},
+        </if>
+        0,0,0,0,0,NOW(),NOW(),1)
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Dynamic">
@@ -137,8 +186,8 @@
                 user_id = #{userId},
             </if>
 
-            <if test="techInfoId != null">
-                tech_info_id = #{techInfoId},
+            <if test="productId != null">
+                product_id = #{productId},
             </if>
 
             <if test="content != null">

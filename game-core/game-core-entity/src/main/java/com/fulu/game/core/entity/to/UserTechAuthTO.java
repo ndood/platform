@@ -21,5 +21,5 @@ public class UserTechAuthTO extends UserTechAuth {
      */
     private Integer[] tagIds;
 
-
+    
 }

@@ -5,18 +5,16 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.enums.FileTypeEnum;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
-import com.fulu.game.common.exception.CashException;
 import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
-import com.fulu.game.core.dao.ICommonDao;
-import com.fulu.game.core.dao.UserInfoAuthDao;
-import com.fulu.game.core.dao.UserInfoAuthFileTempDao;
-import com.fulu.game.core.dao.VirtualProductAttachDao;
+import com.fulu.game.core.dao.*;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.vo.*;
@@ -29,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -55,7 +54,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     @Qualifier(value = "userTechAuthServiceImpl")
     @Autowired
     private UserTechAuthServiceImpl userTechAuthService;
-
     @Autowired
     private OssUtil ossUtil;
     @Autowired
@@ -63,9 +61,13 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     @Autowired
     private UserInfoAuthFileTempService userInfoAuthFileTempService;
     @Autowired
-    private VirtualProductAttachDao virtualProductAttachDao;
+    private VirtualProductService virtualProductService;
+    @Autowired
+    private VirtualProductAttachService virtualProductAttachService;
+    @Autowired
+    private ProductService productService;
     
-
+    
 
     @Override
     public ICommonDao<UserInfoAuth, Integer> getDao() {
@@ -90,6 +92,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
      * @return
      */
     @Override
+    @Transactional
     public UserInfoAuth save(UserInfoAuthTO userInfoAuthTO) {
         log.info("保存用户认证信息:UserInfoAuthTO:{}", userInfoAuthTO);
         User user = userService.findById(userInfoAuthTO.getUserId());
@@ -107,9 +110,13 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         user.setUpdateTime(new Date());
         userService.update(user);
 
+
         UserInfoAuth userInfoAuth = new UserInfoAuth();
         BeanUtil.copyProperties(userInfoAuthTO, userInfoAuth);
         userInfoAuth.setUpdateTime(new Date());
+
+        userInfoAuthDao.update(userInfoAuth);
+
         //主图不存userInfoAuth，改为存入临时表
         userInfoAuth.setMainPicUrl(null);
         if (userInfoAuth.getId() == null) {
@@ -137,7 +144,102 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         //添加用户信息标签
         createUserInfoTags(userInfoAuthTO.getTags(), user.getId());
 
+
+        String privatePicStr = userInfoAuthTO.getPrivatePicStr();
+
+        //设置陪玩师的私密照
+        if (StringUtils.isNotBlank(privatePicStr)) {
+
+            JSONObject privatePicJson = JSONObject.parseObject(privatePicStr);
+
+            //获取需要删除的私密照组
+            JSONArray delIds = privatePicJson.getJSONArray("delList");
+
+            for (int i = 0; i < delIds.size(); i++) {
+                VirtualProduct t = new VirtualProduct();
+                t.setId(delIds.getIntValue(i));
+                t.setDelFlag(true);
+
+                virtualProductService.update(t);
+            }
+
+            //修改私密照
+            JSONArray updateList = privatePicJson.getJSONArray("updateList");
+            for (int i = 0; i < updateList.size(); i++) {
+
+                //修改商品信息
+                JSONObject groupInfo = updateList.getJSONObject(i);
+                VirtualProduct t = new VirtualProduct();
+                t.setId(groupInfo.getIntValue("virtualProductId"));
+                t.setName(groupInfo.getString("name"));
+                t.setPrice(groupInfo.getIntValue("price"));
+                t.setSort(groupInfo.getIntValue("sort"));
+                t.setAttachCount(groupInfo.getJSONArray("urls").size());
+                t.setUpdateTime(new Date());
+
+                virtualProductService.update(t);
+
+                //修改附件信息
+                JSONArray urls = groupInfo.getJSONArray("urls");
+                //删除旧附件
+                virtualProductAttachService.deleteByVirtualProductId(t.getId());
+                //添加新的附件信息
+                for (int j = 0; j < urls.size(); j++) {
+                    VirtualProductAttach vpa = new VirtualProductAttach();
+                    vpa.setUserId(userInfoAuthTO.getUserId());
+                    vpa.setVirtualProductId(t.getId());
+                    vpa.setUrl(ossUtil.activateOssFile(urls.getString(j)));
+                    vpa.setCreateTime(new Date());
+                    virtualProductAttachService.create(vpa);
+                }
+            }
+
+            //添加新的私密照
+            JSONArray addList = privatePicJson.getJSONArray("addList");
+            for (int i = 0; i < addList.size(); i++) {
+
+                //添加商品信息
+                JSONObject groupInfo = addList.getJSONObject(i);
+                VirtualProduct t = new VirtualProduct();
+                t.setName(groupInfo.getString("name"));
+                t.setPrice(groupInfo.getIntValue("price"));
+                t.setSort(groupInfo.getIntValue("sort"));
+                t.setType(VirtualProductTypeEnum.PERSONAL_PICS.getType());
+                t.setAttachCount(groupInfo.getJSONArray("urls").size());
+                t.setDelFlag(false);
+                t.setCreateTime(new Date());
+
+                virtualProductService.create(t);
+
+                //获取附件信息
+                JSONArray urls = groupInfo.getJSONArray("urls");
+                //添加附件信息
+                for (int j = 0; j < urls.size(); j++) {
+                    VirtualProductAttach vpa = new VirtualProductAttach();
+                    vpa.setUserId(userInfoAuthTO.getUserId());
+                    vpa.setVirtualProductId(t.getId());
+                    vpa.setUrl(ossUtil.activateOssFile(urls.getString(j)));
+                    vpa.setCreateTime(new Date());
+                    virtualProductAttachService.create(vpa);
+                }
+            }
+        }
+
         return userInfoAuth;
+    }
+
+
+    /**
+     * 保存用户认证的个人信息的排序号
+     *
+     * @param userInfoAuthTO
+     * @return
+     */
+    @Override
+    public void saveSort(UserInfoAuthTO userInfoAuthTO) {
+
+        userInfoAuthDao.updateUserSort(userInfoAuthTO.getUserId(),userInfoAuthTO.getSort());
+
     }
 
 
@@ -199,33 +301,34 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         //查询用户所有标签
         List<TagVO> allPersonTagVos = findAllUserTagSelected(userId, false);
         userInfoAuthVO.setGroupTags(allPersonTagVos);
-        
+
         //查询用户的所有私密照片
         VirtualProductAttachVO vpav = new VirtualProductAttachVO();
         vpav.setDelFlag(false);
         vpav.setType(VirtualProductTypeEnum.PERSONAL_PICS.getType());
         vpav.setUserId(userId);
-        List<VirtualProductAttachVO> attachList = virtualProductAttachDao.findDetailByVo(vpav);
         
+        List<VirtualProductAttachVO> attachList = virtualProductAttachService.findDetailByVo(vpav);
+
         //将私密照片分组归类
         boolean exitsFlag = false;
-        for(int i = 0 ; i < attachList.size() ; i++){
-            
+        for (int i = 0; i < attachList.size(); i++) {
+
             exitsFlag = false;
-            
+
             List<PicGroupVO> groupList = userInfoAuthVO.getGroupList();
             PicGroupVO temp = null;
-            for(int j = 0 ; j < groupList.size(); j++){
-                if(attachList.get(i).getVirtualProductId().intValue() == groupList.get(i).getVirtualProductId().intValue()){
+            for (int j = 0; j < groupList.size(); j++) {
+                if (attachList.get(i).getVirtualProductId().intValue() == groupList.get(j).getVirtualProductId().intValue()) {
                     exitsFlag = true;
-                    temp = groupList.get(i);
+                    temp = groupList.get(j);
                     break;
                 }
             }
-            
-            if(exitsFlag){
+
+            if (exitsFlag) {
                 temp.getUrls().add(attachList.get(i).getUrl());
-            }else{
+            } else {
                 temp = new PicGroupVO();
                 temp.setName(attachList.get(i).getName());
                 temp.setPrice(attachList.get(i).getPrice());
@@ -233,9 +336,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
                 temp.getUrls().add(attachList.get(i).getUrl());
                 groupList.add(temp);
             }
-            
+
         }
-        
+
         return userInfoAuthVO;
     }
 
@@ -420,7 +523,23 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             List<UserTechAuth> userTechAuthList = userTechAuthService.findByUserId(userInfoAuth.getUserId());
             userInfoAuthVO.setUserTechAuthList(userTechAuthList);
 
+            ProductShowCaseVO psv = productService.findRecommendProductByUserId(userInfoAuth.getUserId());
+            if (psv != null) {
+                userInfoAuthVO.setRecommendProductId(psv.getId());
+            }
+
+
+            //获取每个陪玩师的私密照套数
+            VirtualProductVO vpv = new VirtualProductVO();
+            vpv.setUserId(userInfoAuthVO.getUserId());
+            vpv.setDelFlag(false);
+            vpv.setType(VirtualProductTypeEnum.PERSONAL_PICS.getType());
+            
+            List<VirtualProductVO> vpList = virtualProductService.findByVirtualProductVo(vpv);
+            userInfoAuthVO.setGroupPicCount(vpList.size());
+
             userInfoAuthVOList.add(userInfoAuthVO);
+
         }
 
         PageInfo page = new PageInfo(userInfoAuths);
@@ -824,43 +943,20 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     }
 
     @Override
-    public boolean modifyCharm(Integer userId, Integer price) {
-        User user = userService.findById(userId);
-        if (user == null) {
-            log.info("当前用户id={}查询数据库不存在", userId);
-            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
-        }
-
-        return modifyCharm(user, price);
-    }
-
-    @Override
-    public boolean modifyCharm(User user, Integer price) {
-        if (user == null) {
-            return false;
-        }
-
-        UserInfoAuth auth = findByUserId(user.getId());
-        auth.setCharm((auth.getCharm() == null ? 0 : auth.getCharm()) + price);
-        updateByUserId(auth);
-        return true;
-    }
-
-    @Override
     public void withdrawCharm(Integer userId, Integer charm) {
-        UserInfoAuth userInfoAuth = findByUserId(userId);
-        if (userInfoAuth == null) {
-            log.error("陪玩师id:{}不存在", userId);
-            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
-        }
-
-        Integer totalCharm = userInfoAuth.getCharm();
-        if (charm > totalCharm) {
-            log.error("陪玩师id:{}提现魅力值超出总魅力值", userId);
-            throw new CashException(CashException.ExceptionCode.CHARM_WITHDRAW_FAIL_EXCEPTION);
-        }
-
-        //todo  记录流水 记录分润
+//        UserInfoAuth userInfoAuth = findByUserId(userId);
+//        if (userInfoAuth == null) {
+//            log.error("陪玩师id:{}不存在", userId);
+//            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+//        }
+//
+//        Integer totalCharm = userInfoAuth.getCharm();
+//        if (charm > totalCharm) {
+//            log.error("陪玩师id:{}提现魅力值超出总魅力值", userId);
+//            throw new CashException(CashException.ExceptionCode.CHARM_WITHDRAW_FAIL_EXCEPTION);
+//        }
+//
+//        //todo  记录流水 记录分润
 
 
     }

@@ -50,14 +50,24 @@ public class RedisOpenServiceImpl {
         return (value != null) ? value.toString() : null;
     }
 
+
     /**
      * 添加一个BitSet
      *
      * @param key
      * @param val
      */
+    public void bitSet(String key, long val, boolean flag) {
+        redisTemplate.opsForValue().setBit(key, val, flag);
+    }
+    /**
+     * 添加一个BitSet,默认为true
+     *
+     * @param key
+     * @param val
+     */
     public void bitSet(String key, long val) {
-        redisTemplate.opsForValue().setBit(key, val, true);
+        bitSet(key, val, true);
     }
 
     /**

@@ -23,7 +23,7 @@ import java.util.List;
 
 
 @Service("dynamicLikeService")
-public class DynamicLikeServiceImpl extends AbsCommonService<DynamicLike,Long> implements DynamicLikeService {
+public class DynamicLikeServiceImpl extends AbsCommonService<DynamicLike,Integer> implements DynamicLikeService {
 
     @Autowired
 	private DynamicLikeDao dynamicLikeDao;
@@ -37,7 +37,7 @@ public class DynamicLikeServiceImpl extends AbsCommonService<DynamicLike,Long> i
 
 
     @Override
-    public ICommonDao<DynamicLike, Long> getDao() {
+    public ICommonDao<DynamicLike, Integer> getDao() {
         return dynamicLikeDao;
     }
 
@@ -57,23 +57,24 @@ public class DynamicLikeServiceImpl extends AbsCommonService<DynamicLike,Long> i
         }
         dynamicLikeVO.setStatus(null);
         User user = userService.getCurrentUser();
-        dynamicLikeVO.setFromUserId(user.getId().longValue());
+        dynamicLikeVO.setFromUserId(user.getId());
         List<DynamicLike> list = dynamicLikeDao.findByParameter(dynamicLikeVO);
         dynamicLikeVO.setStatus(status);
-        dynamicLikeVO.setCreateTime(new Date());
         dynamicLikeVO.setFromUserHeadUrl(user.getHeadPortraitsUrl());
         dynamicLikeVO.setFromUserNickname(user.getNickname());
 
         if(list != null && !list.isEmpty()){
+            dynamicLikeVO.setId(list.get(0).getId());
             dynamicLikeDao.update(dynamicLikeVO);
         } else {
+            dynamicLikeVO.setCreateTime(new Date());
             create(dynamicLikeVO);
         }
         // TODO shijiaoyun 修改动态信息的点赞次数（以及ES中存是否已点赞信息：likeUserId）
         if(status != null && status == 0){//取消点赞
-            dynamicService.updateIndexFilesById(dynamicLikeVO.getId(), false, -1, 0,false);
+            dynamicService.updateIndexFilesById(dynamicLikeVO.getDynamicId(), false, -1, 0,false);
         } else {//点赞
-            dynamicService.updateIndexFilesById(dynamicLikeVO.getId(), false, 1, 0,false);
+            dynamicService.updateIndexFilesById(dynamicLikeVO.getDynamicId(), false, 1, 0,false);
         }
     }
 
@@ -86,7 +87,7 @@ public class DynamicLikeServiceImpl extends AbsCommonService<DynamicLike,Long> i
      * @return
      */
     @Override
-    public PageInfo<DynamicLike> list(Integer pageNum, Integer pageSize, Long dynamicId) {
+    public PageInfo<DynamicLike> list(Integer pageNum, Integer pageSize, Integer dynamicId) {
         PageHelper.startPage(pageNum, pageSize, "id DESC");
         DynamicLikeVO dynamicLikeVO = new DynamicLikeVO();
         dynamicLikeVO.setDynamicId(dynamicId);

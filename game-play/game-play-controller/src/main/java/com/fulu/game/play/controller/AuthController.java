@@ -160,7 +160,7 @@ public class AuthController extends BaseController {
             userService.isCurrentUser(userTechAuth.getUserId());
         }
         userTechAuthTO.setUserId(user.getId());
-        userTechAuthService.save(userTechAuthTO,null);
+        userTechAuthService.save(userTechAuthTO);
         return Result.success().data(userTechAuthTO);
     }
 
@@ -171,10 +171,13 @@ public class AuthController extends BaseController {
     @PostMapping(value = "/private-pic/list")
     public Result privatePicList(Integer userId) {
 
+        User user = userService.getCurrentUser();
+        
         VirtualProductVO vpo = new VirtualProductVO();
         vpo.setUserId(userId);
         vpo.setType(VirtualProductTypeEnum.PERSONAL_PICS.getType());
         vpo.setDelFlag(false);
+        vpo.setFromUserId(user.getId());
 
         List<VirtualProductVO> list = virtualProductService.searchByvirtualProductVo(vpo);
 

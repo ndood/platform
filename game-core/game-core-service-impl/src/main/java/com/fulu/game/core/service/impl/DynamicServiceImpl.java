@@ -2,10 +2,13 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.domain.ClientInfo;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.CommonException;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.utils.HttpUtils;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.common.utils.geo.GeoHashUtil;
 import com.fulu.game.common.utils.geo.Point;
@@ -18,8 +21,10 @@ import com.fulu.game.core.search.domain.DynamicDoc;
 import com.fulu.game.core.search.domain.DynamicFileDoc;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +39,7 @@ import java.util.List;
 
 @Slf4j
 @Service("dynamicService")
-public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implements DynamicService {
+public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implements DynamicService {
 
     @Autowired
 	private DynamicDao dynamicDao;
@@ -52,14 +57,17 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
     private ProductService productService;
 
     @Autowired
-    private UserTechInfoService userTechInfoService;
+    private UserFriendService userFriendService;
 
     @Autowired
-    private UserFriendService userFriendService;
+    private AdminService adminService;
+
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
 
 
     @Override
-    public ICommonDao<Dynamic, Long> getDao() {
+    public ICommonDao<Dynamic, Integer> getDao() {
         return dynamicDao;
     }
 
@@ -74,8 +82,10 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
         if(dynamicVO == null){
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
-        User user = userService.getCurrentUser();
-        dynamicVO.setUserId(user.getId());
+        if(dynamicVO.getUserId() == null || dynamicVO.getUserId().intValue() < 0){
+            User user = userService.getCurrentUser();
+            dynamicVO.setUserId(user.getId());
+        }
         ClientInfo clientInfo = SubjectUtil.getUserClientInfo();
         if(clientInfo != null ){
             dynamicVO.setCityCode(clientInfo.get_ipCity());
@@ -96,7 +106,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
         dynamicVO.setStatus(1);
         saveDynamic(dynamicVO);
         saveDynamicFiles(dynamicVO);
-        saveDynamicES(dynamicVO, user);
+        saveDynamicES(dynamicVO);
         return null;
     }
 
@@ -154,8 +164,11 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
      * @return
      */
     @Override
-    public DynamicDoc getDynamicDocById(Long id) {
-        return dynamicSearchComponent.searchById(id, DynamicDoc.class);
+    public DynamicDoc getDynamicDocById(Integer id) {
+        DynamicDoc dynamicDoc = dynamicSearchComponent.searchById(id, DynamicDoc.class);
+        User user = userService.getCurrentUser();
+        setDynamicDocUserExt(dynamicDoc, user);
+        return dynamicDoc;
     }
 
     /**
@@ -197,10 +210,11 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
     /**
      * 通过ID删除动态信息
      * @param id
+     * @param verifyUser 是否验证用户信息是否匹配（true：验证；false：不验证）
      * @return
      */
     @Override
-    public int deleteDynamicById(Long id){
+    public int deleteDynamicById(Integer id, boolean verifyUser){
         Dynamic dynamic = findById(id);
         // 记录不存在
         if(dynamic == null){
@@ -208,7 +222,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
         }
         User user = userService.getCurrentUser();
         // 用户不匹配
-        if(user.getId().intValue() != dynamic.getUserId().intValue()){
+        if(verifyUser && user.getId().intValue() != dynamic.getUserId().intValue()){
             throw new UserException(UserException.ExceptionCode.USER_MISMATCH_EXCEPTION);
         }
         deleteDynamicEsById(id);
@@ -226,47 +240,70 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
      * @return
      */
     @Override
-    public boolean updateIndexFilesById(Long id, boolean rewards, Integer likes, Integer comments, boolean clicks) {
+    public boolean updateIndexFilesById(int id, boolean rewards, Integer likes, Integer comments, boolean clicks) {
         Integer userId = 0;
         Dynamic dynamic = findById(id);
         if(dynamic == null){
             log.info("修改动态索引异常，未找到id： {}", id);
             return false;
         }
-        if(rewards ){
+        if( rewards ){
             if(dynamic.getRewards() != null){
                 dynamic.setRewards(dynamic.getRewards() + 1);
             } else {
-                dynamic.setRewards( 1L);
+                dynamic.setRewards( 1);
             }
         }
-        if(likes != null ){
+        if(likes != null && likes.intValue() != 0){
             if(dynamic.getLikes() != null){
                 dynamic.setLikes(dynamic.getLikes() + likes);
             } else {
-                dynamic.setLikes(1L);
+                dynamic.setLikes(1);
             }
             User user = userService.getCurrentUser();
             userId = user.getId();
         }
-        if(comments != null ){
+        if(comments != null && comments.intValue() != 0){
             if(dynamic.getComments() != null){
                 dynamic.setComments(dynamic.getComments() + comments);
             } else {
-                dynamic.setComments(1L);
+                dynamic.setComments(1);
             }
         }
-        if(clicks ){
+        if( clicks ){
             if(dynamic.getClicks() != null){
                 dynamic.setClicks(dynamic.getClicks() + 1);
             } else {
-                dynamic.setClicks(1L);
+                dynamic.setClicks(1);
             }
         }
         update(dynamic);
         // 修改ES信息
         dynamicSearchComponent.updateIndexFilesById( id, rewards, likes, comments, clicks, userId);
         return true;
+    }
+
+    /**
+     * 后端获取动态列表
+     *
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public PageInfo<DynamicVO> adminList(Integer pageNum, Integer pageSize, String keyword, String startTime, String endTime) {
+        String orderBy =  "id desc";
+        PageHelper.startPage(pageNum,pageSize,orderBy);
+        Admin admin = adminService.getCurrentUser();
+        DynamicVO dynamicVO = new DynamicVO();
+        dynamicVO.setOperatorId(admin.getId());
+        dynamicVO.setKeyword(keyword);
+        dynamicVO.setStartTime(startTime);
+        dynamicVO.setEndTime(endTime);
+        dynamicVO.setStatus(1);
+        List<DynamicVO> couponGroupList =  dynamicDao.adminList(dynamicVO);
+        PageInfo page = new PageInfo(couponGroupList);
+        return page;
     }
 
     /**
@@ -285,26 +322,70 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
         } catch (IOException e) {
             e.printStackTrace();
         }
-        userIsLike(page, user);
+        setDynamicDocsUserExt(page, user);
         return page;
     }
 
     /**
-     * 判断用户是否点赞
+     * 设置多动态的用户扩展信息
+     * 包含是否点赞、是否关注等信息
      * @param pages
      * @param user
      */
-    private void userIsLike(Page<DynamicDoc> pages, User user){
-        if(pages == null){
+    private void setDynamicDocsUserExt(Page<DynamicDoc> pages, User user){
+        if(pages == null || user == null){
+            return ;
+        }
+        for(DynamicDoc dynamicDoc: pages){
+            setDynamicDocUserExt(dynamicDoc,user);
+        }
+    }
+
+    /**
+     * 设置单动态的用户扩展信息
+     * 包含是否点赞、是否关注等信息
+     * @param dynamicDoc
+     * @param user
+     */
+    private void setDynamicDocUserExt(DynamicDoc dynamicDoc, User user){
+        if(dynamicDoc == null || user == null){
             return ;
         }
         int userId = user.getId();
-        for(DynamicDoc dynamicDoc: pages){
-            BitSet bitSet = dynamicDoc.getLikeUserIds();
-            if(bitSet != null && bitSet.get(userId)){
-                dynamicDoc.setIsLike(1);
-            } else {
-                dynamicDoc.setIsLike(0);
+        BitSet bitSet = dynamicDoc.getLikeUserIds();
+        if(bitSet != null && bitSet.get(userId)){
+            dynamicDoc.setIsLike(1);
+        } else {
+            dynamicDoc.setIsLike(0);
+        }
+        Integer isAttention = redisOpenService.getBitSet(RedisKeyEnum.ATTENTION_USERS.generateKey(userId),dynamicDoc.getUserId()) ? 1: 0;
+        dynamicDoc.setIsAttention(isAttention);
+        // 设置动态文件信息
+        setFileInfo(dynamicDoc);
+    }
+
+    /**
+     * 设置图片长宽信息
+     * @param dynamicDoc
+     */
+    private void setFileInfo(DynamicDoc dynamicDoc){
+        if(dynamicDoc != null && dynamicDoc.getFiles() != null && dynamicDoc.getFiles().size() == 1){
+            DynamicFileDoc dynamicFileDoc = dynamicDoc.getFiles().get(0);
+            try {
+                if(dynamicFileDoc.getType().intValue() == 1 ){
+                    //获取图片信息接口
+                    String imgUrl = dynamicFileDoc.getUrl() + "?x-oss-process=image/info";
+                    String imgInfoStr = HttpUtils.get(imgUrl,null);
+                    JSONObject jsonObject = JSONObject.parseObject(imgInfoStr);
+                    dynamicFileDoc.setHeight(Integer.parseInt(jsonObject.getJSONObject("ImageHeight").getString("value")));
+                    dynamicFileDoc.setWidth(Integer.parseInt(jsonObject.getJSONObject("ImageWidth").getString("value")));
+                    List<DynamicFileDoc> list = new ArrayList<>();
+                    list.add(dynamicFileDoc);
+                    dynamicDoc.setFiles(list);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+                log.warn("获取图片信息发生异常，图片地址：{}，异常信息：{}",dynamicFileDoc.getUrl() + "?x-oss-process=image/info", e.getMessage());
             }
         }
     }
@@ -347,7 +428,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
                     dynamicFileVO.setCreateTime(DateUtil.date());
                     dynamicFileVO.setUpdateTime(DateUtil.date());
                     dynamicFileVO.setStatus(1);
-                    dynamicFileVO.setPlayCount(0L);
+                    dynamicFileVO.setPlayCount(0);
                     dynamicFiles.add(dynamicFileVO);
                     dynamicFileService.save(dynamicFileVO);
                 }
@@ -360,7 +441,8 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
      * 保存动态ES信息
      * @param dynamicVO
      */
-    private void saveDynamicES(DynamicVO dynamicVO, User user){
+    private void saveDynamicES(DynamicVO dynamicVO){
+        User user = userService.findById(dynamicVO.getUserId());
         DynamicDoc dynamicDoc = new DynamicDoc();
         dynamicDoc.setId(dynamicVO.getId());
         dynamicDoc.setUserId(user.getId());
@@ -381,15 +463,15 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
         dynamicDoc.setCreateTime(dynamicVO.getCreateTime());
         dynamicDoc.setUpdateTime(dynamicVO.getUpdateTime());
         dynamicDoc.setStatus(dynamicVO.getStatus());
-        dynamicDoc.setTechInfoId(dynamicVO.getTechInfoId());
+        dynamicDoc.setProductId(dynamicVO.getProductId());
         dynamicDoc.setGeohash(dynamicVO.getGeohash());
         dynamicDoc.setGethashShort(dynamicVO.getGeohashShort());
-        if(dynamicVO.getTechInfoId() != null && dynamicVO.getTechInfoId() > 0){
-            //TODO shijiaoyun 此处需要获取下单技能信息
-//            UserTechInfo userTechInfo = userTechInfoService.findById(dynamicVO.getTechInfoId());
-//            Product product = productService.findById(dynamicVO.getTechInfoId());
-//            dynamicDoc.setTechInfoId(userTechInfo.getTechAttrId());
-//            dynamicDoc.setTechInfoName(userTechInfo.get);
+        if(dynamicVO.getProductId() != null && dynamicVO.getProductId() > 0){
+            //获取商品信息、设置动态下单商品信息
+            Product product = productService.findById(dynamicVO.getProductId());
+            dynamicDoc.setProductName(product.getProductName());
+            dynamicDoc.setProductPrice(product.getPrice());
+            dynamicDoc.setProductUnit(product.getUnit());
         }
         if(dynamicVO.getDynamicFiles() != null){
             List<DynamicFileDoc> list = new ArrayList<>();
@@ -409,7 +491,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Long> implement
      * 删除动态ES信息
      * @param id
      */
-    private void deleteDynamicEsById(Long id){
+    private void deleteDynamicEsById(Integer id){
         dynamicSearchComponent.deleteIndex(id);
     }
 

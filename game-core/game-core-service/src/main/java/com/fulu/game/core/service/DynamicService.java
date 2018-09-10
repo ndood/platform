@@ -16,7 +16,7 @@ import java.util.List;
  * @email ${email}
  * @date 2018-08-30 10:31:41
  */
-public interface DynamicService extends ICommonService<Dynamic,Long>{
+public interface DynamicService extends ICommonService<Dynamic,Integer>{
 
     /**
      * 保存动态接口
@@ -50,7 +50,7 @@ public interface DynamicService extends ICommonService<Dynamic,Long>{
      * @param id
      * @return
      */
-    public DynamicDoc getDynamicDocById(Long id);
+    public DynamicDoc getDynamicDocById(Integer id);
 
     /**
      * 获取用户最新动态，我的里面使用
@@ -62,9 +62,10 @@ public interface DynamicService extends ICommonService<Dynamic,Long>{
     /**
      * 删除动态
      * @param id
+     * @param verifyUser 是否验证用户信息是否匹配（true：验证；false：不验证）
      * @return
      */
-    public int deleteDynamicById(Long id);
+    public int deleteDynamicById(Integer id, boolean verifyUser);
 
     /**
      * 修改动态中实时变化的值
@@ -75,5 +76,7 @@ public interface DynamicService extends ICommonService<Dynamic,Long>{
      * @param clicks 是否自增点击次数（true：自增；false：不自增）
      * @return
      */
-    public boolean updateIndexFilesById(Long id, boolean rewards, Integer likes,Integer comments,boolean clicks);
+    public boolean updateIndexFilesById(int id, boolean rewards, Integer likes,Integer comments,boolean clicks);
+
+    PageInfo<DynamicVO> adminList(Integer pageNum, Integer pageSize, String keyword, String startTime, String endTime);
 }

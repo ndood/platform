@@ -5,11 +5,9 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.admin.service.AdminPushMsgService;
 import com.fulu.game.app.service.impl.MobileAppPushServiceImpl;
-import com.fulu.game.common.enums.PlatformEcoEnum;
-import com.fulu.game.common.enums.PushMsgTypeEnum;
-import com.fulu.game.common.enums.WechatPagePathEnum;
-import com.fulu.game.common.enums.WechatTemplateIdEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ServiceErrorException;
+import com.fulu.game.common.utils.AppRouteFactory;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.PushMsg;
 import com.fulu.game.core.entity.vo.PushMsgVO;
@@ -24,9 +22,9 @@ import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -107,6 +105,7 @@ public class AdminPushMsgServiceImpl extends PushMsgServiceImpl implements Admin
             pushMsg.setTotalNum(count);
             pushMsg.setIsPushed(true);
             pushMsg.setUpdateTime(new Date());
+            pushMsg.setTouchTime(new Date());
             update(pushMsg);
         } catch (Exception e) {
             log.error("消息推送urlencode exp", e);
@@ -127,7 +126,6 @@ public class AdminPushMsgServiceImpl extends PushMsgServiceImpl implements Admin
     }
 
 
-
     public void adminPushWxTemplateMsg(PushMsg pushMsg, List<Integer> userIds, String page) {
         String date = DateUtil.format(new Date(), "yyyy年MM月dd日 HH:mm");
         List<WxMaTemplateMessage.Data> dataList = CollectionUtil.newArrayList(
@@ -137,11 +135,20 @@ public class AdminPushMsgServiceImpl extends PushMsgServiceImpl implements Admin
             pushService.addTemplateMsg2Queue(pushMsg.getPlatform(), pushMsg.getId(), userIds, page, WechatTemplateIdEnum.PLAY_LEAVE_MSG, dataList);
         } else if (PlatformEcoEnum.POINT.getType().equals(pushMsg.getPlatform())) {
             pushService.addTemplateMsg2Queue(pushMsg.getPlatform(), pushMsg.getId(), userIds, page, WechatTemplateIdEnum.POINT_LEAVE_MSG, dataList);
-        }else if(PlatformEcoEnum.APP.getType().equals(pushMsg.getPlatform())){
-            if (PushMsgTypeEnum.ALL_USER.getType().equals(pushMsg.getType())){
-                mobileAppPushService.pushMsg(pushMsg.getTitle(),pushMsg.getContent(),null);
-            }else{
-                mobileAppPushService.pushMsg(pushMsg.getTitle(),pushMsg.getContent(),null,userIds.toArray(new Integer[]{}));
+        } else if (PlatformEcoEnum.APP.getType().equals(pushMsg.getPlatform())) {
+            Map<String, String> extras = null;
+            switch (PushMsgJumpTypeEnum.convert(pushMsg.getJumpType())) {
+                case OFFICIAL_NOTICE:
+                    extras = AppRouteFactory.buildOfficialNoticeRoute();
+                    break;
+                default:
+                    extras = AppRouteFactory.buildIndexRoute();
+            }
+
+            if (PushMsgTypeEnum.ALL_USER.getType().equals(pushMsg.getType())) {
+                mobileAppPushService.pushMsg(pushMsg.getTitle(), pushMsg.getContent(), extras);
+            } else {
+                mobileAppPushService.pushMsg(pushMsg.getTitle(), pushMsg.getContent(), extras, userIds.toArray(new Integer[]{}));
             }
         }
     }

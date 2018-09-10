@@ -470,4 +470,11 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
     }
 
 
+    public PageInfo<OrderResVO> delayList(OrderSearchVO orderSearchVO,
+                                          Integer pageNum,
+                                          Integer pageSize,
+                                          String orderBy) {
+        orderSearchVO.setStatusList(OrderStatusGroupEnum.SERVER_WAIT_SERVICE.getStatusList());
+        return list(orderSearchVO, pageNum, pageSize, orderBy);
+    }
 }

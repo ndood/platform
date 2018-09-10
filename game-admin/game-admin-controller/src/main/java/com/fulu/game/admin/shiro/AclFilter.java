@@ -43,6 +43,7 @@ public class AclFilter extends AccessControlFilter {
         if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
             return true;
         }
+        log.info("uri:{}",httpRequest.getRequestURI());
         String token = httpRequest.getHeader("token");
         Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.ADMIN_TOKEN.generateKey(token));
         String returnMsg = null;

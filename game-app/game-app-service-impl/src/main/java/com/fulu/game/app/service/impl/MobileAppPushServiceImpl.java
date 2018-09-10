@@ -96,7 +96,6 @@ public class MobileAppPushServiceImpl implements PushService {
 
     /**
      * 构建PushPayload对象
-     *
      * @param title
      * @param alert
      * @param extras

@@ -1,4 +1,4 @@
-package com.fulu.game.h5.controller.fenqile;
+package com.fulu.game.h5.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
@@ -14,8 +14,8 @@ import com.fulu.game.core.service.OrderDealService;
 import com.fulu.game.core.service.OrderEventService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.fulu.game.h5.service.impl.fenqile.FenqilePayServiceImpl;
 import com.fulu.game.h5.service.impl.fenqile.H5OrderServiceImpl;
+import com.fulu.game.h5.service.impl.fenqile.H5PayServiceImpl;
 import com.fulu.game.h5.service.impl.fenqile.H5PushServiceImpl;
 import com.fulu.game.h5.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
@@ -43,9 +43,8 @@ public class OrderController extends BaseController {
     private final RedisOpenServiceImpl redisOpenService;
     private final H5OrderServiceImpl orderService;
     private final OrderDealService orderDealService;
-    private final FenqilePayServiceImpl fenqilePayService;
+    private final H5PayServiceImpl fenqilePayService;
     private final H5PushServiceImpl h5PushService;
-
 
 
     @Autowired
@@ -53,7 +52,7 @@ public class OrderController extends BaseController {
                            RedisOpenServiceImpl redisOpenService,
                            H5OrderServiceImpl orderService,
                            OrderDealService orderDealService,
-                           FenqilePayServiceImpl fenqilePayService,
+                           H5PayServiceImpl fenqilePayService,
                            H5PushServiceImpl h5PushService) {
         this.userService = userService;
         this.redisOpenService = redisOpenService;
@@ -177,7 +176,6 @@ public class OrderController extends BaseController {
     }
 
 
-
     /**
      * 提醒开始服务
      *
@@ -258,6 +256,7 @@ public class OrderController extends BaseController {
 
     /**
      * 创建订单留言
+     *
      * @param orderNo
      * @param orderEventId
      * @param remark

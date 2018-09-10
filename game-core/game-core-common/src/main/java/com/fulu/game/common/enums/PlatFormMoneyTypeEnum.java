@@ -13,7 +13,8 @@ public enum PlatFormMoneyTypeEnum {
     COUPON_DEDUCTION("优惠券抵扣:"),
     ORDER_REFUND("订单退款:"),
     ORDER_NEGOTIATE("订单协商:"),
-    SMALLCHANGE("加零钱:");
+    SMALLCHANGE("加零钱:"),
+    VIRTUAL_ORDER_PAY("虚拟币充值订单支付:");
 
     String type;
 }

@@ -29,9 +29,11 @@ public class DynamicLikeController  extends BaseController{
      * @return
      */
     @RequestMapping(value = "save")
-    public Result save(@RequestParam( required = true) Long dynamicId) {
+    public Result save(@RequestParam( required = true) Integer dynamicId,
+                       @RequestParam( required = false, defaultValue = "1") Integer status) {
         DynamicLikeVO dynamicLikeVO = new DynamicLikeVO();
         dynamicLikeVO.setDynamicId(dynamicId);
+        dynamicLikeVO.setStatus(status);
         dynamicLikeService.save(dynamicLikeVO);
         return Result.success().data(dynamicLikeVO).msg("成功！");
     }
@@ -47,7 +49,7 @@ public class DynamicLikeController  extends BaseController{
     @RequestMapping(value = "list")
     public Result list(@RequestParam(required = true) Integer pageNum,
                        @RequestParam(required = true) Integer pageSize,
-                       @RequestParam(required = true) Long dynamicId) {
+                       @RequestParam(required = true) Integer dynamicId) {
         PageInfo<DynamicLike> page = dynamicLikeService.list( pageNum, pageSize, dynamicId);
         return Result.success().data(page);
     }

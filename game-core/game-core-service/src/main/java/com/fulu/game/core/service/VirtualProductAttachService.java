@@ -18,6 +18,19 @@ public interface VirtualProductAttachService extends ICommonService<VirtualProdu
     List<VirtualProductAttach> findByParameter(VirtualProductAttachVO virtualProductAttachVO);
 
 
-    List<VirtualProductAttach> findByOrderProIdUserId(Integer userId , Integer productId);
+    List<VirtualProductAttachVO> findByOrderProIdUserId(Integer userId , Integer productId);
 
+    
+    int deleteByVirtualProductId(int virtualProductId);
+
+    
+    List<VirtualProductAttachVO> findDetailByVo(VirtualProductAttachVO virtualProductAttachVO);
+
+
+    /**
+     * 根据商品ID获取附件信息
+     * @param virtualProductId
+     * @return
+     */
+    List<VirtualProductAttach> findByProductId(Integer virtualProductId);
 }

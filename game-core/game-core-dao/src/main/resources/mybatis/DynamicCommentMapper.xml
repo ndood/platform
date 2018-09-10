@@ -101,7 +101,7 @@
         on dynamic_comment.comment_id = dynamic_comment_replay.id
         where dynamic_comment.dynamic_id = #{dynamicId} and
             dynamic_comment.status = 1 and
-            dynamic_comment_replay.status = 1
+            ifnull(dynamic_comment_replay.status,1) = 1
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Long">

@@ -23,6 +23,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -66,11 +67,11 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Autowired
     private DynamicService dynamicService;
 
-    @Qualifier(value = "userTechAuthServiceImpl")
-    @Autowired
-    private UserTechAuthServiceImpl userTechAuthService;
     @Autowired
     private SpringThreadPoolExecutor springThreadPoolExecutor;
+
+    @Autowired
+    private AdminImLogService adminImLogService;
 
 
     @Override
@@ -627,6 +628,18 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
+    public User modifyCharm(User user, Integer price) {
+        if (user == null) {
+            return null;
+        }
+
+        user.setCharm((user.getCharm() == null ? 0 : user.getCharm()) + price);
+        user.setUpdateTime(DateUtil.date());
+        update(user);
+        return user;
+    }
+
+    @Override
     public User modifyVirtualBalance(Integer userId, Integer price) {
         User user = findById(userId);
         if (user == null) {
@@ -646,8 +659,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public boolean loginReceiveVirtualMoney(User user) {
-        Integer type = user.getType();
-
         String loginKey = RedisKeyEnum.LOGIN_RECEIVE_VIRTUAL_MONEY.generateKey();
         boolean flag = redisOpenService.hasKey(loginKey);
         if (flag) {
@@ -667,8 +678,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
                 details.setUserId(user.getId());
                 details.setSum(user.getVirtualBalance());
                 details.setMoney(Constant.LOGIN_VIRTUAL_MONEY);
-                details.setType(VirtualProductTypeEnum.LOGIN_RECEIVE_BONUS.getType());
-                details.setRemark(VirtualProductTypeEnum.LOGIN_RECEIVE_BONUS.getMsg());
+                details.setType(VirtualDetailsTypeEnum.VIRTUAL_MONEY.getType());
+                details.setRemark(VirtualDetailsRemarkEnum.LOGIN_BOUNS.getMsg());
                 details.setCreateTime(DateUtil.date());
                 virtualDetailsService.create(details);
             }
@@ -686,11 +697,12 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     public UserVO getUserInfo(Integer userId) {
         // 写访问日志
         Integer currentUserId = getCurrentUser().getId();
-        if (userId != null && userId > 0) {
+        // 非当前用户才插入访问记录
+        if (userId != null && userId > 0 && userId.intValue() != currentUserId.intValue()) {
             // 写访问日志
             AccessLog accessLog = new AccessLog();
-            accessLog.setFromUserId(currentUserId.longValue());
-            accessLog.setToUserId(userId.longValue());
+            accessLog.setFromUserId(currentUserId);
+            accessLog.setToUserId(userId);
             accessLog.setMenusName("首页");
             accessLogService.save(accessLog);
         } else {
@@ -698,7 +710,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         }
         UserVO userVO = new UserVO();
         User user = findById(userId);
-        userVO = (UserVO) user;
+        String userStr = com.alibaba.fastjson.JSONObject.toJSONString(user);
+        userVO = com.alibaba.fastjson.JSONObject.parseObject(userStr, UserVO.class);
+        userVO.setImPsw("");
         // 设置用户扩展信息（兴趣、职业、简介、视频、以及相册）
         setUserExtInfo(userVO, userId);
         // 获取新增属性信息
@@ -712,17 +726,17 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
      * @param userId
      */
     private void setUserExtInfo(UserVO userVO, Integer userId) {
-        UserInfoAuth userInfoAuth = userInfoAuthService.findById(userId);
+        UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(userId);
         if (userInfoAuth != null) {
             userVO.setInterests(userInfoAuth.getInterests());
             userVO.setAbout(userInfoAuth.getAbout());
             userVO.setProfession(userInfoAuth.getProfession());
-            List<UserInfoAuthFile> videoFiles = userInfoAuthFileService.findByUserAuthIdAndType(userId, 3);
+            List<UserInfoAuthFile> videoFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(), 3);
             //设置用户视频
             if (videoFiles != null && !videoFiles.isEmpty()) {
                 userVO.setVideoUrl(videoFiles.get(0).getUrl());
             }
-            List<UserInfoAuthFile> picFiles = userInfoAuthFileService.findByUserAuthIdAndType(userId, 1);
+            List<UserInfoAuthFile> picFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(), 1);
             //设置用户相册
             if (picFiles != null && !picFiles.isEmpty()) {
                 String[] picArr = new String[picFiles.size()];
@@ -731,10 +745,57 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
                 }
                 userVO.setPicUrls(picArr);
             }
-            List<UserTechAuth> techAuthList = userTechAuthService.findUserNormalTechs(userId);
-            userVO.setUserTechAuths(techAuthList);
+            List<Product> productList = productService.findByUserId(userId);
+            userVO.setUserProducts(productList);
             List<DynamicVO> newestDynamicList = dynamicService.getNewestDynamicList(userId);
             userVO.setNewestDynamics(newestDynamicList);
         }
+    }
+
+
+    @Override
+    public List<AdminImLog> userOnline(Boolean active, String version) {
+        User user = this.getCurrentUser();
+        UserInfoAuth ua = userInfoAuthService.findByUserId(user.getId());
+        if(active){
+            log.info("userId:{}用户上线了!;version:{}",user.getId(),version);
+            redisOpenService.set(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()),user.getType()+"");
+
+
+            if(ua!=null && ua.getImSubstituteId()!=null){
+
+
+                //删除陪玩师的未读信息数量
+                Map<String,Object> map = redisOpenService.hget(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()));
+
+                if(MapUtils.isNotEmpty(map) ){
+
+                    map.remove(user.getImId());
+
+                    if(MapUtils.isEmpty(map)){
+                        redisOpenService.delete(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()));
+                    }else{
+                        redisOpenService.hset(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()) , map , Constant.ONE_DAY * 3);
+                    }
+
+                }
+
+                //获取代聊天记录
+                AdminImLogVO ail = new AdminImLogVO();
+                ail.setOwnerUserId(user.getId());
+                List<AdminImLog> list = adminImLogService.findByParameter(ail);
+                //删除带聊天记录
+                adminImLogService.deleteByOwnerUserId(user.getId());
+                return list;
+
+            }
+
+            return null;
+
+        }else{
+            log.info("userId:{}用户下线了!version:{}",user.getId(),version);
+            redisOpenService.delete(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()));
+        }
+        return null;
     }
 }

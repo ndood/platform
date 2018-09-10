@@ -28,12 +28,15 @@
         <game.third.party.fenqile.version>1.0</game.third.party.fenqile.version>
         <pagehelper.version>4.0.3</pagehelper.version>
         <xerces.version>2.9.1</xerces.version>
+        <fastjson.version>1.2.47</fastjson.version>
         <aliyun.oss.verson>2.8.2</aliyun.oss.verson>
         <weixin-java.sdk.verson>3.0.0</weixin-java.sdk.verson>
         <shiro.version>1.4.0</shiro.version>
         <springboot.version>1.5.4.RELEASE</springboot.version>
         <easypoi.version>3.0.3</easypoi.version>
         <searchbox.jest>5.3.3</searchbox.jest>
+        <javax.mail>1.4.7</javax.mail>
+        <com.sun.mail>1.5.4</com.sun.mail>
         <main.basedir>${basedir}</main.basedir>
     </properties>
 
@@ -132,6 +135,21 @@
                 <groupId>io.searchbox</groupId>
                 <artifactId>jest</artifactId>
                 <version>${searchbox.jest}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.mail</groupId>
+                <artifactId>mail</artifactId>
+                <version>${javax.mail}</version>
+            </dependency>
+            <dependency >
+                <groupId>com.sun.mail</groupId>
+                <artifactId>javax.mail</artifactId>
+                <version>${com.sun.mail}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

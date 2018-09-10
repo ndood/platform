@@ -13,6 +13,11 @@ public class PlayUserToken extends UsernamePasswordToken {
     private Integer sourceId;
     private String accessToken;
 
+    private String mpOpenId;
+    private String unionId;
+    private String mobile;
+
+
 
     public PlayUserToken(String fqlOpenid) {
         super(fqlOpenid, "");
@@ -32,6 +37,11 @@ public class PlayUserToken extends UsernamePasswordToken {
         this.accessToken = accessToken;
         this.sourceId = sourceId;
     }
+
+
+
+
+
 
     public String getFqlOpenid() {
         return fqlOpenid;

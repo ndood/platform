@@ -47,8 +47,16 @@ public enum RedisKeyEnum {
     SMS_VERIFY_CODE_TIMES,
     //陪玩师IM未读数据
     IM_COMPANY_UNREAD,
-    //登录的小程序和APP用户是否领过钻石
-    LOGIN_RECEIVE_VIRTUAL_MONEY;
+    //登录用户是否领取过登录奖励
+    LOGIN_RECEIVE_VIRTUAL_MONEY,
+    //关注用户
+    ATTENTION_USERS,
+    //被关注用户
+    ATTENTIONED_USERS,
+    //未接单的订单ID
+    ORDER_WAITING_SERVICE_ID;
+
+
 
 
     public static final String SPLIT = "-";

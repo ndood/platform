@@ -1,10 +1,11 @@
-package com.fulu.game.h5.controller.fenqile;
+package com.fulu.game.h5.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.vo.ProductShowCaseVO;
 import com.fulu.game.core.service.CategoryService;
 import com.fulu.game.core.service.ProductService;
+import com.fulu.game.h5.controller.BaseController;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

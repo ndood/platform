@@ -39,4 +39,10 @@ public interface ImService {
      * @return 是否发送成功
      */
     boolean sendMsgToImUser(String imId, String action);
+
+    /**
+     * 增加陪玩师未读消息
+     * @param targetImId
+     */
+    void addUnreadCount(String targetImId);
 }

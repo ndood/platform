@@ -5,10 +5,13 @@
     <resultMap id="VirtualPayOrderResultMap" type="com.fulu.game.core.entity.VirtualPayOrder">
         <id column="id" property="id"/>
         <result column="order_no" property="orderNo"/>
+        <result column="name" property="name"/>
         <result column="user_id" property="userId"/>
         <result column="actual_money" property="actualMoney"/>
         <result column="virtual_money" property="virtualMoney"/>
+        <result column="order_ip" property="orderIp"/>
         <result column="is_pay_callback" property="isPayCallback"/>
+        <result column="pay_time" property="payTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="create_time" property="createTime"/>
     </resultMap>
@@ -18,7 +21,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,order_no,user_id,actual_money,virtual_money,is_pay_callback,update_time,create_time    </sql>
+        id,order_no,name,user_id,actual_money,virtual_money,order_ip,is_pay_callback,pay_time,update_time,create_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="VirtualPayOrderResultMap">
         select
@@ -44,6 +47,9 @@
             <if test="orderNo != null">
                 and order_no = #{orderNo}
             </if>
+            <if test="name != null">
+                and name = #{name}
+            </if>
             <if test="userId != null">
                 and user_id = #{userId}
             </if>
@@ -53,8 +59,14 @@
             <if test="virtualMoney != null">
                 and virtual_money = #{virtualMoney}
             </if>
+            <if test="orderIp != null">
+                and order_ip = #{orderIp}
+            </if>
             <if test="isPayCallback != null">
                 and is_pay_callback = #{isPayCallback}
+            </if>
+            <if test="payTime != null">
+                and pay_time = #{payTime}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime}
@@ -62,6 +74,15 @@
             <if test="createTime != null">
                 and create_time = #{createTime}
             </if>
+        </where>
+    </select>
+
+    <select id="findByOrderNo" resultType="com.fulu.game.core.entity.VirtualPayOrder">
+        select
+        <include refid="Base_Column_List"/>
+        from t_virtual_pay_order
+        <where>
+            order_no = #{orderNo} for update
         </where>
     </select>
 
@@ -75,9 +96,9 @@
     <insert id="create" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.fulu.game.core.entity.VirtualPayOrder">
         insert into
-        t_virtual_pay_order (order_no,user_id,actual_money,virtual_money,is_pay_callback,update_time,create_time)
+        t_virtual_pay_order (order_no,name,user_id,actual_money,virtual_money,order_ip,is_pay_callback,pay_time,update_time,create_time)
         values
-        (#{orderNo},#{userId},#{actualMoney},#{virtualMoney},#{isPayCallback},#{updateTime},#{createTime})
+        (#{orderNo},#{name},#{userId},#{actualMoney},#{virtualMoney},#{orderIp},#{isPayCallback},#{payTime},#{updateTime},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.VirtualPayOrder">
@@ -86,6 +107,10 @@
 
             <if test="orderNo != null">
                 order_no = #{orderNo},
+            </if>
+
+            <if test="name != null">
+                name = #{name},
             </if>
 
             <if test="userId != null">
@@ -100,8 +125,16 @@
                 virtual_money = #{virtualMoney},
             </if>
 
+            <if test="orderIp != null">
+                order_ip = #{orderIp},
+            </if>
+
             <if test="isPayCallback != null">
                 is_pay_callback = #{isPayCallback},
+            </if>
+
+            <if test="payTime != null">
+                pay_time = #{payTime},
             </if>
 
             <if test="updateTime != null">

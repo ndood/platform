@@ -2,12 +2,10 @@ package com.fulu.game.admin.controller;
 
 import com.fulu.game.admin.service.impl.AdminUserTechAuthServiceImpl;
 import com.fulu.game.common.Result;
-import com.fulu.game.core.entity.Admin;
-import com.fulu.game.core.entity.ProductTop;
-import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.UserTechAuth;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.ProductTopVO;
 import com.fulu.game.core.service.AdminService;
+import com.fulu.game.core.service.ProductService;
 import com.fulu.game.core.service.ProductTopService;
 import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageInfo;
@@ -39,6 +37,8 @@ public class ProductController extends BaseController {
     @Autowired
     private AdminUserTechAuthServiceImpl userTechAuthService;
 
+    @Autowired
+    private ProductService productService;
 
     @PostMapping(value = "/top/list")
     public Result topList(Integer pageNum,
@@ -117,5 +117,15 @@ public class ProductController extends BaseController {
         return Result.success().msg(msg);
     }
 
+    /**
+     * 获取用户商品列表
+     * @param userId
+     * @return
+     */
+    @PostMapping(value = "/user/list")
+    public Result productList(Integer  userId) {
+        List<Product> list = productService.findAppProductList(userId);
+        return Result.success().data(list);
+    }
 
 }

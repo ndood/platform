@@ -18,7 +18,7 @@ import java.util.List;
 @ToString
 public class DynamicDoc {
     @JestId
-    private Long id;
+    private Integer id;
     private Integer userId;
     /** '评论用户头像URL（冗余字段，提高查询效率）' */
     private String userHeadUrl;
@@ -30,14 +30,14 @@ public class DynamicDoc {
     private Integer userAge;
     /** 动态类型（0：文字；1：图片；2：视频） */
     private Integer type;
-    /** 技能id */
-    private Integer techInfoId;
-    /** 技能名称 */
-    private String techInfoName;
-    /** 技能价格 */
-    private BigDecimal techInfoPrice;
-    /** 技能单位 */
-    private String techInfoUnit;
+    /** 商品id */
+    private Integer productId;
+    /** 商品名称 */
+    private String productName;
+    /** 商品价格 */
+    private BigDecimal productPrice;
+    /** 商品单位 */
+    private String productUnit;
     /** 动态内容 */
     private String content;
     /** 城市编码（用于查询附近的动态） */
@@ -55,13 +55,13 @@ public class DynamicDoc {
     /** 是否置顶（1：是；0：否） */
     private Integer isTop;
     /** 打赏次数 */
-    private Long rewards;
+    private Integer rewards;
     /** 点赞次数 */
-    private Long likes;
+    private Integer likes;
     /** 评论次数，预留 */
-    private Long comments;
+    private Integer comments;
     /** 点击次数 */
-    private Long clicks;
+    private Integer clicks;
     /** 是否热门（1：是；0：否） */
     private Integer isHot;
     /** 创建时间 */
@@ -75,5 +75,7 @@ public class DynamicDoc {
     /** 点赞用户id */
     private BitSet likeUserIds;
     /** 是否已点赞（1：是；0：否） */
-    private int isLike;
+    private int isLike = 0;
+    /** 是否已关注（1：是；0：否） */
+    private int isAttention = 0;
 }

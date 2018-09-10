@@ -7,6 +7,9 @@ import cn.binarywang.wx.miniapp.config.WxMaConfig;
 import com.github.binarywang.wxpay.config.WxPayConfig;
 import com.github.binarywang.wxpay.service.WxPayService;
 import com.github.binarywang.wxpay.service.impl.WxPayServiceImpl;
+import me.chanjar.weixin.mp.api.WxMpConfigStorage;
+import me.chanjar.weixin.mp.api.WxMpService;
+import me.chanjar.weixin.mp.api.impl.WxMpServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +26,8 @@ public class WxMaServiceSupply {
     private WxMaConfig pointMaconfig;
     @Autowired
     private WxPayConfig pointPayConfig;
+    @Autowired
+    private WxMpConfigStorage mpConfig;
 
     /**
      * 开黑陪玩支付服务
@@ -64,5 +69,11 @@ public class WxMaServiceSupply {
         return wxMaService;
     }
 
+
+    public WxMpService wxMpService(){
+        WxMpService wxMpService = new WxMpServiceImpl();
+        wxMpService.setWxMpConfigStorage(mpConfig);
+        return wxMpService;
+    }
 
 }

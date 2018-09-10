@@ -1,4 +1,4 @@
-package com.fulu.game.h5.controller.fenqile.exception;
+package com.fulu.game.h5.controller.exception;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.exception.*;

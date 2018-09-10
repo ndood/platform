@@ -3,12 +3,13 @@ package com.fulu.game.play.controller;
 import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.config.WxMaServiceSupply;
-import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.PlatformEcoEnum;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.common.utils.OssUtil;
@@ -38,7 +39,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -70,7 +73,6 @@ public class UserController extends BaseController {
     private PlayCouponOpenServiceImpl playCouponOpenServiceImpl;
     @Autowired
     private SpringThreadPoolExecutor springThreadPoolExecutor;
-
 
 
     @RequestMapping("tech/list")
@@ -185,20 +187,22 @@ public class UserController extends BaseController {
             log.error("未获取用户微信手机号:phoneNoInfo:{};encryptedData:{};iv:{};sessionKey:{};", phoneNoInfo, encryptedData, iv, sessionKey);
             throw new UserException(UserException.ExceptionCode.WX_PHONE_NOT_EXIST_EXCEPTION);
         }
+        User cacheUser = userService.getCurrentUser();
         User user = new User();
-        user.setId(userService.getCurrentUser().getId());
+        user.setId(cacheUser.getId());
         log.info("获取用户微信手机号,原用户信息:{}", user);
         user.setMobile(phoneNoInfo.getPurePhoneNumber());
         user.setUpdateTime(new Date());
         try {
             userService.update(user);
-            userService.updateRedisUser(user);
-        } catch (Exception e) {
+            BeanUtil.copyProperties(user, cacheUser, CopyOptions.create().setIgnoreNullValue(true));
+            userService.updateRedisUser(cacheUser);
+        }catch (Exception e) {
             log.error("更新微信手机号错误用户信息:{};手机号:{};", user, user.getMobile());
             return Result.error().msg("手机号已被注册!");
         }
         log.info("获取用户微信手机号,更新后用户信息:{};手机号:{};", user, user.getMobile());
-        return Result.success().data(user);
+        return Result.success().data(cacheUser);
 
     }
 
@@ -246,7 +250,6 @@ public class UserController extends BaseController {
         }
         user.setUpdateTime(new Date());
         String ipStr = RequestUtil.getIpAdrress(request);
-
         User resultUser = null;
         if (user.getUnionId() == null) {
             userService.update(user);
@@ -551,5 +554,16 @@ public class UserController extends BaseController {
         return Result.success().data(advice).msg("提交成功");
     }
 
-
+    /**
+     * 用户-查询虚拟零钱余额
+     *
+     * @return
+     */
+    @PostMapping("/virtual-balance/get")
+    public Result getVirtualBalance() {
+        User user = userService.findById(userService.getCurrentUser().getId());
+        Map<String, Object> resultMap = new HashMap<>(2);
+        resultMap.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
+        return Result.success().data(resultMap).msg("查询成功！");
+    }
 }

@@ -54,7 +54,7 @@ public class AccessLogServiceImpl extends AbsCommonService<AccessLog,Long> imple
         PageHelper.startPage(pageNum, pageSize, "id DESC");
         User user = userService.getCurrentUser();
         AccessLogVO accessLogVO = new AccessLogVO();
-        accessLogVO.setToUserId(user.getId().longValue());
+        accessLogVO.setToUserId(user.getId());
         List<AccessLogVO> list = accessLogDao.accessList(accessLogVO);
         return new PageInfo<>(list);
     }
@@ -71,7 +71,7 @@ public class AccessLogServiceImpl extends AbsCommonService<AccessLog,Long> imple
         PageHelper.startPage(pageNum, pageSize, "id DESC");
         User user = userService.getCurrentUser();
         AccessLogVO accessLogVO = new AccessLogVO();
-        accessLogVO.setFromUserId(user.getId().longValue());
+        accessLogVO.setFromUserId(user.getId());
         List<AccessLogVO> list = accessLogDao.footprintList(accessLogVO);
         return new PageInfo<>(list);
     }
@@ -89,6 +89,7 @@ public class AccessLogServiceImpl extends AbsCommonService<AccessLog,Long> imple
         accessLogVO.setToUserId(accessLog.getToUserId());
         List<AccessLogVO> list = accessLogDao.findByParameter(accessLogVO);
         setAccessLogInfo(accessLog);
+        accessLog.setStatus(1);
         if(list != null && !list.isEmpty() && list.size() > 0){
             // TODO shijiaoyun 只有进入首页算次数 && "首页".equals(accessLog.getMenusName())
             int count = list.get(0) != null && list.get(0).getCount() != null && list.get(0).getCount()  > 0 ? list.get(0).getCount() + 1 : 1;

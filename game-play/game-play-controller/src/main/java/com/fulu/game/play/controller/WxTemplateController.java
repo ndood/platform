@@ -19,7 +19,7 @@ import java.util.Date;
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/wxtemplate")
-public class WxTemplateController extends BaseController {
+public class WxTemplateController extends BaseController{
 
 
     @Autowired

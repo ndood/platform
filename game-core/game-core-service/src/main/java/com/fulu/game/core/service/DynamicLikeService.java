@@ -12,7 +12,7 @@ import com.github.pagehelper.PageInfo;
  * @email ${email}
  * @date 2018-08-30 11:09:38
  */
-public interface DynamicLikeService extends ICommonService<DynamicLike,Long>{
+public interface DynamicLikeService extends ICommonService<DynamicLike,Integer>{
 
     /**
      * 点赞接口
@@ -27,5 +27,5 @@ public interface DynamicLikeService extends ICommonService<DynamicLike,Long>{
      * @param dynamicId
      * @return
      */
-    public PageInfo<DynamicLike> list(Integer pageNum, Integer pageSize, Long dynamicId);
+    public PageInfo<DynamicLike> list(Integer pageNum, Integer pageSize, Integer dynamicId);
 }

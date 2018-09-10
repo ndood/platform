@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.common.enums.PlatformEcoEnum;
+import com.fulu.game.core.entity.AdminImLog;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.github.pagehelper.PageInfo;
@@ -245,6 +246,15 @@ public interface UserService extends ICommonService<User, Integer> {
     User modifyVirtualBalance(User user, Integer price);
 
     /**
+     * 修改用户魅力值
+     *
+     * @param user  用户Bean
+     * @param price 魅力值修改数量
+     * @return 用户Bean
+     */
+    User modifyCharm(User user, Integer price);
+
+    /**
      * 登录用户获取虚拟币奖励
      *
      * @param user 用户Bean
@@ -254,8 +264,12 @@ public interface UserService extends ICommonService<User, Integer> {
 
     /**
      * 获取用户信息
+     *
      * @param userId 非必传，当未传时查询当前用户信息，否则查询所传递用户信息
      * @return
      */
     UserVO getUserInfo(Integer userId);
+
+
+    List<AdminImLog> userOnline(Boolean active, String version);
 }

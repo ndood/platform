@@ -30,8 +30,26 @@ public class VirtualProductAttachServiceImpl extends AbsCommonService<VirtualPro
     }
 
     @Override
-    public List<VirtualProductAttach> findByOrderProIdUserId(Integer userId, Integer productId) {
+    public List<VirtualProductAttachVO> findByOrderProIdUserId(Integer userId, Integer productId) {
         return virtualProductAttachDao.findByOrderProIdUserId(userId,productId);
     }
 
+    @Override
+    public int deleteByVirtualProductId(int virtualProductId) {
+        return virtualProductAttachDao.deleteByVirtualProductId(virtualProductId);
+    }
+
+    @Override
+    public List<VirtualProductAttachVO> findDetailByVo(VirtualProductAttachVO virtualProductAttachVO) {
+        return virtualProductAttachDao.findDetailByVo(virtualProductAttachVO);
+    }
+
+
+    @Override
+    public List<VirtualProductAttach> findByProductId(Integer virtualProductId) {
+        VirtualProductAttachVO vpav = new VirtualProductAttachVO();
+        vpav.setVirtualProductId(virtualProductId);
+        List<VirtualProductAttach> vpaList = virtualProductAttachDao.findByParameter(vpav);
+        return vpaList;
+    }
 }

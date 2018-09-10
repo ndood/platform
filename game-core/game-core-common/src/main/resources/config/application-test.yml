@@ -61,6 +61,19 @@ config:
       keyPath: /data/cert/apiclient_cert.p12
       tradeType: JSAPI
       notifyUrl: http://t-api-point.wzpeilian.com/wechat/pay/callback
+    wechat_mp:
+      appId: wxc848a7d200e9fc4c
+      secret: 38bbed52fcf066e0f050a2abe76444df
+      token: 111
+      aesKey: 111
+      msgDataFormat:
+      mchId:
+      mchKey:
+      subAppId:
+      subMchId:
+      keyPath:
+      tradeType:
+      notifyUrl:
     im:
       urlPrefix: http://a1.easemob.com
       appKey: 1183180421228734#game-test
@@ -78,3 +91,6 @@ config:
     jpush:
       appKey: fb3c39cc1f8ee7d2a9e7ce1a
       appSecret: 76beaf2705371b53ee1e46f8
+    ordermail:
+      address: xiaosong@fulu.com
+      password: fulu&2018

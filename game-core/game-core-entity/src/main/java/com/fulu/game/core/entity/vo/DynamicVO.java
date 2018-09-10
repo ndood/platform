@@ -18,4 +18,15 @@ import java.util.List;
 public class DynamicVO  extends Dynamic {
     private List<DynamicFile> dynamicFiles;
     private String[] urls;
+
+    private String startTime;
+    private String endTime;
+    private String fileUrls;
+
+    private String keyword;
+
+    private String productName;
+    private String productPrice;
+    private String productUnit;
+    private String userNickname;
 }

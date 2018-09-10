@@ -24,6 +24,8 @@ public class Config {
     private Wechat wechat_game = new Wechat();
 
     private Wechat wechat_poit = new Wechat();
+    //微信公众号
+    private Wechat wechat_mp = new Wechat();
 
     private Elasticsearch elasticsearch = new Elasticsearch();
 
@@ -33,6 +35,8 @@ public class Config {
     private Jpush jpush = new Jpush();
 
     private Queue queue = new Queue();
+
+    private Ordermail ordermail = new Ordermail();
 
     @Data
     public static class Evn {
@@ -99,6 +103,12 @@ public class Config {
     public static class Jpush{
         private String appKey;
         private String appSecret;
+    }
+
+    @Data
+    public static class Ordermail {
+        private String address;
+        private String password;
     }
 
     @Data

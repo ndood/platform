@@ -63,4 +63,11 @@ public interface OrderService extends ICommonService<Order, Integer> {
     Boolean isOldUser(Integer userId);
 
 
+    /**
+     * 获取需要发送邮件的订单
+     *
+     * @return
+     */
+    List<Order> findWaitSendEmailOrder(Integer status , Integer waitMins);
+
 }

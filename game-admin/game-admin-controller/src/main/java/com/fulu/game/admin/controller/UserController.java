@@ -83,6 +83,11 @@ public class UserController extends BaseController {
     @PostMapping(value = "/info-auth/save")
     public Result userInfoAuthCreate(UserInfoAuthTO userInfoAuthTO) {
         userInfoAuthService.save(userInfoAuthTO);
+        
+        if(userInfoAuthTO.getSort() == null){
+            userInfoAuthService.saveSort(userInfoAuthTO);
+        }
+        
         return Result.success().data(userInfoAuthTO);
     }
 
@@ -210,8 +215,8 @@ public class UserController extends BaseController {
      * @return
      */
     @PostMapping(value = "/tech-auth/save")
-    public Result techAuthSave(UserTechAuthTO userTechAuthTO , String privatePicStr) {
-        userTechAuthService.save(userTechAuthTO,privatePicStr);
+    public Result techAuthSave(UserTechAuthTO userTechAuthTO) {
+        userTechAuthService.save(userTechAuthTO);
         return Result.success().data(userTechAuthTO);
     }
 

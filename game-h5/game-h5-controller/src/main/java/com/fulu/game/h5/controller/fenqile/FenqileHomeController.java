@@ -10,6 +10,7 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.BannerVO;
 import com.fulu.game.core.service.BannerService;
 import com.fulu.game.core.service.UserService;
+import com.fulu.game.h5.controller.BaseController;
 import com.fulu.game.h5.shiro.PlayUserToken;
 import com.fulu.game.h5.utils.RequestUtil;
 import com.fulu.game.thirdparty.fenqile.entity.CodeSessionResult;
@@ -35,7 +36,8 @@ import java.util.Map;
  */
 @Controller
 @Slf4j
-public class HomeController extends BaseController {
+@RequestMapping("/fenqile")
+public class FenqileHomeController extends BaseController {
 
 
     private final BannerService bannerService;
@@ -46,15 +48,15 @@ public class HomeController extends BaseController {
 
 
     @Autowired
-    public HomeController(BannerService bannerService,
-                          UserService userService) {
+    public FenqileHomeController(BannerService bannerService,
+                                 UserService userService) {
         this.bannerService = bannerService;
         this.userService = userService;
     }
 
+
     /**
      * banner展示列表
-     *
      * @return 封装结果集
      */
     @PostMapping("/banner/list")
@@ -67,7 +69,7 @@ public class HomeController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/fenqile/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
     public Result login(@RequestParam("code") String code,
                         @RequestParam(value = "sourceId", required = false) Integer sourceId,
@@ -110,7 +112,7 @@ public class HomeController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/fenqile/test/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/test/login", method = RequestMethod.POST)
     @ResponseBody
     public Result testLogin(String openId,
                             @RequestParam(value = "sourceId", required = false) Integer sourceId,

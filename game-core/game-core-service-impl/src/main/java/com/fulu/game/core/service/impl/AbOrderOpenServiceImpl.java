@@ -7,8 +7,10 @@ import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.properties.Config;
 import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.common.utils.GenIdUtil;
+import com.fulu.game.common.utils.MailUtil;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OrderEventVO;
 import com.fulu.game.core.entity.vo.OrderVO;
@@ -21,11 +23,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static com.fulu.game.common.enums.OrderStatusEnum.NON_PAYMENT;
 
@@ -57,6 +62,8 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
     private ImService imService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private Config configProperties;
 
 
     /**
@@ -529,8 +536,13 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
             //TODO 退款
             orderRefund(order, order.getActualMoney());
         }
+        
+        //发送邮件
+        MailUtil.sendMail(configProperties.getOrdermail().getAddress(),configProperties.getOrdermail().getPassword(),"陪玩师取消了订单："+orderNo,"陪玩师取消了订单，订单号"+orderNo,new String[]{configProperties.getOrdermail().getAddress()});
         return orderConvertVo(order);
     }
+    
+    
 
     /**
      * 用户取消订单

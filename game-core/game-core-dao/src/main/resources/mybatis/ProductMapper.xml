@@ -14,6 +14,7 @@
         <result column="unit" property="unit"/>
         <result column="sales_mode_id" property="salesModeId"/>
         <result column="sales_mode_rank" property="salesModeRank"/>
+        <result column="platform_show" property="platformShow"/>
         <result column="status" property="status"/>
         <result column="is_activate" property="isActivate"/>
         <result column="create_time" property="createTime"/>
@@ -25,7 +26,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,category_id,gender,product_name,category_icon,tech_auth_id,price,unit,sales_mode_id,sales_mode_rank,status,is_activate,create_time,update_time,del_flag
+        id,user_id,category_id,gender,product_name,category_icon,tech_auth_id,price,unit,sales_mode_id,sales_mode_rank,platform_show,status,is_activate,create_time,update_time,del_flag
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="ProductResultMap">
@@ -34,6 +35,24 @@
         from t_product
         <where>
             id = #{id} and del_flag = false and is_activate = true
+        </where>
+    </select>
+
+    <select id="findAppProductByTech" parameterType="java.lang.Integer"  resultMap="ProductResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_product
+        <where>
+            tech_auth_id = #{techAuthId} and (platform_show = 2 or platform_show = 3)
+        </where>
+    </select>
+
+    <select id="findAppProductList" parameterType="java.lang.Integer"  resultMap="ProductResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_product
+        <where>
+            user_id = #{userId} and (platform_show = 2 or platform_show = 3)
         </where>
     </select>
 
@@ -78,6 +97,9 @@
             <if test="salesModeRank != null">
                 and sales_mode_rank = #{salesModeRank}
             </if>
+            <if test="platformShow != null">
+                and platform_show = #{platformShow}
+            </if>
             <if test="status != null">
                 and status = #{status}
             </if>
@@ -89,7 +111,7 @@
             </if>
             and is_activate = true and del_flag = false
         </where>
-        ORDER BY sales_mode_rank DESC ;
+        ORDER BY sales_mode_rank DESC
     </select>
 
     <select id="findProductShowCase" resultType="com.fulu.game.core.entity.vo.ProductShowCaseVO">
@@ -148,9 +170,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Product">
         insert into
-        t_product (user_id,category_id,gender,product_name,category_icon,tech_auth_id,price,unit,sales_mode_id,sales_mode_rank,status,is_activate,create_time,update_time,del_flag)
+        t_product (user_id,category_id,gender,product_name,category_icon,tech_auth_id,price,unit,sales_mode_id,sales_mode_rank,platform_show,status,is_activate,create_time,update_time,del_flag)
         values
-        (#{userId},#{categoryId},#{gender},#{productName},#{categoryIcon},#{techAuthId},#{price},#{unit},#{salesModeId},#{salesModeRank},#{status},#{isActivate},#{createTime},#{updateTime},#{delFlag})
+        (#{userId},#{categoryId},#{gender},#{productName},#{categoryIcon},#{techAuthId},#{price},#{unit},#{salesModeId},#{salesModeRank},#{platformShow},#{status},#{isActivate},#{createTime},#{updateTime},#{delFlag})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Product">
@@ -193,6 +215,10 @@
 
             <if test="salesModeRank != null">
                 sales_mode_rank = #{salesModeRank},
+            </if>
+
+            <if test="platformShow != null">
+                platform_show = #{platformShow},
             </if>
 
             <if test="status != null">
@@ -244,6 +270,9 @@
             <if test="rank != null">
                 sales_mode_rank = #{rank},
             </if>
+            <if test="platformShow != null">
+                platform_show = #{platformShow},
+            </if>
         </set>
         <where>
             sales_mode_id = #{id}
@@ -286,7 +315,7 @@
         FROM
             t_product t1
         INNER JOIN t_user_info_auth uia ON uia.user_id = t1.user_id
-        AND uia.sort IS NOT NULL
+        AND uia.sort IS NOT NULL AND t1.del_flag = 0 
         INNER JOIN (
             SELECT
                 id,
@@ -297,12 +326,42 @@
                 del_flag = 0
             GROUP BY
                 category_id
-        ) t2 ON t2.id = t1.sales_mode_id
+        ) t2 ON t2.id = t1.sales_mode_id 
         GROUP BY
             userId
         ORDER BY
             uia.sort,
             id
+    </select>
+
+    <select id="findRecommendProductByUserId" resultType="com.fulu.game.core.entity.vo.ProductShowCaseVO">
+        SELECT
+            t1.id AS id,
+            t1.user_id AS userId,
+            t1.category_id AS categoryId,
+            t1.tech_auth_id AS techAuthId,
+            t1.gender AS gender,
+            t1.product_name AS productName,
+            t1.price AS price,
+            t1.unit AS unit,
+            t1.`status` AS STATUS,
+            t1.create_time AS createTime
+        FROM
+            t_product t1
+        INNER JOIN (
+            SELECT
+                id,
+                min(type) AS `type`
+            FROM
+                t_sales_mode
+            WHERE
+                del_flag = 0
+            GROUP BY
+                category_id
+        ) t2 ON t2.id = t1.sales_mode_id AND t1.del_flag = 0 
+        AND t1.user_id = #{userId}
+        GROUP BY userId limit 0,1
+        
     </select>
 
 </mapper>
