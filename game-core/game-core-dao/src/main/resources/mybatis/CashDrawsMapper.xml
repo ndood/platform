@@ -13,23 +13,25 @@
         <result column="acc_user" property="accUser"/>
         <result column="comment" property="comment"/>
         <result column="cash_status" property="cashStatus"/>
+        <result column="server_auth" property="serverAuth"/>
+        <result column="type" property="type"/>
         <result column="operator" property="operator"/>
         <result column="cash_no" property="cashNo"/>
         <result column="process_time" property="processTime"/>
     </resultMap>
 
     <resultMap id="CashDrawsResultVOMap" type="com.fulu.game.core.entity.vo.CashDrawsVO" extends="CashDrawsResultMap">
-        
+
         <result column="realName" property="realName"/>
         <result column="card_no" property="cardNo"/>
         <result column="open_id" property="openId"/>
         <result column="charm" property="charm"/>
         <result column="balance" property="balance"/>
-        
+
     </resultMap>
 
     <sql id="Base_Column_List">
-        cash_id,create_time,user_id,nickname,mobile,money,acc_no,acc_user,comment,cash_status,operator,cash_no,process_time    </sql>
+        cash_id,create_time,user_id,nickname,mobile,money,acc_no,acc_user,comment,cash_status,server_auth,type,operator,cash_no,process_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="CashDrawsResultMap">
         select
@@ -60,6 +62,12 @@
             </if>
             <if test="cashStatus != null">
                 and cash_status = #{cashStatus}
+            </if>
+            <if test="serverAuth != null">
+                and server_auth = #{serverAuth}
+            </if>
+            <if test="type != null">
+                and type = #{type}
             </if>
             <if test="nickname != null">
                 and nickname like CONCAT('%', #{nickname},'%')
@@ -147,9 +155,9 @@
     <insert id="create" useGeneratedKeys="true" keyProperty="cashId"
             parameterType="com.fulu.game.core.entity.CashDraws">
         insert into
-        t_cash_draws (create_time,user_id,nickname,mobile,money,acc_no,acc_user,comment,cash_status,operator,cash_no,process_time)
+        t_cash_draws (create_time,user_id,nickname,mobile,money,acc_no,acc_user,comment,cash_status,server_auth,type,operator,cash_no,process_time)
         values
-        (#{createTime},#{userId},#{nickname},#{mobile},#{money},#{accNo},#{accUser},#{comment},#{cashStatus},#{operator},#{cashNo},#{processTime})
+        (#{createTime},#{userId},#{nickname},#{mobile},#{money},#{accNo},#{accUser},#{comment},#{cashStatus},#{serverAuth},#{type},#{operator},#{cashNo},#{processTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.CashDraws">
@@ -164,6 +172,13 @@
             <if test="accUser != null">acc_user = #{accUser},</if>
             <if test="comment != null">comment = #{comment},</if>
             <if test="cashStatus != null">cash_status = #{cashStatus},</if>
+            <if test="serverAuth != null">
+                server_auth = #{serverAuth},
+            </if>
+
+            <if test="type != null">
+                type = #{type},
+            </if>
             <if test="operator != null">operator = #{operator},</if>
             <if test="cashNo != null">cash_no = #{cashNo},</if>
             <if test="processTime != null">process_time = #{processTime},</if>
