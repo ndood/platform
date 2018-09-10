@@ -1,16 +1,14 @@
 package com.fulu.game.admin.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Admin;
-import cn.hutool.core.bean.BeanUtil;
-import com.fulu.game.core.service.queue.RedisTaskContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,8 +21,6 @@ import java.util.Map;
 @Slf4j
 public class HomeController {
 
-    @Autowired
-    private RedisTaskContainer redisTaskContainer;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index() {
@@ -53,13 +49,5 @@ public class HomeController {
         }
     }
 
-
-    @RequestMapping(value = "/test/queue", method = RequestMethod.GET)
-    @ResponseBody
-    public Result testQueue(String id,String content){
-        redisTaskContainer.getRedisQueue().pushFromHead(new Msg(id,content));
-
-        return Result.success();
-    }
 
 }
