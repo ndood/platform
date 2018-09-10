@@ -80,6 +80,7 @@ public class MpHomeController extends BaseController {
 
 
     @PostMapping(value = "login")
+    @ResponseBody
     public Result login(@RequestParam(required = true) String code,
                         @RequestParam(required = true) String mobile,
                         @RequestParam(required = true, defaultValue = "") String verifyCode,
@@ -129,6 +130,7 @@ public class MpHomeController extends BaseController {
      * @return
      */
     @PostMapping("/sms/verify")
+    @ResponseBody
     public Result sms(@RequestParam("mobile") String mobile) {
         //缓存中查找该手机是否有验证码
         if (redisOpenService.hasKey(RedisKeyEnum.SMS.generateKey(mobile))) {
