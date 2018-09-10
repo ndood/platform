@@ -360,3 +360,12 @@ COMMENT '后端操作者名称' after `operator_id`;
 alter table t_dynamic change  column tech_info_id product_id int(11);
 
 
+-- 修改动态表，添加是否
+ALTER TABLE `t_dynamic_file` ADD COLUMN `width` int(11) DEFAULT '0'
+COMMENT '图片/视频宽度' after `play_count`;
+ALTER TABLE `t_dynamic_file` ADD COLUMN `height` int(11) DEFAULT '0'
+COMMENT '图片/视频高度' after `width`;
+ALTER TABLE `t_dynamic_file` ADD COLUMN `duration` int(11) DEFAULT '0'
+COMMENT '视频时长（单位秒）' after `height`;
+
+
