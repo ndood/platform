@@ -34,6 +34,8 @@ public class Config {
 
     private Jpush jpush = new Jpush();
 
+    private Queue queue = new Queue();
+
     private Ordermail ordermail = new Ordermail();
 
     @Data
@@ -89,7 +91,7 @@ public class Config {
     }
 
     @Data
-    public static class Elasticsearch {
+    public static class Elasticsearch{
         private String host;
         private int readTimeout;
         private String indexDB;
@@ -98,14 +100,22 @@ public class Config {
     }
 
     @Data
-    public static class Jpush {
+    public static class Jpush{
         private String appKey;
         private String appSecret;
     }
-    
+
     @Data
     public static class Ordermail {
         private String address;
         private String password;
+    }
+
+    @Data
+    public static class Queue{
+        private boolean miniappPush;
+        private boolean appPush;
+        private boolean userScore;
+        private boolean formId;
     }
 }

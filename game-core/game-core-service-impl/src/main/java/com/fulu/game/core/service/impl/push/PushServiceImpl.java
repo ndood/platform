@@ -6,7 +6,6 @@ import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fulu.game.common.Constant;
-import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.enums.WechatTemplateIdEnum;
@@ -20,7 +19,7 @@ import com.fulu.game.core.entity.vo.WechatFormidVO;
 import com.fulu.game.core.service.PushService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.WechatFormidService;
-import com.fulu.game.core.service.queue.PushMsgQueue;
+import com.fulu.game.core.service.queue.MiniAppPushContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,7 @@ public class PushServiceImpl implements PushService {
 
 
     @Autowired
-    private PushMsgQueue pushMsgQueue;
+    private MiniAppPushContainer miniAppPushContainer;
     @Autowired
     private UserService userService;
     @Autowired
@@ -161,7 +160,7 @@ public class PushServiceImpl implements PushService {
                     wxMaTemplateMessage.setPage(page);
                     wxMaTemplateMessage.setFormId(wechatFormidVO.getFormId());
                     wxMaTemplateMessage.setData(dataList);
-                    pushMsgQueue.addTemplateMessage(new WxMaTemplateMessageVO(platform, pushId, wxMaTemplateMessage));
+                    miniAppPushContainer.add(new WxMaTemplateMessageVO(platform, pushId, wxMaTemplateMessage));
                     formIds.add(wechatFormidVO.getFormId());
                     userFormIds.put(wechatFormidVO.getUserId(), wechatFormidVO.getFormId());
                 }
