@@ -58,5 +58,9 @@ public class UserVO extends User {
     private List<DynamicVO> newestDynamics;
     /** 是否已关注（1：是；0：否） */
     private int isAttention = 0;
+    /** 关注用户数 */
+    private int attentions = 0;
+    /** 粉丝数 */
+    private int fans = 0;
 
 }

@@ -4,9 +4,11 @@ package com.fulu.game.core.service.impl;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.BoundListOperations;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisConnectionUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -48,6 +50,21 @@ public class RedisOpenServiceImpl {
     public String get(String key) {
         Object value = redisTemplate.opsForValue().get(key);
         return (value != null) ? value.toString() : null;
+    }
+
+    /**
+     * 统计bit位为1的总数
+     * @param key
+     */
+    public Long bitCount(final String key) {
+        return (Long) redisTemplate.execute(new RedisCallback<Long>() {
+            @Override
+            public Long doInRedis(RedisConnection connection) throws DataAccessException {
+                long result = 0;
+                result = connection.bitCount(key.getBytes());
+                return result;
+            }
+        });
     }
 
 
