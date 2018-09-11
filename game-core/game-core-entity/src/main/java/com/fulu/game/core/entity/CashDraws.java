@@ -45,19 +45,20 @@ public class CashDraws implements Serializable {
 	//运营是否已处理  0  未处理  1已处理
 	private Integer serverAuth;
 	//提现类型：1：余额提现；2：魅力值提现
+	@Excel(name = "提现类型", orderNum = "9", width = 15 , replace = {"余额提现_1", "魅力值提现_2", "余额提现_null"})
 	private Integer type;
 	//申请单操作人
-	@Excel(name = "申请单操作人", orderNum = "9", width = 15)
+	@Excel(name = "申请单操作人", orderNum = "10", width = 15)
 	private String operator;
 	//提现单号（处理成功后生成）
-	@Excel(name = "提现单号", orderNum = "10", width = 15)
+	@Excel(name = "提现单号", orderNum = "11", width = 15)
 	private String cashNo;
 	//提现申请时间
-	@Excel(name = "提现申请时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "11", width = 25)
+	@Excel(name = "提现申请时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "12", width = 25)
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date createTime;
 	//处理时间
-	@Excel(name = "处理时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "12", width = 25)
+	@Excel(name = "处理时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "13", width = 25)
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date processTime;
 

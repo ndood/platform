@@ -105,6 +105,9 @@
             <if test="cashStatus != null">
                 and t1.cash_status = #{cashStatus}
             </if>
+            <if test="serverAuth != null">
+                and t1.server_auth = #{serverAuth}
+            </if>
             <if test="nickname != null">
                 and t1.nickname like CONCAT('%', #{nickname},'%')
             </if>

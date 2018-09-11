@@ -1,5 +1,6 @@
 package com.fulu.game.core.entity.vo;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.fulu.game.core.entity.CashDraws;
 import lombok.Data;
 
@@ -31,25 +32,32 @@ public class CashDrawsVO extends CashDraws {
     /**
      * 认证的真实姓名
      */
+    @Excel(name = "用户真实姓名", orderNum = "14", width = 15)
     private String realName;
 
     /**
      * 认证的身份证号
      */
+    @Excel(name = "用户身份证号", orderNum = "15", width = 15)
     private String cardNo;
 
     /**
      * 用户OpenId
      */
+    @Excel(name = "用户OpenId", orderNum = "16", width = 15)
     private String openId;
 
     /**
      * 用户魅力值
      */
+    @Excel(name = "用户魅力值", orderNum = "17", width = 15)
     private BigDecimal charm;
 
     /**
      * 用户可提现余额
      */
+    @Excel(name = "用户余额", orderNum = "18", width = 15)
     private BigDecimal balance;
+
+
 }

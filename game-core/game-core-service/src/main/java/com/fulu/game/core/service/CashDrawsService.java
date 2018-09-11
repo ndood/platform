@@ -17,9 +17,9 @@ public interface CashDrawsService extends ICommonService<CashDraws,Integer>{
 
     CashDrawsVO save(CashDrawsVO cashDrawsVO);
 
-    PageInfo<CashDraws> list(CashDrawsVO cashDrawsVO,Integer pageNum, Integer pageSize);
+    PageInfo<CashDrawsVO> list(CashDrawsVO cashDrawsVO,Integer pageNum, Integer pageSize);
 
-    List<CashDraws> list(CashDrawsVO cashDrawsVO);
+    PageInfo<CashDrawsVO> list(CashDrawsVO cashDrawsVO);
 
     CashDraws draw(Integer cashId, String comment);
 

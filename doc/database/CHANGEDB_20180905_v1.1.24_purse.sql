@@ -32,3 +32,6 @@ CREATE TABLE `t_virtual_pay_order` (
   `create_time` datetime NOT NULL COMMENT '订单创建时间',
   PRIMARY KEY (`id`)
 ) COMMENT='虚拟币充值订单表';
+
+
+ALTER TABLE `t_cash_draws` ADD COLUMN `server_auth` tinyint(4) DEFAULT '0' NOT NULL COMMENT '运营是否已处理  0  未处理  1已处理' after `cash_status`;

@@ -60,8 +60,6 @@ public class UserController extends BaseController {
     @Autowired
     private UserBodyAuthService userBodyAuthService;
     @Autowired
-    private RedisOpenServiceImpl redisOpenService;
-    @Autowired
     private VirtualDetailsService virtualDetailsService;
 
     /**
@@ -506,29 +504,6 @@ public class UserController extends BaseController {
         return Result.success().data(userInfoVO).msg("查询聊天对象信息成功！");
     }
 
-    /**
-     * 获取用户在线状态
-     * @return
-     */
-    @PostMapping("/online-status/get")
-    public Result chatWithGet(Integer userIds[]) {
-
-        List<UserOnlineStatusVo> list = new ArrayList<>();
-        
-        for(int i = 0 ; i < userIds.length ; i++){
-            String onlineStr = redisOpenService.get(RedisKeyEnum.USER_ONLINE_KEY.generateKey(userIds[i]));
-            
-            UserOnlineStatusVo uos = new UserOnlineStatusVo();
-            uos.setUserId(userIds[i]);
-            uos.setIsOnLine(true);
-            if(StringUtils.isBlank(onlineStr)){
-                uos.setIsOnLine(false);
-            }
-            list.add(uos);
-        }
-        
-        return Result.success().data(list).msg("查询成功！");
-    }
 
 
     @RequestMapping("/virtual-detail/list")

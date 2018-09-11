@@ -143,24 +143,36 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
     }
 
     @Override
-    public PageInfo<CashDraws> list(CashDrawsVO cashDrawsVO, Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize, "create_time DESC");
+    public PageInfo<CashDrawsVO> list(CashDrawsVO cashDrawsVO, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize, "t1.create_time DESC");
         List<CashDrawsVO> list = cashDrawsDao.findDetailByParameter(cashDrawsVO);
+
+        this.charmToMoney(list);
         
+        return new PageInfo(list);
+    }
+
+    @Override
+    public PageInfo<CashDrawsVO> list(CashDrawsVO cashDrawsVO) {
+        PageHelper.orderBy("t1.create_time DESC");
+        
+        List<CashDrawsVO> list = cashDrawsDao.findDetailByParameter(cashDrawsVO);
+        this.charmToMoney(list);
+
+        return new PageInfo(list);
+    }
+
+    /**
+     * 魅力值转换成金额
+     * @param list
+     */
+    private void charmToMoney(List<CashDrawsVO> list){
         //转换魅力值的可提现金额   魅力值除以10*70%就是可提现金额
         for(int i = 0 ; i < list.size() ; i++){
             BigDecimal charm = list.get(i).getCharm();
             charm.multiply(new BigDecimal("0.07"));
             list.get(i).setCharm(charm);
         }
-        
-        return new PageInfo(list);
-    }
-
-    @Override
-    public List<CashDraws> list(CashDrawsVO cashDrawsVO) {
-        List<CashDraws> list = cashDrawsDao.findListOrderByCreateTime(cashDrawsVO);
-        return list;
     }
 
 

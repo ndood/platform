@@ -4,6 +4,7 @@ import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.CashServerAuthStatusEnum;
 import com.fulu.game.core.entity.CashDraws;
 import com.fulu.game.core.entity.vo.CashDrawsVO;
 import com.fulu.game.core.service.CashDrawsService;
@@ -41,7 +42,21 @@ public class CashDrawsController extends BaseController{
     public Result list(CashDrawsVO cashDrawsVO,
                        @RequestParam("pageNum") Integer pageNum,
                        @RequestParam("pageSize") Integer pageSize){
-        PageInfo<CashDraws> cashDrawsList = cashDrawsService.list(cashDrawsVO,pageNum,pageSize);
+        PageInfo<CashDrawsVO> cashDrawsList = cashDrawsService.list(cashDrawsVO,pageNum,pageSize);
+        return Result.success().data(cashDrawsList).msg("查询列表成功！");
+    }
+
+
+    /**
+     * 财务-查看提现申请列表
+     * @return
+     */
+    @PostMapping("/financer-auth/list")
+    public Result financerAuthlist(CashDrawsVO cashDrawsVO,
+                       @RequestParam("pageNum") Integer pageNum,
+                       @RequestParam("pageSize") Integer pageSize){
+        cashDrawsVO.setServerAuth(CashServerAuthStatusEnum.AUTH_SUCCESS.getType());
+        PageInfo<CashDrawsVO> cashDrawsList = cashDrawsService.list(cashDrawsVO,pageNum,pageSize);
         return Result.success().data(cashDrawsList).msg("查询列表成功！");
     }
 
@@ -55,9 +70,9 @@ public class CashDrawsController extends BaseController{
     public void orderExport(HttpServletResponse response,
                             CashDrawsVO cashDrawsVO) throws Exception {
         String title = "提现申请单列表";
-        List<CashDraws> cashDrawsList = cashDrawsService.list(cashDrawsVO);
+        PageInfo<CashDrawsVO> cashDrawsList = cashDrawsService.list(cashDrawsVO);
         ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
-        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, CashDraws.class, cashDrawsList);
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, CashDrawsVO.class, cashDrawsList.getList());
         response.setCharacterEncoding("UTF-8");
         response.setHeader("content-Type", "application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));
@@ -92,6 +107,23 @@ public class CashDrawsController extends BaseController{
         if (!flag){
             return Result.error().msg("操作失败，订单不存在");
         }
+        return Result.success().msg("操作成功");
+    }
+
+    /**
+     * 管理员-审批通过
+     * @param cashId
+     * @return
+     */
+    @PostMapping("/admin-auth/succ")
+    public Result adminAuthSucc(@RequestParam("cashId") Integer cashId){
+
+        CashDraws cd = new CashDraws();
+        cd.setCashId(cashId);
+        cd.setServerAuth(CashServerAuthStatusEnum.AUTH_SUCCESS.getType());
+        
+        cashDrawsService.update(cd);
+        
         return Result.success().msg("操作成功");
     }
 }
