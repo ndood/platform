@@ -45,7 +45,7 @@ public class CashDrawsController extends BaseController {
     @PostMapping("/charm/withdraw")
     public Result withdrawCharm(@RequestParam Integer charm) {
         CashDrawsVO vo = cashDrawsService.withdrawCharm(charm);
-        return Result.success().data(vo).msg("提现申请成功！");
+        return Result.success().data(vo).msg("魅力值提现申请成功！");
     }
 }
 

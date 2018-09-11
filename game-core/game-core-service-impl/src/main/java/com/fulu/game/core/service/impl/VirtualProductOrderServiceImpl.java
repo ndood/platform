@@ -91,7 +91,7 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
         if (virtualBalance < price) {
             log.error("用户userId：{}的钻石余额不够支付虚拟商品，钻石余额：{}，虚拟商品价格：{}",
                     fromUser.getId(), virtualBalance, price);
-            throw new VirtualProductException(VirtualProductException.ExceptionCode.BALANCE_NOT_ENOUGH_EXCEPTION);
+            throw new VirtualProductException(VirtualProductException.ExceptionCode.VIRTUAL_BALANCE_NOT_ENOUGH_EXCEPTION);
         }
 
         User targetUser = userService.findById(targetUserId);
@@ -187,7 +187,7 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
         List<VirtualProductOrder> vpList = virtualProductOrderDao.findByParameter(vpo);
         if (CollectionUtils.isEmpty(vpList)) {
             return false;
-        }else{
+        } else {
             return true;
         }
     }

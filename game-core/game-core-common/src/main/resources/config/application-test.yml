@@ -73,7 +73,7 @@ config:
       subMchId:
       keyPath:
       tradeType:
-      notifyUrl:
+      notifyUrl: https://t-h5.wzpeilian.com/wechat/mp/pay/callback
     im:
       urlPrefix: http://a1.easemob.com
       appKey: 1183180421228734#game-test
