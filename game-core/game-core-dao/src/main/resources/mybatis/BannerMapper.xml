@@ -8,6 +8,7 @@
         <result column="sort" property="sort"/>
         <result column="operator_id" property="operatorId"/>
         <result column="operator_name" property="operatorName"/>
+        <result column="platform_type" property="platformType"/>
         <result column="pic_url" property="picUrl"/>
         <result column="redirect_type" property="redirectType"/>
         <result column="redirect_url" property="redirectUrl"/>
@@ -19,7 +20,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,disable,sort,operator_id,operator_name,pic_url,redirect_type,redirect_url,create_time,update_time    </sql>
+        id,disable,sort,operator_id,operator_name,platform_type,pic_url,redirect_type,redirect_url,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="BannerResultMap">
         select
@@ -56,6 +57,9 @@
             <if test="redirectType != null">
                 and redirect_type = #{redirectType}
             </if>
+            <if test="platformType != null" >
+                and platform_type = #{platformType}
+            </if>
             <if test="redirectUrl != null">
                 and redirect_url = #{redirectUrl}
             </if>
@@ -71,9 +75,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Banner">
         insert into
-        t_banner (disable,sort,operator_id,operator_name,pic_url,redirect_type,redirect_url,create_time,update_time)
+        t_banner (disable,sort,operator_id,operator_name,platform_type,pic_url,redirect_type,redirect_url,create_time,update_time)
         values
-        (#{disable},#{sort},#{operatorId},#{operatorName},#{picUrl},#{redirectType},#{redirectUrl},#{createTime},#{updateTime})
+        (#{disable},#{sort},#{operatorId},#{operatorName},#{platformType},#{picUrl},#{redirectType},#{redirectUrl},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Banner">
@@ -92,6 +96,10 @@
 
             <if test="operatorName != null">
                 operator_name = #{operatorName},
+            </if>
+
+            <if test="platformType != null">
+                platform_type = #{platformType},
             </if>
 
             <if test="picUrl != null">

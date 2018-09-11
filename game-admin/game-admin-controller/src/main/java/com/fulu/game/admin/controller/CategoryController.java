@@ -69,7 +69,7 @@ public class CategoryController extends BaseController {
      */
     @PostMapping(value = "/list-all")
     public Result listAll() {
-        List<Category> list = categoryService.findByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType(), null);
+        List<Category> list = categoryService.findByFirstPid(CategoryParentEnum.ACCOMPANY_PLAY.getType(), null);
         return Result.success().data(list);
     }
 

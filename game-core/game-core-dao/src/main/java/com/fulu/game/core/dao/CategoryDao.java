@@ -19,4 +19,7 @@ public interface CategoryDao extends ICommonDao<Category,Integer>{
 
 
     List<Category> findByParameter(CategoryVO categoryVO);
+
+    /** 通过一级分类获取分类列表 */
+    List<Category> findByFirstPidAndPrams(CategoryVO categoryVO);
 }
