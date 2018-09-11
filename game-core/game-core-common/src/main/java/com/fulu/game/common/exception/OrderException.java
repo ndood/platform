@@ -25,11 +25,19 @@ public class OrderException  extends BizException{
         ORDER_USER_NOT_HAS_TECH(7012, "您没有认证该游戏"),
         ORDER_STATUS_MISMATCHES(7014, "订单状态不匹配,不能操作!"),
         ORDER_NOT_ROB_MYSELF(7015, "不能抢自己的订单!"),
-        ORDER_NOT_MYSELF(7016, "不能给自己下单");
+        ORDER_NOT_MYSELF(7016, "不能给自己下单"),
+        ORDER_COUPON_NOT_USE(7017, "该优惠券不能使用!");
         private int code;
         private String msg;
     }
 
+
+
+    public OrderException(ExceptionCode exceptionCode) {
+        this.exceptionCode = exceptionCode;
+        this.code = exceptionCode.getCode();
+        this.message = exceptionCode.getMsg();
+    }
 
 
     public OrderException(ExceptionCode exceptionCode,String orderNo) {

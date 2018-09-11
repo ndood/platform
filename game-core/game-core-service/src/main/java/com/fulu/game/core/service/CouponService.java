@@ -83,7 +83,7 @@ public interface CouponService extends ICommonService<Coupon, Integer> {
      *
      * @return
      */
-    List<Coupon> availableCouponList(Integer userId);
+    List<Coupon> availableCouponList(Integer userId, BigDecimal orderMoney,Integer categoryId);
 
     /**
      * 判断优惠券是否可用
@@ -91,6 +91,6 @@ public interface CouponService extends ICommonService<Coupon, Integer> {
      * @param coupon
      * @return
      */
-    Boolean couponIsAvailable(Coupon coupon, BigDecimal orderMoney);
+    Boolean couponIsAvailable(Coupon coupon, BigDecimal orderMoney,int categoryId );
 
 }

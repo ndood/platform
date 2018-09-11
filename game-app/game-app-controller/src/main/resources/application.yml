@@ -3,8 +3,8 @@ spring:
        active: dev
     http:
        multipart:
-          max-file-size: 5MB
-          max-request-size: 5MB
+          max-file-size: 500MB
+          max-request-size: 500MB
 config:
     queue:
         miniappPush: false

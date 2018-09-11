@@ -405,9 +405,9 @@ update `t_banner` set platform_type = 1 where ifnull(platform_type,1) = 1
 -- 优惠券表修改
 ALTER TABLE `t_coupon_group` ADD COLUMN `category_id`  int(11) NOT NULL DEFAULT 1 COMMENT '限品类(1则为陪玩全品类,10为游戏全品类,11为娱乐全品类)' AFTER `is_new_user`;
 ALTER TABLE `t_coupon_group` ADD COLUMN `type`  tinyint(1) NOT NULL DEFAULT 1 COMMENT '类型(1满减，2折扣)' AFTER `category_id`;
-ALTER TABLE `t_coupon_group` ADD COLUMN `full_reduction` NOT decimal(11,2) DEFAULT 0 NULL COMMENT '多少金额可用' AFTER `type`;
+ALTER TABLE `t_coupon_group` ADD COLUMN `full_reduction`  decimal(11,2) NOT NULL DEFAULT 0  COMMENT '多少金额可用' AFTER `type`;
 
-ALTER TABLE `t_coupon` ADD COLUMN `category_id`  int NOT NULL DEFAULT 1 COMMENT '限品类(为空则为全品类)' AFTER `is_new_user`;
+ALTER TABLE `t_coupon` ADD COLUMN `category_id`  int(11) NOT NULL DEFAULT 1 COMMENT '限品类(1则为陪玩全品类,10为游戏全品类,11为娱乐全品类)' AFTER `is_new_user`;
 ALTER TABLE `t_coupon` ADD COLUMN `type`   tinyint(1) NOT NULL DEFAULT 1 COMMENT '类型(1满减，2折扣)' AFTER `category_id`;
 ALTER TABLE `t_coupon` ADD COLUMN `full_reduction`  decimal(11,2) DEFAULT 0 NOT NULL COMMENT '多少金额可用' AFTER `type`;
 

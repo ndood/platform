@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -73,13 +74,13 @@ public class CouponController extends BaseController {
 
     /**
      * 查询用户所有可用的优惠券
-     *
      * @return
      */
     @PostMapping(value = "/user")
-    public Result userCoupons() {
+    public Result userCoupons(@RequestParam( required = false) BigDecimal orderMoney,
+                              @RequestParam( required = false) Integer categoryId) {
         User user = userService.getCurrentUser();
-        List<Coupon> list = couponService.availableCouponList(user.getId());
+        List<Coupon> list = couponService.availableCouponList(user.getId(), orderMoney, categoryId);
         return Result.success().data(list);
     }
 
