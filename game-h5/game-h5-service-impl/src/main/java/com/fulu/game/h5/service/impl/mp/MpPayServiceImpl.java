@@ -59,22 +59,22 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
      * 提交充值订单
      *
      * @param sessionkey   订单校验令牌
-     * @param actualMoney  实付金额（人民币）
      * @param virtualMoney 充值虚拟币金额（钻石）
      * @param ip           ip
      * @return 订单号
      */
     public Map<String, Object> submit(String sessionkey,
-                                      BigDecimal actualMoney,
                                       Integer virtualMoney,
                                       String ip,
                                       Integer payment) {
         User user = userService.getCurrentUser();
         if (!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))) {
-            log.error("验证sessionkey错误:sessionkey:{};actualMoney:{};virtualMoney:{};ip:{};userId:{}",
-                    sessionkey, actualMoney, virtualMoney, ip, user.getId());
+            log.error("验证sessionkey错误:sessionkey:{};virtualMoney:{};ip:{};userId:{}",
+                    sessionkey, virtualMoney, ip, user.getId());
             throw new DataException(DataException.ExceptionCode.NO_FORM_TOKEN_ERROR);
         }
+
+        BigDecimal actualMoney = new BigDecimal(virtualMoney / 10).setScale(2, BigDecimal.ROUND_HALF_DOWN);
 
         VirtualPayOrder order = new VirtualPayOrder();
         order.setName("虚拟币充值订单：付款金额：¥" + actualMoney + "，虚拟币数量：" + virtualMoney + "");
@@ -278,27 +278,26 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
     }
 
     /**
-     * @param sessionkey  订单校验令牌
-     * @param actualMoney 实付金额（人民币）
-     * @param money       充值到平台的金额
-     * @param ip          ip地址字符串
+     * @param sessionkey 订单校验令牌
+     * @param money      充值到平台的金额
+     * @param ip         ip地址字符串
      * @return 结果集Map
      */
-    public Map<String, Object> balanceCharge(String sessionkey, BigDecimal actualMoney, BigDecimal money, String ip) {
+    public Map<String, Object> balanceCharge(String sessionkey, BigDecimal money, String ip) {
         User user = userService.getCurrentUser();
         if (!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))) {
-            log.error("验证sessionkey错误:sessionkey:{};actualMoney:{};money:{};ip:{};userId:{}",
-                    sessionkey, actualMoney, money, ip, user.getId());
+            log.error("验证sessionkey错误:sessionkey:{};money:{};ip:{};userId:{}",
+                    sessionkey, money, ip, user.getId());
             throw new DataException(DataException.ExceptionCode.NO_FORM_TOKEN_ERROR);
         }
 
         VirtualPayOrder order = new VirtualPayOrder();
         order.setOrderNo(generateVirtualPayOrderNo());
-        order.setName("余额充值订单：付款金额：¥" + actualMoney + "，充值金额：¥" + money + "");
+        order.setName("余额充值订单：付款金额：¥" + money + "，充值金额：¥" + money + "");
         order.setUserId(user.getId());
         order.setType(VirtualPayOrderTypeEnum.BALANCE_ORDER.getType());
         order.setPayment(VirtualPayOrderPaymentEnum.WECHAT_PAY.getType());
-        order.setActualMoney(actualMoney);
+        order.setActualMoney(money);
         order.setMoney(money);
         order.setOrderIp(ip);
         order.setIsPayCallback(false);

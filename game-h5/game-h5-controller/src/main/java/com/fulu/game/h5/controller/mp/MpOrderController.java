@@ -43,7 +43,6 @@ public class MpOrderController extends BaseController {
      *
      * @param request      request
      * @param sessionkey   订单校验令牌
-     * @param actualMoney  实付金额（人民币）
      * @param virtualMoney 充值虚拟币金额（钻石）
      * @param payment      支付方式（1：微信支付；2：余额支付）
      * @return 封装结果集
@@ -51,11 +50,10 @@ public class MpOrderController extends BaseController {
     @PostMapping("/submit")
     public Result submit(HttpServletRequest request,
                          @RequestParam String sessionkey,
-                         @RequestParam BigDecimal actualMoney,
                          @RequestParam Integer virtualMoney,
                          @RequestParam Integer payment) {
         String ip = RequestUtil.getIpAdrress(request);
-        Map<String, Object> resultMap = payService.submit(sessionkey, actualMoney, virtualMoney, ip, payment);
+        Map<String, Object> resultMap = payService.submit(sessionkey, virtualMoney, ip, payment);
         return Result.success().data(resultMap).msg("创建订单成功!");
     }
 
@@ -79,19 +77,17 @@ public class MpOrderController extends BaseController {
     /**
      * 提交余额充值订单
      *
-     * @param request     request
-     * @param sessionkey  订单校验令牌
-     * @param actualMoney 实付金额（人民币）
-     * @param money       充值到平台的金额
+     * @param request    request
+     * @param sessionkey 订单校验令牌
+     * @param money      充值到平台的金额
      * @return 封装结果集
      */
     @PostMapping("/balance/submit")
     public Result balanceCharge(HttpServletRequest request,
                                 @RequestParam String sessionkey,
-                                @RequestParam BigDecimal actualMoney,
                                 @RequestParam BigDecimal money) {
         String ip = RequestUtil.getIpAdrress(request);
-        Map<String, Object> resultMap = payService.balanceCharge(sessionkey, actualMoney, money, ip);
+        Map<String, Object> resultMap = payService.balanceCharge(sessionkey, money, ip);
         return Result.success().data(resultMap).msg("创建订单成功!");
     }
 }
