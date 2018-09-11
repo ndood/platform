@@ -24,6 +24,7 @@ CREATE TABLE `t_virtual_pay_order` (
   `user_id` int(11) DEFAULT NULL COMMENT '用户id',
   `type` tinyint(1) DEFAULT NULL COMMENT '订单类型(1：虚拟币充值订单，2：余额充值订单)',
   `payment` tinyint(1) DEFAULT NULL COMMENT '支付方式（1：微信支付；2：余额支付）',
+  `pay_path` tinyint(1) DEFAULT NULL COMMENT '充值路径（1：公众号；2：安卓；3：IOS）',
   `actual_money` decimal(11,2) DEFAULT NULL COMMENT '实付金额',
   `virtual_money` int(11) DEFAULT NULL COMMENT '虚拟商品价格（对应钻石数量）',
   `money` decimal(11,2) DEFAULT '0.00' COMMENT '充值到平台的金额',
@@ -44,3 +45,5 @@ ALTER TABLE `t_cash_draws` ADD COLUMN `server_auth` tinyint(4) DEFAULT '0' NOT N
 
 --t_virtual_product_order加order_no唯一索引
 ALTER TABLE `t_virtual_product_order` ADD UNIQUE (`order_no`)
+
+ALTER TABLE `t_virtual_pay_order` ADD COLUMN `pay_path` tinyint(1) DEFAULT NULL COMMENT '充值路径（1：公众号；2：安卓；3：IOS）' after `payment`;

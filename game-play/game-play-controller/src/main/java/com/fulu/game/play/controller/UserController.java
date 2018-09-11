@@ -284,6 +284,22 @@ public class UserController extends BaseController {
     }
 
     /**
+     * 判断用户是否已经绑定手机号
+     *
+     * @return
+     */
+    @PostMapping("/mobile/bind/status")
+    public Result mobileBindStatus() {
+        User currentUser = userService.getCurrentUser();
+        User openIdUser = userService.findById(currentUser.getId());
+        //如果openId已经绑定手机号
+        if (openIdUser != null && StringUtils.isNotBlank(openIdUser.getMobile())) {
+            return Result.success().msg("已经绑定过手机号！");
+        }
+        return Result.error().msg("没有绑定手机号！");
+    }
+
+    /**
      * 绑定手机号
      *
      * @param mobile
@@ -308,28 +324,16 @@ public class UserController extends BaseController {
         if (openIdUser != null && openIdUser.getMobile() != null) {
             return Result.error().msg("已经绑定过手机号！");
         }
-        User newUser;
         User mobileUser = userService.findByMobile(mobile);
         if (mobileUser != null) {
-            if (mobileUser.getOpenId() != null) {
-                return Result.error().msg("该手机号已经被绑定！");
-            } else {
-                mobileUser.setRegistIp(currentUser.getRegistIp());
-
-                mobileUser.setOpenId(currentUser.getOpenId());
-                mobileUser.setUpdateTime(new Date());
-                userService.update(mobileUser);
-                userService.deleteById(openIdUser.getId());
-                newUser = mobileUser;
-            }
+            return Result.error().msg("该手机号已经被绑定！");
         } else {
             openIdUser.setMobile(mobile);
             openIdUser.setUpdateTime(new Date());
             userService.update(openIdUser);
-            newUser = openIdUser;
-            userService.updateRedisUser(newUser);
+            userService.updateRedisUser(openIdUser);
         }
-        return Result.success().data(newUser).msg("手机号绑定成功！");
+        return Result.success().data(openIdUser).msg("手机号绑定成功！");
     }
 
 
@@ -591,7 +595,7 @@ public class UserController extends BaseController {
         User user = userService.getCurrentUser();
 
         UserBodyAuth authInfo = userBodyAuthService.getUserAuthInfo(user.getId());
-        
+
         return Result.success().data(authInfo).msg("查询成功！");
     }
 
