@@ -49,4 +49,11 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
         List<VirtualPayOrderVO> voList = virtualPayOrderDao.chargeList(payOrderVO);
         return new PageInfo<>(voList);
     }
+
+    @Override
+    public PageInfo<VirtualPayOrderVO> chargeList(VirtualPayOrderVO payOrderVO) {
+        PageHelper.startPage("vpo.pay_time DESC");
+        List<VirtualPayOrderVO> voList = virtualPayOrderDao.chargeList(payOrderVO);
+        return new PageInfo<>(voList);
+    }
 }

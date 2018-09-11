@@ -1,6 +1,7 @@
 package com.fulu.game.core.entity.vo;
 
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.fulu.game.core.entity.VirtualPayOrder;
 import lombok.Data;
 
@@ -18,16 +19,19 @@ public class VirtualPayOrderVO extends VirtualPayOrder {
     /**
      * 申请人
      */
+    @Excel(name = "用户id", orderNum = "4", width = 15)
     private Integer userId;
 
     /**
      * 申请者手机号
      */
+    @Excel(name = "手机号", orderNum = "5", width = 15)
     private String mobile;
 
     /**
      * 申请者昵称
      */
+    @Excel(name = "昵称", orderNum = "3", width = 15)
     private String nickname;
 
     /**

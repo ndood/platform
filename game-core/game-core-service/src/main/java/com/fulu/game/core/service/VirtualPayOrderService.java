@@ -4,8 +4,6 @@ import com.fulu.game.core.entity.VirtualPayOrder;
 import com.fulu.game.core.entity.vo.VirtualPayOrderVO;
 import com.github.pagehelper.PageInfo;
 
-import java.util.List;
-
 
 /**
  * 虚拟币和余额充值订单表
@@ -21,4 +19,6 @@ public interface VirtualPayOrderService extends ICommonService<VirtualPayOrder, 
     VirtualPayOrder findByOrderNo(String orderNo);
 
     PageInfo<VirtualPayOrderVO> chargeList(VirtualPayOrderVO payOrderVO, Integer pageNum, Integer pageSize, String orderBy);
+
+    PageInfo<VirtualPayOrderVO> chargeList(VirtualPayOrderVO payOrderVO);
 }

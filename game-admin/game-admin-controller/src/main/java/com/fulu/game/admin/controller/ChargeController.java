@@ -1,16 +1,23 @@
 package com.fulu.game.admin.controller;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.vo.VirtualPayOrderVO;
 import com.fulu.game.core.service.VirtualPayOrderService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 
 /**
  * 充值管理Controller
@@ -42,5 +49,26 @@ public class ChargeController extends BaseController {
                               String orderBy) {
         PageInfo<VirtualPayOrderVO> pageInfo = payOrderService.chargeList(payOrderVO, pageNum, pageSize, orderBy);
         return Result.success().data(pageInfo).msg("查询成功!");
+    }
+
+    /**
+     * excel导出
+     *
+     * @param response
+     * @param payOrderVO
+     * @throws Exception
+     */
+    @RequestMapping("/export")
+    public void orderExport(HttpServletResponse response,
+                            VirtualPayOrderVO payOrderVO) throws Exception {
+        String title = "提现申请单列表";
+        PageInfo<VirtualPayOrderVO> voPageInfo = payOrderService.chargeList(payOrderVO);
+        ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, VirtualPayOrderVO.class, voPageInfo.getList());
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("content-Type", "application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));
+        workbook.write(response.getOutputStream());
+        workbook.close();
     }
 }
