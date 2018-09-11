@@ -12,7 +12,6 @@ import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.UserInfoAuthServiceImpl;
-import com.fulu.game.h5.controller.BaseController;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -49,6 +48,8 @@ public class UserController extends BaseController {
 
     private ProductService productService;
 
+    private final UserBodyAuthService userBodyAuthService;
+
     @Autowired
     public UserController(UserCommentService commentService,
                           AdviceService adviceService,
@@ -56,7 +57,7 @@ public class UserController extends BaseController {
                           OssUtil ossUtil,
                           ImService imService,
                           UserInfoAuthServiceImpl userInfoAuthService,
-                          ProductService productService) {
+                          ProductService productService, UserBodyAuthService userBodyAuthService) {
         this.commentService = commentService;
         this.adviceService = adviceService;
         this.userService = userService;
@@ -64,6 +65,7 @@ public class UserController extends BaseController {
         this.imService = imService;
         this.userInfoAuthService = userInfoAuthService;
         this.productService = productService;
+        this.userBodyAuthService = userBodyAuthService;
     }
 
     /**
@@ -229,5 +231,21 @@ public class UserController extends BaseController {
     public Result save(UserCommentVO commentVO) {
         commentService.save(commentVO);
         return Result.success().msg("添加成功！");
+    }
+
+    /**
+     * 检测用户是否通过实名认证
+     *
+     * @return 封装结果集
+     */
+    @PostMapping("/body-auth/check")
+    public Result isUserBodyAuth() {
+        User user = userService.getCurrentUser();
+        boolean result = userBodyAuthService.userAlreadyAuth(user.getId());
+        if (result) {
+            return Result.success().msg("已通过用户实名认证！");
+        } else {
+            return Result.error().msg("未通过用户实名认证！");
+        }
     }
 }
