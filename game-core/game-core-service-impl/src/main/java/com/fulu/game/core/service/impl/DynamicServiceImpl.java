@@ -2,6 +2,7 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.domain.ClientInfo;
 import com.fulu.game.common.enums.RedisKeyEnum;
@@ -307,6 +308,14 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
     }
 
     /**
+     * 删除所有ES中的动态
+     */
+    @Override
+    public void deleteAll() {
+        dynamicSearchComponent.deleteIndexAll();
+    }
+
+    /**
      * 获取动态列表
      * @param pageSize
      * @param slide
@@ -361,7 +370,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
         Integer isAttention = redisOpenService.getBitSet(RedisKeyEnum.ATTENTION_USERS.generateKey(userId),dynamicDoc.getUserId()) ? 1: 0;
         dynamicDoc.setIsAttention(isAttention);
         // 设置动态文件信息
-        setFileInfo(dynamicDoc);
+//        setFileInfo(dynamicDoc);
     }
 
     /**
@@ -418,13 +427,18 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
     private void saveDynamicFiles(DynamicVO dynamicVO){
         List<DynamicFile> dynamicFiles = new ArrayList<>();
         if(dynamicVO != null){
-            if(dynamicVO.getUrls() != null){
-                String[] urls = dynamicVO.getUrls();
-                for(String url: urls) {
+            if(dynamicVO.getFiles() != null){
+                String files = dynamicVO.getFiles();
+                JSONArray fileJsonArr = JSONArray.parseArray(files);
+                for(int i = 0; i < fileJsonArr.size(); i++) {
+                    JSONObject fileObject = fileJsonArr.getJSONObject(i);
                     DynamicFileVO dynamicFileVO = new DynamicFileVO();
                     dynamicFileVO.setDynamicId(dynamicVO.getId());
                     dynamicFileVO.setType(dynamicVO.getType());
-                    dynamicFileVO.setUrl(url);
+                    dynamicFileVO.setUrl(fileObject.getString("url"));
+                    dynamicFileVO.setWidth(fileObject.getInteger("width") == null ? 0:fileObject.getInteger("width"));
+                    dynamicFileVO.setHeight(fileObject.getInteger("height") == null ? 0:fileObject.getInteger("height"));
+                    dynamicFileVO.setDuration(fileObject.getInteger("duration") == null ? 0:fileObject.getInteger("duration"));
                     dynamicFileVO.setCreateTime(DateUtil.date());
                     dynamicFileVO.setUpdateTime(DateUtil.date());
                     dynamicFileVO.setStatus(1);
@@ -480,6 +494,9 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
                 dynamicFileDoc.setType(dynamicVO.getType());
                 dynamicFileDoc.setUrl(file.getUrl());
                 dynamicFileDoc.setPlayCount(file.getPlayCount());
+                dynamicFileDoc.setWidth(file.getWidth());
+                dynamicFileDoc.setHeight(file.getHeight());
+                dynamicFileDoc.setDuration(file.getDuration());
                 list.add(dynamicFileDoc);
             }
             dynamicDoc.setFiles(list);

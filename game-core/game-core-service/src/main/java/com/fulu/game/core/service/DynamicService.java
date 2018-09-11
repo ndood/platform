@@ -79,4 +79,7 @@ public interface DynamicService extends ICommonService<Dynamic,Integer>{
     public boolean updateIndexFilesById(int id, boolean rewards, Integer likes,Integer comments,boolean clicks);
 
     PageInfo<DynamicVO> adminList(Integer pageNum, Integer pageSize, String keyword, String startTime, String endTime);
+
+    /** 删除所有ES中的动态 */
+    void deleteAll();
 }
