@@ -1,13 +1,20 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.exception.ParamsException;
+import com.fulu.game.common.utils.AppRouteFactory;
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.entity.Dynamic;
+import com.fulu.game.core.entity.DynamicPushMsg;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.AppPushMsgVO;
 import com.fulu.game.core.entity.vo.DynamicLikeVO;
 import com.fulu.game.core.search.component.DynamicSearchComponent;
+import com.fulu.game.core.service.DynamicPushMsgService;
 import com.fulu.game.core.service.DynamicService;
 import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.service.impl.push.MobileAppPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +27,7 @@ import com.fulu.game.core.service.DynamicLikeService;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 @Service("dynamicLikeService")
@@ -34,6 +42,12 @@ public class DynamicLikeServiceImpl extends AbsCommonService<DynamicLike,Integer
 
     @Autowired
     private DynamicService dynamicService;
+
+    @Autowired
+    private MobileAppPushServiceImpl mobileAppPushService;
+
+    @Autowired
+    private DynamicPushMsgService dynamicPushMsgService;
 
 
     @Override
@@ -75,7 +89,30 @@ public class DynamicLikeServiceImpl extends AbsCommonService<DynamicLike,Integer
             dynamicService.updateIndexFilesById(dynamicLikeVO.getDynamicId(), false, -1, 0,false);
         } else {//点赞
             dynamicService.updateIndexFilesById(dynamicLikeVO.getDynamicId(), false, 1, 0,false);
+            Dynamic dynamic = dynamicService.findById(dynamicLikeVO.getDynamicId());
+            // 推送push消息，以及点赞
+            Map<String, String> extras = extras = AppRouteFactory.buildDynamicRoute(dynamicLikeVO.getDynamicId());
+            String content = "点了一个赞";
+            AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(dynamic.getUserId()).title("点赞").alert(content).extras(extras).build();
+            //发送push消息
+            mobileAppPushService.pushMsg(appPushMsgVO);
+            // 保存push消息
+            DynamicPushMsg dynamicPushMsg = new DynamicPushMsg();
+            dynamicPushMsg.setDynamicId(dynamicLikeVO.getDynamicId());
+            dynamicPushMsg.setFromUserId(user.getId());
+            dynamicPushMsg.setFromUserHeadUrl(user.getHeadPortraitsUrl());
+            dynamicPushMsg.setFromUserNickname(user.getNickname());
+            dynamicPushMsg.setToUserId(dynamic.getUserId());
+            //push消息类型（1：点赞；2：评论；3打赏）
+            dynamicPushMsg.setPushType(1);
+            dynamicPushMsg.setPushContent(content);
+            dynamicPushMsg.setPushExtras(JSONObject.toJSONString(extras));
+            dynamicPushMsg.setCreateTime(new Date());
+            dynamicPushMsg.setUpdateTime(new Date());
+            dynamicPushMsg.setIsDel(0);
+            dynamicPushMsgService.create(dynamicPushMsg);
         }
+
     }
 
     /**

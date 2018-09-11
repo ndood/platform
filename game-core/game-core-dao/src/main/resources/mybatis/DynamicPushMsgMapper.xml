@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.DynamicPushMsgDao">
+    <resultMap id="DynamicPushMsgResultMap" type="com.fulu.game.core.entity.DynamicPushMsg">
+                                    <id column="id"  property="id" />
+                                            <result column="dynamic_id"  property="dynamicId" />
+                                            <result column="from_user_id"  property="fromUserId" />
+                                            <result column="from_user_nickname"  property="fromUserNickname" />
+                                            <result column="from_user_head_url"  property="fromUserHeadUrl" />
+                                            <result column="to_user_id"  property="toUserId" />
+                                            <result column="push_type"  property="pushType" />
+                                            <result column="push_content"  property="pushContent" />
+                                            <result column="push_extras"  property="pushExtras" />
+                                            <result column="create_time"  property="createTime" />
+                                            <result column="update_time"  property="updateTime" />
+                                            <result column="is_del"  property="isDel" />
+                        </resultMap>
+
+    <resultMap id="DynamicPushMsgResultVOMap" type="com.fulu.game.core.entity.vo.DynamicPushMsgVO" extends="DynamicPushMsgResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,dynamic_id,from_user_id,from_user_nickname,from_user_head_url,to_user_id,push_type,push_content,push_extras,create_time,update_time,is_del    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="DynamicPushMsgResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_dynamic_push_msg
+        <where>
+        id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll"  resultMap="DynamicPushMsgResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_dynamic_push_msg
+    </select>
+
+    <select id="findByParameter" resultMap="DynamicPushMsgResultMap" parameterType="com.fulu.game.core.entity.vo.DynamicPushMsgVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_dynamic_push_msg
+        <where>
+                                                                            <if test="dynamicId != null">
+                       and dynamic_id = #{dynamicId}
+                    </if>
+                                                                <if test="fromUserId != null">
+                       and from_user_id = #{fromUserId}
+                    </if>
+                                                                <if test="fromUserNickname != null">
+                       and from_user_nickname = #{fromUserNickname}
+                    </if>
+                                                                <if test="fromUserHeadUrl != null">
+                       and from_user_head_url = #{fromUserHeadUrl}
+                    </if>
+                                                                <if test="toUserId != null">
+                       and to_user_id = #{toUserId}
+                    </if>
+                                                                <if test="pushType != null">
+                       and push_type = #{pushType}
+                    </if>
+                                                                <if test="pushContent != null">
+                       and push_content = #{pushContent}
+                    </if>
+                                                                <if test="pushExtras != null">
+                       and push_extras = #{pushExtras}
+                    </if>
+                                                                <if test="createTime != null">
+                       and create_time = #{createTime}
+                    </if>
+                                                                <if test="updateTime != null">
+                       and update_time = #{updateTime}
+                    </if>
+                                                                <if test="isDel != null">
+                       and is_del = #{isDel}
+                    </if>
+                                    </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_dynamic_push_msg
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.DynamicPushMsg">
+        insert into
+        t_dynamic_push_msg (dynamic_id,from_user_id,from_user_nickname,from_user_head_url,to_user_id,push_type,push_content,push_extras,create_time,update_time,is_del)
+        values
+        (#{dynamicId},#{fromUserId},#{fromUserNickname},#{fromUserHeadUrl},#{toUserId},#{pushType},#{pushContent},#{pushExtras},#{createTime},#{updateTime},#{isDel})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.DynamicPushMsg">
+        update t_dynamic_push_msg
+        <set>
+                                                        
+                    <if test="dynamicId != null">
+                        dynamic_id = #{dynamicId},
+                    </if>
+                                            
+                    <if test="fromUserId != null">
+                        from_user_id = #{fromUserId},
+                    </if>
+                                            
+                    <if test="fromUserNickname != null">
+                        from_user_nickname = #{fromUserNickname},
+                    </if>
+                                            
+                    <if test="fromUserHeadUrl != null">
+                        from_user_head_url = #{fromUserHeadUrl},
+                    </if>
+                                            
+                    <if test="toUserId != null">
+                        to_user_id = #{toUserId},
+                    </if>
+                                            
+                    <if test="pushType != null">
+                        push_type = #{pushType},
+                    </if>
+                                            
+                    <if test="pushContent != null">
+                        push_content = #{pushContent},
+                    </if>
+                                            
+                    <if test="pushExtras != null">
+                        push_extras = #{pushExtras},
+                    </if>
+                                            
+                    <if test="createTime != null">
+                        create_time = #{createTime},
+                    </if>
+                                            
+                    <if test="updateTime != null">
+                        update_time = #{updateTime},
+                    </if>
+                                            
+                    <if test="isDel != null">
+                        is_del = #{isDel},
+                    </if>
+                                    </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>
