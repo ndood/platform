@@ -114,7 +114,7 @@ ALTER TABLE `t_admin` ADD COLUMN `im_pwd` varchar(128) DEFAULT NULL COMMENT 'IM�
 UPDATE `t_product` pro SET `platform_show` = (SELECT `platform_show` FROM `t_sales_mode` sm WHERE pro.sales_mode_id = sm.id) ;
 
 
--- ----2018年9月7日上线准备sql结束--------
+-- ----2018年9月7日上线sql结束--------
 
 
 
@@ -369,3 +369,14 @@ ALTER TABLE `t_dynamic_file` ADD COLUMN `duration` int(11) DEFAULT '0'
 COMMENT '视频时长（单位秒）' after `height`;
 
 
+
+
+-- 优惠券表修改
+ALTER TABLE `t_coupon_group` ADD COLUMN `category_id`  int(11) NULL COMMENT '限品类(为空则为全品类)' AFTER `is_new_user`;
+ALTER TABLE `t_coupon_group` ADD COLUMN `type`  tinyint(1) NULL COMMENT '类型(1满减，2折扣)' AFTER `category_id`;
+ALTER TABLE `t_coupon_group` ADD COLUMN `full_reduction`  decimal(11,2) NULL COMMENT '多少金额可用' AFTER `type`;
+
+
+ALTER TABLE `t_coupon` ADD COLUMN `category_id`  int NULL COMMENT '限品类(为空则为全品类)' AFTER `is_new_user`;
+ALTER TABLE `t_coupon` ADD COLUMN `type`   tinyint(1) NULL COMMENT '类型(1满减，2折扣)' AFTER `category_id`;
+ALTER TABLE `t_coupon` ADD COLUMN `full_reduction`  decimal(11,2) NULL COMMENT '多少金额可用' AFTER `type`;
