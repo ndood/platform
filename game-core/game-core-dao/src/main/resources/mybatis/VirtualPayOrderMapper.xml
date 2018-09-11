@@ -9,7 +9,7 @@
         <result column="user_id" property="userId"/>
         <result column="type" property="type"/>
         <result column="payment" property="payment"/>
-        <result column="pay_path"  property="payPath" />
+        <result column="pay_path" property="payPath"/>
         <result column="actual_money" property="actualMoney"/>
         <result column="virtual_money" property="virtualMoney"/>
         <result column="money" property="money"/>
@@ -100,6 +100,37 @@
         <where>
             order_no = #{orderNo} for update
         </where>
+    </select>
+
+    <select id="chargeList" resultType="com.fulu.game.core.entity.vo.VirtualPayOrderVO">
+        SELECT
+        vpo.*,
+        `user`.nickname,
+        `user`.mobile
+        FROM
+        t_virtual_pay_order vpo
+        LEFT JOIN t_user USER ON vpo.user_id = `user`.id
+        WHERE
+        vpo.type = #{type}
+        AND vpo.is_pay_callback = 1
+        <if test="userId != null">
+            AND vpo.user_id = #{userId}
+        </if>
+        <if test="mobile != null">
+            AND USER .mobile = #{mobile}
+        </if>
+        <if test="nickname != null">
+            AND USER .nickname = #{nickname}
+        </if>
+        <if test="payPath != null">
+            AND vpo.pay_path = #{payPath}
+        </if>
+        <if test="payStartTime != null">
+            AND vpo.pay_time &gt;= #{payStartTime}
+        </if>
+        <if test="payEndTime != null">
+            AND vpo.pay_time &gt;= #{payEndTime}
+        </if>
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">

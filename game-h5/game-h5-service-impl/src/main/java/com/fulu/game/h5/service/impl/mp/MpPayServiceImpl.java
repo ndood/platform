@@ -206,7 +206,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
 
-        BigDecimal balance = user.getBalance();
+        BigDecimal balance = user.getBalance().add(user.getChargeBalance());
         VirtualPayOrder order = virtualPayOrderService.findByOrderNo(orderNo);
         BigDecimal actualMoney = order.getActualMoney();
         if (balance.compareTo(actualMoney) < 0) {
