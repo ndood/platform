@@ -12,6 +12,7 @@ import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -278,5 +279,19 @@ public class UserController extends BaseController {
     public Result withdrawCharm(@RequestParam Integer userId, @RequestParam Integer charm) {
         userInfoAuthService.withdrawCharm(userId, charm);
         return Result.success().msg("提现成功");
+    }
+
+    /**
+     * 查询-用户-列表
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @PostMapping("/list")
+    public Result list(UserVO userVO,
+                       @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+                       @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
+        PageInfo<UserVO> userList = userService.list(userVO, pageNum, pageSize);
+        return Result.success().data(userList).msg("查询用户列表成功！");
     }
 }
