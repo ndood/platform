@@ -42,6 +42,10 @@ public class CashDraws implements Serializable {
 	//申请单处理状态（生成订单时默认为0未处理，1表示已处理）
 	@Excel(name = "申请单处理状态", orderNum = "8", width = 15)
 	private Integer cashStatus;
+	//运营是否已处理  0  未处理  1已处理
+	private Integer serverAuth;
+	//提现类型：1：余额提现；2：魅力值提现
+	private Integer type;
 	//申请单操作人
 	@Excel(name = "申请单操作人", orderNum = "9", width = 15)
 	private String operator;

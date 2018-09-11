@@ -5,7 +5,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
-import com.fulu.game.common.exception.SystemException;
+import com.fulu.game.common.exception.DataException;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.OrderPointProductTO;
 import com.fulu.game.core.entity.vo.OrderEventVO;
@@ -185,7 +185,7 @@ public class OrderController extends BaseController {
                          @RequestParam(required = true) String sessionkey) {
         if (!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))) {
             log.error("验证sessionkey错误:orderPointProductTO:{};sessionkey:{};", orderPointProductTO, sessionkey);
-            throw new SystemException(SystemException.ExceptionCode.NO_FORM_TOKEN_ERROR);
+            throw new DataException(DataException.ExceptionCode.NO_FORM_TOKEN_ERROR);
         }
         OrderPointProductVO orderPointProductVO = getAdvanceOrder(orderPointProductTO);
         String orderIp = RequestUtil.getIpAdrress(request);

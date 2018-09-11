@@ -5,25 +5,22 @@ import cn.hutool.core.date.Week;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.CashProcessStatusEnum;
 import com.fulu.game.common.enums.MoneyOperateTypeEnum;
+import com.fulu.game.common.enums.UserBodyAuthStatusEnum;
 import com.fulu.game.common.exception.CashException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.CashDrawsDao;
 import com.fulu.game.core.dao.ICommonDao;
-import com.fulu.game.core.entity.Admin;
-import com.fulu.game.core.entity.CashDraws;
-import com.fulu.game.core.entity.MoneyDetails;
-import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.CashDrawsVO;
-import com.fulu.game.core.service.AdminService;
-import com.fulu.game.core.service.CashDrawsService;
-import com.fulu.game.core.service.MoneyDetailsService;
-import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.entity.vo.UserBodyAuthVO;
+import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
 
 import cn.hutool.core.bean.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +40,8 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
     private AdminService adminService;
     @Autowired
     private MoneyDetailsService mdService;
+    @Autowired
+    private UserBodyAuthService userBodyAuthService;
 
     @Override
     public ICommonDao<CashDraws, Integer> getDao() {
@@ -72,6 +71,24 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
             log.error("提款申请异常，提款金额小于0，用户id:{}", user.getId());
             throw new CashException(CashException.ExceptionCode.CASH_NEGATIVE_EXCEPTION);
         }
+
+        UserBodyAuthVO uba = new UserBodyAuthVO();
+        uba.setUserId(user.getId());
+        List<UserBodyAuth> list = userBodyAuthService.findByParameter(uba);
+
+        int authStatus = UserBodyAuthStatusEnum.NO_AUTH.getType().intValue();
+        
+        if(CollectionUtils.isNotEmpty(list)){
+            UserBodyAuth authInfo = list.get(0);
+            authStatus = authInfo.getAuthStatus().intValue();
+        }
+        
+        if (authStatus != UserBodyAuthStatusEnum.AUTH_SUCCESS.getType().intValue()) {
+            log.error("提款申请异常，当前操作用户未进行身份认证");
+            throw new UserException(UserException.ExceptionCode.BODY_NO_AUTH);
+        }
+        
+        
         user = userService.findById(user.getId());
         BigDecimal balance = user.getBalance();
         if (money.compareTo(balance) == 1) {
@@ -128,7 +145,15 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
     @Override
     public PageInfo<CashDraws> list(CashDrawsVO cashDrawsVO, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize, "create_time DESC");
-        List<CashDraws> list = cashDrawsDao.findByParameter(cashDrawsVO);
+        List<CashDrawsVO> list = cashDrawsDao.findDetailByParameter(cashDrawsVO);
+        
+        //转换魅力值的可提现金额   魅力值除以10*70%就是可提现金额
+        for(int i = 0 ; i < list.size() ; i++){
+            BigDecimal charm = list.get(i).getCharm();
+            charm.multiply(new BigDecimal("0.07"));
+            list.get(i).setCharm(charm);
+        }
+        
         return new PageInfo(list);
     }
 

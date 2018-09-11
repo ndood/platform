@@ -32,7 +32,6 @@ public class ImServiceImpl implements ImService {
 
     @Autowired
     private IMUtil imUtil;
-
     @Qualifier(value = "userInfoAuthServiceImpl")
     @Autowired
     private UserInfoAuthService userInfoAuthService;

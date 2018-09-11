@@ -32,7 +32,7 @@ public class ImController extends BaseController {
 
     @Autowired
     private ImService imService;
-
+    
     //增加陪玩师未读消息数量
     @RequestMapping("/send")
     public Result sendMessage(@RequestParam(value = "targetImId", required = false) String targetImId) {

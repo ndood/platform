@@ -51,11 +51,12 @@ public class Result implements Serializable {
         return result;
     }
 
-    public static Result error(int code) {
+    public static Result dataError() {
         Result result = new Result();
-        result.setStatus(code);
+        result.setStatus(ResultStatus.DATAEXCPTION);
         return result;
     }
+
 
     public static Result noLogin() {
         Result result = new Result();

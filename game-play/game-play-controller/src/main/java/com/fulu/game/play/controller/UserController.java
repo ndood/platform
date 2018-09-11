@@ -5,21 +5,20 @@ import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.UserBodyAuthStatusEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.*;
-import com.fulu.game.core.entity.vo.UserCommentVO;
-import com.fulu.game.core.entity.vo.UserInfoVO;
-import com.fulu.game.core.entity.vo.UserVO;
-import com.fulu.game.core.entity.vo.WxUserInfo;
+import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
@@ -38,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -73,7 +73,8 @@ public class UserController extends BaseController {
     private PlayCouponOpenServiceImpl playCouponOpenServiceImpl;
     @Autowired
     private SpringThreadPoolExecutor springThreadPoolExecutor;
-
+    @Autowired
+    private UserBodyAuthService userBodyAuthService;
 
     @RequestMapping("tech/list")
     public Result userTechList() {
@@ -92,7 +93,19 @@ public class UserController extends BaseController {
     @PostMapping("/balance/get")
     public Result getBalance() {
         User user = userService.findById(userService.getCurrentUser().getId());
-        return Result.success().data(user.getBalance()).msg("查询成功！");
+        JSONObject data = new JSONObject();
+        data.put("balance", user.getBalance());
+        data.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
+        Integer charm = user.getCharm();
+        if (charm == null) {
+            data.put("charm", 0);
+            data.put("charmMoney", 0);
+        } else {
+            data.put("charm", charm);
+            data.put("charmMoney", new BigDecimal(charm).multiply(Constant.CHARM_TO_MONEY_RATE));
+        }
+        data.put("chargeBalance", user.getChargeBalance());
+        return Result.success().data(data).msg("查询成功！");
     }
 
     /**
@@ -197,7 +210,7 @@ public class UserController extends BaseController {
             userService.update(user);
             BeanUtil.copyProperties(user, cacheUser, CopyOptions.create().setIgnoreNullValue(true));
             userService.updateRedisUser(cacheUser);
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("更新微信手机号错误用户信息:{};手机号:{};", user, user.getMobile());
             return Result.error().msg("手机号已被注册!");
         }
@@ -566,4 +579,43 @@ public class UserController extends BaseController {
         resultMap.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
         return Result.success().data(resultMap).msg("查询成功！");
     }
+
+
+    /**
+     * 用户-获取用户认证信息
+     *
+     * @return
+     */
+    @PostMapping("/auth-status/get")
+    public Result getUserAuthStatus() {
+        User user = userService.getCurrentUser();
+
+        UserBodyAuth authInfo = userBodyAuthService.findByUserId(user.getId());
+
+        return Result.success().data(authInfo).msg("查询成功！");
+    }
+
+
+    /**
+     * 用户-提交用户认证信息
+     *
+     * @return
+     */
+    @PostMapping("/body-auth/save")
+    public Result getUserAuthStatus(String userName, String cardNo, String cardUrl, String cardHandUrl) {
+        User user = userService.getCurrentUser();
+        UserBodyAuthVO uba = new UserBodyAuthVO();
+        uba.setUserId(user.getId());
+        uba.setUserName(userName);
+        uba.setCardNo(cardNo);
+        uba.setCardUrl(ossUtil.activateOssFile(cardUrl));
+        uba.setCardHandUrl(ossUtil.activateOssFile(cardHandUrl));
+        uba.setAuthStatus(UserBodyAuthStatusEnum.NO_AUTH.getType());
+        uba.setCreateTime(new Date());
+
+        userBodyAuthService.submitUserBodyAuthInfo(uba);
+
+        return Result.success().msg("提交成功！");
+    }
+
 }

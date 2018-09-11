@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.UserBodyAuthDao">
+    <resultMap id="UserBodyAuthResultMap" type="com.fulu.game.core.entity.UserBodyAuth">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="user_name" property="userName"/>
+        <result column="card_no" property="cardNo"/>
+        <result column="card_url" property="cardUrl"/>
+        <result column="card_hand_url" property="cardHandUrl"/>
+        <result column="auth_status" property="authStatus"/>
+        <result column="admin_id" property="adminId"/>
+        <result column="admin_name" property="adminName"/>
+        <result column="remarks" property="remarks"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="UserBodyAuthResultVOMap" type="com.fulu.game.core.entity.vo.UserBodyAuthVO"
+               extends="UserBodyAuthResultMap">
+        <result column="nickname" property="nickName"/>
+        <result column="mobile" property="mobile"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,user_name,card_no,card_url,card_hand_url,auth_status,admin_id,admin_name,remarks,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="UserBodyAuthResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user_body_auth
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="UserBodyAuthResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user_body_auth
+    </select>
+
+    <select id="findByParameter" resultMap="UserBodyAuthResultMap"
+            parameterType="com.fulu.game.core.entity.vo.UserBodyAuthVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_user_body_auth
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName}
+            </if>
+            <if test="cardNo != null">
+                and card_no = #{cardNo}
+            </if>
+            <if test="cardUrl != null">
+                and card_url = #{cardUrl}
+            </if>
+            <if test="cardHandUrl != null">
+                and card_hand_url = #{cardHandUrl}
+            </if>
+            <if test="authStatus != null">
+                and auth_status = #{authStatus}
+            </if>
+            <if test="adminId != null">
+                and admin_id = #{adminId}
+            </if>
+            <if test="adminName != null">
+                and admin_name = #{adminName}
+            </if>
+            <if test="remarks != null">
+                and remarks = #{remarks}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+    <select id="findByUserId" resultType="com.fulu.game.core.entity.UserBodyAuth">
+        SELECT
+          *
+        FROM
+            t_user_body_auth
+        WHERE
+            user_id = #{userId};
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_user_body_auth
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserBodyAuth">
+        insert into
+        t_user_body_auth (user_id,user_name,card_no,card_url,card_hand_url,auth_status,admin_id,admin_name,remarks,create_time,update_time)
+        values
+        (#{userId},#{userName},#{cardNo},#{cardUrl},#{cardHandUrl},#{authStatus},#{adminId},#{adminName},#{remarks},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.UserBodyAuth">
+        update t_user_body_auth
+        <set>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="userName != null">
+                user_name = #{userName},
+            </if>
+
+            <if test="cardNo != null">
+                card_no = #{cardNo},
+            </if>
+
+            <if test="cardUrl != null">
+                card_url = #{cardUrl},
+            </if>
+
+            <if test="cardHandUrl != null">
+                card_hand_url = #{cardHandUrl},
+            </if>
+
+            <if test="authStatus != null">
+                auth_status = #{authStatus},
+            </if>
+
+            <if test="adminId != null">
+                admin_id = #{adminId},
+            </if>
+
+            <if test="adminName != null">
+                admin_name = #{adminName},
+            </if>
+
+            <if test="remarks != null">
+                remarks = #{remarks},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+
+    <select id="findByVO" resultMap="UserBodyAuthResultVOMap" parameterType="com.fulu.game.core.entity.vo.UserBodyAuthVO">
+        SELECT
+            t1.id,
+            t1.create_time,
+            t2.nickname,
+            t1.user_id,
+            t2.mobile,
+            t1.user_name,
+            t1.card_no,
+            t1.card_url,
+            t1.card_hand_url,
+            t1.admin_name,
+            t1.auth_status,
+            t1.remarks,
+            t1.update_time
+        FROM
+            t_user_body_auth t1
+        INNER JOIN t_user t2 ON t1.user_id = t2.id
+        <where>
+            <if test="userId != null">
+                and t1.user_id = #{userId}
+            </if>
+            <if test="userName != null">
+                and t1.user_name = #{userName}
+            </if>
+            <if test="cardNo != null">
+                and t1.card_no = #{cardNo}
+            </if>
+            <if test="cardUrl != null">
+                and t1.card_url = #{cardUrl}
+            </if>
+            <if test="cardHandUrl != null">
+                and t1.card_hand_url = #{cardHandUrl}
+            </if>
+            <if test="authStatus != null">
+                and t1.auth_status = #{authStatus}
+            </if>
+            <if test="adminId != null">
+                and t1.admin_id = #{adminId}
+            </if>
+            <if test="adminName != null">
+                and t1.admin_name = #{adminName}
+            </if>
+            <if test="remarks != null">
+                and t1.remarks = #{remarks}
+            </if>
+            <if test="createTime != null">
+                and t1.create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and t1.update_time = #{updateTime}
+            </if>
+            <if test="nickName != null">
+                and t2.nickname = #{nickName}
+            </if>
+            <if test="mobile != null">
+                and t2.mobile = #{mobile}
+            </if>
+            <if test="startTime != null">
+                <![CDATA[ and t1.create_time >= #{startTime} ]]>
+            </if>
+            <if test="endTime != null">
+                <![CDATA[ and t1.create_time <= #{endTime} ]]>
+            </if>
+        </where>
+    </select>
+    
+</mapper>

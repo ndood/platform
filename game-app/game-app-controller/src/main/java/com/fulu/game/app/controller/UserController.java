@@ -178,7 +178,7 @@ public class UserController extends BaseController {
 
     @PostMapping(value = "online")
     public Result userOnline(@RequestParam(required = true) Boolean active, String version) {
-
+        
         List<AdminImLog> list = userService.userOnline(active,version);
 
         return Result.success().data(list).msg("查询成功！");

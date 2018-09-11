@@ -1,19 +1,33 @@
 package com.fulu.game.h5.controller.mp;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.exception.LoginException;
+import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SMSUtil;
+import com.fulu.game.common.utils.SubjectUtil;
+import com.fulu.game.core.entity.User;
+import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.h5.controller.BaseController;
+import com.fulu.game.h5.shiro.PlayUserToken;
+import com.fulu.game.h5.utils.RequestUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * 微信公众号Controller
@@ -28,50 +42,95 @@ public class MpHomeController extends BaseController {
 
     @Autowired
     private WxMaServiceSupply wxMaServiceSupply;
-
-
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private UserService userService;
 
-    @GetMapping(value = "/userinfo")
-    public String getUserInfo(String code,
-                              String lang) {
+    @RequestMapping(value = "/test/login", method = RequestMethod.POST)
+    @ResponseBody
+    public Result testLogin(String openId,
+                            @RequestParam(value = "sourceId", required = false) Integer sourceId,
+                            HttpServletRequest request) {
+        log.info("==调用/test/login方法==");
+        PlayUserToken playUserToken = PlayUserToken.newBuilder(PlayUserToken.Platform.FENQILE).fqlOpenid(openId).build();
+        String ip = RequestUtil.getIpAdrress(request);
+        playUserToken.setHost(ip);
+        Subject subject = SecurityUtils.getSubject();
         try {
-            WxMpOAuth2AccessToken accessToken = wxMaServiceSupply.wxMpService().oauth2getAccessToken(code);
-            WxMpUser wxMpUser = wxMaServiceSupply.wxMpService().getUserService().userInfo(accessToken.getOpenId(), lang);
-            log.info("wxMpUser:{}", wxMpUser);
-        } catch (WxErrorException e) {
-            log.error("微信授权错误", e);
+            subject.login(playUserToken);
+            User user = userService.getCurrentUser();
+            Map<String, Object> result = BeanUtil.beanToMap(user);
+            result.put("token", SubjectUtil.getToken());
+            result.put("userId", user.getId());
+            return Result.success().data(result).msg("测试登录成功!");
+        } catch (AuthenticationException e) {
+            if (e.getCause() instanceof UserException) {
+                if (UserException.ExceptionCode.USER_BANNED_EXCEPTION.equals(((UserException) e.getCause()).getExceptionCode())) {
+                    log.error("用户被封禁,openId:{}", openId);
+                    return Result.userBanned();
+                }
+            }
+            return Result.noLogin().msg("测试登录用户验证信息错误！");
+        } catch (Exception e) {
+            log.error("测试登录异常!", e);
+            return Result.error().msg("测试登陆异常！");
         }
-        return "index";
     }
-
 
 
     @PostMapping(value = "login")
-    public void login(@RequestParam(required = true) String code,
-                      @RequestParam(required = true) String mobile,
-                      @RequestParam(required = true) String verifyCode){
+    @ResponseBody
+    public Result login(@RequestParam(required = true) String code,
+                        @RequestParam(required = true) String mobile,
+                        @RequestParam(required = true, defaultValue = "") String verifyCode,
+                        HttpServletRequest request) {
+        String ip = RequestUtil.getIpAdrress(request);
+        String redisVerifyCode = redisOpenService.get(RedisKeyEnum.SMS_VERIFY_CODE.generateKey(mobile));
+        if (!verifyCode.equals(redisVerifyCode)) {
+            throw new LoginException(LoginException.ExceptionCode.VERIFY_CODE_ERROR);
+        }
         try {
             WxMpOAuth2AccessToken accessToken = wxMaServiceSupply.wxMpService().oauth2getAccessToken(code);
             WxMpUser wxMpUser = wxMaServiceSupply.wxMpService().getUserService().userInfo(accessToken.getOpenId(), "zh_CN");
-
-
-
-        }catch (Exception e){
-            log.error("微信授权错误", e);
+            PlayUserToken playUserToken = PlayUserToken.newBuilder(PlayUserToken.Platform.MP)
+                    .mpOpenId(wxMpUser.getOpenId())
+                    .unionId(wxMpUser.getUnionId())
+                    .mobile(mobile)
+                    .host(ip)
+                    .build();
+            Subject subject = SecurityUtils.getSubject();
+            subject.login(playUserToken);
+            User user = userService.getCurrentUser();
+            userService.updateUserIpAndLastTime(ip);
+            Map<String, Object> result = BeanUtil.beanToMap(user);
+            result.put("token", SubjectUtil.getToken());
+            return Result.success().data(result).msg("登录成功!");
+        } catch (WxErrorException e) {
+            throw new LoginException(LoginException.ExceptionCode.WX_AUTH_ERROR);
+        } catch (AuthenticationException e) {
+            if (e.getCause() instanceof UserException) {
+                if (UserException.ExceptionCode.USER_BANNED_EXCEPTION.equals(((UserException) e.getCause()).getExceptionCode())) {
+                    log.error("用户被封禁,mobile:{}", mobile);
+                    return Result.userBanned();
+                }
+            }
+            return Result.error();
+        } catch (Exception e) {
+            log.error("登录异常!", e);
+            return Result.error().msg("登陆异常！");
         }
-
     }
-
 
 
     /**
      * 点击发送验证码接口
+     *
      * @param mobile
      * @return
      */
     @PostMapping("/sms/verify")
+    @ResponseBody
     public Result sms(@RequestParam("mobile") String mobile) {
         //缓存中查找该手机是否有验证码
         if (redisOpenService.hasKey(RedisKeyEnum.SMS.generateKey(mobile))) {
@@ -96,13 +155,10 @@ public class MpHomeController extends BaseController {
     }
 
 
-
-
-
     @GetMapping(value = "/authurl")
     @ResponseBody
-    public Result getAuthUrl(String redirectURI){
-        String url = wxMaServiceSupply.wxMpService().oauth2buildAuthorizationUrl(redirectURI,"snsapi_base","");
+    public Result getAuthUrl(String redirectURI) {
+        String url = wxMaServiceSupply.wxMpService().oauth2buildAuthorizationUrl(redirectURI, "snsapi_base", "");
         System.out.println(url);
         return Result.success().msg(url);
     }

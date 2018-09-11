@@ -82,7 +82,11 @@ public class FenqileHomeController extends BaseController {
         session.setAccessToken("tempaccesstoken");
         String openId = session.getUid();
         //1.认证和凭据的token
-        PlayUserToken playUserToken = new PlayUserToken(openId, session.getAccessToken());
+        PlayUserToken playUserToken = PlayUserToken.newBuilder(PlayUserToken.Platform.FENQILE)
+                                                        .fqlOpenid(openId)
+                                                        .accessToken(session.getAccessToken())
+                                                        .build();
+
         String ip = RequestUtil.getIpAdrress(request);
         playUserToken.setHost(ip);
         Subject subject = SecurityUtils.getSubject();
@@ -118,7 +122,7 @@ public class FenqileHomeController extends BaseController {
                             @RequestParam(value = "sourceId", required = false) Integer sourceId,
                             HttpServletRequest request) {
         log.info("==调用/test/login方法==");
-        PlayUserToken playUserToken = new PlayUserToken(openId);
+        PlayUserToken playUserToken = PlayUserToken.newBuilder(PlayUserToken.Platform.FENQILE).fqlOpenid(openId).build();
         String ip = RequestUtil.getIpAdrress(request);
         playUserToken.setHost(ip);
         Subject subject = SecurityUtils.getSubject();

@@ -129,7 +129,7 @@ public class HomeController extends BaseController {
                     return Result.userBanned();
                 }
             }
-            return Result.noLogin().msg("测试登录用户验证信息错误！");
+            return Result.noLogin().msg("用户验证信息错误！");
         } catch (Exception e) {
             log.error("登录异常!", e);
             return Result.error().msg("登陆异常！");

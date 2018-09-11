@@ -2,7 +2,7 @@ package com.fulu.game.h5.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.exception.SystemException;
+import com.fulu.game.common.exception.DataException;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.entity.User;
@@ -86,7 +86,7 @@ public class OrderController extends BaseController {
         if (!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))) {
             log.error("验证sessionkey错误:productId:{};num:{};couponNo:{};sessionkey:{};userId:{}",
                     productId, num, couponNo, sessionkey, user.getId());
-            throw new SystemException(SystemException.ExceptionCode.NO_FORM_TOKEN_ERROR);
+            throw new DataException(DataException.ExceptionCode.NO_FORM_TOKEN_ERROR);
         }
         try {
             String ip = RequestUtil.getIpAdrress(request);

@@ -3,3 +3,9 @@ spring:
        active: dev
 server:
     port: 8888
+config:
+    queue:
+        miniappPush: true
+        appPush: true
+        userScore: false
+        formId: false
