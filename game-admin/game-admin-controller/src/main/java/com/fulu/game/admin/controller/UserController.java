@@ -6,30 +6,29 @@ import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.fulu.game.admin.service.AdminUserInfoAuthService;
 import com.fulu.game.admin.service.AdminUserTechAuthService;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.utils.CollectionUtil;
-import com.fulu.game.core.entity.Product;
-import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.UserInfoAuthReject;
-import com.fulu.game.core.entity.UserTechAuthReject;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.to.UserTechAuthTO;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 用户Controller
@@ -58,7 +57,13 @@ public class UserController extends BaseController {
     private UserTechAuthRejectService userTechAuthRejectService;
     @Autowired
     private ProductService productService;
-    
+    @Autowired
+    private UserBodyAuthService userBodyAuthService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private VirtualDetailsService virtualDetailsService;
+
     /**
      * 陪玩师认证信息列表
      *
@@ -83,11 +88,11 @@ public class UserController extends BaseController {
     @PostMapping(value = "/info-auth/save")
     public Result userInfoAuthCreate(UserInfoAuthTO userInfoAuthTO) {
         userInfoAuthService.save(userInfoAuthTO);
-        
-        if(userInfoAuthTO.getSort() == null){
+
+        if (userInfoAuthTO.getSort() == null) {
             userInfoAuthService.saveSort(userInfoAuthTO);
         }
-        
+
         return Result.success().data(userInfoAuthTO);
     }
 
@@ -207,6 +212,68 @@ public class UserController extends BaseController {
         }
         return Result.success().data(user);
     }
+
+    /**
+     * 实名认证审核--通过
+     *
+     * @param userId 用户id
+     * @return 封装结果集
+     */
+    @PostMapping(value = "/body-auth/pass")
+    public Result bodyAuthPass(@RequestParam Integer userId) {
+        userBodyAuthService.pass(userId);
+        return Result.success().msg("通过成功！");
+    }
+
+    /**
+     * 实名认证审核--拒绝或驳回
+     *
+     * @param userId 用户id
+     * @param remark 备注
+     * @return 封装结果集
+     */
+    @PostMapping(value = "/body-auth/reject")
+    public Result bodyAuthReject(@RequestParam Integer userId, String remark) {
+        userBodyAuthService.reject(userId, remark);
+        return Result.success().msg("操作成功！");
+    }
+
+
+    /**
+     * 用户身份认证信息
+     *
+     * @param pageNum  页码
+     * @param pageSize 每页显示数据条数
+     * @return 封装结果集
+     */
+    @PostMapping(value = "/body-auth/list")
+    public Result userBodyAuthList(@RequestParam("pageNum") Integer pageNum,
+                                   @RequestParam("pageSize") Integer pageSize,
+                                   UserBodyAuthVO userBodyAuthVO) {
+        PageInfo<UserBodyAuthVO> pageInfo = userBodyAuthService.findByVO(pageNum, pageSize, userBodyAuthVO);
+        return Result.success().data(pageInfo);
+    }
+
+    /**
+     * 用户身份认证信息列表导出
+     *
+     * @param response
+     * @throws Exception
+     */
+    @RequestMapping("/body-auth/export")
+    public void orderExport(HttpServletResponse response,
+                            UserBodyAuthVO userBodyAuthVO) throws Exception {
+        String title = "用户身份认证信息列表";
+        List<UserBodyAuthVO> voList = userBodyAuthService.list(userBodyAuthVO);
+        ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, UserBodyAuthVO.class, voList);
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("content-Type", "application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));
+        workbook.write(response.getOutputStream());
+        workbook.close();
+    }
+
 
     /**
      * 用户技能认证信息添加和修改
@@ -343,7 +410,7 @@ public class UserController extends BaseController {
      */
     @PostMapping("/set-substitute")
     public Result setSubstitute(@RequestParam("id") Integer id, Integer substituteId) {
-        userInfoAuthService.setSubstitute(id,substituteId);
+        userInfoAuthService.setSubstitute(id, substituteId);
         return Result.success().msg("操作成功！");
     }
 
@@ -437,6 +504,46 @@ public class UserController extends BaseController {
         List<Product> productList = productService.findByUserId(id);
         userInfoVO.setProductList(productList);
         return Result.success().data(userInfoVO).msg("查询聊天对象信息成功！");
+    }
+
+    /**
+     * 获取用户在线状态
+     * @return
+     */
+    @PostMapping("/online-status/get")
+    public Result chatWithGet(Integer userIds[]) {
+
+        List<UserOnlineStatusVo> list = new ArrayList<>();
+        
+        for(int i = 0 ; i < userIds.length ; i++){
+            String onlineStr = redisOpenService.get(RedisKeyEnum.USER_ONLINE_KEY.generateKey(userIds[i]));
+            
+            UserOnlineStatusVo uos = new UserOnlineStatusVo();
+            uos.setUserId(userIds[i]);
+            uos.setIsOnLine(true);
+            if(StringUtils.isBlank(onlineStr)){
+                uos.setIsOnLine(false);
+            }
+            list.add(uos);
+        }
+        
+        return Result.success().data(list).msg("查询成功！");
+    }
+
+
+    @RequestMapping("/virtual-detail/list")
+    public Result virtualDetailList(Integer type,
+                                    @RequestParam("pageSize") Integer pageSize,
+                                    @RequestParam("pageNum") Integer pageNum) {
+        User user = userService.getCurrentUser();
+
+        VirtualDetailsVO vd = new VirtualDetailsVO();
+        vd.setUserId(user.getId());
+        vd.setType(type);
+        
+        PageInfo<VirtualDetails> list = virtualDetailsService.findByParameterWithPage(vd , pageSize , pageNum , " create_time desc" );
+
+        return Result.success().data(list).msg("查询列表成功！");
     }
     
 }

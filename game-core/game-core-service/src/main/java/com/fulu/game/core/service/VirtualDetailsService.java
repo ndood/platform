@@ -1,6 +1,10 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.VirtualDetails;
+import com.fulu.game.core.entity.vo.VirtualDetailsVO;
+import com.github.pagehelper.PageInfo;
+
+import java.util.List;
 
 
 /**
@@ -12,4 +16,6 @@ import com.fulu.game.core.entity.VirtualDetails;
  */
 public interface VirtualDetailsService extends ICommonService<VirtualDetails, Integer> {
 
+    PageInfo<VirtualDetails> findByParameterWithPage(VirtualDetailsVO virtualDetailsVO, Integer pageSize, Integer pageNum , String orderBy);
+    
 }

@@ -138,10 +138,10 @@ public class ExceptionHandlerAdvice {
      * @param e
      * @return
      */
-    @ExceptionHandler(SystemException.class)
-    public Result handleSystemException(SystemException e) {
-        log.error("系统异常", e);
-        return Result.error(e.getCode()).msg(e.getMessage());
+    @ExceptionHandler(DataException.class)
+    public Result handleSystemException(DataException e) {
+        log.error("数据异常", e);
+        return Result.dataError().data("errcode", e.getCode()).msg(e.getMessage());
     }
 
     /**

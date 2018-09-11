@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 
 /**
- * 虚拟货币充值订单表
+ * 虚拟币和余额充值订单表
  *
  * @author Gong Zechun
  * @email ${email}

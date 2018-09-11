@@ -58,6 +58,8 @@ public class User implements Serializable {
     private Integer sourceId;
     @JsonIgnore
     private BigDecimal balance;
+    //充值零钱（不可提现）
+    private BigDecimal chargeBalance;
     //虚拟零钱（对应钻石数量）
     private Integer virtualBalance;
     //魅力值

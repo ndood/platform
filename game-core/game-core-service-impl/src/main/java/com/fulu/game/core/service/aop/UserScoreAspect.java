@@ -13,7 +13,7 @@ import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.fulu.game.core.service.queue.UserScoreQueue;
+import com.fulu.game.core.service.queue.UserScoreContainer;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -35,7 +35,7 @@ public class UserScoreAspect {
     @Autowired
     private UserService userService;
     @Autowired
-    private UserScoreQueue userScoreQueue;
+    private UserScoreContainer userScoreContainer;
     @Autowired
     private OrderService orderService;
     @Autowired
@@ -121,7 +121,7 @@ public class UserScoreAspect {
             userDetails.setScore(UserScoreEnum.USER_FINISH_ORDER.getScore());
             userDetails.setDescription(UserScoreEnum.USER_FINISH_ORDER.getDescription());
             if (details.getUserId() != null) {
-                userScoreQueue.addUserScoreQueue(userDetails);
+                userScoreContainer.add(userDetails);
             }
 
             UserScoreDetails serviceUserDetails = new UserScoreDetails();
@@ -129,7 +129,7 @@ public class UserScoreAspect {
             serviceUserDetails.setScore(UserScoreEnum.SERVICE_USER_FINISH_ORDER.getScore());
             serviceUserDetails.setDescription(UserScoreEnum.SERVICE_USER_FINISH_ORDER.getDescription());
             if (details.getUserId() != null) {
-                userScoreQueue.addUserScoreQueue(serviceUserDetails);
+                userScoreContainer.add(serviceUserDetails);
             }
         } else if (userScoreEnum.getDescription().equals(Constant.FULL_RESTITUTION)) {
             Object[] array = joinPoint.getArgs();
@@ -163,7 +163,7 @@ public class UserScoreAspect {
         }
 
         if (details.getUserId() != null) {
-            userScoreQueue.addUserScoreQueue(details);
+            userScoreContainer.add(details);
         }
     }
 

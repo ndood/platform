@@ -22,7 +22,7 @@ public class ResultStatus {
     public static Integer NOUNIONID = 502;
 
     //没有formToken，不能提交表单
-    public static Integer NOFORMTOKEN = 503;
+    public static Integer DATAEXCPTION = 503;
 
     //新用户待绑定
     public static Integer NEWUSER = 201;

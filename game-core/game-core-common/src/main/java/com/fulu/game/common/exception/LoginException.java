@@ -2,9 +2,8 @@ package com.fulu.game.common.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
 @Getter
-public class SystemException  extends RuntimeException{
+public class LoginException extends RuntimeException {
 
     private ExceptionCode exceptionCode;
 
@@ -14,12 +13,13 @@ public class SystemException  extends RuntimeException{
     @AllArgsConstructor
     @Getter
     public enum ExceptionCode{
-        NO_FORM_TOKEN_ERROR(503, "页面超时,需要重新刷新页面后再尝试!");
+        VERIFY_CODE_ERROR(3001, "验证码错误!"),
+        WX_AUTH_ERROR(3002, "微信授权失效!");
         private int code;
         private String msg;
     }
 
-    public SystemException(ExceptionCode exceptionCode) {
+    public LoginException(ExceptionCode exceptionCode) {
         super();
         this.code = exceptionCode.getCode();
         this.message = exceptionCode.getMsg();

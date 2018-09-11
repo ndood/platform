@@ -21,6 +21,7 @@ import java.util.Map;
 @Slf4j
 public class HomeController {
 
+
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index() {
         return "index";
@@ -36,8 +37,6 @@ public class HomeController {
             Subject subject = SecurityUtils.getSubject();
             subject.login(token);
             Admin admin = (Admin) subject.getPrincipal();
-            admin.setPassword(null);
-            admin.setSalt(null);
             Map<String, Object> map = BeanUtil.beanToMap(admin);
             map.put("token", SubjectUtil.getToken());
             return Result.success().data(map).msg("登录成功!");
@@ -49,4 +48,6 @@ public class HomeController {
             return Result.error().msg("登录异常");
         }
     }
+
+
 }
