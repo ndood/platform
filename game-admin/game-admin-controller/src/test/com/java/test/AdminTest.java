@@ -21,7 +21,7 @@ public class AdminTest {
     @Test
     public void test1() {
 
-        Admin admin = createAdminAccount("杨旭东", "yangxudong", "Aa123456");
+        Admin admin = createAdminAccount("杨", "yangfan", "yf13720173993");
 
         log.info("admin:{}", admin);
     }

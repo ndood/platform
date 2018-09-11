@@ -32,6 +32,11 @@ public class CouponGroupVO  extends CouponGroup {
     @NotNull(message = "[生成数量]字段不能为空")
     @Max(value = 100000,message = "发放数量不能超过十万")
     private Integer amount;
+
+    //类型(1满减，2折扣)
+    @NotNull(message = "[优惠券类型]字段不能为空")
+    private Integer type;
+
     //兑换码
     @NotNull(message = "[兑换码]字段不能为空")
     private String redeemCode;

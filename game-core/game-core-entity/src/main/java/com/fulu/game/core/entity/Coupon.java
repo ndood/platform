@@ -29,6 +29,14 @@ public class Coupon implements Serializable {
     //是否是新用户专享
     @Excel(name = "新用户专享",replace = {"是_true","否_false"},orderNum = "2")
     private Boolean isNewUser;
+
+    //限品类(为空则为全品类)
+    private Integer categoryId;
+    //类型(1满减，2折扣)
+    private Integer type;
+    //多少金额可用（为0则为无门槛）
+    private BigDecimal fullReduction;
+
     //绑定了那个用户
     private Integer userId;
     //领取手机号
