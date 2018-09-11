@@ -52,4 +52,7 @@ public interface UserBodyAuthService extends ICommonService<UserBodyAuth, Intege
      * @return
      */
     boolean userAlreadyAuth(Integer userId);
+
+
+    UserBodyAuth getUserAuthInfo(Integer userId);
 }

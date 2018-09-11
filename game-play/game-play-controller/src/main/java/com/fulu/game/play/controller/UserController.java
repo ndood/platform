@@ -586,12 +586,12 @@ public class UserController extends BaseController {
      *
      * @return
      */
-    @PostMapping("/auth-status/get")
-    public Result getUserAuthStatus() {
+    @PostMapping("/body-auth/get")
+    public Result getUserAuthInfo() {
         User user = userService.getCurrentUser();
 
-        UserBodyAuth authInfo = userBodyAuthService.findByUserId(user.getId());
-
+        UserBodyAuth authInfo = userBodyAuthService.getUserAuthInfo(user.getId());
+        
         return Result.success().data(authInfo).msg("查询成功！");
     }
 

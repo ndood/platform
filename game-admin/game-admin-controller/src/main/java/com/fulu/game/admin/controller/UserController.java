@@ -25,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
@@ -270,7 +272,13 @@ public class UserController extends BaseController {
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));
         workbook.write(response.getOutputStream());
         workbook.close();
+
+//        FileOutputStream fos = new FileOutputStream(new File("E:\\test.xls"));
+//        workbook.write(fos);
+//        workbook.close();
+//        fos.close();
     }
+    
 
 
     /**
@@ -505,7 +513,13 @@ public class UserController extends BaseController {
     }
 
 
-
+    /**
+     * 获取钻石/魅力值明细
+     * @param type
+     * @param pageSize
+     * @param pageNum
+     * @return
+     */
     @RequestMapping("/virtual-detail/list")
     public Result virtualDetailList(Integer type,
                                     @RequestParam("pageSize") Integer pageSize,

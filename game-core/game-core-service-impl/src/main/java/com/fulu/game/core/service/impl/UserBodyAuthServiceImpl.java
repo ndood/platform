@@ -128,4 +128,18 @@ public class UserBodyAuthServiceImpl extends AbsCommonService<UserBodyAuth, Inte
         }
         return false;
     }
+
+
+    @Override
+    public UserBodyAuth getUserAuthInfo(Integer userId) {
+
+        UserBodyAuth authInfo = userBodyAuthDao.findByUserId(userId);
+
+        if(authInfo == null){
+            throw new UserException(UserException.ExceptionCode.BODY_NO_AUTH);
+        }
+        
+        return authInfo;
+    }
+    
 }
