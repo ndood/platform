@@ -83,6 +83,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         order.setType(VirtualPayOrderTypeEnum.VIRTUAL_ORDER.getType());
         order.setActualMoney(actualMoney);
         order.setVirtualMoney(virtualMoney);
+        order.setPayment(payment);
         order.setOrderIp(ip);
         order.setIsPayCallback(false);
         order.setUpdateTime(DateUtil.date());
@@ -94,11 +95,9 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
 
         Map<String, Object> resultMap = new HashMap<>(4);
         if (payment.equals(VirtualPayOrderPaymentEnum.WECHAT_PAY.getType())) {
-            order.setPayment(VirtualPayOrderPaymentEnum.WECHAT_PAY.getType());
             resultMap.put("orderNo", order.getOrderNo());
             resultMap.put("paySuccess", 0);
         } else {
-            order.setPayment(VirtualPayOrderPaymentEnum.BALANCE_PAY.getType());
             balancePay(order.getOrderNo());
             resultMap.put("orderNo", order.getOrderNo());
             resultMap.put("paySuccess", 1);
@@ -121,6 +120,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
             log.info("订单支付:orderNo:{};order:{};requestIp:{};", order.getOrderNo(), order, requestIp);
             return pay(order, user, requestIp);
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("订单支付错误", e);
             throw new OrderException(order.getOrderNo(), "订单无法支付!");
         }
