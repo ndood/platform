@@ -19,7 +19,7 @@
         <result column="charge_balance" property="chargeBalance"/>
         <result column="virtual_balance" property="virtualBalance"/>
         <result column="charm" property="charm"/>
-        <result column="total_withdraw_charm" property="totalWithdrawCharm"/>
+        <result column="charm_draw_sum" property="charmDrawSum"/>
         <result column="status" property="status"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
@@ -53,7 +53,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,charge_balance,virtual_balance,charm,total_withdraw_charm,status,create_time,update_time,open_id,point_open_id,public_open_id,union_id,city,province,country,score_avg,user_score,constellation,birth,age,im_id,im_psw,source_id,regist_ip,login_ip,login_time
+        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,charge_balance,virtual_balance,charm,charm_draw_sum,status,create_time,update_time,open_id,point_open_id,public_open_id,union_id,city,province,country,score_avg,user_score,constellation,birth,age,im_id,im_psw,source_id,regist_ip,login_ip,login_time
     </sql>
 
     <select id="findUserVOByUserIds" resultMap="UserResultVOMap">
@@ -145,8 +145,8 @@
             <if test="charm != null">
                 and charm = #{charm}
             </if>
-            <if test="totalWithdrawCharm != null">
-                and total_withdraw_charm = #{totalWithdrawCharm}
+            <if test="charmDrawSum != null">
+                and charm_draw_sum = #{charmDrawSum}
             </if>
             <if test="status != null">
                 and status = #{status}
@@ -286,9 +286,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.User">
         insert into
-        t_user (mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,charge_balance,virtual_balance,charm,total_withdraw_charm,status,create_time,update_time,open_id,point_open_id,public_open_id,union_id,city,province,country,score_avg,user_score,constellation,birth,im_id,im_psw,source_id,regist_ip,login_ip,login_time)
+        t_user (mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,charge_balance,virtual_balance,charm,charm_draw_sum,status,create_time,update_time,open_id,point_open_id,public_open_id,union_id,city,province,country,score_avg,user_score,constellation,birth,im_id,im_psw,source_id,regist_ip,login_ip,login_time)
         values
-        (#{mobile},#{nickname},#{gender},#{headPortraitsUrl},#{password},#{salt},#{realname},#{idcard},#{type},#{userInfoAuth},#{balance},#{virtualBalance},#{virtualBalance},#{charm},#{totalWithdrawCharm},#{status},#{createTime},#{updateTime},#{openId},#{pointOpenId},#{publicOpenId},#{unionId},#{city},#{province},#{country},#{scoreAvg},#{userScore},#{constellation},#{birth},#{imId},#{imPsw},#{sourceId},#{registIp},#{loginIp},#{loginTime})
+        (#{mobile},#{nickname},#{gender},#{headPortraitsUrl},#{password},#{salt},#{realname},#{idcard},#{type},#{userInfoAuth},#{balance},#{virtualBalance},#{virtualBalance},#{charm},#{charmDrawSum},#{status},#{createTime},#{updateTime},#{openId},#{pointOpenId},#{publicOpenId},#{unionId},#{city},#{province},#{country},#{scoreAvg},#{userScore},#{constellation},#{birth},#{imId},#{imPsw},#{sourceId},#{registIp},#{loginIp},#{loginTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.User">
@@ -351,8 +351,8 @@
                 charm = #{charm},
             </if>
 
-            <if test="totalWithdrawCharm != null">
-                total_withdraw_charm = #{totalWithdrawCharm},
+            <if test="charmDrawSum != null">
+                charm_draw_sum = #{charmDrawSum},
             </if>
 
             <if test="status != null">

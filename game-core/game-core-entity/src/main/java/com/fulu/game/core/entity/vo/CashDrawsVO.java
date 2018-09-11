@@ -51,7 +51,7 @@ public class CashDrawsVO extends CashDraws {
      * 用户魅力值
      */
     @Excel(name = "用户魅力值", orderNum = "17", width = 15)
-    private BigDecimal charm;
+    private BigDecimal charmMoney;
 
     /**
      * 用户可提现余额

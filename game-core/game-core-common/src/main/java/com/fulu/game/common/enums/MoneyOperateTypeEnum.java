@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum MoneyOperateTypeEnum implements TypeEnum<Integer>{
+public enum MoneyOperateTypeEnum implements TypeEnum<Integer> {
     //用户提现
     USER_DRAW_CASH(-1, "提现"),
     //管理员加零钱
@@ -13,6 +13,7 @@ public enum MoneyOperateTypeEnum implements TypeEnum<Integer>{
     //陪玩订单完成
     ORDER_COMPLETE(2, "陪玩订单"),
     ADMIN_REFUSE_REMIT(3, "管理员拒绝打款"),
+    USER_CHARM_WITHDRAW(4, "魅力值提现"),
 
     CHANNEL_ADD_CASH(1, "渠道商加款"),
     CHANNEL_CUT_CASH(2, "渠道商扣款"),

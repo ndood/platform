@@ -22,8 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -170,12 +168,13 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
      * @param list
      */
     private void charmToMoney(List<CashDrawsVO> list) {
-        
+
         //转换魅力值的可提现金额   魅力值除以10*70%就是可提现金额
         for (int i = 0; i < list.size(); i++) {
-            BigDecimal charm = list.get(i).getCharm();
-            charm = charm.multiply(new BigDecimal("0.07"));
-            list.get(i).setCharm(charm.setScale(2,BigDecimal.ROUND_DOWN));
+            //todo gzc 这里跟dgr确认
+            Integer charm = list.get(i).getCharm();
+            BigDecimal charmMoney = new BigDecimal(charm).multiply(new BigDecimal("0.07"));
+            list.get(i).setCharmMoney(charmMoney.setScale(2, BigDecimal.ROUND_DOWN));
         }
     }
 
@@ -213,6 +212,9 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         if (null == cashDraws) {
             return false;
         }
+
+        Integer type = cashDraws.getType();
+
         cashDraws.setOperator(admin.getName());
         cashDraws.setComment(comment);
         //修改为"已拒绝"状态
@@ -220,28 +222,55 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         cashDraws.setProcessTime(new Date());
         cashDrawsDao.update(cashDraws);
 
-        //返款
-        User user = userService.findById(cashDraws.getUserId());
-        BigDecimal balance = user.getBalance();
-        log.info("管理员拒绝打款前，用户账户余额:{}", balance);
-        balance = balance.add(cashDraws.getMoney());
-        log.info("管理员拒绝打款后，用户账户余额:{}", balance);
+        if (type.equals(CashDrawsTypeEnum.BALANCE_WITHDRAW.getType())) {
+            //返款
+            User user = userService.findById(cashDraws.getUserId());
+            BigDecimal balance = user.getBalance();
+            log.info("管理员拒绝打款前，用户账户余额:{}", balance);
+            balance = balance.add(cashDraws.getMoney());
+            log.info("管理员拒绝打款后，用户账户余额:{}", balance);
 
-        MoneyDetails moneyDetails = new MoneyDetails();
-        moneyDetails.setOperatorId(admin.getId());
-        moneyDetails.setAction(MoneyOperateTypeEnum.ADMIN_REFUSE_REMIT.getType());
-        moneyDetails.setTargetId(cashDraws.getUserId());
-        moneyDetails.setSum(balance);
-        moneyDetails.setMoney(cashDraws.getMoney());
-        moneyDetails.setCashId(cashId);
-        moneyDetails.setRemark(comment);
-        moneyDetails.setCreateTime(new Date());
-        mdService.create(moneyDetails);
+            MoneyDetails moneyDetails = new MoneyDetails();
+            moneyDetails.setOperatorId(admin.getId());
+            moneyDetails.setAction(MoneyOperateTypeEnum.ADMIN_REFUSE_REMIT.getType());
+            moneyDetails.setTargetId(cashDraws.getUserId());
+            moneyDetails.setSum(balance);
+            moneyDetails.setMoney(cashDraws.getMoney());
+            moneyDetails.setCashId(cashId);
+            moneyDetails.setRemark(comment);
+            moneyDetails.setCreateTime(new Date());
+            mdService.create(moneyDetails);
 
-        user.setBalance(balance);
-        user.setUpdateTime(new Date());
-        userService.update(user);
-        return true;
+            user.setBalance(balance);
+            user.setUpdateTime(new Date());
+            userService.update(user);
+            return true;
+        } else {
+            //返款
+            User user = userService.findById(cashDraws.getUserId());
+            BigDecimal balance = user.getBalance();
+            log.info("管理员拒绝打款前，用户账户余额:{}", balance);
+            balance = balance.subtract(cashDraws.getMoney());
+            log.info("管理员拒绝打款后，用户账户余额:{}", balance);
+
+            MoneyDetails moneyDetails = new MoneyDetails();
+            moneyDetails.setOperatorId(admin.getId());
+            moneyDetails.setAction(MoneyOperateTypeEnum.ADMIN_REFUSE_REMIT.getType());
+            moneyDetails.setTargetId(cashDraws.getUserId());
+            moneyDetails.setSum(balance);
+            moneyDetails.setMoney(cashDraws.getMoney());
+            moneyDetails.setCashId(cashId);
+            moneyDetails.setRemark(comment);
+            moneyDetails.setCreateTime(new Date());
+            mdService.create(moneyDetails);
+
+            user.setBalance(balance);
+            user.setCharmDrawSum((user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum()) - cashDraws.getCharm());
+            user.setUpdateTime(new Date());
+            userService.update(user);
+            return true;
+        }
+
     }
 
     @Override
@@ -255,11 +284,11 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         }
 
         Integer totalCharm = user.getCharm() == null ? 0 : user.getCharm();
-        Integer totalWithdrawCharm = user.getTotalWithdrawCharm() == null ? 0 : user.getTotalWithdrawCharm();
-        Integer leftCharm = totalCharm - totalWithdrawCharm;
-        if (totalWithdrawCharm < 0 || leftCharm < 0) {
-            log.error("用户id：{}魅力值提现异常，总魅力值：{}，剩余魅力值：{}，提现魅力值：{}",
-                    user.getId(), totalCharm, leftCharm, charm);
+        Integer charmDrawSum = user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum();
+        Integer leftCharm = totalCharm - charmDrawSum;
+        if (leftCharm <= 0 || leftCharm < charm) {
+            log.error("用户id：{}魅力值提现异常，总魅力值：{}，累计总提现魅力值：{}，剩余魅力值：{}，此次提现魅力值：{}",
+                    user.getId(), totalCharm, charmDrawSum, leftCharm, charm);
             throw new CashException(CashException.ExceptionCode.CHARM_WITHDRAW_FAIL_EXCEPTION);
         }
 
@@ -267,7 +296,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
                 .setScale(2, ROUND_HALF_DOWN);
 
         user.setBalance(user.getBalance().add(charmMoney));
-        user.setTotalWithdrawCharm((user.getTotalWithdrawCharm() == null ? 0 : user.getTotalWithdrawCharm()) + charm);
+        user.setCharmDrawSum((user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum()) + charm);
         user.setUpdateTime(DateUtil.date());
         userService.update(user);
 
@@ -276,6 +305,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         cashDraws.setNickname(user.getNickname());
         cashDraws.setMobile(user.getMobile());
         cashDraws.setMoney(charmMoney);
+        cashDraws.setCharm(charm);
         cashDraws.setCashStatus(CashProcessStatusEnum.WAITING.getType());
         cashDraws.setServerAuth(CashDrawsServerAuthEnum.UN_PROCESS.getType());
         cashDraws.setType(CashDrawsTypeEnum.CHARM_WITHDRAW.getType());
@@ -287,7 +317,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         details.setOperatorId(user.getId());
         details.setTargetId(user.getId());
         details.setMoney(charmMoney);
-        details.setAction(MoneyOperateTypeEnum.USER_DRAW_CASH.getType());
+        details.setAction(MoneyOperateTypeEnum.USER_CHARM_WITHDRAW.getType());
         details.setCashId(cashDraws.getCashId());
         details.setSum(user.getBalance());
         details.setCreateTime(DateUtil.date());

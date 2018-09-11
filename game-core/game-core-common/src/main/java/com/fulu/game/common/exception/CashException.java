@@ -20,7 +20,7 @@ public class CashException extends BizException {
         CASH_CUT_EXCEPTION(30003, "扣款金额超出余额"),
         CASH_ORDER_FAIL_EXCEPTION(30004, "下单失败，请联系客服"),
         CASH_REMIT_FAIL_EXCEPTION(30005, "打款失败，请联系管理员"),
-        CHARM_WITHDRAW_FAIL_EXCEPTION(30006, "提现魅力值超出超出剩余量");
+        CHARM_WITHDRAW_FAIL_EXCEPTION(30006, "提现魅力值超出剩余魅力值");
         private int code;
         private String msg;
     }
