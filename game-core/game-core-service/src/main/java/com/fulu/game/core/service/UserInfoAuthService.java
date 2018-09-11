@@ -120,12 +120,4 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
      * @param id 客服ID
      */
     void setSubstitute(int id, Integer substituteId);
-
-    /**
-     * 陪玩师魅力值提现
-     *
-     * @param userId 陪玩师id
-     * @param charm  魅力值
-     */
-    void withdrawCharm(Integer userId, Integer charm);
 }

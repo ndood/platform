@@ -37,6 +37,7 @@
         <searchbox.jest>5.3.3</searchbox.jest>
         <javax.mail>1.4.7</javax.mail>
         <com.sun.mail>1.5.4</com.sun.mail>
+        <jpush-client.version>3.3.7</jpush-client.version>
         <main.basedir>${basedir}</main.basedir>
     </properties>
 
@@ -150,6 +151,11 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
                 <version>${fastjson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.jpush.api</groupId>
+                <artifactId>jpush-client</artifactId>
+                <version>${jpush-client.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

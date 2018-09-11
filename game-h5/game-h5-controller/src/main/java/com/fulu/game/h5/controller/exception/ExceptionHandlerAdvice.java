@@ -153,7 +153,7 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(LoginException.class)
     public Result handleLoginException(LoginException e) {
         log.error("登录异常", e);
-        return Result.dataError().data("errcode", e.getCode()).msg(e.getMessage());
+        return Result.error().data("errcode", e.getCode()).msg(e.getMessage());
     }
 
     /**

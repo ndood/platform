@@ -1,13 +1,13 @@
 package com.fulu.game.core.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.Week;
 import com.fulu.game.common.Constant;
-import com.fulu.game.common.enums.CashProcessStatusEnum;
-import com.fulu.game.common.enums.MoneyOperateTypeEnum;
-import com.fulu.game.common.enums.UserBodyAuthStatusEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.CashException;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.dao.CashDrawsDao;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
@@ -16,9 +16,6 @@ import com.fulu.game.core.entity.vo.UserBodyAuthVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-
-
-import cn.hutool.core.bean.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,18 +74,18 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         List<UserBodyAuth> list = userBodyAuthService.findByParameter(uba);
 
         int authStatus = UserBodyAuthStatusEnum.NO_AUTH.getType().intValue();
-        
-        if(CollectionUtils.isNotEmpty(list)){
+
+        if (CollectionUtils.isNotEmpty(list)) {
             UserBodyAuth authInfo = list.get(0);
             authStatus = authInfo.getAuthStatus().intValue();
         }
-        
+
         if (authStatus != UserBodyAuthStatusEnum.AUTH_SUCCESS.getType().intValue()) {
             log.error("提款申请异常，当前操作用户未进行身份认证");
             throw new UserException(UserException.ExceptionCode.BODY_NO_AUTH);
         }
-        
-        
+
+
         user = userService.findById(user.getId());
         BigDecimal balance = user.getBalance();
         if (money.compareTo(balance) == 1) {
@@ -123,7 +120,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         userService.updateRedisUser(user);
         log.info("更新redisUser");
         CashDrawsVO vo = new CashDrawsVO();
-        BeanUtil.copyProperties(cashDraws , vo);
+        BeanUtil.copyProperties(cashDraws, vo);
         vo.setTips(getCashDrawsTips());
         return vo;
     }
@@ -131,12 +128,13 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
     /**
      * 根据提现时间获取提醒文案
      * 注：每周二、周五进行打款（周二办理周四-周日的提现申请，周五办理周一到周三的提现申请）
+     *
      * @return 返回文案
      */
     private String getCashDrawsTips() {
         int weekInt = DateUtil.thisDayOfWeekEnum().getValue();
         boolean flag = weekInt >= Week.MONDAY.getValue() && weekInt <= Week.WEDNESDAY.getValue();
-        if(flag) {
+        if (flag) {
             return Constant.CASH_DRAWS_NEXT_FRIDAY_TIPS;
         }
         return Constant.CASH_DRAWS_NEXT_TUESDAY_TIPS;
@@ -237,5 +235,73 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         user.setUpdateTime(new Date());
         userService.update(user);
         return true;
+    }
+
+    @Override
+    public CashDrawsVO withdrawCharm(Integer charm) {
+        User user = userService.getCurrentUser();
+
+        Integer totalCharm = user.getCharm() == null ? 0 : user.getCharm();
+        if (totalCharm.compareTo(charm) < 0) {
+            log.error("用户id：{}魅力值提现异常，总魅力值：{}，提现魅力值：{}", user.getId(), totalCharm, charm);
+            throw new CashException(CashException.ExceptionCode.CASH_EXCEED_EXCEPTION);
+        }
+
+        user.setTotalWithdrawCharm((user.getTotalWithdrawCharm() == null ? 0 : user.getTotalWithdrawCharm()) + charm);
+        user.setUpdateTime(DateUtil.date());
+        userService.update(user);
+
+        BigDecimal charmMoney = new BigDecimal(charm).multiply(Constant.CHARM_TO_MONEY_RATE);
+
+        CashDraws cashDraws = new CashDraws();
+        cashDraws.setUserId(user.getId());
+        cashDraws.setNickname(user.getNickname());
+        cashDraws.setMobile(user.getMobile());
+        cashDraws.setMoney(charmMoney);
+        cashDraws.setCashStatus(CashProcessStatusEnum.WAITING.getType());
+        cashDraws.setServerAuth(CashDrawsServerAuthEnum.UN_PROCESS.getType());
+        cashDraws.setType(CashDrawsTypeEnum.CHARM_WITHDRAW.getType());
+        cashDraws.setCashNo(generateCashNo());
+        cashDraws.setCreateTime(DateUtil.date());
+        cashDrawsDao.create(cashDraws);
+
+        MoneyDetails details = new MoneyDetails();
+        details.setOperatorId(user.getId());
+        details.setTargetId(user.getId());
+        details.setMoney(charmMoney);
+        details.setAction(MoneyOperateTypeEnum.USER_DRAW_CASH.getType());
+        details.setCashId(cashDraws.getCashId());
+        details.setSum(new BigDecimal(user.getTotalWithdrawCharm()));
+        details.setCreateTime(DateUtil.date());
+        mdService.drawSave(details);
+
+        CashDrawsVO vo = new CashDrawsVO();
+        BeanUtil.copyProperties(cashDraws, vo);
+        return vo;
+    }
+
+
+    /**
+     * 生成订单号
+     *
+     * @return
+     */
+    private String generateCashNo() {
+        String cashNo = GenIdUtil.GetOrderNo();
+        if (findByCashNo(cashNo) == null) {
+            return cashNo;
+        } else {
+            return generateCashNo();
+        }
+    }
+
+    public CashDraws findByCashNo(String cashNo) {
+        CashDrawsVO vo = new CashDrawsVO();
+        vo.setCashNo(cashNo);
+        List<CashDraws> list = cashDrawsDao.findByParameter(vo);
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+        return list.get(0);
     }
 }

@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/v1/virtual-pay-order")
+@RequestMapping("/api/v1/mp/charge-order")
 public class MpOrderController extends BaseController {
     @Autowired
     private UserService userService;
@@ -42,10 +42,10 @@ public class MpOrderController extends BaseController {
      * 提交虚拟币充值订单
      *
      * @param request      request
-     * @param sessionkey   sessionkey
+     * @param sessionkey   订单校验令牌
      * @param actualMoney  实付金额（人民币）
      * @param virtualMoney 充值虚拟币金额（钻石）
-     * @param payType      支付方式（1：微信支付；2：余额支付）
+     * @param payment      支付方式（1：微信支付；2：余额支付）
      * @return 封装结果集
      */
     @PostMapping("/submit")
@@ -53,9 +53,9 @@ public class MpOrderController extends BaseController {
                          @RequestParam String sessionkey,
                          @RequestParam BigDecimal actualMoney,
                          @RequestParam Integer virtualMoney,
-                         @RequestParam Integer payType) {
+                         @RequestParam Integer payment) {
         String ip = RequestUtil.getIpAdrress(request);
-        Map<String, Object> resultMap = payService.submit(sessionkey, actualMoney, virtualMoney, ip, payType);
+        Map<String, Object> resultMap = payService.submit(sessionkey, actualMoney, virtualMoney, ip, payment);
         return Result.success().data(resultMap).msg("创建订单成功!");
     }
 
@@ -74,5 +74,24 @@ public class MpOrderController extends BaseController {
         User user = userService.findById(order.getUserId());
         Object result = payService.payOrder(order, user, ip);
         return Result.success().data(result);
+    }
+
+    /**
+     * 提交余额充值订单
+     *
+     * @param request     request
+     * @param sessionkey  订单校验令牌
+     * @param actualMoney 实付金额（人民币）
+     * @param money       充值到平台的金额
+     * @return 封装结果集
+     */
+    @PostMapping("/balance/charge")
+    public Result balanceCharge(HttpServletRequest request,
+                                @RequestParam String sessionkey,
+                                @RequestParam BigDecimal actualMoney,
+                                @RequestParam BigDecimal money) {
+        String ip = RequestUtil.getIpAdrress(request);
+        Map<String, Object> resultMap = payService.balanceCharge(sessionkey, actualMoney, money, ip);
+        return Result.success().data(resultMap).msg("创建订单成功!");
     }
 }

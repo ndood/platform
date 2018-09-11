@@ -6,7 +6,6 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.github.pagehelper.PageInfo;
 import me.chanjar.weixin.common.exception.WxErrorException;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.util.Date;
@@ -265,10 +264,19 @@ public interface UserService extends ICommonService<User, Integer> {
      * 修改用户魅力值
      *
      * @param user  用户Bean
-     * @param price 魅力值修改数量
+     * @param price 魅力值修改量
      * @return 用户Bean
      */
     User modifyCharm(User user, Integer price);
+
+    /**
+     * 修改用户魅力值
+     *
+     * @param userId 用户id
+     * @param charm  魅力值修改量
+     * @return 用户Bean
+     */
+    User modifyCharm(Integer userId, Integer charm);
 
     /**
      * 登录用户获取虚拟币奖励

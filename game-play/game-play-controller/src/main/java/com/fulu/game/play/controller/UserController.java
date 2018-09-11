@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -94,8 +95,15 @@ public class UserController extends BaseController {
         User user = userService.findById(userService.getCurrentUser().getId());
         JSONObject data = new JSONObject();
         data.put("balance", user.getBalance());
-        data.put("virtualBalance", user.getVirtualBalance());
-        data.put("charm", user.getCharm());
+        data.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
+        Integer charm = user.getCharm();
+        if (charm == null) {
+            data.put("charm", 0);
+            data.put("charmMoney", 0);
+        } else {
+            data.put("charm", charm);
+            data.put("charmMoney", new BigDecimal(charm).multiply(Constant.CHARM_TO_MONEY_RATE));
+        }
         data.put("chargeBalance", user.getChargeBalance());
         return Result.success().data(data).msg("查询成功！");
     }
@@ -609,5 +617,5 @@ public class UserController extends BaseController {
 
         return Result.success().msg("提交成功！");
     }
-    
+
 }
