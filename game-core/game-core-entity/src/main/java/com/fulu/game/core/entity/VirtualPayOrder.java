@@ -29,6 +29,8 @@ public class VirtualPayOrder implements Serializable {
     private Integer type;
     //支付方式（1：微信支付；2：余额支付）
     private Integer payment;
+    //充值路径（1：公众号；2：安卓；3：IOS）
+    private Integer payPath;
     //实付金额
     private BigDecimal actualMoney;
     //虚拟商品价格（对应钻石数量）
