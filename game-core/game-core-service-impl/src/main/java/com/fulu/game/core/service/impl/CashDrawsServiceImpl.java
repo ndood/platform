@@ -146,14 +146,14 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         List<CashDrawsVO> list = cashDrawsDao.findDetailByParameter(cashDrawsVO);
 
         this.charmToMoney(list);
-        
+
         return new PageInfo(list);
     }
 
     @Override
     public PageInfo<CashDrawsVO> list(CashDrawsVO cashDrawsVO) {
         PageHelper.orderBy("t1.create_time DESC");
-        
+
         List<CashDrawsVO> list = cashDrawsDao.findDetailByParameter(cashDrawsVO);
         this.charmToMoney(list);
 
@@ -162,11 +162,12 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
 
     /**
      * 魅力值转换成金额
+     *
      * @param list
      */
-    private void charmToMoney(List<CashDrawsVO> list){
+    private void charmToMoney(List<CashDrawsVO> list) {
         //转换魅力值的可提现金额   魅力值除以10*70%就是可提现金额
-        for(int i = 0 ; i < list.size() ; i++){
+        for (int i = 0; i < list.size(); i++) {
             BigDecimal charm = list.get(i).getCharm();
             charm.multiply(new BigDecimal("0.07"));
             list.get(i).setCharm(charm);
@@ -240,6 +241,12 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
     @Override
     public CashDrawsVO withdrawCharm(Integer charm) {
         User user = userService.getCurrentUser();
+
+        boolean result = userBodyAuthService.userAlreadyAuth(user.getId());
+        if (!result) {
+            log.error("用户id：{}未进行用户身份实名认证", user.getId());
+            throw new UserException(UserException.ExceptionCode.BODY_NO_AUTH);
+        }
 
         Integer totalCharm = user.getCharm() == null ? 0 : user.getCharm();
         if (totalCharm.compareTo(charm) < 0) {
