@@ -1,12 +1,16 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.exception.ParamsException;
+import com.fulu.game.common.utils.AppRouteFactory;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.RewardDao;
 import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.vo.AppPushMsgVO;
 import com.fulu.game.core.entity.vo.RewardVO;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.impl.push.MobileAppPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +21,9 @@ import org.springframework.stereotype.Service;
 import com.fulu.game.core.dao.RewardDao;
 import com.fulu.game.core.entity.Reward;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service("rewardService")
@@ -37,6 +43,12 @@ public class RewardServiceImpl extends AbsCommonService<Reward, Integer> impleme
 
     @Autowired
     private VirtualProductService virtualProductService;
+
+    @Autowired
+    private MobileAppPushServiceImpl mobileAppPushService;
+
+    @Autowired
+    private DynamicPushMsgService dynamicPushMsgService;
 
     @Override
     public ICommonDao<Reward, Integer> getDao() {
@@ -74,6 +86,25 @@ public class RewardServiceImpl extends AbsCommonService<Reward, Integer> impleme
             create(rewardVO);
             //修改动态打赏次数
             dynamicService.updateIndexFilesById(rewardVO.getResourceId(),true, 0, 0,false);
+            Map<String, String> extras = extras = AppRouteFactory.buildDynamicRoute(rewardVO.getResourceId());
+            AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(rewardVO.getToUserId()).title("打赏").alert(virtualProduct.getName()).extras(extras).build();
+            //发送push消息
+            mobileAppPushService.pushMsg(appPushMsgVO);
+            // 保存push消息
+            DynamicPushMsg dynamicPushMsg = new DynamicPushMsg();
+            dynamicPushMsg.setDynamicId(rewardVO.getResourceId());
+            dynamicPushMsg.setFromUserId(user.getId());
+            dynamicPushMsg.setFromUserHeadUrl(user.getHeadPortraitsUrl());
+            dynamicPushMsg.setFromUserNickname(user.getNickname());
+            dynamicPushMsg.setToUserId(rewardVO.getToUserId());
+            //push消息类型（1：点赞；2：评论；3打赏）
+            dynamicPushMsg.setPushType(3);
+            dynamicPushMsg.setPushContent(virtualProduct.getName());
+            dynamicPushMsg.setPushExtras(JSONObject.toJSONString(extras));
+            dynamicPushMsg.setCreateTime(new Date());
+            dynamicPushMsg.setUpdateTime(new Date());
+            dynamicPushMsg.setIsDel(0);
+            dynamicPushMsgService.create(dynamicPushMsg);
         } else {
             log.error("打赏记录：打赏用户Id：{}，接收奖励用户id：{}，礼物id：{}，调用虚拟商品订单接口失败", user.getId(), rewardVO.getToUserId(), rewardVO.getGiftId());
         }
