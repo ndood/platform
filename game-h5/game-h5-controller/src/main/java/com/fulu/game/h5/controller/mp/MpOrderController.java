@@ -85,7 +85,7 @@ public class MpOrderController extends BaseController {
      * @param money       充值到平台的金额
      * @return 封装结果集
      */
-    @PostMapping("/balance/charge")
+    @PostMapping("/balance/submit")
     public Result balanceCharge(HttpServletRequest request,
                                 @RequestParam String sessionkey,
                                 @RequestParam BigDecimal actualMoney,

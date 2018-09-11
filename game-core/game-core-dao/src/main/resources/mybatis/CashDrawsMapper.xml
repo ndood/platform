@@ -147,6 +147,14 @@
         </where>
         order by create_time desc
     </select>
+    <select id="findByCashNo" resultType="com.fulu.game.core.entity.CashDraws">
+        select
+        <include refid="Base_Column_List"/>
+        from t_cash_draws
+        <where>
+            cash_no = #{cashNo} for update
+        </where>
+    </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_cash_draws
