@@ -146,7 +146,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
     private WxPayMpOrderResult pay(VirtualPayOrder order, User user, String ip) {
         WxPayUnifiedOrderRequest orderRequest = buildWxPayRequest(order, ip);
         try {
-            orderRequest.setOpenid(user.getOpenId());
+            orderRequest.setOpenid(user.getPublicOpenId());
             return wxMpServiceSupply.wxMpPayService().createOrder(orderRequest);
         } catch (Exception e) {
             log.error("虚拟币充值订单支付错误", e);
