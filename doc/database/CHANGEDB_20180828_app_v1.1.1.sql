@@ -369,3 +369,28 @@ ALTER TABLE `t_dynamic_file` ADD COLUMN `duration` int(11) DEFAULT '0'
 COMMENT '视频时长（单位秒）' after `height`;
 
 
+drop table if exists t_dynamic_push_msg;
+
+/*==============================================================*/
+/* Table: 动态push消息推送记录表                                */
+/*==============================================================*/
+create table t_dynamic_push_msg
+(
+   id                   int(11) not null auto_increment,
+   dynamic_id           int(11) comment '被关注用户id',
+   from_user_id         int(11) comment 'push消息发送用户id',
+   from_user_nickname   varchar(64) comment 'push消息发送用户昵称',
+   from_user_head_url   varchar(512) comment 'push消息发送用户头像url',
+   to_user_id           int(11) comment 'push消息接收用户id',
+   push_type            tinyint(1) comment 'push消息类型（1：点赞；2：评论；3打赏）',
+   push_content         varchar(128) comment 'push消息内容',
+   push_extras          varchar(512) comment 'push消息扩展内容',
+   create_time          datetime comment '创建时间',
+   update_time          datetime comment '修改时间',
+   is_del               tinyint(1) comment '状态（0：有效；1：无效）',
+   primary key (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='动态Push消息推送表';
+
+
+
+
