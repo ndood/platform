@@ -391,6 +391,12 @@ create table t_dynamic_push_msg
    primary key (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='动态Push消息推送表';
 
+/* 修改banner表，添加平台属性（1：属于小程序；2：app）  */
+ALTER TABLE `t_banner` ADD COLUMN `platform_type` tinyint(1) DEFAULT '1'
+COMMENT 'banner所属平台(1:小程序;2:app)' after `operator_name`;
+update `t_banner` set platform_code = 1 where ifnull(platform_code,1) = 1
+
+
 
 
 
