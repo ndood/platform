@@ -32,7 +32,8 @@ CREATE TABLE `t_virtual_pay_order` (
   `pay_time` datetime DEFAULT NULL COMMENT '订单支付时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `create_time` datetime NOT NULL COMMENT '订单创建时间',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `order_no` (`order_no`)
 ) COMMENT='虚拟币和余额充值订单表';
 
 ALTER TABLE `t_cash_draws` ADD COLUMN `type` tinyint(1) DEFAULT '1' COMMENT '提现类型：1：余额提现；2：魅力值提现' after `server_auth`;
@@ -41,3 +42,5 @@ ALTER TABLE `t_user` ADD COLUMN `total_withdraw_charm` int(11) unsigned DEFAULT 
 
 ALTER TABLE `t_cash_draws` ADD COLUMN `server_auth` tinyint(4) DEFAULT '0' NOT NULL COMMENT '运营是否已处理  0  未处理  1已处理' after `cash_status`;
 
+--t_virtual_product_order加order_no唯一索引
+ALTER TABLE `t_virtual_product_order` ADD UNIQUE (`order_no`)
