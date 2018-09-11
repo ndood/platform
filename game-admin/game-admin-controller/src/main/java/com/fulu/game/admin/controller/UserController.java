@@ -515,19 +515,15 @@ public class UserController extends BaseController {
 
     /**
      * 获取钻石/魅力值明细
-     * @param type
-     * @param pageSize
-     * @param pageNum
      * @return
      */
     @RequestMapping("/virtual-detail/list")
-    public Result virtualDetailList(Integer type,
+    public Result virtualDetailList(Integer type, Integer userId,
                                     @RequestParam("pageSize") Integer pageSize,
                                     @RequestParam("pageNum") Integer pageNum) {
-        User user = userService.getCurrentUser();
 
         VirtualDetailsVO vd = new VirtualDetailsVO();
-        vd.setUserId(user.getId());
+        vd.setUserId(userId);
         vd.setType(type);
         
         PageInfo<VirtualDetails> list = virtualDetailsService.findByParameterWithPage(vd , pageSize , pageNum , " create_time desc" );
