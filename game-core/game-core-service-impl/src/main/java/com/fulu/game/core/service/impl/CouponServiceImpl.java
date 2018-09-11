@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -61,7 +62,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
     }
 
     @Override
-    public Boolean couponIsAvailable(Coupon coupon) {
+    public Boolean couponIsAvailable(Coupon coupon, BigDecimal orderMoney) {
         if (coupon.getIsUse()) {
             log.error("优惠券使用错误:已经使用:{}", coupon.getCouponNo());
             return false;
@@ -72,6 +73,10 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
         }
         if (new Date().after(coupon.getEndUsefulTime())) {
             log.error("优惠券使用错误:过期:{}", coupon.getCouponNo());
+            return false;
+        }
+        if(coupon.getFullReduction().compareTo(orderMoney)>0){
+            log.error("订单金额小于满减金额:{}", coupon.getCouponNo());
             return false;
         }
         if (userService.isOldUser(coupon.getUserId()) && coupon.getIsNewUser()) {

@@ -3,6 +3,7 @@ package com.fulu.game.core.service;
 import com.fulu.game.core.entity.Coupon;
 import com.github.pagehelper.PageInfo;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -90,6 +91,6 @@ public interface CouponService extends ICommonService<Coupon, Integer> {
      * @param coupon
      * @return
      */
-    Boolean couponIsAvailable(Coupon coupon);
+    Boolean couponIsAvailable(Coupon coupon, BigDecimal orderMoney);
 
 }
