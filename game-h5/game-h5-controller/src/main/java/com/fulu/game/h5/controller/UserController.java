@@ -23,9 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 用户Controller
@@ -250,9 +248,10 @@ public class UserController extends BaseController {
         }
 
         boolean result = userBodyAuthService.userAlreadyAuth(user.getId());
-        Map<String, Object> resultMap = new HashMap<>(2);
-        resultMap.put("isAuth", result ? 1 : 0);
-        return Result.success().data(resultMap).msg("查询成功！");
+        if (result) {
+            return Result.success().msg("已通过认证！");
+        }
+        return Result.error().msg("未通过认证！");
     }
 
     /**
