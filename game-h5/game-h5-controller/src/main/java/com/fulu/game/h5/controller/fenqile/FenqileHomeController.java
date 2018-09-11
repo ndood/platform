@@ -2,6 +2,7 @@ package com.fulu.game.h5.controller.fenqile;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.PlatformBannerEnum;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SubjectUtil;
@@ -64,6 +65,7 @@ public class FenqileHomeController extends BaseController {
     public Result list() {
         BannerVO bannerVO = new BannerVO();
         bannerVO.setDisable(true);
+        bannerVO.setPlatformType(PlatformBannerEnum.PLAY.getType());
         List<Banner> bannerList = bannerService.findByParam(bannerVO);
         return Result.success().data(bannerList);
     }
