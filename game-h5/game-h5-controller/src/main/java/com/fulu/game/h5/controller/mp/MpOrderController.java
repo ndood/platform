@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/v1/virtual-pay-order")
+@RequestMapping("/api/v1/mp/charge-order")
 public class MpOrderController extends BaseController {
     @Autowired
     private UserService userService;
@@ -83,7 +83,7 @@ public class MpOrderController extends BaseController {
      * @param sessionkey  订单校验令牌
      * @param actualMoney 实付金额（人民币）
      * @param money       充值到平台的金额
-     * @return
+     * @return 封装结果集
      */
     @PostMapping("/balance/charge")
     public Result balanceCharge(HttpServletRequest request,
