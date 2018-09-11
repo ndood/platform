@@ -211,4 +211,19 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
     }
 
 
+    public Boolean isInParentCategory(int parentCategoryId,int categoryId){
+        if(parentCategoryId==categoryId){
+            return true;
+        }
+        Category category = findById(categoryId);
+        if(category.getPid().equals(parentCategoryId)){
+            return true;
+        }
+        Category parentCategory = findById(category.getPid());
+        if(parentCategory.getPid().equals(parentCategoryId)){
+            return true;
+        }
+        return false;
+    }
+
 }

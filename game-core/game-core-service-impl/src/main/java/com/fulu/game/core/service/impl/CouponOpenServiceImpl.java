@@ -96,6 +96,9 @@ public abstract class CouponOpenServiceImpl implements CouponOpenService{
         coupon.setReceiveIp(receiveIp);
         coupon.setDeduction(couponGroup.getDeduction());
         coupon.setIsNewUser(couponGroup.getIsNewUser());
+        coupon.setType(couponGroup.getType());
+        coupon.setCategoryId(couponGroup.getCategoryId());
+        coupon.setFullReduction(couponGroup.getFullReduction());
         coupon.setUserId(userId);
         coupon.setMobile(user.getMobile());
         coupon.setIsUse(false);
@@ -111,7 +114,7 @@ public abstract class CouponOpenServiceImpl implements CouponOpenService{
         try {
             couponService.create(coupon);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("创建优惠券异常",e);
             log.error("无法给用户userId:{}发放优惠券，兑换码为:{}", userId, couponGroup.getRedeemCode());
             return null;
         }

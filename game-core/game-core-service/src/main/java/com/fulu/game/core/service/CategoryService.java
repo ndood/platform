@@ -34,4 +34,12 @@ public interface CategoryService extends ICommonService<Category,Integer>{
 
      /** 通过一级分类pid查询改分类下的所有子分类 */
      List<Category> findByFirstPid(Integer pid, Boolean status);
+
+     /**
+      * 查询子分类是否属于父分类
+      * @param parentCategoryId
+      * @param categoryId
+      * @return
+      */
+     Boolean isInParentCategory(int parentCategoryId,int categoryId);
 }
