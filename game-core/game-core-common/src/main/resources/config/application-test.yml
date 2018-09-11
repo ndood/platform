@@ -73,7 +73,7 @@ config:
       subMchId:
       keyPath: /data/cert/apiclient_cert.p12
       tradeType: JSAPI
-      notifyUrl: https://t-api-h5.wzpeilian.com//wechat/mp/pay/callback
+      notifyUrl: https://t-api-h5.wzpeilian.com/wechat/mp/pay/callback
     im:
       urlPrefix: http://a1.easemob.com
       appKey: 1183180421228734#game-test

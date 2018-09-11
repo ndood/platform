@@ -1,7 +1,6 @@
 package com.fulu.game.core.service.impl;
 
 
-import com.fulu.game.common.enums.VirtualPayOrderTypeEnum;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.VirtualPayOrderDao;
 import com.fulu.game.core.entity.VirtualPayOrder;
@@ -40,7 +39,6 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
 
     @Override
     public PageInfo<VirtualPayOrderVO> chargeList(VirtualPayOrderVO payOrderVO, Integer pageNum, Integer pageSize, String orderBy) {
-        payOrderVO.setType(VirtualPayOrderTypeEnum.VIRTUAL_ORDER.getType());
         if (StringUtils.isBlank(orderBy)) {
             orderBy = "vpo.pay_time DESC";
         }
