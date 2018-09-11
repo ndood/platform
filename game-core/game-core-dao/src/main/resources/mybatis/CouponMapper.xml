@@ -8,6 +8,9 @@
         <result column="coupon_group_id" property="couponGroupId"/>
         <result column="deduction" property="deduction"/>
         <result column="is_new_user" property="isNewUser"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="type" property="type"/>
+        <result column="full_reduction" property="fullReduction"/>
         <result column="user_id" property="userId"/>
         <result column="mobile" property="mobile"/>
         <result column="is_use" property="isUse"/>
@@ -26,7 +29,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,coupon_no,coupon_group_id,deduction,is_new_user,user_id,mobile,is_use,order_no,start_useful_time,end_useful_time,receive_time,is_first_receive,use_time,receive_ip,use_ip,create_time
+        id,coupon_no,coupon_group_id,deduction,is_new_user,category_id,type,full_reduction,user_id,mobile,is_use,order_no,start_useful_time,end_useful_time,receive_time,is_first_receive,use_time,receive_ip,use_ip,create_time
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="CouponResultMap">
@@ -60,6 +63,15 @@
             </if>
             <if test="isNewUser != null">
                 and is_new_user = #{isNewUser}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="fullReduction != null">
+                and full_reduction = #{fullReduction}
             </if>
             <if test="userId != null">
                 and user_id = #{userId}
@@ -132,6 +144,15 @@
             <if test="isNewUser != null">
                 and is_new_user = #{isNewUser}
             </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="fullReduction != null">
+                and full_reduction = #{fullReduction}
+            </if>
             <if test="userId != null">
                 and user_id = #{userId}
             </if>
@@ -166,9 +187,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Coupon">
         insert into
-        t_coupon (coupon_no,coupon_group_id,deduction,is_new_user,user_id,mobile,is_use,order_no,start_useful_time,end_useful_time,receive_time,is_first_receive,use_time,receive_ip,use_ip,create_time)
+        t_coupon (coupon_no,coupon_group_id,deduction,is_new_user,category_id,type,full_reduction,user_id,mobile,is_use,order_no,start_useful_time,end_useful_time,receive_time,is_first_receive,use_time,receive_ip,use_ip,create_time)
         values
-        (#{couponNo},#{couponGroupId},#{deduction},#{isNewUser},#{userId},#{mobile},#{isUse},#{orderNo},#{startUsefulTime},#{endUsefulTime},#{receiveTime},#{isFirstReceive},#{useTime},#{receiveIp},#{useIp},#{createTime})
+        (#{couponNo},#{couponGroupId},#{deduction},#{isNewUser},#{categoryId},type,#{fullReduction},#{userId},#{mobile},#{isUse},#{orderNo},#{startUsefulTime},#{endUsefulTime},#{receiveTime},#{isFirstReceive},#{useTime},#{receiveIp},#{useIp},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Coupon">
@@ -188,7 +209,15 @@
             <if test="isNewUser != null">
                 is_new_user = #{isNewUser},
             </if>
-
+            <if test="categoryId != null">
+                 category_id = #{categoryId},
+            </if>
+            <if test="type != null">
+                 type = #{type},
+            </if>
+            <if test="fullReduction != null">
+                 full_reduction = #{fullReduction},
+            </if>
             <if test="userId != null">
                 user_id = #{userId},
             </if>

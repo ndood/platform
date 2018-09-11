@@ -376,7 +376,7 @@ ALTER TABLE `t_coupon_group` ADD COLUMN `category_id`  int(11) NULL COMMENT '限
 ALTER TABLE `t_coupon_group` ADD COLUMN `type`  tinyint(1) NULL COMMENT '类型(1满减，2折扣)' AFTER `category_id`;
 ALTER TABLE `t_coupon_group` ADD COLUMN `full_reduction`  decimal(11,2) NULL COMMENT '多少金额可用' AFTER `type`;
 
-
 ALTER TABLE `t_coupon` ADD COLUMN `category_id`  int NULL COMMENT '限品类(为空则为全品类)' AFTER `is_new_user`;
 ALTER TABLE `t_coupon` ADD COLUMN `type`   tinyint(1) NULL COMMENT '类型(1满减，2折扣)' AFTER `category_id`;
 ALTER TABLE `t_coupon` ADD COLUMN `full_reduction`  decimal(11,2) NULL COMMENT '多少金额可用' AFTER `type`;
+

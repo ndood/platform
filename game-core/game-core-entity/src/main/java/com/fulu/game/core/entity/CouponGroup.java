@@ -31,6 +31,14 @@ public class CouponGroup implements Serializable {
 	private String redeemCode;
 	//备注
 	private String remark;
+	//限品类(为空则为全品类)
+	private Integer categoryId;
+	//类型(1满减，2折扣)
+	private Integer type;
+	//多少金额可用（为0则为无门槛）
+	private BigDecimal fullReduction;
+
+
 	//有效期开始时间
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date startUsefulTime;
