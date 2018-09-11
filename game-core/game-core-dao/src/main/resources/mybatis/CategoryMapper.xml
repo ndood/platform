@@ -74,6 +74,44 @@
         </where>
     </select>
 
+    <select id="findByFirstPidAndPrams" resultMap="CategoryResultMap" parameterType="com.fulu.game.core.entity.vo.CategoryVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_category
+        <where>
+            <if test="pid != null">
+                and pid in ( select id from t_category where pid = #{pid} )
+            </if>
+            <if test="icon != null">
+                and icon = #{icon}
+            </if>
+            <if test="indexIcon != null">
+                and index_icon = #{indexIcon}
+            </if>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="sort != null">
+                and sort = #{sort}
+            </if>
+            <if test="isPoint != null">
+                and is_point = #{isPoint}
+            </if>
+            <if test="charges != null">
+                and charges = #{charges}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_category
         <where>

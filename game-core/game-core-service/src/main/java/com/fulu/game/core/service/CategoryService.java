@@ -31,4 +31,7 @@ public interface CategoryService extends ICommonService<Category,Integer>{
      Category save(CategoryVO categoryVO);
 
      List<Category> findPointCategory();
+
+     /** 通过一级分类pid查询改分类下的所有子分类 */
+     List<Category> findByFirstPid(Integer pid, Boolean status);
 }
