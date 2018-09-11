@@ -1,5 +1,6 @@
 package com.fulu.game.h5.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
@@ -22,7 +23,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户Controller
@@ -231,5 +234,40 @@ public class UserController extends BaseController {
     public Result save(UserCommentVO commentVO) {
         commentService.save(commentVO);
         return Result.success().msg("添加成功！");
+    }
+
+    /**
+     * 检测用户是否通过实名认证
+     *
+     * @return 封装结果集
+     */
+    @PostMapping("/body-auth/check")
+    public Result isUserBodyAuth() {
+        User user = userService.findById(userService.getCurrentUser().getId());
+        if (user == null) {
+            log.info("当前用户id={}查询数据库不存在", userService.getCurrentUser().getId());
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+
+        boolean result = userBodyAuthService.userAlreadyAuth(user.getId());
+        Map<String, Object> resultMap = new HashMap<>(2);
+        resultMap.put("isAuth", result ? 1 : 0);
+        return Result.success().data(resultMap).msg("查询成功！");
+    }
+
+    /**
+     * 获取用户钱包
+     *
+     * @return 封装结果集
+     */
+    @PostMapping("/balance/get")
+    public Result getBalance() {
+        User user = userService.findById(userService.getCurrentUser().getId());
+        JSONObject data = new JSONObject();
+        data.put("balance", user.getBalance());
+        data.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
+        data.put("charm", user.getCharm() == null ? 0 : user.getCharm());
+        data.put("chargeBalance", user.getChargeBalance());
+        return Result.success().data(data).msg("查询成功！");
     }
 }
