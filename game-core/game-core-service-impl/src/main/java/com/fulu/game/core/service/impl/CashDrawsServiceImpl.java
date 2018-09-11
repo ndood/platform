@@ -25,6 +25,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import static java.math.BigDecimal.ROUND_HALF_DOWN;
+
 @Service("/cashDrawsService")
 @Slf4j
 public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> implements CashDrawsService {
@@ -192,8 +194,9 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         }
         cashDraws.setOperator(admin.getName());
         cashDraws.setComment(comment);
-        cashDraws.setCashStatus(CashProcessStatusEnum.DONE.getType());//修改为已处理状态
-        cashDraws.setCashNo(null);//订单处理号暂做保留
+        //修改为已处理状态
+        cashDraws.setCashStatus(CashProcessStatusEnum.DONE.getType());
+//        cashDraws.setCashNo(null);
         cashDraws.setProcessTime(new Date());
         cashDrawsDao.update(cashDraws);
         return cashDraws;
@@ -240,7 +243,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
 
     @Override
     public CashDrawsVO withdrawCharm(Integer charm) {
-        User user = userService.getCurrentUser();
+        User user = userService.findById(userService.getCurrentUser().getId());
 
         boolean result = userBodyAuthService.userAlreadyAuth(user.getId());
         if (!result) {
@@ -249,16 +252,21 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         }
 
         Integer totalCharm = user.getCharm() == null ? 0 : user.getCharm();
-        if (totalCharm.compareTo(charm) < 0) {
-            log.error("用户id：{}魅力值提现异常，总魅力值：{}，提现魅力值：{}", user.getId(), totalCharm, charm);
-            throw new CashException(CashException.ExceptionCode.CASH_EXCEED_EXCEPTION);
+        Integer totalWithdrawCharm = user.getTotalWithdrawCharm() == null ? 0 : user.getTotalWithdrawCharm();
+        Integer leftCharm = totalCharm - totalWithdrawCharm;
+        if (totalWithdrawCharm < 0 || leftCharm < 0) {
+            log.error("用户id：{}魅力值提现异常，总魅力值：{}，剩余魅力值：{}，提现魅力值：{}",
+                    user.getId(), totalCharm, leftCharm, charm);
+            throw new CashException(CashException.ExceptionCode.CHARM_WITHDRAW_FAIL_EXCEPTION);
         }
 
+        BigDecimal charmMoney = new BigDecimal(charm).multiply(Constant.CHARM_TO_MONEY_RATE)
+                .setScale(2, ROUND_HALF_DOWN);
+
+        user.setBalance(user.getBalance().add(charmMoney));
         user.setTotalWithdrawCharm((user.getTotalWithdrawCharm() == null ? 0 : user.getTotalWithdrawCharm()) + charm);
         user.setUpdateTime(DateUtil.date());
         userService.update(user);
-
-        BigDecimal charmMoney = new BigDecimal(charm).multiply(Constant.CHARM_TO_MONEY_RATE);
 
         CashDraws cashDraws = new CashDraws();
         cashDraws.setUserId(user.getId());
@@ -278,7 +286,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         details.setMoney(charmMoney);
         details.setAction(MoneyOperateTypeEnum.USER_DRAW_CASH.getType());
         details.setCashId(cashDraws.getCashId());
-        details.setSum(new BigDecimal(user.getTotalWithdrawCharm()));
+        details.setSum(user.getBalance());
         details.setCreateTime(DateUtil.date());
         mdService.drawSave(details);
 
@@ -302,13 +310,11 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         }
     }
 
-    public CashDraws findByCashNo(String cashNo) {
-        CashDrawsVO vo = new CashDrawsVO();
-        vo.setCashNo(cashNo);
-        List<CashDraws> list = cashDrawsDao.findByParameter(vo);
-        if (CollectionUtils.isEmpty(list)) {
+    private CashDraws findByCashNo(String cashNo) {
+        CashDraws cashDraws = cashDrawsDao.findByCashNo(cashNo);
+        if (cashDraws != null) {
             return null;
         }
-        return list.get(0);
+        return cashDraws;
     }
 }
