@@ -54,6 +54,10 @@ public class Order implements Serializable {
             "已评价_600"}, width = 15)
     private Integer status;
 
+
+    private Date beginTime;
+
+
     //下单用户ID
     @Excel(name = "下单用户ID", orderNum = "7", width = 15)
     private Integer userId;

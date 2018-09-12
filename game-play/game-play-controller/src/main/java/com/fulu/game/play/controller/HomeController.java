@@ -137,7 +137,6 @@ public class HomeController extends BaseController {
             return Result.error().msg("登陆异常！");
 
         }
-
     }
 
 
@@ -169,4 +168,6 @@ public class HomeController extends BaseController {
             return Result.error().msg("测试登陆异常！");
         }
     }
+
+
 }
