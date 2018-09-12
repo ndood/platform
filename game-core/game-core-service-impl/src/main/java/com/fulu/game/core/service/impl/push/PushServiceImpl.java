@@ -101,11 +101,6 @@ public class PushServiceImpl implements PushService {
             content = StrUtil.format(content, replaces);
         }
         String date = DateUtil.format(DateUtil.date(), "yyyy年MM月dd日 HH:mm");
-        WechatFormid formIdObj = findFormidVOByUserId(PlatformEcoEnum.PLAY.getType(), userId);
-        if (formIdObj == null) {
-            log.error("user或者formId为null无法给用户推送消息userId:{};content:{};formId:{}", userId, content, formIdObj);
-        }
-
         String serviceUserNickName = "";
         User serviceUser = userService.findById(order.getServiceUserId());
         if (serviceUser != null) {
@@ -134,7 +129,6 @@ public class PushServiceImpl implements PushService {
 
     /**
      * 批量写入推送模板消息
-     *
      * @param pushId
      * @param userIds
      * @param page
@@ -168,13 +162,16 @@ public class PushServiceImpl implements PushService {
                 Map<Integer, String> userFormIds = new HashMap<>();
                 //发送微信模板消息
                 for (WechatFormidVO wechatFormidVO : wechatFormidVOS) {
-                    WxMaTemplateMessage wxMaTemplateMessage = new WxMaTemplateMessage();
-                    wxMaTemplateMessage.setTemplateId(wechatTemplateEnum.getTemplateId());
-                    wxMaTemplateMessage.setToUser(wechatFormidVO.getOpenId());
-                    wxMaTemplateMessage.setPage(page);
-                    wxMaTemplateMessage.setFormId(wechatFormidVO.getFormId());
-                    wxMaTemplateMessage.setData(dataList);
-                    miniAppPushContainer.add(new WxMaTemplateMessageVO(platform, pushId, wxMaTemplateMessage));
+                    WxMaTemplateMessageVO vo = WxMaTemplateMessageVO.builder()
+                                                                    .templateId(wechatTemplateEnum.getTemplateId())
+                                                                    .toUser(wechatFormidVO.getOpenId())
+                                                                    .page(page)
+                                                                    .formId(wechatFormidVO.getFormId())
+                                                                    .data(dataList)
+                                                                    .platform(platform)
+                                                                    .pushId(pushId)
+                                                                    .build();
+                    miniAppPushContainer.add(vo);
                     formIds.add(wechatFormidVO.getFormId());
                     userFormIds.put(wechatFormidVO.getUserId(), wechatFormidVO.getFormId());
                 }

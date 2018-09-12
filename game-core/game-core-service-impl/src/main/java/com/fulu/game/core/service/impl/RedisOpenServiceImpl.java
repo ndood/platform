@@ -2,6 +2,7 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.common.enums.RedisKeyEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnection;
@@ -11,6 +12,7 @@ import org.springframework.data.redis.core.RedisConnectionUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PreDestroy;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -22,22 +24,17 @@ import java.util.concurrent.locks.ReentrantLock;
  * redis操作封装类
  */
 @Service
+@Slf4j
 public class RedisOpenServiceImpl {
-
-    @Autowired
-    private RedisTemplate redisTemplate;
 
     /**
      * 默认存活时间30分钟
      */
     private static final long TIME = 30 * 60;
-
-
     private static final String LOCKED = "LOCKED";
-
     private static Lock lock = new ReentrantLock();//基于底层IO阻塞考虑
-
-    private byte[] rawKey;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 获取某个key的值
@@ -60,6 +57,7 @@ public class RedisOpenServiceImpl {
     public void bitSet(String key, long val, boolean flag) {
         redisTemplate.opsForValue().setBit(key, val, flag);
     }
+
     /**
      * 添加一个BitSet,默认为true
      *
@@ -237,54 +235,71 @@ public class RedisOpenServiceImpl {
 
     /**
      * 获取listOps来操作list
+     *
      * @param key
      * @return
      */
     public <T, S> BoundListOperations<T, S> getListOps(String key) {
-        rawKey = redisTemplate.getKeySerializer().serialize(key);
         return redisTemplate.boundListOps(key);
     }
 
     /**
      * blocking 一直阻塞直到队列里边有数据
      * remove and get last item from queue:BRPOP
+     *
      * @return
      */
-    public <T> T takeFromTail(int timeout) throws InterruptedException{
+    public <T> T takeFromTail(String key, int timeout) throws InterruptedException {
         lock.lockInterruptibly();
-        RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
-        RedisConnection connection = connectionFactory.getConnection();
-        try{
+        try {
+            byte[] rawKey = redisTemplate.getKeySerializer().serialize(key);
+            RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
+            RedisConnection connection = connectionFactory.getConnection();
             List<byte[]> results = connection.bRPop(timeout, rawKey);
-            if(CollectionUtils.isEmpty(results)){
+            if (CollectionUtils.isEmpty(results)) {
                 return null;
             }
-            return (T)redisTemplate.getValueSerializer().deserialize(results.get(1));
-        }finally{
+            return (T) redisTemplate.getValueSerializer().deserialize(results.get(0));
+        } catch (Exception e) {
+            log.error("获取队列信息异常:", e);
+            return null;
+        } finally {
             lock.unlock();
-            RedisConnectionUtils.releaseConnection(connection, connectionFactory);
+//            RedisConnectionUtils.releaseConnection(connection, connectionFactory);
         }
     }
 
     /**
      * blocking 一直阻塞直到队列里边有数据
      * remove and get first item from queue:BLPOP
+     *
      * @return
      */
-    public <T> T takeFromHead(int timeout) throws InterruptedException{
+    public <T> T takeFromHead(String key,int timeout) throws InterruptedException {
         lock.lockInterruptibly();
-        RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
-        RedisConnection connection = connectionFactory.getConnection();
-        try{
+        try {
+            byte[] rawKey = redisTemplate.getKeySerializer().serialize(key);
+            RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
+            RedisConnection connection = connectionFactory.getConnection();
             List<byte[]> results = connection.bLPop(timeout, rawKey);
-            if(CollectionUtils.isEmpty(results)){
+            if (CollectionUtils.isEmpty(results)) {
                 return null;
             }
-            return (T)redisTemplate.getValueSerializer().deserialize(results.get(1));
-        }finally{
+            return (T) redisTemplate.getValueSerializer().deserialize(results.get(1));
+        } catch (Exception e) {
+            log.info("获取队列信息异常:", e);
+            return null;
+        } finally {
             lock.unlock();
-            RedisConnectionUtils.releaseConnection(connection, connectionFactory);
+//            RedisConnectionUtils.releaseConnection(connection, connectionFactory);
         }
     }
 
+    @PreDestroy
+    public void destroy() {
+        RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
+        RedisConnection connection = connectionFactory.getConnection();
+        log.info("关闭redis连结");
+        RedisConnectionUtils.releaseConnection(connection, connectionFactory);
+    }
 }
