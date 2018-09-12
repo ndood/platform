@@ -80,7 +80,7 @@ public class AppRouteFactory {
     private static Map<String,String> newRoute(RouteType routeType,Map<String,String> params){
         String paramStr = "";
         if(!params.isEmpty()){
-            paramStr = "params="+ JSONObject.toJSONString(params);
+            paramStr = "?params="+ JSONObject.toJSONString(params);
         }
         Map<String,String> route = new HashMap<>();
         route.put("androidRoute",routeType.getAndroidRoute()+paramStr);
