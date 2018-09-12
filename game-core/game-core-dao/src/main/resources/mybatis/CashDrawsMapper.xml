@@ -110,7 +110,7 @@
                 and t1.cash_status = #{cashStatus}
             </if>
             <if test="serverAuth != null">
-                and t1.server_auth = #{serverAuth}
+                and IFNULL(t1.server_auth,0)= #{serverAuth}
             </if>
             <if test="nickname != null">
                 and t1.nickname like CONCAT('%', #{nickname},'%')
@@ -120,6 +120,9 @@
             </if>
             <if test="createEndTime != null">
                 and t1.create_time <![CDATA[<=]]> #{createEndTime}
+            </if>
+            <if test="type != null">
+                and IFNULL(t1.type,1) = #{type}
             </if>
         </where>
     </select>
