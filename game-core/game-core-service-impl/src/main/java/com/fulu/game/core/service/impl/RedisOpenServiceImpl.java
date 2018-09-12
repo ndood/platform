@@ -250,7 +250,7 @@ public class RedisOpenServiceImpl {
      * @return
      */
     public <T> T takeFromTail(String key, int timeout) throws InterruptedException {
-        lock.lockInterruptibly();
+//        lock.lockInterruptibly();
         try {
             byte[] rawKey = redisTemplate.getKeySerializer().serialize(key);
             RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
@@ -259,12 +259,12 @@ public class RedisOpenServiceImpl {
             if (CollectionUtils.isEmpty(results)) {
                 return null;
             }
-            return (T) redisTemplate.getValueSerializer().deserialize(results.get(0));
+            return (T) redisTemplate.getValueSerializer().deserialize(results.get(1));
         } catch (Exception e) {
             log.error("获取队列信息异常:", e);
             return null;
         } finally {
-            lock.unlock();
+//            lock.unlock();
 //            RedisConnectionUtils.releaseConnection(connection, connectionFactory);
         }
     }

@@ -1,12 +1,9 @@
 package com.fulu.game.core.entity;
 
-import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -22,7 +19,9 @@ public class WxMaTemplateMessageVO {
 
     private String formId;
 
-    private List<WxMaTemplateMessage.Data> data;
+//    private List<WxMaTemplateMessage.Data> data;
+
+    private String dataJson;
 
     private Integer platform;
 

@@ -15,6 +15,7 @@ import cn.jpush.api.push.model.audience.Audience;
 import cn.jpush.api.push.model.notification.AndroidNotification;
 import cn.jpush.api.push.model.notification.IosNotification;
 import cn.jpush.api.push.model.notification.Notification;
+import com.alibaba.fastjson.JSONArray;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.enums.PlatformEcoEnum;
@@ -167,7 +168,7 @@ public class PushServiceImpl implements PushService {
                                                                     .toUser(wechatFormidVO.getOpenId())
                                                                     .page(page)
                                                                     .formId(wechatFormidVO.getFormId())
-                                                                    .data(dataList)
+                                                                    .dataJson(JSONArray.toJSONString(dataList))
                                                                     .platform(platform)
                                                                     .pushId(pushId)
                                                                     .build();
@@ -175,6 +176,7 @@ public class PushServiceImpl implements PushService {
                     formIds.add(wechatFormidVO.getFormId());
                     userFormIds.put(wechatFormidVO.getUserId(), wechatFormidVO.getFormId());
                 }
+                //TODO 补发短信的逻辑有问题
                 //没有有效formId的user进行短信补发
                 sendSMSIfFormIdInVaild(userFormIds, users, dataList);
                 //删除已经发过的formId

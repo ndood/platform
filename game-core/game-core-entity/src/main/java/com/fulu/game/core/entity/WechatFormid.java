@@ -13,6 +13,7 @@ import lombok.Data;
  */
 @Data
 public class WechatFormid implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 	
 	//

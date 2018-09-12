@@ -2,6 +2,7 @@ package com.fulu.game.core.service.queue;
 
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSON;
 import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.core.entity.PushMsg;
@@ -62,7 +63,7 @@ public class MiniAppPushContainer extends RedisTaskContainer {
         try {
             log.info("推送消息队列推送消息:wxMaTemplateMessageVO:{}", wxMaTemplateMessageVO);
             WxMaTemplateMessage wxMaTemplateMessage = WxMaTemplateMessage.builder().templateId(wxMaTemplateMessageVO.getTemplateId())
-                    .data(wxMaTemplateMessageVO.getData())
+                    .data(JSON.parseArray(wxMaTemplateMessageVO.getDataJson(),WxMaTemplateMessage.Data.class))
                     .page(wxMaTemplateMessageVO.getPage())
                     .formId(wxMaTemplateMessageVO.getFormId())
                     .toUser(wxMaTemplateMessageVO.getToUser())
