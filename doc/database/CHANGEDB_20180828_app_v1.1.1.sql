@@ -418,6 +418,22 @@ UPDATE `t_coupon` SET `category_id` = 1,`type`=1,`full_reduction`=0,`category_na
 
 
 
+drop table if exists t_price_rule;
+/*==============================================================*/
+/* Table: 定价规则表                                */
+/*==============================================================*/
+CREATE TABLE `t_price_rule` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `category_id` int(11) NOT NULL COMMENT '类型ID',
+  `platform_show` tinyint(1) DEFAULT '3' COMMENT '显示平台(1小程序，2APP，3都显示)',
+  `order_count` int(11) DEFAULT NULL COMMENT '接单数',
+  `price` decimal(10,2) DEFAULT NULL COMMENT '价格，同时用于排序',
+  `create_time` datetime NOT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `is_del` tinyint(1) DEFAULT NULL COMMENT '删除标记（1：删除；0：正常）',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='定价规则表';
+
 
 
 
