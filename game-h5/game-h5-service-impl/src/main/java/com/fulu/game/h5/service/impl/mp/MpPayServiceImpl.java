@@ -77,8 +77,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
             throw new DataException(DataException.ExceptionCode.NO_FORM_TOKEN_ERROR);
         }
 
-        //fixme gzc 比例设置
-        BigDecimal actualMoney = new BigDecimal(virtualMoney).divide(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal actualMoney = new BigDecimal(virtualMoney).divide(new BigDecimal(10)).setScale(2, BigDecimal.ROUND_HALF_UP);
 
         VirtualPayOrder order = new VirtualPayOrder();
         order.setName("虚拟币充值订单：付款金额：¥" + actualMoney + "，虚拟币数量：" + virtualMoney + "");
