@@ -86,7 +86,7 @@ public class RedisTest {
 
     @Test
     public void testBitSetCount(){
-        System.out.println("count ====== " + redisOpenServiceImpl.getBitCount("bitCountTestKey"));
+        System.out.println("count ====== " + redisOpenServiceImpl.bitCount("bitCountTestKey"));
     }
 
 
