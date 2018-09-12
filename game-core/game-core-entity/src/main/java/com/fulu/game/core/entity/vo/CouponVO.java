@@ -17,4 +17,5 @@ public class CouponVO  extends Coupon {
     //是否过期
     private Boolean overdue;
 
+
 }

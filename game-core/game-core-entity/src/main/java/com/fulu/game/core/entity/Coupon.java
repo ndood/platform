@@ -30,6 +30,9 @@ public class Coupon implements Serializable {
     @Excel(name = "新用户专享",replace = {"是_true","否_false"},orderNum = "2")
     private Boolean isNewUser;
 
+    //品类名称
+    private String categoryName;
+
     //限品类(为空则为全品类)
     private Integer categoryId;
     //类型(1满减，2折扣)
