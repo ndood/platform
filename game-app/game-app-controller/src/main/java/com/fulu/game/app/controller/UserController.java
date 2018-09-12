@@ -275,18 +275,7 @@ public class UserController extends BaseController {
         return Result.success().data(advice).msg("提交成功");
     }
 
-    /**
-     * （陪玩师）魅力值提现
-     *
-     * @param userId 陪玩师id
-     * @param charm  魅力值
-     * @return 封装结果集
-     */
-    @PostMapping("/charm/withdraw")
-    public Result withdrawCharm(@RequestParam Integer userId, @RequestParam Integer charm) {
-        userInfoAuthService.withdrawCharm(userId, charm);
-        return Result.success().msg("提现成功");
-    }
+
 
     /**
      * 用户-查询余额
