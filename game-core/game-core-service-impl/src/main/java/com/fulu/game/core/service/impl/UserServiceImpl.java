@@ -747,12 +747,12 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             userVO.setInterests(userInfoAuth.getInterests());
             userVO.setAbout(userInfoAuth.getAbout());
             userVO.setProfession(userInfoAuth.getProfession());
-            List<UserInfoAuthFile> videoFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(), 3);
+            List<UserInfoAuthFile> videoFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(), FileTypeEnum.VIDEO.getType());
             //设置用户视频
             if (videoFiles != null && !videoFiles.isEmpty()) {
                 userVO.setVideoUrl(videoFiles.get(0).getUrl());
             }
-            List<UserInfoAuthFile> picFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(), 1);
+            List<UserInfoAuthFile> picFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(), FileTypeEnum.PIC.getType());
             //设置用户相册
             if (picFiles != null && !picFiles.isEmpty()) {
                 String[] picArr = new String[picFiles.size()];

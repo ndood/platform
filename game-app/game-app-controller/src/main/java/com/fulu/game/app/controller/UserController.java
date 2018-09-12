@@ -3,6 +3,7 @@ package com.fulu.game.app.controller;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.FileTypeEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.exception.UserException;
@@ -148,8 +149,8 @@ public class UserController extends BaseController {
         UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
         if (userInfoAuth != null) {
             // 先删除所有以前图片，然后插入
-            userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(), 1);
-            userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(), 3);
+            userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(), FileTypeEnum.PIC.getType());
+            userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(), FileTypeEnum.VIDEO.getType());
             if (userVO != null && (userVO.getPicUrls() != null || userVO.getVideoUrl() != null)) {
                 String[] picUrls = userVO.getPicUrls();
                 if (picUrls != null && picUrls.length > 0) {
@@ -157,8 +158,8 @@ public class UserController extends BaseController {
                         UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
                         userInfoAuthFile.setUrl(picUrls[i]);
                         userInfoAuthFile.setInfoAuthId(userInfoAuth.getId());
-                        userInfoAuthFile.setType(1);
-                        userInfoAuthFile.setName("相册" + 1);
+                        userInfoAuthFile.setType(FileTypeEnum.PIC.getType());
+                        userInfoAuthFile.setName("相册" + (i + 1));
                         userInfoAuthFile.setCreateTime(new Date());
                         userInfoAuthFileService.create(userInfoAuthFile);
                     }
@@ -167,7 +168,7 @@ public class UserController extends BaseController {
                     UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
                     userInfoAuthFile.setUrl(userVO.getVideoUrl());
                     userInfoAuthFile.setInfoAuthId(userInfoAuth.getId());
-                    userInfoAuthFile.setType(3);
+                    userInfoAuthFile.setType(FileTypeEnum.VIDEO.getType());
                     userInfoAuthFile.setName("视频");
                     userInfoAuthFile.setCreateTime(new Date());
                     userInfoAuthFileService.create(userInfoAuthFile);
