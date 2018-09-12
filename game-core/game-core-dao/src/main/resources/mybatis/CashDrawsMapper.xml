@@ -121,6 +121,9 @@
             <if test="createEndTime != null">
                 and t1.create_time <![CDATA[<=]]> #{createEndTime}
             </if>
+            <if test="type != null">
+                and IFNULL(t1.type,1) = #{type}
+            </if>
         </where>
     </select>
 
