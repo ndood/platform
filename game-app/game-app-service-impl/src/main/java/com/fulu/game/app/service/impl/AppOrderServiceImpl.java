@@ -40,6 +40,7 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
     public String submit(int productId,
                          int num,
                          int payment,
+                         Date beginTime,
                          String remark,
                          String couponNo,
                          String userIp) {
@@ -61,6 +62,7 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
         order.setServiceUserId(product.getUserId());
         order.setCategoryId(product.getCategoryId());
         order.setRemark(remark);
+        order.setBeginTime(beginTime);
         order.setPayment(payment);
         order.setIsPay(false);
         order.setIsPayCallback(false);
@@ -71,7 +73,6 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
         order.setUpdateTime(new Date());
         order.setOrderIp(userIp);
         order.setCharges(category.getCharges());
-
         //使用优惠券
         Coupon coupon = null;
         if (StringUtils.isNotBlank(couponNo)) {
