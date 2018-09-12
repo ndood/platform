@@ -146,7 +146,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
 
     @Override
     public PageInfo<CashDrawsVO> list(CashDrawsVO cashDrawsVO, Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize, "t1.create_time DESC");
+        PageHelper.startPage(pageNum, pageSize, "t1.create_time DESC , FIELD(t1.cash_status, 0, 2, 1) , t1.server_auth DESC");
         List<CashDrawsVO> list = cashDrawsDao.findDetailByParameter(cashDrawsVO);
 
         this.charmToMoney(list);
