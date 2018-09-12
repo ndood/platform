@@ -1,6 +1,8 @@
 package com.fulu.game.core.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.enums.CashProcessStatusEnum;
 import com.fulu.game.common.enums.MoneyOperateTypeEnum;
 import com.fulu.game.common.exception.CashException;
@@ -18,8 +20,6 @@ import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.bean.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,27 +60,27 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         String orderBy = "tmd.create_time desc";
         PageHelper.startPage(pageNum, pageSize, orderBy);
         List<MoneyDetailsVO> list = moneyDetailsDao.findByUser(moneyDetailsVO);
-        if(CollectionUtil.isEmpty(list)) {
+        if (CollectionUtil.isEmpty(list)) {
             return null;
         }
-        for(MoneyDetailsVO vo : list) {
-            if(vo.getAction().equals(MoneyOperateTypeEnum.USER_DRAW_CASH.getType())) {
-                if(vo.getCashStatus() == null) {
+        for (MoneyDetailsVO vo : list) {
+            if (vo.getAction().equals(MoneyOperateTypeEnum.USER_DRAW_CASH.getType())) {
+                if (vo.getCashStatus() == null) {
                     vo.setCashStatusMsg(CashProcessStatusEnum.WAITING.getMsg());
-                }else {
-                    if(vo.getCashStatus().equals(CashProcessStatusEnum.DONE.getType())) {
+                } else {
+                    if (vo.getCashStatus().equals(CashProcessStatusEnum.DONE.getType())) {
                         vo.setCashStatusMsg(CashProcessStatusEnum.DONE.getMsg());
-                    }else if(vo.getCashStatus().equals(CashProcessStatusEnum.REFUSE.getType())) {
+                    } else if (vo.getCashStatus().equals(CashProcessStatusEnum.REFUSE.getType())) {
                         vo.setCashStatusMsg(CashProcessStatusEnum.REFUSE.getMsg());
-                    }else {
+                    } else {
                         vo.setCashStatusMsg(CashProcessStatusEnum.WAITING.getMsg());
                     }
                 }
-            }else if(vo.getAction().equals(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType())) {
+            } else if (vo.getAction().equals(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType())) {
                 vo.setCashStatusMsg(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getMsg());
-            }else if(vo.getAction().equals(MoneyOperateTypeEnum.ORDER_COMPLETE.getType())) {
+            } else if (vo.getAction().equals(MoneyOperateTypeEnum.ORDER_COMPLETE.getType())) {
                 vo.setCashStatusMsg(MoneyOperateTypeEnum.ORDER_COMPLETE.getMsg());
-            }else if(vo.getAction().equals(MoneyOperateTypeEnum.ADMIN_REFUSE_REMIT.getType())) {
+            } else if (vo.getAction().equals(MoneyOperateTypeEnum.ADMIN_REFUSE_REMIT.getType())) {
                 vo.setCashStatusMsg(CashProcessStatusEnum.REFUND.getMsg());
             }
         }
@@ -107,7 +107,8 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         log.info("当前余额:{},加零钱金额:{}", balance, moneyDetailsVO.getMoney());
         MoneyDetails moneyDetails = new MoneyDetails();
         BeanUtil.copyProperties(moneyDetailsVO, moneyDetails);
-        moneyDetails.setSum(newBalance);
+        BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
+        moneyDetails.setSum(newBalance.add(chargeBalance));
         moneyDetails.setOperatorId(admin.getId());
         moneyDetails.setTargetId(user.getId());
         moneyDetails.setAction(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType());
@@ -148,7 +149,8 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         moneyDetails.setOperatorId(targetId);
         moneyDetails.setTargetId(targetId);
         moneyDetails.setAction(MoneyOperateTypeEnum.ORDER_COMPLETE.getType());
-        moneyDetails.setSum(newBalance);
+        BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
+        moneyDetails.setSum(newBalance.add(chargeBalance));
         moneyDetails.setRemark("陪玩订单完成，系统打款,订单号_" + orderNo);
         moneyDetails.setCreateTime(new Date());
         moneyDetailsDao.create(moneyDetails);

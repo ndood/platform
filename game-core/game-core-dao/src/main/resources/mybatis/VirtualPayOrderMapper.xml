@@ -9,6 +9,7 @@
         <result column="user_id" property="userId"/>
         <result column="type" property="type"/>
         <result column="payment" property="payment"/>
+        <result column="pay_path" property="payPath"/>
         <result column="actual_money" property="actualMoney"/>
         <result column="virtual_money" property="virtualMoney"/>
         <result column="money" property="money"/>
@@ -24,7 +25,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,order_no,name,user_id,type,payment,actual_money,virtual_money,money,order_ip,is_pay_callback,pay_time,update_time,create_time    </sql>
+        id,order_no,name,user_id,type,payment,pay_path,actual_money,virtual_money,money,order_ip,is_pay_callback,pay_time,update_time,create_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="VirtualPayOrderResultMap">
         select
@@ -62,6 +63,9 @@
             <if test="payment != null">
                 and payment = #{payment}
             </if>
+            <if test="payPath != null">
+                and pay_path = #{payPath}
+            </if>
             <if test="actualMoney != null">
                 and actual_money = #{actualMoney}
             </if>
@@ -98,6 +102,37 @@
         </where>
     </select>
 
+    <select id="chargeList" resultType="com.fulu.game.core.entity.vo.VirtualPayOrderVO">
+        SELECT
+        vpo.*,
+        `user`.nickname,
+        `user`.mobile
+        FROM
+        t_virtual_pay_order vpo
+        LEFT JOIN t_user USER ON vpo.user_id = `user`.id
+        WHERE
+        vpo.type = #{type}
+        AND vpo.is_pay_callback = 1
+        <if test="userId != null">
+            AND vpo.user_id = #{userId}
+        </if>
+        <if test="mobile != null">
+            AND USER .mobile = #{mobile}
+        </if>
+        <if test="nickname != null">
+            AND USER .nickname = #{nickname}
+        </if>
+        <if test="payPath != null">
+            AND vpo.pay_path = #{payPath}
+        </if>
+        <if test="payStartTime != null">
+            AND vpo.pay_time &gt;= #{payStartTime}
+        </if>
+        <if test="payEndTime != null">
+            AND vpo.pay_time &gt;= #{payEndTime}
+        </if>
+    </select>
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_virtual_pay_order
         <where>
@@ -108,9 +143,9 @@
     <insert id="create" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.fulu.game.core.entity.VirtualPayOrder">
         insert into
-        t_virtual_pay_order (order_no,name,user_id,type,payment,actual_money,virtual_money,money,order_ip,is_pay_callback,pay_time,update_time,create_time)
+        t_virtual_pay_order (order_no,name,user_id,type,payment,pay_path,actual_money,virtual_money,money,order_ip,is_pay_callback,pay_time,update_time,create_time)
         values
-        (#{orderNo},#{name},#{userId},#{type},#{payment},#{actualMoney},#{virtualMoney},#{money},#{orderIp},#{isPayCallback},#{payTime},#{updateTime},#{createTime})
+        (#{orderNo},#{name},#{userId},#{type},#{payment},#{payPath},#{actualMoney},#{virtualMoney},#{money},#{orderIp},#{isPayCallback},#{payTime},#{updateTime},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.VirtualPayOrder">
@@ -135,6 +170,10 @@
 
             <if test="payment != null">
                 payment = #{payment},
+            </if>
+
+            <if test="payPath != null">
+                pay_path = #{payPath},
             </if>
 
             <if test="actualMoney != null">

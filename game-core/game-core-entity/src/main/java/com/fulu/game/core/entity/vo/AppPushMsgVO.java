@@ -19,6 +19,9 @@ public class AppPushMsgVO {
 
     private Boolean sendAll;
 
+    public AppPushMsgVO(){};
+
+
     private AppPushMsgVO(Builder builder) {
         setTitle(builder.title);
         setAlert(builder.alert);

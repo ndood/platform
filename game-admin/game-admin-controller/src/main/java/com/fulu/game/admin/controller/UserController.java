@@ -25,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,8 +61,6 @@ public class UserController extends BaseController {
     private ProductService productService;
     @Autowired
     private UserBodyAuthService userBodyAuthService;
-    @Autowired
-    private RedisOpenServiceImpl redisOpenService;
     @Autowired
     private VirtualDetailsService virtualDetailsService;
 
@@ -272,7 +272,13 @@ public class UserController extends BaseController {
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));
         workbook.write(response.getOutputStream());
         workbook.close();
+
+//        FileOutputStream fos = new FileOutputStream(new File("E:\\test.xls"));
+//        workbook.write(fos);
+//        workbook.close();
+//        fos.close();
     }
+    
 
 
     /**
@@ -506,39 +512,18 @@ public class UserController extends BaseController {
         return Result.success().data(userInfoVO).msg("查询聊天对象信息成功！");
     }
 
+
     /**
-     * 获取用户在线状态
+     * 获取钻石/魅力值明细
      * @return
      */
-    @PostMapping("/online-status/get")
-    public Result chatWithGet(Integer userIds[]) {
-
-        List<UserOnlineStatusVo> list = new ArrayList<>();
-        
-        for(int i = 0 ; i < userIds.length ; i++){
-            String onlineStr = redisOpenService.get(RedisKeyEnum.USER_ONLINE_KEY.generateKey(userIds[i]));
-            
-            UserOnlineStatusVo uos = new UserOnlineStatusVo();
-            uos.setUserId(userIds[i]);
-            uos.setIsOnLine(true);
-            if(StringUtils.isBlank(onlineStr)){
-                uos.setIsOnLine(false);
-            }
-            list.add(uos);
-        }
-        
-        return Result.success().data(list).msg("查询成功！");
-    }
-
-
     @RequestMapping("/virtual-detail/list")
-    public Result virtualDetailList(Integer type,
+    public Result virtualDetailList(Integer type, Integer userId,
                                     @RequestParam("pageSize") Integer pageSize,
                                     @RequestParam("pageNum") Integer pageNum) {
-        User user = userService.getCurrentUser();
 
         VirtualDetailsVO vd = new VirtualDetailsVO();
-        vd.setUserId(user.getId());
+        vd.setUserId(userId);
         vd.setType(type);
         
         PageInfo<VirtualDetails> list = virtualDetailsService.findByParameterWithPage(vd , pageSize , pageNum , " create_time desc" );

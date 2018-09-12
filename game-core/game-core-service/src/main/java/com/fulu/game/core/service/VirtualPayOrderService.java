@@ -1,6 +1,8 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.VirtualPayOrder;
+import com.fulu.game.core.entity.vo.VirtualPayOrderVO;
+import com.github.pagehelper.PageInfo;
 
 
 /**
@@ -15,4 +17,8 @@ public interface VirtualPayOrderService extends ICommonService<VirtualPayOrder, 
     //    VirtualPayOrder charge(String code, BigDecimal actualMoney, Integer virtualMoney, String mobile);
 //
     VirtualPayOrder findByOrderNo(String orderNo);
+
+    PageInfo<VirtualPayOrderVO> chargeList(VirtualPayOrderVO payOrderVO, Integer pageNum, Integer pageSize, String orderBy);
+
+    PageInfo<VirtualPayOrderVO> chargeList(VirtualPayOrderVO payOrderVO);
 }

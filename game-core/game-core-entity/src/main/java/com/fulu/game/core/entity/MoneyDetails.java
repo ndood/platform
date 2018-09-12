@@ -25,7 +25,7 @@ public class MoneyDetails implements Serializable {
     private Integer targetId;
     //金额(默认0.00)
     private BigDecimal money;
-    //1表示入款，-1表示提款
+    //-1提现，1加零钱，2陪玩订单入账，3拒绝提现返款，4魅力值提现
     private Integer action;
     //action为-1时关联t_cash_draws表
     private Integer cashId;

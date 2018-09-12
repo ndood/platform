@@ -9,8 +9,9 @@ public class RedisQueue<T> {
     private BoundListOperations<String, T> listOperations;
 
     private RedisOpenServiceImpl redisOpenService;
-
+    private final String rawkey ;
     public RedisQueue(String key, RedisOpenServiceImpl redisOpenService) {
+        rawkey =key;
         this.redisOpenService = redisOpenService;
         listOperations = redisOpenService.getListOps(key);
     }
@@ -22,7 +23,7 @@ public class RedisQueue<T> {
      * @return
      */
     public T takeFromTail(int timeout) throws InterruptedException {
-        return redisOpenService.takeFromTail(timeout);
+        return redisOpenService.takeFromTail(rawkey,timeout);
     }
 
     public T takeFromTail() throws InterruptedException {
@@ -60,7 +61,7 @@ public class RedisQueue<T> {
      * @return
      */
     public T takeFromHead(int timeout) throws InterruptedException {
-        return redisOpenService.takeFromHead(timeout);
+        return redisOpenService.takeFromHead(rawkey,timeout);
     }
 
     public T takeFromHead() throws InterruptedException {

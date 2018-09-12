@@ -39,6 +39,8 @@ public class RedisConsumer<T> extends Thread {
             } while (run.get());
         } catch (Exception e) {
             log.error("轮循线程异常退出", e);
+        }finally {
+            log.info("消费者线程结束");
         }
     }
 

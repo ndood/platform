@@ -70,7 +70,8 @@ CREATE TABLE `t_virtual_product_order` (
   `remark` varchar(512) DEFAULT NULL COMMENT '备注',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `order_no` (`order_no`)
 ) COMMENT='虚拟商品订单表';
 
 -- t_virtual_details

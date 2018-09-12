@@ -1,6 +1,8 @@
 package com.fulu.game.app.controller;
 
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.FileTypeEnum;
@@ -25,7 +27,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -280,6 +286,43 @@ public class UserController extends BaseController {
     public Result withdrawCharm(@RequestParam Integer userId, @RequestParam Integer charm) {
         userInfoAuthService.withdrawCharm(userId, charm);
         return Result.success().msg("提现成功");
+    }
+
+    /**
+     * 用户-查询余额
+     * 账户金额不能从缓存取，因为存在管理员给用户加零钱缓存并未更新
+     *
+     * @return
+     */
+    @PostMapping("/balance/get")
+    public Result getBalance() {
+        User user = userService.findById(userService.getCurrentUser().getId());
+        JSONObject data = new JSONObject();
+        data.put("balance", user.getBalance());
+        data.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
+        Integer charm = user.getCharm();
+        if (charm == null) {
+            data.put("charm", 0);
+            data.put("charmMoney", 0);
+        } else {
+            data.put("charm", charm);
+            data.put("charmMoney", new BigDecimal(charm).multiply(Constant.CHARM_TO_MONEY_RATE));
+        }
+        data.put("chargeBalance", user.getChargeBalance());
+        return Result.success().data(data).msg("查询成功！");
+    }
+
+    /**
+     * 用户-查询虚拟零钱余额
+     *
+     * @return
+     */
+    @PostMapping("/virtual-balance/get")
+    public Result getVirtualBalance() {
+        User user = userService.findById(userService.getCurrentUser().getId());
+        Map<String, Object> resultMap = new HashMap<>(2);
+        resultMap.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
+        return Result.success().data(resultMap).msg("查询成功！");
     }
 
     /**

@@ -2,6 +2,7 @@ package com.fulu.game.core.service.queue;
 
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSON;
 import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.core.entity.PushMsg;
@@ -23,15 +24,11 @@ import java.util.function.Consumer;
 public class MiniAppPushContainer extends RedisTaskContainer {
 
     private static final String MINI_APP_PUSH_QUEQUE = "miniapp:push:queue";
-
-    @Autowired
-    private RedisOpenServiceImpl redisOpenService;
-
     private static int runTaskThreadNum = 1;
-
     //使用一个统一维护的线程池来管理隔离线程
     protected static ExecutorService es = Executors.newFixedThreadPool(runTaskThreadNum);
-
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
     private RedisConsumer redisConsumer;
 
     @Autowired
@@ -41,13 +38,14 @@ public class MiniAppPushContainer extends RedisTaskContainer {
 
     @PostConstruct
     private void init() {
+        log.info("play小程序推送队列线程");
         if (!configProperties.getQueue().isMiniappPush()) {
             log.info("无需开启小程序推送队列线程");
             es.shutdown();
             return;
         }
+        log.info("play小程序已经开启了推送队列线程");
         redisQueue = new RedisQueue<WxMaTemplateMessageVO>(MINI_APP_PUSH_QUEQUE, redisOpenService);
-
         Consumer<WxMaTemplateMessageVO> consumer = (data) -> {
             process(data);
         };
@@ -64,13 +62,17 @@ public class MiniAppPushContainer extends RedisTaskContainer {
         //TODO app的要单独拆开放到appPushContainer的process里
         try {
             log.info("推送消息队列推送消息:wxMaTemplateMessageVO:{}", wxMaTemplateMessageVO);
-            WxMaTemplateMessage wxMaTemplateMessage = wxMaTemplateMessageVO.getWxMaTemplateMessage();
+            WxMaTemplateMessage wxMaTemplateMessage = WxMaTemplateMessage.builder().templateId(wxMaTemplateMessageVO.getTemplateId())
+                    .data(JSON.parseArray(wxMaTemplateMessageVO.getDataJson(),WxMaTemplateMessage.Data.class))
+                    .page(wxMaTemplateMessageVO.getPage())
+                    .formId(wxMaTemplateMessageVO.getFormId())
+                    .toUser(wxMaTemplateMessageVO.getToUser())
+                    .build();
+
             Integer pushId = wxMaTemplateMessageVO.getPushId();
             if (PlatformEcoEnum.POINT.getType().equals(wxMaTemplateMessageVO.getPlatform())) {
                 log.info("上分平台推送消息:wxMaTemplateMessageVO:{}", wxMaTemplateMessageVO);
                 wxMaServiceSupply.pointWxMaService().getMsgService().sendTemplateMsg(wxMaTemplateMessage);
-            } else if (PlatformEcoEnum.APP.getType().equals(wxMaTemplateMessageVO.getPlatform())) {
-                //todo APP推送
             } else {
                 log.info("陪玩平台推送消息:wxMaTemplateMessageVO:{}", wxMaTemplateMessageVO);
                 wxMaServiceSupply.playWxMaService().getMsgService().sendTemplateMsg(wxMaTemplateMessage);

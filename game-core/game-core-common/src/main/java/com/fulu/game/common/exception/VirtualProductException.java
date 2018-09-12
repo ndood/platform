@@ -10,8 +10,9 @@ public class VirtualProductException extends BizException {
     @AllArgsConstructor
     @Getter
     public enum ExceptionCode {
-        BALANCE_NOT_ENOUGH_EXCEPTION(11001, "钻石不足！"),
-        NOT_EXIST(11002, "虚拟商品不存在！");
+        VIRTUAL_BALANCE_NOT_ENOUGH_EXCEPTION(11001, "钻石不足！"),
+        BALANCE_NOT_ENOUGH_EXCEPTION(11002, "余额不足！"),
+        NOT_EXIST(11003, "虚拟商品不存在！");
         private int code;
         private String msg;
     }

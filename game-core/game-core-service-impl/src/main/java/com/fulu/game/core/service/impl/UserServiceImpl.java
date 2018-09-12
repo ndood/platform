@@ -644,12 +644,24 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public User modifyCharm(User user, Integer price) {
+    public User modifyCharm(User user, Integer charm) {
         if (user == null) {
             return null;
         }
 
-        user.setCharm((user.getCharm() == null ? 0 : user.getCharm()) + price);
+        user.setCharm((user.getCharm() == null ? 0 : user.getCharm()) + charm);
+        user.setUpdateTime(DateUtil.date());
+        update(user);
+        return user;
+    }
+
+    public User modifyCharm(Integer userId, Integer charm) {
+        User user = findById(userId);
+        if(user == null) {
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+
+        user.setCharm((user.getCharm() == null ? 0 : user.getCharm()) + charm);
         user.setUpdateTime(DateUtil.date());
         update(user);
         return user;

@@ -1,6 +1,6 @@
 package com.fulu.game.h5.controller.mp;
 
-import com.fulu.game.h5.service.impl.fenqile.H5PayServiceImpl;
+import com.fulu.game.h5.service.impl.mp.MpPayServiceImpl;
 import com.github.binarywang.wxpay.bean.notify.WxPayNotifyResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 public class WechatController {
 
     @Autowired
-    private H5PayServiceImpl h5PayService;
+    private MpPayServiceImpl payService;
 
     @ResponseBody
     @RequestMapping("/pay/callback")
@@ -32,7 +32,7 @@ public class WechatController {
                             HttpServletResponse response) {
         try {
             String xmlResult = IOUtils.toString(request.getInputStream(), request.getCharacterEncoding());
-            return h5PayService.payResult(xmlResult);
+            return payService.payResult(xmlResult);
         } catch (Exception e) {
             log.error("xml消息转换异常{}", e.getMessage());
             return WxPayNotifyResponse.fail(e.getMessage());

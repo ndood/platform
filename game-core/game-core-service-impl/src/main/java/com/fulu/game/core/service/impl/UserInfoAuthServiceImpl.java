@@ -944,23 +944,4 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
         userInfoAuthDao.updateByUserId(uia);
     }
-
-    @Override
-    public void withdrawCharm(Integer userId, Integer charm) {
-//        UserInfoAuth userInfoAuth = findByUserId(userId);
-//        if (userInfoAuth == null) {
-//            log.error("陪玩师id:{}不存在", userId);
-//            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
-//        }
-//
-//        Integer totalCharm = userInfoAuth.getCharm();
-//        if (charm > totalCharm) {
-//            log.error("陪玩师id:{}提现魅力值超出总魅力值", userId);
-//            throw new CashException(CashException.ExceptionCode.CHARM_WITHDRAW_FAIL_EXCEPTION);
-//        }
-//
-//        //todo  记录流水 记录分润
-
-
-    }
 }

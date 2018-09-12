@@ -1,5 +1,6 @@
 package com.fulu.game.h5.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
@@ -12,7 +13,6 @@ import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.UserInfoAuthServiceImpl;
-import com.fulu.game.h5.controller.BaseController;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -49,6 +49,8 @@ public class UserController extends BaseController {
 
     private ProductService productService;
 
+    private final UserBodyAuthService userBodyAuthService;
+
     @Autowired
     public UserController(UserCommentService commentService,
                           AdviceService adviceService,
@@ -56,7 +58,7 @@ public class UserController extends BaseController {
                           OssUtil ossUtil,
                           ImService imService,
                           UserInfoAuthServiceImpl userInfoAuthService,
-                          ProductService productService) {
+                          ProductService productService, UserBodyAuthService userBodyAuthService) {
         this.commentService = commentService;
         this.adviceService = adviceService;
         this.userService = userService;
@@ -64,6 +66,7 @@ public class UserController extends BaseController {
         this.imService = imService;
         this.userInfoAuthService = userInfoAuthService;
         this.productService = productService;
+        this.userBodyAuthService = userBodyAuthService;
     }
 
     /**
@@ -229,5 +232,41 @@ public class UserController extends BaseController {
     public Result save(UserCommentVO commentVO) {
         commentService.save(commentVO);
         return Result.success().msg("添加成功！");
+    }
+
+    /**
+     * 检测用户是否通过实名认证
+     *
+     * @return 封装结果集
+     */
+    @PostMapping("/body-auth/check")
+    public Result isUserBodyAuth() {
+        User user = userService.findById(userService.getCurrentUser().getId());
+        if (user == null) {
+            log.info("当前用户id={}查询数据库不存在", userService.getCurrentUser().getId());
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+
+        boolean result = userBodyAuthService.userAlreadyAuth(user.getId());
+        if (result) {
+            return Result.success().msg("已通过认证！");
+        }
+        return Result.error().msg("未通过认证！");
+    }
+
+    /**
+     * 获取用户钱包
+     *
+     * @return 封装结果集
+     */
+    @PostMapping("/balance/get")
+    public Result getBalance() {
+        User user = userService.findById(userService.getCurrentUser().getId());
+        JSONObject data = new JSONObject();
+        data.put("balance", user.getBalance());
+        data.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
+        data.put("charm", user.getCharm() == null ? 0 : user.getCharm());
+        data.put("chargeBalance", user.getChargeBalance());
+        return Result.success().data(data).msg("查询成功！");
     }
 }

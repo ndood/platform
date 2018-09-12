@@ -123,9 +123,28 @@ public class UserBodyAuthServiceImpl extends AbsCommonService<UserBodyAuth, Inte
     @Override
     public boolean userAlreadyAuth(Integer userId) {
         UserBodyAuth uba = userBodyAuthDao.findByUserId(userId);
+        if(uba == null) {
+            log.info("当前用户id={}未进行身份验证", userId);
+            throw new UserException(UserException.ExceptionCode.BODY_NO_AUTH);
+        }
+
         if(uba.getAuthStatus().intValue() == UserBodyAuthStatusEnum.AUTH_SUCCESS.getType().intValue()){
             return true;
         }
         return false;
     }
+
+
+    @Override
+    public UserBodyAuth getUserAuthInfo(Integer userId) {
+
+        UserBodyAuth authInfo = userBodyAuthDao.findByUserId(userId);
+
+        if(authInfo == null){
+            throw new UserException(UserException.ExceptionCode.BODY_NO_AUTH);
+        }
+        
+        return authInfo;
+    }
+    
 }

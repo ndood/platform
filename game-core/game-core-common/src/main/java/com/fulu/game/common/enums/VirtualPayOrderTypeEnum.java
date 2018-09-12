@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 虚拟币充值订单方式枚举类
+ * 虚拟币和余额充值订单表--订单类型枚举类
  *
  * @author Gong ZeChun
  * @date 2018/9/5 18:04
@@ -12,8 +12,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum VirtualPayOrderTypeEnum implements TypeEnum<Integer> {
-    WECHAT_PAY(1, "微信支付"),
-    BALANCE_PAY(2, "余额支付");
+    VIRTUAL_ORDER(1, "虚拟币充值订单"),
+    BALANCE_ORDER(2, "余额充值订单");
 
     private Integer type;
     private String msg;

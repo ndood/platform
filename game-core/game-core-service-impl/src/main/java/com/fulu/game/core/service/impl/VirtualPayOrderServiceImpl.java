@@ -4,13 +4,16 @@ package com.fulu.game.core.service.impl;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.VirtualPayOrderDao;
 import com.fulu.game.core.entity.VirtualPayOrder;
+import com.fulu.game.core.entity.vo.VirtualPayOrderVO;
 import com.fulu.game.core.service.VirtualPayOrderService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 
 @Service
@@ -25,30 +28,6 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
         return virtualPayOrderDao;
     }
 
-    public VirtualPayOrder charge(String code, BigDecimal actualMoney, Integer virtualMoney, String mobile) {
-//        if (StringUtils.isBlank(code)) {
-//            throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
-//        }
-//
-//        WxMpService wxMpService = wxMpServiceSupply.getWxMpService();
-//        WxMpOAuth2AccessToken token;
-//        String openId = null;
-//        String unionId = null;
-//        try {
-//            token = wxMpService.oauth2getAccessToken(code);
-//            openId = token.getOpenId();
-//            WxMpUser wxMpUser = wxMpService.oauth2getUserInfo(token, null);
-//            unionId = wxMpUser.getUnionId();
-//        } catch (WxErrorException e) {
-//            e.printStackTrace();
-//            log.error("通过公众号获取用户信息出错", e);
-//        }
-
-        //fixme 先判断mobile 然后openId 然后unionId（非空判断）
-
-        return null;
-    }
-
     @Override
     public VirtualPayOrder findByOrderNo(String orderNo) {
         if (StringUtils.isBlank(orderNo)) {
@@ -56,5 +35,23 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
         }
 
         return virtualPayOrderDao.findByOrderNo(orderNo);
+    }
+
+    @Override
+    public PageInfo<VirtualPayOrderVO> chargeList(VirtualPayOrderVO payOrderVO, Integer pageNum, Integer pageSize, String orderBy) {
+        if (StringUtils.isBlank(orderBy)) {
+            orderBy = "vpo.pay_time DESC";
+        }
+
+        PageHelper.startPage(pageNum, pageSize, orderBy);
+        List<VirtualPayOrderVO> voList = virtualPayOrderDao.chargeList(payOrderVO);
+        return new PageInfo<>(voList);
+    }
+
+    @Override
+    public PageInfo<VirtualPayOrderVO> chargeList(VirtualPayOrderVO payOrderVO) {
+        PageHelper.startPage("vpo.pay_time DESC");
+        List<VirtualPayOrderVO> voList = virtualPayOrderDao.chargeList(payOrderVO);
+        return new PageInfo<>(voList);
     }
 }

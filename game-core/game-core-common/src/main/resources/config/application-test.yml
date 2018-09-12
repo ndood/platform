@@ -66,14 +66,14 @@ config:
       secret: 38bbed52fcf066e0f050a2abe76444df
       token: 111
       aesKey: 111
-      msgDataFormat:
-      mchId:
-      mchKey:
+      msgDataFormat: JSON
+      mchId: 1502601051
+      mchKey: 24d1b993f21046a296b0846f62d3e431
       subAppId:
       subMchId:
-      keyPath:
-      tradeType:
-      notifyUrl:
+      keyPath: /data/cert/apiclient_cert.p12
+      tradeType: JSAPI
+      notifyUrl: https://t-api-h5.wzpeilian.com/wechat/mp/pay/callback
     im:
       urlPrefix: http://a1.easemob.com
       appKey: 1183180421228734#game-test

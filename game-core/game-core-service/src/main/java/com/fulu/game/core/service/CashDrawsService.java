@@ -5,6 +5,7 @@ import com.fulu.game.core.entity.vo.CashDrawsVO;
 import com.github.pagehelper.PageInfo;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -13,15 +14,17 @@ import java.util.List;
  */
 
 @Transactional
-public interface CashDrawsService extends ICommonService<CashDraws,Integer>{
+public interface CashDrawsService extends ICommonService<CashDraws, Integer> {
 
     CashDrawsVO save(CashDrawsVO cashDrawsVO);
 
-    PageInfo<CashDraws> list(CashDrawsVO cashDrawsVO,Integer pageNum, Integer pageSize);
+    PageInfo<CashDrawsVO> list(CashDrawsVO cashDrawsVO,Integer pageNum, Integer pageSize);
 
-    List<CashDraws> list(CashDrawsVO cashDrawsVO);
+    PageInfo<CashDrawsVO> list(CashDrawsVO cashDrawsVO);
 
     CashDraws draw(Integer cashId, String comment);
 
     boolean refuse(Integer cashId, String comment);
+
+    CashDrawsVO withdrawCharm(Integer charm);
 }
