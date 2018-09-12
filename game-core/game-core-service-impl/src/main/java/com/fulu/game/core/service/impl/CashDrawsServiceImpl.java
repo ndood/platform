@@ -171,10 +171,11 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
 
         //转换魅力值的可提现金额   魅力值除以10*70%就是可提现金额
         for (int i = 0; i < list.size(); i++) {
-            //todo gzc 这里跟dgr确认
+            
             Integer charm = list.get(i).getCharm();
             BigDecimal charmMoney = new BigDecimal(charm).multiply(new BigDecimal("0.07"));
             list.get(i).setCharmMoney(charmMoney.setScale(2, BigDecimal.ROUND_DOWN));
+            
         }
     }
 
