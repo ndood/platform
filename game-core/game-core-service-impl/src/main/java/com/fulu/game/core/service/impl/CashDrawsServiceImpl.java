@@ -173,9 +173,12 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         for (int i = 0; i < list.size(); i++) {
             
             Integer charm = list.get(i).getCharm();
-            BigDecimal charmMoney = new BigDecimal(charm).multiply(new BigDecimal("0.07"));
-            list.get(i).setCharmMoney(charmMoney.setScale(2, BigDecimal.ROUND_DOWN));
-            
+            if(charm == null){
+                list.get(i).setCharmMoney(new BigDecimal("0"));
+            }else{
+                BigDecimal charmMoney = new BigDecimal(charm).multiply(new BigDecimal("0.07"));
+                list.get(i).setCharmMoney(charmMoney.setScale(2, BigDecimal.ROUND_DOWN));
+            }
         }
     }
 
