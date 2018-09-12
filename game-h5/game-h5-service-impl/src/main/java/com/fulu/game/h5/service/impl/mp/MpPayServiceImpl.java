@@ -317,10 +317,6 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
             // 结果正确
             String orderNo = getOrderNo(result);
             String totalYuan = getTotal(result);
-            //fixme gzc
-            VirtualPayOrder order = virtualPayOrderService.findByOrderNo(orderNo);
-            log.info("payResult方法中，订单详情", order.toString());
-
             successPayOrder(orderNo, new BigDecimal(totalYuan));
             return WxPayNotifyResponse.success("处理成功!");
         } catch (Exception e) {
