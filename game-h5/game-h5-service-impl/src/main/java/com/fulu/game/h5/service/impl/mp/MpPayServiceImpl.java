@@ -77,9 +77,8 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
             throw new DataException(DataException.ExceptionCode.NO_FORM_TOKEN_ERROR);
         }
 
-        BigDecimal actualMoney = new BigDecimal(virtualMoney / 10).setScale(2, BigDecimal.ROUND_HALF_DOWN);
-        //todo gzc 方便测试
-//        BigDecimal actualMoney = new BigDecimal(0.01).setScale(2);
+        //fixme gzc 比例设置
+        BigDecimal actualMoney = new BigDecimal(virtualMoney / 100).setScale(2, BigDecimal.ROUND_HALF_DOWN);
 
         VirtualPayOrder order = new VirtualPayOrder();
         order.setName("虚拟币充值订单：付款金额：¥" + actualMoney + "，虚拟币数量：" + virtualMoney + "");
@@ -170,6 +169,9 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
     private VirtualPayOrder successPayOrder(String orderNo, BigDecimal actualMoney) {
         log.info("用户支付订单orderNo:{},actualMoney:{}", orderNo, actualMoney);
         VirtualPayOrder order = virtualPayOrderService.findByOrderNo(orderNo);
+
+        log.info("订单详情：" + order.toString());
+
         if (order.getIsPayCallback()) {
             throw new OrderException(orderNo, "重复支付订单![" + order.toString() + "]");
         }
@@ -180,9 +182,11 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
 
         //如果是余额充值订单，则需要记录零钱流水
         Integer type = order.getType();
-        if (type.equals(VirtualPayOrderTypeEnum.BALANCE_ORDER.getType())) {
-            User user = userService.findById(order.getUserId());
-
+        User user = userService.findById(order.getUserId());
+        if (type.equals(VirtualPayOrderTypeEnum.VIRTUAL_ORDER.getType())) {
+            user.setVirtualBalance((user.getVirtualBalance() == null ? 0 : user.getVirtualBalance())
+                    + order.getVirtualMoney());
+        } else {
             MoneyDetails mDetails = new MoneyDetails();
             mDetails.setOperatorId(order.getUserId());
             mDetails.setTargetId(order.getUserId());
@@ -191,7 +195,11 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
             mDetails.setSum(user.getBalance().add(user.getChargeBalance()));
             mDetails.setCreateTime(DateUtil.date());
             moneyDetailsService.drawSave(mDetails);
+
+            user.setChargeBalance(user.getChargeBalance().add(order.getMoney()));
         }
+        userService.update(user);
+        userService.updateRedisUser(user);
 
         //记录平台流水
         platformMoneyDetailsService.createOrderDetails(
@@ -309,6 +317,10 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
             // 结果正确
             String orderNo = getOrderNo(result);
             String totalYuan = getTotal(result);
+            //fixme gzc
+            VirtualPayOrder order = virtualPayOrderService.findByOrderNo(orderNo);
+            log.info("payResult方法中，订单详情", order.toString());
+
             successPayOrder(orderNo, new BigDecimal(totalYuan));
             return WxPayNotifyResponse.success("处理成功!");
         } catch (Exception e) {

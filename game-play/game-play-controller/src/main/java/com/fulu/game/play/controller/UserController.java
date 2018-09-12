@@ -303,21 +303,21 @@ public class UserController extends BaseController {
             return Result.error().msg("验证码提交错误");
         }
         User currentUser = userService.getCurrentUser();
-        User openIdUser = userService.findByOpenId(currentUser.getOpenId(), PlatformEcoEnum.PLAY);
+        User user = userService.findById(currentUser.getId());
         //如果openId已经绑定手机号
-        if (openIdUser != null && openIdUser.getMobile() != null) {
+        if (user != null && user.getMobile() != null) {
             return Result.error().msg("已经绑定过手机号！");
         }
         User mobileUser = userService.findByMobile(mobile);
         if (mobileUser != null) {
             return Result.error().msg("该手机号已经被绑定！");
         } else {
-            openIdUser.setMobile(mobile);
-            openIdUser.setUpdateTime(new Date());
-            userService.update(openIdUser);
-            userService.updateRedisUser(openIdUser);
+            user.setMobile(mobile);
+            user.setUpdateTime(new Date());
+            userService.update(user);
+            userService.updateRedisUser(user);
         }
-        return Result.success().data(openIdUser).msg("手机号绑定成功！");
+        return Result.success().data(user).msg("手机号绑定成功！");
     }
 
 
