@@ -192,11 +192,15 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
             mDetails.setTargetId(order.getUserId());
             mDetails.setMoney(order.getMoney());
             mDetails.setAction(MoneyOperateTypeEnum.WITHDRAW_BALANCE.getType());
-            mDetails.setSum(user.getBalance().add(user.getChargeBalance()));
+            BigDecimal chargeBalance = user.getChargeBalance();
+            if (chargeBalance == null) {
+                chargeBalance = BigDecimal.ZERO;
+            }
+            mDetails.setSum(user.getBalance().add(chargeBalance));
             mDetails.setCreateTime(DateUtil.date());
             moneyDetailsService.drawSave(mDetails);
 
-            user.setChargeBalance(user.getChargeBalance().add(order.getMoney()));
+            user.setChargeBalance(chargeBalance.add(order.getMoney()));
         }
         userService.update(user);
         userService.updateRedisUser(user);
