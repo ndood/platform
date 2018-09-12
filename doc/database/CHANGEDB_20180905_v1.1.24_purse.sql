@@ -44,9 +44,9 @@ ALTER TABLE `t_user` ADD COLUMN `charm_draw_sum` int(11) unsigned DEFAULT '0' CO
 ALTER TABLE `t_cash_draws` ADD COLUMN `server_auth` tinyint(4) DEFAULT '0' NOT NULL COMMENT '运营是否已处理  0  未处理  1已处理' after `cash_status`;
 
 --t_virtual_product_order加order_no唯一索引
-ALTER TABLE `t_virtual_product_order` ADD UNIQUE (`order_no`)
+ALTER TABLE `t_virtual_product_order` ADD UNIQUE (`order_no`);
 
-ALTER TABLE `t_virtual_pay_order` ADD COLUMN `pay_path` tinyint(1) DEFAULT NULL COMMENT '充值路径（1：公众号；2：安卓；3：IOS）' after `payment`;
+ALTER TABLE `t_virtual_pay_order` ADD COLUMN `pay_path` tinyint(1) DEFAULT '1' COMMENT '充值路径（1：公众号；2：安卓；3：IOS）' after `payment`;
 
 
 ALTER TABLE `t_money_details` MODIFY COLUMN `action` tinyint(1) NOT NULL COMMENT '-1提现，1加零钱，2陪玩订单入账，3拒绝提现返款，4魅力值提现，5余额购买虚拟币，6余额充值';
