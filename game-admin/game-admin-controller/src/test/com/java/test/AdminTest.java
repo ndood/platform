@@ -20,10 +20,11 @@ public class AdminTest {
 
     @Test
     public void test1() {
-
-        Admin admin = createAdminAccount("杨", "yangfan", "yf13720173993");
-
+        Admin admin = createAdminAccount("王道波", "wangdaobo", "wdb.1345");
         log.info("admin:{}", admin);
+
+
+
     }
 
 
@@ -38,7 +39,6 @@ public class AdminTest {
         admin.setSalt(password.getSalt());
         admin.setCreateTime(new Date());
         admin.setUpdateTime(admin.getCreateTime());
-
         return admin;
     }
 
