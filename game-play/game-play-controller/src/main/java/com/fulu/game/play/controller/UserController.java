@@ -284,22 +284,6 @@ public class UserController extends BaseController {
     }
 
     /**
-     * 判断用户是否已经绑定手机号
-     *
-     * @return
-     */
-    @PostMapping("/mobile/bind/status")
-    public Result mobileBindStatus() {
-        User currentUser = userService.getCurrentUser();
-        User openIdUser = userService.findById(currentUser.getId());
-        //如果openId已经绑定手机号
-        if (openIdUser != null && StringUtils.isNotBlank(openIdUser.getMobile())) {
-            return Result.success().msg("已经绑定过手机号！");
-        }
-        return Result.error().msg("没有绑定手机号！");
-    }
-
-    /**
      * 绑定手机号
      *
      * @param mobile
