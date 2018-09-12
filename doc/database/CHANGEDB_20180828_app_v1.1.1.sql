@@ -435,7 +435,8 @@ CREATE TABLE `t_price_rule` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='定价规则表';
 
 
-
+-- 添加技能接单数
+ALTER TABLE `t_user_tech_auth` ADD COLUMN `order_count` int(11) DEFAULT '0' COMMENT '接单数' after `status`;
 
 
 
