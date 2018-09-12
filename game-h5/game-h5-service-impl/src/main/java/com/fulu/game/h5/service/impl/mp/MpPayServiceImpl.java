@@ -111,7 +111,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         return resultMap;
     }
 
-    public Object payOrder(VirtualPayOrder order, User user, String requestIp) {
+    public WxPayMpOrderResult payOrder(VirtualPayOrder order, User user, String requestIp) {
         if (order.getIsPayCallback()) {
             throw new OrderException(order.getOrderNo(), "已支付的订单不能支付!");
         }

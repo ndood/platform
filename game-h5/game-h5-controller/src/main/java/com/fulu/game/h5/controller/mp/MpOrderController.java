@@ -8,6 +8,7 @@ import com.fulu.game.core.service.VirtualPayOrderService;
 import com.fulu.game.h5.controller.BaseController;
 import com.fulu.game.h5.service.impl.mp.MpPayServiceImpl;
 import com.fulu.game.h5.utils.RequestUtil;
+import com.github.binarywang.wxpay.bean.order.WxPayMpOrderResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -70,7 +72,14 @@ public class MpOrderController extends BaseController {
         String ip = RequestUtil.getIpAdrress(request);
         VirtualPayOrder order = virtualPayOrderService.findByOrderNo(orderNo);
         User user = userService.findById(order.getUserId());
-        Object result = payService.payOrder(order, user, ip);
+        WxPayMpOrderResult wxPayMpOrderResult = payService.payOrder(order, user, ip);
+        Map<String,Object> result = new HashMap<>();
+        result.put("appId",wxPayMpOrderResult.getAppId());
+        result.put("timestamp",wxPayMpOrderResult.getTimeStamp());
+        result.put("nonceStr",wxPayMpOrderResult.getNonceStr());
+        result.put("package",wxPayMpOrderResult.getPackageValue());
+        result.put("signType",wxPayMpOrderResult.getSignType());
+        result.put("paySign",wxPayMpOrderResult.getPaySign());
         return Result.success().data(result);
     }
 
