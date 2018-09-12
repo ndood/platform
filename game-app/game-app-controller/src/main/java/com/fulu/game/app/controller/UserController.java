@@ -1,13 +1,12 @@
 package com.fulu.game.app.controller;
 
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
-import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.entity.*;
-import com.fulu.game.core.entity.vo.AdminImLogVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
@@ -21,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -81,6 +82,7 @@ public class UserController extends BaseController {
 
     /**
      * 获取用户信息
+     *
      * @param userId 非必传，当未传时查询当前用户信息，否则查询所传递用户信息
      * @return
      */
@@ -93,11 +95,12 @@ public class UserController extends BaseController {
 
     /**
      * 获取用户的基础信息
+     *
      * @param userId
      * @return
      */
     @RequestMapping("info")
-    public Result getInfo(Integer userId){
+    public Result getInfo(Integer userId) {
         User user = userService.findById(userId);
         return Result.success().data(user);
     }
@@ -178,8 +181,8 @@ public class UserController extends BaseController {
 
     @PostMapping(value = "online")
     public Result userOnline(@RequestParam(required = true) Boolean active, String version) {
-        
-        List<AdminImLog> list = userService.userOnline(active,version);
+
+        List<AdminImLog> list = userService.userOnline(active, version);
 
         return Result.success().data(list).msg("查询成功！");
     }
@@ -265,5 +268,42 @@ public class UserController extends BaseController {
         }
         Advice advice = adviceService.addAdvice(content, contact, advicePicUrls);
         return Result.success().data(advice).msg("提交成功");
+    }
+
+    /**
+     * 用户-查询余额
+     * 账户金额不能从缓存取，因为存在管理员给用户加零钱缓存并未更新
+     *
+     * @return
+     */
+    @PostMapping("/balance/get")
+    public Result getBalance() {
+        User user = userService.findById(userService.getCurrentUser().getId());
+        JSONObject data = new JSONObject();
+        data.put("balance", user.getBalance());
+        data.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
+        Integer charm = user.getCharm();
+        if (charm == null) {
+            data.put("charm", 0);
+            data.put("charmMoney", 0);
+        } else {
+            data.put("charm", charm);
+            data.put("charmMoney", new BigDecimal(charm).multiply(Constant.CHARM_TO_MONEY_RATE));
+        }
+        data.put("chargeBalance", user.getChargeBalance());
+        return Result.success().data(data).msg("查询成功！");
+    }
+
+    /**
+     * 用户-查询虚拟零钱余额
+     *
+     * @return
+     */
+    @PostMapping("/virtual-balance/get")
+    public Result getVirtualBalance() {
+        User user = userService.findById(userService.getCurrentUser().getId());
+        Map<String, Object> resultMap = new HashMap<>(2);
+        resultMap.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
+        return Result.success().data(resultMap).msg("查询成功！");
     }
 }
