@@ -48,6 +48,8 @@ public class UserInfoAuthVO extends UserInfoAuth {
     private List<UserInfoAuthFile> portraitList;
     //声音文件
     private List<UserInfoAuthFile> voiceList;
+    //视频文件
+    private List<UserInfoAuthFile> videoList;
 
     //标签组
     private List<TagVO> groupTags;

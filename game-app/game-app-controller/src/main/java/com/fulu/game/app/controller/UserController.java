@@ -4,10 +4,12 @@ import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.AdminImLogVO;
+import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
@@ -39,10 +41,6 @@ public class UserController extends BaseController {
     @Autowired
     private OssUtil ossUtil;
     @Autowired
-    private RedisOpenServiceImpl redisOpenService;
-    @Autowired
-    private AdminImLogService adminImLogService;
-    @Autowired
     private ImService imService;
     @Qualifier(value = "userTechAuthServiceImpl")
     @Autowired
@@ -51,6 +49,8 @@ public class UserController extends BaseController {
     private AdviceService adviceService;
     @Autowired
     private UserInfoAuthFileService userInfoAuthFileService;
+    @Autowired
+    private UserCommentService commentService;
 
 
     /**
@@ -283,6 +283,7 @@ public class UserController extends BaseController {
 
     /**
      * 查询-用户-列表
+     * 只查陪玩师
      * @param pageNum
      * @param pageSize
      * @return
@@ -291,7 +292,31 @@ public class UserController extends BaseController {
     public Result list(UserVO userVO,
                        @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                        @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
+        //只查陪玩师
+        userVO.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
         PageInfo<UserVO> userList = userService.list(userVO, pageNum, pageSize);
         return Result.success().data(userList).msg("查询用户列表成功！");
+    }
+
+    /**
+     * 查询陪玩师的所有评论
+     *
+     * @param pageNum
+     * @param pageSize
+     * @param serverId
+     * @return
+     */
+    @RequestMapping(value = "/comment/byserver")
+    public Result findDetailsComments(Integer pageNum,
+                                      Integer pageSize,
+                                      Integer serverId) {
+        PageInfo<UserCommentVO> page = commentService.findByServerId(pageNum, pageSize, serverId);
+        return Result.success().data(page);
+    }
+
+    @PostMapping(value = "/user-tech-page")
+    public Result getUserTechPage(){
+
+        return Result.success();
     }
 }

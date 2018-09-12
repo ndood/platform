@@ -1,9 +1,6 @@
 package com.fulu.game.core.entity.vo;
 
-import com.fulu.game.core.entity.Category;
-import com.fulu.game.core.entity.SalesMode;
-import com.fulu.game.core.entity.Tag;
-import com.fulu.game.core.entity.TechValue;
+import com.fulu.game.core.entity.*;
 import lombok.Data;
 
 import java.util.List;
@@ -29,4 +26,7 @@ public class CategoryVO extends Category {
     private Integer most;
 
     private List<TagVO> groupTags;
+
+    // 分类对应定价规则表
+    private List<PriceRule> priceRuleList;
 }

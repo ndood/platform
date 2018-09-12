@@ -49,6 +49,10 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
     @Qualifier(value = "userTechAuthServiceImpl")
     @Autowired
     private UserTechAuthServiceImpl userTechAuthService;
+
+    @Autowired
+    private PriceRuleService priceRuleService;
+
     @Override
     public ICommonDao<Category, Integer> getDao() {
         return categoryDao;
@@ -134,6 +138,9 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
             tagVOList.add(vo);
         }
         categoryVO.setGroupTags(tagVOList);
+        //设置定价规则
+        List<PriceRule> priceRuleList = priceRuleService.findByCategoryId(category.getId());
+        categoryVO.setPriceRuleList(priceRuleList);
         return categoryVO;
     }
 

@@ -611,6 +611,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             userInfoAuthVO.setPortraitList(portraitFiles);
             List<UserInfoAuthFile> voiceFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthVO.getId(), FileTypeEnum.VOICE.getType());
             userInfoAuthVO.setVoiceList(voiceFiles);
+            //添加视频信息
+            List<UserInfoAuthFile> videoFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthVO.getId(), FileTypeEnum.VIDEO.getType());
+            userInfoAuthVO.setVideoList(videoFiles);
         }
     }
 
