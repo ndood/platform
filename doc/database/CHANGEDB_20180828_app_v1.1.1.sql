@@ -411,8 +411,10 @@ ALTER TABLE `t_coupon` ADD COLUMN `category_id`  int(11) NOT NULL DEFAULT 1 COMM
 ALTER TABLE `t_coupon` ADD COLUMN `type`   tinyint(1) NOT NULL DEFAULT 1 COMMENT '类型(1满减，2折扣)' AFTER `category_id`;
 ALTER TABLE `t_coupon` ADD COLUMN `full_reduction`  decimal(11,2) DEFAULT 0 NOT NULL COMMENT '多少金额可用' AFTER `type`;
 
-UPDATE `t_coupon_group` SET category_id = 1,type=1,full_reduction=0;
-UPDATE `t_coupon` SET category_id = 1,type=1,full_reduction=0;
+ALTER TABLE `t_coupon` ADD COLUMN `category_name`  varchar(255) NULL COMMENT '品类名称' AFTER `category_id`;
+
+UPDATE `t_coupon_group` SET `category_id` = 1,`type`=1,`full_reduction`=0;
+UPDATE `t_coupon` SET `category_id` = 1,`type`=1,`full_reduction`=0,`category_name`='全品类';
 
 
 
