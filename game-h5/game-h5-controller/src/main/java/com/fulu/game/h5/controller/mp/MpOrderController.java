@@ -1,6 +1,8 @@
 package com.fulu.game.h5.controller.mp;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.common.config.WxMaServiceSupply;
+import com.fulu.game.common.config.WxMpServiceSupply;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.VirtualPayOrder;
 import com.fulu.game.core.service.UserService;
@@ -9,6 +11,9 @@ import com.fulu.game.h5.controller.BaseController;
 import com.fulu.game.h5.service.impl.mp.MpPayServiceImpl;
 import com.fulu.game.h5.utils.RequestUtil;
 import com.github.binarywang.wxpay.bean.order.WxPayMpOrderResult;
+import com.github.binarywang.wxpay.bean.entpay.EntPayRequest;
+import com.github.binarywang.wxpay.constant.WxPayConstants;
+import com.github.binarywang.wxpay.exception.WxPayException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -39,6 +44,10 @@ public class MpOrderController extends BaseController {
     @Qualifier("virtualPayOrderServiceImpl")
     @Autowired
     private VirtualPayOrderService virtualPayOrderService;
+    @Autowired
+    private WxMpServiceSupply wxMpServiceSupply;
+    @Autowired
+    private WxMaServiceSupply wxMaServiceSupply;
 
     /**
      * 提交虚拟币充值订单
@@ -74,12 +83,14 @@ public class MpOrderController extends BaseController {
         User user = userService.findById(order.getUserId());
         WxPayMpOrderResult wxPayMpOrderResult = payService.payOrder(order, user, ip);
         Map<String,Object> result = new HashMap<>();
-        result.put("appId",wxPayMpOrderResult.getAppId());
-        result.put("timestamp",wxPayMpOrderResult.getTimeStamp());
-        result.put("nonceStr",wxPayMpOrderResult.getNonceStr());
-        result.put("package",wxPayMpOrderResult.getPackageValue());
-        result.put("signType",wxPayMpOrderResult.getSignType());
-        result.put("paySign",wxPayMpOrderResult.getPaySign());
+        if(wxPayMpOrderResult != null) {
+            result.put("appId",wxPayMpOrderResult.getAppId());
+            result.put("timestamp",wxPayMpOrderResult.getTimeStamp());
+            result.put("nonceStr",wxPayMpOrderResult.getNonceStr());
+            result.put("package",wxPayMpOrderResult.getPackageValue());
+            result.put("signType",wxPayMpOrderResult.getSignType());
+            result.put("paySign",wxPayMpOrderResult.getPaySign());
+        }
         return Result.success().data(result);
     }
 
@@ -98,5 +109,62 @@ public class MpOrderController extends BaseController {
         String ip = RequestUtil.getIpAdrress(request);
         Map<String, Object> resultMap = payService.balanceCharge(sessionkey, money, ip);
         return Result.success().data(resultMap).msg("创建订单成功!");
+    }
+
+//    @PostMapping("/transfer")
+//    public Result transferToUser() throws WxPayException {
+//        //龚小明的公众号的openid
+//        String publicOpenId = "os6HU00YbkERVByDFGmLVgju5-jY";
+////        String publicOpenId = "oZKvq4hQBlleKr_my1I3VZ0eJI1M";
+//        String partnerTradeNo = "CTEST180911500438";
+//
+//        EntPayRequest request = EntPayRequest.newBuilder()
+//                .partnerTradeNo(partnerTradeNo)
+//                .openid(publicOpenId)
+//                .amount(30)
+//                .spbillCreateIp("10.10.10.10")
+//                .checkName(WxPayConstants.CheckNameOption.NO_CHECK)
+//                .description("描述信息")
+//                .build();
+//
+//        String result = this.wxMpServiceSupply.wxMpPayService().getEntPayService().entPay(request).toString();
+//        System.out.println(result);
+//        return Result.success();
+//    }
+
+    @PostMapping("/transfer")
+    public Result transferToUser() throws WxPayException {
+
+        //龚小明的公众号的openid
+//        String publicOpenId = "os6HU00YbkERVByDFGmLVgju5-jY";
+
+//        String playOpenId = "oZKvq4sB4rbCSxe0Zdf1MAtNCWrA";//龚泽淳的陪玩openId
+//        String pointOpenId = "oTxDr4mo8Z-J7xLlVJRcOntPiC6M"; //龚泽淳的上分openId
+//        String partnerTradeNo = "CTEST180911500438";
+//
+//        EntPayRequest request = EntPayRequest.newBuilder()
+//                .partnerTradeNo(partnerTradeNo)
+//                .openid(pointOpenId)
+//                .amount(30)
+//                .spbillCreateIp("10.10.10.10")
+//                .checkName(WxPayConstants.CheckNameOption.NO_CHECK)
+//                .description("描述信息")
+//                .build();
+//
+//        String result = this.wxMaServiceSupply.pointWxPayService().getEntPayService().entPay(request).toString();
+//        System.out.println(result);
+//        return Result.success();
+
+
+        VirtualPayOrder order = virtualPayOrderService.findByOrderNo("C_DEV180911186815");
+        if(order.getIsPayCallback()) {
+            System.out.println("回调成功！");
+        }
+
+        if(!order.getIsPayCallback()) {
+            System.out.println("回调失败！");
+        }
+
+        return null;
     }
 }

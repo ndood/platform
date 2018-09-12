@@ -103,6 +103,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         cashDraws.setNickname(user.getNickname());
         cashDraws.setMobile(user.getMobile());
         cashDraws.setCashStatus(CashProcessStatusEnum.WAITING.getType());
+        cashDraws.setServerAuth(CashDrawsServerAuthEnum.UN_PROCESS.getType());
         cashDraws.setCreateTime(new Date());
         cashDrawsDao.create(cashDraws);
         log.info("生成提款申请记录");
@@ -111,7 +112,8 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         moneyDetails.setTargetId(user.getId());
         moneyDetails.setAction(MoneyOperateTypeEnum.USER_DRAW_CASH.getType());
         moneyDetails.setMoney(money.negate());
-        moneyDetails.setSum(newBalance);
+        BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
+        moneyDetails.setSum(newBalance.add(chargeBalance));
         moneyDetails.setCashId(cashDraws.getCashId());
         moneyDetails.setCreateTime(new Date());
         mdService.drawSave(moneyDetails);
@@ -149,6 +151,9 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
 
         this.charmToMoney(list);
 
+        //todo gzc 遍历list在每个对象中set加密的sign参数
+
+
         return new PageInfo(list);
     }
 
@@ -171,7 +176,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
 
         //转换魅力值的可提现金额   魅力值除以10*70%就是可提现金额
         for (int i = 0; i < list.size(); i++) {
-            
+
             Integer charm = list.get(i).getCharm();
             if(charm == null){
                 list.get(i).setCharmMoney(new BigDecimal("0"));
@@ -205,6 +210,10 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
 //        cashDraws.setCashNo(null);
         cashDraws.setProcessTime(new Date());
         cashDrawsDao.update(cashDraws);
+
+        //todo gzc 加密处理 自定义的sign
+
+
         return cashDraws;
     }
 
@@ -238,7 +247,8 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
             moneyDetails.setOperatorId(admin.getId());
             moneyDetails.setAction(MoneyOperateTypeEnum.ADMIN_REFUSE_REMIT.getType());
             moneyDetails.setTargetId(cashDraws.getUserId());
-            moneyDetails.setSum(balance);
+            BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
+            moneyDetails.setSum(balance.add(chargeBalance));
             moneyDetails.setMoney(cashDraws.getMoney());
             moneyDetails.setCashId(cashId);
             moneyDetails.setRemark(comment);
@@ -261,7 +271,8 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
             moneyDetails.setOperatorId(admin.getId());
             moneyDetails.setAction(MoneyOperateTypeEnum.ADMIN_REFUSE_REMIT.getType());
             moneyDetails.setTargetId(cashDraws.getUserId());
-            moneyDetails.setSum(balance);
+            BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
+            moneyDetails.setSum(balance.add(chargeBalance));
             moneyDetails.setMoney(cashDraws.getMoney());
             moneyDetails.setCashId(cashId);
             moneyDetails.setRemark(comment);
@@ -323,7 +334,8 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         details.setMoney(charmMoney);
         details.setAction(MoneyOperateTypeEnum.USER_CHARM_WITHDRAW.getType());
         details.setCashId(cashDraws.getCashId());
-        details.setSum(user.getBalance());
+        BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
+        details.setSum(user.getBalance().add(chargeBalance));
         details.setCreateTime(DateUtil.date());
         mdService.drawSave(details);
 

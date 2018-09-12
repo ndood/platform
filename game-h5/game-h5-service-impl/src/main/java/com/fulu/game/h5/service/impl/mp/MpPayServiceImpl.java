@@ -78,7 +78,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         }
 
         //fixme gzc 比例设置
-        BigDecimal actualMoney = new BigDecimal(virtualMoney / 100).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+        BigDecimal actualMoney = new BigDecimal(virtualMoney).divide(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP);
 
         VirtualPayOrder order = new VirtualPayOrder();
         order.setName("虚拟币充值订单：付款金额：¥" + actualMoney + "，虚拟币数量：" + virtualMoney + "");
@@ -192,10 +192,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
             mDetails.setTargetId(order.getUserId());
             mDetails.setMoney(order.getMoney());
             mDetails.setAction(MoneyOperateTypeEnum.WITHDRAW_BALANCE.getType());
-            BigDecimal chargeBalance = user.getChargeBalance();
-            if (chargeBalance == null) {
-                chargeBalance = BigDecimal.ZERO;
-            }
+            BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
             mDetails.setSum(user.getBalance().add(chargeBalance));
             mDetails.setCreateTime(DateUtil.date());
             moneyDetailsService.drawSave(mDetails);
@@ -240,7 +237,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
 
-        BigDecimal chargeBalance = user.getChargeBalance();
+        BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
         BigDecimal balance = user.getBalance();
         BigDecimal totalBalance = chargeBalance.add(balance);
         VirtualPayOrder order = virtualPayOrderService.findByOrderNo(orderNo);
@@ -285,7 +282,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         mDetails.setTargetId(userId);
         mDetails.setMoney(actualMoney.negate());
         mDetails.setAction(MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY.getType());
-        mDetails.setSum(user.getBalance().add(user.getChargeBalance()));
+        mDetails.setSum(user.getBalance().add(chargeBalance));
         mDetails.setCreateTime(DateUtil.date());
         moneyDetailsService.drawSave(mDetails);
 
