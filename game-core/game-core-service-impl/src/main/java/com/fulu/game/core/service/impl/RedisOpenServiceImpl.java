@@ -251,10 +251,10 @@ public class RedisOpenServiceImpl {
      */
     public <T> T takeFromTail(String key, int timeout) throws InterruptedException {
 //        lock.lockInterruptibly();
+        RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
+        RedisConnection connection = connectionFactory.getConnection();
         try {
             byte[] rawKey = redisTemplate.getKeySerializer().serialize(key);
-            RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
-            RedisConnection connection = connectionFactory.getConnection();
             List<byte[]> results = connection.bRPop(timeout, rawKey);
             if (CollectionUtils.isEmpty(results)) {
                 return null;
@@ -265,7 +265,7 @@ public class RedisOpenServiceImpl {
             return null;
         } finally {
 //            lock.unlock();
-//            RedisConnectionUtils.releaseConnection(connection, connectionFactory);
+            RedisConnectionUtils.releaseConnection(connection, connectionFactory);
         }
     }
 
@@ -276,11 +276,12 @@ public class RedisOpenServiceImpl {
      * @return
      */
     public <T> T takeFromHead(String key,int timeout) throws InterruptedException {
-        lock.lockInterruptibly();
+//        lock.lockInterruptibly();
+        RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
+        RedisConnection connection = connectionFactory.getConnection();
         try {
             byte[] rawKey = redisTemplate.getKeySerializer().serialize(key);
-            RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
-            RedisConnection connection = connectionFactory.getConnection();
+
             List<byte[]> results = connection.bLPop(timeout, rawKey);
             if (CollectionUtils.isEmpty(results)) {
                 return null;
@@ -290,8 +291,8 @@ public class RedisOpenServiceImpl {
             log.info("获取队列信息异常:", e);
             return null;
         } finally {
-            lock.unlock();
-//            RedisConnectionUtils.releaseConnection(connection, connectionFactory);
+//            lock.unlock();
+            RedisConnectionUtils.releaseConnection(connection, connectionFactory);
         }
     }
 
