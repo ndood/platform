@@ -115,7 +115,7 @@ ALTER TABLE `t_admin` ADD COLUMN `im_pwd` varchar(128) DEFAULT NULL COMMENT 'IM�
 UPDATE `t_product` pro SET `platform_show` = (SELECT `platform_show` FROM `t_sales_mode` sm WHERE pro.sales_mode_id = sm.id) ;
 
 
--- ----2018年9月7日上线准备sql结束--------
+-- ----2018年9月7日上线sql结束--------
 
 
 
@@ -368,5 +368,89 @@ ALTER TABLE `t_dynamic_file` ADD COLUMN `height` int(11) DEFAULT '0'
 COMMENT '图片/视频高度' after `width`;
 ALTER TABLE `t_dynamic_file` ADD COLUMN `duration` int(11) DEFAULT '0'
 COMMENT '视频时长（单位秒）' after `height`;
+
+
+drop table if exists t_dynamic_push_msg;
+
+/*==============================================================*/
+/* Table: 动态push消息推送记录表                                */
+/*==============================================================*/
+create table t_dynamic_push_msg
+(
+   id                   int(11) not null auto_increment,
+   dynamic_id           int(11) comment '被关注用户id',
+   from_user_id         int(11) comment 'push消息发送用户id',
+   from_user_nickname   varchar(64) comment 'push消息发送用户昵称',
+   from_user_head_url   varchar(512) comment 'push消息发送用户头像url',
+   to_user_id           int(11) comment 'push消息接收用户id',
+   push_type            tinyint(1) comment 'push消息类型（1：点赞；2：评论；3打赏）',
+   push_content         varchar(128) comment 'push消息内容',
+   push_extras          varchar(512) comment 'push消息扩展内容',
+   create_time          datetime comment '创建时间',
+   update_time          datetime comment '修改时间',
+   is_del               tinyint(1) comment '状态（0：有效；1：无效）',
+   primary key (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='动态Push消息推送表';
+
+/* 修改banner表，添加平台属性（1：属于小程序；2：app）  */
+ALTER TABLE `t_banner` ADD COLUMN `platform_type` tinyint(1) DEFAULT '1'
+COMMENT 'banner所属平台(1:小程序;2:app)' after `operator_name`;
+update `t_banner` set platform_type = 1 where ifnull(platform_type,1) = 1
+
+
+
+
+
+
+
+-- 优惠券表修改
+ALTER TABLE `t_coupon_group` ADD COLUMN `category_id`  int(11) NOT NULL DEFAULT 1 COMMENT '限品类(1则为陪玩全品类,10为游戏全品类,11为娱乐全品类)' AFTER `is_new_user`;
+ALTER TABLE `t_coupon_group` ADD COLUMN `type`  tinyint(1) NOT NULL DEFAULT 1 COMMENT '类型(1满减，2折扣)' AFTER `category_id`;
+ALTER TABLE `t_coupon_group` ADD COLUMN `full_reduction`  decimal(11,2) NOT NULL DEFAULT 0  COMMENT '多少金额可用' AFTER `type`;
+
+ALTER TABLE `t_coupon` ADD COLUMN `category_id`  int(11) NOT NULL DEFAULT 1 COMMENT '限品类(1则为陪玩全品类,10为游戏全品类,11为娱乐全品类)' AFTER `is_new_user`;
+ALTER TABLE `t_coupon` ADD COLUMN `type`   tinyint(1) NOT NULL DEFAULT 1 COMMENT '类型(1满减，2折扣)' AFTER `category_id`;
+ALTER TABLE `t_coupon` ADD COLUMN `full_reduction`  decimal(11,2) DEFAULT 0 NOT NULL COMMENT '多少金额可用' AFTER `type`;
+
+ALTER TABLE `t_coupon` ADD COLUMN `category_name`  varchar(255) NULL COMMENT '品类名称' AFTER `category_id`;
+
+UPDATE `t_coupon_group` SET `category_id` = 1,`type`=1,`full_reduction`=0;
+UPDATE `t_coupon` SET `category_id` = 1,`type`=1,`full_reduction`=0,`category_name`='全品类';
+
+
+
+drop table if exists t_price_rule;
+/*==============================================================*/
+/* Table: 定价规则表                                */
+/*==============================================================*/
+CREATE TABLE `t_price_rule` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `category_id` int(11) NOT NULL COMMENT '类型ID',
+  `platform_show` tinyint(1) DEFAULT '3' COMMENT '显示平台(1小程序，2APP，3都显示)',
+  `order_count` int(11) DEFAULT NULL COMMENT '接单数',
+  `price` decimal(10,2) DEFAULT NULL COMMENT '价格，同时用于排序',
+  `create_time` datetime NOT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `is_del` tinyint(1) DEFAULT NULL COMMENT '删除标记（1：删除；0：正常）',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='定价规则表';
+
+
+-- 添加技能接单数
+ALTER TABLE `t_user_tech_auth` ADD COLUMN `order_count` int(11) DEFAULT '0' COMMENT '接单数' after `status`;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

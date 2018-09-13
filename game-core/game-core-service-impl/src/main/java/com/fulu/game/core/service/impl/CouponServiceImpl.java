@@ -5,6 +5,7 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Coupon;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.CouponVO;
+import com.fulu.game.core.service.CategoryService;
 import com.fulu.game.core.service.CouponService;
 import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
@@ -14,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,7 +28,8 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
     private CouponDao couponDao;
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private CategoryService categoryService;
 
     @Override
     public ICommonDao<Coupon, Integer> getDao() {
@@ -48,7 +51,7 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
 
 
     @Override
-    public List<Coupon> availableCouponList(Integer userId) {
+    public List<Coupon> availableCouponList(Integer userId,BigDecimal orderMoney,Integer categoryId) {
         List<Coupon> couponList = couponDao.findByAvailable(userId);
         List<Coupon> availableCouponList = new ArrayList<>();
         availableCouponList.addAll(couponList);
@@ -56,12 +59,18 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
             if (userService.isOldUser(userId) && coupon.getIsNewUser()) {
                 availableCouponList.remove(coupon);
             }
+            if(orderMoney!=null&&coupon.getFullReduction().compareTo(orderMoney)>0){
+                availableCouponList.remove(coupon);
+            }
+            if(categoryId!=null&&!categoryService.isInParentCategory(coupon.getCategoryId(),categoryId)){
+                availableCouponList.remove(coupon);
+            }
         }
         return availableCouponList;
     }
 
     @Override
-    public Boolean couponIsAvailable(Coupon coupon) {
+    public Boolean couponIsAvailable(Coupon coupon, BigDecimal orderMoney,int categoryId) {
         if (coupon.getIsUse()) {
             log.error("优惠券使用错误:已经使用:{}", coupon.getCouponNo());
             return false;
@@ -74,12 +83,21 @@ public class CouponServiceImpl extends AbsCommonService<Coupon, Integer> impleme
             log.error("优惠券使用错误:过期:{}", coupon.getCouponNo());
             return false;
         }
+        if(coupon.getFullReduction().compareTo(orderMoney)>0){
+            log.error("订单金额小于满减金额:{}", coupon.getCouponNo());
+            return false;
+        }
+        if(!categoryService.isInParentCategory(coupon.getCategoryId(),categoryId)){
+            log.error("优惠券品类与订单品类不符合:{}", coupon.getCouponNo());
+            return false;
+        }
         if (userService.isOldUser(coupon.getUserId()) && coupon.getIsNewUser()) {
             log.error("优惠券使用错误:不能使用新用户专享券:{}", coupon.getCouponNo());
             return false;
         }
         return true;
     }
+
 
     @Override
     public PageInfo<Coupon> listByUseStatus(Integer pageNum, Integer pageSize, Boolean isUse, Boolean overdue) {

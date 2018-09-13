@@ -14,9 +14,11 @@ public class AppRouteFactory {
 
     @Getter
     public enum RouteType{
-        OFFICIAL_NOTICE("fulu://IM_GonggaoActivity","fulu://KHOfficialNoticeViewController"), //官方公告
+        OFFICIAL_NOTICE("khpw://IM_GonggaoActivity","khpw://KHOfficialNoticeViewController"), //官方公告
         INDEX("androidRoute","iosRoute"), //首页
+        DYNAMIC("khpw://DongTaiDetailActivity","khpw://KHDynamicDetailController"), //动态
         WEBVIEW("androidRoute","iosRoute");
+
 
         private String androidRoute;
         private String iosRoute;
@@ -60,6 +62,17 @@ public class AppRouteFactory {
     }
 
     /**
+     * 消息跳转路由定义
+     * @return
+     */
+    public static Map<String,String> buildDynamicRoute(Integer dynamicId){
+        Map<String, String> map = new HashMap<>();
+        map.put("id",dynamicId + "");
+        Map<String,String> route = newRoute(RouteType.DYNAMIC,map);
+        return route;
+    }
+
+    /**
      * 创建一个路由map
      * @param routeType
      * @return
@@ -67,7 +80,7 @@ public class AppRouteFactory {
     private static Map<String,String> newRoute(RouteType routeType,Map<String,String> params){
         String paramStr = "";
         if(!params.isEmpty()){
-            paramStr = "params="+ JSONObject.toJSONString(params);
+            paramStr = "?params="+ JSONObject.toJSONString(params);
         }
         Map<String,String> route = new HashMap<>();
         route.put("androidRoute",routeType.getAndroidRoute()+paramStr);

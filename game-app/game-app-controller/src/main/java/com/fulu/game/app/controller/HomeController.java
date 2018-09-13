@@ -6,11 +6,16 @@ import com.fulu.game.app.shiro.AppUserToken;
 import com.fulu.game.app.util.RequestUtil;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.PlatformBannerEnum;
+import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
+import com.fulu.game.core.entity.Banner;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.BannerVO;
+import com.fulu.game.core.service.BannerService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -33,6 +39,9 @@ public class HomeController extends BaseController {
 
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+
+    @Autowired
+    private BannerService bannerService;
 
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -97,5 +106,19 @@ public class HomeController extends BaseController {
             redisOpenService.set(RedisKeyEnum.SMS_VERIFY_CODE_TIMES.generateKey(mobile), "1", Constant.MOBILE_CACHE_TIME);
             return Result.success().data(verifyCode).msg("验证码发送成功！");
         }
+    }
+
+    /**
+     * 获取首页banner列表接口
+     * @return
+     */
+    @PostMapping("/banner/list")
+    @ResponseBody
+    public Result list() {
+        BannerVO bannerVO = new BannerVO();
+        bannerVO.setDisable(true);
+        bannerVO.setPlatformType(PlatformBannerEnum.APP.getType());
+        List<Banner> bannerList = bannerService.findByParam(bannerVO);
+        return Result.success().data(bannerList);
     }
 }

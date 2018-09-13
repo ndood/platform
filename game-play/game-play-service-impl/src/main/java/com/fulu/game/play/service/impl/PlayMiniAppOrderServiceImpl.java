@@ -202,11 +202,11 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
         if (StringUtils.isNotBlank(couponNo)) {
             coupon = useCouponForOrder(couponNo, order);
             if (coupon == null) {
-                throw new ServiceErrorException("该优惠券不能使用!");
+                throw new OrderException(OrderException.ExceptionCode.ORDER_COUPON_NOT_USE);
             }
         }
         if (order.getUserId().equals(order.getServiceUserId())) {
-            throw new ServiceErrorException("不能给自己下单哦!");
+            throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_MYSELF);
         }
         //创建订单
         orderService.create(order);

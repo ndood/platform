@@ -6,6 +6,7 @@ import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.CategoryVO;
+import com.fulu.game.core.entity.vo.PriceRuleVO;
 import com.fulu.game.core.entity.vo.TagVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
@@ -33,6 +34,8 @@ public class CategoryController extends BaseController {
     private SalesModeService salesModeService;
     @Autowired
     private OssUtil ossUtil;
+    @Autowired
+    private PriceRuleService priceRuleService;
 
 
 
@@ -69,7 +72,7 @@ public class CategoryController extends BaseController {
      */
     @PostMapping(value = "/list-all")
     public Result listAll() {
-        List<Category> list = categoryService.findByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType(), null);
+        List<Category> list = categoryService.findByFirstPid(CategoryParentEnum.ACCOMPANY_PLAY.getType(), null);
         return Result.success().data(list);
     }
 
@@ -223,5 +226,48 @@ public class CategoryController extends BaseController {
         return Result.success().data(techValueList);
     }
 
+    /**
+     * 创建定价规则
+     **/
+    @PostMapping(value = "/price-rule/create")
+    public Result priceRuleCreate(@RequestParam(required = true) Integer categoryId,
+                            @RequestParam(required = true) Integer orderCount,
+                            @RequestParam(required = true)  BigDecimal price) {
+        PriceRule priceRule = new PriceRule();
+        priceRule.setCategoryId(categoryId);
+        priceRule.setOrderCount(orderCount);
+        priceRule.setPrice(price);
+        priceRule.setPlatformShow(3);
+        priceRule.setCreateTime(new Date());
+        priceRule.setUpdateTime(new Date());
+        priceRule.setIsDel(0);
+        priceRuleService.create(priceRule);
+        return Result.success().msg("定价规则创建成功!").data(priceRule);
+    }
+
+    /**
+     * 修改定价规则
+     **/
+    @PostMapping(value = "/price-rule/update")
+    public Result priceRuleUpdate(@RequestParam(required = true) Integer id,
+                                  @RequestParam(required = true) Integer orderCount,
+                                  @RequestParam(required = true)  BigDecimal price) {
+        PriceRule priceRule = new PriceRule();
+        priceRule.setId(id);
+        priceRule.setOrderCount(orderCount);
+        priceRule.setPrice(price);
+        priceRule.setUpdateTime(new Date());
+        priceRuleService.update(priceRule);
+        return Result.success().msg("定价规则修改成功!").data(priceRule);
+    }
+
+    /**
+     * 删除定价规则
+     **/
+    @PostMapping(value = "/price-rule/del")
+    public Result priceRuleDelete(@RequestParam(required = true) Integer id) {
+        priceRuleService.deleteById(id);
+        return Result.success().msg("定价规则删除成功!");
+    }
 
 }

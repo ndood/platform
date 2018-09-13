@@ -3,15 +3,13 @@ package com.fulu.game.common.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@Getter
 @AllArgsConstructor
-public enum FileTypeEnum implements TypeEnum<Integer>{
+@Getter
+public enum PlatformBannerEnum implements TypeEnum<Integer>{
 
-    PIC(1,"写真图片"),
-    VOICE(2,"声音"),
-    MAIN_PIC(3, "主图"),
-    VIDEO(4, "视频");
+    PLAY(1, "小程序"),
+    APP(2, "APP");
+
     private Integer type;
     private String msg;
-
 }

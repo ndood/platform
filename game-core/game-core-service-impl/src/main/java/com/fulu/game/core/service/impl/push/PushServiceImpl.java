@@ -328,6 +328,7 @@ public class PushServiceImpl implements PushService {
         PushPayload payload = PushPayload.newBuilder()
                 .setPlatform(Platform.android_ios())
                 .setAudience(audience)
+
                 .setNotification(Notification.newBuilder()
                         .setAlert(alert)
                         .addPlatformNotification(AndroidNotification.newBuilder()
@@ -338,6 +339,8 @@ public class PushServiceImpl implements PushService {
                                 .addExtras(extras).build())
                         .build())
                 .build();
+        //todo 生产环境改成true
+        payload.resetOptionsApnsProduction(false);
 
         return payload;
     }

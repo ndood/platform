@@ -2,17 +2,24 @@ package com.fulu.game.app.controller;
 
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.FileTypeEnum;
+import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.enums.UserBodyAuthStatusEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.UserBodyAuthVO;
+import com.fulu.game.core.entity.vo.AdminImLogVO;
+import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +30,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +58,8 @@ public class UserController extends BaseController {
     private AdviceService adviceService;
     @Autowired
     private UserInfoAuthFileService userInfoAuthFileService;
+    @Autowired
+    private UserCommentService commentService;
     @Autowired
     private UserBodyAuthService userBodyAuthService;
 
@@ -82,7 +93,6 @@ public class UserController extends BaseController {
 
     /**
      * 获取用户信息
-     *
      * @param userId 非必传，当未传时查询当前用户信息，否则查询所传递用户信息
      * @return
      */
@@ -95,12 +105,11 @@ public class UserController extends BaseController {
 
     /**
      * 获取用户的基础信息
-     *
      * @param userId
      * @return
      */
     @RequestMapping("info")
-    public Result getInfo(Integer userId) {
+    public Result getInfo(Integer userId){
         User user = userService.findById(userId);
         return Result.success().data(user);
     }
@@ -150,8 +159,8 @@ public class UserController extends BaseController {
         UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
         if (userInfoAuth != null) {
             // 先删除所有以前图片，然后插入
-            userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(), 1);
-            userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(), 3);
+            userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(), FileTypeEnum.PIC.getType());
+            userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(), FileTypeEnum.VIDEO.getType());
             if (userVO != null && (userVO.getPicUrls() != null || userVO.getVideoUrl() != null)) {
                 String[] picUrls = userVO.getPicUrls();
                 if (picUrls != null && picUrls.length > 0) {
@@ -159,8 +168,8 @@ public class UserController extends BaseController {
                         UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
                         userInfoAuthFile.setUrl(picUrls[i]);
                         userInfoAuthFile.setInfoAuthId(userInfoAuth.getId());
-                        userInfoAuthFile.setType(1);
-                        userInfoAuthFile.setName("相册" + 1);
+                        userInfoAuthFile.setType(FileTypeEnum.PIC.getType());
+                        userInfoAuthFile.setName("相册" + (i + 1));
                         userInfoAuthFile.setCreateTime(new Date());
                         userInfoAuthFileService.create(userInfoAuthFile);
                     }
@@ -169,7 +178,7 @@ public class UserController extends BaseController {
                     UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
                     userInfoAuthFile.setUrl(userVO.getVideoUrl());
                     userInfoAuthFile.setInfoAuthId(userInfoAuth.getId());
-                    userInfoAuthFile.setType(3);
+                    userInfoAuthFile.setType(FileTypeEnum.VIDEO.getType());
                     userInfoAuthFile.setName("视频");
                     userInfoAuthFile.setCreateTime(new Date());
                     userInfoAuthFileService.create(userInfoAuthFile);
@@ -181,8 +190,8 @@ public class UserController extends BaseController {
 
     @PostMapping(value = "online")
     public Result userOnline(@RequestParam(required = true) Boolean active, String version) {
-
-        List<AdminImLog> list = userService.userOnline(active, version);
+        
+        List<AdminImLog> list = userService.userOnline(active,version);
 
         return Result.success().data(list).msg("查询成功！");
     }
@@ -270,6 +279,8 @@ public class UserController extends BaseController {
         return Result.success().data(advice).msg("提交成功");
     }
 
+
+
     /**
      * 用户-查询余额
      * 账户金额不能从缓存取，因为存在管理员给用户加零钱缓存并未更新
@@ -305,6 +316,45 @@ public class UserController extends BaseController {
         Map<String, Object> resultMap = new HashMap<>(2);
         resultMap.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
         return Result.success().data(resultMap).msg("查询成功！");
+    }
+
+    /**
+     * 查询-用户-列表
+     * 只查陪玩师
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @PostMapping("/list")
+    public Result list(UserVO userVO,
+                       @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+                       @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
+        //只查陪玩师
+        userVO.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
+        PageInfo<UserVO> userList = userService.list(userVO, pageNum, pageSize);
+        return Result.success().data(userList).msg("查询用户列表成功！");
+    }
+
+    /**
+     * 查询陪玩师的所有评论
+     *
+     * @param pageNum
+     * @param pageSize
+     * @param serverId
+     * @return
+     */
+    @RequestMapping(value = "/comment/byserver")
+    public Result findDetailsComments(Integer pageNum,
+                                      Integer pageSize,
+                                      Integer serverId) {
+        PageInfo<UserCommentVO> page = commentService.findByServerId(pageNum, pageSize, serverId);
+        return Result.success().data(page);
+    }
+
+    @PostMapping(value = "/user-tech-page")
+    public Result getUserTechPage(){
+
+        return Result.success();
     }
 
 

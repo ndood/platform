@@ -72,7 +72,8 @@ public class PlayAdminDbConfig {
         //分页插件
         PageHelper pageHelper = new PageHelper();
         Properties properties = new Properties();
-        properties.setProperty("reasonable", "true");
+        // false: pageNum<1和大于总页数时，返回空;true: pageNum<1返回第一页，大于总页数返回最后一页
+        properties.setProperty("reasonable", "false");
         properties.setProperty("supportMethodsArguments", "true");
         properties.setProperty("returnPageInfo", "check");
         properties.setProperty("params", "count=countSql");

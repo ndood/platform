@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,9 +68,10 @@ public class CouponController extends BaseController {
      * @return 封装结果集
      */
     @PostMapping(value = "/user")
-    public Result userCoupons() {
+    public Result userCoupons( @RequestParam( required = false)BigDecimal orderMoney,
+                               @RequestParam( required = false)Integer categoryId) {
         User user = userService.getCurrentUser();
-        List<Coupon> list = couponService.availableCouponList(user.getId());
+        List<Coupon> list = couponService.availableCouponList(user.getId(),orderMoney,categoryId);
         return Result.success().data(list);
     }
 }

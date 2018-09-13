@@ -228,24 +228,33 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
      *
      * @return
      */
-    protected Coupon useCouponForOrder(String couponCode, Order order) {
-        Coupon coupon = couponService.findByCouponNo(couponCode);
+    protected Coupon useCouponForOrder(String couponNo, Order order) {
+        Coupon coupon = couponService.findByCouponNo(couponNo);
         //判断是否是自己的优惠券
         userService.isCurrentUser(coupon.getUserId());
         //判断该优惠券是否可用
-        if (!couponService.couponIsAvailable(coupon)) {
+        if (!couponService.couponIsAvailable(coupon,order.getTotalMoney(),order.getCategoryId())) {
+            log.error("该优惠券无法使用:orderNo:{},couponNo:{}",order.getOrderNo(),coupon.getCouponNo());
             return null;
         }
         order.setCouponNo(coupon.getCouponNo());
-        order.setCouponMoney(coupon.getDeduction());
-        //判断优惠券金额是否大于订单总额
-        if (coupon.getDeduction().compareTo(order.getTotalMoney()) >= 0) {
-            order.setActualMoney(new BigDecimal(0));
-            order.setCouponMoney(order.getTotalMoney());
-        } else {
-            BigDecimal actualMoney = order.getTotalMoney().subtract(coupon.getDeduction());
+        if(CouponTypeEnum.DERATE.getType().equals(coupon.getType()) ){
+            order.setCouponMoney(coupon.getDeduction());
+            //判断优惠券金额是否大于订单总额
+            if (coupon.getDeduction().compareTo(order.getTotalMoney()) >= 0) {
+                order.setActualMoney(new BigDecimal(0));
+                order.setCouponMoney(order.getTotalMoney());
+            } else {
+                BigDecimal actualMoney = order.getTotalMoney().subtract(coupon.getDeduction());
+                order.setActualMoney(actualMoney);
+            }
+        }else if(CouponTypeEnum.DISCOUNT.getType().equals(coupon.getType())){
+            BigDecimal actualMoney = order.getTotalMoney().multiply(coupon.getDeduction());
+            BigDecimal couponMoney = order.getTotalMoney().subtract(actualMoney);
+            order.setCouponMoney(couponMoney);
             order.setActualMoney(actualMoney);
         }
+
         return coupon;
     }
 

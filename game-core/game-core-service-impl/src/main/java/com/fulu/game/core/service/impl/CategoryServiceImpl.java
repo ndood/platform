@@ -49,6 +49,10 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
     @Qualifier(value = "userTechAuthServiceImpl")
     @Autowired
     private UserTechAuthServiceImpl userTechAuthService;
+
+    @Autowired
+    private PriceRuleService priceRuleService;
+
     @Override
     public ICommonDao<Category, Integer> getDao() {
         return categoryDao;
@@ -57,6 +61,7 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
     public PageInfo<Category> list(int pageNum, int pageSize) {
         return list(pageNum, pageSize, true, null);
     }
+
 
     @Override
     public PageInfo<Category> list(int pageNum, int pageSize, Boolean status, String orderBy) {
@@ -67,7 +72,8 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
             orderBy = "sort desc";
         }
         PageHelper.startPage(pageNum, pageSize, orderBy);
-        List<Category> categoryList = categoryDao.findByParameter(categoryVO);
+//        List<Category> categoryList = categoryDao.findByParameter(categoryVO);
+        List<Category> categoryList = categoryDao.findByFirstPidAndPrams(categoryVO);
         PageInfo page = new PageInfo(categoryList);
         return page;
     }
@@ -132,13 +138,20 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
             tagVOList.add(vo);
         }
         categoryVO.setGroupTags(tagVOList);
+        //设置定价规则
+        List<PriceRule> priceRuleList = priceRuleService.findByCategoryId(category.getId());
+        categoryVO.setPriceRuleList(priceRuleList);
         return categoryVO;
     }
 
 
     @Override
     public List<Category> findAllAccompanyPlayCategory() {
-        return findByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType(), true);
+        CategoryVO categoryVO = new CategoryVO();
+        categoryVO.setPid(CategoryParentEnum.ACCOMPANY_PLAY.getType());
+        categoryVO.setStatus(true);
+        return categoryDao.findByFirstPidAndPrams(categoryVO);
+//        return findByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType(), true);
     }
 
 
@@ -146,8 +159,11 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
     public Category save(CategoryVO categoryVO) {
         Category category = new Category();
         BeanUtil.copyProperties(categoryVO,category);
-        if(category.getId()==null){
+        // 如果pid不存在默认为一级分类
+        if(category != null && category.getPid() == null){
             category.setPid(CategoryParentEnum.ACCOMPANY_PLAY.getType());
+        }
+        if(category.getId()==null){
             category.setCreateTime(new Date());
             category.setUpdateTime(new Date());
             create(category);
@@ -177,6 +193,19 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
         return categoryDao.findByParameter(param);
     }
 
+    /**
+     * 通过一级分类pid查询改分类下的所有子分类
+     */
+    @Override
+    public List<Category> findByFirstPid(Integer pid,Boolean status) {
+        PageHelper.orderBy("sort desc");
+        CategoryVO categoryVO = new CategoryVO();
+        categoryVO.setPid(pid);
+        categoryVO.setStatus(status);
+        List<Category> categoryList = categoryDao.findByFirstPidAndPrams(categoryVO);
+        return categoryList;
+    }
+
 
     @Override
     public List<Category> findByPid(Integer pid, Boolean status) {
@@ -188,5 +217,20 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
         return categoryList;
     }
 
+
+    public Boolean isInParentCategory(int parentCategoryId,int categoryId){
+        if(parentCategoryId==categoryId){
+            return true;
+        }
+        Category category = findById(categoryId);
+        if(category.getPid().equals(parentCategoryId)){
+            return true;
+        }
+        Category parentCategory = findById(category.getPid());
+        if(parentCategory.getPid().equals(parentCategoryId)){
+            return true;
+        }
+        return false;
+    }
 
 }

@@ -759,12 +759,12 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             userVO.setInterests(userInfoAuth.getInterests());
             userVO.setAbout(userInfoAuth.getAbout());
             userVO.setProfession(userInfoAuth.getProfession());
-            List<UserInfoAuthFile> videoFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(), 3);
+            List<UserInfoAuthFile> videoFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(), FileTypeEnum.VIDEO.getType());
             //设置用户视频
             if (videoFiles != null && !videoFiles.isEmpty()) {
                 userVO.setVideoUrl(videoFiles.get(0).getUrl());
             }
-            List<UserInfoAuthFile> picFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(), 1);
+            List<UserInfoAuthFile> picFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(), FileTypeEnum.PIC.getType());
             //设置用户相册
             if (picFiles != null && !picFiles.isEmpty()) {
                 String[] picArr = new String[picFiles.size()];
@@ -777,6 +777,15 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             userVO.setUserProducts(productList);
             List<DynamicVO> newestDynamicList = dynamicService.getNewestDynamicList(userId);
             userVO.setNewestDynamics(newestDynamicList);
+            Integer currentUserId = getCurrentUser().getId();
+            Integer isAttention = redisOpenService.getBitSet(RedisKeyEnum.ATTENTION_USERS.generateKey(currentUserId),userId) ? 1: 0;
+            userVO.setIsAttention(isAttention);
+            //获取关注数
+            int attentions = redisOpenService.bitCount(RedisKeyEnum.ATTENTION_USERS.generateKey(userId)).intValue();
+            //获取粉丝数
+            int fans = redisOpenService.bitCount(RedisKeyEnum.ATTENTIONED_USERS.generateKey(userId)).intValue();
+            userVO.setAttentions(attentions);
+            userVO.setFans(fans);
         }
     }
 

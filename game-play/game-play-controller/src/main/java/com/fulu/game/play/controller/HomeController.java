@@ -5,6 +5,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.config.WxMaServiceSupply;
+import com.fulu.game.common.enums.PlatformBannerEnum;
 import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserException;
@@ -51,6 +52,7 @@ public class HomeController extends BaseController {
     public Result list() {
         BannerVO bannerVO = new BannerVO();
         bannerVO.setDisable(true);
+        bannerVO.setPlatformType(PlatformBannerEnum.PLAY.getType());
         List<Banner> bannerList = bannerService.findByParam(bannerVO);
         return Result.success().data(bannerList);
     }
@@ -135,7 +137,6 @@ public class HomeController extends BaseController {
             return Result.error().msg("登陆异常！");
 
         }
-
     }
 
 
@@ -167,4 +168,6 @@ public class HomeController extends BaseController {
             return Result.error().msg("测试登陆异常！");
         }
     }
+
+
 }

@@ -2,13 +2,11 @@ package com.fulu.game.core.service.impl;
 
 import com.fulu.game.common.exception.CouponException;
 import com.fulu.game.common.utils.GenIdUtil;
+import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.Coupon;
 import com.fulu.game.core.entity.CouponGroup;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.service.CouponGroupService;
-import com.fulu.game.core.service.CouponOpenService;
-import com.fulu.game.core.service.CouponService;
-import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +26,8 @@ public abstract class CouponOpenServiceImpl implements CouponOpenService{
     private UserService userService;
     @Autowired
     private CouponService couponService;
-
+    @Autowired
+    private CategoryService categoryService;
     /**
      * 发放完优惠券推送消息
      *
@@ -88,6 +87,8 @@ public abstract class CouponOpenServiceImpl implements CouponOpenService{
             throw new CouponException(CouponException.ExceptionCode.OVERDUE);
         }
         String couponNo = generateCouponNo();
+
+        Category category = categoryService.findById(couponGroup.getCategoryId());
         User user = userService.findById(userId);
         Coupon coupon = new Coupon();
         coupon.setCouponGroupId(couponGroup.getId());
@@ -96,6 +97,10 @@ public abstract class CouponOpenServiceImpl implements CouponOpenService{
         coupon.setReceiveIp(receiveIp);
         coupon.setDeduction(couponGroup.getDeduction());
         coupon.setIsNewUser(couponGroup.getIsNewUser());
+        coupon.setType(couponGroup.getType());
+        coupon.setCategoryId(couponGroup.getCategoryId());
+        coupon.setCategoryName(category.getName());
+        coupon.setFullReduction(couponGroup.getFullReduction());
         coupon.setUserId(userId);
         coupon.setMobile(user.getMobile());
         coupon.setIsUse(false);
@@ -111,7 +116,7 @@ public abstract class CouponOpenServiceImpl implements CouponOpenService{
         try {
             couponService.create(coupon);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("创建优惠券异常",e);
             log.error("无法给用户userId:{}发放优惠券，兑换码为:{}", userId, couponGroup.getRedeemCode());
             return null;
         }
