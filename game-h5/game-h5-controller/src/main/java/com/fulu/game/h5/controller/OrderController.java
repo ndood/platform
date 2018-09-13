@@ -119,8 +119,8 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/user/cancel")
     public Result userCancelOrder(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = orderService.userCancelOrder(orderNo);
-        return Result.success().data(orderVO).msg("取消订单成功!");
+        orderService.userCancelOrder(orderNo);
+        return Result.success().data(orderNo).msg("取消订单成功!");
     }
 
 
@@ -236,8 +236,8 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/user/verify")
     public Result userVerifyOrder(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = orderService.userVerifyOrder(orderNo);
-        return Result.success().data(orderVO).msg("订单验收成功!");
+        orderService.userVerifyOrder(orderNo);
+        return Result.success().data(orderNo).msg("订单验收成功!");
     }
 
 

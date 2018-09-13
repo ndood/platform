@@ -41,8 +41,5 @@ public class H5PushServiceImpl extends MiniAppPushServiceImpl {
 
     }
 
-    public void orderPay(Order order){
-        playMiniAppPushService.orderPay(order);
-    }
 
 }

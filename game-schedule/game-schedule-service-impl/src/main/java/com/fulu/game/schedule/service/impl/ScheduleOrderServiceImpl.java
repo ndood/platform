@@ -67,9 +67,9 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
         } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
             //上分订单
             playOrderShareProfitService.shareProfit(order);
-        } else if (OrderTypeEnum.H5.getType().equals(order.getType())) {
-            h5OrderShareProfitService.shareProfit(order);
-        }else {
+        }
+        //todo 分润逻辑需要按照平台来而不是订单类型
+        else {
             log.error("订单类型不匹配:{}",order);
             throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING,order.getOrderNo());
         }
@@ -86,9 +86,9 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
         } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
             //上分订单
             pointOrderShareProfitService.orderRefund(order, refundMoney);
-        } else if (OrderTypeEnum.H5.getType().equals(order.getType())) {
-            h5OrderShareProfitService.orderRefund(order,refundMoney);
-        }else {
+        }
+        //todo 退款逻辑需要按照平台来
+        else {
             log.error("订单类型不匹配:{}",order);
             throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING,order.getOrderNo());
         }

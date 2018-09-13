@@ -13,6 +13,7 @@ public enum PlatformEcoEnum implements TypeEnum<Integer> {
     MP(3, "微信公众号"),
     IOS(4, "IOS"),
     ANDROID(5, "ANDROID"),
+    FENQILE(6, "分期乐"),
     APP(45, "APP(android+ios)");
 
 

@@ -1,10 +1,7 @@
 package com.fulu.game.h5.service.impl.fenqile;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.fulu.game.common.enums.OrderStatusEnum;
-import com.fulu.game.common.enums.OrderStatusGroupEnum;
-import com.fulu.game.common.enums.OrderTypeEnum;
-import com.fulu.game.common.enums.UserTypeEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.utils.SMSUtil;
@@ -112,7 +109,8 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         //创建订单
         Order order = new Order();
         order.setName(product.getProductName() + " " + num + "*" + product.getUnit());
-        order.setType(OrderTypeEnum.H5.getType());
+        order.setType(OrderTypeEnum.PLATFORM.getType());
+        order.setPlatform(PlatformEcoEnum.FENQILE.getType());
         order.setOrderNo(generateOrderNo());
         order.setUserId(user.getId());
         order.setServiceUserId(product.getUserId());

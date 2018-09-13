@@ -81,7 +81,7 @@ public interface OrderOpenService {
      * @param orderNo
      * @return
      */
-    OrderVO serverCancelOrder(String orderNo);
+    String serverCancelOrder(String orderNo);
 
     /**
      * 用户取消订单
@@ -89,7 +89,7 @@ public interface OrderOpenService {
      * @param orderNo
      * @return
      */
-    OrderVO userCancelOrder(String orderNo);
+    String userCancelOrder(String orderNo);
 
     /**
      * 用户订单申诉
@@ -106,7 +106,7 @@ public interface OrderOpenService {
      * @param orderNo
      * @return
      */
-    OrderVO serverAcceptanceOrder(String orderNo, String remark, String[] fileUrl);
+    String serverAcceptanceOrder(String orderNo, String remark, String[] fileUrl);
 
     /**
      * 用户验收订单
@@ -114,7 +114,7 @@ public interface OrderOpenService {
      * @param orderNo
      * @return
      */
-    OrderVO userVerifyOrder(String orderNo);
+    String userVerifyOrder(String orderNo);
 
 
     /**

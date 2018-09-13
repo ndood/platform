@@ -16,6 +16,7 @@ import com.fulu.game.core.entity.vo.OrderEventVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
+import com.fulu.game.core.service.impl.push.IBusinessPushService;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -94,7 +95,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
      *
      * @return
      */
-    protected abstract MiniAppPushServiceImpl getMinAppPushService();
+    protected abstract IBusinessPushService getMinAppPushService();
 
 
     /**
@@ -526,7 +527,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
      */
     @Override
     @UserScore(type = UserScoreEnum.SERVICE_USER_CANCEL_ORDER)
-    public OrderVO serverCancelOrder(String orderNo) {
+    public String serverCancelOrder(String orderNo) {
         log.info("陪玩师取消订单orderNo:{}", orderNo);
         Order order = orderService.findByOrderNo(orderNo);
         userService.isCurrentUser(order.getServiceUserId());
@@ -548,7 +549,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         
         //发送邮件
         MailUtil.sendMail(configProperties.getOrdermail().getAddress(),configProperties.getOrdermail().getPassword(),"陪玩师取消了订单："+orderNo,"陪玩师取消了订单，订单号"+orderNo,new String[]{configProperties.getOrdermail().getAddress()});
-        return orderConvertVo(order);
+        return orderNo;
     }
     
     
@@ -561,7 +562,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
      */
     @Override
     @UserScore(type = UserScoreEnum.USER_CANCEL_ORDER)
-    public OrderVO userCancelOrder(String orderNo) {
+    public String userCancelOrder(String orderNo) {
         log.info("用户取消订单orderNo:{}", orderNo);
         Order order = orderService.findByOrderNo(orderNo);
         userService.isCurrentUser(order.getUserId());
@@ -584,7 +585,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
             getMinAppPushService().cancelOrderByUser(order);
         }
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
-        return orderConvertVo(order);
+        return orderNo;
     }
 
 
@@ -635,7 +636,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
      * @return
      */
     @Override
-    public OrderVO serverAcceptanceOrder(String orderNo, String remark, String[] fileUrl) {
+    public String serverAcceptanceOrder(String orderNo, String remark, String[] fileUrl) {
         log.info("打手提交验收订单orderNo:{}", orderNo);
         Order order = orderService.findByOrderNo(orderNo);
         userService.isCurrentUser(order.getServiceUserId());
@@ -652,7 +653,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         orderEventService.createCheckEvent(order, user, remark, fileUrl);
         //推送通知
         getMinAppPushService().checkOrder(order);
-        return orderConvertVo(order);
+        return orderNo;
     }
 
     /**
@@ -662,7 +663,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
      * @return
      */
     @Override
-    public OrderVO userVerifyOrder(String orderNo) {
+    public String userVerifyOrder(String orderNo) {
         log.info("用户验收订单orderNo:{}", orderNo);
         Order order = orderService.findByOrderNo(orderNo);
         userService.isCurrentUser(order.getUserId());
@@ -678,7 +679,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         //确认服务
         getMinAppPushService().acceptOrder(order);
-        return orderConvertVo(order);
+        return orderNo;
     }
 
 

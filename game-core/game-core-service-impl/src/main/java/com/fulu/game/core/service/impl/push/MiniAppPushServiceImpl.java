@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
+public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements IBusinessPushService{
 
     @Autowired
     private UserService userService;
@@ -169,7 +169,16 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
                 WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
     }
 
-
+    /**
+     * 订单支付
+     * @param order
+     */
+    public void orderPay(Order order) {
+        push(order.getServiceUserId(),
+                order,
+                WechatTemplateMsgEnum.ORDER_TOSERVICE_PAY,
+                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
+    }
     /**
      * 用户验收订单
      *

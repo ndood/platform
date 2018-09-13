@@ -42,8 +42,6 @@ public class AdminPushServiceImpl extends PushServiceImpl {
                     order,
                     WechatTemplateIdEnum.POINT_SERVICE_PROCESS_NOTICE,
                     WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_USER_WIN);
-        } else if (OrderTypeEnum.H5.getType().equals(order.getType())) {
-            pushWechatTemplateMsg(PlatformEcoEnum.POINT.getType(), order.getServiceUserId(), WechatTemplateIdEnum.POINT_LEAVE_MSG, WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_USER_WIN.getPage().getPointPagePath(), WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_USER_WIN.getContent());
         }
     }
 
@@ -75,10 +73,6 @@ public class AdminPushServiceImpl extends PushServiceImpl {
                     order,
                     WechatTemplateIdEnum.POINT_SERVICE_PROCESS_NOTICE,
                     WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_SERVICE_WIN);
-        } else if (OrderTypeEnum.H5.getType().equals(order.getType())) {
-            //todo 给用户发送仲裁短信
-            pushWechatTemplateMsg(PlatformEcoEnum.POINT.getType(), order.getServiceUserId(), WechatTemplateIdEnum.POINT_LEAVE_MSG, WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_SERVICE_WIN.getPage().getPointPagePath(), WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_SERVICE_WIN.getContent());
-
         }
     }
 
@@ -115,9 +109,6 @@ public class AdminPushServiceImpl extends PushServiceImpl {
                     WechatTemplateIdEnum.POINT_SERVICE_PROCESS_NOTICE,
                     WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE,
                     msg);
-        } else if (OrderTypeEnum.H5.getType().equals(order.getType())) {
-            //todo 给用户发送仲裁短信
-            pushWechatTemplateMsg(PlatformEcoEnum.POINT.getType(), order.getServiceUserId(), WechatTemplateIdEnum.POINT_LEAVE_MSG, WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE.getPage().getPointPagePath(), WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE.getContent(), msg);
         }
     }
 

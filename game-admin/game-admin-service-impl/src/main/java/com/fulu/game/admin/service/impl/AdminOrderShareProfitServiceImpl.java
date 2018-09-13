@@ -40,9 +40,9 @@ public class AdminOrderShareProfitServiceImpl extends OrderShareProfitServiceImp
             return playOrderShareProfitService.refund(order, actualMoney, refundUserMoney);
         } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
             return pointOrderShareProfitService.refund(order, actualMoney, refundUserMoney);
-        }else if (OrderTypeEnum.H5.getType().equals(order.getType())) {
-            return h5OrderShareProfitService.refund(order, actualMoney, refundUserMoney);
-        }else {
+        }
+        //todo 后台退款应该按照平台来而不是订单类型
+        else {
             log.error("订单类型不匹配:{}",order);
             throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING,order.getOrderNo());
         }
