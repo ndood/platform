@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.RedisConnectionUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.Date;
 import java.util.List;
@@ -35,6 +36,9 @@ public class RedisOpenServiceImpl {
     private static Lock lock = new ReentrantLock();//基于底层IO阻塞考虑
     @Autowired
     private RedisTemplate redisTemplate;
+
+    private static RedisConnectionFactory connectionFactory;
+    private static RedisConnection connection;
 
     /**
      * 获取某个key的值
@@ -250,11 +254,11 @@ public class RedisOpenServiceImpl {
      * @return
      */
     public <T> T takeFromTail(String key, int timeout) throws InterruptedException {
-//        lock.lockInterruptibly();
-        RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
-        RedisConnection connection = connectionFactory.getConnection();
         try {
             byte[] rawKey = redisTemplate.getKeySerializer().serialize(key);
+            while(connection == null){
+                init();
+            }
             List<byte[]> results = connection.bRPop(timeout, rawKey);
             if (CollectionUtils.isEmpty(results)) {
                 return null;
@@ -263,9 +267,6 @@ public class RedisOpenServiceImpl {
         } catch (Exception e) {
             log.error("获取队列信息异常:", e);
             return null;
-        } finally {
-//            lock.unlock();
-            RedisConnectionUtils.releaseConnection(connection, connectionFactory);
         }
     }
 
@@ -276,12 +277,11 @@ public class RedisOpenServiceImpl {
      * @return
      */
     public <T> T takeFromHead(String key,int timeout) throws InterruptedException {
-//        lock.lockInterruptibly();
-        RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
-        RedisConnection connection = connectionFactory.getConnection();
         try {
             byte[] rawKey = redisTemplate.getKeySerializer().serialize(key);
-
+            while(connection == null){
+                init();
+            }
             List<byte[]> results = connection.bLPop(timeout, rawKey);
             if (CollectionUtils.isEmpty(results)) {
                 return null;
@@ -290,17 +290,19 @@ public class RedisOpenServiceImpl {
         } catch (Exception e) {
             log.info("获取队列信息异常:", e);
             return null;
-        } finally {
-//            lock.unlock();
-            RedisConnectionUtils.releaseConnection(connection, connectionFactory);
         }
+    }
+
+    @PostConstruct
+    private void init() {
+        log.info("获取一个redis连接");
+        connectionFactory = redisTemplate.getConnectionFactory();
+        connection = connectionFactory.getConnection();
     }
 
     @PreDestroy
     public void destroy() {
-        RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
-        RedisConnection connection = connectionFactory.getConnection();
-        log.info("关闭redis连结");
+        log.info("归还redis连接");
         RedisConnectionUtils.releaseConnection(connection, connectionFactory);
     }
 }
