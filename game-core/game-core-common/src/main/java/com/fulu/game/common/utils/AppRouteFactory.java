@@ -14,9 +14,9 @@ public class AppRouteFactory {
 
     @Getter
     public enum RouteType{
-        OFFICIAL_NOTICE("fulu://IM_GonggaoActivity","fulu://KHOfficialNoticeViewController"), //官方公告
+        OFFICIAL_NOTICE("khpw://IM_GonggaoActivity","khpw://KHOfficialNoticeViewController"), //官方公告
         INDEX("androidRoute","iosRoute"), //首页
-        DYNAMIC("fulu://DongTaiDetailActivity","fulu://KHDynamicDetailController"), //动态
+        DYNAMIC("khpw://DongTaiDetailActivity","khpw://KHDynamicDetailController"), //动态
         WEBVIEW("androidRoute","iosRoute");
 
 
