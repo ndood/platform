@@ -190,6 +190,18 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
     }
 
     @Override
+    public BigDecimal monthIncome(Integer targetId) {
+        Date startTime = DateUtil.beginOfMonth(new Date());
+        Date endTime = DateUtil.endOfMonth(new Date());
+        List<MoneyDetails> moneyDetailsList = findUserMoneyByAction(targetId, startTime, endTime);
+        BigDecimal sum = new BigDecimal(0);
+        for (MoneyDetails moneyDetails : moneyDetailsList) {
+            sum = sum.add(moneyDetails.getMoney());
+        }
+        return sum;
+    }
+
+    @Override
     public PageInfo<MoneyDetails> listUserDetails(MoneyDetailsVO moneyDetailsVO, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize, "create_time desc");
         List<MoneyDetails> list = moneyDetailsDao.findByParameter(moneyDetailsVO);
