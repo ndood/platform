@@ -39,12 +39,13 @@ public class UserScoreContainer extends RedisTaskContainer {
 
     @PostConstruct
     private void init() {
+        redisQueue = new RedisQueue<UserScoreDetails>(USER_SCORE_QUEQUE, redisOpenService);
+
         if (!configProperties.getQueue().isUserScore()) {
             log.info("无需开启用户积分队列线程");
             es.shutdown();
             return;
         }
-        redisQueue = new RedisQueue<UserScoreDetails>(USER_SCORE_QUEQUE, redisOpenService);
 
         Consumer<UserScoreDetails> consumer = (data) -> {
             process(data);

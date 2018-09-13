@@ -35,13 +35,12 @@ public class AppPushContainer extends RedisTaskContainer {
 
     @PostConstruct
     private void init() {
+        redisQueue = new RedisQueue<AppPushMsgVO>(APP_PUSH_QUEQUE, redisOpenService);
         if (!configProperties.getQueue().isMiniappPush()) {
-            log.info("无需开启小程序推送队列线程");
+            log.info("无需开启小程序推送队列消费线程");
             es.shutdown();
             return;
         }
-        redisQueue = new RedisQueue<AppPushMsgVO>(APP_PUSH_QUEQUE, redisOpenService);
-
         Consumer<AppPushMsgVO> consumer = (data) -> {
             // do something
             process(data);
