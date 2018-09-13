@@ -1,7 +1,10 @@
 package com.fulu.game.app.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Result;
+import com.fulu.game.core.entity.DynamicPushMsg;
 import com.fulu.game.core.entity.PushMsg;
+import com.fulu.game.core.service.DynamicPushMsgService;
 import com.fulu.game.core.service.PushMsgService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +25,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class PushMsgController extends BaseController {
 
     private final PushMsgService pushMsgService;
+    private final DynamicPushMsgService dynamicPushMsgService;
+
 
     @Autowired
-    public PushMsgController(PushMsgService pushMsgService) {
+    public PushMsgController(PushMsgService pushMsgService,DynamicPushMsgService dynamicPushMsgService) {
         this.pushMsgService = pushMsgService;
+        this.dynamicPushMsgService = dynamicPushMsgService;
     }
 
     /**
@@ -52,4 +58,20 @@ public class PushMsgController extends BaseController {
         PushMsg pushMsg = pushMsgService.newOfficialNotice();
         return Result.success().data(pushMsg).msg("查询成功！");
     }
+
+    /**
+     * 获取各种消息的最新的一条
+     *
+     * @return 封装结果集
+     */
+    @RequestMapping("/kinds-msg-newest")
+    public Result newPush() {
+        JSONObject result = new JSONObject();
+        PushMsg officialPushMsg = pushMsgService.newOfficialNotice();
+        result.put("official", officialPushMsg);
+        DynamicPushMsg dynamicPushMsg = dynamicPushMsgService.newDynamicPushMsg();
+        result.put("dynamic", dynamicPushMsg);
+        return Result.success().data(result).msg("查询成功！");
+    }
+
 }

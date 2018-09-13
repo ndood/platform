@@ -51,4 +51,18 @@ public class DynamicPushMsgServiceImpl extends AbsCommonService<DynamicPushMsg,I
         List<DynamicPushMsg> list = dynamicPushMsgDao.findByParameter(dynamicPushMsgVO);
         return new PageInfo<>(list);
     }
+
+    /**
+     * 获取最新一条动态push消息
+     *
+     * @return
+     */
+    @Override
+    public DynamicPushMsg newDynamicPushMsg() {
+        DynamicPushMsgVO dynamicPushMsgVO = new DynamicPushMsgVO();
+        User user = userService.getCurrentUser();
+        dynamicPushMsgVO.setToUserId(user.getId());
+        DynamicPushMsg dynamicPushMsg = dynamicPushMsgDao.newDynamicPushMsg(dynamicPushMsgVO);
+        return dynamicPushMsg;
+    }
 }
