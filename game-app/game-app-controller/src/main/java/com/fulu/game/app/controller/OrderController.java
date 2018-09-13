@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 
 @RestController
 @Slf4j
@@ -45,7 +46,7 @@ public class OrderController extends BaseController {
         }
         try {
             String ip = RequestUtil.getIpAdrress(request);
-            String orderNo = appOrderServiceImpl.submit(productId, num,payment,remark,couponNo,ip);
+            String orderNo = appOrderServiceImpl.submit(productId, num,payment,new Date(),remark,couponNo,ip);
             return Result.success().data(orderNo).msg("创建订单成功!");
         } finally {
             redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));
