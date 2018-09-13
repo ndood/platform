@@ -4,8 +4,11 @@ package com.fulu.game.app.controller;
 import com.fulu.game.app.service.impl.AppOrderServiceImpl;
 import com.fulu.game.app.util.RequestUtil;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.domain.ClientInfo;
+import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.DataException;
+import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
@@ -35,6 +38,7 @@ public class OrderController extends BaseController {
     public Result submit(@RequestParam(required = true) Integer productId,
                          @RequestParam(required = true) Integer num,
                          @RequestParam(required = true) Integer payment,
+                         @RequestParam(required = true) Date beginTime,
                          String couponNo,
                          @RequestParam(required = true) String sessionkey,
                          String remark,
@@ -45,8 +49,16 @@ public class OrderController extends BaseController {
             throw new DataException(DataException.ExceptionCode.NO_FORM_TOKEN_ERROR);
         }
         try {
+
+            ClientInfo clientInfo =  SubjectUtil.getUserClientInfo();
+            int platform ;
+            if(clientInfo.get_platform().equalsIgnoreCase("ios")){
+                platform = PlatformEcoEnum.IOS.getType();
+            }else{
+                platform = PlatformEcoEnum.ANDROID.getType();
+            }
             String ip = RequestUtil.getIpAdrress(request);
-            String orderNo = appOrderServiceImpl.submit(productId, num,payment,new Date(),remark,couponNo,ip);
+            String orderNo = appOrderServiceImpl.submit(productId, num,payment,platform,beginTime,remark,couponNo,ip);
             return Result.success().data(orderNo).msg("创建订单成功!");
         } finally {
             redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));

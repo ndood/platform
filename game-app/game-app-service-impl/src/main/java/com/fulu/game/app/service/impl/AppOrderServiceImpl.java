@@ -1,6 +1,8 @@
 package com.fulu.game.app.service.impl;
 
 
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.enums.OrderTypeEnum;
 import com.fulu.game.common.exception.OrderException;
@@ -11,7 +13,6 @@ import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.cms.PasswordRecipientId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,7 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
     public String submit(int productId,
                          int num,
                          int payment,
+                         int platform,
                          Date beginTime,
                          String remark,
                          String couponNo,
@@ -64,6 +66,7 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
         order.setRemark(remark);
         order.setBeginTime(beginTime);
         order.setPayment(payment);
+        order.setPlatform(platform);
         order.setIsPay(false);
         order.setIsPayCallback(false);
         order.setTotalMoney(totalMoney);
@@ -93,8 +96,10 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
         }
         //创建订单商品
         orderProductService.create(order, product, num);
+
+        int countdownMinute = waitForPayTime(order.getCreateTime(),beginTime);
         //计算订单状态倒计时24小时
-        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
+        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), countdownMinute);
 
         return order.getOrderNo();
     }
@@ -118,6 +123,29 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
     @Override
     protected MiniAppPushServiceImpl getMinAppPushService() {
         return null;
+    }
+
+
+
+
+
+    /**
+     * 待支付倒计时时间
+     * @param orderTime
+     * @param beginTime
+     * @return
+     */
+    private int waitForPayTime(Date orderTime, Date beginTime) {
+        int timeMinute = 30;
+        Long minute = DateUtil.between(orderTime, beginTime, DateUnit.MINUTE);
+        if (minute > 30) {
+            timeMinute = 30;
+        } else if (minute < 5) {
+            timeMinute = 5;
+        } else {
+            Integer.valueOf(minute + "");
+        }
+        return timeMinute;
     }
 
 }
