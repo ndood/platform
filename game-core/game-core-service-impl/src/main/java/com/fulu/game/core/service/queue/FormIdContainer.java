@@ -34,12 +34,13 @@ public class FormIdContainer extends RedisTaskContainer {
 
     @PostConstruct
     private void init() {
+        redisQueue = new RedisQueue<WechatFormid>(MINI_APP_FORMID_QUEQUE, redisOpenService);
+
         if (!configProperties.getQueue().isFormId()) {
-            log.info("无需开启小程序formId收集队列线程");
+            log.info("无需开启小程序formId收集队列消费线程");
             es.shutdown();
             return;
         }
-        redisQueue = new RedisQueue<WechatFormid>(MINI_APP_FORMID_QUEQUE, redisOpenService);
 
         Consumer<WechatFormid> consumer = (data) -> {
             process(data);

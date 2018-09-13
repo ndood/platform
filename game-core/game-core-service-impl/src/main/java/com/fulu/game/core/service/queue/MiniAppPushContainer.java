@@ -38,14 +38,13 @@ public class MiniAppPushContainer extends RedisTaskContainer {
 
     @PostConstruct
     private void init() {
-        log.info("play小程序推送队列线程");
+        redisQueue = new RedisQueue<WxMaTemplateMessageVO>(MINI_APP_PUSH_QUEQUE, redisOpenService);
+
         if (!configProperties.getQueue().isMiniappPush()) {
-            log.info("无需开启小程序推送队列线程");
+            log.info("无需开启小程序推送队列消费线程");
             es.shutdown();
             return;
         }
-        log.info("play小程序已经开启了推送队列线程");
-        redisQueue = new RedisQueue<WxMaTemplateMessageVO>(MINI_APP_PUSH_QUEQUE, redisOpenService);
         Consumer<WxMaTemplateMessageVO> consumer = (data) -> {
             process(data);
         };

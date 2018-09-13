@@ -267,7 +267,7 @@ public class RedisOpenServiceImpl {
      * @return
      */
     public <T> T takeFromTail(String key, int timeout) throws InterruptedException {
-        lock.lockInterruptibly();
+//        lock.lockInterruptibly();
         RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
         RedisConnection connection = connectionFactory.getConnection();
         try {
@@ -281,7 +281,7 @@ public class RedisOpenServiceImpl {
             log.error("获取队列信息异常:", e);
             return null;
         } finally {
-            lock.unlock();
+//            lock.unlock();
             RedisConnectionUtils.releaseConnection(connection, connectionFactory);
         }
     }
@@ -293,11 +293,12 @@ public class RedisOpenServiceImpl {
      * @return
      */
     public <T> T takeFromHead(String key,int timeout) throws InterruptedException {
-        lock.lockInterruptibly();
+//        lock.lockInterruptibly();
         RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
         RedisConnection connection = connectionFactory.getConnection();
         try {
             byte[] rawKey = redisTemplate.getKeySerializer().serialize(key);
+
             List<byte[]> results = connection.bLPop(timeout, rawKey);
             if (CollectionUtils.isEmpty(results)) {
                 return null;
@@ -307,7 +308,7 @@ public class RedisOpenServiceImpl {
             log.info("获取队列信息异常:", e);
             return null;
         } finally {
-            lock.unlock();
+//            lock.unlock();
             RedisConnectionUtils.releaseConnection(connection, connectionFactory);
         }
     }
