@@ -211,7 +211,7 @@
                 and t1.update_time = #{updateTime}
             </if>
             <if test="nickName != null">
-                and t2.nickname = #{nickName}
+                and t2.nickname like '%${nickName}%' 
             </if>
             <if test="mobile != null">
                 and t2.mobile = #{mobile}
