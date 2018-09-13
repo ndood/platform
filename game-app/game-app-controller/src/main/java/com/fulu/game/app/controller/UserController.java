@@ -4,9 +4,11 @@ import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.UserBodyAuthStatusEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.vo.UserBodyAuthVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
@@ -39,10 +41,6 @@ public class UserController extends BaseController {
     @Autowired
     private OssUtil ossUtil;
     @Autowired
-    private RedisOpenServiceImpl redisOpenService;
-    @Autowired
-    private AdminImLogService adminImLogService;
-    @Autowired
     private ImService imService;
     @Qualifier(value = "userTechAuthServiceImpl")
     @Autowired
@@ -51,6 +49,8 @@ public class UserController extends BaseController {
     private AdviceService adviceService;
     @Autowired
     private UserInfoAuthFileService userInfoAuthFileService;
+    @Autowired
+    private UserBodyAuthService userBodyAuthService;
 
 
     /**
@@ -305,5 +305,42 @@ public class UserController extends BaseController {
         Map<String, Object> resultMap = new HashMap<>(2);
         resultMap.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
         return Result.success().data(resultMap).msg("查询成功！");
+    }
+
+
+    /**
+     * 用户-提交用户认证信息
+     *
+     * @return
+     */
+    @PostMapping("/body-auth/save")
+    public Result getUserAuthStatus(String userName, String cardNo, String cardUrl, String cardHandUrl) {
+        User user = userService.getCurrentUser();
+        UserBodyAuthVO uba = new UserBodyAuthVO();
+        uba.setUserId(user.getId());
+        uba.setUserName(userName);
+        uba.setCardNo(cardNo);
+        uba.setCardUrl(ossUtil.activateOssFile(cardUrl));
+        uba.setCardHandUrl(ossUtil.activateOssFile(cardHandUrl));
+        uba.setAuthStatus(UserBodyAuthStatusEnum.NO_AUTH.getType());
+        uba.setCreateTime(new Date());
+
+        userBodyAuthService.submitUserBodyAuthInfo(uba);
+
+        return Result.success().msg("提交成功！");
+    }
+
+    /**
+     * 用户-获取用户认证信息
+     *
+     * @return
+     */
+    @PostMapping("/body-auth/get")
+    public Result getUserAuthInfo() {
+        User user = userService.getCurrentUser();
+
+        UserBodyAuth authInfo = userBodyAuthService.getUserAuthInfo(user.getId());
+
+        return Result.success().data(authInfo).msg("查询成功！");
     }
 }
