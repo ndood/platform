@@ -35,6 +35,11 @@ public class ProductDetailsVO {
     private String description;
     //订单数
     private int orderCount;
+    //技能认证提交图标
+    private String gradePicUrl;
+
+    //是否已关注（1：已关注；0：未关注）
+    private Integer isAttention;
 
     //技能标签
     private List<String> techTags;

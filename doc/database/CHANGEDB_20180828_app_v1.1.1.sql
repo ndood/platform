@@ -384,7 +384,7 @@ create table t_dynamic_push_msg
    from_user_head_url   varchar(512) comment 'push消息发送用户头像url',
    to_user_id           int(11) comment 'push消息接收用户id',
    push_type            tinyint(1) comment 'push消息类型（1：点赞；2：评论；3打赏）',
-   push_content         varchar(128) comment 'push消息内容',
+   push_content         varchar(256) comment 'push消息内容',
    push_extras          varchar(512) comment 'push消息扩展内容',
    create_time          datetime comment '创建时间',
    update_time          datetime comment '修改时间',

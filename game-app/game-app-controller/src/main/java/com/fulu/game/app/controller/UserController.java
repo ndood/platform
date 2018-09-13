@@ -351,13 +351,6 @@ public class UserController extends BaseController {
         return Result.success().data(page);
     }
 
-    @PostMapping(value = "/user-tech-page")
-    public Result getUserTechPage(){
-
-        return Result.success();
-    }
-
-
     /**
      * 用户-提交用户认证信息
      *

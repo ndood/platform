@@ -437,6 +437,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      */
     @Override
     public ProductDetailsVO findDetailsByProductId(Integer productId) {
+        User user = userService.getCurrentUser();
         Product product = findById(productId);
         if (product == null) {
             throw new ProductException(ProductException.ExceptionCode.PRODUCT_NOT_EXIST);
@@ -454,6 +455,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         UserTechAuth userTechAuth = userTechAuthService.findById(product.getTechAuthId());
         //查询完成订单数
         int orderCount = orderService.allOrderCount(userInfo.getUserId());
+        int isAttention = redisOpenService.getBitSet(RedisKeyEnum.ATTENTION_USERS.generateKey(user.getId()),product.getUserId()) ? 1: 0;
         //查询用户段位信息
         ProductDetailsVO productDetailsVO = ProductDetailsVO.builder()
                                         .categoryId(product.getCategoryId())
@@ -469,6 +471,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                                         .orderCount(orderCount)
                                         .techTags(techTags)
                                         .otherProduct(productVOList)
+                                        .gradePicUrl(userTechAuth.getGradePicUrl())
+                                        .isAttention(isAttention)
                                         .build();
 
         UserTechInfo userTechInfo = userTechAuthService.findDanInfo(product.getTechAuthId());

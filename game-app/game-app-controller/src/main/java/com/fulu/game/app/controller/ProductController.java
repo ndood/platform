@@ -3,6 +3,7 @@ package com.fulu.game.app.controller;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.ProductDetailsVO;
 import com.fulu.game.core.service.ProductService;
 import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageInfo;
@@ -43,6 +44,18 @@ public class ProductController extends BaseController {
         }
         List<Product> list = productService.findAppProductList(userId);
         return Result.success().data(list);
+    }
+
+    /**
+     * 查询用户商品详情页
+     *
+     * @param productId
+     * @return
+     */
+    @RequestMapping(value = "/details")
+    public Result findByProductId(Integer productId) {
+        ProductDetailsVO productDetailsVO = productService.findDetailsByProductId(productId);
+        return Result.success().data(productDetailsVO);
     }
 
 }
