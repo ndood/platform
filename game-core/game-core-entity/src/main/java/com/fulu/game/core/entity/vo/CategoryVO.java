@@ -29,4 +29,13 @@ public class CategoryVO extends Category {
 
     // 分类对应定价规则表
     private List<PriceRule> priceRuleList;
+
+    // 认证状态（0：未认证；1：审核中；2：被拒绝）
+    private Integer authStatus;
+    // 认证状态对应描述（0：未认证；1：审核中；2：被拒绝）
+    private String authStatusStr;
+    // 被拒绝原因
+    private String reason;
+    // 子分类集合
+    private List<CategoryVO> childCategoryList;
 }

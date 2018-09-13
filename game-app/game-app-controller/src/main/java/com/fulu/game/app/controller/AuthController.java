@@ -1,12 +1,18 @@
 package com.fulu.game.app.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.CategoryAuthStatusEnum;
+import com.fulu.game.common.enums.CategoryParentEnum;
+import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.to.UserTechAuthTO;
+import com.fulu.game.core.entity.vo.CategoryVO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
 import com.fulu.game.core.service.*;
@@ -42,6 +48,8 @@ public class AuthController extends BaseController {
     private UserTechAuthServiceImpl userTechAuthService;
     @Autowired
     private UserTechAuthRejectService userTechAuthRejectService;
+    @Autowired
+    private CategoryService categoryService;
 
 
 
@@ -164,5 +172,92 @@ public class AuthController extends BaseController {
         return Result.success().data(userTechAuthTO);
     }
 
+
+    /**
+     * 申请资质认证页
+     *
+     * @return
+     */
+    @PostMapping(value = "/apply-auth-home")
+    public Result userAuthHome() {
+        // 1、获取用户认证状态；
+        User user = userService.findById(userService.getCurrentUser().getId());
+        //如果是用户冻结状态给错误提示
+        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
+            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE);
+        }
+        Integer authStatus = user.getUserInfoAuth();
+        UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
+        if (userInfoAuth == null) {
+            authStatus = -1;
+        }
+        String reason = "";
+        UserInfoAuthReject userInfoAuthReject = userInfoAuthRejectService.findLastRecordByUserId(user.getId(), authStatus);
+        if (userInfoAuthReject != null) {
+            reason = userInfoAuthReject.getReason();
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("authStatus", authStatus);
+        map.put("reason", reason);
+        // 2、获取用户已认证技能列表
+        List<UserTechAuth> techAuthList = userTechAuthService.findByUserId(user.getId());
+        List<UserTechAuthVO> userTechAuthVOList = new ArrayList<>();
+        Map<String, UserTechAuthVO> authTechMap = new HashMap<>();
+        for (UserTechAuth userTechAuth : techAuthList) {
+            UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
+            BeanUtil.copyProperties(userTechAuth, userTechAuthVO);
+            UserTechAuthReject techAuthReject = userTechAuthRejectService.findLastRecordByTechAuth(userTechAuth.getId(), userTechAuth.getStatus());
+            if (techAuthReject != null) {
+                userTechAuthVO.setReason(techAuthReject.getReason());
+            }
+            //认证通过的才放入集合中
+            if(userTechAuthVO.getStatus() != null && userTechAuthVO.getStatus().intValue() == TechAuthStatusEnum.NORMAL.getType()){
+                userTechAuthVOList.add(userTechAuthVO);
+            }
+            authTechMap.put(userTechAuthVO.getCategoryId() + "",userTechAuthVO);
+        }
+        map.put("userTechAuthList",userTechAuthVOList);
+        JSONArray categoryGroupList = new JSONArray();
+        // 3、获取用户可认证列表
+        List<Category> list = categoryService.findByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType(),true);
+        if(list != null && list.size() > 0){
+            for(Category category: list){
+                CategoryVO categoryVO = new CategoryVO();
+                List<CategoryVO> childCategoryList = new ArrayList<>();
+                BeanUtil.copyProperties(category, categoryVO);
+                List<Category> childList = categoryService.findByPid(category.getId(),true);
+                String key = "";
+                for(Category childCategory: childList){
+                    CategoryVO childCategoryVO = new CategoryVO();
+                    BeanUtil.copyProperties(childCategory, childCategoryVO);
+                    key = childCategory.getId() + "";
+                    if(authTechMap.containsKey(key) && authTechMap.get(key) != null &&
+                            authTechMap.get(key).getStatus().intValue() == TechAuthStatusEnum.NORMAL.getType()){ //已认证
+                        continue;
+                    } else if(authTechMap.containsKey(key) && authTechMap.get(key) != null &&
+                            authTechMap.get(key).getStatus().intValue() == TechAuthStatusEnum.AUTHENTICATION_ING.getType()){//审核中
+                        childCategoryVO.setAuthStatus(CategoryAuthStatusEnum.AUTHING.getType());
+                        childCategoryVO.setAuthStatusStr(CategoryAuthStatusEnum.AUTHING.getMsg());
+                    } else if(authTechMap.containsKey(key) && authTechMap.get(key) != null &&
+                            authTechMap.get(key).getStatus().intValue() == TechAuthStatusEnum.NO_AUTHENTICATION.getType() ){//被拒绝
+                        childCategoryVO.setAuthStatus(CategoryAuthStatusEnum.REFUSED.getType());
+                        childCategoryVO.setAuthStatusStr(CategoryAuthStatusEnum.REFUSED.getMsg());
+                        childCategoryVO.setReason(authTechMap.get(key).getReason());
+                    } else {
+                        childCategoryVO.setAuthStatus(CategoryAuthStatusEnum.UNAUTH.getType());
+                        childCategoryVO.setAuthStatusStr(CategoryAuthStatusEnum.UNAUTH.getMsg());
+                    }
+                    childCategoryList.add(childCategoryVO);
+                }
+                // 如果子分类存在，才需添加
+                if(childCategoryList != null && childCategoryList.size() > 0){
+                    categoryVO.setChildCategoryList(childCategoryList);
+                    categoryGroupList.add(categoryVO);
+                }
+            }
+        }
+        map.put("techGroupList",categoryGroupList);
+        return Result.success().data(map);
+    }
 
 }
