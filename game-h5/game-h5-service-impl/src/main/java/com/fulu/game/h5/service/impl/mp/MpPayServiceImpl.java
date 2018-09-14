@@ -3,10 +3,7 @@ package com.fulu.game.h5.service.impl.mp;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.config.WxMpServiceSupply;
 import com.fulu.game.common.enums.*;
-import com.fulu.game.common.exception.DataException;
-import com.fulu.game.common.exception.OrderException;
-import com.fulu.game.common.exception.UserException;
-import com.fulu.game.common.exception.VirtualProductException;
+import com.fulu.game.common.exception.*;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.entity.MoneyDetails;
 import com.fulu.game.core.entity.User;
@@ -338,6 +335,12 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
             log.error("验证sessionkey错误:sessionkey:{};money:{};ip:{};userId:{}",
                     sessionkey, money, ip, user.getId());
             throw new DataException(DataException.ExceptionCode.NO_FORM_TOKEN_ERROR);
+        }
+        
+        
+        if(money.doubleValue() <= 0){
+            log.error("充值金额money:{}",money);
+            throw new MpPayException(MpPayException.ExceptionCode.CHARGE_VALUE_ERROR);
         }
 
         VirtualPayOrder order = new VirtualPayOrder();
