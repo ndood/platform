@@ -469,6 +469,8 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
         dynamicDoc.setCityName(dynamicVO.getCityName());
         dynamicDoc.setClicks(dynamicVO.getClicks());
         dynamicDoc.setComments(dynamicVO.getComments());
+        dynamicDoc.setLikes(dynamicVO.getLikes());
+        dynamicDoc.setRewards(dynamicVO.getRewards());
         dynamicDoc.setGeohash(dynamicVO.getGeohash());
         dynamicDoc.setGethashShort(dynamicVO.getGeohashShort());
         dynamicDoc.setType(dynamicVO.getType());
