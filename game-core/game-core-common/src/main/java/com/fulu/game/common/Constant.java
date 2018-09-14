@@ -1,6 +1,11 @@
 package com.fulu.game.common;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.crypto.asymmetric.RSA;
+import sun.security.krb5.internal.crypto.RsaMd5CksumType;
+
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -200,4 +205,8 @@ public interface Constant {
      * 魅力值转化为可提现金额的比例
      */
     BigDecimal CHARM_TO_MONEY_RATE = new BigDecimal(0.07);
+
+    Map<String, Object> RSA_KEY_MAP = new HashMap<>();
+
+    Map<String, Object> RSA_MAP = new HashMap<>();
 }

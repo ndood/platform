@@ -76,6 +76,7 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
                         vo.setCashStatusMsg(CashProcessStatusEnum.WAITING.getMsg());
                     }
                 }
+                //todo gzc 判断逻辑很繁琐、后续优化
             } else if (vo.getAction().equals(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType())) {
                 vo.setCashStatusMsg(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getMsg());
             } else if (vo.getAction().equals(MoneyOperateTypeEnum.ORDER_COMPLETE.getType())) {

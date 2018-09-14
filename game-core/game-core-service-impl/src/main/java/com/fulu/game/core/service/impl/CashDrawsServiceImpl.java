@@ -102,6 +102,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         cashDraws.setUserId(user.getId());
         cashDraws.setNickname(user.getNickname());
         cashDraws.setMobile(user.getMobile());
+        cashDraws.setType(CashDrawsTypeEnum.BALANCE_WITHDRAW.getType());
         cashDraws.setCashStatus(CashProcessStatusEnum.WAITING.getType());
         cashDraws.setServerAuth(CashDrawsServerAuthEnum.UN_PROCESS.getType());
         cashDraws.setCreateTime(new Date());
@@ -148,12 +149,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
     public PageInfo<CashDrawsVO> list(CashDrawsVO cashDrawsVO, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize, "t1.create_time DESC , FIELD(t1.cash_status, 0, 2, 1) , t1.server_auth DESC");
         List<CashDrawsVO> list = cashDrawsDao.findDetailByParameter(cashDrawsVO);
-
         this.charmToMoney(list);
-
-        //todo gzc 遍历list在每个对象中set加密的sign参数
-
-
         return new PageInfo(list);
     }
 
@@ -178,9 +174,9 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         for (int i = 0; i < list.size(); i++) {
 
             Integer charm = list.get(i).getCharm();
-            if(charm == null){
+            if (charm == null) {
                 list.get(i).setCharmMoney(new BigDecimal("0"));
-            }else{
+            } else {
                 BigDecimal charmMoney = new BigDecimal(charm).multiply(new BigDecimal("0.07"));
                 list.get(i).setCharmMoney(charmMoney.setScale(2, BigDecimal.ROUND_DOWN));
             }
@@ -210,11 +206,15 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
 //        cashDraws.setCashNo(null);
         cashDraws.setProcessTime(new Date());
         cashDrawsDao.update(cashDraws);
-
-        //todo gzc 加密处理 自定义的sign
-
-
         return cashDraws;
+    }
+
+    @Override
+    public CashDraws directDraw(String encryptedStr) {
+
+
+
+        return null;
     }
 
     @Override
@@ -227,6 +227,10 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         }
 
         Integer type = cashDraws.getType();
+        if (type == null) {
+            type = CashDrawsTypeEnum.BALANCE_WITHDRAW.getType();
+            cashDraws.setType(CashDrawsTypeEnum.BALANCE_WITHDRAW.getType());
+        }
 
         cashDraws.setOperator(admin.getName());
         cashDraws.setComment(comment);
@@ -262,30 +266,11 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         } else {
             //返款
             User user = userService.findById(cashDraws.getUserId());
-            BigDecimal balance = user.getBalance();
-            log.info("管理员拒绝打款前，用户账户余额:{}", balance);
-            balance = balance.subtract(cashDraws.getMoney());
-            log.info("管理员拒绝打款后，用户账户余额:{}", balance);
-
-            MoneyDetails moneyDetails = new MoneyDetails();
-            moneyDetails.setOperatorId(admin.getId());
-            moneyDetails.setAction(MoneyOperateTypeEnum.ADMIN_REFUSE_REMIT.getType());
-            moneyDetails.setTargetId(cashDraws.getUserId());
-            BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
-            moneyDetails.setSum(balance.add(chargeBalance));
-            moneyDetails.setMoney(cashDraws.getMoney());
-            moneyDetails.setCashId(cashId);
-            moneyDetails.setRemark(comment);
-            moneyDetails.setCreateTime(new Date());
-            mdService.create(moneyDetails);
-
-            user.setBalance(balance);
             user.setCharmDrawSum((user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum()) - cashDraws.getCharm());
             user.setUpdateTime(new Date());
             userService.update(user);
             return true;
         }
-
     }
 
     @Override
@@ -310,7 +295,6 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         BigDecimal charmMoney = new BigDecimal(charm).multiply(Constant.CHARM_TO_MONEY_RATE)
                 .setScale(2, ROUND_HALF_DOWN);
 
-        user.setBalance(user.getBalance().add(charmMoney));
         user.setCharmDrawSum((user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum()) + charm);
         user.setUpdateTime(DateUtil.date());
         userService.update(user);
@@ -327,17 +311,6 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         cashDraws.setCashNo(generateCashNo());
         cashDraws.setCreateTime(DateUtil.date());
         cashDrawsDao.create(cashDraws);
-
-        MoneyDetails details = new MoneyDetails();
-        details.setOperatorId(user.getId());
-        details.setTargetId(user.getId());
-        details.setMoney(charmMoney);
-        details.setAction(MoneyOperateTypeEnum.USER_CHARM_WITHDRAW.getType());
-        details.setCashId(cashDraws.getCashId());
-        BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
-        details.setSum(user.getBalance().add(chargeBalance));
-        details.setCreateTime(DateUtil.date());
-        mdService.drawSave(details);
 
         CashDrawsVO vo = new CashDrawsVO();
         BeanUtil.copyProperties(cashDraws, vo);
