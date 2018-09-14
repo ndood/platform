@@ -447,11 +447,27 @@ ALTER TABLE `t_user_tech_auth` ADD COLUMN `max_price`  decimal(10,2) DEFAULT '0'
 
 
 
+-- 添加注册来源（加t_user还是t_user_info_auth）暂定t_user表：
+ALTER TABLE `t_user` ADD COLUMN `register_type` tinyint(1) DEFAULT '1' COMMENT '用户注册来源（1：小程序；2：APP）' after `type`;
+-- 添加虚拟粉丝数：
+ALTER TABLE `t_user_info_auth` ADD COLUMN `virtual_fans_count` int(11) DEFAULT '0' COMMENT '虚拟粉丝数' after `about`;
 
 
+-- 添加技能虚拟接单数
+ALTER TABLE `t_user_tech_auth` ADD COLUMN `virtual_order_count` int(11) DEFAULT '0' COMMENT '虚拟接单数' after `order_count`;
+-- 添加技能认证语音
+ALTER TABLE `t_user_tech_auth` ADD COLUMN `voice`  varchar(512) DEFAULT NULL COMMENT '语音文件地址' after `grade_pic_url`;
+-- 添加技能认证语音时长
+ALTER TABLE `t_user_tech_auth` ADD COLUMN `voice_duration`  int(11) DEFAULT NULL COMMENT '语音时长' after `voice`;
+-- 添加技能认证来源（小程序、APP）
+ALTER TABLE `t_user_tech_auth` ADD COLUMN `resource_type`  tinyint(1) DEFAULT '1' COMMENT '技能认证来源（1：小程序；2：APP）' after `voice_duration`;
+-- 添加技能平均得分
+ALTER TABLE `t_user_tech_auth` ADD COLUMN `score_avg` decimal(2,1) DEFAULT NULL COMMENT '技能评分' after `resource_type`;
 
 
-
+-- 分类表新增：
+ALTER TABLE `t_category` ADD COLUMN `example_pic_url`  varchar(512) DEFAULT NULL COMMENT '示例图片url地址' after `charges`;
+ALTER TABLE `t_category` ADD COLUMN `example_about`  varchar(128) DEFAULT NULL COMMENT '示例说明' after `example_pic_url`;
 
 
 
