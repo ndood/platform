@@ -337,4 +337,61 @@ public class RedisOpenServiceImpl {
         log.info("归还redis连接");
         RedisConnectionUtils.releaseConnection(connection, connectionFactory);
     }
+
+    /**
+     * 自增
+     * @param key
+     * @return
+     */
+    public long incr(String key) {
+        return incr( key, 1);
+    }
+
+
+    /**
+     * 递增
+     * @param key
+     * @param delta 递增因子，必须大于0
+     * @return
+     */
+    public long incr(String key, long delta) {
+        if (delta < 0) {
+            throw new RuntimeException("递增因子必须大于0");
+        }
+        return redisTemplate.opsForValue().increment(key, delta);
+    }
+
+    /**
+     * 自减
+     * @param key 键
+     * @return
+     */
+    public long decr(String key){
+        return decr( key, 1);
+    }
+
+    /**
+     * 递减
+     * @param key 键
+     * @param delta 要减少几(小于0)
+     * @return
+     */
+    public long decr(String key, long delta){
+        if(delta<0){
+            throw new RuntimeException("递减因子必须大于0");
+        }
+        return redisTemplate.opsForValue().increment(key, -delta);
+    }
+
+
+    /**
+     * 获取Integer类型的值
+     * @param key
+     * @return
+     */
+    public Integer getInteger(String key) {
+        Object value = redisTemplate.opsForValue().get(key);
+        return (value != null) ? (Integer) value : 0;
+    }
+
 }
