@@ -334,10 +334,9 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
                     sessionkey, money, ip, user.getId());
             throw new DataException(DataException.ExceptionCode.NO_FORM_TOKEN_ERROR);
         }
-        
-        
-        if(money.doubleValue() <= 0){
-            log.error("充值金额money:{}",money);
+
+        if (money.doubleValue() <= 0) {
+            log.error("充值金额money:{}", money);
             throw new MpPayException(MpPayException.ExceptionCode.CHARGE_VALUE_ERROR);
         }
 

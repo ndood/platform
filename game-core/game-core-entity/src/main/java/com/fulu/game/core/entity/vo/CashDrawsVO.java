@@ -59,5 +59,8 @@ public class CashDrawsVO extends CashDraws {
     @Excel(name = "用户余额", orderNum = "18", width = 15)
     private BigDecimal balance;
 
-
+    /**
+     * 加密字符串
+     */
+    private String sign;
 }
