@@ -184,6 +184,17 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         if (type.equals(VirtualPayOrderTypeEnum.VIRTUAL_ORDER.getType())) {
             user.setVirtualBalance((user.getVirtualBalance() == null ? 0 : user.getVirtualBalance())
                     + order.getVirtualMoney());
+
+            //记录虚拟币流水
+            VirtualDetails details = new VirtualDetails();
+            details.setUserId(user.getId());
+            details.setRelevantNo(order.getOrderNo());
+            details.setSum(user.getVirtualBalance());
+            details.setMoney(order.getVirtualMoney());
+            details.setType(VirtualDetailsTypeEnum.VIRTUAL_MONEY.getType());
+            details.setRemark(VirtualDetailsRemarkEnum.CHARGE.getMsg());
+            details.setCreateTime(DateUtil.date());
+            virtualDetailsService.create(details);
         } else {
             //余额充值订单，需要记录零钱流水
             MoneyDetails mDetails = new MoneyDetails();
