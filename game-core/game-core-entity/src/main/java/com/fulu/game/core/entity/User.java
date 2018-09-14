@@ -102,5 +102,7 @@ public class User implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @Excel(name = "最后登录登录时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "10", width = 35)
     private Date loginTime;
+    // 注册来源类型
+    private Integer registerType;
 
 }
