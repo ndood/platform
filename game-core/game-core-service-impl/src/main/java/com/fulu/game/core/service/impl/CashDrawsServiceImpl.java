@@ -118,6 +118,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         cashDraws.setCashStatus(CashProcessStatusEnum.WAITING.getType());
         cashDraws.setServerAuth(CashDrawsServerAuthEnum.UN_PROCESS.getType());
         cashDraws.setCreateTime(new Date());
+        cashDraws.setCashNo(generateCashNo());
         cashDrawsDao.create(cashDraws);
         log.info("生成提款申请记录");
         MoneyDetails moneyDetails = new MoneyDetails();
@@ -309,6 +310,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
                 return cashDraws;
             } catch (WxPayException e) {
                 e.printStackTrace();
+                log.error("企业打款到微信零钱失败！", e);
                 return null;
             }
         }
@@ -346,6 +348,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
                 return cashDraws;
             } catch (WxPayException e) {
                 e.printStackTrace();
+                log.error("企业打款到微信零钱失败！", e);
                 return null;
             }
         }
