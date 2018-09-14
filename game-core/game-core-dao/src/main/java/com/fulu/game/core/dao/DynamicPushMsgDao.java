@@ -18,4 +18,10 @@ public interface DynamicPushMsgDao extends ICommonDao<DynamicPushMsg,Integer>{
 
     List<DynamicPushMsg> findByParameter(DynamicPushMsgVO dynamicPushMsgVO);
 
+    /**
+     * 获取用户最新的动态推送消息
+     * @param dynamicPushMsgVO
+     * @return
+     */
+    DynamicPushMsg newDynamicPushMsg(DynamicPushMsgVO dynamicPushMsgVO);
 }

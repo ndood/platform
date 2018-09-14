@@ -106,7 +106,7 @@
         where (friend.from_user_id = #{userId} or friend.to_user_id = #{userId}) and
         friend.is_attention = 1  and
         <!-- and isBlack = 0 and  -->
-        tuser.nickname like CONCAT('%', #{nickname},'%')
+        (tuser.id = #{nickname} or tuser.nickname like CONCAT('%', #{nickname},'%'))
     </select>
 
     <select id="searchUsers" resultMap="FriendResultVOMap" parameterType="com.fulu.game.core.entity.vo.UserFriendVO">

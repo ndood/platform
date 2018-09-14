@@ -21,4 +21,10 @@ public interface DynamicPushMsgService extends ICommonService<DynamicPushMsg,Int
      * @return
      */
     PageInfo<DynamicPushMsg> list(Integer pageNum, Integer pageSize);
+
+    /**
+     * 获取最新一条动态push消息
+     * @return
+     */
+    DynamicPushMsg newDynamicPushMsg();
 }

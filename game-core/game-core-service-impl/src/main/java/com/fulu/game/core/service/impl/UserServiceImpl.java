@@ -73,6 +73,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Autowired
     private AdminImLogService adminImLogService;
 
+    @Autowired
+    private MoneyDetailsService moneyDetailsService;
+
 
     @Override
     public ICommonDao<User, Integer> getDao() {
@@ -743,6 +746,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         userVO.setImPsw("");
         // 设置用户扩展信息（兴趣、职业、简介、视频、以及相册）
         setUserExtInfo(userVO, userId);
+        //设置用户月收入
+        userVO.setMonthIncome(moneyDetailsService.monthIncome(userId));
         // 获取新增属性信息
         return userVO;
     }

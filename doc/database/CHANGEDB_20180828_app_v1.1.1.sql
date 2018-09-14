@@ -384,7 +384,7 @@ create table t_dynamic_push_msg
    from_user_head_url   varchar(512) comment 'push消息发送用户头像url',
    to_user_id           int(11) comment 'push消息接收用户id',
    push_type            tinyint(1) comment 'push消息类型（1：点赞；2：评论；3打赏）',
-   push_content         varchar(128) comment 'push消息内容',
+   push_content         varchar(256) comment 'push消息内容',
    push_extras          varchar(512) comment 'push消息扩展内容',
    create_time          datetime comment '创建时间',
    update_time          datetime comment '修改时间',
@@ -442,6 +442,8 @@ CREATE TABLE `t_price_rule` (
 
 -- 添加技能接单数
 ALTER TABLE `t_user_tech_auth` ADD COLUMN `order_count` int(11) DEFAULT '0' COMMENT '接单数' after `status`;
+-- 添加用户最大接单技能价格
+ALTER TABLE `t_user_tech_auth` ADD COLUMN `max_price`  decimal(10,2) DEFAULT '0' COMMENT '定价允许最大价格限制' after `order_count`;
 
 
 

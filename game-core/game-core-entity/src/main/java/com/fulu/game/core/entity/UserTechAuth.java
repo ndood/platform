@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 
@@ -31,6 +32,11 @@ public class UserTechAuth implements Serializable {
     private Integer status;
     //是否激活
     private Boolean isActivate;
+    // 用户该技能接单数
+    private Integer orderCount;
+
+    //用户最大定价价格
+    private BigDecimal maxPrice;
 
     private String mobile;
 

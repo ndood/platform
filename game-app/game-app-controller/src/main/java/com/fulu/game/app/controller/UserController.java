@@ -2,20 +2,18 @@ package com.fulu.game.app.controller;
 
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.FileTypeEnum;
-import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.UserBodyAuthStatusEnum;
 import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.entity.*;
-import com.fulu.game.core.entity.vo.AdminImLogVO;
+import com.fulu.game.core.entity.vo.UserBodyAuthVO;
 import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.*;
-import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -28,9 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.math.BigDecimal;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +54,8 @@ public class UserController extends BaseController {
     private UserInfoAuthFileService userInfoAuthFileService;
     @Autowired
     private UserCommentService commentService;
+    @Autowired
+    private UserBodyAuthService userBodyAuthService;
 
 
     /**
@@ -89,6 +87,7 @@ public class UserController extends BaseController {
 
     /**
      * 获取用户信息
+     *
      * @param userId 非必传，当未传时查询当前用户信息，否则查询所传递用户信息
      * @return
      */
@@ -101,11 +100,12 @@ public class UserController extends BaseController {
 
     /**
      * 获取用户的基础信息
+     *
      * @param userId
      * @return
      */
     @RequestMapping("info")
-    public Result getInfo(Integer userId){
+    public Result getInfo(Integer userId) {
         User user = userService.findById(userId);
         return Result.success().data(user);
     }
@@ -186,8 +186,8 @@ public class UserController extends BaseController {
 
     @PostMapping(value = "online")
     public Result userOnline(@RequestParam(required = true) Boolean active, String version) {
-        
-        List<AdminImLog> list = userService.userOnline(active,version);
+
+        List<AdminImLog> list = userService.userOnline(active, version);
 
         return Result.success().data(list).msg("查询成功！");
     }
@@ -289,14 +289,12 @@ public class UserController extends BaseController {
         JSONObject data = new JSONObject();
         data.put("balance", user.getBalance());
         data.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
-        Integer charm = user.getCharm();
-        if (charm == null) {
-            data.put("charm", 0);
-            data.put("charmMoney", 0);
-        } else {
-            data.put("charm", charm);
-            data.put("charmMoney", new BigDecimal(charm).multiply(Constant.CHARM_TO_MONEY_RATE));
-        }
+        Integer totalCharm = user.getCharm() == null ? 0 : user.getCharm();
+        Integer charmDrawSum = user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum();
+        Integer leftCharm = totalCharm - charmDrawSum;
+        data.put("charm", leftCharm);
+        data.put("charmMoney", new BigDecimal(leftCharm)
+                .multiply(Constant.CHARM_TO_MONEY_RATE).setScale(2, BigDecimal.ROUND_HALF_DOWN));
         data.put("chargeBalance", user.getChargeBalance());
         return Result.success().data(data).msg("查询成功！");
     }
@@ -317,6 +315,7 @@ public class UserController extends BaseController {
     /**
      * 查询-用户-列表
      * 只查陪玩师
+     *
      * @param pageNum
      * @param pageSize
      * @return
@@ -347,9 +346,39 @@ public class UserController extends BaseController {
         return Result.success().data(page);
     }
 
-    @PostMapping(value = "/user-tech-page")
-    public Result getUserTechPage(){
+    /**
+     * 用户-提交用户认证信息
+     *
+     * @return
+     */
+    @PostMapping("/body-auth/save")
+    public Result getUserAuthStatus(String userName, String cardNo, String cardUrl, String cardHandUrl) {
+        User user = userService.getCurrentUser();
+        UserBodyAuthVO uba = new UserBodyAuthVO();
+        uba.setUserId(user.getId());
+        uba.setUserName(userName);
+        uba.setCardNo(cardNo);
+        uba.setCardUrl(ossUtil.activateOssFile(cardUrl));
+        uba.setCardHandUrl(ossUtil.activateOssFile(cardHandUrl));
+        uba.setAuthStatus(UserBodyAuthStatusEnum.NO_AUTH.getType());
+        uba.setCreateTime(new Date());
 
-        return Result.success();
+        userBodyAuthService.submitUserBodyAuthInfo(uba);
+
+        return Result.success().msg("提交成功！");
+    }
+
+    /**
+     * 用户-获取用户认证信息
+     *
+     * @return
+     */
+    @PostMapping("/body-auth/get")
+    public Result getUserAuthInfo() {
+        User user = userService.getCurrentUser();
+
+        UserBodyAuth authInfo = userBodyAuthService.getUserAuthInfo(user.getId());
+
+        return Result.success().data(authInfo).msg("查询成功！");
     }
 }
