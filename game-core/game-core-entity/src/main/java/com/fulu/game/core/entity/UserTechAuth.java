@@ -38,6 +38,20 @@ public class UserTechAuth implements Serializable {
     //用户最大定价价格
     private BigDecimal maxPrice;
 
+    //虚拟接单数
+    private Integer virtualOrderCount;
+
+    //语音地址
+    private String voice;
+    //语音时长
+    private Integer voiceDuration;
+
+    //技能认证来源
+    private Integer resourceType;
+
+    // 技能综合评分
+    private Integer scoreAvg;
+
     private String mobile;
 
     private String categoryName;

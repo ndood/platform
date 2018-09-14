@@ -12,6 +12,11 @@
         <result column="description" property="description"/>
         <result column="status" property="status"/>
         <result column="order_count" property="orderCount"/>
+        <result column="virtual_order_count" property="virtualOrderCount"/>
+        <result column="voice" property="voice"/>
+        <result column="voice_duration" property="voiceDuration"/>
+        <result column="resource_type" property="resourceType"/>
+        <result column="score_avg" property="scoreAvg"/>
         <result column="max_price" property="maxPrice"/>
         <result column="is_activate" property="isActivate"/>
         <result column="create_time" property="createTime"/>
@@ -23,7 +28,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,category_id,user_id,category_name,mobile,grade_pic_url,description,status,order_count,max_price,is_activate,create_time,update_time
+        id,category_id,user_id,category_name,mobile,grade_pic_url,description,status,order_count,virtual_order_count,voice,voice_duration,resource_type,score_avg,max_price,is_activate,create_time,update_time
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserTechAuthResultMap">
@@ -71,6 +76,21 @@
             <if test="orderCount != null">
                 and order_count = #{orderCount}
             </if>
+            <if test="virtualOrderCount != null">
+                and virtual_order_count = #{virtualOrderCount}
+            </if>
+            <if test="voice != null">
+                and voice = #{voice}
+            </if>
+            <if test="voiceDuration != null">
+                and voice_duration = #{voiceDuration}
+            </if>
+            <if test="resourceType != null">
+                and resource_type = #{resourceType}
+            </if>
+            <if test="scoreAvg != null">
+                and score_avg = #{scoreAvg}
+            </if>
             <if test="maxPrice != null">
                 and max_price = #{maxPrice}
             </if>
@@ -116,9 +136,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserTechAuth">
         insert into
-        t_user_tech_auth (category_id,user_id,category_name,mobile,grade_pic_url,description,status,order_count,max_price,is_activate,create_time,update_time)
+        t_user_tech_auth (category_id,user_id,category_name,mobile,grade_pic_url,description,status,order_count,virtual_order_count,voice,voice_duration,resource_type,score_avg,max_price,is_activate,create_time,update_time)
         values
-        (#{categoryId},#{userId},#{categoryName},#{mobile},#{gradePicUrl},#{description},#{status},#{orderCount},#{maxPrice},#{isActivate},#{createTime},#{updateTime})
+        (#{categoryId},#{userId},#{categoryName},#{mobile},#{gradePicUrl},#{description},#{status},#{orderCount},#{virtualOrderCount},#{voice},#{voiceDuration},#{resourceType},#{scoreAvg},#{maxPrice},#{isActivate},#{createTime},#{updateTime})
     </insert>
 
     <update id="updateByCategory" parameterType="com.fulu.game.core.entity.Category">
@@ -167,6 +187,26 @@
 
             <if test="orderCount != null">
                 order_count = #{orderCount},
+            </if>
+
+            <if test="virtualOrderCount != null">
+                virtual_order_count = #{virtualOrderCount},
+            </if>
+
+            <if test="voice != null">
+                voice = #{voice},
+            </if>
+
+            <if test="voiceDuration != null">
+                voice_duration = #{voiceDuration},
+            </if>
+
+            <if test="resourceType != null">
+                resource_type = #{resourceType},
+            </if>
+
+            <if test="scoreAvg != null">
+                score_avg = #{scoreAvg},
             </if>
 
             <if test="isActivate != null">
