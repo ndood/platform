@@ -182,7 +182,7 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
     @Override
     public boolean isAlreadyUnlock(Integer userId, Integer virtualProductId) {
         VirtualProductOrderVO vpo = new VirtualProductOrderVO();
-        vpo.setTargetUserId(userId);
+        vpo.setFromUserId(userId);
         vpo.setVirtualProductId(virtualProductId);
         List<VirtualProductOrder> vpList = virtualProductOrderDao.findByParameter(vpo);
         if (CollectionUtils.isEmpty(vpList)) {
