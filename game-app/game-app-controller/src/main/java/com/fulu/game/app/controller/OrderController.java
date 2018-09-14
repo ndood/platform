@@ -116,6 +116,15 @@ public class OrderController extends BaseController {
     }
 
 
+    /**
+     * 用户列表
+     * @return
+     */
+    @RequestMapping(value = "/list/user")
+    public Result userOrderList(){
+
+        return Result.success();
+    }
 
 
     /**
