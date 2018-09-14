@@ -112,7 +112,7 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/server/start-serve")
     public Result startServerOrder(@RequestParam(required = true) String orderNo) {
         appOrderServiceImpl.serverStartServeOrder(orderNo);
-        return Result.success().data(orderNo).msg("接单成功!");
+        return Result.success().data(orderNo).msg("开始服务!");
     }
 
 
@@ -206,6 +206,17 @@ public class OrderController extends BaseController {
         return Result.success().data(orderNo).msg("取消订单成功!");
     }
 
+    /**
+     * 陪玩师取消订单
+     *
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/server/cancel")
+    public Result serverCancelOrder(@RequestParam(required = true) String orderNo) {
+        appOrderServiceImpl.serverCancelOrder(orderNo);
+        return Result.success().data(orderNo).msg("取消订单成功!");
+    }
 
 
     /**
