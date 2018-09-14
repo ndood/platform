@@ -3,8 +3,6 @@ package com.fulu.game.admin.controller;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
-import cn.hutool.crypto.asymmetric.RSA;
-import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.CashServerAuthStatusEnum;
 import com.fulu.game.core.entity.CashDraws;
@@ -12,7 +10,6 @@ import com.fulu.game.core.entity.vo.CashDrawsVO;
 import com.fulu.game.core.service.CashDrawsService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
-import java.util.Map;
 
 /**
  * yanbiao
@@ -100,26 +96,21 @@ public class CashDrawsController extends BaseController {
         return Result.success().data(cashDraws).msg("打款成功！");
     }
 
-//    public Result publicKey() {
-//        Map<String, Object> rsaMap = Constant.RSA_MAP;
-//        if (MapUtils.isEmpty(rsaMap)) {
-//            rsaMap.put("rsa", new RSA());
-//        }
-//
-//
-//        return null;
-//    }
-//
     /**
-     * 管理员-打款动作（直接打款到用户微信零钱）
+     * 财务-打款动作（直接打款到用户微信零钱）
      *
-     * @return
+     * @param cashId  提现id
+     * @param sign    签名
+     * @param comment 备注
+     * @return 封装结果集
      */
     @PostMapping("/direct/draw")
-    public Result directDraw(@RequestParam String encryptedStr) {
-        CashDraws cashDraws = cashDrawsService.directDraw(encryptedStr);
+    public Result directDraw(@RequestParam Integer cashId,
+                             @RequestParam String sign,
+                             @RequestParam(name = "comment", required = false) String comment) {
+        CashDraws cashDraws = cashDrawsService.directDraw(cashId, sign, comment);
         if (null == cashDraws) {
-            return Result.error().msg("申请单不存在！");
+            return Result.error().msg("打款失败！");
         }
         return Result.success().data(cashDraws).msg("打款成功！");
     }
