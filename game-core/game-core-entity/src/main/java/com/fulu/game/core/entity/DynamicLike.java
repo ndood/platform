@@ -32,5 +32,7 @@ public class DynamicLike implements Serializable {
 	private Date createTime;
 	//状态（1：有效；0：取消赞）
 	private Integer status;
+	//用户年龄
+	private Integer age;
 
 }

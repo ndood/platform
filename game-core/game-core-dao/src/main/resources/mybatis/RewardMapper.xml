@@ -43,52 +43,54 @@
         from t_reward
     </select>
 
-    <select id="findByParameter" resultMap="RewardResultMap" parameterType="com.fulu.game.core.entity.vo.RewardVO">
+    <select id="findByParameter" resultType="com.fulu.game.core.entity.Reward" parameterType="com.fulu.game.core.entity.vo.RewardVO">
         SELECT
-        <include refid="Base_Column_List"/>
-        FROM t_reward
+            reward.*,tuser.age
+        FROM t_reward reward
+        LEFT JOIN t_user tuser
+        ON reward.from_user_id = tuser.id
         <where>
             <if test="resourceId != null">
-                and resource_id = #{resourceId}
+                and reward.resource_id = #{resourceId}
             </if>
             <if test="resourceType != null">
-                and resource_type = #{resourceType}
+                and reward.resource_type = #{resourceType}
             </if>
             <if test="giftId != null">
-                and gift_id = #{giftId}
+                and reward.gift_id = #{giftId}
             </if>
             <if test="giftUrl != null">
-                and gift_url = #{giftUrl}
+                and reward.gift_url = #{giftUrl}
             </if>
             <if test="fromUserId != null">
-                and from_user_id = #{fromUserId}
+                and reward.from_user_id = #{fromUserId}
             </if>
             <if test="fromUserHeadUrl != null">
-                and from_user_head_url = #{fromUserHeadUrl}
+                and reward.from_user_head_url = #{fromUserHeadUrl}
             </if>
             <if test="fromUserNickname != null">
-                and from_user_nickname = #{fromUserNickname}
+                and reward.from_user_nickname = #{fromUserNickname}
             </if>
             <if test="fromUserGender != null">
-                and from_user_gender = #{fromUserGender}
+                and reward.from_user_gender = #{fromUserGender}
             </if>
             <if test="toUserId != null">
-                and to_user_id = #{toUserId}
+                and reward.to_user_id = #{toUserId}
             </if>
             <if test="toUserHeadUrl != null">
-                and to_user_head_url = #{toUserHeadUrl}
+                and reward.to_user_head_url = #{toUserHeadUrl}
             </if>
             <if test="toUserNickname != null">
-                and to_user_nickname = #{toUserNickname}
+                and reward.to_user_nickname = #{toUserNickname}
             </if>
             <if test="toUserGender != null">
-                and to_user_gender = #{toUserGender}
+                and reward.to_user_gender = #{toUserGender}
             </if>
             <if test="createTime != null">
-                and create_time = #{createTime}
+                and reward.create_time = #{createTime}
             </if>
             <if test="status != null">
-                and status = #{status}
+                and reward.status = #{status}
             </if>
         </where>
     </select>

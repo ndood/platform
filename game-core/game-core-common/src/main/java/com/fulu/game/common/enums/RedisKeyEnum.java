@@ -54,7 +54,9 @@ public enum RedisKeyEnum {
     //被关注用户
     ATTENTIONED_USERS,
     //未接单的订单ID
-    ORDER_WAITING_SERVICE_ID;
+    ORDER_WAITING_SERVICE_ID,
+    //访问次数
+    ACCESS_COUNT;
 
 
 

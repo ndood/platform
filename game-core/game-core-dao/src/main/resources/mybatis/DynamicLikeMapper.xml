@@ -34,29 +34,31 @@
         from t_dynamic_like
     </select>
 
-    <select id="findByParameter" resultMap="DynamicLikeResultMap"
+    <select id="findByParameter" resultType="com.fulu.game.core.entity.DynamicLike"
             parameterType="com.fulu.game.core.entity.vo.DynamicLikeVO">
         SELECT
-        <include refid="Base_Column_List"/>
-        FROM t_dynamic_like
+          dynamicLike.*,tuser.age
+        FROM t_dynamic_like dynamicLike
+        LEFT JOIN t_user tuser
+        ON dynamicLike.from_user_id = tuser.id
         <where>
             <if test="dynamicId != null">
-                and dynamic_id = #{dynamicId}
+                and dynamicLike.dynamic_id = #{dynamicId}
             </if>
             <if test="fromUserId != null">
-                and from_user_id = #{fromUserId}
+                and dynamicLike.from_user_id = #{fromUserId}
             </if>
             <if test="fromUserHeadUrl != null">
-                and from_user_head_url = #{fromUserHeadUrl}
+                and dynamicLike.from_user_head_url = #{fromUserHeadUrl}
             </if>
             <if test="fromUserNickname != null">
-                and from_user_nickname = #{fromUserNickname}
+                and dynamicLike.from_user_nickname = #{fromUserNickname}
             </if>
             <if test="createTime != null">
-                and create_time = #{createTime}
+                and dynamicLike.create_time = #{createTime}
             </if>
             <if test="status != null">
-                and status = #{status}
+                and dynamicLike.status = #{status}
             </if>
         </where>
     </select>

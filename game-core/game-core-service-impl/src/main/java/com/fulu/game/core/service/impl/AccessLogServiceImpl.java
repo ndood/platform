@@ -2,6 +2,7 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.common.domain.ClientInfo;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.AccessLogDetail;
@@ -35,6 +36,9 @@ public class AccessLogServiceImpl extends AbsCommonService<AccessLog,Long> imple
     @Autowired
     private AccessLogDetailService accessLogDetailService;
 
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
+
 
 
     @Override
@@ -56,6 +60,10 @@ public class AccessLogServiceImpl extends AbsCommonService<AccessLog,Long> imple
         AccessLogVO accessLogVO = new AccessLogVO();
         accessLogVO.setToUserId(user.getId());
         List<AccessLogVO> list = accessLogDao.accessList(accessLogVO);
+        String key = RedisKeyEnum.ACCESS_COUNT.generateKey(user.getId());
+        if(redisOpenService.hasKey(key)){
+            redisOpenService.delete(key);
+        }
         return new PageInfo<>(list);
     }
 
@@ -115,6 +123,16 @@ public class AccessLogServiceImpl extends AbsCommonService<AccessLog,Long> imple
         accessLogDetail.setUpdateTime(new Date());
         accessLogDetail.setStatus(1);
         accessLogDetailService.create(accessLogDetail);
+        //保存访问次数
+        int accessCount = 1;
+        String key = RedisKeyEnum.ACCESS_COUNT.generateKey(accessLog.getToUserId());
+        if(redisOpenService.hasKey(key)){
+            String accessCountStr = redisOpenService.get(key);
+            if(accessCountStr != null && !"".equals(accessCountStr)){
+                accessCount = Integer.parseInt(accessCountStr) + 1;
+            }
+        }
+        redisOpenService.set(key,accessCount + "");
         return accessLog;
     }
 
