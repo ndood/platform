@@ -16,4 +16,6 @@ public class DynamicCommentVO  extends DynamicComment {
 
     /** 被回复内容 */
     private String toContent;
+    /** 年龄 */
+    private Integer age;
 }

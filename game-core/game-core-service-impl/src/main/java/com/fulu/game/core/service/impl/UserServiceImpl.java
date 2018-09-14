@@ -728,6 +728,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     public UserVO getUserInfo(Integer userId) {
         // 写访问日志
         Integer currentUserId = getCurrentUser().getId();
+        int accessCount = 0;
         // 非当前用户才插入访问记录
         if (userId != null && userId > 0 && userId.intValue() != currentUserId.intValue()) {
             // 写访问日志
@@ -738,16 +739,24 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             accessLogService.save(accessLog);
         } else {
             userId = currentUserId;
+            String key = RedisKeyEnum.ACCESS_COUNT.generateKey(currentUserId);
+            if(redisOpenService.hasKey(key)){
+                String accessCountStr = redisOpenService.get(key);
+                if(accessCountStr != null && !"".equals(accessCountStr)){
+                    accessCount = Integer.parseInt(accessCountStr);
+                }
+            }
         }
         UserVO userVO = new UserVO();
         User user = findById(userId);
-        String userStr = com.alibaba.fastjson.JSONObject.toJSONString(user);
-        userVO = com.alibaba.fastjson.JSONObject.parseObject(userStr, UserVO.class);
+        BeanUtil.copyProperties(user,userVO);
         userVO.setImPsw("");
         // 设置用户扩展信息（兴趣、职业、简介、视频、以及相册）
         setUserExtInfo(userVO, userId);
         //设置用户月收入
         userVO.setMonthIncome(moneyDetailsService.monthIncome(userId));
+        //设置用户来访次数
+        userVO.setAccessCount(accessCount);
         // 获取新增属性信息
         return userVO;
     }
