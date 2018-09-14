@@ -132,7 +132,8 @@ public class AccessLogServiceImpl extends AbsCommonService<AccessLog,Long> imple
                 accessCount = Integer.parseInt(accessCountStr) + 1;
             }
         }
-        redisOpenService.set(key,accessCount + "");
+        //永久保存
+        redisOpenService.set(key,accessCount + "", true);
         return accessLog;
     }
 

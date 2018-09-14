@@ -83,6 +83,8 @@ public class RewardServiceImpl extends AbsCommonService<Reward, Integer> impleme
             VirtualProduct virtualProduct = virtualProductService.findById(rewardVO.getGiftId().intValue());
             rewardVO.setGiftUrl(virtualProduct.getObjectUrl());
             rewardVO.setGiftPrice(virtualProduct.getPrice());
+            rewardVO.setCreateTime(new Date());
+            rewardVO.setStatus(1);
             create(rewardVO);
             //修改动态打赏次数
             dynamicService.updateIndexFilesById(rewardVO.getResourceId(),true, 0, 0,false);
