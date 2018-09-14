@@ -27,6 +27,8 @@ public class DynamicLike implements Serializable {
 	private String fromUserHeadUrl;
 	//点赞用户昵称（冗余字段，提高查询效率）
 	private String fromUserNickname;
+	//点赞用户性别（0：未公开；1：男；2：女）
+	private Integer fromUserGender;
 	//创建时间
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date createTime;
