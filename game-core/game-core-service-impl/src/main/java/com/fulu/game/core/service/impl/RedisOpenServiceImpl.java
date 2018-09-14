@@ -101,6 +101,21 @@ public class RedisOpenServiceImpl {
      *
      * @param key
      * @param value
+     * @param isPerpetual 是否永久保存（true：是；false：否）
+     */
+    public void set(String key, String value, boolean isPerpetual) {
+        if(isPerpetual){
+            redisTemplate.opsForValue().set(key, value);
+        } else {
+            set(key, value);
+        }
+    }
+
+    /**
+     * 设置某个key的值
+     *
+     * @param key
+     * @param value
      */
     public void set(String key, String value) {
         set(key, value, TIME);
