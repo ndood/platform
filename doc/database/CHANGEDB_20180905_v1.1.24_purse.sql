@@ -37,11 +37,9 @@ CREATE TABLE `t_virtual_pay_order` (
   UNIQUE KEY `order_no` (`order_no`)
 ) COMMENT='虚拟币和余额充值订单表';
 
-ALTER TABLE `t_cash_draws` ADD COLUMN `type` tinyint(1) DEFAULT '1' COMMENT '提现类型：1：余额提现；2：魅力值提现' after `server_auth`;
 
 ALTER TABLE `t_user` ADD COLUMN `charm_draw_sum` int(11) unsigned DEFAULT '0' COMMENT '累计总提现魅力值' after `charm`;
 
-ALTER TABLE `t_cash_draws` ADD COLUMN `server_auth` tinyint(4) DEFAULT '0' NOT NULL COMMENT '运营是否已处理  0  未处理  1已处理' after `cash_status`;
 
 --t_virtual_product_order加order_no唯一索引
 ALTER TABLE `t_virtual_product_order` ADD UNIQUE (`order_no`);
@@ -51,11 +49,15 @@ ALTER TABLE `t_virtual_pay_order` ADD COLUMN `pay_path` tinyint(1) DEFAULT '1' C
 
 ALTER TABLE `t_money_details` MODIFY COLUMN `action` tinyint(1) NOT NULL COMMENT '-1提现，1加零钱，2陪玩订单入账，3拒绝提现返款，4魅力值提现，5余额购买虚拟币，6余额充值';
 
+ALTER TABLE `t_cash_draws` ADD COLUMN `server_auth` tinyint(4) DEFAULT '0' NOT NULL COMMENT '运营是否已处理  0  未处理  1已处理' after `cash_status`;
+
+
 ALTER TABLE `t_cash_draws` ADD COLUMN `charm` int(11) DEFAULT '0' COMMENT '提现魅力值';
 
 ALTER TABLE `t_cash_draws` MODIFY COLUMN `acc_no` varchar(255) CHARACTER SET utf8 DEFAULT NULL COMMENT '账户账号';
 
 ALTER TABLE `t_cash_draws` MODIFY COLUMN `acc_user` varchar(255) CHARACTER SET utf8 DEFAULT NULL COMMENT '账户名';
 
+ALTER TABLE `t_cash_draws` ADD COLUMN `type` tinyint(1) DEFAULT '1' COMMENT '提现类型：1：余额提现；2：魅力值提现' after `server_auth`;
 
 
