@@ -37,7 +37,7 @@
     <select id="findByParameter" resultType="com.fulu.game.core.entity.DynamicLike"
             parameterType="com.fulu.game.core.entity.vo.DynamicLikeVO">
         SELECT
-          dynamicLike.*,tuser.age
+          dynamicLike.*,tuser.age,tuser.gender as fromUserGender
         FROM t_dynamic_like dynamicLike
         LEFT JOIN t_user tuser
         ON dynamicLike.from_user_id = tuser.id
