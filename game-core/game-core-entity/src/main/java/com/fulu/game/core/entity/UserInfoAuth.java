@@ -59,4 +59,8 @@ public class UserInfoAuth implements Serializable {
      * 用户简介
      */
     private String about;
+    /**
+     * 虚拟粉丝数
+     */
+    private Integer virtualFansCount;
 }

@@ -19,6 +19,7 @@
         <result column="interests" property="interests"/>
         <result column="profession" property="profession"/>
         <result column="about" property="about"/>
+        <result column="virtual_fans_count" property="virtualFansCount"/>
     </resultMap>
 
     <resultMap id="UserInfoAuthResultVOMap" type="com.fulu.game.core.entity.vo.UserInfoAuthVO"
@@ -36,7 +37,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,mobile,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,sort,create_time,update_time,im_substitute_id,interests,profession,about
+        id,user_id,mobile,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,sort,create_time,update_time,im_substitute_id,interests,profession,about,virtual_fans_count
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserInfoAuthResultMap">
@@ -187,9 +188,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserInfoAuth">
         insert into
-        t_user_info_auth (user_id,mobile,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,sort,create_time,update_time,interests,profession,about)
+        t_user_info_auth (user_id,mobile,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,sort,create_time,update_time,interests,profession,about,virtual_fans_count)
         values
-        (#{userId},#{mobile},#{qq},#{wechat},#{isRejectSubmit},#{mainPicUrl},#{pushTimeInterval},#{allowExport},#{sort},#{createTime},#{updateTime},#{interests},#{profession},#{about})
+        (#{userId},#{mobile},#{qq},#{wechat},#{isRejectSubmit},#{mainPicUrl},#{pushTimeInterval},#{allowExport},#{sort},#{createTime},#{updateTime},#{interests},#{profession},#{about},#{virtualFansCount})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.UserInfoAuth">
@@ -241,6 +242,9 @@
             </if>
             <if test="about != null">
                 about = #{about},
+            </if>
+            <if test="virtualFansCount != null">
+                virtual_fans_count = #{virtualFansCount},
             </if>
         </set>
         <where>
@@ -299,6 +303,9 @@
             </if>
             <if test="about != null">
                 about = #{about},
+            </if>
+            <if test="virtualFansCount != null">
+                virtual_fans_count = #{virtualFansCount},
             </if>
         </set>
         <where>
