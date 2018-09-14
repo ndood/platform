@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.enums.VirtualPayOrderPayPathEnum;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.VirtualPayOrderDao;
 import com.fulu.game.core.entity.VirtualPayOrder;
@@ -9,6 +10,7 @@ import com.fulu.game.core.service.VirtualPayOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +47,11 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
 
         PageHelper.startPage(pageNum, pageSize, orderBy);
         List<VirtualPayOrderVO> voList = virtualPayOrderDao.chargeList(payOrderVO);
+        if (CollectionUtils.isNotEmpty(voList)) {
+            for (VirtualPayOrderVO vo : voList) {
+                vo.setPayPath(vo.getPayPath() == null ? VirtualPayOrderPayPathEnum.MP.getType() : vo.getPayPath());
+            }
+        }
         return new PageInfo<>(voList);
     }
 

@@ -50,7 +50,8 @@
         tcd.cash_status AS cash_status
         FROM t_money_details tmd LEFT JOIN t_cash_draws tcd ON tmd.cash_id = tcd.cash_id
         <where>
-            <if test="targetId != null">tmd.target_id = #{targetId}</if>
+            tmd.action != 4
+            <if test="targetId != null">and tmd.target_id = #{targetId}</if>
         </where>
     </select>
 
