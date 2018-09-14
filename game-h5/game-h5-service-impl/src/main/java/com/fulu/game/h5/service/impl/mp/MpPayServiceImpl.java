@@ -280,17 +280,6 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         details.setCreateTime(DateUtil.date());
         virtualDetailsService.create(details);
 
-        //记录零钱流水
-        MoneyDetails mDetails = new MoneyDetails();
-        mDetails.setOperatorId(userId);
-        mDetails.setTargetId(userId);
-        mDetails.setMoney(actualMoney.negate());
-        mDetails.setAction(MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY.getType());
-        mDetails.setSum(user.getBalance().add(chargeBalance));
-        mDetails.setRemark(MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY.getMsg() + "订单号：" + orderNo);
-        mDetails.setCreateTime(DateUtil.date());
-        moneyDetailsService.drawSave(mDetails);
-
         //记录平台流水
         platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.VIRTUAL_ORDER_PAY,
                 order.getOrderNo(),
