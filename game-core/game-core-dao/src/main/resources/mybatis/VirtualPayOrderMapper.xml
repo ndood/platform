@@ -129,7 +129,7 @@
             AND vpo.pay_time &gt;= #{payStartTime}
         </if>
         <if test="payEndTime != null">
-            AND vpo.pay_time &gt;= #{payEndTime}
+            AND vpo.pay_time &lt;= #{payEndTime}
         </if>
     </select>
 

@@ -54,6 +54,8 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
     private VirtualDetailsService virtualDetailsService;
     @Autowired
     private MoneyDetailsService moneyDetailsService;
+    @Autowired
+    private BalancePayService balancePayService;
 
     /**
      * 提交充值订单
@@ -88,7 +90,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         order.setIsPayCallback(false);
         order.setUpdateTime(DateUtil.date());
         order.setCreateTime(DateUtil.date());
-        order.setPayPath(1);
+        order.setPayPath(VirtualPayOrderPayPathEnum.MP.getType());
 
         //创建订单
         virtualPayOrderService.create(order);
@@ -176,13 +178,14 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         order.setUpdateTime(DateUtil.date());
         virtualPayOrderService.update(order);
 
-        //如果是余额充值订单，则需要记录零钱流水
+
         Integer type = order.getType();
         User user = userService.findById(order.getUserId());
         if (type.equals(VirtualPayOrderTypeEnum.VIRTUAL_ORDER.getType())) {
             user.setVirtualBalance((user.getVirtualBalance() == null ? 0 : user.getVirtualBalance())
                     + order.getVirtualMoney());
         } else {
+            //余额充值订单，需要记录零钱流水
             MoneyDetails mDetails = new MoneyDetails();
             mDetails.setOperatorId(order.getUserId());
             mDetails.setTargetId(order.getUserId());
@@ -190,6 +193,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
             mDetails.setAction(MoneyOperateTypeEnum.WITHDRAW_BALANCE.getType());
             BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
             mDetails.setSum(user.getBalance().add(chargeBalance));
+            mDetails.setRemark(MoneyOperateTypeEnum.WITHDRAW_BALANCE.getMsg() + "订单号: " + orderNo);
             mDetails.setCreateTime(DateUtil.date());
             moneyDetailsService.drawSave(mDetails);
 
@@ -233,28 +237,21 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
 
-        BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
-        BigDecimal balance = user.getBalance();
-        BigDecimal totalBalance = chargeBalance.add(balance);
         VirtualPayOrder order = virtualPayOrderService.findByOrderNo(orderNo);
         BigDecimal actualMoney = order.getActualMoney();
-        if (totalBalance.compareTo(actualMoney) < 0) {
-            log.error("用户userId：{}的账户余额不够充钻石，余额：{}，应付金额：{}", userId, totalBalance, actualMoney);
-            throw new VirtualProductException(VirtualProductException.ExceptionCode.BALANCE_NOT_ENOUGH_EXCEPTION);
+
+        boolean payResult = balancePayService.balancePay(userId, actualMoney, orderNo);
+        if (!payResult) {
+            log.error("余额支付虚拟币，支付失败，用户id：{}，订单号：{}", userId, orderNo);
+            throw new BalancePayException(BalancePayException.ExceptionCode.PAY_FAIL);
         }
+
+        BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
 
         order.setIsPayCallback(true);
         order.setPayTime(DateUtil.date());
         order.setUpdateTime(DateUtil.date());
         virtualPayOrderService.update(order);
-
-        //优先用不可提现零钱来支付钻石
-        if (chargeBalance.compareTo(actualMoney) >= 0) {
-            user.setChargeBalance(chargeBalance.subtract(actualMoney));
-        } else {
-            user.setChargeBalance(BigDecimal.ZERO);
-            user.setBalance(balance.subtract(actualMoney.subtract(chargeBalance)));
-        }
 
         user.setVirtualBalance((user.getVirtualBalance() == null ? 0 : user.getVirtualBalance())
                 + order.getVirtualMoney());
@@ -279,6 +276,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         mDetails.setMoney(actualMoney.negate());
         mDetails.setAction(MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY.getType());
         mDetails.setSum(user.getBalance().add(chargeBalance));
+        mDetails.setRemark(MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY.getMsg() + "订单号：" + orderNo);
         mDetails.setCreateTime(DateUtil.date());
         moneyDetailsService.drawSave(mDetails);
 
@@ -355,6 +353,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         order.setIsPayCallback(false);
         order.setUpdateTime(DateUtil.date());
         order.setCreateTime(DateUtil.date());
+        order.setPayPath(VirtualPayOrderPayPathEnum.MP.getType());
 
         //创建订单
         virtualPayOrderService.create(order);

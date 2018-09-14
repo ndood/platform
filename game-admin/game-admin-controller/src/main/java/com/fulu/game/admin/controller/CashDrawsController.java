@@ -3,6 +3,8 @@ package com.fulu.game.admin.controller;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
+import cn.hutool.crypto.asymmetric.RSA;
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.CashServerAuthStatusEnum;
 import com.fulu.game.core.entity.CashDraws;
@@ -10,6 +12,7 @@ import com.fulu.game.core.entity.vo.CashDrawsVO;
 import com.fulu.game.core.service.CashDrawsService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
+import java.util.Map;
 
 /**
  * yanbiao
@@ -82,7 +86,7 @@ public class CashDrawsController extends BaseController {
     }
 
     /**
-     * 管理员-打款动作
+     * 财务-打款动作
      *
      * @return
      */
@@ -90,6 +94,30 @@ public class CashDrawsController extends BaseController {
     public Result draw(@RequestParam("cashId") Integer cashId,
                        @RequestParam(name = "comment", required = false) String comment) {
         CashDraws cashDraws = cashDrawsService.draw(cashId, comment);
+        if (null == cashDraws) {
+            return Result.error().msg("申请单不存在！");
+        }
+        return Result.success().data(cashDraws).msg("打款成功！");
+    }
+
+//    public Result publicKey() {
+//        Map<String, Object> rsaMap = Constant.RSA_MAP;
+//        if (MapUtils.isEmpty(rsaMap)) {
+//            rsaMap.put("rsa", new RSA());
+//        }
+//
+//
+//        return null;
+//    }
+//
+    /**
+     * 管理员-打款动作（直接打款到用户微信零钱）
+     *
+     * @return
+     */
+    @PostMapping("/direct/draw")
+    public Result directDraw(@RequestParam String encryptedStr) {
+        CashDraws cashDraws = cashDrawsService.directDraw(encryptedStr);
         if (null == cashDraws) {
             return Result.error().msg("申请单不存在！");
         }

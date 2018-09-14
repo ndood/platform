@@ -24,6 +24,8 @@ public interface CashDrawsService extends ICommonService<CashDraws, Integer> {
 
     CashDraws draw(Integer cashId, String comment);
 
+    CashDraws directDraw(String encryptedStr);
+
     boolean refuse(Integer cashId, String comment);
 
     CashDrawsVO withdrawCharm(Integer charm);

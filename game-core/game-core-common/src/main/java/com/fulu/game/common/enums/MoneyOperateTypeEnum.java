@@ -24,4 +24,13 @@ public enum MoneyOperateTypeEnum implements TypeEnum<Integer> {
 
     private Integer type;
     private String msg;
+
+    public static String getMsgByType(Integer type) {
+        for (MoneyOperateTypeEnum typeEnum : MoneyOperateTypeEnum.values()) {
+            if (typeEnum.type.equals(type)) {
+                return typeEnum.msg;
+            }
+        }
+        return null;
+    }
 }

@@ -96,14 +96,12 @@ public class UserController extends BaseController {
         JSONObject data = new JSONObject();
         data.put("balance", user.getBalance());
         data.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
-        Integer charm = user.getCharm();
-        if (charm == null) {
-            data.put("charm", 0);
-            data.put("charmMoney", 0);
-        } else {
-            data.put("charm", charm);
-            data.put("charmMoney", new BigDecimal(charm).multiply(Constant.CHARM_TO_MONEY_RATE));
-        }
+        Integer totalCharm = user.getCharm() == null ? 0 : user.getCharm();
+        Integer charmDrawSum = user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum();
+        Integer leftCharm = totalCharm - charmDrawSum;
+        data.put("charm", leftCharm);
+        data.put("charmMoney", new BigDecimal(leftCharm)
+                .multiply(Constant.CHARM_TO_MONEY_RATE).setScale(2, BigDecimal.ROUND_HALF_DOWN));
         data.put("chargeBalance", user.getChargeBalance());
         return Result.success().data(data).msg("查询成功！");
     }
