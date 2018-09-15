@@ -5,11 +5,9 @@ import com.fulu.game.common.enums.RedisKeyEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.BoundListOperations;
-import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisConnectionUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -39,8 +37,6 @@ public class RedisOpenServiceImpl {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    private static RedisConnectionFactory connectionFactory;
-    private static RedisConnection connection;
 
     /**
      * 获取某个key的值
@@ -51,21 +47,6 @@ public class RedisOpenServiceImpl {
     public String get(String key) {
         Object value = redisTemplate.opsForValue().get(key);
         return (value != null) ? value.toString() : null;
-    }
-
-    /**
-     * 统计bit位为1的总数
-     * @param key
-     */
-    public Long bitCount(final String key) {
-        return (Long) redisTemplate.execute(new RedisCallback<Long>() {
-            @Override
-            public Long doInRedis(RedisConnection connection) throws DataAccessException {
-                long result = 0;
-                result = connection.bitCount(key.getBytes());
-                return result;
-            }
-        });
     }
 
 
@@ -98,21 +79,6 @@ public class RedisOpenServiceImpl {
      */
     public Boolean getBitSet(String key, long val) {
         return redisTemplate.opsForValue().getBit(key, val);
-    }
-
-    /**
-     * 设置某个key的值
-     *
-     * @param key
-     * @param value
-     * @param isPerpetual 是否永久保存（true：是；false：否）
-     */
-    public void set(String key, String value, boolean isPerpetual) {
-        if(isPerpetual){
-            redisTemplate.opsForValue().set(key, value);
-        } else {
-            set(key, value);
-        }
     }
 
     /**
@@ -286,11 +252,11 @@ public class RedisOpenServiceImpl {
      * @return
      */
     public <T> T takeFromTail(String key, int timeout) throws InterruptedException {
+//        lock.lockInterruptibly();
+        RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
+        RedisConnection connection = connectionFactory.getConnection();
         try {
             byte[] rawKey = redisTemplate.getKeySerializer().serialize(key);
-            while(connection == null){
-                init();
-            }
             List<byte[]> results = connection.bRPop(timeout, rawKey);
             if (CollectionUtils.isEmpty(results)) {
                 return null;
@@ -299,6 +265,9 @@ public class RedisOpenServiceImpl {
         } catch (Exception e) {
             log.error("获取队列信息异常:", e);
             return null;
+        } finally {
+//            lock.unlock();
+            RedisConnectionUtils.releaseConnection(connection, connectionFactory);
         }
     }
 
@@ -309,89 +278,23 @@ public class RedisOpenServiceImpl {
      * @return
      */
     public <T> T takeFromHead(String key,int timeout) throws InterruptedException {
+        //        lock.lockInterruptibly();
+        RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
+        RedisConnection connection = connectionFactory.getConnection();
         try {
             byte[] rawKey = redisTemplate.getKeySerializer().serialize(key);
-            while(connection == null){
-                init();
-            }
             List<byte[]> results = connection.bLPop(timeout, rawKey);
             if (CollectionUtils.isEmpty(results)) {
                 return null;
             }
             return (T) redisTemplate.getValueSerializer().deserialize(results.get(1));
         } catch (Exception e) {
-            log.info("获取队列信息异常:", e);
+            log.error("获取队列信息异常:", e);
             return null;
+        } finally {
+//            lock.unlock();
+            RedisConnectionUtils.releaseConnection(connection, connectionFactory);
         }
-    }
-
-    @PostConstruct
-    private void init() {
-        log.info("获取一个redis连接");
-        connectionFactory = redisTemplate.getConnectionFactory();
-        connection = connectionFactory.getConnection();
-    }
-
-    @PreDestroy
-    public void destroy() {
-        log.info("归还redis连接");
-        RedisConnectionUtils.releaseConnection(connection, connectionFactory);
-    }
-
-    /**
-     * 自增
-     * @param key
-     * @return
-     */
-    public long incr(String key) {
-        return incr( key, 1);
-    }
-
-
-    /**
-     * 递增
-     * @param key
-     * @param delta 递增因子，必须大于0
-     * @return
-     */
-    public long incr(String key, long delta) {
-        if (delta < 0) {
-            throw new RuntimeException("递增因子必须大于0");
-        }
-        return redisTemplate.opsForValue().increment(key, delta);
-    }
-
-    /**
-     * 自减
-     * @param key 键
-     * @return
-     */
-    public long decr(String key){
-        return decr( key, 1);
-    }
-
-    /**
-     * 递减
-     * @param key 键
-     * @param delta 要减少几(小于0)
-     * @return
-     */
-    public long decr(String key, long delta){
-        if(delta<0){
-            throw new RuntimeException("递减因子必须大于0");
-        }
-        return redisTemplate.opsForValue().increment(key, -delta);
-    }
-
-
-    /**
-     * 获取Integer类型的值
-     * @param key
-     * @return
-     */
-    public Integer getInteger(String key) {
-        Object value = redisTemplate.opsForValue().get(key);
-        return (value != null) ? (Integer) value : 0;
     }
 
 }

@@ -28,7 +28,8 @@ public class UserException extends BizException {
         NO_WECHATECO_EXCEPTION(21005, "没有匹配的微信生态类型"),
         BODY_NO_AUTH(21006, "用户未进行身份验证"),
         BODY_ALREADY_AUTH(21007, "用户已经认证了身份"),
-        MOBILE_NOT_MATCH_EXCEPTION(21008, "登录手机号不匹配");
+        MOBILE_NOT_MATCH_EXCEPTION(21008, "登录手机号不匹配"),
+        NO_AVAILABLE_OPENID(21009, "无法打款，用户没有有效的openId");
 
         private int code;
         private String msg;
