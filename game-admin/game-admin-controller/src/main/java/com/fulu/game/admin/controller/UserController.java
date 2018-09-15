@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
@@ -297,11 +298,12 @@ public class UserController extends BaseController {
      * 技能审核通过
      *
      * @param id
+     * @param maxPrice 最大定价价格
      * @return
      */
     @PostMapping(value = "/tech-auth/pass")
-    public Result techAuthPass(Integer id) {
-        userTechAuthService.pass(id);
+    public Result techAuthPass(Integer id, @RequestParam(required = false) BigDecimal maxPrice) {
+        userTechAuthService.pass(id,maxPrice);
         return Result.success().msg("技能审核通过!");
     }
 

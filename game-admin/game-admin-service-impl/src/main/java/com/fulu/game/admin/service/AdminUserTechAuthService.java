@@ -3,6 +3,8 @@ package com.fulu.game.admin.service;
 import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.service.UserTechAuthService;
 
+import java.math.BigDecimal;
+
 public interface AdminUserTechAuthService extends UserTechAuthService {
 
 
@@ -18,9 +20,10 @@ public interface AdminUserTechAuthService extends UserTechAuthService {
     /**
      * 技能审核通过
      * @param id
+     * @param maxPrice 最大定价价格
      * @return
      */
-    UserTechAuth pass(Integer id);
+    UserTechAuth pass(Integer id, BigDecimal maxPrice);
 
     /**
      * 冻结用户技能认证
