@@ -66,7 +66,7 @@ public class GlobalController extends BaseController{
      */
     @PostMapping("/chat-room/save-virtual-count")
     public Result saveChatRoomVirtualCount(@RequestParam(required = true) String count){
-        redisOpenService.set(RedisKeyEnum.CHAT_ROOM_VIRTUAL_COUNT.generateKey(),count);
+        redisOpenService.set(RedisKeyEnum.CHAT_ROOM_VIRTUAL_COUNT.generateKey(),count,true);
         return Result.success().msg("设置聊天室虚拟人数成功!").data(count);
     }
 
