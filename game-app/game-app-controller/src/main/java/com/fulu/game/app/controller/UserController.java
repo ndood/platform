@@ -120,7 +120,8 @@ public class UserController extends BaseController {
         User user = userService.getCurrentUser();
         // 当存在用户认证信息时取修改
         if (userVO != null && (userVO.getInterests() != null ||
-                userVO.getProfession() != null || userVO.getAbout() != null)) {
+                userVO.getProfession() != null || userVO.getAbout() != null ||
+                userVO.getPicUrls() != null || userVO.getVideoUrl() != null)) {
             UserInfoAuth userInfoAuth = new UserInfoAuth();
             userInfoAuth.setUserId(user.getId());
             if (userVO.getInterests() != null) {
