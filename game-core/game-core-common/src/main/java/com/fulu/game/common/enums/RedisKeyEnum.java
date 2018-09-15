@@ -62,7 +62,9 @@ public enum RedisKeyEnum {
     //访问次数
     ACCESS_COUNT,
     //发布动态数
-    DYNAMIC_COUNT;
+    DYNAMIC_COUNT,
+    //聊天室虚拟人数
+    CHAT_ROOM_VIRTUAL_COUNT;
 
 
 

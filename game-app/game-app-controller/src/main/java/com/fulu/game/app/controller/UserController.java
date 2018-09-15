@@ -157,7 +157,7 @@ public class UserController extends BaseController {
             // 先删除所有以前图片，然后插入
             userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(), FileTypeEnum.PIC.getType());
             userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(), FileTypeEnum.VIDEO.getType());
-            if (userVO != null && (userVO.getPicUrls() != null || userVO.getVideoUrl() != null)) {
+            if (userVO != null) {
                 String[] picUrls = userVO.getPicUrls();
                 if (picUrls != null && picUrls.length > 0) {
                     for (int i = 0; i < picUrls.length; i++) {
