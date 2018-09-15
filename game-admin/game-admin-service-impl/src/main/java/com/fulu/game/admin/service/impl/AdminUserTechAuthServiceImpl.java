@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -182,7 +183,7 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
 
 
     @Override
-    public UserTechAuth pass(Integer id) {
+    public UserTechAuth pass(Integer id, BigDecimal maxPrice) {
         try {
             Admin admin = adminService.getCurrentUser();
             log.info("技能审核通过:管理员操作:adminId:{};adminName:{};authInfoId:{}",admin.getId(),admin.getName(),id);
@@ -194,6 +195,9 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
             throw new  UserAuthException(UserAuthException.ExceptionCode.USER_TECH_FREEZE);
         }
         userTechAuth.setStatus(TechAuthStatusEnum.NORMAL.getType());
+        if(maxPrice != null){
+            userTechAuth.setMaxPrice(maxPrice);
+        }
         update(userTechAuth);
         //给用户推送通知
         adminPushService.techAuthAuditSuccess(userTechAuth.getUserId());
