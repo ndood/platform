@@ -19,6 +19,7 @@ import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.OrderEventService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +43,8 @@ public class OrderController extends BaseController {
     private RedisOpenServiceImpl redisOpenService;
     @Autowired
     private AppPayServiceImpl appPayService;
+
+
 
     @RequestMapping(value = "submit")
     public Result submit(@RequestParam(required = true) Integer productId,
@@ -116,14 +119,20 @@ public class OrderController extends BaseController {
     }
 
 
+
     /**
-     * 用户列表
+     * 订单列表
+     * @param pageNum
+     * @param pageSize
+     * @param type
      * @return
      */
-    @RequestMapping(value = "/list/user")
-    public Result userOrderList(){
-
-        return Result.success();
+    @RequestMapping(value = "/list")
+    public Result userOrderList(@RequestParam(required = true) Integer pageNum,
+                                @RequestParam(required = true) Integer pageSize,
+                                Integer type){
+        PageInfo<OrderDetailsVO>  orderList = appOrderServiceImpl.orderList(pageNum,pageSize,type);
+        return Result.success().data(orderList);
     }
 
 
@@ -142,7 +151,7 @@ public class OrderController extends BaseController {
             return Result.error().msg("取消协商后,两个小时内不能重复协商!");
         }
         appOrderServiceImpl.userConsultOrder(orderNo, refundMoney, remark, fileUrl);
-        return Result.success().data(orderNo);
+        return Result.success().data(orderNo).msg("提交订单协商!");
     }
 
 
@@ -157,7 +166,7 @@ public class OrderController extends BaseController {
     public Result consultAppeal(@RequestParam(required = true) String orderNo,
                                 Integer orderEventId) {
         appOrderServiceImpl.consultAgreeOrder(orderNo, orderEventId);
-        return Result.success().data(orderNo);
+        return Result.success().data(orderNo).msg("同意订单协商!");
     }
 
 
@@ -174,7 +183,7 @@ public class OrderController extends BaseController {
                                 String remark,
                                 @RequestParam(required = true) String[] fileUrl) {
         appOrderServiceImpl.consultRejectOrder(orderNo, orderEventId, remark, fileUrl);
-        return Result.success().data(orderNo);
+        return Result.success().data(orderNo).msg("拒绝协商订单!");
     }
 
     /**
@@ -210,7 +219,8 @@ public class OrderController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/user/cancel")
-    public Result userCancelOrder(@RequestParam(required = true) String orderNo) {
+    public Result userCancelOrder(@RequestParam(required = true) String orderNo,String reason) {
+        log.info("{}订单取消,原因:{}",reason);
         appOrderServiceImpl.userCancelOrder(orderNo);
         return Result.success().data(orderNo).msg("取消订单成功!");
     }
@@ -222,7 +232,8 @@ public class OrderController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/server/cancel")
-    public Result serverCancelOrder(@RequestParam(required = true) String orderNo) {
+    public Result serverCancelOrder(@RequestParam(required = true) String orderNo,String reason) {
+        log.info("{}订单取消,原因:{}",reason);
         appOrderServiceImpl.serverCancelOrder(orderNo);
         return Result.success().data(orderNo).msg("取消订单成功!");
     }

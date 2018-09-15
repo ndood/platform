@@ -6,6 +6,7 @@ import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.entity.Order;
+import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
@@ -93,5 +94,11 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         
         return orderDao.findByParameter(params);
     }
-    
+
+    @Override
+    public List<OrderDetailsVO> orderList(int type, int userId) {
+        List<OrderDetailsVO> list = orderDao.listOrderDetails(type, userId);
+        return list;
+    }
+
 }

@@ -60,9 +60,6 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         String orderBy = "tmd.create_time desc";
         PageHelper.startPage(pageNum, pageSize, orderBy);
         List<MoneyDetailsVO> list = moneyDetailsDao.findByUser(moneyDetailsVO);
-        if (CollectionUtil.isEmpty(list)) {
-            return null;
-        }
         for (MoneyDetailsVO vo : list) {
             if (vo.getAction().equals(MoneyOperateTypeEnum.USER_DRAW_CASH.getType())) {
                 if (vo.getCashStatus() == null) {
