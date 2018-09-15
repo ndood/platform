@@ -39,8 +39,6 @@ public class RedisOpenServiceImpl {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    private static RedisConnectionFactory connectionFactory;
-    private static RedisConnection connection;
 
     /**
      * 获取某个key的值
@@ -52,6 +50,7 @@ public class RedisOpenServiceImpl {
         Object value = redisTemplate.opsForValue().get(key);
         return (value != null) ? value.toString() : null;
     }
+
 
     /**
      * 统计bit位为1的总数
@@ -67,7 +66,6 @@ public class RedisOpenServiceImpl {
             }
         });
     }
-
 
     /**
      * 添加一个BitSet
@@ -105,21 +103,6 @@ public class RedisOpenServiceImpl {
      *
      * @param key
      * @param value
-     * @param isPerpetual 是否永久保存（true：是；false：否）
-     */
-    public void set(String key, String value, boolean isPerpetual) {
-        if(isPerpetual){
-            redisTemplate.opsForValue().set(key, value);
-        } else {
-            set(key, value);
-        }
-    }
-
-    /**
-     * 设置某个key的值
-     *
-     * @param key
-     * @param value
      */
     public void set(String key, String value) {
         set(key, value, TIME);
@@ -134,6 +117,22 @@ public class RedisOpenServiceImpl {
      */
     public void set(String key, String value, long time) {
         redisTemplate.opsForValue().set(key, value, time, TimeUnit.SECONDS);
+    }
+
+
+    /**
+     * 设置某个key的值
+     *
+     * @param key
+     * @param value
+     * @param isPerpetual 是否永久保存（true：是；false：否）
+     */
+    public void set(String key, String value, boolean isPerpetual) {
+        if(isPerpetual){
+            redisTemplate.opsForValue().set(key, value);
+        } else {
+            set(key, value);
+        }
     }
 
     /**
@@ -286,11 +285,11 @@ public class RedisOpenServiceImpl {
      * @return
      */
     public <T> T takeFromTail(String key, int timeout) throws InterruptedException {
+//        lock.lockInterruptibly();
+        RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
+        RedisConnection connection = connectionFactory.getConnection();
         try {
             byte[] rawKey = redisTemplate.getKeySerializer().serialize(key);
-            while(connection == null){
-                init();
-            }
             List<byte[]> results = connection.bRPop(timeout, rawKey);
             if (CollectionUtils.isEmpty(results)) {
                 return null;
@@ -299,6 +298,9 @@ public class RedisOpenServiceImpl {
         } catch (Exception e) {
             log.error("获取队列信息异常:", e);
             return null;
+        } finally {
+//            lock.unlock();
+            RedisConnectionUtils.releaseConnection(connection, connectionFactory);
         }
     }
 
@@ -309,34 +311,26 @@ public class RedisOpenServiceImpl {
      * @return
      */
     public <T> T takeFromHead(String key,int timeout) throws InterruptedException {
+        //        lock.lockInterruptibly();
+        RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
+        RedisConnection connection = connectionFactory.getConnection();
         try {
             byte[] rawKey = redisTemplate.getKeySerializer().serialize(key);
-            while(connection == null){
-                init();
-            }
             List<byte[]> results = connection.bLPop(timeout, rawKey);
             if (CollectionUtils.isEmpty(results)) {
                 return null;
             }
             return (T) redisTemplate.getValueSerializer().deserialize(results.get(1));
         } catch (Exception e) {
-            log.info("获取队列信息异常:", e);
+            log.error("获取队列信息异常:", e);
             return null;
+        } finally {
+//            lock.unlock();
+            RedisConnectionUtils.releaseConnection(connection, connectionFactory);
         }
     }
 
-    @PostConstruct
-    private void init() {
-        log.info("获取一个redis连接");
-        connectionFactory = redisTemplate.getConnectionFactory();
-        connection = connectionFactory.getConnection();
-    }
 
-    @PreDestroy
-    public void destroy() {
-        log.info("归还redis连接");
-        RedisConnectionUtils.releaseConnection(connection, connectionFactory);
-    }
 
     /**
      * 自增

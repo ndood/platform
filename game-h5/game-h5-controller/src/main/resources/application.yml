@@ -9,5 +9,5 @@ config:
     queue:
         miniappPush: false
         appPush: false
-        userScore: true
+        userScore: false
         formId: false

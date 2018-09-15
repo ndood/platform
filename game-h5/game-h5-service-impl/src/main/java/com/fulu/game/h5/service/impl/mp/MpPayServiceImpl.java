@@ -3,10 +3,7 @@ package com.fulu.game.h5.service.impl.mp;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.config.WxMpServiceSupply;
 import com.fulu.game.common.enums.*;
-import com.fulu.game.common.exception.BalancePayException;
-import com.fulu.game.common.exception.DataException;
-import com.fulu.game.common.exception.OrderException;
-import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.exception.*;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.entity.MoneyDetails;
 import com.fulu.game.core.entity.User;
@@ -187,6 +184,17 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         if (type.equals(VirtualPayOrderTypeEnum.VIRTUAL_ORDER.getType())) {
             user.setVirtualBalance((user.getVirtualBalance() == null ? 0 : user.getVirtualBalance())
                     + order.getVirtualMoney());
+
+            //记录虚拟币流水
+            VirtualDetails details = new VirtualDetails();
+            details.setUserId(user.getId());
+            details.setRelevantNo(order.getOrderNo());
+            details.setSum(user.getVirtualBalance());
+            details.setMoney(order.getVirtualMoney());
+            details.setType(VirtualDetailsTypeEnum.VIRTUAL_MONEY.getType());
+            details.setRemark(VirtualDetailsRemarkEnum.CHARGE.getMsg());
+            details.setCreateTime(DateUtil.date());
+            virtualDetailsService.create(details);
         } else {
             //余额充值订单，需要记录零钱流水
             MoneyDetails mDetails = new MoneyDetails();
@@ -272,17 +280,6 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         details.setCreateTime(DateUtil.date());
         virtualDetailsService.create(details);
 
-        //记录零钱流水
-        MoneyDetails mDetails = new MoneyDetails();
-        mDetails.setOperatorId(userId);
-        mDetails.setTargetId(userId);
-        mDetails.setMoney(actualMoney.negate());
-        mDetails.setAction(MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY.getType());
-        mDetails.setSum(user.getBalance().add(chargeBalance));
-        mDetails.setRemark(MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY.getMsg() + "订单号：" + orderNo);
-        mDetails.setCreateTime(DateUtil.date());
-        moneyDetailsService.drawSave(mDetails);
-
         //记录平台流水
         platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.VIRTUAL_ORDER_PAY,
                 order.getOrderNo(),
@@ -336,6 +333,11 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
             log.error("验证sessionkey错误:sessionkey:{};money:{};ip:{};userId:{}",
                     sessionkey, money, ip, user.getId());
             throw new DataException(DataException.ExceptionCode.NO_FORM_TOKEN_ERROR);
+        }
+
+        if (money.doubleValue() <= 0) {
+            log.error("充值金额money:{}", money);
+            throw new MpPayException(MpPayException.ExceptionCode.CHARGE_VALUE_ERROR);
         }
 
         VirtualPayOrder order = new VirtualPayOrder();

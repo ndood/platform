@@ -38,6 +38,7 @@
         <javax.mail>1.4.7</javax.mail>
         <com.sun.mail>1.5.4</com.sun.mail>
         <jpush-client.version>3.3.7</jpush-client.version>
+        <alipay.version>3.3.49.ALL</alipay.version>
         <main.basedir>${basedir}</main.basedir>
     </properties>
 
@@ -156,6 +157,11 @@
                 <groupId>cn.jpush.api</groupId>
                 <artifactId>jpush-client</artifactId>
                 <version>${jpush-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alipay.sdk</groupId>
+                <artifactId>alipay-sdk-java</artifactId>
+                <version>${alipay.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

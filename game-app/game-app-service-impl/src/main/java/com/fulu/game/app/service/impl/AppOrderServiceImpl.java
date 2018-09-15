@@ -17,8 +17,9 @@ import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.IBusinessPushService;
-import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
 import com.fulu.game.core.service.impl.push.MobileAppPushServiceImpl;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,10 +53,11 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
     private MobileAppPushServiceImpl mobileAppPushServiceImpl;
 
     @Autowired
-    private AppOrderShareProfitServiceImpl  appOrderShareProfitService;
+    private AppOrderShareProfitServiceImpl appOrderShareProfitService;
 
     @Autowired
     private UserCommentService userCommentService;
+
     /**
      * 用户提交订单
      *
@@ -136,9 +138,9 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
     }
 
 
-
     /**
      * 陪玩师接收订单
+     *
      * @param orderNo
      * @return
      */
@@ -161,7 +163,6 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
         mobileAppPushServiceImpl.receiveOrder(order);
         return order.getOrderNo();
     }
-
 
 
     public OrderDetailsVO findOrderDetails(String orderNo) {
@@ -216,7 +217,7 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
 
     @Override
     protected void dealOrderAfterPay(Order order) {
-        int minute = receiveOrderTime(order.getPayTime(),order.getBeginTime());
+        int minute = receiveOrderTime(order.getPayTime(), order.getBeginTime());
         //订单状态倒计时
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), minute);
         //发送短信通知给陪玩师
@@ -224,6 +225,27 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
         SMSUtil.sendOrderReceivingRemind(server.getMobile(), order.getName());
         //推送app通知
         mobileAppPushServiceImpl.orderPay(order);
+    }
+
+
+    /**
+     * 订单列表
+     * @param pageNum
+     * @param pageSize
+     * @param type     1是用户2是陪玩师
+     * @return
+     */
+    public PageInfo<OrderDetailsVO> orderList(int pageNum, int pageSize, Integer type) {
+        PageHelper.startPage(pageNum, pageSize, "id DESC");
+        User user = userService.getCurrentUser();
+        List<OrderDetailsVO> list = orderService.orderList(type, user.getId());
+        for (OrderDetailsVO orderDetailsVO : list) {
+            String categoryName = orderDetailsVO.getName().substring(0, orderDetailsVO.getName().indexOf(" "));
+            orderDetailsVO.setCategoryName(categoryName);
+            orderDetailsVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderDetailsVO.getStatus()));
+            orderDetailsVO.setStatusNote(OrderStatusEnum.getNoteByStatus(orderDetailsVO.getStatus()));
+        }
+        return new PageInfo<>(list);
     }
 
 
@@ -235,7 +257,7 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
 
     @Override
     protected void orderRefund(Order order, BigDecimal refundMoney) {
-        appOrderShareProfitService.orderRefund(order,refundMoney);
+        appOrderShareProfitService.orderRefund(order, refundMoney);
     }
 
 
@@ -247,6 +269,7 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
 
     /**
      * 待接单倒计时
+     *
      * @param payTime
      * @param beginTime
      * @return
@@ -264,6 +287,7 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
 
     /**
      * 待开始倒计时时长
+     *
      * @param receivingTime
      * @param beginTime
      * @return

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * todo：描述文字
+ * 提现类型枚举类
  *
  * @author Gong ZeChun
  * @date 2018/9/11 1:34
@@ -17,4 +17,13 @@ public enum CashDrawsTypeEnum implements TypeEnum<Integer> {
 
     private Integer type;
     private String msg;
+
+    public static String getMsgByType(Integer type) {
+        for (CashDrawsTypeEnum typeEnum : CashDrawsTypeEnum.values()) {
+            if (typeEnum.getType().equals(type)) {
+                return typeEnum.msg;
+            }
+        }
+        return null;
+    }
 }
