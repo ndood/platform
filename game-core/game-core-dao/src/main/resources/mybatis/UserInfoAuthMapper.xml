@@ -26,6 +26,8 @@
                extends="UserInfoAuthResultMap">
         <result column="money_sum" property="moneySum"/>
         <result column="order_count" property="orderCount"/>
+        <result column="expend_money_sum" property="expendMoneySum"/>
+        <result column="expend_order_count" property="expendOrderCount"/>
         <result column="user_info_auth" property="userInfoAuth"/>
         <result column="head_portraits_url" property="headUrl"/>
         <result column="gender" property="gender"/>
@@ -134,12 +136,16 @@
         u.nickname,
         IFNULL( sum( o.total_money ), 0 ) AS money_sum,
         count( o.service_user_id ) AS order_count,
+        IFNULL( sum( expendOrder.total_money ), 0 ) AS expend_money_sum,
+        count( expendOrder.user_id ) AS expend_order_count,
         (select count(1) from t_user_tech_auth tuta where tuta.user_id = uia.user_id) AS tech_auth_count
         FROM
         t_user_info_auth uia
         LEFT JOIN t_user u ON uia.user_id = u.id
         LEFT JOIN ( SELECT service_user_id, total_money FROM t_order WHERE STATUS &gt;= 500 AND STATUS &lt;= 600 ) o ON
         uia.user_id = o.service_user_id
+        LEFT JOIN ( SELECT user_id, total_money FROM t_order WHERE STATUS &gt;= 500 AND STATUS &lt;= 600 ) expendOrder ON
+        uia.user_id = expendOrder.user_id
         <where>
             <if test="userId != null">
                 and uia.user_id = #{userId}

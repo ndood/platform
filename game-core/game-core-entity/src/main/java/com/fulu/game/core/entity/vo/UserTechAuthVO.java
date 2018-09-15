@@ -8,6 +8,7 @@ import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.UserTechInfo;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -37,6 +38,24 @@ public class UserTechAuthVO  extends UserTechAuth {
     private String nickname;
 
     private Integer gender;
+
+    private String birth;
+    // 用户综合评分
+    private BigDecimal userScoreAvg;
+    // 用户注册来源类型
+    private Integer registerType;
+    //关注用户数
+    private Integer attentions;
+    //粉丝数
+    private Integer fansCount;
+    //虚拟粉丝数
+    private Integer virtualFansCount;
+    //历史浏览次数
+    private Integer historyBrowseCount;
+    //历史被访问次数
+    private Integer historyAccessedCount;
+    //发布动态数
+    private Integer dynamicCount;
 
     private List<TagVO> groupTags;
 

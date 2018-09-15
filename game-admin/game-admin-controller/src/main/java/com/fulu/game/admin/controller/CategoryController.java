@@ -270,4 +270,19 @@ public class CategoryController extends BaseController {
         return Result.success().msg("定价规则删除成功!");
     }
 
+    /**
+     * 获取一级分类列表（例如：游戏和娱乐）
+     * @return
+     */
+    @PostMapping( value = "first-list")
+    public Result firstList() {
+        List<Category> categoryList = categoryService.findByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType(), true);
+        for (Category category : categoryList) {
+            if (category.getIndexIcon() != null) {
+                category.setIcon(category.getIndexIcon());
+            }
+        }
+        return Result.success().data(categoryList);
+    }
+
 }

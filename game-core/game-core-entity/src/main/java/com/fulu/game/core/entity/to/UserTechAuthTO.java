@@ -3,6 +3,8 @@ package com.fulu.game.core.entity.to;
 import com.fulu.game.core.entity.UserTechAuth;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class UserTechAuthTO extends UserTechAuth {
 
@@ -21,5 +23,11 @@ public class UserTechAuthTO extends UserTechAuth {
      */
     private Integer[] tagIds;
 
-    
+    private String nickname;
+
+    private Integer gender;
+
+    private String birth;
+    // 用户综合评分
+    private BigDecimal userScoreAvg;
 }

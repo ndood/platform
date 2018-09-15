@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.admin.service.AdminUserTechAuthService;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.common.enums.VirtualProductTypeEnum;
@@ -24,6 +25,7 @@ import com.fulu.game.core.entity.vo.UserTechAuthVO;
 import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.AbsCommonService;
+import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -67,6 +69,8 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
     @Autowired
     private AdminPushServiceImpl adminPushService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
 
     @Override
     public ICommonDao<UserTechAuth, Integer> getDao() {
@@ -79,7 +83,24 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
     @Transactional
     public UserTechAuthTO save(UserTechAuthTO userTechAuthTO) {
         log.info("修改认证技能:userTechAuthVO:{}",userTechAuthTO);
-        User user = userService.getCurrentUser();
+//        User user = userService.getCurrentUser();
+        User user = userService.findById(userTechAuthTO.getUserId());
+        if(userTechAuthTO.getUserScoreAvg() != null){
+            user.setScoreAvg(userTechAuthTO.getUserScoreAvg());
+        }
+        if(userTechAuthTO.getBirth() != null){
+            user.setBirth(userTechAuthTO.getBirth());
+        }
+        if(userTechAuthTO.getGender() != null){
+            user.setGender(userTechAuthTO.getGender());
+        }
+        if(userTechAuthTO.getMobile() != null){
+            user.setMobile(userTechAuthTO.getMobile());
+        }
+        if(userTechAuthTO.getNickname() != null){
+            user.setNickname(userTechAuthTO.getNickname());
+        }
+        userService.update(user);
         Category category = categoryService.findById(userTechAuthTO.getCategoryId());
         userTechAuthTO.setStatus(TechAuthStatusEnum.AUTHENTICATION_ING.getType());
         userTechAuthTO.setMobile(user.getMobile());
@@ -299,6 +320,31 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
             UserTechAuthReject techAuthReject =userTechAuthRejectService.findLastRecordByTechAuth(userTechAuthVO.getId(),userTechAuthVO.getStatus());
             if(techAuthReject!=null){
                 userTechAuthVO.setReason(techAuthReject.getReason());
+            }
+        }
+        User user = userService.findById(userTechAuthVO.getUserId());
+        if(user != null){
+            userTechAuthVO.setGender(user.getGender());
+            userTechAuthVO.setBirth(user.getBirth());
+            userTechAuthVO.setNickname(user.getNickname());
+            userTechAuthVO.setUserScoreAvg(user.getScoreAvg());
+            userTechAuthVO.setRegisterType(user.getRegisterType());
+            int userId = user.getId();
+            //获取关注数
+            int attentions = redisOpenService.bitCount(RedisKeyEnum.ATTENTION_USERS.generateKey(userId)).intValue();
+            //获取粉丝数
+            int fans = redisOpenService.bitCount(RedisKeyEnum.ATTENTIONED_USERS.generateKey(userId)).intValue();
+            userTechAuthVO.setAttentions(attentions);
+            userTechAuthVO.setFansCount(fans);
+            userTechAuthVO.setHistoryBrowseCount(redisOpenService.getInteger(RedisKeyEnum.HISTORY_BROWSE_COUNT.generateKey(userId)));
+            userTechAuthVO.setHistoryAccessedCount(redisOpenService.getInteger(RedisKeyEnum.HISTORY_ACCESSED_COUNT.generateKey(userId)));
+            userTechAuthVO.setDynamicCount(redisOpenService.getInteger(RedisKeyEnum.DYNAMIC_COUNT.generateKey(userId)));
+            //查询是否存在开始接单
+            UserAutoReceiveOrder autoReceiveOrder =   userAutoReceiveOrderService.findByTechId(userTechAuth.getId());
+            if(autoReceiveOrder == null){
+                userTechAuthVO.setAutoOrder(false);
+            }else{
+                userTechAuthVO.setAutoOrder(true);
             }
         }
         //查询用户所有技能标签

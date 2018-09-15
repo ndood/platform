@@ -55,8 +55,14 @@ public enum RedisKeyEnum {
     ATTENTIONED_USERS,
     //未接单的订单ID
     ORDER_WAITING_SERVICE_ID,
+    //历史访问次数
+    HISTORY_BROWSE_COUNT,
+    //历史被访问次数
+    HISTORY_ACCESSED_COUNT,
     //访问次数
-    ACCESS_COUNT;
+    ACCESS_COUNT,
+    //发布动态数
+    DYNAMIC_COUNT;
 
 
 

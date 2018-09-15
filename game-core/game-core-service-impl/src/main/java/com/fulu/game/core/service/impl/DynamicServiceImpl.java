@@ -108,6 +108,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
         saveDynamic(dynamicVO);
         saveDynamicFiles(dynamicVO);
         saveDynamicES(dynamicVO);
+        redisOpenService.incr(RedisKeyEnum.DYNAMIC_COUNT.generateKey(dynamicVO.getUserId()));
         return null;
     }
 
@@ -227,6 +228,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
             throw new UserException(UserException.ExceptionCode.USER_MISMATCH_EXCEPTION);
         }
         deleteDynamicEsById(id);
+        redisOpenService.decr(RedisKeyEnum.DYNAMIC_COUNT.generateKey(id));
         return deleteById(id);
     }
 

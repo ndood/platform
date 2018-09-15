@@ -344,7 +344,7 @@
                 type = #{type},
             </if>
             <if test="registerType != null">
-                register_type = #{registerType}
+                register_type = #{registerType},
             </if>
 
             <if test="userInfoAuth != null">

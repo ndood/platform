@@ -134,6 +134,10 @@ public class AccessLogServiceImpl extends AbsCommonService<AccessLog,Long> imple
         }
         //永久保存
         redisOpenService.set(key,accessCount + "", true);
+        //设置浏览次数
+        redisOpenService.incr(RedisKeyEnum.HISTORY_BROWSE_COUNT.generateKey(accessLog.getFromUserId()));
+        //设置被访问次数
+        redisOpenService.incr(RedisKeyEnum.HISTORY_ACCESSED_COUNT.generateKey(accessLog.getToUserId()));
         return accessLog;
     }
 

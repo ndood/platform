@@ -90,5 +90,14 @@ public class RedisTest {
     }
 
 
+    @Test
+    public void IncTest(){
+        System.out.println("result: " + redisOpenServiceImpl.getInteger("noKey"));
+        System.out.println(redisOpenServiceImpl.incr("incrKey"));
+        System.out.println(redisOpenServiceImpl.incr("incrKey"));
+        System.out.println("result: " + redisOpenServiceImpl.getInteger("incrKey"));
+        System.out.println(redisOpenServiceImpl.decr("incrKey"));
+        System.out.println("result: " + redisOpenServiceImpl.getInteger("incrKey"));
+    }
 
 }

@@ -3,6 +3,8 @@ package com.fulu.game.core.entity.to;
 import com.fulu.game.core.entity.UserInfoAuth;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * 接收用户认证的个人信息
  */
@@ -28,6 +30,8 @@ public class UserInfoAuthTO extends UserInfoAuth {
     private Integer duration;
     //标签
     private Integer[] tags;
+    //综合得星评分数
+    private BigDecimal scoreAvg;
 
     private String privatePicStr;
 }

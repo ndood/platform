@@ -8,6 +8,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.enums.FileTypeEnum;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
 import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.ParamsException;
@@ -29,6 +30,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Key;
 import java.util.*;
 
 
@@ -66,6 +68,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     private VirtualProductAttachService virtualProductAttachService;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
     
     
 
@@ -107,6 +111,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         user.setBirth(userInfoAuthTO.getBirth());
         user.setConstellation(userInfoAuthTO.getConstellation());
         user.setUserInfoAuth(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType());
+        if(userInfoAuthTO.getScoreAvg() != null){
+            user.setScoreAvg(userInfoAuthTO.getScoreAvg());
+        }
         user.setUpdateTime(new Date());
         userService.update(user);
 
@@ -287,13 +294,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
         UserInfoAuthVO userInfoAuthVO = new UserInfoAuthVO();
         BeanUtil.copyProperties(userInfoAuth, userInfoAuthVO);
-        userInfoAuthVO.setNickname(user.getNickname());
-        userInfoAuthVO.setAge(user.getAge());
-        userInfoAuthVO.setHeadUrl(user.getHeadPortraitsUrl());
-        userInfoAuthVO.setGender(user.getGender());
-        userInfoAuthVO.setConstellation(user.getConstellation());
-        userInfoAuthVO.setBirth(user.getBirth());
-        userInfoAuthVO.setUserInfoAuth(user.getUserInfoAuth());
+        //设置用户认证扩展信息 add by shijiaoyun
+        setUserInfoAuthExtInfo(userInfoAuthVO, user);
 
         Integer userInfoAuthStatus = user.getUserInfoAuth();
         findUserAuthInfoByStatus(userInfoAuthStatus, userInfoAuthVO);
@@ -340,6 +342,41 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         }
 
         return userInfoAuthVO;
+    }
+
+    /**
+     * 设置用户认证信息附加信息
+     * add by shijiaoyun
+     * @param userInfoAuthVO
+     */
+    private void setUserInfoAuthExtInfo(UserInfoAuthVO userInfoAuthVO, User user) {
+        if(userInfoAuthVO == null || userInfoAuthVO.getUserId() == null || user == null){
+            return ;
+        }
+        int userId = user.getId();
+        userInfoAuthVO.setNickname(user.getNickname());
+        userInfoAuthVO.setAge(user.getAge());
+        userInfoAuthVO.setHeadUrl(user.getHeadPortraitsUrl());
+        userInfoAuthVO.setGender(user.getGender());
+        userInfoAuthVO.setConstellation(user.getConstellation());
+        userInfoAuthVO.setBirth(user.getBirth());
+        userInfoAuthVO.setUserInfoAuth(user.getUserInfoAuth());
+        userInfoAuthVO.setBalance(user.getBalance());
+        userInfoAuthVO.setChargeBalance(user.getChargeBalance());
+
+        //添加管理平台新增属性 add by shijiaoyun
+        userInfoAuthVO.setScoreAvg(user.getScoreAvg());
+        userInfoAuthVO.setRegisterType(user.getRegisterType());
+        //获取关注数
+        int attentions = redisOpenService.bitCount(RedisKeyEnum.ATTENTION_USERS.generateKey(userId)).intValue();
+        //获取粉丝数
+        int fans = redisOpenService.bitCount(RedisKeyEnum.ATTENTIONED_USERS.generateKey(userId)).intValue();
+        userInfoAuthVO.setAttentions(attentions);
+        userInfoAuthVO.setFansCount(fans);
+        userInfoAuthVO.setHistoryBrowseCount(redisOpenService.getInteger(RedisKeyEnum.HISTORY_BROWSE_COUNT.generateKey(userId)));
+        userInfoAuthVO.setHistoryAccessedCount(redisOpenService.getInteger(RedisKeyEnum.HISTORY_ACCESSED_COUNT.generateKey(userId)));
+        userInfoAuthVO.setDynamicCount(redisOpenService.getInteger(RedisKeyEnum.DYNAMIC_COUNT.generateKey(userId)));
+        // TODO shijiaoyun 此处还需要添加主接单技能和订单信息
     }
 
     @Override

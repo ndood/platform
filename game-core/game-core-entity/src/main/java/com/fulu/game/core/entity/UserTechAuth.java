@@ -50,7 +50,7 @@ public class UserTechAuth implements Serializable {
     private Integer resourceType;
 
     // 技能综合评分
-    private Integer scoreAvg;
+    private BigDecimal scoreAvg;
 
     private String mobile;
 
