@@ -20,6 +20,11 @@ public class UserComment implements Serializable {
 	private Integer id;
 	//订单关联id
 	private String orderNo;
+
+	private Integer categoryId;
+
+	private Integer techAuthId;
+
 	//玩家id
 	private Integer userId;
 	//打手id

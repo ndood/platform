@@ -1,6 +1,7 @@
 package com.fulu.game.app.controller;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.CouponTypeEnum;
 import com.fulu.game.core.entity.Coupon;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.CouponService;
@@ -37,6 +38,11 @@ public class CouponController extends BaseController {
                               @RequestParam( required = false)Integer categoryId) {
         User user = userService.getCurrentUser();
         List<Coupon> list = couponService.availableCouponList(user.getId(),orderMoney,categoryId);
+        for(Coupon coupon : list){
+            if(CouponTypeEnum.DISCOUNT.getType().equals(coupon.getType())){
+                coupon.setDeduction(coupon.getDeduction().multiply(new BigDecimal(10)));
+            }
+        }
         return Result.success().data(list);
     }
 }

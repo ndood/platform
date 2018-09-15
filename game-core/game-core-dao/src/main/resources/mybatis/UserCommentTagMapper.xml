@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.UserCommentTagDao">
+    <resultMap id="UserCommentTagResultMap" type="com.fulu.game.core.entity.UserCommentTag">
+        <id column="id" property="id"/>
+        <result column="comment_id" property="commentId"/>
+        <result column="tech_auth_id" property="techAuthId"/>
+        <result column="tag_id" property="tagId"/>
+        <result column="tag_name" property="tagName"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="UserCommentTagResultVOMap" type="com.fulu.game.core.entity.vo.UserCommentTagVO"
+               extends="UserCommentTagResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,comment_id,tech_auth_id,tag_id,tag_name,create_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="UserCommentTagResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user_comment_tag
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="UserCommentTagResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user_comment_tag
+    </select>
+
+    <select id="findByParameter" resultMap="UserCommentTagResultMap"
+            parameterType="com.fulu.game.core.entity.vo.UserCommentTagVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_user_comment_tag
+        <where>
+            <if test="commentId != null">
+                and comment_id = #{commentId}
+            </if>
+            <if test="techAuthId != null">
+                and tech_auth_id = #{techAuthId}
+            </if>
+            <if test="tagId != null">
+                and tag_id = #{tagId}
+            </if>
+            <if test="tagName != null">
+                and tag_name = #{tagName}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_user_comment_tag
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.UserCommentTag">
+        insert into
+        t_user_comment_tag (comment_id,tech_auth_id,tag_id,tag_name,create_time)
+        values
+        (#{commentId},#{techAuthId},#{tagId},#{tagName},#{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.UserCommentTag">
+        update t_user_comment_tag
+        <set>
+
+            <if test="commentId != null">
+                comment_id = #{commentId},
+            </if>
+
+            <if test="techAuthId != null">
+                tech_auth_id = #{techAuthId},
+            </if>
+
+            <if test="tagId != null">
+                tag_id = #{tagId},
+            </if>
+
+            <if test="tagName != null">
+                tag_name = #{tagName},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

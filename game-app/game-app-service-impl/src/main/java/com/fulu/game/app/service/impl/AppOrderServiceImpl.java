@@ -229,6 +229,32 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
 
 
     /**
+     * 用户验收订单
+     * @param orderNo
+     * @return
+     */
+    @Override
+    public String userVerifyOrder(String orderNo) {
+        log.info("用户验收订单orderNo:{}", orderNo);
+        Order order = orderService.findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getUserId());
+        if (!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())) {
+            throw new OrderException(order.getOrderNo(), "只有进行中的订单才能验收!");
+        }
+        order.setStatus(OrderStatusEnum.COMPLETE.getStatus());
+        order.setUpdateTime(new Date());
+        order.setCompleteTime(new Date());
+        orderService.update(order);
+        //订单分润
+        shareProfit(order);
+        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
+        //确认服务
+        getMinAppPushService().acceptOrder(order);
+        return orderNo;
+    }
+
+
+    /**
      * 订单列表
      * @param pageNum
      * @param pageSize

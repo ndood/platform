@@ -575,9 +575,7 @@ public class UserController extends BaseController {
     @PostMapping("/body-auth/get")
     public Result getUserAuthInfo() {
         User user = userService.getCurrentUser();
-
         UserBodyAuth authInfo = userBodyAuthService.getUserAuthInfo(user.getId());
-
         return Result.success().data(authInfo).msg("查询成功！");
     }
 

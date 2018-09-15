@@ -19,7 +19,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,order_no,user_id,server_user_id,score,score_avg,content,record_user,create_time,update_time    </sql>
+        id,order_no,user_id,server_user_id,category_id,tech_auth_id,score,score_avg,content,record_user,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserCommentResultMap">
         select
@@ -38,13 +38,7 @@
     <select id="findScoreAvgByServerUserId" parameterType="java.lang.Integer" resultType="java.math.BigDecimal">
         SELECT AVG(score) FROM t_user_comment WHERE server_user_id = #{serverUserId};
     </select>
-    <select id="callScoreAvgProc" parameterType="java.lang.Integer" statementType="CALLABLE">
-         <![CDATA[
-        {call star_score_avg_update_procedure(
-                 #{id,jdbcType=INTEGER,mode=IN}
-             )}
-         ]]>
-    </select>
+
     <select id="findByParameter" resultMap="UserCommentResultMap" parameterType="com.fulu.game.core.entity.vo.UserCommentVO">
         SELECT
         <include refid="Base_Column_List"/>
@@ -52,6 +46,12 @@
         <where>
             <if test="orderNo!= null">
                 and order_no = #{orderNo}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="techAuthId != null">
+                and tech_auth_id = #{techAuthId}
             </if>
             <if test="userId != null">
                 and user_id = #{userId}
@@ -87,6 +87,12 @@
         <where>
             <if test="orderNo!= null">
                 and order_no = #{orderNo}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="techAuthId != null">
+                and tech_auth_id = #{techAuthId}
             </if>
             <if test="userId != null">
                 and user_id = #{userId}
@@ -124,9 +130,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserComment">
         insert into
-        t_user_comment (order_no,user_id,server_user_id,score,score_avg,content,record_user,create_time,update_time)
+        t_user_comment (order_no,user_id,server_user_id,category_id,tech_auth_id,score,score_avg,content,record_user,create_time,update_time)
         values
-        (#{orderNo},#{userId},#{serverUserId},#{score},#{scoreAvg},#{content},#{recordUser},#{createTime},#{updateTime})
+        (#{orderNo},#{userId},#{serverUserId},#{categoryId},#{techAuthId},#{score},#{scoreAvg},#{content},#{recordUser},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.UserComment">
@@ -135,6 +141,13 @@
 
             <if test="orderNo != null">
                 order_no = #{orderNo},
+            </if>
+
+            <if test="categoryId != null">
+                 category_id = #{categoryId},
+            </if>
+            <if test="techAuthId != null">
+                 tech_auth_id = #{techAuthId},
             </if>
 
             <if test="userId != null">

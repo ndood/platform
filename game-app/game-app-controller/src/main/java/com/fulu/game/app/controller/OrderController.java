@@ -16,7 +16,9 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.entity.vo.OrderEventVO;
 import com.fulu.game.core.entity.vo.OrderVO;
+import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.service.OrderEventService;
+import com.fulu.game.core.service.UserCommentService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.github.pagehelper.PageInfo;
@@ -43,8 +45,8 @@ public class OrderController extends BaseController {
     private RedisOpenServiceImpl redisOpenService;
     @Autowired
     private AppPayServiceImpl appPayService;
-
-
+    @Autowired
+    private UserCommentService userCommentService;
 
     @RequestMapping(value = "submit")
     public Result submit(@RequestParam(required = true) Integer productId,
@@ -297,6 +299,19 @@ public class OrderController extends BaseController {
     public Result orderDetails(@RequestParam(required = true) String orderNo) {
         OrderDetailsVO orderDetailsVO = appOrderServiceImpl.findOrderDetails(orderNo);
         return Result.success().data(orderDetailsVO);
+    }
+
+
+
+    /**
+     * 用户-添加评价
+     *
+     * @return
+     */
+    @RequestMapping("/comment/save")
+    public Result save(UserCommentVO commentVO) {
+        userCommentService.save(commentVO);
+        return Result.success().msg("添加成功！");
     }
 
 }

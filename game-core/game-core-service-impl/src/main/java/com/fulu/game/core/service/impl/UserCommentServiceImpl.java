@@ -9,6 +9,7 @@ import com.fulu.game.core.dao.UserCommentDao;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserComment;
+import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.UserCommentService;
@@ -32,7 +33,8 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
     private OrderService orderService;
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private UserTechAuthServiceImpl userTechAuthService;
 
     @Override
     public ICommonDao<UserComment, Integer> getDao() {
@@ -58,11 +60,16 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
         }
         userService.isCurrentUser(order.getUserId());
         int serverUserId = order.getServiceUserId();
+
+        UserTechAuth userTechAuth = userTechAuthService.findByCategoryAndUser(order.getCategoryId(),serverUserId).get(0);
+
         UserComment comment = new UserComment();
         comment.setRecordUser(commentVO.getRecordUser());
         comment.setUserId(user.getId());
         comment.setServerUserId(serverUserId);
         comment.setScore(commentVO.getScore());
+        comment.setCategoryId(order.getCategoryId());
+        comment.setTechAuthId(userTechAuth.getId());
         comment.setOrderNo(commentVO.getOrderNo());
         comment.setContent(commentVO.getContent());
         comment.setCreateTime(new Date());
