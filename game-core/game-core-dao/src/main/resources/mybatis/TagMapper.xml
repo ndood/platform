@@ -36,6 +36,19 @@
         from t_tag
     </select>
 
+
+    <select id="findByTagIds" resultMap="TagResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_tag
+        <where>
+            id in
+            <foreach collection="tagIds" item="tagId" index="index" open="(" close=")" separator=",">
+                #{tagId}
+            </foreach>
+        </where>
+    </select>
+
     <select id="findByParameter" resultMap="TagResultMap" parameterType="com.fulu.game.core.entity.vo.TagVO">
         SELECT
         <include refid="Base_Column_List"/>
@@ -70,7 +83,6 @@
             </if>
         </where>
         ORDER BY pid ASC
-
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">

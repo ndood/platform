@@ -86,6 +86,14 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
     List<UserTechAuth> findByCategoryAndUser(Integer categoryId, Integer userId);
 
     /**
+     * 通过游戏分类和用户ID查询用户技能
+     * @param categoryId
+     * @param userId
+     * @return
+     */
+    UserTechAuth findTechByCategoryAndUser(Integer categoryId, Integer userId);
+
+    /**
      * 通过用户ID查询技能认证
      * @param userId
      * @return

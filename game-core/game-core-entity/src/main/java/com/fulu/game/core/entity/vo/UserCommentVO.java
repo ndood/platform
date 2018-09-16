@@ -1,6 +1,8 @@
 package com.fulu.game.core.entity.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fulu.game.core.entity.UserComment;
+import com.fulu.game.core.entity.UserCommentTag;
 import lombok.Data;
 
 import java.util.List;
@@ -17,10 +19,11 @@ public class UserCommentVO  extends UserComment {
 
     private String headUrl;
 
-
     //标签ID
+    @JsonIgnore
     private List<Integer> tagIds;
-    //标签名称
-    private List<String> tagNames;
+
+
+    private List<UserCommentTag>  userCommentTags;
 
 }

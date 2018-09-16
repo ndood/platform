@@ -18,4 +18,7 @@ public interface UserCommentTagDao extends ICommonDao<UserCommentTag,Integer>{
 
     List<UserCommentTag> findByParameter(UserCommentTagVO userCommentTagVO);
 
+
+
+
 }

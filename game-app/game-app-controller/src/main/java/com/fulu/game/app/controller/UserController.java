@@ -26,10 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @Slf4j
@@ -56,7 +53,8 @@ public class UserController extends BaseController {
     private UserCommentService commentService;
     @Autowired
     private UserBodyAuthService userBodyAuthService;
-
+    @Autowired
+    private TechTagService techTagService;
 
     /**
      * 修改/填写资料
@@ -377,9 +375,24 @@ public class UserController extends BaseController {
     @PostMapping("/body-auth/get")
     public Result getUserAuthInfo() {
         User user = userService.getCurrentUser();
-
         UserBodyAuth authInfo = userBodyAuthService.getUserAuthInfo(user.getId());
-
         return Result.success().data(authInfo).msg("查询成功！");
     }
+
+
+    /**
+     * 陪玩师技能标签列表
+     * @return
+     */
+    @PostMapping("/tech/tags")
+    public Result getUserTechTags(@RequestParam(required = true) Integer userId,
+                                  @RequestParam(required = true) Integer categoryId){
+        UserTechAuth userTechAuth = userTechAuthService.findTechByCategoryAndUser(userId, categoryId);
+        List<TechTag> techTags = new ArrayList<>();
+        if(userTechAuth!=null){
+            techTags = techTagService.findByTechAuthId(userTechAuth.getId());
+        }
+        return Result.success().data(techTags);
+    }
+
 }

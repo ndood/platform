@@ -179,6 +179,15 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         return userTechAuthDao.findByParameter(param);
     }
 
+    @Override
+    public UserTechAuth findTechByCategoryAndUser(Integer categoryId, Integer userId) {
+        List<UserTechAuth> userTechAuths = findByCategoryAndUser(categoryId,userId);
+        if(userTechAuths.isEmpty()){
+            return null;
+        }
+        return userTechAuths.get(0);
+    }
+
 
     @Override
     public UserTechAuthVO findTechAuthVOById(Integer id,Integer categoryId) {

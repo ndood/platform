@@ -21,7 +21,7 @@ public interface UserCommentService extends ICommonService<UserComment, Integer>
      */
     void save(UserCommentVO commentVO);
 
-    UserComment findByOrderNo(String orderNo);
+    UserCommentVO findByOrderNo(String orderNo);
 
     /**
      * 查询陪玩师的所有评论

@@ -1,18 +1,17 @@
 package com.fulu.game.core.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.enums.UserScoreEnum;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserCommentDao;
-import com.fulu.game.core.entity.Order;
-import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.UserComment;
-import com.fulu.game.core.entity.UserTechAuth;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.UserCommentService;
+import com.fulu.game.core.service.UserCommentTagService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.aop.UserScore;
 import com.github.pagehelper.PageHelper;
@@ -35,6 +34,9 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
     private UserService userService;
     @Autowired
     private UserTechAuthServiceImpl userTechAuthService;
+    @Autowired
+    private UserCommentTagService userCommentTagService;
+
 
     @Override
     public ICommonDao<UserComment, Integer> getDao() {
@@ -75,7 +77,8 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
         comment.setCreateTime(new Date());
         comment.setUpdateTime(comment.getCreateTime());
         commentDao.create(comment);
-
+        //创建评论标签
+        userCommentTagService.create(comment,commentVO.getTagIds());
         //更改订单状态
         order.setStatus(OrderStatusEnum.ALREADY_APPRAISE.getStatus());
         order.setUpdateTime(new Date());
@@ -109,16 +112,26 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
                 userComment.setNickName(user.getNickname());
                 userComment.setHeadUrl(user.getHeadPortraitsUrl());
             }
+            List<UserCommentTag>  userCommentTags =  userCommentTagService.findByCommentId(userComment.getId());
+            userComment.setUserCommentTags(userCommentTags);
         }
         return new PageInfo<>(commentVOList);
     }
 
     @Override
-    public UserComment findByOrderNo(String orderNo) {
+    public UserCommentVO findByOrderNo(String orderNo) {
         UserCommentVO commentVO = new UserCommentVO();
         commentVO.setOrderNo(orderNo);
         List<UserComment> list = commentDao.findByParameter(commentVO);
-        return list.size() > 0 ? list.get(0) : null;
+        UserComment  userComment = list.size() > 0 ? list.get(0) : null;
+        UserCommentVO userCommentVO = new UserCommentVO();
+        BeanUtil.copyProperties(userComment,userCommentVO);
+        List<UserCommentTag>  userCommentTags =  userCommentTagService.findByCommentId(userComment.getId());
+        User user = userService.findById(userComment.getUserId());
+        userCommentVO.setNickName(user.getNickname());
+        userCommentVO.setHeadUrl(user.getHeadPortraitsUrl());
+        userCommentVO.setUserCommentTags(userCommentTags);
+        return userCommentVO;
     }
 
 }

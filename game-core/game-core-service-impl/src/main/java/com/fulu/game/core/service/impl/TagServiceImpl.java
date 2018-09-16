@@ -171,4 +171,9 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
         }
         return true;
     }
+
+    @Override
+    public List<Tag> findByTagIds(List<Integer> tagIds) {
+        return tagDao.findByTagIds(tagIds);
+    }
 }

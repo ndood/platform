@@ -59,4 +59,6 @@ public interface TagService extends ICommonService<Tag,Integer>{
      * @return
      */
     Boolean delGroupTag(Tag tag);
+
+    List<Tag> findByTagIds(List<Integer> tagIds);
 }
