@@ -153,4 +153,53 @@
             id = #{id}
         </where>
     </update>
+
+    <update id="updateByUserId" parameterType="com.fulu.game.core.entity.UserNightInfo">
+        update t_user_night_info
+        <set>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+
+            <if test="type != null">
+                type = #{type},
+            </if>
+
+            <if test="name != null">
+                name = #{name},
+            </if>
+
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+
+            <if test="adminId != null">
+                admin_id = #{adminId},
+            </if>
+
+            <if test="adminName != null">
+                admin_name = #{adminName},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="delFlag != null">
+                del_flag = #{delFlag},
+            </if>
+        </set>
+        <where>
+            user_id = #{userId}
+        </where>
+    </update>
 </mapper>

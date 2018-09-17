@@ -19,4 +19,6 @@ public interface UserNightInfoDao extends ICommonDao<UserNightInfo, Integer> {
     List<UserNightInfo> findByParameter(UserNightInfoVO userNightInfoVO);
 
     List<UserNightInfo> list(UserNightInfoVO userNightInfoVO);
+
+    int updateByUserId(UserNightInfo userNightInfo);
 }

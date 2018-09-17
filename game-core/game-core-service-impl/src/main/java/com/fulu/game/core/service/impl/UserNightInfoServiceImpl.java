@@ -6,10 +6,13 @@ import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserNightInfoDao;
+import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.SalesMode;
 import com.fulu.game.core.entity.UserNightInfo;
 import com.fulu.game.core.entity.UserTechAuth;
+import com.fulu.game.core.entity.vo.SalesModeVO;
 import com.fulu.game.core.entity.vo.UserNightInfoVO;
+import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.SalesModeService;
 import com.fulu.game.core.service.UserNightInfoService;
 import com.fulu.game.core.service.UserTechAuthService;
@@ -34,6 +37,8 @@ public class UserNightInfoServiceImpl extends AbsCommonService<UserNightInfo, In
     private UserTechAuthService userTechAuthService;
     @Autowired
     private SalesModeService salesModeService;
+    @Autowired
+    private AdminService adminService;
 
     @Override
     public ICommonDao<UserNightInfo, Integer> getDao() {
@@ -86,5 +91,34 @@ public class UserNightInfoServiceImpl extends AbsCommonService<UserNightInfo, In
         } else {
             return null;
         }
+    }
+
+    @Override
+    public UserNightInfo setNightConfig(Integer userId, Integer sort, Integer categoryId, Integer type) {
+        Admin admin = adminService.getCurrentUser();
+
+        SalesModeVO vo = new SalesModeVO();
+        vo.setCategoryId(categoryId);
+        vo.setType(type);
+        vo.setDelFlag(0);
+        List<SalesMode> salesModeList = salesModeService.findByParameter(vo);
+        SalesMode salesMode = new SalesMode();
+        if (CollectionUtils.isNotEmpty(salesModeList)) {
+            salesMode = salesModeList.get(0);
+        }
+
+        UserNightInfo info = new UserNightInfo();
+        info.setUserId(userId);
+        info.setCategoryId(categoryId);
+        info.setType(type);
+        info.setName(salesMode.getName());
+        info.setSort(sort);
+        info.setAdminId(admin.getId());
+        info.setAdminName(admin.getName());
+        info.setUpdateTime(DateUtil.date());
+        info.setCreateTime(DateUtil.date());
+        info.setDelFlag(Boolean.FALSE);
+        userNightInfoDao.updateByUserId(info);
+        return info;
     }
 }

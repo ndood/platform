@@ -193,7 +193,6 @@ public class UserController extends BaseController {
         return Result.success().data(userInfoAuthVO);
     }
 
-
     /**
      * 通过用户手机查询用户信息
      *
@@ -530,12 +529,29 @@ public class UserController extends BaseController {
     /**
      * 获取夜场陪玩师设置
      *
-     * @param userId
-     * @return
+     * @param userId 用户id
+     * @return 封装结果集
      */
     @RequestMapping("/night-config/get")
     public Result getNightConfig(@RequestParam Integer userId) {
         UserNightInfo info = userNightInfoService.getNightConfig(userId);
         return Result.success().data(info).msg("查询成功！");
+    }
+
+    /**
+     * 设置夜场陪玩师信息
+     *
+     * @param sort       排序权重
+     * @param categoryId 分类id
+     * @param type       单位种类
+     * @return 封装结果集
+     */
+    @RequestMapping("/night-config/set")
+    public Result setNightConfig(@RequestParam Integer userId,
+                                 @RequestParam Integer sort,
+                                 @RequestParam Integer categoryId,
+                                 @RequestParam Integer type) {
+        UserNightInfo info = userNightInfoService.setNightConfig(userId, sort, categoryId, type);
+        return Result.success().data(info).msg("设置成功！");
     }
 }

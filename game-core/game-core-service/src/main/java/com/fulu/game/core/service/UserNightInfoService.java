@@ -19,4 +19,6 @@ public interface UserNightInfoService extends ICommonService<UserNightInfo, Inte
     void remove(Integer id);
 
     UserNightInfoVO getNightConfig(Integer userId);
+
+    UserNightInfo setNightConfig(Integer userId, Integer sort, Integer categoryId, Integer type);
 }
