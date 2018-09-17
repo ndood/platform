@@ -18,7 +18,8 @@ public class PayException extends BizException {
     public enum ExceptionCode {
         BALANCE_NOT_ENOUGH_EXCEPTION(90000, "余额不足！"),
         PAY_FAIL(90001, "支付失败！"),
-        PAYMENT_UN_MATCH(90002, "支付方式不匹配！");
+        PAYMENT_UN_MATCH(90002, "支付方式不匹配！"),
+        WECHAT_CREATE_PAY_FAIL(90003, "微信创建支付订单失败！");
 
         private int code;
         private String msg;

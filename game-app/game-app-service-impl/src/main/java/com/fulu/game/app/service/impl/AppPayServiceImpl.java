@@ -1,13 +1,15 @@
 package com.fulu.game.app.service.impl;
 
-import com.fulu.game.common.enums.PayBusinessEnum;
+import com.alipay.api.domain.AlipayTradeAppPayModel;
 import com.fulu.game.common.enums.PaymentEnum;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.PayRequestVO;
-import com.fulu.game.core.entity.vo.PaymentVO;
 import com.fulu.game.core.service.impl.pay.OrderPayServiceImpl;
-import com.fulu.game.core.service.impl.payment.PaymentService;
+import com.fulu.game.core.service.impl.payment.AlipayPayment;
+import com.fulu.game.core.service.impl.payment.BalancePayment;
+import com.fulu.game.core.service.impl.payment.WeChatPayPayment;
+import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderRequest;
 import com.github.binarywang.wxpay.exception.WxPayException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,11 @@ public class AppPayServiceImpl extends OrderPayServiceImpl {
     @Autowired
     private AppOrderServiceImpl appOrderService;
     @Autowired
-    private PaymentService paymentService;
+    private BalancePayment balancePayment;
+    @Autowired
+    private AlipayPayment alipayPayment;
+    @Autowired
+    private WeChatPayPayment weChatPayPayment;
 
     @Override
     protected void payOrder(String orderNo, BigDecimal actualMoney) {
@@ -30,21 +36,23 @@ public class AppPayServiceImpl extends OrderPayServiceImpl {
 
     @Override
     protected PayRequestVO pay(Order order, User user, String ip) {
+        PaymentEnum payment = PaymentEnum.getEnumByType(order.getPayment());
         PayRequestVO payRequestVO = new PayRequestVO();
         payRequestVO.setPayment(order.getPayment());
-        PaymentVO paymentVO = PaymentVO.builder().paymentEnum(PaymentEnum.getEnumByType(order.getPayment()))
-                .payBusinessEnum(PayBusinessEnum.ORDER)
-                .order(order)
-                .user(user)
-                .userIp(ip)
-                .build();
         //余额支付需要不需要调用支付请求
-        if (PaymentEnum.BALANCE_PAY.equals(PaymentEnum.getEnumByType(order.getPayment()))) {
-            if(paymentService.paySuccess(paymentVO)){
-                payOrder(order.getOrderNo(),order.getActualMoney());
+        if (PaymentEnum.BALANCE_PAY.equals(payment)) {
+            boolean flag = balancePayment.balancePayOrder(user.getId(),order.getActualMoney(),order.getOrderNo());
+            if (flag) {
+                payOrder(order.getOrderNo(), order.getActualMoney());
             }
-        }else{
-            Object payArguments = paymentService.createPayRequest(paymentVO);
+            payRequestVO.setPayArguments(true);
+        } else if (PaymentEnum.ALIPAY_PAY.equals(payment)){
+            AlipayTradeAppPayModel alipayTradeAppPayModel = alipayPayment.buildAlipayRequest(order);
+            String payResponse = alipayPayment.payRequest(alipayTradeAppPayModel);
+            payRequestVO.setPayArguments(payResponse);
+        } else if(PaymentEnum.WECHAT_PAY.equals(payment)){
+            WxPayUnifiedOrderRequest wxPayUnifiedOrderRequest = weChatPayPayment.buildWxPayRequest(order,user,ip);
+            Object payArguments = weChatPayPayment.payRequest(WeChatPayPayment.WechatType.APP,wxPayUnifiedOrderRequest);
             payRequestVO.setPayArguments(payArguments);
         }
         return payRequestVO;

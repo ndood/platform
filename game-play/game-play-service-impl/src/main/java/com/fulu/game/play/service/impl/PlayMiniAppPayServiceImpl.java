@@ -34,6 +34,8 @@ public class PlayMiniAppPayServiceImpl extends MiniAppOrderPayServiceImpl {
         playMiniAppOrderService.payOrder(orderNo, actualMoney);
     }
 
+
+
     @Override
     public WxPayMpOrderResult pay(Order order, User user, String requestIp) {
         WxPayUnifiedOrderRequest orderRequest = buildWxPayRequest(order, requestIp);

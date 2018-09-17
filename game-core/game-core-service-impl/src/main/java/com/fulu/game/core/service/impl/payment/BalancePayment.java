@@ -24,7 +24,7 @@ import java.util.Date;
  */
 @Service
 @Slf4j
-public class BalancePayServiceImpl  {
+public class BalancePayment {
 
     @Autowired
     UserService userService;
@@ -32,28 +32,16 @@ public class BalancePayServiceImpl  {
     private MoneyDetailsService moneyDetailsService;
 
 
-    private boolean balancePayVirtualMoney(Integer userId, BigDecimal actualMoney, String orderNo) {
+    public boolean balancePayVirtualMoney(Integer userId, BigDecimal actualMoney, String orderNo) {
         balancePayByUser(userId,actualMoney,orderNo,MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY);
         return true;
     }
 
-    private boolean balancePayOrder(Integer userId, BigDecimal actualMoney, String orderNo) {
+    public boolean balancePayOrder(Integer userId, BigDecimal actualMoney, String orderNo) {
         balancePayByUser(userId,actualMoney,orderNo,MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY);
         return true;
     }
 
-    public boolean balancePay(PayBusinessEnum payBusinessEnum, Integer userId, BigDecimal actualMoney, String orderNo) {
-        boolean flag =false;
-        switch (payBusinessEnum){
-            case ORDER:
-                flag = balancePayOrder(userId,actualMoney,orderNo);
-                break;
-            case VIRTUAL_PRODUCT:
-                flag = balancePayVirtualMoney(userId,actualMoney,orderNo);
-                break;
-        }
-        return flag;
-    }
 
 
     private boolean balancePayByUser(Integer userId, BigDecimal actualMoney, String orderNo,MoneyOperateTypeEnum moneyOperateTypeEnum){

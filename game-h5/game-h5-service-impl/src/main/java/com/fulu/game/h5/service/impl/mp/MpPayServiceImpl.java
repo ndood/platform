@@ -12,7 +12,7 @@ import com.fulu.game.core.entity.VirtualPayOrder;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.VirtualPayOrderServiceImpl;
-import com.fulu.game.core.service.impl.payment.BalancePayServiceImpl;
+import com.fulu.game.core.service.impl.payment.BalancePayment;
 import com.github.binarywang.wxpay.bean.notify.WxPayNotifyResponse;
 import com.github.binarywang.wxpay.bean.notify.WxPayOrderNotifyResult;
 import com.github.binarywang.wxpay.bean.order.WxPayMpOrderResult;
@@ -56,7 +56,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
     @Autowired
     private MoneyDetailsService moneyDetailsService;
     @Autowired
-    private BalancePayServiceImpl balancePayService;
+    private BalancePayment balancePayment;
 
     /**
      * 提交充值订单
@@ -252,7 +252,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         VirtualPayOrder order = virtualPayOrderService.findByOrderNo(orderNo);
         BigDecimal actualMoney = order.getActualMoney();
 
-        boolean payResult = balancePayService.balancePay(PayBusinessEnum.VIRTUAL_PRODUCT,userId, actualMoney, orderNo);
+        boolean payResult = balancePayment.balancePayVirtualMoney(userId, actualMoney, orderNo);
         if (!payResult) {
             log.error("余额支付虚拟币，支付失败，用户id：{}，订单号：{}", userId, orderNo);
             throw new PayException(PayException.ExceptionCode.PAY_FAIL);

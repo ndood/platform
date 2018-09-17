@@ -27,6 +27,8 @@ public class Config {
     //微信公众号
     private Wechat wechat_mp = new Wechat();
 
+    private Wechat wechat_app = new Wechat();
+
     private Elasticsearch elasticsearch = new Elasticsearch();
 
     //环信账户配置信息

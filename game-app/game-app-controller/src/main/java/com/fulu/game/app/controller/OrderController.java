@@ -84,6 +84,7 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/pay")
     @Deprecated
     public Result pay(@RequestParam(required = true) String orderNo,
+                      Integer payment,
                       HttpServletRequest request) {
         String ip = RequestUtil.getIpAdrress(request);
         Order order = appOrderServiceImpl.findByOrderNo(orderNo);
@@ -92,6 +93,7 @@ public class OrderController extends BaseController {
         if(result==null){
             PayRequestVO payRequestVO = new PayRequestVO();
             payRequestVO.setPayment(0);
+            payRequestVO.setPayArguments(true);
             result = payRequestVO;
         }
 
