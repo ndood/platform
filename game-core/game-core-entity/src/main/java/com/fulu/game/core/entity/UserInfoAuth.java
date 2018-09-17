@@ -21,8 +21,6 @@ public class UserInfoAuth implements Serializable {
     private Integer id;
     //用户ID
     private Integer userId;
-    //手机号
-    private String mobile;
     //qq号码
     private String qq;
     //微信号

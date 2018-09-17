@@ -20,7 +20,13 @@ public interface BalancePayService {
     boolean balancePayVirtualMoney(Integer userId, BigDecimal actualMoney, String orderNo);
 
 
-
+    /**
+     * 余额支付订单
+     * @param userId
+     * @param actualMoney
+     * @param orderNo
+     * @return
+     */
     boolean balancePayOrder(Integer userId, BigDecimal actualMoney, String orderNo);
 
 
