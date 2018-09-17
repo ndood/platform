@@ -475,20 +475,16 @@ ALTER TABLE `t_category` ADD COLUMN `example_about`  varchar(128) DEFAULT NULL C
 ALTER TABLE `t_user_comment` ADD COLUMN `category_id`  int(11) DEFAULT NULL COMMENT '游戏分类' after `order_no`;
 ALTER TABLE `t_user_comment` ADD COLUMN `tech_auth_id`  int(11) DEFAULT NULL COMMENT '游戏技能ID' after `category_id`;
 
-CREATE TABLE `t_comment_tag` (
+CREATE TABLE `t_user_comment_tag` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `service_user_id` int(11) DEFAULT NULL COMMENT '陪玩师id',
-  `user_id` int(11) DEFAULT NULL COMMENT '老板id',
-  `category_id` int(11) DEFAULT NULL COMMENT '分类id',
-  `comment_id` int(11) DEFAULT NULL COMMENT '评论id',
-  `tag_id` int(11) DEFAULT NULL COMMENT '标签id',
-  `star` int(11) DEFAULT NULL COMMENT '星数评级',
-  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `del_flag` tinyint(1) DEFAULT '0' COMMENT '是否已删除（0：否；1：是）',
+  `comment_id` int(11) NOT NULL COMMENT '评论ID',
+  `user_id` int(11) NOT NULL COMMENT '陪玩师用户ID',
+  `tech_auth_id` int(11) NOT NULL COMMENT '技能ID',
+  `tag_id` int(11) NOT NULL COMMENT '标签ID',
+  `tag_name` varchar(255) NOT NULL,
+  `create_time` datetime NOT NULL,
   PRIMARY KEY (`id`)
-)  COMMENT='评论标签表';
-
+) COMMENT='用户评论标签表';
 
 
 

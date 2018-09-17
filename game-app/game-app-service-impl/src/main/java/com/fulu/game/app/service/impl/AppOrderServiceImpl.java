@@ -270,6 +270,14 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
             orderDetailsVO.setCategoryName(categoryName);
             orderDetailsVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderDetailsVO.getStatus()));
             orderDetailsVO.setStatusNote(OrderStatusEnum.getNoteByStatus(orderDetailsVO.getStatus()));
+            OrderProduct orderProduct = orderProductService.findByOrderNo(orderDetailsVO.getOrderNo());
+            orderDetailsVO.setPriceUnit(orderProduct.getUnit()+"/"+orderProduct.getPrice()+"元*"+orderProduct.getAmount());
+            //订单已评价状态显示订单评价的分数
+            if(orderDetailsVO.getStatus().equals(OrderStatusEnum.ALREADY_APPRAISE.getStatus())){
+                UserComment userComment = userCommentService.findByOrderNo(orderDetailsVO.getOrderNo());
+                orderDetailsVO.setCommentScore(userComment.getScore());
+            }
+
         }
         return new PageInfo<>(list);
     }

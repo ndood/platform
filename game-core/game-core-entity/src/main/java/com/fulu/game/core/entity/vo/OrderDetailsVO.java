@@ -12,6 +12,9 @@ public class OrderDetailsVO extends Order {
 
     private String categoryName;
 
+    //订单价格单位
+    private String priceUnit;
+
     private String userHeadUrl;
 
     private String userNickName;
