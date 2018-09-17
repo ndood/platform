@@ -4,7 +4,7 @@ import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.service.PayService;
+import com.fulu.game.core.service.OrderPayService;
 import com.github.binarywang.wxpay.bean.notify.WxPayNotifyResponse;
 import com.github.binarywang.wxpay.exception.WxPayException;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 
 @Service
 @Slf4j
-public abstract class PayServiceImpl<T> implements PayService {
+public abstract class OrderPayServiceImpl<T> implements OrderPayService {
 
     @Override
     public Object payOrder(Order order, User user, String requestIp) {
@@ -36,7 +36,13 @@ public abstract class PayServiceImpl<T> implements PayService {
         }
     }
 
+    /**
+     * 修改订单的支付状态
+     * @param orderNo
+     * @param actualMoney
+     */
     protected abstract void payOrder(String orderNo, BigDecimal actualMoney);
+
 
     protected abstract Object pay(Order order, User user, String ip);
 

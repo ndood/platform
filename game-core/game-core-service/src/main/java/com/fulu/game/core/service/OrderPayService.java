@@ -7,7 +7,7 @@ import com.github.binarywang.wxpay.exception.WxPayException;
 
 import java.math.BigDecimal;
 
-public interface PayService {
+public interface OrderPayService {
 
     /**
      * 订单支付

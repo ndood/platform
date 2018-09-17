@@ -10,23 +10,27 @@ import lombok.Getter;
  * @date 2018/9/13 19:42
  */
 @Getter
-public class BalancePayException extends BizException {
+public class PayException extends BizException {
     private ExceptionCode exceptionCode;
 
     @AllArgsConstructor
     @Getter
     public enum ExceptionCode {
         BALANCE_NOT_ENOUGH_EXCEPTION(90000, "余额不足！"),
-        PAY_FAIL(90001, "支付失败！");
+        PAY_FAIL(90001, "支付失败！"),
+        PAYMENT_UN_MATCH(90002, "支付方式不匹配！");
 
         private int code;
         private String msg;
     }
 
-    public BalancePayException(ExceptionCode exceptionCode) {
+    public PayException(ExceptionCode exceptionCode) {
         super();
         this.code = exceptionCode.getCode();
         this.message = exceptionCode.getMsg();
         this.exceptionCode = exceptionCode;
     }
+
+
+
 }

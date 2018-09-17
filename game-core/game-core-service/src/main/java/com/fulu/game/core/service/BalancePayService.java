@@ -11,12 +11,18 @@ import java.math.BigDecimal;
 public interface BalancePayService {
 
     /**
-     * 余额支付
-     *
+     * 余额支付钻石
      * @param userId      用户id
      * @param actualMoney 实付金额
      * @param orderNo     订单编号
      * @return 是否支付成功
      */
-    boolean balancePay(Integer userId, BigDecimal actualMoney, String orderNo);
+    boolean balancePayVirtualMoney(Integer userId, BigDecimal actualMoney, String orderNo);
+
+
+
+    boolean balancePayOrder(Integer userId, BigDecimal actualMoney, String orderNo);
+
+
+
 }
