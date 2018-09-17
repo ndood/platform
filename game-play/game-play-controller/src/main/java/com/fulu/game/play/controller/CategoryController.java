@@ -87,6 +87,8 @@ public class CategoryController extends BaseController {
         return Result.success().data(pageInfo);
     }
 
+    //todo gzc 新接口 把之前的游戏分类数据和午夜场的数据 全部返回
+
     /**
      * 根据业务查询游戏销售方式
      *
@@ -98,11 +100,6 @@ public class CategoryController extends BaseController {
         List<SalesMode> salesModeList = salesModeService.findByCategory(categoryId);
         return Result.success().data(salesModeList);
     }
-
-
-
-
-
 
 
     /**
