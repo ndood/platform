@@ -37,7 +37,6 @@ public class AclFilter extends AccessControlFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        System.out.println(request);
         String action = httpRequest.getRequestURI().replace(httpRequest.getContextPath(), "");
         List<String> urls = IOUtils.readLines(AclFilter.class.getClassLoader().getResourceAsStream("notRequireLoginAction.data"), "UTF-8");
         if(urls != null && urls.size() > 0){
