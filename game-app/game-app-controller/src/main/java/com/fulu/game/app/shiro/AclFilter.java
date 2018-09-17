@@ -48,10 +48,10 @@ public class AclFilter extends AccessControlFilter {
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        String action = httpRequest.getRequestURI().replace(httpRequest.getContextPath(), "");
         List<String> urls = NOT_REQUIRE_LOGIN_ACTION;
         if(urls != null && urls.size() > 0){
+            HttpServletRequest httpRequest = (HttpServletRequest) request;
+            String action = httpRequest.getRequestURI().replace(httpRequest.getContextPath(), "");
             for(String url: urls){
                 if(action != null && !"".equals(action) && url != null &&
                         !"".equals(url) && url.equals(action)){
