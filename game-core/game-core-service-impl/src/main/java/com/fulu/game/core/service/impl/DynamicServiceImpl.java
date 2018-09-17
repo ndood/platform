@@ -123,8 +123,9 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
     @Override
     public Page<DynamicDoc> list(Integer pageSize, Integer slide, Integer id, Integer type) {
         List<String> userIdList = null;
-        User user = userService.getCurrentUser();
+        User user = null;
         if(type != null && type == 2){
+            userService.getCurrentUser();
             userIdList = new ArrayList<>();
             userIdList.add(user.getId() + "");
             List<UserFriend> list = userFriendService.getAllAttentionsByUserId(user.getId());
