@@ -160,6 +160,18 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * @param pageNum
      * @param pageSize
      * @param categoryId
+     * @param orderBy 排序规则 sales，newnan
+     * @param dans 段位信息
+     * @param prices 价格信息
+     * @return
+     */
+    PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId,Integer gender,Integer pageNum,Integer pageSize,String orderBy, String dans, String prices);
+
+    /**
+     * 查询商品橱窗
+     * @param pageNum
+     * @param pageSize
+     * @param categoryId
      * @return
      */
     PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId,Integer gender,Integer pageNum,Integer pageSize,String orderBy);

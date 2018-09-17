@@ -610,30 +610,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                                         Integer pageNum,
                                         Integer pageSize,
                                         String orderBy) {
-        PageInfo<ProductShowCaseVO> page = null;
-        try {
-            Page<ProductShowCaseVO> searchResult = productSearchComponent.searchShowCaseDoc(categoryId, gender, pageNum, pageSize, orderBy,ProductShowCaseVO.class);
-            page = new PageInfo<ProductShowCaseVO>(searchResult);
-        } catch (Exception e) {
-            log.error("ProductShowCase查询异常:", e);
-            PageHelper.startPage(pageNum, pageSize, "create_time desc");
-            List<ProductShowCaseVO> showCaseVOS = productDao.findProductShowCase(categoryId, gender);
-            for (ProductShowCaseVO showCaseVO : showCaseVOS) {
-                UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(showCaseVO.getUserId(), false, false, true, false);
-                showCaseVO.setNickName(userInfoVO.getNickName());
-                showCaseVO.setGender(userInfoVO.getGender());
-                showCaseVO.setMainPhoto(userInfoVO.getMainPhotoUrl());
-                showCaseVO.setCity(userInfoVO.getCity());
-                showCaseVO.setPersonTags(userInfoVO.getTags());
-                UserTechInfo userTechInfo = userTechAuthService.findDanInfo(showCaseVO.getTechAuthId());
-                if (userTechInfo != null) {
-                    showCaseVO.setDan(userTechInfo.getValue());
-                }
-                showCaseVO.setOnLine(isProductStartOrderReceivingStatus(showCaseVO.getId()));
-            }
-            page = new PageInfo<ProductShowCaseVO>(showCaseVOS);
-        }
-        return page;
+        return findProductShowCase( categoryId, gender, pageNum, pageSize, orderBy, null, null);
     }
 
     /**
@@ -740,6 +717,46 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         ProductVO productVO = new ProductVO();
         productVO.setUserId(userId);
         return productDao.findByParameter(productVO);
+    }
+
+    /**
+     * 查询商品橱窗
+     *
+     * @param categoryId
+     * @param gender
+     * @param pageNum
+     * @param pageSize
+     * @param orderBy
+     * @param dans
+     * @param prices
+     * @return
+     */
+    @Override
+    public PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId, Integer gender, Integer pageNum, Integer pageSize, String orderBy, String dans, String prices) {
+        PageInfo<ProductShowCaseVO> page = null;
+        try {
+            Page<ProductShowCaseVO> searchResult = productSearchComponent.searchShowCaseDoc(categoryId, gender, pageNum, pageSize, orderBy,dans, prices,ProductShowCaseVO.class);
+            page = new PageInfo<ProductShowCaseVO>(searchResult);
+        } catch (Exception e) {
+            log.error("ProductShowCase查询异常:", e);
+            PageHelper.startPage(pageNum, pageSize, "create_time desc");
+            List<ProductShowCaseVO> showCaseVOS = productDao.findProductShowCase(categoryId, gender);
+            for (ProductShowCaseVO showCaseVO : showCaseVOS) {
+                UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(showCaseVO.getUserId(), false, false, true, false);
+                showCaseVO.setNickName(userInfoVO.getNickName());
+                showCaseVO.setGender(userInfoVO.getGender());
+                showCaseVO.setMainPhoto(userInfoVO.getMainPhotoUrl());
+                showCaseVO.setCity(userInfoVO.getCity());
+                showCaseVO.setPersonTags(userInfoVO.getTags());
+                UserTechInfo userTechInfo = userTechAuthService.findDanInfo(showCaseVO.getTechAuthId());
+                if (userTechInfo != null) {
+                    showCaseVO.setDan(userTechInfo.getValue());
+                }
+                showCaseVO.setOnLine(isProductStartOrderReceivingStatus(showCaseVO.getId()));
+            }
+            page = new PageInfo<ProductShowCaseVO>(showCaseVOS);
+        }
+        return page;
     }
 
 

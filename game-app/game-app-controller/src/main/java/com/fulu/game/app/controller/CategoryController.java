@@ -110,6 +110,8 @@ public class CategoryController extends BaseController {
      * @param pageNum
      * @param pageSize
      * @param orderBy
+     * @param dans 单位信息
+     * @param prices 价格信息
      * @return
      */
     @RequestMapping(value = "/product/list")
@@ -117,8 +119,10 @@ public class CategoryController extends BaseController {
                                       Integer gender,
                                       @RequestParam(required = true) Integer pageNum,
                                       @RequestParam(required = true) Integer pageSize,
-                                      String orderBy) {
-        PageInfo<ProductShowCaseVO> pageInfo = productService.findProductShowCase(categoryId, gender, pageNum, pageSize, orderBy);
+                                      String orderBy,
+                                      String dans,
+                                      String prices) {
+        PageInfo<ProductShowCaseVO> pageInfo = productService.findProductShowCase(categoryId, gender, pageNum, pageSize, orderBy, dans, prices);
         return Result.success().data(pageInfo);
     }
 
