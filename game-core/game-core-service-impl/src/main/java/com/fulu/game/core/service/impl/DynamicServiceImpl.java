@@ -125,7 +125,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
         List<String> userIdList = null;
         User user = null;
         if(type != null && type == 2){
-            userService.getCurrentUser();
+            user = userService.getCurrentUser();
             userIdList = new ArrayList<>();
             userIdList.add(user.getId() + "");
             List<UserFriend> list = userFriendService.getAllAttentionsByUserId(user.getId());
