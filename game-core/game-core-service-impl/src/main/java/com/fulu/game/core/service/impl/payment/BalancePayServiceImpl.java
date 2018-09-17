@@ -41,7 +41,6 @@ public class BalancePayServiceImpl implements BalancePayService {
     @Override
     public boolean balancePayOrder(Integer userId, BigDecimal actualMoney, String orderNo) {
         balancePayByUser(userId,actualMoney,orderNo,MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY);
-
         return true;
     }
 
