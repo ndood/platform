@@ -7,8 +7,11 @@ import com.fulu.game.core.entity.Tag;
 import com.fulu.game.core.entity.UserComment;
 import com.fulu.game.core.entity.UserCommentTag;
 import com.fulu.game.core.entity.vo.UserCommentTagVO;
+import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.service.TagService;
 import com.fulu.game.core.service.UserCommentTagService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +47,15 @@ public class UserCommentTagServiceImpl extends AbsCommonService<UserCommentTag, 
         UserCommentTagVO param = new UserCommentTagVO();
         param.setCommentId(commentId);
         return userCommentTagDao.findByParameter(param);
+    }
+
+    @Override
+    public PageInfo<UserCommentTag> findByServerId(Integer pageNum, Integer pageSize, Integer serverId) {
+        UserCommentTagVO param = new UserCommentTagVO();
+        param.setUserId(serverId);
+        PageHelper.startPage(pageNum, pageSize, "create_time desc");
+        List<UserCommentTag> userCommentTagList = userCommentTagDao.findByServerId(param);
+        return new PageInfo<>(userCommentTagList);
     }
 
 

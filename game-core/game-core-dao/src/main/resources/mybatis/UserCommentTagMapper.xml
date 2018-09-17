@@ -61,6 +61,12 @@
         </where>
     </select>
 
+    <select id="findByServerId" resultMap="UserCommentTagResultMap"
+            parameterType="com.fulu.game.core.entity.vo.UserCommentTagVO">
+        select DISTINCT tag_name from t_user_comment_tag
+        where user_id = #{userId}
+    </select>
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_user_comment_tag
         <where>

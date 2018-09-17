@@ -56,6 +56,9 @@ public class UserController extends BaseController {
     @Autowired
     private TechTagService techTagService;
 
+    @Autowired
+    private UserCommentTagService userCommentTagService;
+
     /**
      * 修改/填写资料
      *
@@ -342,6 +345,22 @@ public class UserController extends BaseController {
                                       Integer pageSize,
                                       Integer serverId) {
         PageInfo<UserCommentVO> page = commentService.findByServerId(pageNum, pageSize, serverId);
+        return Result.success().data(page);
+    }
+
+    /**
+     * 查询陪玩师评论标签列表接口
+     *
+     * @param pageNum
+     * @param pageSize
+     * @param serverId
+     * @return
+     */
+    @RequestMapping(value = "/comment-tag/list")
+    public Result findCommentsTagList(Integer pageNum,
+                                      Integer pageSize,
+                                      Integer serverId) {
+        PageInfo<UserCommentTag> page = userCommentTagService.findByServerId(pageNum, pageSize, serverId);
         return Result.success().data(page);
     }
 

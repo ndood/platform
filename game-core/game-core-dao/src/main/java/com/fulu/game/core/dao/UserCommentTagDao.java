@@ -19,6 +19,10 @@ public interface UserCommentTagDao extends ICommonDao<UserCommentTag,Integer>{
     List<UserCommentTag> findByParameter(UserCommentTagVO userCommentTagVO);
 
 
-
-
+    /**
+     * 获取用户评论标签列表集合
+     * @param param
+     * @return
+     */
+    List<UserCommentTag> findByServerId(UserCommentTagVO param);
 }
