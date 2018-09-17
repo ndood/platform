@@ -13,7 +13,7 @@ import com.fulu.game.core.service.OrderDealService;
 import com.fulu.game.core.service.OrderEventService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.fulu.game.play.service.impl.MiniAppOrderPayServiceImpl;
+import com.fulu.game.play.service.impl.PlayMiniAppPayServiceImpl;
 import com.fulu.game.play.service.impl.PilotMiniAppOrderServiceImpl;
 import com.fulu.game.play.service.impl.PlayMiniAppOrderServiceImpl;
 import com.fulu.game.play.service.impl.PlayMiniAppPushServiceImpl;
@@ -42,7 +42,7 @@ public class OrderController extends BaseController {
     @Autowired
     private OrderDealService orderDealService;
     @Autowired
-    private MiniAppOrderPayServiceImpl playMiniAppPayService;
+    private PlayMiniAppPayServiceImpl playMiniAppPayService;
     @Autowired
     private UserService userService;
     @Autowired

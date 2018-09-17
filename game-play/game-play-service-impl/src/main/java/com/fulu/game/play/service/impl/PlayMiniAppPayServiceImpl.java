@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 
 @Service
 @Slf4j
-public class MiniAppOrderPayServiceImpl extends MiniAppOrderPayServiceImpl {
+public class PlayMiniAppPayServiceImpl extends MiniAppOrderPayServiceImpl {
 
     @Autowired
     private WxMaServiceSupply wxMaServiceSupply;

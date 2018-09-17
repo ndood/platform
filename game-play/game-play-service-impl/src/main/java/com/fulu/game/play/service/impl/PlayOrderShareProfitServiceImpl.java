@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 public class PlayOrderShareProfitServiceImpl extends OrderShareProfitServiceImpl {
 
     @Autowired
-    private MiniAppOrderPayServiceImpl playMiniAppPayService;
+    private PlayMiniAppPayServiceImpl playMiniAppPayService;
 
     @Override
     public Boolean refund(Order order, BigDecimal actualMoney, BigDecimal refundUserMoney) throws WxPayException {

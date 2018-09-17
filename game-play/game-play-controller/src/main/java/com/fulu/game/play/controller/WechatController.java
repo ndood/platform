@@ -1,6 +1,6 @@
 package com.fulu.game.play.controller;
 
-import com.fulu.game.play.service.impl.MiniAppOrderPayServiceImpl;
+import com.fulu.game.play.service.impl.PlayMiniAppPayServiceImpl;
 import com.github.binarywang.wxpay.bean.notify.WxPayNotifyResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 public class WechatController {
 
     @Autowired
-    private MiniAppOrderPayServiceImpl playMiniAppPayService;
+    private PlayMiniAppPayServiceImpl playMiniAppPayService;
 
     @ResponseBody
     @RequestMapping("/pay/callback")
