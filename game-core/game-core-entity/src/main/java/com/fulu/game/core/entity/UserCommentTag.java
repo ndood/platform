@@ -19,6 +19,8 @@ public class UserCommentTag implements Serializable {
 	private Integer id;
 	//评论ID
 	private Integer commentId;
+	//陪玩师ID
+	private Integer userId;
 	//技能ID
 	private Integer techAuthId;
 	//标签ID
