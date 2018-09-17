@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,17 @@ import java.util.Map;
  */
 @Slf4j
 public class AclFilter extends AccessControlFilter {
+
+    /** 不需要登录的请求 */
+    private static List<String> NOT_REQUIRE_LOGIN_ACTION = new ArrayList<>();
+
+    static {
+        try {
+            NOT_REQUIRE_LOGIN_ACTION = IOUtils.readLines(AclFilter.class.getClassLoader().getResourceAsStream("notRequireLoginAction.data"), "UTF-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
@@ -38,7 +50,7 @@ public class AclFilter extends AccessControlFilter {
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String action = httpRequest.getRequestURI().replace(httpRequest.getContextPath(), "");
-        List<String> urls = IOUtils.readLines(AclFilter.class.getClassLoader().getResourceAsStream("notRequireLoginAction.data"), "UTF-8");
+        List<String> urls = NOT_REQUIRE_LOGIN_ACTION;
         if(urls != null && urls.size() > 0){
             for(String url: urls){
                 if(action != null && !"".equals(action) && url != null &&
