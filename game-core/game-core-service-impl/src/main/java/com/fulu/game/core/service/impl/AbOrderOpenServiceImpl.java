@@ -214,7 +214,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         User user = userService.getCurrentUser();
         OrderDeal orderDeal = new OrderDeal();
         orderDeal.setTitle("上传凭证");
-        orderDeal.setType(OrderDealTypeEnum.CONSULT.getType());
+        orderDeal.setType(OrderEventTypeEnum.CONSULT.getType());
         orderDeal.setUserId(user.getId());
         orderDeal.setRemark(remark);
         orderDeal.setOrderNo(order.getOrderNo());
@@ -357,7 +357,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         String title = "发起了协商-" + refundType + " ￥" + refundMoney.toPlainString();
         OrderDeal orderDeal = new OrderDeal();
         orderDeal.setTitle(title);
-        orderDeal.setType(OrderDealTypeEnum.CONSULT.getType());
+        orderDeal.setType(OrderEventTypeEnum.CONSULT.getType());
         orderDeal.setUserId(user.getId());
         orderDeal.setRemark(remark);
         orderDeal.setOrderNo(order.getOrderNo());
@@ -429,7 +429,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         orderService.update(order);
         OrderDeal orderDeal = new OrderDeal();
         orderDeal.setTitle("拒绝了协商");
-        orderDeal.setType(OrderDealTypeEnum.CONSULT.getType());
+        orderDeal.setType(OrderEventTypeEnum.CONSULT.getType());
         orderDeal.setUserId(user.getId());
         orderDeal.setRemark(remark);
         orderDeal.setOrderNo(order.getOrderNo());
@@ -470,7 +470,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         String title = "同意了协商，￥" + orderEvent.getRefundMoney().toPlainString() + "已经退款结算";
         OrderDeal orderDeal = new OrderDeal();
         orderDeal.setTitle(title);
-        orderDeal.setType(OrderDealTypeEnum.CONSULT.getType());
+        orderDeal.setType(OrderEventTypeEnum.CONSULT.getType());
         orderDeal.setUserId(user.getId());
         orderDeal.setRemark("陪玩师同意协商");
         orderDeal.setOrderNo(order.getOrderNo());

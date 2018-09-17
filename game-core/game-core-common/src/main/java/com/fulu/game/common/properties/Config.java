@@ -38,6 +38,8 @@ public class Config {
 
     private Ordermail ordermail = new Ordermail();
 
+    private AlipayPay alipayPay = new AlipayPay();
+
     @Data
     public static class Evn {
         private String prefix;
@@ -117,5 +119,13 @@ public class Config {
         private boolean appPush;
         private boolean userScore;
         private boolean formId;
+    }
+
+    @Data
+    public static class AlipayPay{
+        private String appId;
+        private String appPrivateKey;
+        private String alipayPublicKey;
+        private String payNotifyUrl;
     }
 }

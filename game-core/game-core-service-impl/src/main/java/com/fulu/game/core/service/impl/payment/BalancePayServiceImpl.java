@@ -2,11 +2,11 @@ package com.fulu.game.core.service.impl.payment;
 
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.enums.MoneyOperateTypeEnum;
+import com.fulu.game.common.enums.PayBusinessEnum;
 import com.fulu.game.common.exception.PayException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.entity.MoneyDetails;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.service.BalancePayService;
 import com.fulu.game.core.service.MoneyDetailsService;
 import com.fulu.game.core.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ import java.util.Date;
  */
 @Service
 @Slf4j
-public class BalancePayServiceImpl implements BalancePayService {
+public class BalancePayServiceImpl  {
 
     @Autowired
     UserService userService;
@@ -32,16 +32,27 @@ public class BalancePayServiceImpl implements BalancePayService {
     private MoneyDetailsService moneyDetailsService;
 
 
-    @Override
-    public boolean balancePayVirtualMoney(Integer userId, BigDecimal actualMoney, String orderNo) {
+    private boolean balancePayVirtualMoney(Integer userId, BigDecimal actualMoney, String orderNo) {
         balancePayByUser(userId,actualMoney,orderNo,MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY);
         return true;
     }
 
-    @Override
-    public boolean balancePayOrder(Integer userId, BigDecimal actualMoney, String orderNo) {
+    private boolean balancePayOrder(Integer userId, BigDecimal actualMoney, String orderNo) {
         balancePayByUser(userId,actualMoney,orderNo,MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY);
         return true;
+    }
+
+    public boolean balancePay(PayBusinessEnum payBusinessEnum, Integer userId, BigDecimal actualMoney, String orderNo) {
+        boolean flag =false;
+        switch (payBusinessEnum){
+            case ORDER:
+                flag = balancePayOrder(userId,actualMoney,orderNo);
+                break;
+            case VIRTUAL_PRODUCT:
+                flag = balancePayVirtualMoney(userId,actualMoney,orderNo);
+                break;
+        }
+        return flag;
     }
 
 

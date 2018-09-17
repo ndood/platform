@@ -13,10 +13,7 @@ import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.vo.OrderDetailsVO;
-import com.fulu.game.core.entity.vo.OrderEventVO;
-import com.fulu.game.core.entity.vo.OrderVO;
-import com.fulu.game.core.entity.vo.UserCommentVO;
+import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.service.OrderEventService;
 import com.fulu.game.core.service.UserCommentService;
 import com.fulu.game.core.service.UserService;
@@ -92,6 +89,12 @@ public class OrderController extends BaseController {
         Order order = appOrderServiceImpl.findByOrderNo(orderNo);
         User user = userService.findById(order.getUserId());
         Object result = appPayService.payOrder(order, user, ip);
+        if(result==null){
+            PayRequestVO payRequestVO = new PayRequestVO();
+            payRequestVO.setPayment(0);
+            result = payRequestVO;
+        }
+
         return Result.success().data(result);
     }
 

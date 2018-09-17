@@ -2,7 +2,6 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.common.enums.OrderEventTypeEnum;
-import com.fulu.game.common.enums.OrderDealTypeEnum;
 import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.OrderEventDao;
@@ -92,7 +91,7 @@ public class OrderEventServiceImpl extends AbsCommonService<OrderEvent, Integer>
         create(orderEvent);
         OrderDeal orderDeal = new OrderDeal();
         orderDeal.setTitle("陪玩师提交验收订单");
-        orderDeal.setType(OrderDealTypeEnum.CHECK.getType());
+        orderDeal.setType(OrderEventTypeEnum.CHECK.getType());
         orderDeal.setUserId(order.getServiceUserId());
         orderDeal.setRemark(remark);
         orderDeal.setOrderNo(order.getOrderNo());
@@ -137,7 +136,7 @@ public class OrderEventServiceImpl extends AbsCommonService<OrderEvent, Integer>
         create(orderEvent);
         OrderDeal orderDeal = new OrderDeal();
         orderDeal.setTitle("申请了客服仲裁");
-        orderDeal.setType(OrderDealTypeEnum.APPEAL.getType());
+        orderDeal.setType(OrderEventTypeEnum.APPEAL.getType());
         orderDeal.setUserId(applyUser.getId());
         orderDeal.setRemark(remark);
         orderDeal.setOrderNo(order.getOrderNo());
@@ -161,7 +160,7 @@ public class OrderEventServiceImpl extends AbsCommonService<OrderEvent, Integer>
             orderDeal.setRemark("用户取消协商订单");
             orderDeal.setUserId(applyUser.getId());
         }
-        orderDeal.setType(OrderDealTypeEnum.CONSULT.getType());
+        orderDeal.setType(OrderEventTypeEnum.CONSULT.getType());
         orderDeal.setOrderNo(order.getOrderNo());
         orderDeal.setOrderEventId(orderEvent.getId());
         orderDeal.setCreateTime(new Date());

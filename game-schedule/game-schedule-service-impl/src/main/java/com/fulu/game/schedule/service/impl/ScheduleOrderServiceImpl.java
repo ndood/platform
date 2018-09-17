@@ -1,6 +1,5 @@
 package com.fulu.game.schedule.service.impl;
 
-import com.fulu.game.common.enums.OrderDealTypeEnum;
 import com.fulu.game.common.enums.OrderEventTypeEnum;
 import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.enums.OrderTypeEnum;
@@ -180,7 +179,7 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
         String title = "系统自动同意了协商，￥" + orderEvent.getRefundMoney().toPlainString() + "已经退款结算";
         OrderDeal orderDeal = new OrderDeal();
         orderDeal.setTitle(title);
-        orderDeal.setType(OrderDealTypeEnum.CONSULT.getType());
+        orderDeal.setType(OrderEventTypeEnum.CONSULT.getType());
         orderDeal.setUserId(order.getServiceUserId());
         orderDeal.setRemark("系统自动同意协商");
         orderDeal.setOrderNo(order.getOrderNo());
