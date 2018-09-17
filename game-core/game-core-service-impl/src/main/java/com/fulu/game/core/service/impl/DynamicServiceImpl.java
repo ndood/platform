@@ -135,7 +135,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
                 }
             }
         }
-        return getDynamicList( pageSize, slide, id, userIdList, user);
+        return getDynamicList( pageSize, slide, id, userIdList, user, false);
     }
 
 
@@ -149,7 +149,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
      * @return
      */
     @Override
-    public Page<DynamicDoc> userDynamicList(Integer pageSize, Integer slide, Integer id, Integer userId) {
+    public Page<DynamicDoc> userDynamicList(Integer pageSize, Integer slide, Integer id, Integer userId, boolean isPicOrVideo) {
         List<String> userIdList = new ArrayList<>();
         User user = userService.getCurrentUser();
         if(userId == null){
@@ -157,7 +157,20 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
         } else {
             userIdList.add(userId + "");
         }
-        return getDynamicList( pageSize, slide, id, userIdList, user);
+        return getDynamicList( pageSize, slide, id, userIdList, user, isPicOrVideo);
+    }
+
+    /**
+     * 获取用户动态列表接口
+     * @param pageSize 每页数量
+     * @param slide    0：下滑刷新；1：上划加载更多
+     * @param id       上划：传客户端最大id；下滑：传客户端最小id
+     * @param userId   非必传，不传查用户自己动态，传了查其他用户动态
+     * @return
+     */
+    @Override
+    public Page<DynamicDoc> userDynamicList(Integer pageSize, Integer slide, Integer id, Integer userId) {
+        return userDynamicList( pageSize, slide, id, userId, false);
     }
 
 
@@ -183,9 +196,18 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
     @Override
     public List<DynamicVO> getNewestDynamicList(Integer userId) {
         List<DynamicVO> result = new ArrayList<>();
-        Page<DynamicDoc> page = userDynamicList(4, 0, 0, userId);
+        DynamicVO params = new DynamicVO();
+        // 先获取最新的图片和视频动态
+        Page<DynamicDoc> page = userDynamicList(4, 0, 0, userId,true);
         if(page != null){
             List<DynamicDoc> list = page.getResult();
+            if(list == null || list.isEmpty()){
+                //不存在图片和视频动态，则获取最新的一条动态
+                page = userDynamicList(1, 0, 0, userId,false);
+                if(page != null){
+                    list = page.getResult();
+                }
+            }
             if(list != null && !list.isEmpty()){
                 for(DynamicDoc doc: list){
                     DynamicVO dynamicVO = new DynamicVO();
@@ -209,6 +231,9 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
         }
         return result;
     }
+
+
+
 
     /**
      * 通过ID删除动态信息
@@ -327,10 +352,10 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
      * @param user
      * @return
      */
-    private Page<DynamicDoc> getDynamicList(Integer pageSize, Integer slide, Integer id, List<String> userIdList, User user){
+    private Page<DynamicDoc> getDynamicList(Integer pageSize, Integer slide, Integer id, List<String> userIdList, User user, boolean isPicOrVideo){
         Page<DynamicDoc> page = null;
         try {
-            page = dynamicSearchComponent.searchDynamicDocList(slide, id, null, null,pageSize, "",userIdList ,null);
+            page = dynamicSearchComponent.searchDynamicDocList(slide, id, null, null,pageSize, "",userIdList ,null, isPicOrVideo);
         } catch (IOException e) {
             e.printStackTrace();
         }
