@@ -5,7 +5,6 @@
     <resultMap id="UserInfoAuthResultMap" type="com.fulu.game.core.entity.UserInfoAuth">
         <id column="id" property="id"/>
         <result column="user_id" property="userId"/>
-        <result column="mobile" property="mobile"/>
         <result column="qq" property="qq"/>
         <result column="wechat" property="wechat"/>
         <result column="is_reject_submit" property="isRejectSubmit"/>
@@ -36,7 +35,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,mobile,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,sort,create_time,update_time,im_substitute_id,interests,profession,about
+        id,user_id,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,sort,create_time,update_time,im_substitute_id,interests,profession,about
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserInfoAuthResultMap">
@@ -75,9 +74,7 @@
             <if test="userId != null">
                 and user_id = #{userId}
             </if>
-            <if test="mobile != null">
-                and mobile = #{mobile}
-            </if>
+
             <if test="qq != null">
                 and qq = #{qq}
             </if>
@@ -127,6 +124,7 @@
         u.user_info_auth,
         u.head_portraits_url,
         u.im_id,
+        u.mobile,
         u.im_psw,
         u.gender,
         u.age,
@@ -143,9 +141,7 @@
             <if test="userId != null">
                 and uia.user_id = #{userId}
             </if>
-            <if test="mobile != null">
-                and uia.mobile = #{mobile}
-            </if>
+
             <if test="nickname != null">
                 and u.nickname LIKE CONCAT('%', #{nickname},'%')
             </if>
@@ -187,9 +183,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserInfoAuth">
         insert into
-        t_user_info_auth (user_id,mobile,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,sort,create_time,update_time,interests,profession,about)
+        t_user_info_auth (user_id,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,sort,create_time,update_time,interests,profession,about)
         values
-        (#{userId},#{mobile},#{qq},#{wechat},#{isRejectSubmit},#{mainPicUrl},#{pushTimeInterval},#{allowExport},#{sort},#{createTime},#{updateTime},#{interests},#{profession},#{about})
+        (#{userId},#{qq},#{wechat},#{isRejectSubmit},#{mainPicUrl},#{pushTimeInterval},#{allowExport},#{sort},#{createTime},#{updateTime},#{interests},#{profession},#{about})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.UserInfoAuth">
@@ -198,10 +194,6 @@
 
             <if test="userId != null">
                 user_id = #{userId},
-            </if>
-
-            <if test="mobile != null">
-                mobile = #{mobile},
             </if>
 
             <if test="qq != null">
@@ -254,10 +246,6 @@
 
             <if test="userId != null">
                 user_id = #{userId},
-            </if>
-
-            <if test="mobile != null">
-                mobile = #{mobile},
             </if>
 
             <if test="qq != null">

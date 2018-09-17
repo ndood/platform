@@ -27,6 +27,8 @@ public class UserInfoAuthVO extends UserInfoAuth {
 
     private String birth;
 
+    private String mobile;
+
     private String constellation;
 
     private Integer age;
