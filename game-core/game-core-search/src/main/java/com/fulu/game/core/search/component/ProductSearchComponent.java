@@ -111,7 +111,6 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
         return page;
     }
 
-
     /**
      * 分类商品查询
      *
@@ -124,11 +123,13 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
      * @throws IOException
      */
     public <T> Page<T> searchShowCaseDoc(int categoryId,
-                                                      Integer gender,
-                                                      Integer pageNum,
-                                                      Integer pageSize,
-                                                      String orderBy,
-                                                      Class<T> type) throws IOException {
+                                         Integer gender,
+                                         Integer pageNum,
+                                         Integer pageSize,
+                                         String orderBy,
+                                         String dans,
+                                         String prices,
+                                         Class<T> type) throws IOException {
         //封装查询条件
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
@@ -138,6 +139,14 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
 
         boolQueryBuilder.filter(QueryBuilders.termQuery("categoryId", categoryId));
         boolQueryBuilder.filter(QueryBuilders.termQuery("isIndexShow", true));
+        if(dans != null && !"".equals(dans)){
+            String[] dansArr = dans.split(",");
+            boolQueryBuilder.filter(QueryBuilders.termsQuery("dan", dansArr));
+        }
+        if(prices != null && !"".equals(prices)){
+            String[] priceArr = prices.split(",");
+            boolQueryBuilder.filter(QueryBuilders.termsQuery("price", priceArr));
+        }
         searchSourceBuilder.query(boolQueryBuilder);
 
         //置顶排序
@@ -182,6 +191,27 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
         page.setTotal(result.getTotal());
         page.setOrderBy(orderBy);
         return page;
+    }
+
+
+    /**
+     * 分类商品查询
+     *
+     * @param categoryId
+     * @param gender
+     * @param pageNum
+     * @param pageSize
+     * @param orderBy
+     * @return
+     * @throws IOException
+     */
+    public <T> Page<T> searchShowCaseDoc(int categoryId,
+                                                      Integer gender,
+                                                      Integer pageNum,
+                                                      Integer pageSize,
+                                                      String orderBy,
+                                                      Class<T> type) throws IOException {
+        return searchShowCaseDoc( categoryId, gender, pageNum, pageSize, orderBy, null, null,type);
     }
 
 
