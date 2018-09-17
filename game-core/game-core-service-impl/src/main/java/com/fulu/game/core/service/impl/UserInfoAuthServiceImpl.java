@@ -99,9 +99,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
             throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE);
         }
-        if (userInfoAuthTO.getMobile() == null) {
-            userInfoAuthTO.setMobile(user.getMobile());
-        }
         user.setGender(userInfoAuthTO.getGender());
         user.setAge(userInfoAuthTO.getAge());
         user.setBirth(userInfoAuthTO.getBirth());
