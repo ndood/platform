@@ -76,6 +76,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Autowired
     private MoneyDetailsService moneyDetailsService;
 
+    @Autowired
+    private UserTechAuthService userTechAuthService;
+
 
     @Override
     public ICommonDao<User, Integer> getDao() {
@@ -788,6 +791,19 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
                 userVO.setPicUrls(picArr);
             }
             List<Product> productList = productService.findByUserId(userId);
+            if(productList != null && !productList.isEmpty()){
+                UserTechAuth userTechAuth = null;
+                for(int i = 0; i < productList.size(); i++){
+                    userTechAuth = userTechAuthService.findById(productList.get(i).getTechAuthId());
+                    if(userTechAuth != null){
+                        productList.get(i).setOrderCount(userTechAuth.getOrderCount());
+                        productList.get(i).setVirtualOrderCount(userTechAuth.getVirtualOrderCount());
+                        productList.get(i).setVoice(userTechAuth.getVoice());
+                        productList.get(i).setVoiceDuration(userTechAuth.getVoiceDuration());
+                        productList.get(i).setScoreAvg(userTechAuth.getScoreAvg());
+                    }
+                }
+            }
             userVO.setUserProducts(productList);
             List<DynamicVO> newestDynamicList = dynamicService.getNewestDynamicList(userId);
             userVO.setNewestDynamics(newestDynamicList);
