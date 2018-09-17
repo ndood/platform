@@ -9,6 +9,7 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
+import org.apache.commons.io.IOUtils;
 import org.apache.shiro.web.filter.AccessControlFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,6 +36,19 @@ public class AclFilter extends AccessControlFilter {
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        System.out.println(request);
+        String action = httpRequest.getRequestURI().replace(httpRequest.getContextPath(), "");
+        List<String> urls = IOUtils.readLines(AclFilter.class.getClassLoader().getResourceAsStream("notRequireLoginAction.data"), "UTF-8");
+        if(urls != null && urls.size() > 0){
+            for(String url: urls){
+                if(action != null && !"".equals(action) && url != null &&
+                        !"".equals(url) && url.equals(action)){
+                    log.info("notRequireLoginAction: " + action);
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
