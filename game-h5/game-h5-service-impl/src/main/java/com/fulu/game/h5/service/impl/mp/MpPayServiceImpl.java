@@ -97,7 +97,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));
 
         Map<String, Object> resultMap = new HashMap<>(4);
-        if (payment.equals(VirtualPayOrderPaymentEnum.WECHAT_PAY.getType())) {
+        if (payment.equals(PaymentEnum.WECHAT_PAY.getType())) {
             resultMap.put("orderNo", order.getOrderNo());
             resultMap.put("paySuccess", 0);
         } else {
@@ -254,7 +254,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         boolean payResult = balancePayService.balancePay(userId, actualMoney, orderNo);
         if (!payResult) {
             log.error("余额支付虚拟币，支付失败，用户id：{}，订单号：{}", userId, orderNo);
-            throw new BalancePayException(BalancePayException.ExceptionCode.PAY_FAIL);
+            throw new PayException(PayException.ExceptionCode.PAY_FAIL);
         }
 
         BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
@@ -345,7 +345,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         order.setName("余额充值订单：付款金额：¥" + money + "，充值金额：¥" + money + "");
         order.setUserId(user.getId());
         order.setType(VirtualPayOrderTypeEnum.BALANCE_ORDER.getType());
-        order.setPayment(VirtualPayOrderPaymentEnum.WECHAT_PAY.getType());
+        order.setPayment(PaymentEnum.WECHAT_PAY.getType());
         order.setActualMoney(money);
         order.setMoney(money);
         order.setOrderIp(ip);

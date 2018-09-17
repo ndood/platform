@@ -2,7 +2,7 @@ package com.fulu.game.core.service.impl.payment;
 
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.enums.MoneyOperateTypeEnum;
-import com.fulu.game.common.exception.BalancePayException;
+import com.fulu.game.common.exception.PayException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.entity.MoneyDetails;
 import com.fulu.game.core.entity.User;
@@ -30,6 +30,8 @@ public class BalancePayServiceImpl implements BalancePayService {
     @Autowired
     private MoneyDetailsService moneyDetailsService;
 
+
+
     @Override
     public boolean balancePay(Integer userId, BigDecimal actualMoney, String orderNo) {
         User user = userService.findById(userId);
@@ -44,7 +46,7 @@ public class BalancePayServiceImpl implements BalancePayService {
 
         if (totalBalance.compareTo(actualMoney) < 0) {
             log.error("用户userId：{}的账户余额不够充钻石，总余额：{}，应付金额：{}", userId, totalBalance, actualMoney);
-            throw new BalancePayException(BalancePayException.ExceptionCode.BALANCE_NOT_ENOUGH_EXCEPTION);
+            throw new PayException(PayException.ExceptionCode.BALANCE_NOT_ENOUGH_EXCEPTION);
         }
 
         //优先用不可提现余额来支付钻石

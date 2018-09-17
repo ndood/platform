@@ -24,6 +24,8 @@ public class AppPayServiceImpl extends PayServiceImpl {
     @Override
     protected Object pay(Order order, User user, String ip) {
 
+
+
         return null;
     }
 
