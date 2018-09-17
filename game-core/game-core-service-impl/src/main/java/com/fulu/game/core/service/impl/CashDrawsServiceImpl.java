@@ -320,7 +320,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
                 details.setSum(leftCharm);
                 details.setMoney(cashDraws.getCharm());
                 details.setType(VirtualDetailsTypeEnum.CHARM.getType());
-                details.setRemark(MoneyOperateTypeEnum.USER_CHARM_WITHDRAW.getMsg());
+                details.setRemark("魅力值提现");
                 details.setCreateTime(DateUtil.date());
                 virtualDetailsService.create(details);
                 return cashDraws;

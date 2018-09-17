@@ -74,18 +74,10 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
                     }
                 }
                 //todo gzc 判断逻辑很繁琐、后续优化
-            } else if (vo.getAction().equals(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType())) {
-                vo.setCashStatusMsg(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getMsg());
-            } else if (vo.getAction().equals(MoneyOperateTypeEnum.ORDER_COMPLETE.getType())) {
-                vo.setCashStatusMsg(MoneyOperateTypeEnum.ORDER_COMPLETE.getMsg());
             } else if (vo.getAction().equals(MoneyOperateTypeEnum.ADMIN_REFUSE_REMIT.getType())) {
                 vo.setCashStatusMsg(CashProcessStatusEnum.REFUND.getMsg());
-            }else if (vo.getAction().equals(MoneyOperateTypeEnum.USER_CHARM_WITHDRAW.getType())) {
-                vo.setCashStatusMsg(MoneyOperateTypeEnum.USER_CHARM_WITHDRAW.getMsg());
-            }else if (vo.getAction().equals(MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY.getType())) {
-                vo.setCashStatusMsg(MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY.getMsg());
-            }else if (vo.getAction().equals(MoneyOperateTypeEnum.WITHDRAW_BALANCE.getType())) {
-                vo.setCashStatusMsg(MoneyOperateTypeEnum.WITHDRAW_BALANCE.getMsg());
+            }else{
+                vo.setCashStatusMsg(MoneyOperateTypeEnum.getMsgByType(vo.getAction()));
             }
         }
         return new PageInfo(list);
