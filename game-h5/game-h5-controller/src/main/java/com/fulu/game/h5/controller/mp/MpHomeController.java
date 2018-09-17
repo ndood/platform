@@ -115,7 +115,13 @@ public class MpHomeController extends BaseController {
                     return Result.userBanned();
                 }
             }
-            return Result.error();
+            if (e.getCause() instanceof UserException) {
+                if (UserException.ExceptionCode.MOBILE_NOT_MATCH_EXCEPTION.equals(((UserException) e.getCause()).getExceptionCode())) {
+                    log.error("登录手机号mobile:{}不匹配！", mobile);
+                    return Result.error().msg(UserException.ExceptionCode.MOBILE_NOT_MATCH_EXCEPTION.getMsg());
+                }
+            }
+            return Result.error().msg("用户信息认证失败！");
         } catch (Exception e) {
             log.error("登录异常!", e);
             return Result.error().msg("登陆异常！");
