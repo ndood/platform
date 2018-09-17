@@ -251,7 +251,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         VirtualPayOrder order = virtualPayOrderService.findByOrderNo(orderNo);
         BigDecimal actualMoney = order.getActualMoney();
 
-        boolean payResult = balancePayService.balancePay(userId, actualMoney, orderNo);
+        boolean payResult = balancePayService.balancePayVirtualMoney(userId, actualMoney, orderNo);
         if (!payResult) {
             log.error("余额支付虚拟币，支付失败，用户id：{}，订单号：{}", userId, orderNo);
             throw new PayException(PayException.ExceptionCode.PAY_FAIL);

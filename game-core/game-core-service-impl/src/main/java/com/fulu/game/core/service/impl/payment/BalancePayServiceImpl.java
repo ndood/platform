@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 余额支付
@@ -31,9 +32,21 @@ public class BalancePayServiceImpl implements BalancePayService {
     private MoneyDetailsService moneyDetailsService;
 
 
+    @Override
+    public boolean balancePayVirtualMoney(Integer userId, BigDecimal actualMoney, String orderNo) {
+        balancePayByUser(userId,actualMoney,orderNo,MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY);
+        return true;
+    }
 
     @Override
-    public boolean balancePay(Integer userId, BigDecimal actualMoney, String orderNo) {
+    public boolean balancePayOrder(Integer userId, BigDecimal actualMoney, String orderNo) {
+        balancePayByUser(userId,actualMoney,orderNo,MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY);
+
+        return true;
+    }
+
+
+    private boolean balancePayByUser(Integer userId, BigDecimal actualMoney, String orderNo,MoneyOperateTypeEnum moneyOperateTypeEnum){
         User user = userService.findById(userId);
         if (user == null) {
             log.info("当前用户id：{}查询数据库不存在", userId);
@@ -57,20 +70,22 @@ public class BalancePayServiceImpl implements BalancePayService {
             user.setBalance(balance.subtract(actualMoney.subtract(chargeBalance)));
         }
 
-        user.setUpdateTime(DateUtil.date());
+        user.setUpdateTime(new Date());
         userService.update(user);
-
         //记录零钱流水
         MoneyDetails mDetails = new MoneyDetails();
-        mDetails.setOperatorId(userId);
-        mDetails.setTargetId(userId);
+        mDetails.setOperatorId(user.getId());
+        mDetails.setTargetId(user.getId());
         mDetails.setMoney(actualMoney.negate());
-        mDetails.setAction(MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY.getType());
+        mDetails.setAction(moneyOperateTypeEnum.getType());
         mDetails.setSum(user.getBalance().add(chargeBalance));
-        mDetails.setRemark(MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY.getMsg() + "订单号：" + orderNo);
+        mDetails.setRemark(moneyOperateTypeEnum.getMsg() + "订单号：" + orderNo);
         mDetails.setCreateTime(DateUtil.date());
         moneyDetailsService.drawSave(mDetails);
-
         return true;
     }
+
+
+
+
 }

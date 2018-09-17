@@ -16,7 +16,7 @@ import java.util.Date;
 
 @Service
 @Slf4j
-public abstract class MiniAppPayServiceImpl extends PayServiceImpl<WxPayOrderNotifyResult> {
+public abstract class MiniAppOrderPayServiceImpl extends OrderPayServiceImpl<WxPayOrderNotifyResult> {
 
     /**
      * 构造微信支付请求request

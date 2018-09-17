@@ -4,7 +4,7 @@ import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.service.impl.pay.MiniAppPayServiceImpl;
+import com.fulu.game.core.service.impl.pay.MiniAppOrderPayServiceImpl;
 import com.github.binarywang.wxpay.bean.notify.WxPayOrderNotifyResult;
 import com.github.binarywang.wxpay.bean.order.WxPayMpOrderResult;
 import com.github.binarywang.wxpay.bean.request.WxPayRefundRequest;
@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 
 @Service
 @Slf4j
-public class PlayMiniAppPayServiceImpl extends MiniAppPayServiceImpl {
+public class MiniAppOrderPayServiceImpl extends MiniAppOrderPayServiceImpl {
 
     @Autowired
     private WxMaServiceSupply wxMaServiceSupply;

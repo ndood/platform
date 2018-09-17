@@ -2,7 +2,7 @@ package com.fulu.game.app.service.impl;
 
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.service.impl.pay.PayServiceImpl;
+import com.fulu.game.core.service.impl.pay.OrderPayServiceImpl;
 import com.github.binarywang.wxpay.exception.WxPayException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 
 @Service
-public class AppPayServiceImpl extends PayServiceImpl {
+public class AppPayServiceImpl extends OrderPayServiceImpl {
 
     @Autowired
     private AppOrderServiceImpl appOrderService;
