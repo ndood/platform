@@ -311,7 +311,7 @@ public class OrderController extends BaseController {
     @RequestMapping("/comment/save")
     public Result save(UserCommentVO commentVO) {
         userCommentService.save(commentVO);
-        return Result.success().msg("添加成功！");
+        return Result.success().msg("评论成功！");
     }
 
 }
