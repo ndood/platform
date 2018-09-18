@@ -25,7 +25,7 @@ import java.util.Date;
  */
 @Service
 @Slf4j
-public class WeChatPayPayment {
+public class WeChatPayPaymentComponent {
 
 
     public enum WechatType {
@@ -37,7 +37,7 @@ public class WeChatPayPayment {
 
 
     @Autowired
-    public WeChatPayPayment(Config configProperties) {
+    public WeChatPayPaymentComponent(Config configProperties) {
         this.configProperties = configProperties;
     }
 

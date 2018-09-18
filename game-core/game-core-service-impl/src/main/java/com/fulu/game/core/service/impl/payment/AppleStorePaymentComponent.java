@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class AppleStorePayment {
+public class AppleStorePaymentComponent {
 
 
 
@@ -22,7 +22,7 @@ public class AppleStorePayment {
 
 
     @Autowired
-    public AppleStorePayment(Config configProperties) {
+    public AppleStorePaymentComponent(Config configProperties) {
         this.configProperties = configProperties;
     }
 

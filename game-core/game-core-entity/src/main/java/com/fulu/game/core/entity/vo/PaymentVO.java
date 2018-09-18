@@ -15,5 +15,6 @@ public class PaymentVO {
 
     private User user;
 
+    private String receiptData;
 
 }

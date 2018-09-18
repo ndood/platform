@@ -12,7 +12,7 @@ import com.fulu.game.core.entity.VirtualPayOrder;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.VirtualPayOrderServiceImpl;
-import com.fulu.game.core.service.impl.payment.BalancePayment;
+import com.fulu.game.core.service.impl.payment.BalancePaymentComponent;
 import com.github.binarywang.wxpay.bean.notify.WxPayNotifyResponse;
 import com.github.binarywang.wxpay.bean.notify.WxPayOrderNotifyResult;
 import com.github.binarywang.wxpay.bean.order.WxPayMpOrderResult;
@@ -56,7 +56,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
     @Autowired
     private MoneyDetailsService moneyDetailsService;
     @Autowired
-    private BalancePayment balancePayment;
+    private BalancePaymentComponent balancePayment;
 
 
 

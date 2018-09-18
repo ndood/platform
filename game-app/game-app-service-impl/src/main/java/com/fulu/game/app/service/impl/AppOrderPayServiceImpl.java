@@ -7,9 +7,9 @@ import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.PayRequestVO;
 import com.fulu.game.core.service.impl.pay.OrderPayServiceImpl;
-import com.fulu.game.core.service.impl.payment.AlipayPayment;
-import com.fulu.game.core.service.impl.payment.BalancePayment;
-import com.fulu.game.core.service.impl.payment.WeChatPayPayment;
+import com.fulu.game.core.service.impl.payment.AlipayPaymentComponent;
+import com.fulu.game.core.service.impl.payment.BalancePaymentComponent;
+import com.fulu.game.core.service.impl.payment.WeChatPayPaymentComponent;
 import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderRequest;
 import com.github.binarywang.wxpay.exception.WxPayException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +23,11 @@ public class AppOrderPayServiceImpl extends OrderPayServiceImpl {
     @Autowired
     private AppOrderServiceImpl appOrderService;
     @Autowired
-    private BalancePayment balancePayment;
+    private BalancePaymentComponent balancePayment;
     @Autowired
-    private AlipayPayment alipayPayment;
+    private AlipayPaymentComponent alipayPayment;
     @Autowired
-    private WeChatPayPayment weChatPayPayment;
+    private WeChatPayPaymentComponent weChatPayPayment;
 
     @Override
     protected void payOrder(String orderNo, BigDecimal actualMoney) {
@@ -56,7 +56,7 @@ public class AppOrderPayServiceImpl extends OrderPayServiceImpl {
             payRequestVO.setPayArguments(payResponse);
         } else if(PaymentEnum.WECHAT_PAY.equals(payment)){
             WxPayUnifiedOrderRequest wxPayUnifiedOrderRequest = weChatPayPayment.buildWxPayRequest(order,user,ip);
-            Object payArguments = weChatPayPayment.payRequest(PayBusinessEnum.ORDER,WeChatPayPayment.WechatType.APP,wxPayUnifiedOrderRequest);
+            Object payArguments = weChatPayPayment.payRequest(PayBusinessEnum.ORDER, WeChatPayPaymentComponent.WechatType.APP,wxPayUnifiedOrderRequest);
             payRequestVO.setPayArguments(payArguments);
         }
         return payRequestVO;
@@ -77,13 +77,17 @@ public class AppOrderPayServiceImpl extends OrderPayServiceImpl {
         return null;
     }
 
+
     @Override
     protected String getTotal(Object result) {
         return null;
     }
 
+
     @Override
     protected boolean thirdRefund(String orderNo, Integer totalMoney, Integer refundMoney) throws WxPayException {
         return false;
     }
+
+
 }

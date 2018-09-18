@@ -8,9 +8,9 @@ import com.fulu.game.common.exception.PayException;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.VirtualPayOrder;
 import com.fulu.game.core.entity.vo.PayRequestVO;
-import com.fulu.game.core.service.impl.payment.AlipayPayment;
-import com.fulu.game.core.service.impl.payment.BalancePayment;
-import com.fulu.game.core.service.impl.payment.WeChatPayPayment;
+import com.fulu.game.core.service.impl.payment.AlipayPaymentComponent;
+import com.fulu.game.core.service.impl.payment.BalancePaymentComponent;
+import com.fulu.game.core.service.impl.payment.WeChatPayPaymentComponent;
 import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +21,17 @@ import org.springframework.stereotype.Service;
 public class ChargePayServiceImpl {
 
     @Autowired
-    private BalancePayment balancePayment;
+    private BalancePaymentComponent balancePayment;
     @Autowired
-    private AlipayPayment alipayPayment;
+    private AlipayPaymentComponent alipayPayment;
     @Autowired
-    private WeChatPayPayment weChatPayPayment;
+    private WeChatPayPaymentComponent weChatPayPayment;
+
+
+
+
+
+
 
 
 
@@ -40,7 +46,7 @@ public class ChargePayServiceImpl {
             payRequestVO.setPayArguments(payResponse);
         } else if(PaymentEnum.WECHAT_PAY.equals(payment)){
             WxPayUnifiedOrderRequest wxPayUnifiedOrderRequest = weChatPayPayment.buildWxPayRequest(order,user,ip);
-            Object payArguments = weChatPayPayment.payRequest(PayBusinessEnum.VIRTUAL_PRODUCT,WeChatPayPayment.WechatType.APP,wxPayUnifiedOrderRequest);
+            Object payArguments = weChatPayPayment.payRequest(PayBusinessEnum.VIRTUAL_PRODUCT, WeChatPayPaymentComponent.WechatType.APP,wxPayUnifiedOrderRequest);
             payRequestVO.setPayArguments(payArguments);
         }else{
             throw new PayException(PayException.ExceptionCode.PAYMENT_UN_MATCH);

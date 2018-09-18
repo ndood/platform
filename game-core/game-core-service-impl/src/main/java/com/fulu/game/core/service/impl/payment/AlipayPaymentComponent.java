@@ -19,14 +19,14 @@ import java.math.BigDecimal;
 
 @Service
 @Slf4j
-public class AlipayPayment {
+public class AlipayPaymentComponent {
 
 
     private final Config configProperties;
 
 
     @Autowired
-    public AlipayPayment(Config configProperties) {
+    public AlipayPaymentComponent(Config configProperties) {
         this.configProperties = configProperties;
     }
 

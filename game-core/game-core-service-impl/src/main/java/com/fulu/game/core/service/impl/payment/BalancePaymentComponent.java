@@ -23,7 +23,7 @@ import java.util.Date;
  */
 @Service
 @Slf4j
-public class BalancePayment {
+public class BalancePaymentComponent {
 
     @Autowired
     UserService userService;
