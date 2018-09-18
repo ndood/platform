@@ -308,6 +308,10 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
      * @return
      */
     private int receiveOrderTime(Date payTime, Date beginTime) {
+        //todo 因为小程序没有提交开始时间 这里为了测试给一个开始时间
+        if(beginTime==null){
+            beginTime = DateUtil.offsetMinute(payTime,30);
+        }
         int timeMinute = 15;
         Long minute = DateUtil.between(payTime, beginTime, DateUnit.MINUTE);
         if (minute < 15) {
@@ -326,6 +330,11 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
      * @return
      */
     private int beginOrderTime(Date receivingTime, Date beginTime) {
+        //todo 因为小程序没有提交开始时间 这里为了测试给一个开始时间
+
+        if(beginTime==null){
+            beginTime = DateUtil.offsetMinute(receivingTime,30);
+        }
         int timeMinute = 15;
         Long minute = DateUtil.between(receivingTime, beginTime, DateUnit.MINUTE);
         if (minute < 15) {
@@ -345,6 +354,12 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
      * @return
      */
     private int waitForPayTime(Date orderTime, Date beginTime) {
+        //todo 因为小程序没有提交开始时间 这里为了测试给一个开始时间
+
+        if(beginTime==null){
+            beginTime = DateUtil.offsetMinute(orderTime,30);
+        }
+
         int timeMinute = 30;
         Long minute = DateUtil.between(orderTime, beginTime, DateUnit.MINUTE);
         if (minute > 30) {
