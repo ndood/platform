@@ -31,16 +31,16 @@ public class BalancePayment {
     private MoneyDetailsService moneyDetailsService;
 
 
+
+
+
     public boolean balancePayVirtualMoney(Integer userId, BigDecimal actualMoney, String orderNo) {
-        balancePayByUser(userId,actualMoney,orderNo,MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY);
-        return true;
+       return balancePayByUser(userId,actualMoney,orderNo,MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY);
     }
 
     public boolean balancePayOrder(Integer userId, BigDecimal actualMoney, String orderNo) {
-        balancePayByUser(userId,actualMoney,orderNo,MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY);
-        return true;
+       return balancePayByUser(userId,actualMoney,orderNo,MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY);
     }
-
 
 
     private boolean balancePayByUser(Integer userId, BigDecimal actualMoney, String orderNo,MoneyOperateTypeEnum moneyOperateTypeEnum){
@@ -68,7 +68,10 @@ public class BalancePayment {
         }
 
         user.setUpdateTime(new Date());
-        userService.update(user);
+        int result = userService.update(user);
+        if(result<1){
+            return false;
+        }
         //记录零钱流水
         MoneyDetails mDetails = new MoneyDetails();
         mDetails.setOperatorId(user.getId());
