@@ -77,6 +77,18 @@ public class UserController extends BaseController {
     }
 
     /**
+     * 设置是否马甲
+     *
+     * @param id 认证id
+     * @return 封装结果集
+     */
+    @PostMapping(value = "/info-auth/vest/set")
+    public Result setVest(@RequestParam Integer id) {
+        UserInfoAuth userInfoAuth = userInfoAuthService.setVest(id);
+        return Result.success().data(userInfoAuth).msg("操作成功！");
+    }
+
+    /**
      * 认证信息创建
      *
      * @return

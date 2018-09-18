@@ -298,7 +298,11 @@ public interface UserService extends ICommonService<User, Integer> {
 
     UserOnlineVO userOnline(Boolean active, String version);
 
-
+    /**
+     * 删除用户登录的token
+     * @return
+     */
+    Boolean removeUserLoginToken(Integer userId);
 
     /**
      * 根据关键字搜索陪玩师用户

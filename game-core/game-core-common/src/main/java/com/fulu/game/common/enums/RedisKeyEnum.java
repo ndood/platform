@@ -17,7 +17,7 @@ public enum RedisKeyEnum {
     ADMIN_TOKEN,
     //用户token
     PLAY_TOKEN,
-    //用户token
+    //小程序的sessionKey
     WX_SESSION_KEY,
     //短信
     SMS,

@@ -183,7 +183,7 @@ public interface ProductService extends ICommonService<Product, Integer> {
      * @param orderBy
      * @return
      */
-    PageInfo<ProductCollectVO> findAllProductByPage(Integer gender, String orderBy);
+    PageInfo<ProductCollectVO> findAllProductByPage(Integer gender, Integer pageNum, Integer pageSize, String orderBy);
 
     /**
      * 通过昵称查找商品
@@ -304,9 +304,10 @@ public interface ProductService extends ICommonService<Product, Integer> {
     /**
      * 分页查询所有午夜场陪玩师商品
      *
-     * @param gender  性别
-     * @param orderBy 排序字符串
-     * @return 分页结果集
+     * @param gender   性别
+     * @param pageNum  页码
+     * @param pageSize 每页显示数据条数
+     * @return 分页获取查询VO
      */
-    PageInfo<ProductShowCaseVO> findAllNightProductByPage(Integer gender, Integer pageNum, Integer pageSize, String orderBy);
+    PageInfo<ProductShowCaseVO> findAllNightProductByPage(Integer gender, Integer pageNum, Integer pageSize);
 }

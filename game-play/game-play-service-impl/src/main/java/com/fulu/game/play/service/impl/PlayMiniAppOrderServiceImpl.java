@@ -21,6 +21,7 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -58,6 +59,9 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
     private OrderService orderService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Qualifier(value = "userInfoAuthServiceImpl")
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
 
     /**
      * 陪玩师接单
@@ -68,7 +72,7 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
     public String serverReceiveOrder(Order order) {
         log.info("执行开始接单接口");
         log.info("陪玩师接单orderNo:{}", order.getOrderNo());
-        
+
         //只有等待陪玩和已支付的订单才能开始陪玩
         if (!order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus()) || !order.getIsPay()) {
             throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES, order.getOrderNo());
@@ -91,8 +95,8 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
         List<OrderDetailsVO> list = orderDao.listOrderDetails(type, user.getId());
 
         //获取未读订单
-        String wronJsonStr = redisOpenService.get(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(user.getId()));        
-        
+        String wronJsonStr = redisOpenService.get(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(user.getId()));
+
         for (OrderDetailsVO orderDetailsVO : list) {
             if (user.getId().equals(orderDetailsVO.getUserId())) {
                 orderDetailsVO.setIdentity(UserTypeEnum.GENERAL_USER.getType());
@@ -103,14 +107,14 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
             orderDetailsVO.setStatusNote(OrderStatusEnum.getNoteByStatus(orderDetailsVO.getStatus()));
             Long countDown = orderStatusDetailsService.getCountDown(orderDetailsVO.getOrderNo(), orderDetailsVO.getStatus());
             orderDetailsVO.setCountDown(countDown);
-            
+
             //设置订单未读状态
 
-            if(StringUtils.isNotBlank(wronJsonStr)){
+            if (StringUtils.isNotBlank(wronJsonStr)) {
                 JSONArray waitingReadOrderNo = JSONObject.parseArray(wronJsonStr);
-                
-                for(int i = 0 ; i < waitingReadOrderNo.size() ; i++){
-                    if(waitingReadOrderNo.getIntValue(i) == orderDetailsVO.getId()){
+
+                for (int i = 0; i < waitingReadOrderNo.size(); i++) {
+                    if (waitingReadOrderNo.getIntValue(i) == orderDetailsVO.getId()) {
                         orderDetailsVO.setWaitingRead(true);
                         break;
                     }
@@ -166,22 +170,22 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
             orderDetailsVO.setCommentContent(userComment.getContent());
             orderDetailsVO.setCommentScore(userComment.getScore());
         }
-        
+
         //删除订单未读状态
 
         String wronJsonStr = redisOpenService.get(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(user.getId()));
-        if(StringUtils.isNotBlank(wronJsonStr)){
+        if (StringUtils.isNotBlank(wronJsonStr)) {
             JSONArray waitingReadOrderNo = JSONObject.parseArray(wronJsonStr);
 
-            for(int i = 0 ; i < waitingReadOrderNo.size() ; i++){
-                if(waitingReadOrderNo.getIntValue(i) == order.getId()){
+            for (int i = 0; i < waitingReadOrderNo.size(); i++) {
+                if (waitingReadOrderNo.getIntValue(i) == order.getId()) {
                     waitingReadOrderNo.remove(i);
-                    redisOpenService.set(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(user.getId()),waitingReadOrderNo.toJSONString());
+                    redisOpenService.set(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(user.getId()), waitingReadOrderNo.toJSONString());
                     break;
                 }
             }
         }
-        
+
         return orderDetailsVO;
     }
 
@@ -258,23 +262,23 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
         orderProductService.create(order, product, num);
         //计算订单状态倒计时24小时
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
-        
+
         //保存陪玩师的未读订单信息
 
         JSONArray waitingReadOrderNo = null;
-        
+
         String wronJsonStr = redisOpenService.get(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(product.getUserId()));
-        
-        if(StringUtils.isBlank(wronJsonStr)){
+
+        if (StringUtils.isBlank(wronJsonStr)) {
             waitingReadOrderNo = new JSONArray();
-        }else{
+        } else {
             waitingReadOrderNo = JSONObject.parseArray(wronJsonStr);
         }
 
         waitingReadOrderNo.add(order.getId());
-        
-        redisOpenService.set(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(product.getUserId()),waitingReadOrderNo.toJSONString());
-        
+
+        redisOpenService.set(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(product.getUserId()), waitingReadOrderNo.toJSONString());
+
         return order.getOrderNo();
     }
 
@@ -284,9 +288,17 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
         //发送短信通知给陪玩师
         User server = userService.findById(order.getServiceUserId());
-        SMSUtil.sendOrderReceivingRemind(server.getMobile(), order.getName());
-        //推送通知
-        playMiniAppPushService.orderPay(order);
+        UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(order.getServiceUserId());
+        boolean vestFlag = false;
+        if (userInfoAuth != null) {
+            vestFlag = userInfoAuth.getVestFlag();
+        }
+
+        if (!vestFlag) {
+            SMSUtil.sendOrderReceivingRemind(server.getMobile(), order.getName());
+            //推送通知
+            playMiniAppPushService.orderPay(order);
+        }
     }
 
     @Override
