@@ -17,8 +17,18 @@ import java.util.List;
  */
 @Data
 public class UserNightInfoVO extends UserNightInfo {
+    /**
+     * 性别
+     */
+    private Integer gender;
 
+    /**
+     * 所有可选的技能选项
+     */
     List<UserTechAuth> allUserTechs;
 
+    /**
+     * 所有可选的单位选项
+     */
     List<SalesMode> allSalesModes;
 }

@@ -23,5 +23,5 @@ public interface UserNightInfoService extends ICommonService<UserNightInfo, Inte
 
     UserNightInfo setNightConfig(Integer userId, Integer sort, Integer categoryId, Integer salesModeId);
 
-    PageInfo<ProductShowCaseVO> findNightUserByPage(Integer pageNum, Integer pageSize);
+    PageInfo<ProductShowCaseVO> findNightUserByPage(Integer gender, Integer pageNum, Integer pageSize);
 }

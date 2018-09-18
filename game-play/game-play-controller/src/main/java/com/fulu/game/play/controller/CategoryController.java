@@ -91,30 +91,34 @@ public class CategoryController extends BaseController {
     /**
      * 分页查询所有种类下的所有商品
      *
-     * @param gender  性别
-     * @param orderBy 排序字符串
+     * @param gender   性别
+     * @param pageNum  页码
+     * @param pageSize 每页显示数据条数
+     * @param orderBy  排序字符串
      * @return 封装结果集
      */
     @RequestMapping("/product/all")
     public Result findAllProduct(Integer gender,
+                                 @RequestParam Integer pageNum,
+                                 @RequestParam Integer pageSize,
                                  String orderBy) {
-        PageInfo<ProductCollectVO> pageInfo = productService.findAllProductByPage(gender, orderBy);
+        PageInfo<ProductCollectVO> pageInfo = productService.findAllProductByPage(gender, pageNum, pageSize, orderBy);
         return Result.success().data(pageInfo).msg("查询成功！");
     }
 
     /**
      * 分页查询所有午夜场陪玩师商品
      *
-     * @param gender
-     * @param orderBy
-     * @return
+     * @param gender   性别
+     * @param pageNum  页码
+     * @param pageSize 每页显示数据条数
+     * @return 封装结果集
      */
     @RequestMapping("/night-product/list")
     public Result findAllNightProductByPage(Integer gender,
                                             @RequestParam Integer pageNum,
-                                            @RequestParam Integer pageSize,
-                                            String orderBy) {
-        PageInfo<ProductShowCaseVO> pageInfo = productService.findAllNightProductByPage(gender, pageNum, pageSize, orderBy);
+                                            @RequestParam Integer pageSize) {
+        PageInfo<ProductShowCaseVO> pageInfo = productService.findAllNightProductByPage(gender, pageNum, pageSize);
         return Result.success().data(pageInfo).msg("查询成功！");
     }
 
