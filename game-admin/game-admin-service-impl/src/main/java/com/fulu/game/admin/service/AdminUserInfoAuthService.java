@@ -22,7 +22,6 @@ public interface AdminUserInfoAuthService extends UserInfoAuthService {
     UserInfoAuth pass(int id);
 
 
-
     /**
      * 冻结用户认证信息
      *
@@ -39,4 +38,12 @@ public interface AdminUserInfoAuthService extends UserInfoAuthService {
      * @return
      */
     UserInfoAuth unFreeze(int id);
+
+    /**
+     * 设置是否马甲
+     *
+     * @param id 认证id
+     * @return 用户认证信息Bean
+     */
+    UserInfoAuth setVest(Integer id);
 }

@@ -12,12 +12,13 @@ import com.fulu.game.core.dao.UserInfoAuthDao;
 import com.fulu.game.core.dao.UserInfoAuthFileTempDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.UserInfoAuthFileTempVO;
-import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.AdminService;
+import com.fulu.game.core.service.ProductService;
+import com.fulu.game.core.service.UserInfoAuthRejectService;
+import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.UserInfoAuthServiceImpl;
-import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -193,7 +194,7 @@ public class AdminUserInfoAuthServiceImpl extends UserInfoAuthServiceImpl implem
         user.setUpdateTime(new Date());
         userService.update(user);
         //同步恢复用户正确技能的商品状态
-        List<UserTechAuth> userTechAuthList =userTechAuthServiceImpl.findUserNormalTechs(userInfoAuth.getUserId());
+        List<UserTechAuth> userTechAuthList = userTechAuthServiceImpl.findUserNormalTechs(userInfoAuth.getUserId());
         for (UserTechAuth userTechAuth : userTechAuthList) {
             productService.recoverProductActivateByTechAuthId(userTechAuth.getId());
         }
@@ -201,5 +202,11 @@ public class AdminUserInfoAuthServiceImpl extends UserInfoAuthServiceImpl implem
         return userInfoAuth;
     }
 
-
+    @Override
+    public UserInfoAuth setVest(Integer id) {
+        UserInfoAuth userInfoAuth = userInfoAuthDao.findById(id);
+        userInfoAuth.setVestFlag(!userInfoAuth.getVestFlag());
+        userInfoAuthDao.update(userInfoAuth);
+        return userInfoAuth;
+    }
 }
