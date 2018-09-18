@@ -56,7 +56,7 @@ public interface UserDao extends ICommonDao<User, Integer> {
     Integer countUserOrder(Integer userId);
 
 
-    List<User> searchByAuthUserInfo(@Param(value = "searchWord") String searchWord);
+    List<User> searchByAuthUserInfo(@Param(value = "searchWord") String searchWord , @Param(value = "currentAdminId")Integer currentAdminId);
 
 
     List<User> searchByUserInfo(@Param(value = "searchWord") String searchWord);

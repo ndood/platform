@@ -837,10 +837,10 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
 
     @Override
-    public PageInfo<User> searchByAuthUserInfo(Integer pageNum, Integer pageSize,String searchword) {
+    public PageInfo<User> searchByAuthUserInfo(Integer pageNum, Integer pageSize,Integer currentAdminId ,String searchword) {
         PageHelper.startPage(pageNum, pageSize);
         
-        List<User> list = userDao.searchByAuthUserInfo(searchword);
+        List<User> list = userDao.searchByAuthUserInfo(searchword,currentAdminId);
         
         return new PageInfo<User>(list);
     }

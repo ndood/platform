@@ -556,16 +556,4 @@ public class UserController extends BaseController {
         return Result.success().data(info).msg("设置成功！");
     }
 
-
-    /**
-     * 
-     *随机取一个自动问好的陪玩师
-     * @return
-     */
-    @PostMapping(value = "/rand-auth/query")
-    public Result randGetAuthUser() {
-        UserInfoAuthVO userInfoAuthVO = userInfoAuthService.randGetAuthUser();
-        return Result.success().data(userInfoAuthVO);
-    }
-    
 }
