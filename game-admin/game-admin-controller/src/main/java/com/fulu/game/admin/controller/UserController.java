@@ -527,7 +527,7 @@ public class UserController extends BaseController {
     }
 
     /**
-     * 获取夜场陪玩师设置
+     * 获取午夜场陪玩师设置
      *
      * @param userId 用户id
      * @return 封装结果集
@@ -539,19 +539,20 @@ public class UserController extends BaseController {
     }
 
     /**
-     * 设置夜场陪玩师信息
+     * 设置午夜场陪玩师信息
      *
-     * @param sort       排序权重
-     * @param categoryId 分类id
-     * @param type       单位种类
+     * @param userId      陪玩师id
+     * @param sort        排序权重
+     * @param categoryId  游戏分类id
+     * @param salesModeId 单位id
      * @return 封装结果集
      */
     @RequestMapping("/night-config/set")
     public Result setNightConfig(@RequestParam Integer userId,
                                  @RequestParam Integer sort,
                                  @RequestParam Integer categoryId,
-                                 @RequestParam Integer type) {
-        UserNightInfo info = userNightInfoService.setNightConfig(userId, sort, categoryId, type);
+                                 @RequestParam Integer salesModeId) {
+        UserNightInfo info = userNightInfoService.setNightConfig(userId, sort, categoryId, salesModeId);
         return Result.success().data(info).msg("设置成功！");
     }
 }

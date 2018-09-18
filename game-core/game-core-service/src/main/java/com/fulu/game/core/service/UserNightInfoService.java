@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.UserNightInfo;
+import com.fulu.game.core.entity.vo.ProductShowCaseVO;
 import com.fulu.game.core.entity.vo.UserNightInfoVO;
 import com.github.pagehelper.PageInfo;
 
@@ -20,5 +21,7 @@ public interface UserNightInfoService extends ICommonService<UserNightInfo, Inte
 
     UserNightInfoVO getNightConfig(Integer userId);
 
-    UserNightInfo setNightConfig(Integer userId, Integer sort, Integer categoryId, Integer type);
+    UserNightInfo setNightConfig(Integer userId, Integer sort, Integer categoryId, Integer salesModeId);
+
+    PageInfo<ProductShowCaseVO> findNightUserByPage(Integer pageNum, Integer pageSize);
 }

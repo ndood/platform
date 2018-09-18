@@ -22,6 +22,8 @@ public class UserNightInfo implements Serializable {
     private Integer userId;
     //游戏ID
     private Integer categoryId;
+    //销售单位id
+    private Integer salesModeId;
     //单位种类
     private Integer type;
     //单位

@@ -6,16 +6,12 @@ import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserNightInfoDao;
-import com.fulu.game.core.entity.Admin;
-import com.fulu.game.core.entity.SalesMode;
-import com.fulu.game.core.entity.UserNightInfo;
-import com.fulu.game.core.entity.UserTechAuth;
+import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.vo.ProductShowCaseVO;
 import com.fulu.game.core.entity.vo.SalesModeVO;
+import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserNightInfoVO;
-import com.fulu.game.core.service.AdminService;
-import com.fulu.game.core.service.SalesModeService;
-import com.fulu.game.core.service.UserNightInfoService;
-import com.fulu.game.core.service.UserTechAuthService;
+import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections4.CollectionUtils;
@@ -32,13 +28,18 @@ public class UserNightInfoServiceImpl extends AbsCommonService<UserNightInfo, In
 
     @Autowired
     private UserNightInfoDao userNightInfoDao;
-    @Qualifier("adminUserTechAuthServiceImpl")
+    @Qualifier("userTechAuthServiceImpl")
     @Autowired
     private UserTechAuthService userTechAuthService;
     @Autowired
     private SalesModeService salesModeService;
     @Autowired
     private AdminService adminService;
+    @Qualifier(value = "userInfoAuthServiceImpl")
+    @Autowired
+    private UserInfoAuthServiceImpl userInfoAuthService;
+    @Autowired
+    private ProductService productService;
 
     @Override
     public ICommonDao<UserNightInfo, Integer> getDao() {
@@ -94,12 +95,11 @@ public class UserNightInfoServiceImpl extends AbsCommonService<UserNightInfo, In
     }
 
     @Override
-    public UserNightInfo setNightConfig(Integer userId, Integer sort, Integer categoryId, Integer type) {
+    public UserNightInfo setNightConfig(Integer userId, Integer sort, Integer categoryId, Integer salesModeId) {
         Admin admin = adminService.getCurrentUser();
 
         SalesModeVO vo = new SalesModeVO();
-        vo.setCategoryId(categoryId);
-        vo.setType(type);
+        vo.setId(salesModeId);
         vo.setDelFlag(0);
         List<SalesMode> salesModeList = salesModeService.findByParameter(vo);
         SalesMode salesMode = new SalesMode();
@@ -110,7 +110,8 @@ public class UserNightInfoServiceImpl extends AbsCommonService<UserNightInfo, In
         UserNightInfo info = new UserNightInfo();
         info.setUserId(userId);
         info.setCategoryId(categoryId);
-        info.setType(type);
+        info.setSalesModeId(salesMode.getId());
+        info.setType(salesMode.getType());
         info.setName(salesMode.getName());
         info.setSort(sort);
         info.setAdminId(admin.getId());
@@ -120,5 +121,29 @@ public class UserNightInfoServiceImpl extends AbsCommonService<UserNightInfo, In
         info.setDelFlag(Boolean.FALSE);
         userNightInfoDao.updateByUserId(info);
         return info;
+    }
+
+    @Override
+    public PageInfo<ProductShowCaseVO> findNightUserByPage(Integer pageNum, Integer pageSize) {
+        String orderBy = "t1.sort ASC, t2.create_time DESC";
+        PageHelper.startPage(pageNum, pageSize, orderBy);
+        List<ProductShowCaseVO> caseVOList = userNightInfoDao.findNightUser();
+
+        if (CollectionUtils.isNotEmpty(caseVOList)) {
+            for (ProductShowCaseVO showCaseVO : caseVOList) {
+                UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(showCaseVO.getUserId(), false, false, true, false);
+                showCaseVO.setNickName(userInfoVO.getNickName());
+                showCaseVO.setGender(userInfoVO.getGender());
+                showCaseVO.setMainPhoto(userInfoVO.getMainPhotoUrl());
+                showCaseVO.setCity(userInfoVO.getCity());
+                showCaseVO.setPersonTags(userInfoVO.getTags());
+                UserTechInfo userTechInfo = userTechAuthService.findDanInfo(showCaseVO.getTechAuthId());
+                if (userTechInfo != null) {
+                    showCaseVO.setDan(userTechInfo.getValue());
+                }
+                showCaseVO.setOnLine(productService.isProductStartOrderReceivingStatus(showCaseVO.getId()));
+            }
+        }
+        return new PageInfo<>(caseVOList);
     }
 }

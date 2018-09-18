@@ -1,6 +1,7 @@
 package com.fulu.game.core.dao;
 
 import com.fulu.game.core.entity.UserNightInfo;
+import com.fulu.game.core.entity.vo.ProductShowCaseVO;
 import com.fulu.game.core.entity.vo.UserNightInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -21,4 +22,6 @@ public interface UserNightInfoDao extends ICommonDao<UserNightInfo, Integer> {
     List<UserNightInfo> list(UserNightInfoVO userNightInfoVO);
 
     int updateByUserId(UserNightInfo userNightInfo);
+
+    List<ProductShowCaseVO> findNightUser();
 }

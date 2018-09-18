@@ -7,6 +7,7 @@ import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.SalesMode;
 import com.fulu.game.core.entity.TechAttr;
 import com.fulu.game.core.entity.TechValue;
+import com.fulu.game.core.entity.vo.ProductCollectVO;
 import com.fulu.game.core.entity.vo.ProductShowCaseVO;
 import com.fulu.game.core.entity.vo.TagVO;
 import com.fulu.game.core.service.*;
@@ -87,7 +88,35 @@ public class CategoryController extends BaseController {
         return Result.success().data(pageInfo);
     }
 
-    //todo gzc 新接口 把之前的游戏分类数据和午夜场的数据 全部返回
+    /**
+     * 分页查询所有种类下的所有商品
+     *
+     * @param gender  性别
+     * @param orderBy 排序字符串
+     * @return 封装结果集
+     */
+    @RequestMapping("/product/all")
+    public Result findAllProduct(Integer gender,
+                                 String orderBy) {
+        PageInfo<ProductCollectVO> pageInfo = productService.findAllProductByPage(gender, orderBy);
+        return Result.success().data(pageInfo).msg("查询成功！");
+    }
+
+    /**
+     * 分页查询所有午夜场陪玩师商品
+     *
+     * @param gender
+     * @param orderBy
+     * @return
+     */
+    @RequestMapping("/night-product/list")
+    public Result findAllNightProductByPage(Integer gender,
+                                            @RequestParam Integer pageNum,
+                                            @RequestParam Integer pageSize,
+                                            String orderBy) {
+        PageInfo<ProductShowCaseVO> pageInfo = productService.findAllNightProductByPage(gender, pageNum, pageSize, orderBy);
+        return Result.success().data(pageInfo).msg("查询成功！");
+    }
 
     /**
      * 根据业务查询游戏销售方式
