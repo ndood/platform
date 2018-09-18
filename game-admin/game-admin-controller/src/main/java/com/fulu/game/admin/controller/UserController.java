@@ -398,8 +398,12 @@ public class UserController extends BaseController {
      */
     @PostMapping("/lock")
     public Result lock(@RequestParam("id") Integer id) {
-        userService.lock(id);
-        return Result.success().msg("操作成功！");
+        Boolean flag = userService.lock(id);
+        if(flag){
+            return Result.success().msg("封禁用户并且剔除用户登录状态成功！");
+        }else{
+            return Result.success().msg("封禁用户未找到用户登录状态！");
+        }
     }
 
     /**

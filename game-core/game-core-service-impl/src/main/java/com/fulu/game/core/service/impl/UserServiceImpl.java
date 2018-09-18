@@ -212,14 +212,14 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
 
     @Override
-    public void lock(int id) {
+    public boolean lock(int id) {
         Admin admin = adminService.getCurrentUser();
         User user = findById(id);
         user.setUpdateTime(new Date());
         user.setStatus(UserStatusEnum.BANNED.getType());
         userDao.update(user);
-        removeUserLoginToken(user.getId());
         log.info("用户id:{}被管理员id:{}封禁", id, admin.getId());
+        return removeUserLoginToken(user.getId());
     }
 
     @Override
@@ -851,9 +851,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Override
     public PageInfo<User> searchByAuthUserInfo(Integer pageNum, Integer pageSize,String searchword) {
         PageHelper.startPage(pageNum, pageSize);
-        
         List<User> list = userDao.searchByAuthUserInfo(searchword);
-        
         return new PageInfo<User>(list);
     }
 
