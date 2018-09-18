@@ -47,6 +47,7 @@
         <result column="serverNickName" property="serverNickName"/>
         <result column="userHeadUrl" property="userHeadUrl"/>
         <result column="serverHeadUrl" property="serverHeadUrl"/>
+        <result column="categoryName" property="categoryName"/>
     </resultMap>
 
     <resultMap id="PointOrderDetailsVOMap" type="com.fulu.game.core.entity.vo.PointOrderDetailsVO"
@@ -375,42 +376,45 @@
 
     <select id="list" resultMap="OrderResVOMap" parameterType="com.fulu.game.core.entity.vo.searchVO.OrderSearchVO">
         SELECT
-        <include refid="Base_Column_List"/>
-        FROM t_order
+        t1.* , 
+        t2.agent_admin_id as agentAdminId,
+        t2.agent_admin_name as agentAdminName,
+        t2.remark as proRemark
+        FROM t_order t1 LEFT JOIN t_order_admin_remark t2 ON t2.order_id = t1.id
         <where>
             <if test="type != null">
-                and type = #{type}
+                and t1.type = #{type}
             </if>
             <if test="categoryId != null">
-                and category_id = #{categoryId}
+                and t1.category_id = #{categoryId}
             </if>
             <if test="orderNo != null">
-                and order_no = #{orderNo}
+                and t1.order_no = #{orderNo}
             </if>
             <if test="channelId != null">
-                and channel_id = #{channelId}
+                and t1.channel_id = #{channelId}
             </if>
             <if test="userId != null">
-                and user_id = #{userId}
+                and t1.user_id = #{userId}
             </if>
 
             <if test="serviceUserId != null">
-                and service_user_id = #{serviceUserId}
+                and t1.service_user_id = #{serviceUserId}
             </if>
             <if test="startTime != null">
-                and create_time &gt;= #{startTime}
+                and t1.create_time &gt;= #{startTime}
             </if>
             <if test="endTime != null">
-                and create_time &lt;= #{endTime}
+                and t1.create_time &lt;= #{endTime}
             </if>
             <if test="gtInterval != null">
-                and TIMESTAMPDIFF(SECOND,create_time,receiving_time) &gt;= #{gtInterval}
+                and TIMESTAMPDIFF(SECOND,t1.create_time,t1.receiving_time) &gt;= #{gtInterval}
             </if>
             <if test="ltInterval != null">
-                and TIMESTAMPDIFF(SECOND,create_time,receiving_time) &lt;= #{ltInterval}
+                and TIMESTAMPDIFF(SECOND,t1.create_time,t1.receiving_time) &lt;= #{ltInterval}
             </if>
             <if test="statusList != null">
-                and status in
+                and t1.status in
                 <foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
                     #{item}
                 </foreach>
@@ -611,11 +615,13 @@
     </select>
 
 
-    <select id="getBannerOrderList" resultMap="OrderResultMap">
+    <select id="getBannerOrderList" resultMap="OrderDetailsVOMap">
         SELECT
-        o.*
+        o.*,
+        c.name as categoryName
         FROM
         t_order o
+        INNER JOIN t_category c on c.id = o.category_id
         where
             o.type = 1 and o.service_user_id = #{authUserId} and o.user_id = #{bossUserId} 
             <if test="statusList != null">

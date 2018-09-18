@@ -5,10 +5,7 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.UserException;
-import com.fulu.game.core.entity.Order;
-import com.fulu.game.core.entity.Product;
-import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.VirtualProduct;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.AdminImLogVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
@@ -56,6 +53,9 @@ public class ImController extends BaseController {
     @Qualifier("playMiniAppOrderServiceImpl")
     @Autowired
     private PlayMiniAppOrderServiceImpl playMiniAppOrderServiceImpl;
+    
+    @Autowired
+    private AdminService adminService;
 
     
     //减少未读消息数量
@@ -201,7 +201,9 @@ public class ImController extends BaseController {
     public Result searchAuthUserList(@RequestParam("pageNum") Integer pageNum,
                                      @RequestParam("pageSize") Integer pageSize, String searchWord){
 
-        PageInfo<User> pageInfo = userService.searchByAuthUserInfo(pageNum,pageSize,searchWord);
+        Admin ad = adminService.getCurrentUser();
+        
+        PageInfo<User> pageInfo = userService.searchByAuthUserInfo(pageNum,pageSize,ad.getId(),searchWord);
 
         return Result.success().data(pageInfo).msg("操作成功");
     }
@@ -285,7 +287,7 @@ public class ImController extends BaseController {
         Order order = playMiniAppOrderServiceImpl.findByOrderNo(orderNo);
         
         playMiniAppOrderServiceImpl.serverStartServeOrder(order);
-        return Result.success().data(orderNo).msg("接单成功!");
+        return Result.success().data(orderNo).msg("操作成功!");
     }
 
 

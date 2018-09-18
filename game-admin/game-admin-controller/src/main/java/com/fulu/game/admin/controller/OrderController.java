@@ -250,10 +250,7 @@ public class OrderController extends BaseController {
 
     //管理员设置处理备注
     @RequestMapping("/set-order/remark")
-    public Result setAdminOrderRemark(@RequestParam("pageNum") Integer pageNum,
-                                      @RequestParam("pageSize") Integer pageSize,
-                                      Integer orderId,Integer adminId,String adminName,String remark
-                                      ){
+    public Result setAdminOrderRemark(Integer orderId,Integer adminId,String adminName,String remark){
 
         OrderAdminRemark oar = new OrderAdminRemark();
         oar.setOrderId(orderId);

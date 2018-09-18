@@ -336,7 +336,7 @@
     </update>
 
     <select id="getMaxAutoSayHelloCount" resultType="java.lang.Integer">
-        SELECT max(id) from t_user_info_auth WHERE auto_say_hello != '' and auto_say_hello is not nll
+        SELECT max(id) from t_user_info_auth WHERE auto_say_hello != '' and auto_say_hello is not null
     </select>
 
 
@@ -347,14 +347,13 @@
         u.head_portraits_url,
         u.im_id,
         u.mobile,
-        u.im_psw,
         u.gender,
         u.age,
         u.nickname
         FROM
         t_user_info_auth uia
         LEFT JOIN t_user u ON uia.user_id = u.id
-        where uia.id <![CDATA[>=]]> #{minId} limit 1
+        where uia.id <![CDATA[>=]]> #{minId} and auto_say_hello != '' and auto_say_hello is not null limit 1
     </select>
 
 </mapper>
