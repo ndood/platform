@@ -34,7 +34,7 @@ public class VirtualPayOrder implements Serializable {
     @Excel(name = "支付方式", orderNum = "8", replace = {"微信支付_1", "余额支付_2"}, width = 15)
     private Integer payment;
     //充值路径（1：公众号；2：安卓；3：IOS）
-    @Excel(name = "充值路径", orderNum = "7", replace = {"公众号_1", "安卓_2", "IOS_3"}, width = 15)
+    @Excel(name = "充值路径", orderNum = "7", replace = {"公众号_3", "安卓_5", "IOS_4"}, width = 15)
     private Integer payPath;
     //实付金额
     private BigDecimal actualMoney;

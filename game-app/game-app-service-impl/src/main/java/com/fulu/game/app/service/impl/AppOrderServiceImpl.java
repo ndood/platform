@@ -122,7 +122,6 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
         }
         //创建订单
         orderService.create(order);
-
         //更新优惠券使用状态
         if (coupon != null) {
             couponService.updateCouponUseStatus(order.getOrderNo(), userIp, coupon);

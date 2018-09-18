@@ -2,7 +2,7 @@ package com.fulu.game.app.controller;
 
 
 import com.fulu.game.app.service.impl.AppOrderServiceImpl;
-import com.fulu.game.app.service.impl.AppPayServiceImpl;
+import com.fulu.game.app.service.impl.AppOrderPayServiceImpl;
 import com.fulu.game.app.util.RequestUtil;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.domain.ClientInfo;
@@ -41,7 +41,7 @@ public class OrderController extends BaseController {
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
     @Autowired
-    private AppPayServiceImpl appPayService;
+    private AppOrderPayServiceImpl appPayService;
     @Autowired
     private UserCommentService userCommentService;
 
@@ -88,6 +88,7 @@ public class OrderController extends BaseController {
                       HttpServletRequest request) {
         String ip = RequestUtil.getIpAdrress(request);
         Order order = appOrderServiceImpl.findByOrderNo(orderNo);
+        order.setPayment(payment);
         User user = userService.findById(order.getUserId());
         Object result = appPayService.payOrder(order, user, ip);
         if(result==null){

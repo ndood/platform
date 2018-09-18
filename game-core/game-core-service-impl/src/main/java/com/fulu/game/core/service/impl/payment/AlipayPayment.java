@@ -7,8 +7,10 @@ import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradeAppPayModel;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
+import com.fulu.game.common.enums.PayBusinessEnum;
 import com.fulu.game.common.properties.Config;
 import com.fulu.game.core.entity.Order;
+import com.fulu.game.core.entity.VirtualPayOrder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ public class AlipayPayment {
     }
 
 
+
     public AlipayTradeAppPayModel buildAlipayRequest(Order order){
         AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
         model.setBody(order.getName());
@@ -43,18 +46,35 @@ public class AlipayPayment {
 
 
 
+    public AlipayTradeAppPayModel buildAlipayRequest(VirtualPayOrder virtualPayOrder){
+        AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
+        model.setBody(virtualPayOrder.getName());
+        model.setSubject(virtualPayOrder.getName());
+        model.setOutTradeNo(virtualPayOrder.getOrderNo());
+        model.setTimeoutExpress("30m");
+        model.setTotalAmount(virtualPayOrder.getActualMoney().toPlainString());
+        model.setProductCode("QUICK_MSECURITY_PAY");
+        return model;
+    }
+
+
+
     /**
      * 发起支付请求
      * @param model
      * @return
      */
-    public String payRequest(AlipayTradeAppPayModel model) {
+    public String payRequest(PayBusinessEnum payBusinessEnum, AlipayTradeAppPayModel model) {
         log.info("发起支付请求,model:{}",model);
         Config.AlipayPay alipayPay = configProperties.getAlipayPay();
         AlipayClient alipayClient = new DefaultAlipayClient(configProperties.getAlipayPay().getPayGateway(), alipayPay.getAppId(), alipayPay.getAppPrivateKey(), "json", "utf-8", alipayPay.getAlipayPublicKey(), "RSA2");
         AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
         request.setBizModel(model);
-        request.setNotifyUrl(alipayPay.getPayNotifyUrl());
+        if(PayBusinessEnum.ORDER.equals(payBusinessEnum)){
+            request.setNotifyUrl(alipayPay.getPayOrderNotifyUrl());
+        }else if(PayBusinessEnum.VIRTUAL_PRODUCT.equals(payBusinessEnum)){
+            request.setNotifyUrl(alipayPay.getPayVirtualProductNotifyUrl());
+        }
         try {
             //这里和普通的接口调用不同，使用的是sdkExecute
             AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);

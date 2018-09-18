@@ -69,10 +69,6 @@ public class PayTest2 {
             //这里和普通的接口调用不同，使用的是sdkExecute
             AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
             System.out.println(response.getBody());//就是orderString 可以直接给客户端请求，无需再做处理。
-            String result = JSONObject.toJSONString(response.getParams());
-            System.out.println(APP_PRIVATE_KEY);
-            System.out.println(ALIPAY_PUBLIC_KEY);
-            System.out.println(response.getParams());
         } catch (AlipayApiException e) {
             e.printStackTrace();
         }

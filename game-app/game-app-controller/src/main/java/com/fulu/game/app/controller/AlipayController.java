@@ -18,10 +18,18 @@ public class AlipayController {
      * @return
      */
     @ResponseBody
-    @RequestMapping("/pay/callback")
-    public String payNotify(){
-
+    @RequestMapping("/pay/order/callback")
+    public String payOrderNotify(){
 
         return null;
     }
+
+    @ResponseBody
+    @RequestMapping("/pay/virtualproduct/callback")
+    public String virtualProductOrderNotify(){
+
+        return null;
+    }
+
+
 }

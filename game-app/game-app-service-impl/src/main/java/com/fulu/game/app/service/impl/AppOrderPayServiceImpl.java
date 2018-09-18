@@ -1,6 +1,7 @@
 package com.fulu.game.app.service.impl;
 
 import com.alipay.api.domain.AlipayTradeAppPayModel;
+import com.fulu.game.common.enums.PayBusinessEnum;
 import com.fulu.game.common.enums.PaymentEnum;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 
 @Service
-public class AppPayServiceImpl extends OrderPayServiceImpl {
+public class AppOrderPayServiceImpl extends OrderPayServiceImpl {
 
     @Autowired
     private AppOrderServiceImpl appOrderService;
@@ -48,18 +49,23 @@ public class AppPayServiceImpl extends OrderPayServiceImpl {
             payRequestVO.setPayArguments(true);
         } else if (PaymentEnum.ALIPAY_PAY.equals(payment)){
             AlipayTradeAppPayModel alipayTradeAppPayModel = alipayPayment.buildAlipayRequest(order);
-            String payResponse = alipayPayment.payRequest(alipayTradeAppPayModel);
+            String payResponse = alipayPayment.payRequest(PayBusinessEnum.ORDER,alipayTradeAppPayModel);
             payRequestVO.setPayArguments(payResponse);
         } else if(PaymentEnum.WECHAT_PAY.equals(payment)){
             WxPayUnifiedOrderRequest wxPayUnifiedOrderRequest = weChatPayPayment.buildWxPayRequest(order,user,ip);
-            Object payArguments = weChatPayPayment.payRequest(WeChatPayPayment.WechatType.APP,wxPayUnifiedOrderRequest);
+            Object payArguments = weChatPayPayment.payRequest(PayBusinessEnum.ORDER,WeChatPayPayment.WechatType.APP,wxPayUnifiedOrderRequest);
             payRequestVO.setPayArguments(payArguments);
         }
         return payRequestVO;
     }
 
+
     @Override
     protected Object parseResult(String xmlResult) throws WxPayException {
+
+
+
+
         return null;
     }
 
