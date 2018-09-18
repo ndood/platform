@@ -56,8 +56,8 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
             //匹配完毕更新新的登录时间和IP
             Map<String, Object> userMap = new HashMap<>();
             userMap = BeanUtil.beanToMap(user);
-            String gToken = GenIdUtil.GetToken();
-            redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(gToken+"#"+user.getId()), userMap);
+            String gToken = GenIdUtil.GetToken()+"#"+user.getId();
+            redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(gToken), userMap);
             redisOpenService.set(RedisKeyEnum.WX_SESSION_KEY.generateKey(gToken), userToken.getSessionKey());
             SubjectUtil.setToken(gToken);
             SubjectUtil.setCurrentUser(user);

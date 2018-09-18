@@ -60,8 +60,8 @@ public class AppUserMatcher extends HashedCredentialsMatcher implements Initiali
             }
             //匹配完毕更新新的登录时间和IP
             Map<String, Object> userMap = BeanUtil.beanToMap(user);
-            String gToken = GenIdUtil.GetToken();
-            redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(gToken+"#"+user.getId()), userMap, Constant.APP_EXPIRE_TIME);
+            String gToken = GenIdUtil.GetToken()+"#"+user.getId();
+            redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(gToken), userMap, Constant.APP_EXPIRE_TIME);
             SubjectUtil.setToken(gToken);
             SubjectUtil.setCurrentUser(user);
             log.info("生成新token=={},shiro验证结束", SubjectUtil.getToken());
