@@ -89,4 +89,7 @@ public abstract class OrderPayServiceImpl<T> implements OrderPayService {
 
     protected abstract boolean thirdRefund(String orderNo, Integer totalMoney, Integer refundMoney) throws WxPayException;
 
+
+
+
 }

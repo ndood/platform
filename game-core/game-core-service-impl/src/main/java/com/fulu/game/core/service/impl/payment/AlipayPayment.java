@@ -23,8 +23,6 @@ public class AlipayPayment {
     private final Config configProperties;
 
 
-    private static final String ALIPAY_GATEWAY_URL = "https://openapi.alipay.com/gateway.do";
-
 
     @Autowired
     public AlipayPayment(Config configProperties) {
@@ -53,7 +51,7 @@ public class AlipayPayment {
     public String payRequest(AlipayTradeAppPayModel model) {
         log.info("发起支付请求,model:{}",model);
         Config.AlipayPay alipayPay = configProperties.getAlipayPay();
-        AlipayClient alipayClient = new DefaultAlipayClient(ALIPAY_GATEWAY_URL, alipayPay.getAppId(), alipayPay.getAppPrivateKey(), "json", "utf-8", alipayPay.getAlipayPublicKey(), "RSA2");
+        AlipayClient alipayClient = new DefaultAlipayClient(configProperties.getAlipayPay().getPayGateway(), alipayPay.getAppId(), alipayPay.getAppPrivateKey(), "json", "utf-8", alipayPay.getAlipayPublicKey(), "RSA2");
         AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
         request.setBizModel(model);
         request.setNotifyUrl(alipayPay.getPayNotifyUrl());

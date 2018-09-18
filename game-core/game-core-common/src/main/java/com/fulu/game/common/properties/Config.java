@@ -129,5 +129,6 @@ public class Config {
         private String appPrivateKey;
         private String alipayPublicKey;
         private String payNotifyUrl;
+        private String payGateway;
     }
 }

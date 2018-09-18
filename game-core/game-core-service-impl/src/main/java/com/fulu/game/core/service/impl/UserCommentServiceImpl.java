@@ -124,6 +124,9 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
         commentVO.setOrderNo(orderNo);
         List<UserComment> list = commentDao.findByParameter(commentVO);
         UserComment  userComment = list.size() > 0 ? list.get(0) : null;
+        if(userComment==null){
+            return null;
+        }
         UserCommentVO userCommentVO = new UserCommentVO();
         BeanUtil.copyProperties(userComment,userCommentVO);
         List<UserCommentTag>  userCommentTags =  userCommentTagService.findByCommentId(userComment.getId());
