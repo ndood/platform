@@ -29,5 +29,7 @@ public class OrderDetailsVO extends Order {
     private Integer commentScore;
 
     private String commentContent;
+    
+    private Boolean waitingRead;
 
 }

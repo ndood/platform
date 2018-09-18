@@ -3,6 +3,7 @@ package com.fulu.game.core.service;
 import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.core.entity.AdminImLog;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.UserOnlineVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.github.pagehelper.PageInfo;
 import me.chanjar.weixin.common.exception.WxErrorException;
@@ -295,5 +296,34 @@ public interface UserService extends ICommonService<User, Integer> {
     UserVO getUserInfo(Integer userId);
 
 
-    List<AdminImLog> userOnline(Boolean active, String version);
+    UserOnlineVO userOnline(Boolean active, String version);
+
+
+
+    /**
+     * 根据关键字搜索陪玩师用户
+     *
+     * @return
+     */
+    PageInfo<User> searchByAuthUserInfo(Integer pageNum, Integer pageSize,String searchword);
+
+
+    /**
+     * 根据关键字搜索用户
+     *
+     * @return
+     */
+    PageInfo<User> searchByUserInfo(Integer pageNum, Integer pageSize,String searchword);
+    
+
+    /**
+     * 判断用户是否需要取一个随机自动问好
+     */
+    boolean getUserRandStatus(Integer userId);
+
+
+    /**
+     * 判断用户是否需要取一个随机自动问好
+     */
+    void setUserRandStatus(Integer userId);
 }

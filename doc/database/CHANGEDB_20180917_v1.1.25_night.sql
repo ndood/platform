@@ -9,3 +9,6 @@ CREATE TABLE `t_order_admin_remark` (
   PRIMARY KEY (`id`)
 ) COMMENT='运营订单备注表';
 
+ALTER TABLE `t_user_info_auth` ADD COLUMN `auto_say_hello` VARCHAR(500) COMMENT '自动问好' after `sort`;
+
+ALTER TABLE `t_user_info_auth` ADD COLUMN `open_substitute_im` tinyint(1) COMMENT '陪玩师代聊开关' after `im_substitute_id`;

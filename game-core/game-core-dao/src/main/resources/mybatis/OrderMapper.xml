@@ -610,4 +610,21 @@
         OR DATE_FORMAT(complete_time, '%Y-%m-%d') = date_sub(curdate(), INTERVAL 1 DAY);
     </select>
 
+
+    <select id="getBannerOrderList" resultMap="OrderResultMap">
+        SELECT
+        o.*
+        FROM
+        t_order o
+        where
+            o.type = 1 and o.service_user_id = #{authUserId} and o.user_id = #{bossUserId} 
+            <if test="statusList != null">
+                and o.status in
+                <foreach collection="statusList" item="s" index="index" open="(" close=")" separator=",">
+                    #{s}
+                </foreach>
+            </if>
+    </select>
+    
+    
 </mapper>

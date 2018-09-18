@@ -5,18 +5,23 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.VirtualProduct;
 import com.fulu.game.core.entity.vo.AdminImLogVO;
+import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.play.service.impl.PlayMiniAppOrderServiceImpl;
 import com.fulu.game.play.service.impl.PlayMiniAppPushServiceImpl;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -44,6 +49,13 @@ public class ImController extends BaseController {
 
     @Autowired
     private PlayMiniAppPushServiceImpl playMiniAppPushService;
+    
+    @Autowired
+    private OrderService orderService;
+
+    @Qualifier("playMiniAppOrderServiceImpl")
+    @Autowired
+    private PlayMiniAppOrderServiceImpl playMiniAppOrderServiceImpl;
 
     
     //减少未读消息数量
@@ -171,4 +183,126 @@ public class ImController extends BaseController {
         String result = playMiniAppPushService.pushIMWxTemplateMsg(content,acceptImId,imId);
         return Result.success().msg(result);
     }
+
+
+
+    //获取该陪玩师与老板的订单
+    @RequestMapping("/banner-order/get")
+    public Result getBannerOrderList(Integer authUserId , Integer bossUserId){
+
+        List<Order> list = orderService.getBannerOrderList(authUserId,bossUserId);
+
+        return Result.success().data(list).msg("操作成功");
+    }
+
+
+    //搜索陪玩师
+    @RequestMapping("/search-auth/list")
+    public Result searchAuthUserList(@RequestParam("pageNum") Integer pageNum,
+                                     @RequestParam("pageSize") Integer pageSize, String searchWord){
+
+        PageInfo<User> pageInfo = userService.searchByAuthUserInfo(pageNum,pageSize,searchWord);
+
+        return Result.success().data(pageInfo).msg("操作成功");
+    }
+
+    
+    //搜索用户
+    @RequestMapping("/search-user/list")
+    public Result searchUserList(@RequestParam("pageNum") Integer pageNum,
+                                     @RequestParam("pageSize") Integer pageSize, String searchWord){
+
+        PageInfo<User> pageInfo = userService.searchByUserInfo(pageNum,pageSize,searchWord);
+
+        return Result.success().data(pageInfo).msg("操作成功");
+    }
+
+
+    /**
+     * 陪玩师同意协商
+     *
+     * @param orderNo
+     * @param orderEventId
+     * @return
+     */
+    @RequestMapping(value = "/server/consult-appeal")
+    public Result consultAppeal(@RequestParam(required = true) String orderNo,
+                                Integer orderEventId , Integer userId) {
+        Order order = orderService.findByOrderNo(orderNo);
+        
+        playMiniAppOrderServiceImpl.consultAgreeOrder(order, orderEventId , userId);
+        return Result.success().data(orderNo);
+    }
+
+
+    /**
+     * 陪玩师拒绝协商
+     *
+     * @param orderNo
+     * @param orderEventId
+     * @return
+     */
+    @RequestMapping(value = "/server/consult-reject")
+    public Result consultReject(@RequestParam(required = true) String orderNo,
+                                Integer orderEventId,
+                                String remark,
+                                @RequestParam(required = true) String[] fileUrl , Integer userId) {
+        
+        Order order = orderService.findByOrderNo(orderNo);
+        playMiniAppOrderServiceImpl.consultRejectOrder(order, orderEventId, remark, fileUrl , userId);
+        
+        return Result.success().data(orderNo);
+    }
+
+
+    /**
+     * 陪玩师接收订单
+     *
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/server/receive")
+    public Result serverReceiveOrder(@RequestParam String orderNo,
+                                     String version) {
+
+        Order order = orderService.findByOrderNo(orderNo);
+        
+        playMiniAppOrderServiceImpl.serverReceiveOrder(order);
+        
+        return Result.success().data(orderNo).msg("接单成功!");
+    }
+
+
+    /**
+     * 陪玩师开始服务
+     *
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/server/start-serve")
+    public Result startServerOrder(@RequestParam(required = true) String orderNo) {
+
+        Order order = playMiniAppOrderServiceImpl.findByOrderNo(orderNo);
+        
+        playMiniAppOrderServiceImpl.serverStartServeOrder(order);
+        return Result.success().data(orderNo).msg("接单成功!");
+    }
+
+
+    /**
+     * 陪玩师取消订单
+     *
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/server/cancel")
+    public Result serverCancelOrder(@RequestParam(required = true) String orderNo) {
+
+        Order order = playMiniAppOrderServiceImpl.findByOrderNo(orderNo);
+        
+        OrderVO orderVO = playMiniAppOrderServiceImpl.serverCancelOrder(order);
+        return Result.success().data(orderVO).msg("取消订单成功!");
+    }
+
+    
 }

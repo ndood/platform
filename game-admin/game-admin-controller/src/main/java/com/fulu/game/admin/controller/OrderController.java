@@ -7,11 +7,14 @@ import com.fulu.game.admin.service.impl.AdminOrderServiceImpl;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.core.entity.ArbitrationDetails;
+import com.fulu.game.core.entity.OrderAdminRemark;
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderStatusDetailsVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.responseVO.OrderResVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
+import com.fulu.game.core.service.OrderAdminRemarkService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
@@ -38,6 +41,10 @@ public class OrderController extends BaseController {
     public OrderController(AdminOrderServiceImpl orderService) {
         this.orderService = orderService;
     }
+    
+    @Autowired
+    public OrderAdminRemarkService orderAdminRemarkService;
+    
 
     /**
      * 管理员-订单列表
@@ -238,5 +245,24 @@ public class OrderController extends BaseController {
             return Result.error().msg("无数据！");
         }
         return Result.success().data(orderVOPageInfo).msg("查询成功！");
+    }
+
+
+    //管理员设置处理备注
+    @RequestMapping("/set-order/remark")
+    public Result setAdminOrderRemark(@RequestParam("pageNum") Integer pageNum,
+                                      @RequestParam("pageSize") Integer pageSize,
+                                      Integer orderId,Integer adminId,String adminName,String remark
+                                      ){
+
+        OrderAdminRemark oar = new OrderAdminRemark();
+        oar.setOrderId(orderId);
+        oar.setAgentAdminId(adminId);
+        oar.setAgentAdminName(adminName);
+        oar.setRemark(remark);
+
+        orderAdminRemarkService.saveAdminOrderRemark(oar);
+
+        return Result.success().msg("操作成功");
     }
 }

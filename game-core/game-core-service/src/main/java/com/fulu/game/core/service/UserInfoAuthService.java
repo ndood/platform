@@ -120,4 +120,11 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
      * @param id 客服ID
      */
     void setSubstitute(int id, Integer substituteId);
+
+
+    /**
+     * 随机取一个自动问好的陪玩师
+     *
+     */
+    UserInfoAuthVO randGetAuthUser();
 }

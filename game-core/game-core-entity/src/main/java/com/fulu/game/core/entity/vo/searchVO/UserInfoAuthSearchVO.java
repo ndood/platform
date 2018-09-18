@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class UserInfoAuthSearchVO {
 
+    private Integer id;
     private String nickname;
     private Integer userId;
     private String mobile;

@@ -291,7 +291,11 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/server/consult-appeal")
     public Result consultAppeal(@RequestParam(required = true) String orderNo,
                                 Integer orderEventId) {
-        pointMiniAppOrderServiceImpl.consultAgreeOrder(orderNo, orderEventId);
+        Order order = pointMiniAppOrderServiceImpl.findByOrderNo(orderNo);
+        User user = userService.getCurrentUser();
+        userService.isCurrentUser(order.getServiceUserId());
+
+        pointMiniAppOrderServiceImpl.consultAgreeOrder(order, orderEventId,user.getId());
         return Result.success().data(orderNo);
     }
 
@@ -308,7 +312,13 @@ public class OrderController extends BaseController {
                                 Integer orderEventId,
                                 String remark,
                                 @RequestParam(required = true) String[] fileUrl) {
-        pointMiniAppOrderServiceImpl.consultRejectOrder(orderNo, orderEventId, remark, fileUrl);
+
+        Order order = pointMiniAppOrderServiceImpl.findByOrderNo(orderNo);
+        User user = userService.getCurrentUser();
+        userService.isCurrentUser(order.getServiceUserId());
+
+        pointMiniAppOrderServiceImpl.consultRejectOrder(order, orderEventId, remark, fileUrl,user.getId());
+        
         return Result.success().data(orderNo);
     }
 
@@ -335,7 +345,11 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/server/start-serve")
     public Result startServerOrder(@RequestParam(required = true) String orderNo) {
-        pointMiniAppOrderServiceImpl.serverStartServeOrder(orderNo);
+
+        Order order = pointMiniAppOrderServiceImpl.findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getServiceUserId());
+        
+        pointMiniAppOrderServiceImpl.serverStartServeOrder(order);
         return Result.success().data(orderNo).msg("接单成功!");
     }
 
@@ -361,7 +375,11 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/server/cancel")
     public Result serverCancelOrder(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = pointMiniAppOrderServiceImpl.serverCancelOrder(orderNo);
+
+        Order order = pointMiniAppOrderServiceImpl.findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getServiceUserId());
+        
+        OrderVO orderVO = pointMiniAppOrderServiceImpl.serverCancelOrder(order);
         return Result.success().data(orderVO).msg("取消订单成功!");
     }
 

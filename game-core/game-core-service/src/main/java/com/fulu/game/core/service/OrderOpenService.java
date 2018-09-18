@@ -23,10 +23,9 @@ public interface OrderOpenService {
     /**
      * 陪玩师开始服务
      *
-     * @param orderNo
      * @return
      */
-    String serverStartServeOrder(String orderNo);
+    String serverStartServeOrder(Order order);
 
 
     /**
@@ -48,22 +47,20 @@ public interface OrderOpenService {
     /**
      * 陪玩师拒绝协商订单
      *
-     * @param orderNo
      * @param remark
      * @param fileUrls
      * @return
      */
-    String consultRejectOrder(String orderNo, int orderDealId, String remark, String[] fileUrls);
+    String consultRejectOrder(Order order, int orderDealId, String remark, String[] fileUrls , Integer userId);
 
 
     /**
      * 陪玩师同样协商订单
      *
-     * @param orderNo
      * @param orderEventId
      * @return
      */
-    String consultAgreeOrder(String orderNo, int orderEventId);
+    String consultAgreeOrder(Order order, int orderEventId , Integer userId);
 
 
     /**
@@ -78,10 +75,9 @@ public interface OrderOpenService {
     /**
      * 陪玩师取消订单
      *
-     * @param orderNo
      * @return
      */
-    OrderVO serverCancelOrder(String orderNo);
+    OrderVO serverCancelOrder(Order order);
 
     /**
      * 用户取消订单

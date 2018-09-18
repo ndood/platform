@@ -443,4 +443,24 @@
         WHERE
             id = #{userId} FOR UPDATE;
     </select>
+
+
+    <select id="searchByAuthUserInfo" parameterType="java.lang.String" resultMap="UserResultMap">
+        select
+        t1.*
+        from t_user t1 INNER JOIN t_user_info_auth t2
+        ON t1.id = t2.user_id
+        where
+        t1.id = #{searchWord} or t1.nickname like '%${searchWord}%'
+
+    </select>
+
+    <select id="searchByUserInfo" parameterType="java.lang.String" resultMap="UserResultMap">
+        select
+        t1.*
+        from t_user t1
+        where
+        t1.id = #{searchWord} or t1.nickname like '%${searchWord}%'
+    </select>
+    
 </mapper>

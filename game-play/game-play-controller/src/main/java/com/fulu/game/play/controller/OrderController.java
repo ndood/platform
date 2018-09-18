@@ -263,7 +263,11 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/server/consult-appeal")
     public Result consultAppeal(@RequestParam(required = true) String orderNo,
                                 Integer orderEventId) {
-        orderService.consultAgreeOrder(orderNo, orderEventId);
+        Order order = orderService.findByOrderNo(orderNo);
+        User user = userService.getCurrentUser();
+        userService.isCurrentUser(order.getServiceUserId());
+        
+        orderService.consultAgreeOrder(order, orderEventId,user.getId());
         return Result.success().data(orderNo);
     }
 
@@ -280,7 +284,11 @@ public class OrderController extends BaseController {
                                 Integer orderEventId,
                                 String remark,
                                 @RequestParam(required = true) String[] fileUrl) {
-        orderService.consultRejectOrder(orderNo, orderEventId, remark, fileUrl);
+        Order order = orderService.findByOrderNo(orderNo);
+        User user = userService.getCurrentUser();
+        userService.isCurrentUser(order.getServiceUserId());
+        
+        orderService.consultRejectOrder(order, orderEventId, remark, fileUrl,user.getId());
         return Result.success().data(orderNo);
     }
 
@@ -307,7 +315,11 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/server/receive")
     public Result serverReceiveOrder(@RequestParam String orderNo,
                                      String version) {
-        orderService.serverReceiveOrder(orderNo);
+
+        Order order = orderService.findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getServiceUserId());
+        
+        orderService.serverReceiveOrder(order);
         return Result.success().data(orderNo).msg("接单成功!");
     }
 
@@ -319,7 +331,11 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/server/start-serve")
     public Result startServerOrder(@RequestParam(required = true) String orderNo) {
-        orderService.serverStartServeOrder(orderNo);
+
+        Order order = orderService.findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getServiceUserId());
+        
+        orderService.serverStartServeOrder(order);
         return Result.success().data(orderNo).msg("接单成功!");
     }
 
@@ -345,7 +361,11 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/server/cancel")
     public Result serverCancelOrder(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = orderService.serverCancelOrder(orderNo);
+
+        Order order = orderService.findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getServiceUserId());
+        
+        OrderVO orderVO = orderService.serverCancelOrder(order);
         return Result.success().data(orderVO).msg("取消订单成功!");
     }
 

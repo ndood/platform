@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
+import com.alibaba.fastjson.JSONArray;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ImgException;
@@ -782,10 +783,17 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
 
     @Override
-    public List<AdminImLog> userOnline(Boolean active, String version) {
+    public UserOnlineVO userOnline(Boolean active, String version) {
+
+        UserOnlineVO uo = new UserOnlineVO();
+        
         User user = this.getCurrentUser();
         UserInfoAuth ua = userInfoAuthService.findByUserId(user.getId());
         if (active) {
+
+            uo.setOpenAgentIm(ua.getOpenSubstituteIm());
+            uo.setNeedSayHello(this.getUserRandStatus(user.getId()));
+            
             log.info("userId:{}用户上线了!;version:{}", user.getId(), version);
             redisOpenService.set(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()), user.getType() + "");
 
@@ -812,18 +820,72 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
                 AdminImLogVO ail = new AdminImLogVO();
                 ail.setOwnerUserId(user.getId());
                 List<AdminImLog> list = adminImLogService.findByParameter(ail);
+                
+                uo.setImLogList(list);
+                
                 //删除带聊天记录
                 adminImLogService.deleteByOwnerUserId(user.getId());
-                return list;
 
             }
-
-            return null;
 
         } else {
             log.info("userId:{}用户下线了!version:{}", user.getId(), version);
             redisOpenService.delete(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()));
         }
-        return null;
+        return uo;
+    }
+
+
+    @Override
+    public PageInfo<User> searchByAuthUserInfo(Integer pageNum, Integer pageSize,String searchword) {
+        PageHelper.startPage(pageNum, pageSize);
+        
+        List<User> list = userDao.searchByAuthUserInfo(searchword);
+        
+        return new PageInfo<User>(list);
+    }
+
+
+    @Override
+    public PageInfo<User> searchByUserInfo(Integer pageNum, Integer pageSize,String searchword) {
+        PageHelper.startPage(pageNum, pageSize);
+
+        List<User> list = userDao.searchByUserInfo(searchword);
+
+        return new PageInfo<User>(list);
+    }
+
+    @Override
+    public boolean getUserRandStatus(Integer userId) {
+        String userIdJsonStr = redisOpenService.get(RedisKeyEnum.AUTO_SAY_HELLO_USER_LIST.generateKey());
+
+        if(StringUtils.isNotBlank(userIdJsonStr)){
+            JSONArray userIdArr = com.alibaba.fastjson.JSONObject.parseArray(userIdJsonStr);
+
+            for(int i = 0 ; i <userIdArr.size() ; i++){
+                if(userIdArr.getIntValue(i) == userId.intValue()){
+                    return true;
+                }
+            }
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public void setUserRandStatus(Integer userId) {
+        String userIdJsonStr = redisOpenService.get(RedisKeyEnum.AUTO_SAY_HELLO_USER_LIST.generateKey());
+
+        if(StringUtils.isNotBlank(userIdJsonStr)){
+            JSONArray userIdArr = com.alibaba.fastjson.JSONObject.parseArray(userIdJsonStr);
+
+            for(int i = 0 ; i <userIdArr.size() ; i++){
+                if(userIdArr.getIntValue(i) == userId.intValue()){
+                    userIdArr.remove(i);
+                    redisOpenService.set(RedisKeyEnum.AUTO_SAY_HELLO_USER_LIST.generateKey(),userIdArr.toJSONString());
+                    return;
+                }
+            }
+        }
     }
 }

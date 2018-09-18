@@ -5,6 +5,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.core.entity.AdminImLog;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.UserOnlineVO;
 import com.fulu.game.core.entity.vo.VirtualProductAttachVO;
 import com.fulu.game.core.entity.vo.VirtualProductVO;
 import com.fulu.game.core.service.ImService;
@@ -44,9 +45,9 @@ public class ImLogController extends BaseController {
     @PostMapping(value = "online")
     public Result userOnline(@RequestParam(required = true) Boolean active, String version) {
 
-        List<AdminImLog> list = userService.userOnline(active, version);
+        UserOnlineVO uo = userService.userOnline(active, version);
 
-        return Result.success().data(list).msg("查询成功！");
+        return Result.success().data(uo).msg("查询成功！");
     }
 
 

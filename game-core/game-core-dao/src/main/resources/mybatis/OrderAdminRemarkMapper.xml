@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.OrderAdminRemarkDao">
+    <resultMap id="OrderAdminRemarkResultMap" type="com.fulu.game.core.entity.OrderAdminRemark">
+                                    <id column="id"  property="id" />
+                                            <result column="order_id"  property="orderId" />
+                                            <result column="agent_admin_id"  property="agentAdminId" />
+                                            <result column="agent_admin_name"  property="agentAdminName" />
+                                            <result column="remark"  property="remark" />
+                                            <result column="create_time"  property="createTime" />
+                                            <result column="update_time"  property="updateTime" />
+                        </resultMap>
+
+    <resultMap id="OrderAdminRemarkResultVOMap" type="com.fulu.game.core.entity.vo.OrderAdminRemarkVO" extends="OrderAdminRemarkResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,order_id,agent_admin_id,agent_admin_name,remark,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="OrderAdminRemarkResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_order_admin_remark
+        <where>
+        id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll"  resultMap="OrderAdminRemarkResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_order_admin_remark
+    </select>
+
+    <select id="findByParameter" resultMap="OrderAdminRemarkResultMap" parameterType="com.fulu.game.core.entity.vo.OrderAdminRemarkVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_order_admin_remark
+        <where>
+                                                                            <if test="orderId != null">
+                       and order_id = #{orderId}
+                    </if>
+                                                                <if test="agentAdminId != null">
+                       and agent_admin_id = #{agentAdminId}
+                    </if>
+                                                                <if test="agentAdminName != null">
+                       and agent_admin_name = #{agentAdminName}
+                    </if>
+                                                                <if test="remark != null">
+                       and remark = #{remark}
+                    </if>
+                                                                <if test="createTime != null">
+                       and create_time = #{createTime}
+                    </if>
+                                                                <if test="updateTime != null">
+                       and update_time = #{updateTime}
+                    </if>
+                                    </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_order_admin_remark
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.OrderAdminRemark">
+        insert into
+        t_order_admin_remark (order_id,agent_admin_id,agent_admin_name,remark,create_time,update_time)
+        values
+        (#{orderId},#{agentAdminId},#{agentAdminName},#{remark},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.OrderAdminRemark">
+        update t_order_admin_remark
+        <set>
+                                                        
+                    <if test="orderId != null">
+                        order_id = #{orderId},
+                    </if>
+                                            
+                    <if test="agentAdminId != null">
+                        agent_admin_id = #{agentAdminId},
+                    </if>
+                                            
+                    <if test="agentAdminName != null">
+                        agent_admin_name = #{agentAdminName},
+                    </if>
+                                            
+                    <if test="remark != null">
+                        remark = #{remark},
+                    </if>
+                                            
+                    <if test="createTime != null">
+                        create_time = #{createTime},
+                    </if>
+                                            
+                    <if test="updateTime != null">
+                        update_time = #{updateTime},
+                    </if>
+                                    </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

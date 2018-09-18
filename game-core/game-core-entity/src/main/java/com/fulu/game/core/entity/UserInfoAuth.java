@@ -35,6 +35,8 @@ public class UserInfoAuth implements Serializable {
     private Boolean allowExport;
     //推荐位排序字段
     private Integer sort;
+    //自动问好
+    private String autoSayHello;
     //
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
@@ -57,4 +59,7 @@ public class UserInfoAuth implements Serializable {
      * 用户简介
      */
     private String about;
+
+    //是否开启代聊  0关闭  1开启
+    private Boolean openSubstituteIm;
 }

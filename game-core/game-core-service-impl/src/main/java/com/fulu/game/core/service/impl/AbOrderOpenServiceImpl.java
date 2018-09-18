@@ -285,17 +285,15 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
     /**
      * 陪玩师开始服务
      *
-     * @param orderNo
      * @return
      */
     @Override
-    public String serverStartServeOrder(String orderNo) {
-        log.info("陪玩师接单orderNo:{}", orderNo);
-        Order order = orderService.findByOrderNo(orderNo);
-        userService.isCurrentUser(order.getServiceUserId());
+    public String serverStartServeOrder(Order order) {
+        log.info("陪玩师接单orderNo:{}", order.getOrderNo());
+        
         if (!order.getStatus().equals(OrderStatusEnum.ALREADY_RECEIVING.getStatus()) &&
                 !order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())) {
-            throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES, orderNo);
+            throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES, order.getOrderNo());
         }
         order.setStatus(OrderStatusEnum.SERVICING.getStatus());
         order.setUpdateTime(new Date());
@@ -392,27 +390,25 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
     /**
      * 拒绝协商处理
      *
-     * @param orderNo
      * @param orderConsultId
      * @param remark
      * @param fileUrls
      * @return
      */
     @Override
-    public String consultRejectOrder(String orderNo,
+    public String consultRejectOrder(Order order,
                                      int orderConsultId,
                                      String remark,
-                                     String[] fileUrls) {
-        log.info("拒绝协商处理订单orderNo:{}", orderNo);
-        Order order = orderService.findByOrderNo(orderNo);
+                                     String[] fileUrls , Integer userId) {
+        log.info("拒绝协商处理订单orderNo:{}", order.getOrderNo());
+        
         OrderEvent orderEvent = orderEventService.findById(orderConsultId);
         if (orderEvent == null || !order.getOrderNo().equals(orderEvent.getOrderNo())) {
-            throw new OrderException(orderNo, "拒绝协商订单不匹配!");
+            throw new OrderException(order.getOrderNo(), "拒绝协商订单不匹配!");
         }
-        User user = userService.getCurrentUser();
-        userService.isCurrentUser(order.getServiceUserId());
+        
         if (!order.getStatus().equals(OrderStatusEnum.CONSULTING.getStatus())) {
-            throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES, orderNo);
+            throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES, order.getOrderNo());
         }
         order.setStatus(OrderStatusEnum.CONSULT_REJECT.getStatus());
         order.setUpdateTime(new Date());
@@ -420,7 +416,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         OrderDeal orderDeal = new OrderDeal();
         orderDeal.setTitle("拒绝了协商");
         orderDeal.setType(OrderDealTypeEnum.CONSULT.getType());
-        orderDeal.setUserId(user.getId());
+        orderDeal.setUserId(userId);
         orderDeal.setRemark(remark);
         orderDeal.setOrderNo(order.getOrderNo());
         orderDeal.setOrderEventId(orderEvent.getId());
@@ -436,23 +432,22 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
     /**
      * 协商解决完成
      *
-     * @param orderNo
      * @param orderEventId
      * @return
      */
     @Override
     @UserScore(type = UserScoreEnum.CONSULT)
-    public String consultAgreeOrder(String orderNo, int orderEventId) {
-        log.info("陪玩师同意协商处理订单orderNo:{}", orderNo);
-        Order order = orderService.findByOrderNo(orderNo);
+    public String consultAgreeOrder(Order order, int orderEventId , Integer userId) {
+        log.info("陪玩师同意协商处理订单orderNo:{}", order.getOrderNo());
+        
         OrderEvent orderEvent = orderEventService.findById(orderEventId);
         if (orderEvent == null || !order.getOrderNo().equals(orderEvent.getOrderNo())) {
-            throw new OrderException(orderNo, "拒绝协商订单不匹配!");
+            throw new OrderException(order.getOrderNo(), "拒绝协商订单不匹配!");
         }
         User user = userService.getCurrentUser();
         userService.isCurrentUser(order.getServiceUserId());
         if (!order.getStatus().equals(OrderStatusEnum.CONSULTING.getStatus())) {
-            throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES, orderNo);
+            throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES, order.getOrderNo());
         }
         order.setStatus(OrderStatusEnum.CONSULT_COMPLETE.getStatus());
         order.setUpdateTime(new Date());
@@ -461,7 +456,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         OrderDeal orderDeal = new OrderDeal();
         orderDeal.setTitle(title);
         orderDeal.setType(OrderDealTypeEnum.CONSULT.getType());
-        orderDeal.setUserId(user.getId());
+        orderDeal.setUserId(userId);
         orderDeal.setRemark("陪玩师同意协商");
         orderDeal.setOrderNo(order.getOrderNo());
         orderDeal.setOrderEventId(orderEvent.getId());
@@ -517,12 +512,11 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
      */
     @Override
     @UserScore(type = UserScoreEnum.SERVICE_USER_CANCEL_ORDER)
-    public OrderVO serverCancelOrder(String orderNo) {
-        log.info("陪玩师取消订单orderNo:{}", orderNo);
-        Order order = orderService.findByOrderNo(orderNo);
-        userService.isCurrentUser(order.getServiceUserId());
+    public OrderVO serverCancelOrder(Order order) {
+        log.info("陪玩师取消订单orderNo:{}", order.getOrderNo());
+        
         if (!order.getStatus().equals(OrderStatusEnum.WAIT_SERVICE.getStatus())) {
-            throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES, orderNo);
+            throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES, order.getOrderNo());
         }
         order.setStatus(OrderStatusEnum.SERVER_CANCEL.getStatus());
         order.setUpdateTime(new Date());
@@ -538,7 +532,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         }
         
         //发送邮件
-        MailUtil.sendMail(configProperties.getOrdermail().getAddress(),configProperties.getOrdermail().getPassword(),"陪玩师取消了订单："+orderNo,"陪玩师取消了订单，订单号"+orderNo,new String[]{configProperties.getOrdermail().getAddress()});
+        MailUtil.sendMail(configProperties.getOrdermail().getAddress(),configProperties.getOrdermail().getPassword(),"陪玩师取消了订单："+order.getOrderNo(),"陪玩师取消了订单，订单号"+order.getOrderNo(),new String[]{configProperties.getOrdermail().getAddress()});
         return orderConvertVo(order);
     }
     

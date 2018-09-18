@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 import cn.hutool.core.date.DateUtil;
+import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.dao.ICommonDao;
@@ -93,5 +94,24 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         
         return orderDao.findByParameter(params);
     }
-    
+
+
+    @Override
+    public List<Order> getBannerOrderList(Integer authUserId, Integer bossUserId) {
+
+        List<Integer> list = new ArrayList<Integer>();
+        list.add(OrderStatusEnum.NON_PAYMENT.getStatus());
+        list.add(OrderStatusEnum.WAIT_SERVICE.getStatus());
+        list.add(OrderStatusEnum.ALREADY_RECEIVING.getStatus());
+        list.add(OrderStatusEnum.SERVICING.getStatus());
+        list.add(OrderStatusEnum.CHECK.getStatus());
+        list.add(OrderStatusEnum.CONSULTING.getStatus());
+        list.add(OrderStatusEnum.CONSULT_REJECT.getStatus());
+        list.add(OrderStatusEnum.CONSULT_CANCEL.getStatus());
+        list.add(OrderStatusEnum.APPEALING.getStatus());
+        
+        List<Order> orderList = orderDao.getBannerOrderList(authUserId,bossUserId,list);
+        
+        return orderList;
+    }
 }
