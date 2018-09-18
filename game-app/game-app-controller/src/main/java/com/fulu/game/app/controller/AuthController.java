@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -142,8 +143,8 @@ public class AuthController extends BaseController {
      * @return
      */
     @PostMapping(value = "/tech-info/query")
-    public Result techAuthQuery(Integer id,
-                                Integer categoryId) {
+    public Result techAuthQuery(@RequestParam(name = "id", required = false) Integer id,
+                                @RequestParam(name = "categoryId", required = false) Integer categoryId) {
         UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(id, categoryId);
         if (userTechAuthVO.getUserId() != null) {
             userService.isCurrentUser(userTechAuthVO.getUserId());

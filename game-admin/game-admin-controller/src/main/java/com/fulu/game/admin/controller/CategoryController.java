@@ -271,6 +271,17 @@ public class CategoryController extends BaseController {
     }
 
     /**
+     * 查询游戏所有定价规则
+     *
+     * @return
+     */
+    @PostMapping(value = "/price-rule/list")
+    public Result priceRuleList(@RequestParam(required = true) Integer categoryId) {
+        List<PriceRule> priceRuleList = priceRuleService.findByCategoryId(categoryId);
+        return Result.success().data(priceRuleList);
+    }
+
+    /**
      * 获取一级分类列表（例如：游戏和娱乐）
      * @return
      */
