@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -309,4 +310,14 @@ public class RedisOpenServiceImpl {
             RedisConnectionUtils.releaseConnection(connection, connectionFactory);
         }
     }
+
+    /**
+     * 通配符查找redis的key
+     * @param parttern
+     * @return
+     */
+    public Set<String> keys(String parttern){
+        return redisTemplate.keys(parttern);
+    }
+
 }
