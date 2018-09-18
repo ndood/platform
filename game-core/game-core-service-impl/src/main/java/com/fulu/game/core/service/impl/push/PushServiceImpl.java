@@ -26,16 +26,18 @@ import com.fulu.game.common.properties.Config;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.WechatFormid;
+import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.WxMaTemplateMessageVO;
 import com.fulu.game.core.entity.vo.WechatFormidVO;
 import com.fulu.game.core.service.PushService;
+import com.fulu.game.core.service.UserInfoAuthService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.WechatFormidService;
 import com.fulu.game.core.service.queue.MiniAppPushContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -45,16 +47,16 @@ import java.util.*;
 public class PushServiceImpl implements PushService {
 
     @Autowired
-    private  MiniAppPushContainer miniAppPushContainer;
+    private MiniAppPushContainer miniAppPushContainer;
     @Autowired
-    private  UserService userService;
+    private UserService userService;
     @Autowired
-    private  WechatFormidService wechatFormidService;
+    private WechatFormidService wechatFormidService;
     @Autowired
-    private  Config configProperties;
-
-
-
+    private Config configProperties;
+    @Qualifier(value = "userInfoAuthServiceImpl")
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
 
     /**
      * 通用模板推送消息
@@ -130,6 +132,7 @@ public class PushServiceImpl implements PushService {
 
     /**
      * 批量写入推送模板消息
+     *
      * @param pushId
      * @param userIds
      * @param page
@@ -164,14 +167,14 @@ public class PushServiceImpl implements PushService {
                 //发送微信模板消息
                 for (WechatFormidVO wechatFormidVO : wechatFormidVOS) {
                     WxMaTemplateMessageVO vo = WxMaTemplateMessageVO.builder()
-                                                                    .templateId(wechatTemplateEnum.getTemplateId())
-                                                                    .toUser(wechatFormidVO.getOpenId())
-                                                                    .page(page)
-                                                                    .formId(wechatFormidVO.getFormId())
-                                                                    .dataJson(JSONArray.toJSONString(dataList))
-                                                                    .platform(platform)
-                                                                    .pushId(pushId)
-                                                                    .build();
+                            .templateId(wechatTemplateEnum.getTemplateId())
+                            .toUser(wechatFormidVO.getOpenId())
+                            .page(page)
+                            .formId(wechatFormidVO.getFormId())
+                            .dataJson(JSONArray.toJSONString(dataList))
+                            .platform(platform)
+                            .pushId(pushId)
+                            .build();
                     miniAppPushContainer.add(vo);
                     formIds.add(wechatFormidVO.getFormId());
                     userFormIds.put(wechatFormidVO.getUserId(), wechatFormidVO.getFormId());
@@ -239,11 +242,19 @@ public class PushServiceImpl implements PushService {
             if (StringUtils.isEmpty(formId)) {
                 log.error("user或者formId为null无法给用户推送消息user:{};content:{};formId:{}", user, content, formId);
                 if (StringUtils.isNotEmpty(user.getMobile())) {
-                    Boolean flag = SMSUtil.sendLeaveInform(user.getMobile(), content, Constant.WEIXN_JUMP_URL);
-                    if (!flag) {
-                        log.error("留言通知发送短信失败:user.getMobile:{};content:{};", user.getMobile(), content);
-                    } else {
-                        log.info("留言通知发送短信成功:user.getMobile:{};content:{};", user.getMobile(), content);
+                    UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
+                    boolean vestFlag = false;
+                    if (userInfoAuth != null) {
+                        vestFlag = userInfoAuth.getVestFlag();
+                    }
+
+                    if (!vestFlag) {
+                        Boolean flag = SMSUtil.sendLeaveInform(user.getMobile(), content, Constant.WEIXN_JUMP_URL);
+                        if (!flag) {
+                            log.error("留言通知发送短信失败:user.getMobile:{};content:{};", user.getMobile(), content);
+                        } else {
+                            log.info("留言通知发送短信成功:user.getMobile:{};content:{};", user.getMobile(), content);
+                        }
                     }
                 }
             }
@@ -252,11 +263,9 @@ public class PushServiceImpl implements PushService {
     }
 
 
-
-
-
     /**
      * 推送全体用户
+     *
      * @param title
      * @param alert
      * @param extras
@@ -318,6 +327,7 @@ public class PushServiceImpl implements PushService {
 
     /**
      * 构建PushPayload对象
+     *
      * @param title
      * @param alert
      * @param extras
@@ -341,8 +351,6 @@ public class PushServiceImpl implements PushService {
 
         return payload;
     }
-
-
 
 
 }

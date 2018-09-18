@@ -37,6 +37,8 @@ public class UserInfoAuth implements Serializable {
     private Integer sort;
     //自动问好
     private String autoSayHello;
+    //是否马甲（0：否；1：是）
+    private Boolean vestFlag;
     //
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
