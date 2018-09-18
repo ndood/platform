@@ -218,7 +218,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         user.setUpdateTime(new Date());
         user.setStatus(UserStatusEnum.BANNED.getType());
         userDao.update(user);
-        SubjectUtil.setCurrentUser(user);
+        removeUserLoginToken(user.getId());
         log.info("用户id:{}被管理员id:{}封禁", id, admin.getId());
     }
 
@@ -229,7 +229,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         user.setUpdateTime(new Date());
         user.setStatus(UserStatusEnum.NORMAL.getType());
         userDao.update(user);
-        SubjectUtil.setCurrentUser(user);
         log.info("用户id:{}被管理员id:{}解封", id, admin.getId());
     }
 
@@ -333,7 +332,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         String token = SubjectUtil.getToken();
         Map<String, Object> userMap = new HashMap<String, Object>();
         userMap = BeanUtil.beanToMap(user);
-        redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token), userMap);
+        redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token+"#"+user.getId()), userMap);
     }
 
 
@@ -833,6 +832,19 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             redisOpenService.delete(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()));
         }
         return uo;
+    }
+
+    @Override
+    public Boolean removeUserLoginToken(Integer userId) {
+        Set<String> keys =  redisOpenService.keys(RedisKeyEnum.PLAY_TOKEN.generateKey()+"*#"+userId);
+        log.info("查找到用户对应的token有:{}"+keys);
+        if(keys.isEmpty()){
+            return false;
+        }
+        for(String key:keys){
+            redisOpenService.delete(key);
+        }
+        return true;
     }
 
 
