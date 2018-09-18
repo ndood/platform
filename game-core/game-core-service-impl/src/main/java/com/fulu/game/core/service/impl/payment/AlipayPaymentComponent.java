@@ -5,21 +5,30 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradeAppPayModel;
+import com.alipay.api.domain.AlipayTradeRefundApplyModel;
+import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
+import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
+import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.fulu.game.common.enums.PayBusinessEnum;
 import com.fulu.game.common.properties.Config;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.VirtualPayOrder;
+import com.fulu.game.core.service.impl.payment.to.PayCallbackTO;
+import com.fulu.game.core.service.impl.payment.to.PayRequestTO;
+import com.fulu.game.core.service.impl.payment.vo.PayCallbackVO;
+import com.fulu.game.core.service.impl.payment.vo.PayRequestVO;
+import com.fulu.game.core.service.impl.payment.vo.RefundVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+import java.util.Map;
 
 @Service
 @Slf4j
-public class AlipayPaymentComponent {
+public class AlipayPaymentComponent implements PaymentComponent {
 
 
     private final Config configProperties;
@@ -31,8 +40,47 @@ public class AlipayPaymentComponent {
     }
 
 
+    @Override
+    public PayRequestTO payRequest(PayRequestVO paymentVO) {
+        PayRequestTO requestTO = new PayRequestTO(false);
+        AlipayTradeAppPayModel model = null;
+        if (paymentVO.getPayBusinessEnum().equals(PayBusinessEnum.VIRTUAL_PRODUCT)) {
+            buildAlipayRequest(paymentVO.getVirtualPayOrder());
+        } else {
+            model = buildAlipayRequest(paymentVO.getOrder());
+        }
+        String result = payRequest(paymentVO.getPayBusinessEnum(), model);
+        requestTO.setRequestParameter(result);
+        return requestTO;
+    }
 
-    public  AlipayTradeAppPayModel buildAlipayRequest(Order order){
+
+    @Override
+    public PayCallbackTO payCallBack(PayCallbackVO payCallbackVO) {
+        PayCallbackTO payCallbackTO = new PayCallbackTO();
+        try {
+            boolean flag = AlipaySignature.rsaCheckV1(payCallbackVO.getAliPayParameterMap(), configProperties.getAlipayPay().getAlipayPublicKey(), "utf-8", "RSA2");
+            payCallbackTO.setSuccess(flag);
+            if (flag) {
+                Map<String, String> result = payCallbackVO.getAliPayParameterMap();
+                payCallbackTO.setOrderNO(result.get("out_trade_no"));
+                payCallbackTO.setPayMoney(result.get("buyer_pay_amount"));
+            }
+        } catch (Exception e) {
+            log.info("支付宝回调解析异常:", e);
+        }
+        return payCallbackTO;
+    }
+
+
+    @Override
+    public boolean refund(RefundVO refundVO) {
+        AlipayTradeRefundApplyModel model = buildAlipayRefund(refundVO.getOrderNo(), refundVO.getRefundMoney().toPlainString());
+        return alipayRefundRequest(model);
+    }
+
+
+    public AlipayTradeAppPayModel buildAlipayRequest(Order order) {
         AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
         model.setBody(order.getName());
         model.setSubject(order.getName());
@@ -44,8 +92,7 @@ public class AlipayPaymentComponent {
     }
 
 
-
-    public AlipayTradeAppPayModel buildAlipayRequest(VirtualPayOrder virtualPayOrder){
+    public AlipayTradeAppPayModel buildAlipayRequest(VirtualPayOrder virtualPayOrder) {
         AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
         model.setBody(virtualPayOrder.getName());
         model.setSubject(virtualPayOrder.getName());
@@ -57,21 +104,56 @@ public class AlipayPaymentComponent {
     }
 
 
+    public AlipayTradeRefundApplyModel buildAlipayRefund(String orderNo, String refundAmount) {
+        AlipayTradeRefundApplyModel model = new AlipayTradeRefundApplyModel();
+        model.setOutRequestNo(orderNo);
+        model.setRefundAmount(refundAmount);
+        model.setOutRequestNo(orderNo + "E");
+        model.setRefundReason(orderNo + "订单正常退款!");
+        return model;
+    }
+
+    /**
+     * 发起退款请求
+     *
+     * @param model
+     * @return
+     */
+    public boolean alipayRefundRequest(AlipayTradeRefundApplyModel model) {
+        log.info("发起退款请求,model:{}", model);
+        Config.AlipayPay alipayPay = configProperties.getAlipayPay();
+        try {
+            AlipayClient alipayClient = new DefaultAlipayClient(configProperties.getAlipayPay().getPayGateway(), alipayPay.getAppId(), alipayPay.getAppPrivateKey(), "json", "utf-8", alipayPay.getAlipayPublicKey(), "RSA2");
+            AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
+            request.setBizModel(model);
+            AlipayTradeRefundResponse response = alipayClient.execute(request);
+            if (response.isSuccess()) {
+                return true;
+            } else {
+                log.error("支付宝退款失败错误信息:", response.getSubMsg());
+            }
+        } catch (Exception e) {
+            log.error("支付宝发起退款异常:", e);
+        }
+        return false;
+    }
+
 
     /**
      * 发起支付请求
+     *
      * @param model
      * @return
      */
     public String payRequest(PayBusinessEnum payBusinessEnum, AlipayTradeAppPayModel model) {
-        log.info("发起支付请求,model:{}",model);
+        log.info("发起支付请求,model:{}", model);
         Config.AlipayPay alipayPay = configProperties.getAlipayPay();
         AlipayClient alipayClient = new DefaultAlipayClient(configProperties.getAlipayPay().getPayGateway(), alipayPay.getAppId(), alipayPay.getAppPrivateKey(), "json", "utf-8", alipayPay.getAlipayPublicKey(), "RSA2");
         AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
         request.setBizModel(model);
-        if(PayBusinessEnum.ORDER.equals(payBusinessEnum)){
+        if (PayBusinessEnum.ORDER.equals(payBusinessEnum)) {
             request.setNotifyUrl(alipayPay.getPayOrderNotifyUrl());
-        }else if(PayBusinessEnum.VIRTUAL_PRODUCT.equals(payBusinessEnum)){
+        } else if (PayBusinessEnum.VIRTUAL_PRODUCT.equals(payBusinessEnum)) {
             request.setNotifyUrl(alipayPay.getPayVirtualProductNotifyUrl());
         }
         try {
@@ -79,9 +161,10 @@ public class AlipayPaymentComponent {
             AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
             return JSONObject.toJSONString(response.getParams());
         } catch (AlipayApiException e) {
-            log.error("支付宝发起支付请求异常:",e);
+            log.error("支付宝发起支付请求异常:", e);
         }
         return null;
     }
+
 
 }
