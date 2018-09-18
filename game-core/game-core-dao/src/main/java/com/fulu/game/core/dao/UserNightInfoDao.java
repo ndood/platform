@@ -23,5 +23,5 @@ public interface UserNightInfoDao extends ICommonDao<UserNightInfo, Integer> {
 
     int updateByUserId(UserNightInfo userNightInfo);
 
-    List<ProductShowCaseVO> findNightUser();
+    List<ProductShowCaseVO> findNightUser(UserNightInfoVO userNightInfoVO);
 }

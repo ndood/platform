@@ -641,10 +641,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     }
 
     @Override
-    public PageInfo<ProductCollectVO> findAllProductByPage(Integer gender, String orderBy) {
-        Integer pageNum = 1;
-        Integer pageSize = 4;
-
+    public PageInfo<ProductCollectVO> findAllProductByPage(Integer gender, Integer pageNum, Integer pageSize, String orderBy) {
         String timeStr = redisOpenService.get(RedisKeyEnum.MIDNIGHT.generateKey());
         DateTime startTime = DateUtil.parseTime(timeStr.split(Constant.DEFAULT_SPLIT_SEPARATOR)[0]);
         DateTime endTime = DateUtil.parseTime(timeStr.split(Constant.DEFAULT_SPLIT_SEPARATOR)[1]);
@@ -675,7 +672,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             ProductCollectVO nightVO = new ProductCollectVO();
             nightVO.setName("午夜场");
 
-            PageInfo<ProductShowCaseVO> pageInfo = userNightInfoService.findNightUserByPage(pageNum, pageSize);
+            PageInfo<ProductShowCaseVO> pageInfo = userNightInfoService.findNightUserByPage(gender, pageNum, pageSize);
             nightVO.setVoList(pageInfo.getList());
             voList.add(nightVO);
         }
@@ -698,10 +695,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Override
     public PageInfo<ProductShowCaseVO> findAllNightProductByPage(Integer gender,
                                                                  Integer pageNum,
-                                                                 Integer pageSize,
-                                                                 String orderBy) {
+                                                                 Integer pageSize) {
 
-        PageInfo<ProductShowCaseVO> pageInfo = userNightInfoService.findNightUserByPage(pageNum, pageSize);
+        PageInfo<ProductShowCaseVO> pageInfo = userNightInfoService.findNightUserByPage(gender, pageNum, pageSize);
         return pageInfo;
     }
 

@@ -113,6 +113,7 @@
         WHERE
             t2.del_flag = FALSE
         AND t2.is_activate = TRUE
+        AND t2.gender = #{gender}
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">

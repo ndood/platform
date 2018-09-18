@@ -82,16 +82,15 @@ public class UserNightInfoServiceImpl extends AbsCommonService<UserNightInfo, In
         vo.setUserId(userId);
         vo.setDelFlag(Boolean.FALSE);
         List<UserNightInfo> infoList = userNightInfoDao.findByParameter(vo);
+        UserNightInfo info = new UserNightInfo();
         if (CollectionUtils.isNotEmpty(infoList)) {
-            UserNightInfo info = infoList.get(0);
-            UserNightInfoVO resultVo = new UserNightInfoVO();
-            BeanUtil.copyProperties(info, resultVo);
-            resultVo.setAllUserTechs(techAuthList);
-            resultVo.setAllSalesModes(salesModes);
-            return resultVo;
-        } else {
-            return null;
+            info = infoList.get(0);
         }
+        UserNightInfoVO resultVo = new UserNightInfoVO();
+        BeanUtil.copyProperties(info, resultVo);
+        resultVo.setAllUserTechs(techAuthList);
+        resultVo.setAllSalesModes(salesModes);
+        return resultVo;
     }
 
     @Override
@@ -119,15 +118,26 @@ public class UserNightInfoServiceImpl extends AbsCommonService<UserNightInfo, In
         info.setUpdateTime(DateUtil.date());
         info.setCreateTime(DateUtil.date());
         info.setDelFlag(Boolean.FALSE);
-        userNightInfoDao.updateByUserId(info);
+
+        UserNightInfoVO infoVO = new UserNightInfoVO();
+        infoVO.setUserId(userId);
+        infoVO.setDelFlag(Boolean.FALSE);
+        List<UserNightInfo> infoList = userNightInfoDao.findByParameter(infoVO);
+        if (CollectionUtils.isNotEmpty(infoList)) {
+            userNightInfoDao.updateByUserId(info);
+        } else {
+            userNightInfoDao.create(info);
+        }
         return info;
     }
 
     @Override
-    public PageInfo<ProductShowCaseVO> findNightUserByPage(Integer pageNum, Integer pageSize) {
+    public PageInfo<ProductShowCaseVO> findNightUserByPage(Integer gender, Integer pageNum, Integer pageSize) {
         String orderBy = "t1.sort ASC, t2.create_time DESC";
         PageHelper.startPage(pageNum, pageSize, orderBy);
-        List<ProductShowCaseVO> caseVOList = userNightInfoDao.findNightUser();
+        UserNightInfoVO vo = new UserNightInfoVO();
+        vo.setGender(gender);
+        List<ProductShowCaseVO> caseVOList = userNightInfoDao.findNightUser(vo);
 
         if (CollectionUtils.isNotEmpty(caseVOList)) {
             for (ProductShowCaseVO showCaseVO : caseVOList) {
