@@ -76,8 +76,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Autowired
     private MoneyDetailsService moneyDetailsService;
 
+    @Qualifier(value = "userTechAuthServiceImpl")
     @Autowired
-    private UserTechAuthService userTechAuthService;
+    private UserTechAuthServiceImpl userTechAuthService;
 
 
     @Override
