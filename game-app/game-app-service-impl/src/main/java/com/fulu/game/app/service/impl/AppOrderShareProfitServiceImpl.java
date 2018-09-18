@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 public class AppOrderShareProfitServiceImpl extends OrderShareProfitServiceImpl {
 
     @Autowired
-    private AppPayServiceImpl appPayService;
+    private AppOrderPayServiceImpl appPayService;
 
 
     @Override

@@ -29,6 +29,8 @@ public class Config {
 
     private Wechat wechat_app = new Wechat();
 
+    private AppleStore appleStore = new AppleStore();
+
     private Elasticsearch elasticsearch = new Elasticsearch();
 
     //环信账户配置信息
@@ -79,7 +81,10 @@ public class Config {
         private String subMchId;
         private String keyPath;
         private String tradeType;
+        //订单支付回调
         private String notifyUrl;
+        //充值支付回调
+        private String payVirtualProductNotifyUrl;
 
     }
 
@@ -128,7 +133,14 @@ public class Config {
         private String appId;
         private String appPrivateKey;
         private String alipayPublicKey;
-        private String payNotifyUrl;
+        private String payOrderNotifyUrl;
+        private String payVirtualProductNotifyUrl;
         private String payGateway;
     }
+
+    @Data
+    public static class AppleStore{
+        private String checkPayUrl;
+    }
+
 }

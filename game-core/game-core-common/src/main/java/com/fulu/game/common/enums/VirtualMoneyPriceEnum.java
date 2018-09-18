@@ -21,4 +21,15 @@ public enum VirtualMoneyPriceEnum {
 
     private Integer number;
     private String priceStr;
+
+
+    public static int getNumberByPriceStr(String priceStr){
+        for(VirtualMoneyPriceEnum priceEnum : VirtualMoneyPriceEnum.values()){
+            if(priceEnum.getPriceStr().equals(priceStr)){
+                return priceEnum.getNumber();
+            }
+        }
+        return 0;
+    }
+
 }
