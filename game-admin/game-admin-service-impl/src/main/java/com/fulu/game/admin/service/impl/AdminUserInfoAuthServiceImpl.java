@@ -2,6 +2,7 @@ package com.fulu.game.admin.service.impl;
 
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DateUtil;
 import com.fulu.game.admin.service.AdminUserInfoAuthService;
 import com.fulu.game.common.enums.FileTypeEnum;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
@@ -18,6 +19,7 @@ import com.fulu.game.core.service.UserInfoAuthRejectService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.UserInfoAuthServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -205,7 +207,22 @@ public class AdminUserInfoAuthServiceImpl extends UserInfoAuthServiceImpl implem
     @Override
     public UserInfoAuth setVest(Integer id) {
         UserInfoAuth userInfoAuth = userInfoAuthDao.findById(id);
-        userInfoAuth.setVestFlag(!userInfoAuth.getVestFlag());
+
+        Boolean vestFlag = userInfoAuth.getVestFlag();
+        if (vestFlag) {
+            userInfoAuth.setVestFlag(false);
+        } else {
+            userInfoAuth.setVestFlag(true);
+            List<Product> productList = productService.findByUserId(userInfoAuth.getUserId());
+            //陪玩师对应的商品设置为“求单ing”状态
+            if (CollectionUtils.isNotEmpty(productList)) {
+                for (Product meta : productList) {
+                    meta.setStatus(true);
+                    meta.setUpdateTime(DateUtil.date());
+                    productService.update(meta);
+                }
+            }
+        }
         userInfoAuthDao.update(userInfoAuth);
         return userInfoAuth;
     }
