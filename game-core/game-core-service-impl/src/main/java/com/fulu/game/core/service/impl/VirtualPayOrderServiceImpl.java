@@ -1,7 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
-import com.fulu.game.common.enums.VirtualPayOrderPayPathEnum;
+import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.VirtualPayOrderDao;
 import com.fulu.game.core.entity.VirtualPayOrder;
@@ -49,7 +49,7 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
         List<VirtualPayOrderVO> voList = virtualPayOrderDao.chargeList(payOrderVO);
         if (CollectionUtils.isNotEmpty(voList)) {
             for (VirtualPayOrderVO vo : voList) {
-                vo.setPayPath(vo.getPayPath() == null ? VirtualPayOrderPayPathEnum.MP.getType() : vo.getPayPath());
+                vo.setPayPath(vo.getPayPath() == null ? PlatformEcoEnum.MP.getType() : vo.getPayPath());
             }
         }
         return new PageInfo<>(voList);
