@@ -1,8 +1,8 @@
 package com.fulu.game.app.controller;
 
 
-import com.fulu.game.app.service.impl.AppOrderServiceImpl;
 import com.fulu.game.app.service.impl.AppOrderPayServiceImpl;
+import com.fulu.game.app.service.impl.AppOrderServiceImpl;
 import com.fulu.game.app.util.RequestUtil;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.domain.ClientInfo;
@@ -13,8 +13,12 @@ import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.UserComment;
-import com.fulu.game.core.entity.vo.*;
+import com.fulu.game.core.entity.payment.model.PayRequestModel;
+import com.fulu.game.core.entity.payment.res.PayRequestRes;
+import com.fulu.game.core.entity.vo.OrderDetailsVO;
+import com.fulu.game.core.entity.vo.OrderEventVO;
+import com.fulu.game.core.entity.vo.PayRequestVO;
+import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.service.OrderEventService;
 import com.fulu.game.core.service.UserCommentService;
 import com.fulu.game.core.service.UserService;
@@ -85,27 +89,22 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/pay")
     @Deprecated
     public Result pay(@RequestParam(required = true) String orderNo,
-                      Integer payment,
-                      HttpServletRequest request) {
-        String ip = RequestUtil.getIpAdrress(request);
+                      Integer payment) {
         Order order = appOrderServiceImpl.findByOrderNo(orderNo);
         order.setPayment(payment);
         User user = userService.findById(order.getUserId());
-        Object result = appPayService.payOrder(order, user, ip);
-        if(result==null){
-            PayRequestVO payRequestVO = new PayRequestVO();
-            payRequestVO.setPayment(0);
-            payRequestVO.setPayArguments(true);
-            result = payRequestVO;
-        }
-
-        return Result.success().data(result);
+        PayRequestModel model =    PayRequestModel.newBuilder().order(order).user(user).build();
+        PayRequestRes res = appPayService.payRequest(model);
+        return Result.success().data(res);
     }
+
+
 
 
 
     /**
      * 陪玩师接收订单
+     *
      * @param orderNo
      * @return
      */
@@ -118,6 +117,7 @@ public class OrderController extends BaseController {
 
     /**
      * 陪玩师开始服务
+     *
      * @param orderNo
      * @return
      */
@@ -128,9 +128,9 @@ public class OrderController extends BaseController {
     }
 
 
-
     /**
      * 订单列表
+     *
      * @param pageNum
      * @param pageSize
      * @param type
@@ -139,8 +139,8 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/list")
     public Result userOrderList(@RequestParam(required = true) Integer pageNum,
                                 @RequestParam(required = true) Integer pageSize,
-                                Integer type){
-        PageInfo<OrderDetailsVO>  orderList = appOrderServiceImpl.orderList(pageNum,pageSize,type);
+                                Integer type) {
+        PageInfo<OrderDetailsVO> orderList = appOrderServiceImpl.orderList(pageNum, pageSize, type);
         return Result.success().data(orderList);
     }
 
@@ -210,26 +210,27 @@ public class OrderController extends BaseController {
     }
 
 
-
     /**
      * 用户验收订单
+     *
      * @param orderNo
      * @return
      */
     @RequestMapping(value = "/user/verify")
     public Result userVerifyOrder(@RequestParam(required = true) String orderNo) {
-         appOrderServiceImpl.userVerifyOrder(orderNo);
+        appOrderServiceImpl.userVerifyOrder(orderNo);
         return Result.success().data(orderNo).msg("订单验收成功!");
     }
 
     /**
      * 用户取消订单
+     *
      * @param orderNo
      * @return
      */
     @RequestMapping(value = "/user/cancel")
-    public Result userCancelOrder(@RequestParam(required = true) String orderNo,String reason) {
-        log.info("{}订单取消,原因:{}",reason);
+    public Result userCancelOrder(@RequestParam(required = true) String orderNo, String reason) {
+        log.info("{}订单取消,原因:{}", reason);
         appOrderServiceImpl.userCancelOrder(orderNo);
         return Result.success().data(orderNo).msg("取消订单成功!");
     }
@@ -241,8 +242,8 @@ public class OrderController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/server/cancel")
-    public Result serverCancelOrder(@RequestParam(required = true) String orderNo,String reason) {
-        log.info("{}订单取消,原因:{}",reason);
+    public Result serverCancelOrder(@RequestParam(required = true) String orderNo, String reason) {
+        log.info("{}订单取消,原因:{}", reason);
         appOrderServiceImpl.serverCancelOrder(orderNo);
         return Result.success().data(orderNo).msg("取消订单成功!");
     }
@@ -261,9 +262,9 @@ public class OrderController extends BaseController {
     }
 
 
-
     /**
      * 申请客服仲裁
+     *
      * @param orderNo
      * @param remark
      * @param fileUrl
@@ -280,6 +281,7 @@ public class OrderController extends BaseController {
 
     /**
      * 留言
+     *
      * @param orderNo
      * @param orderEventId
      * @param remark
@@ -298,6 +300,7 @@ public class OrderController extends BaseController {
 
     /**
      * 订单详情
+     *
      * @param orderNo
      * @return
      */
@@ -306,7 +309,6 @@ public class OrderController extends BaseController {
         OrderDetailsVO orderDetailsVO = appOrderServiceImpl.findOrderDetails(orderNo);
         return Result.success().data(orderDetailsVO);
     }
-
 
 
     /**

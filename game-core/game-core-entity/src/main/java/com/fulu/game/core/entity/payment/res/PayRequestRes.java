@@ -1,15 +1,15 @@
-package com.fulu.game.core.service.impl.payment.to;
+package com.fulu.game.core.entity.payment.res;
 
 import lombok.Data;
 
 @Data
-public class PayRequestTO {
+public class PayRequestRes {
 
     boolean directPay;
 
     Object requestParameter;
 
-    public PayRequestTO(boolean directPay){
+    public PayRequestRes(boolean directPay){
         this.directPay = directPay;
     }
 

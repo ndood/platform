@@ -28,7 +28,7 @@ public class PointMiniAppPayServiceImpl extends MiniAppOrderPayServiceImpl {
     private PointMiniAppOrderServiceImpl pointMiniAppOrderService;
 
     @Override
-    protected void payOrder(String orderNo, BigDecimal actualMoney) {
+    protected void payOrder(Integer payment,String orderNo, BigDecimal actualMoney) {
         pointMiniAppOrderService.payOrder(orderNo, actualMoney);
     }
 

@@ -15,11 +15,11 @@ import com.fulu.game.common.enums.PayBusinessEnum;
 import com.fulu.game.common.properties.Config;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.VirtualPayOrder;
-import com.fulu.game.core.service.impl.payment.to.PayCallbackTO;
-import com.fulu.game.core.service.impl.payment.to.PayRequestTO;
-import com.fulu.game.core.service.impl.payment.vo.PayCallbackVO;
-import com.fulu.game.core.service.impl.payment.vo.PayRequestVO;
-import com.fulu.game.core.service.impl.payment.vo.RefundVO;
+import com.fulu.game.core.entity.payment.res.PayCallbackRes;
+import com.fulu.game.core.entity.payment.res.PayRequestRes;
+import com.fulu.game.core.entity.payment.model.PayCallbackModel;
+import com.fulu.game.core.entity.payment.model.PayRequestModel;
+import com.fulu.game.core.entity.payment.model.RefundModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,28 +41,28 @@ public class AlipayPaymentComponent implements PaymentComponent {
 
 
     @Override
-    public PayRequestTO payRequest(PayRequestVO paymentVO) {
-        PayRequestTO requestTO = new PayRequestTO(false);
+    public PayRequestRes payRequest(PayRequestModel payRequestModel) {
+        PayRequestRes payRequestRes = new PayRequestRes(false);
         AlipayTradeAppPayModel model = null;
-        if (paymentVO.getPayBusinessEnum().equals(PayBusinessEnum.VIRTUAL_PRODUCT)) {
-            buildAlipayRequest(paymentVO.getVirtualPayOrder());
+        if (payRequestModel.getPayBusinessEnum().equals(PayBusinessEnum.VIRTUAL_PRODUCT)) {
+            model =buildAlipayRequest(payRequestModel.getVirtualPayOrder());
         } else {
-            model = buildAlipayRequest(paymentVO.getOrder());
+            model = buildAlipayRequest(payRequestModel.getOrder());
         }
-        String result = payRequest(paymentVO.getPayBusinessEnum(), model);
-        requestTO.setRequestParameter(result);
-        return requestTO;
+        String result = payRequest(payRequestModel.getPayBusinessEnum(), model);
+        payRequestRes.setRequestParameter(result);
+        return payRequestRes;
     }
 
 
     @Override
-    public PayCallbackTO payCallBack(PayCallbackVO payCallbackVO) {
-        PayCallbackTO payCallbackTO = new PayCallbackTO();
+    public PayCallbackRes payCallBack(PayCallbackModel payCallbackModel) {
+        PayCallbackRes payCallbackTO = new PayCallbackRes();
         try {
-            boolean flag = AlipaySignature.rsaCheckV1(payCallbackVO.getAliPayParameterMap(), configProperties.getAlipayPay().getAlipayPublicKey(), "utf-8", "RSA2");
+            boolean flag = AlipaySignature.rsaCheckV1(payCallbackModel.getAliPayParameterMap(), configProperties.getAlipayPay().getAlipayPublicKey(), "utf-8", "RSA2");
             payCallbackTO.setSuccess(flag);
             if (flag) {
-                Map<String, String> result = payCallbackVO.getAliPayParameterMap();
+                Map<String, String> result = payCallbackModel.getAliPayParameterMap();
                 payCallbackTO.setOrderNO(result.get("out_trade_no"));
                 payCallbackTO.setPayMoney(result.get("buyer_pay_amount"));
             }
@@ -74,10 +74,13 @@ public class AlipayPaymentComponent implements PaymentComponent {
 
 
     @Override
-    public boolean refund(RefundVO refundVO) {
-        AlipayTradeRefundApplyModel model = buildAlipayRefund(refundVO.getOrderNo(), refundVO.getRefundMoney().toPlainString());
+    public boolean refund(RefundModel refundModel) {
+        AlipayTradeRefundApplyModel model = buildAlipayRefund(refundModel.getOrderNo(), refundModel.getRefundMoney().toPlainString());
         return alipayRefundRequest(model);
     }
+
+
+
 
 
     public AlipayTradeAppPayModel buildAlipayRequest(Order order) {

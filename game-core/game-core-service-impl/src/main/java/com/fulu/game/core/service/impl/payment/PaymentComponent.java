@@ -1,11 +1,11 @@
 package com.fulu.game.core.service.impl.payment;
 
 
-import com.fulu.game.core.service.impl.payment.to.PayCallbackTO;
-import com.fulu.game.core.service.impl.payment.to.PayRequestTO;
-import com.fulu.game.core.service.impl.payment.vo.PayCallbackVO;
-import com.fulu.game.core.service.impl.payment.vo.PayRequestVO;
-import com.fulu.game.core.service.impl.payment.vo.RefundVO;
+import com.fulu.game.core.entity.payment.res.PayCallbackRes;
+import com.fulu.game.core.entity.payment.res.PayRequestRes;
+import com.fulu.game.core.entity.payment.model.PayCallbackModel;
+import com.fulu.game.core.entity.payment.model.PayRequestModel;
+import com.fulu.game.core.entity.payment.model.RefundModel;
 
 public interface PaymentComponent {
 
@@ -14,7 +14,7 @@ public interface PaymentComponent {
      * @param paymentVO
      * @return
      */
-    PayRequestTO payRequest(PayRequestVO paymentVO);
+    PayRequestRes payRequest(PayRequestModel paymentVO);
 
 
     /**
@@ -22,7 +22,7 @@ public interface PaymentComponent {
      * @param payCallbackVO
      * @return
      */
-    PayCallbackTO payCallBack(PayCallbackVO payCallbackVO);
+    PayCallbackRes payCallBack(PayCallbackModel payCallbackVO);
 
 
     /**
@@ -30,6 +30,6 @@ public interface PaymentComponent {
      * @param refundVO
      * @return
      */
-    boolean refund(RefundVO refundVO);
+    boolean refund(RefundModel refundVO);
 
 }

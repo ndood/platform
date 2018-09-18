@@ -1,11 +1,9 @@
-package com.fulu.game.core.service.impl.payment.to;
+package com.fulu.game.core.entity.payment.res;
 
 import lombok.Data;
 
 @Data
-public class PayCallbackTO {
-
-
+public class PayCallbackRes {
 
 
     //是否支付成功

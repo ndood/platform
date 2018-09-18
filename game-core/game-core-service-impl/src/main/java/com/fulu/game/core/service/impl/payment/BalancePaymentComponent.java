@@ -2,10 +2,18 @@ package com.fulu.game.core.service.impl.payment;
 
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.enums.MoneyOperateTypeEnum;
+import com.fulu.game.common.enums.PayBusinessEnum;
 import com.fulu.game.common.exception.PayException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.entity.MoneyDetails;
+import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.VirtualPayOrder;
+import com.fulu.game.core.entity.payment.model.PayCallbackModel;
+import com.fulu.game.core.entity.payment.model.PayRequestModel;
+import com.fulu.game.core.entity.payment.model.RefundModel;
+import com.fulu.game.core.entity.payment.res.PayCallbackRes;
+import com.fulu.game.core.entity.payment.res.PayRequestRes;
 import com.fulu.game.core.service.MoneyDetailsService;
 import com.fulu.game.core.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +31,7 @@ import java.util.Date;
  */
 @Service
 @Slf4j
-public class BalancePaymentComponent {
+public class BalancePaymentComponent implements PaymentComponent {
 
     @Autowired
     UserService userService;
@@ -31,19 +39,63 @@ public class BalancePaymentComponent {
     private MoneyDetailsService moneyDetailsService;
 
 
+    @Override
+    public PayRequestRes payRequest(PayRequestModel paymentVO) {
+        boolean flag = false;
+        User user = paymentVO.getUser();
+        if (paymentVO.getPayBusinessEnum().equals(PayBusinessEnum.ORDER)) {
+            Order order = paymentVO.getOrder();
+            flag =balancePayOrder(user.getId(),order.getActualMoney(),order.getOrderNo());
+        }else if(paymentVO.getPayBusinessEnum().equals(PayBusinessEnum.VIRTUAL_PRODUCT)){
+            VirtualPayOrder order = paymentVO.getVirtualPayOrder();
+            flag =balancePayOrder(user.getId(),order.getActualMoney(),order.getOrderNo());
+        }
+        return new PayRequestRes(flag);
+    }
 
 
 
+
+    @Override
+    public PayCallbackRes payCallBack(PayCallbackModel payCallbackVO) {
+        return null;
+    }
+
+
+
+    @Override
+    public boolean refund(RefundModel refundVO) {
+        return false;
+    }
+
+    /**
+     * 余额支付虚拟货币
+     * @param userId
+     * @param actualMoney
+     * @param orderNo
+     * @return
+     */
     public boolean balancePayVirtualMoney(Integer userId, BigDecimal actualMoney, String orderNo) {
-       return balancePayByUser(userId,actualMoney,orderNo,MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY);
+        return balancePayByUser(userId, actualMoney, orderNo, MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY);
     }
 
+    /**
+     * 余额支付订单
+     * @param userId
+     * @param actualMoney
+     * @param orderNo
+     * @return
+     */
     public boolean balancePayOrder(Integer userId, BigDecimal actualMoney, String orderNo) {
-       return balancePayByUser(userId,actualMoney,orderNo,MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY);
+        return balancePayByUser(userId, actualMoney, orderNo, MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY);
     }
 
 
-    private boolean balancePayByUser(Integer userId, BigDecimal actualMoney, String orderNo,MoneyOperateTypeEnum moneyOperateTypeEnum){
+
+
+
+
+    private boolean balancePayByUser(Integer userId, BigDecimal actualMoney, String orderNo, MoneyOperateTypeEnum moneyOperateTypeEnum) {
         User user = userService.findById(userId);
         if (user == null) {
             log.info("当前用户id：{}查询数据库不存在", userId);
@@ -69,7 +121,7 @@ public class BalancePaymentComponent {
 
         user.setUpdateTime(new Date());
         int result = userService.update(user);
-        if(result<1){
+        if (result < 1) {
             return false;
         }
         //记录零钱流水
@@ -84,8 +136,6 @@ public class BalancePaymentComponent {
         moneyDetailsService.drawSave(mDetails);
         return true;
     }
-
-
 
 
 }

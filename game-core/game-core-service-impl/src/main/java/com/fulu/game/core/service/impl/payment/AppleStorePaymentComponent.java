@@ -7,13 +7,18 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.enums.VirtualMoneyPriceEnum;
 import com.fulu.game.common.properties.Config;
+import com.fulu.game.core.entity.payment.model.PayCallbackModel;
+import com.fulu.game.core.entity.payment.model.PayRequestModel;
+import com.fulu.game.core.entity.payment.model.RefundModel;
+import com.fulu.game.core.entity.payment.res.PayCallbackRes;
+import com.fulu.game.core.entity.payment.res.PayRequestRes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class AppleStorePaymentComponent {
+public class AppleStorePaymentComponent implements PaymentComponent{
 
 
 
@@ -25,6 +30,23 @@ public class AppleStorePaymentComponent {
     public AppleStorePaymentComponent(Config configProperties) {
         this.configProperties = configProperties;
     }
+
+
+    @Override
+    public PayRequestRes payRequest(PayRequestModel paymentVO) {
+        return null;
+    }
+
+    @Override
+    public PayCallbackRes payCallBack(PayCallbackModel payCallbackVO) {
+        return null;
+    }
+
+    @Override
+    public boolean refund(RefundModel refundVO) {
+        return false;
+    }
+
 
     /**
      * 钻石充值
@@ -58,5 +80,6 @@ public class AppleStorePaymentComponent {
         log.info("请求状态出错:{}", response.body());
         return diamond;
     }
+
 
 }

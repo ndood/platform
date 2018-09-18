@@ -1,11 +1,11 @@
-package com.fulu.game.core.service.impl.payment.vo;
+package com.fulu.game.core.entity.payment.model;
 
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
-public class RefundVO {
+public class RefundModel {
 
     //订单号
     String orderNo;

@@ -20,4 +20,16 @@ public enum PlatformEcoEnum implements TypeEnum<Integer> {
     private Integer type;
     private String msg;
 
+
+
+    public static PlatformEcoEnum getEnumByType(Integer type){
+        for(PlatformEcoEnum platformEcoEnum : PlatformEcoEnum.values()){
+            if(platformEcoEnum.getType().equals(type)){
+                return platformEcoEnum;
+            }
+        }
+        throw new IllegalArgumentException("{"+type+"}平台不匹配");
+    }
+
+
 }

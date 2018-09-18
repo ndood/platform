@@ -9,9 +9,15 @@ import com.fulu.game.common.properties.Config;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.VirtualPayOrder;
+import com.fulu.game.core.entity.payment.model.PayCallbackModel;
+import com.fulu.game.core.entity.payment.model.PayRequestModel;
+import com.fulu.game.core.entity.payment.model.RefundModel;
+import com.fulu.game.core.entity.payment.res.PayCallbackRes;
+import com.fulu.game.core.entity.payment.res.PayRequestRes;
 import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderRequest;
 import com.github.binarywang.wxpay.config.WxPayConfig;
 import com.github.binarywang.wxpay.service.WxPayService;
+import com.github.binarywang.wxpay.service.impl.WxPayServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +31,40 @@ import java.util.Date;
  */
 @Service
 @Slf4j
-public class WeChatPayPaymentComponent {
+public class WeChatPayPaymentComponent implements PaymentComponent{
 
 
-    public enum WechatType {
-        PLAY, POINT, MP, APP;
+    @Override
+    public PayRequestRes payRequest(PayRequestModel paymentVO) {
+        PayRequestRes payRequestRes = new PayRequestRes(false);
+        WxPayUnifiedOrderRequest request = null;
+        User user = paymentVO.getUser();
+        if (paymentVO.getPayBusinessEnum().equals(PayBusinessEnum.VIRTUAL_PRODUCT)) {
+            VirtualPayOrder order = paymentVO.getVirtualPayOrder();
+            request =buildWxPayRequest(order,user);
+            Object result = payRequest(paymentVO.getPayBusinessEnum(),order.getPayPath(),request);
+            payRequestRes.setRequestParameter(result);
+        } else {
+            Order order = paymentVO.getOrder();
+            request = buildWxPayRequest(order,user);
+            Object result = payRequest(paymentVO.getPayBusinessEnum(),order.getPlatform(),request);
+            payRequestRes.setRequestParameter(result);
+        }
+        return payRequestRes;
     }
+
+
+
+    @Override
+    public PayCallbackRes payCallBack(PayCallbackModel payCallbackVO) {
+        return null;
+    }
+
+    @Override
+    public boolean refund(RefundModel refundVO) {
+        return false;
+    }
+
 
 
     private final Config configProperties;
@@ -44,26 +78,12 @@ public class WeChatPayPaymentComponent {
 
     /**
      * 发起微信支付请求
-     * @param wechatType
+     * @param platform
      * @param wxPayUnifiedOrderRequest
      * @return
      */
-    public Object payRequest(PayBusinessEnum payBusinessEnum,WechatType wechatType,  WxPayUnifiedOrderRequest wxPayUnifiedOrderRequest) {
-        WxPayService wxPayService = null;
-        switch (wechatType){
-            case MP:
-                wxPayService = buildPayService(payBusinessEnum,configProperties.getWechat_mp());
-                break;
-            case APP:
-                wxPayService = buildPayService(payBusinessEnum,configProperties.getWechat_app());
-                break;
-            case PLAY:
-                wxPayService = buildPayService(payBusinessEnum,configProperties.getWechat_game());
-                break;
-            case POINT:
-                wxPayService = buildPayService(payBusinessEnum,configProperties.getWechat_poit());
-                break;
-        }
+    public Object payRequest(PayBusinessEnum payBusinessEnum,Integer platform, WxPayUnifiedOrderRequest wxPayUnifiedOrderRequest) {
+        WxPayService wxPayService = buildPayService(payBusinessEnum,platform);
         try {
             log.info("发起微信支付请求:{}",wxPayUnifiedOrderRequest);
            return wxPayService.createOrder(wxPayUnifiedOrderRequest);
@@ -77,15 +97,14 @@ public class WeChatPayPaymentComponent {
      *
      * @param order
      * @param user
-     * @param ip
      * @return
      */
-    public WxPayUnifiedOrderRequest buildWxPayRequest(Order order, User user, String ip) {
+    private WxPayUnifiedOrderRequest buildWxPayRequest(Order order, User user) {
         WxPayUnifiedOrderRequest orderRequest = new WxPayUnifiedOrderRequest();
         orderRequest.setBody(order.getName());
         orderRequest.setOutTradeNo(order.getOrderNo());
         orderRequest.setTotalFee((order.getActualMoney().multiply(new BigDecimal(100))).intValue());//元转成分
-        orderRequest.setSpbillCreateIp(ip);
+        orderRequest.setSpbillCreateIp(order.getOrderIp());
         orderRequest.setTimeStart(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
         if (PlatformEcoEnum.PLAY.getType().equals(order.getPlatform())) {
             orderRequest.setOpenid(user.getOpenId());
@@ -98,12 +117,12 @@ public class WeChatPayPaymentComponent {
     }
 
 
-    public WxPayUnifiedOrderRequest buildWxPayRequest(VirtualPayOrder order, User user, String ip) {
+    private WxPayUnifiedOrderRequest buildWxPayRequest(VirtualPayOrder order, User user) {
         WxPayUnifiedOrderRequest orderRequest = new WxPayUnifiedOrderRequest();
         orderRequest.setBody(order.getName());
         orderRequest.setOutTradeNo(order.getOrderNo());
         orderRequest.setTotalFee((order.getActualMoney().multiply(new BigDecimal(100))).intValue());//元转成分
-        orderRequest.setSpbillCreateIp(ip);
+        orderRequest.setSpbillCreateIp(order.getOrderIp());
         orderRequest.setTimeStart(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
         if (PlatformEcoEnum.PLAY.getType().equals(order.getPayPath())) {
             orderRequest.setOpenid(user.getOpenId());
@@ -117,11 +136,26 @@ public class WeChatPayPaymentComponent {
 
     /**
      * 构造微信支付服务
-     *
-     * @param wechat
      * @return
      */
-    public WxPayService buildPayService(PayBusinessEnum payBusinessEnum,Config.Wechat wechat) {
+    private WxPayService buildPayService(PayBusinessEnum payBusinessEnum,Integer platform) {
+
+        Config.Wechat wechat = null;
+
+        switch (PlatformEcoEnum.getEnumByType(platform)){
+            case MP:
+                wechat = configProperties.getWechat_mp();
+                break;
+            case PLAY:
+                wechat = configProperties.getWechat_game();
+                break;
+            case POINT:
+                wechat = configProperties.getWechat_poit();
+                break;
+            default:
+                wechat = configProperties.getWechat_app();
+        }
+
         WxPayConfig payConfig = new WxPayConfig();
         payConfig.setAppId(wechat.getAppId());
         payConfig.setMchId(wechat.getMchId());
@@ -135,7 +169,7 @@ public class WeChatPayPaymentComponent {
             payConfig.setNotifyUrl(wechat.getPayVirtualProductNotifyUrl());
         }
         payConfig.setTradeType(wechat.getTradeType());
-        WxPayService wxPayService = new com.github.binarywang.wxpay.service.impl.WxPayServiceImpl();
+        WxPayService wxPayService = new WxPayServiceImpl();
         wxPayService.setConfig(payConfig);
         return wxPayService;
 

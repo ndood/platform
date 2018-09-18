@@ -35,25 +35,5 @@ public class ChargePayServiceImpl {
 
 
 
-    public PayRequestVO payRequest(VirtualPayOrder order, User user, String ip){
-        PaymentEnum payment = PaymentEnum.getEnumByType(order.getPayment());
-        PayRequestVO payRequestVO = new PayRequestVO();
-        payRequestVO.setPayment(order.getPayment());
-        //余额支付需要不需要调用支付请求
-        if (PaymentEnum.ALIPAY_PAY.equals(payment)){
-            AlipayTradeAppPayModel alipayTradeAppPayModel = alipayPayment.buildAlipayRequest(order);
-            String payResponse = alipayPayment.payRequest(PayBusinessEnum.VIRTUAL_PRODUCT,alipayTradeAppPayModel);
-            payRequestVO.setPayArguments(payResponse);
-        } else if(PaymentEnum.WECHAT_PAY.equals(payment)){
-            WxPayUnifiedOrderRequest wxPayUnifiedOrderRequest = weChatPayPayment.buildWxPayRequest(order,user,ip);
-            Object payArguments = weChatPayPayment.payRequest(PayBusinessEnum.VIRTUAL_PRODUCT, WeChatPayPaymentComponent.WechatType.APP,wxPayUnifiedOrderRequest);
-            payRequestVO.setPayArguments(payArguments);
-        }else{
-            throw new PayException(PayException.ExceptionCode.PAYMENT_UN_MATCH);
-        }
-        return payRequestVO;
-    }
-
-
 
 }

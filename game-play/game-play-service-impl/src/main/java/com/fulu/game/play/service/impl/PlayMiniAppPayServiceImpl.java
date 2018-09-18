@@ -30,7 +30,7 @@ public class PlayMiniAppPayServiceImpl extends MiniAppOrderPayServiceImpl {
     private PlayMiniAppOrderServiceImpl playMiniAppOrderService;
 
     @Override
-    protected void payOrder(String orderNo, BigDecimal actualMoney) {
+    protected void payOrder(Integer payment,String orderNo, BigDecimal actualMoney) {
         playMiniAppOrderService.payOrder(orderNo, actualMoney);
     }
 

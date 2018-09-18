@@ -17,7 +17,7 @@ public class H5PayServiceImpl extends OrderPayServiceImpl<FenqileOrderNotice> {
     private H5OrderServiceImpl h5OrderService;
 
     @Override
-    protected void payOrder(String orderNo, BigDecimal actualMoney) {
+    protected void payOrder(Integer payment,String orderNo, BigDecimal actualMoney) {
         h5OrderService.payOrder(orderNo, actualMoney);
     }
 
