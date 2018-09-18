@@ -8,6 +8,7 @@ import com.fulu.game.common.domain.ClientInfo;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.CommonException;
 import com.fulu.game.common.exception.ParamsException;
+import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.HttpUtils;
 import com.fulu.game.common.utils.SubjectUtil;
@@ -514,6 +515,9 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
         if(dynamicVO.getProductId() != null && dynamicVO.getProductId() > 0){
             //获取商品信息、设置动态下单商品信息
             Product product = productService.findById(dynamicVO.getProductId());
+            if(product == null){
+                throw new ProductException(ProductException.ExceptionCode.PRODUCT_NOT_EXIST);
+            }
             dynamicDoc.setProductName(product.getProductName());
             dynamicDoc.setProductPrice(product.getPrice());
             dynamicDoc.setProductUnit(product.getUnit());
