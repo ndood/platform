@@ -17,6 +17,7 @@ import com.fulu.game.core.service.aop.UserScore;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -32,6 +33,7 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
     private OrderService orderService;
     @Autowired
     private UserService userService;
+    @Qualifier(value = "userTechAuthServiceImpl")
     @Autowired
     private UserTechAuthServiceImpl userTechAuthService;
     @Autowired
