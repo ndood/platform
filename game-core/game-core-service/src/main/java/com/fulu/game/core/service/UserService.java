@@ -110,7 +110,7 @@ public interface UserService extends ICommonService<User, Integer> {
      *
      * @param id
      */
-    void lock(int id);
+    boolean lock(int id);
 
     /**
      * 后台解封用户(仅修改user表用户的状态)
