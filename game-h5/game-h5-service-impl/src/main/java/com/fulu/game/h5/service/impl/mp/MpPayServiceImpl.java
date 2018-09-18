@@ -345,7 +345,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
 
         if (money.doubleValue() <= 0) {
             log.error("充值金额money:{}", money);
-            throw new MpPayException(MpPayException.ExceptionCode.CHARGE_VALUE_ERROR);
+            throw new PayException(PayException.ExceptionCode.CHARGE_VALUE_ERROR);
         }
 
         VirtualPayOrder order = new VirtualPayOrder();

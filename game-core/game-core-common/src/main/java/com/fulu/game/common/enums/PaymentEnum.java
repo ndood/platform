@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @AllArgsConstructor
 public enum PaymentEnum implements TypeEnum<Integer> {
+
     WECHAT_PAY(1, "微信支付"),
     BALANCE_PAY(2, "账户余额支付"),
     ALIPAY_PAY(3, "支付宝支付"),

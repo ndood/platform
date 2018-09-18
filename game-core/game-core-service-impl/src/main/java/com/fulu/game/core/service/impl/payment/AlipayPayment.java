@@ -25,7 +25,6 @@ public class AlipayPayment {
     private final Config configProperties;
 
 
-
     @Autowired
     public AlipayPayment(Config configProperties) {
         this.configProperties = configProperties;
@@ -33,7 +32,7 @@ public class AlipayPayment {
 
 
 
-    public AlipayTradeAppPayModel buildAlipayRequest(Order order){
+    public  AlipayTradeAppPayModel buildAlipayRequest(Order order){
         AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
         model.setBody(order.getName());
         model.setSubject(order.getName());

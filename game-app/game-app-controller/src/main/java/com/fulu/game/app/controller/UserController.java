@@ -406,7 +406,7 @@ public class UserController extends BaseController {
     @PostMapping("/tech/tags")
     public Result getUserTechTags(@RequestParam(required = true) Integer userId,
                                   @RequestParam(required = true) Integer categoryId){
-        UserTechAuth userTechAuth = userTechAuthService.findTechByCategoryAndUser(userId, categoryId);
+        UserTechAuth userTechAuth = userTechAuthService.findTechByCategoryAndUser(categoryId,userId);
         List<TechTag> techTags = new ArrayList<>();
         if(userTechAuth!=null){
             techTags = techTagService.findByTechAuthId(userTechAuth.getId());

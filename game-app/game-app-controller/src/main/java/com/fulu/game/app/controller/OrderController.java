@@ -13,6 +13,7 @@ import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.UserComment;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.service.OrderEventService;
 import com.fulu.game.core.service.UserCommentService;
@@ -263,7 +264,6 @@ public class OrderController extends BaseController {
 
     /**
      * 申请客服仲裁
-     *
      * @param orderNo
      * @param remark
      * @param fileUrl
@@ -318,6 +318,21 @@ public class OrderController extends BaseController {
     public Result save(UserCommentVO commentVO) {
         userCommentService.save(commentVO);
         return Result.success().msg("评论成功！");
+    }
+
+
+    /**
+     * 查看订单评论
+     *
+     * @return
+     */
+    @RequestMapping("/comment/get")
+    public Result get(@RequestParam("orderNo") String orderNo) {
+        UserCommentVO comment = userCommentService.findByOrderNo(orderNo);
+        if (null == comment) {
+            return Result.error().msg("该评论不存在！");
+        }
+        return Result.success().data(comment).msg("查询成功！");
     }
 
 }
