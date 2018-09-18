@@ -40,6 +40,9 @@ public class AppOrderPayServiceImpl extends OrderPayServiceImpl {
         PaymentEnum payment = PaymentEnum.getEnumByType(order.getPayment());
         PayRequestVO payRequestVO = new PayRequestVO();
         payRequestVO.setPayment(order.getPayment());
+
+
+
         //余额支付需要不需要调用支付请求
         if (PaymentEnum.BALANCE_PAY.equals(payment)) {
             boolean flag = balancePayment.balancePayOrder(user.getId(),order.getActualMoney(),order.getOrderNo());
