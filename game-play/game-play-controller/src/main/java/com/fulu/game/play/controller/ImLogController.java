@@ -5,13 +5,11 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.core.entity.AdminImLog;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.UserOnlineVO;
 import com.fulu.game.core.entity.vo.VirtualProductAttachVO;
 import com.fulu.game.core.entity.vo.VirtualProductVO;
-import com.fulu.game.core.service.ImService;
-import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.VirtualProductAttachService;
-import com.fulu.game.core.service.VirtualProductService;
+import com.fulu.game.core.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +32,8 @@ public class ImLogController extends BaseController {
     private VirtualProductAttachService virtualProductAttachService;
     @Autowired
     private ImService imService;
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
 
     @PostMapping(value = "collect")
     public Result log(String content) {
@@ -95,6 +95,17 @@ public class ImLogController extends BaseController {
         List<VirtualProductAttachVO> list = virtualProductAttachService.findByOrderProIdUserId(user.getId(), virtualProductId);
 
         return Result.success().data(list).msg("查询成功");
+    }
+
+    /**
+     *
+     *随机取一个自动问好的陪玩师
+     * @return
+     */
+    @PostMapping(value = "/rand-auth/query")
+    public Result randGetAuthUser() {
+        UserInfoAuthVO userInfoAuthVO = userInfoAuthService.randGetAuthUser();
+        return Result.success().data(userInfoAuthVO);
     }
 
 }

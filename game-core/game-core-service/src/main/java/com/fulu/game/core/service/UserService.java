@@ -309,7 +309,7 @@ public interface UserService extends ICommonService<User, Integer> {
      *
      * @return
      */
-    PageInfo<User> searchByAuthUserInfo(Integer pageNum, Integer pageSize,String searchword);
+    PageInfo<User> searchByAuthUserInfo(Integer pageNum, Integer pageSize,Integer currentAdminId ,String searchword);
 
 
     /**

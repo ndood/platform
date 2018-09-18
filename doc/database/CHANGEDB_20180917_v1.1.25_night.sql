@@ -17,6 +17,8 @@ ALTER TABLE `t_user_info_auth` ADD COLUMN `auto_say_hello` VARCHAR(500) COMMENT 
 
 ALTER TABLE `t_user_info_auth` ADD COLUMN `open_substitute_im` tinyint(1) COMMENT '陪玩师代聊开关' after `im_substitute_id`;
 
+ALTER TABLE `t_user_info_auth` ADD COLUMN `vest_flag` tinyint(1) DEFAULT '0' COMMENT '是否马甲（0：否；1：是）' after `auto_say_hello`;
+
 CREATE TABLE `t_user_night_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `user_id` int(11) NOT NULL COMMENT '用户ID',
