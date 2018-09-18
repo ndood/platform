@@ -58,8 +58,9 @@ public enum RedisKeyEnum {
     //需要随机自动问好的用户
     AUTO_SAY_HELLO_USER_LIST,
     //用户未读订单
-    USER_WAITING_READ_ORDER;
-
+    USER_WAITING_READ_ORDER,
+    //午夜场标记
+    MIDNIGHT;
 
 
     public static final String SPLIT = "-";

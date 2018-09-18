@@ -90,7 +90,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         order.setIsPayCallback(false);
         order.setUpdateTime(DateUtil.date());
         order.setCreateTime(DateUtil.date());
-        order.setPayPath(VirtualPayOrderPayPathEnum.MP.getType());
+        order.setPayPath(PlatformEcoEnum.MP.getType());
 
         //创建订单
         virtualPayOrderService.create(order);
@@ -352,7 +352,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         order.setIsPayCallback(false);
         order.setUpdateTime(DateUtil.date());
         order.setCreateTime(DateUtil.date());
-        order.setPayPath(VirtualPayOrderPayPathEnum.MP.getType());
+        order.setPayPath(PlatformEcoEnum.MP.getType());
 
         //创建订单
         virtualPayOrderService.create(order);

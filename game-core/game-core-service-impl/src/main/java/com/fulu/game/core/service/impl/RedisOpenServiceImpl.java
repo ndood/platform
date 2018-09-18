@@ -12,11 +12,10 @@ import org.springframework.data.redis.core.RedisConnectionUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -100,6 +99,21 @@ public class RedisOpenServiceImpl {
      */
     public void set(String key, String value, long time) {
         redisTemplate.opsForValue().set(key, value, time, TimeUnit.SECONDS);
+    }
+
+    /**
+     * 设置某个key的值
+     *
+     * @param key
+     * @param value
+     * @param isPerpetual 是否永久保存（true：是；false：否）
+     */
+    public void set(String key, String value, boolean isPerpetual) {
+        if (isPerpetual) {
+            redisTemplate.opsForValue().set(key, value);
+        } else {
+            set(key, value);
+        }
     }
 
     /**
@@ -277,7 +291,7 @@ public class RedisOpenServiceImpl {
      *
      * @return
      */
-    public <T> T takeFromHead(String key,int timeout) throws InterruptedException {
+    public <T> T takeFromHead(String key, int timeout) throws InterruptedException {
         //        lock.lockInterruptibly();
         RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
         RedisConnection connection = connectionFactory.getConnection();
@@ -295,6 +309,15 @@ public class RedisOpenServiceImpl {
 //            lock.unlock();
             RedisConnectionUtils.releaseConnection(connection, connectionFactory);
         }
+    }
+
+    /**
+     * 通配符查找redis的key
+     * @param parttern
+     * @return
+     */
+    public Set<String> keys(String parttern){
+        return redisTemplate.keys(parttern);
     }
 
 }
