@@ -20,7 +20,9 @@ public class PayException extends BizException {
         PAY_FAIL(90001, "支付失败！"),
         PAYMENT_UN_MATCH(90002, "支付方式不匹配！"),
         WECHAT_CREATE_PAY_FAIL(90003, "微信创建支付订单失败！"),
-        CHARGE_VALUE_ERROR(90004, "充值金额不正确");
+        CHARGE_VALUE_ERROR(90004, "充值金额不正确"),
+        APPLE_STORE_CHECK_ERROR(90005, "苹果内购信息验证失败!"),
+        REPETITION_PAY(90006, "不能重复支付!");
 
         private int code;
         private String msg;

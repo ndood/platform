@@ -69,7 +69,7 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
         order.setOrderIp(ip);
         order.setPayPath(payPath);
         //创建订单
-        return create(order,VirtualPayOrderTypeEnum.BALANCE_ORDER);
+        return create(order,VirtualPayOrderTypeEnum.VIRTUAL_ORDER);
     }
 
 

@@ -9,12 +9,14 @@ import java.math.BigDecimal;
 public class RefundModel {
 
 
+    //假如是余额支付该字段必填
+    private Integer userId;
     //订单号
-    String orderNo;
+    private String orderNo;
     //订单总金额
-    BigDecimal totalMoney;
+    private BigDecimal totalMoney;
     //退款金额
-    BigDecimal refundMoney;
+    private BigDecimal refundMoney;
     /**
      * 支付方式
      */
@@ -26,12 +28,14 @@ public class RefundModel {
     private PayBusinessEnum payBusinessEnum;
 
     private RefundModel(Builder builder) {
+        userId = builder.userId;
         payment = builder.payment;
         platform = builder.platform;
         payBusinessEnum = builder.payBusinessEnum;
         orderNo = builder.orderNo;
         totalMoney = builder.totalMoney;
         refundMoney = builder.refundMoney;
+
     }
 
     public static Builder newBuilder(Integer payment, PayBusinessEnum payBusinessEnum) {
@@ -40,12 +44,14 @@ public class RefundModel {
 
 
     public static final class Builder {
+        private Integer userId;
         private Integer payment;
         private Integer platform;
         private PayBusinessEnum payBusinessEnum;
         private String orderNo;
         private BigDecimal totalMoney;
         private BigDecimal refundMoney;
+
 
         private Builder(Integer payment, PayBusinessEnum payBusinessEnum) {
             this.payment = payment;
@@ -55,6 +61,11 @@ public class RefundModel {
 
         public Builder platform(Integer val) {
             platform = val;
+            return this;
+        }
+
+        public Builder userId(Integer val) {
+            userId = val;
             return this;
         }
 

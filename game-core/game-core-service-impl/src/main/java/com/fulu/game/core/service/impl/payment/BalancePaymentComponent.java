@@ -34,9 +34,11 @@ import java.util.Date;
 public class BalancePaymentComponent implements PaymentComponent {
 
     @Autowired
-    UserService userService;
+    private UserService userService;
     @Autowired
     private MoneyDetailsService moneyDetailsService;
+
+
 
 
     @Override
@@ -58,13 +60,40 @@ public class BalancePaymentComponent implements PaymentComponent {
 
     @Override
     public PayCallbackRes payCallBack(PayCallbackModel payCallbackVO) {
-        return null;
+        throw new IllegalArgumentException("余额支付不应该有回调!");
     }
 
 
 
     @Override
     public boolean refund(RefundModel refundVO) {
+        log.info("执行余额退款方法refundVO:{}",refundVO);
+        if(refundVO.getUserId()==null){
+            throw new IllegalArgumentException("余额退款缺少userId!");
+        }
+        if(refundVO.getTotalMoney().compareTo(refundVO.getRefundMoney())<0){
+            throw new IllegalArgumentException("退款金额比订单金额要大!");
+        }
+        User user = userService.findById(refundVO.getUserId());
+        BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
+        user.setChargeBalance(chargeBalance.add(refundVO.getRefundMoney()));
+        user.setUpdateTime(new Date());
+        int result = userService.update(user);
+        if (result < 1) {
+            return true;
+        }
+
+        //记录零钱流水
+        MoneyDetails mDetails = new MoneyDetails();
+        mDetails.setOperatorId(user.getId());
+        mDetails.setTargetId(user.getId());
+        mDetails.setMoney(refundVO.getRefundMoney());
+        mDetails.setAction(MoneyOperateTypeEnum.ORDER_REFUND.getType());
+        mDetails.setSum(user.getBalance().add(chargeBalance));
+        mDetails.setRemark(MoneyOperateTypeEnum.ORDER_REFUND.getMsg() + "订单号：" + refundVO.getRefundMoney());
+        mDetails.setCreateTime(DateUtil.date());
+        moneyDetailsService.drawSave(mDetails);
+
         return false;
     }
 
@@ -89,10 +118,6 @@ public class BalancePaymentComponent implements PaymentComponent {
     public boolean balancePayOrder(Integer userId, BigDecimal actualMoney, String orderNo) {
         return balancePayByUser(userId, actualMoney, orderNo, MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY);
     }
-
-
-
-
 
 
     private boolean balancePayByUser(Integer userId, BigDecimal actualMoney, String orderNo, MoneyOperateTypeEnum moneyOperateTypeEnum) {

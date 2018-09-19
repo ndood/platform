@@ -487,4 +487,18 @@ CREATE TABLE `t_user_comment_tag` (
 ) COMMENT='用户评论标签表';
 
 
+CREATE TABLE `t_appstore_pay_detail` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `transaction_id` varchar(128) NOT NULL,
+  `original_transaction_id` varchar(128) NOT NULL,
+  `product_id` varchar(128) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `purchase_date` varchar(128) NOT NULL,
+  `order_no` varchar(128) DEFAULT NULL,
+  `create_date` datetime NOT NULL,
+  `update_date` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `transaction_id` (`transaction_id`)
+) COMMENT='苹果内购支付流水表';
+
 

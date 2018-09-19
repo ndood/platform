@@ -15,8 +15,6 @@ public class PaymentFactory {
     @Autowired
     private AlipayPaymentComponent alipayPaymentComponent;
     @Autowired
-    private AppleStorePaymentComponent appleStorePaymentComponent;
-    @Autowired
     private BalancePaymentComponent balancePaymentComponent;
     @Autowired
     private WeChatPayPaymentComponent weChatPayPaymentComponent;
@@ -30,8 +28,6 @@ public class PaymentFactory {
                 return weChatPayPaymentComponent;
             case BALANCE_PAY:
                 return balancePaymentComponent;
-            case APPLE_STORE_PAY:
-                return appleStorePaymentComponent;
             default:
                 throw new PayException(PayException.ExceptionCode.PAYMENT_UN_MATCH);
         }

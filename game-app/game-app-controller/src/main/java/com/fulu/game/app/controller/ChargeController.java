@@ -2,6 +2,8 @@ package com.fulu.game.app.controller;
 
 
 import com.fulu.game.app.service.impl.AppVirtualOrderPayServiceImpl;
+import com.fulu.game.app.service.impl.AppVirtualPayOrderServiceImpl;
+import com.fulu.game.app.service.impl.AppleStorePayService;
 import com.fulu.game.app.util.RequestUtil;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.domain.ClientInfo;
@@ -15,7 +17,6 @@ import com.fulu.game.core.entity.payment.model.PayRequestModel;
 import com.fulu.game.core.entity.payment.res.PayRequestRes;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.fulu.game.core.service.impl.VirtualPayOrderServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,16 +33,19 @@ public class ChargeController extends BaseController {
 
 
     @Autowired
-    private VirtualPayOrderServiceImpl virtualPayOrderService;
+    private AppVirtualPayOrderServiceImpl appVirtualPayOrderService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
     @Autowired
     private UserService userService;
     @Autowired
     private AppVirtualOrderPayServiceImpl appVirtualOrderPayService;
+    @Autowired
+    private AppleStorePayService appleStorePayService;
 
     /**
      * 余额充值接口
+     *
      * @param request
      * @param sessionkey
      * @param money
@@ -70,7 +74,7 @@ public class ChargeController extends BaseController {
                 platform = PlatformEcoEnum.ANDROID.getType();
             }
             String ip = RequestUtil.getIpAdrress(request);
-            VirtualPayOrder order = virtualPayOrderService.balanceCharge(user.getId(), money, payment, platform, ip);
+            VirtualPayOrder order = appVirtualPayOrderService.balanceCharge(user.getId(), money, payment, platform, ip);
             PayRequestModel model = PayRequestModel.newBuilder().virtualPayOrder(order).user(user).build();
             PayRequestRes res = appVirtualOrderPayService.payRequest(model);
             return Result.success().data(res);
@@ -82,6 +86,7 @@ public class ChargeController extends BaseController {
 
     /**
      * 钻石充值接口
+     *
      * @param request
      * @param payment
      * @param sessionkey
@@ -89,9 +94,9 @@ public class ChargeController extends BaseController {
      */
     @RequestMapping(value = "diamond")
     public Result diamondCharge(HttpServletRequest request,
-                                @RequestParam String sessionkey,
-                                @RequestParam Integer virtualMoney,
-                                @RequestParam Integer payment) {
+                                @RequestParam(required = true) String sessionkey,
+                                @RequestParam(required = true) Integer virtualMoney,
+                                @RequestParam(required = true) Integer payment) {
         User user = userService.getCurrentUser();
         if (!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))) {
             log.error("验证sessionkey错误:sessionkey:{};payment:{};;userId:{}", sessionkey, payment, user.getId());
@@ -110,13 +115,27 @@ public class ChargeController extends BaseController {
                 platform = PlatformEcoEnum.ANDROID.getType();
             }
             String ip = RequestUtil.getIpAdrress(request);
-            VirtualPayOrder order = virtualPayOrderService.diamondCharge(user.getId(),virtualMoney,payment,platform,ip);
+            VirtualPayOrder order = appVirtualPayOrderService.diamondCharge(user.getId(), virtualMoney, payment, platform, ip);
             PayRequestModel model = PayRequestModel.newBuilder().virtualPayOrder(order).user(user).build();
             PayRequestRes res = appVirtualOrderPayService.payRequest(model);
             return Result.success().data(res);
         } finally {
             redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));
         }
+    }
+
+
+    @RequestMapping(value = "diamond/ios")
+    public Result iosDiamond(@RequestParam(required = true) String receiptData,
+                             HttpServletRequest request) {
+        String ip = RequestUtil.getIpAdrress(request);
+        User user = userService.getCurrentUser();
+        boolean flag = appVirtualPayOrderService.iosChargeDiamond(receiptData, user.getId(), ip);
+        if(flag){
+            return Result.success();
+        }
+        return Result.error().msg("支付失败!");
+
     }
 
 

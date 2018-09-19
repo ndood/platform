@@ -16,7 +16,7 @@ import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.OrderStatusDetailsService;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
-import com.fulu.game.h5.service.impl.fenqile.H5OrderShareProfitServiceImpl;
+import com.fulu.game.h5.service.impl.H5OrderShareProfitServiceImpl;
 import com.fulu.game.play.service.impl.PlayOrderShareProfitServiceImpl;
 import com.fulu.game.point.service.impl.PointOrderShareProfitServiceImpl;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.fulu.game.h5.service.impl.fenqile;
+package com.fulu.game.h5.service.impl;
 
 import com.fulu.game.common.enums.PayBusinessEnum;
 import com.fulu.game.common.enums.PlatFormMoneyTypeEnum;
@@ -10,7 +10,6 @@ import com.fulu.game.core.service.CategoryService;
 import com.fulu.game.core.service.MoneyDetailsService;
 import com.fulu.game.core.service.PlatformMoneyDetailsService;
 import com.fulu.game.core.service.impl.OrderShareProfitServiceImpl;
-import com.github.binarywang.wxpay.exception.WxPayException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,6 +67,7 @@ public class H5OrderShareProfitServiceImpl extends OrderShareProfitServiceImpl {
     @Override
     public  Boolean refund(Order order, BigDecimal actualMoney, BigDecimal refundUserMoney)  {
         RefundModel model = RefundModel.newBuilder(order.getPayment(), PayBusinessEnum.ORDER)
+                .userId(order.getUserId())
                 .orderNo(order.getOrderNo())
                 .refundMoney(refundUserMoney)
                 .totalMoney(actualMoney)

@@ -53,8 +53,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
     private WxMpServiceSupply wxMpServiceSupply;
     @Autowired
     private VirtualDetailsService virtualDetailsService;
-    @Autowired
-    private MoneyDetailsService moneyDetailsService;
+
     @Autowired
     private BalancePaymentComponent balancePayment;
 

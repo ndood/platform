@@ -23,6 +23,7 @@ public class PlayOrderShareProfitServiceImpl extends OrderShareProfitServiceImpl
     @Override
     public Boolean refund(Order order, BigDecimal actualMoney, BigDecimal refundUserMoney) {
         RefundModel model = RefundModel.newBuilder(order.getPayment(), PayBusinessEnum.ORDER)
+                .userId(order.getUserId())
                 .orderNo(order.getOrderNo())
                 .refundMoney(refundUserMoney)
                 .totalMoney(actualMoney)

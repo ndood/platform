@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.AppstorePayDetailDao">
+    <resultMap id="AppstorePayDetailResultMap" type="com.fulu.game.core.entity.AppstorePayDetail">
+        <id column="id" property="id"/>
+        <result column="transaction_id" property="transactionId"/>
+        <result column="original_transaction_id" property="originalTransactionId"/>
+        <result column="product_id" property="productId"/>
+        <result column="quantity" property="quantity"/>
+        <result column="purchase_date" property="purchaseDate"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="create_date" property="createDate"/>
+        <result column="update_date" property="updateDate"/>
+    </resultMap>
+
+    <resultMap id="AppstorePayDetailResultVOMap" type="com.fulu.game.core.entity.vo.AppstorePayDetailVO"
+               extends="AppstorePayDetailResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,transaction_id,original_transaction_id,product_id,quantity,purchase_date,order_no,create_date,update_date    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="AppstorePayDetailResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_appstore_pay_detail
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="AppstorePayDetailResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_appstore_pay_detail
+    </select>
+
+    <select id="findByParameter" resultMap="AppstorePayDetailResultMap"
+            parameterType="com.fulu.game.core.entity.vo.AppstorePayDetailVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_appstore_pay_detail
+        <where>
+            <if test="transactionId != null">
+                and transaction_id = #{transactionId}
+            </if>
+            <if test="originalTransactionId != null">
+                and original_transaction_id = #{originalTransactionId}
+            </if>
+            <if test="productId != null">
+                and product_id = #{productId}
+            </if>
+            <if test="quantity != null">
+                and quantity = #{quantity}
+            </if>
+            <if test="purchaseDate != null">
+                and purchase_date = #{purchaseDate}
+            </if>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="createDate != null">
+                and create_date = #{createDate}
+            </if>
+            <if test="updateDate != null">
+                and update_date = #{updateDate}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_appstore_pay_detail
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.AppstorePayDetail">
+        insert into
+        t_appstore_pay_detail (transaction_id,original_transaction_id,product_id,quantity,purchase_date,order_no,create_date,update_date)
+        values
+        (#{transactionId},#{originalTransactionId},#{productId},#{quantity},#{purchaseDate},#{orderNo},#{createDate},#{updateDate})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.AppstorePayDetail">
+        update t_appstore_pay_detail
+        <set>
+
+            <if test="transactionId != null">
+                transaction_id = #{transactionId},
+            </if>
+
+            <if test="originalTransactionId != null">
+                original_transaction_id = #{originalTransactionId},
+            </if>
+
+            <if test="productId != null">
+                product_id = #{productId},
+            </if>
+
+            <if test="quantity != null">
+                quantity = #{quantity},
+            </if>
+
+            <if test="purchaseDate != null">
+                purchase_date = #{purchaseDate},
+            </if>
+
+            <if test="orderNo != null">
+                order_no = #{orderNo},
+            </if>
+
+            <if test="createDate != null">
+                create_date = #{createDate},
+            </if>
+
+            <if test="updateDate != null">
+                update_date = #{updateDate},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

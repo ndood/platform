@@ -1,4 +1,4 @@
-package com.fulu.game.h5.service.impl.fenqile;
+package com.fulu.game.h5.service.impl;
 
 import com.fulu.game.core.service.impl.pay.OrderPayServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
