@@ -39,10 +39,5 @@ public interface UserInfoAuthDao extends ICommonDao<UserInfoAuth, Integer> {
     int updateUserSort(@Param(value = "userId")Integer userId , @Param(value = "sort")Integer sort);
 
 
-    /**
-     * 获取最大ID
-     */
-    int getMaxAutoSayHelloCount();
-
-    UserInfoAuthVO getTop1ByMinId(@Param(value = "minId")int minId);
+    List<UserInfoAuthVO> getAutoSayHelloUser();
 }

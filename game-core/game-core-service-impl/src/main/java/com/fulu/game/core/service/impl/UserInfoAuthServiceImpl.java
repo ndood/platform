@@ -949,17 +949,11 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
 
     @Override
-    public UserInfoAuthVO randGetAuthUser() {
+    public List<UserInfoAuthVO> getAutoSayHelloUser() {
         
-        //获取自动问好的陪玩师最大ID
-        int maxId = userInfoAuthDao.getMaxAutoSayHelloCount();
-        //取一个随机ID
-        Random ran = new Random();
-        int id = ran.nextInt(maxId-1)+1;
+        //取出自动问好陪玩师信息
+        List<UserInfoAuthVO> uav = userInfoAuthDao.getAutoSayHelloUser();
         
-        //取出陪玩师信息
-        UserInfoAuthVO uav = userInfoAuthDao.getTop1ByMinId(id);
-
         return uav;
     }
 

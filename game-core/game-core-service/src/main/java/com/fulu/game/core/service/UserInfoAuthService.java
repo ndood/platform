@@ -127,7 +127,7 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
      * 随机取一个自动问好的陪玩师
      *
      */
-    UserInfoAuthVO randGetAuthUser();
+    List<UserInfoAuthVO> getAutoSayHelloUser();
     
     
     void setUserAgentImStatus(boolean agentStatus , User userInfo);

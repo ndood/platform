@@ -99,12 +99,12 @@ public class ImLogController extends BaseController {
 
     /**
      *
-     *随机取一个自动问好的陪玩师
+     * 获取所有自动问号陪玩师
      * @return
      */
-    @PostMapping(value = "/rand-auth/query")
-    public Result randGetAuthUser() {
-        UserInfoAuthVO userInfoAuthVO = userInfoAuthService.randGetAuthUser();
+    @PostMapping(value = "/auto-hello/query")
+    public Result getAutoSayHelloUser() {
+        List<UserInfoAuthVO> userInfoAuthVO = userInfoAuthService.getAutoSayHelloUser();
         return Result.success().data(userInfoAuthVO);
     }
 
