@@ -163,6 +163,18 @@
         </where>
     </select>
 
+    <select id="findUnCashDrawsSum" resultType="java.math.BigDecimal">
+        SELECT
+            sum(money)
+        FROM
+            t_cash_draws
+        WHERE
+            type = 1
+        AND cash_status = 0
+        AND server_auth = 0
+        AND user_id = #{userId}
+    </select>
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_cash_draws
         <where>
