@@ -296,7 +296,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         //提现金额单位换算(单位：分)
         Integer totalFee = (cashDraws.getMoney().multiply(new BigDecimal(100))).intValue();
 
-        if (totalFee < 30 || totalFee > 20000) {
+        if (totalFee < 30 || totalFee > 2000000) {
             throw new CashException(CashException.ExceptionCode.CASH_THRSHLD);
         }
 

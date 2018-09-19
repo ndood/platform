@@ -21,7 +21,7 @@ public class CashException extends BizException {
         CASH_ORDER_FAIL_EXCEPTION(30004, "下单失败，请联系客服"),
         CASH_REMIT_FAIL_EXCEPTION(30005, "打款失败，请联系管理员"),
         CHARM_WITHDRAW_FAIL_EXCEPTION(30006, "提现魅力值超出剩余魅力值"),
-        CASH_THRSHLD(30007, "提现金额不能少于0.3元或者大于2000元");
+        CASH_THRSHLD(30007, "提现金额不能少于0.3元或者大于20000元");
         private int code;
         private String msg;
     }
