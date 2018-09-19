@@ -63,5 +63,5 @@ public class UserInfoAuth implements Serializable {
     private String about;
 
     //是否开启代聊  0关闭  1开启
-    private Boolean openSubstituteIm;
+    private boolean openSubstituteIm;
 }

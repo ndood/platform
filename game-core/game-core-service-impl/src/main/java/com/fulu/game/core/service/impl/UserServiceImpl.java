@@ -790,7 +790,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         UserInfoAuth ua = userInfoAuthService.findByUserId(user.getId());
         if (active) {
 
-            uo.setOpenAgentIm(ua.getOpenSubstituteIm());
+            uo.setOpenAgentIm(ua.isOpenSubstituteIm());
             uo.setNeedSayHello(this.getUserRandStatus(user.getId()));
             
             log.info("userId:{}用户上线了!;version:{}", user.getId(), version);
