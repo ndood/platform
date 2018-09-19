@@ -21,6 +21,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -643,26 +644,31 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Override
     public PageInfo<ProductCollectVO> findAllProductByPage(Integer gender, Integer pageNum, Integer pageSize, String orderBy) {
         String timeStr = redisOpenService.get(RedisKeyEnum.MIDNIGHT.generateKey());
-        DateTime startTime = DateUtil.parseTime(timeStr.split(Constant.DEFAULT_SPLIT_SEPARATOR)[0]);
-        DateTime endTime = DateUtil.parseTime(timeStr.split(Constant.DEFAULT_SPLIT_SEPARATOR)[1]);
-
-        long timeDiffLong = DateUtil.between(startTime, endTime, DateUnit.SECOND, Boolean.FALSE);
-        boolean flag = timeDiffLong > 0L;
         boolean showNightFlag;
-
-        //午夜场时间段不跨天
-        DateTime currentTime = DateUtil.parseTime(DateUtil.formatTime(DateUtil.date()));
-        if (flag) {
-            showNightFlag = (DateUtil.between(startTime, currentTime, DateUnit.SECOND, Boolean.FALSE) > 0L)
-                    && (DateUtil.between(currentTime, endTime, DateUnit.SECOND, Boolean.FALSE) > 0L);
-            //午夜场时间段跨天
+        if (StringUtils.isBlank(timeStr)) {
+            showNightFlag = false;
         } else {
-            DateTime beginOfDay = DateUtil.parseTime(DateUtil.formatTime(DateUtil.beginOfDay(DateUtil.date())));
-            DateTime endOfDay = DateUtil.parseTime(DateUtil.formatTime(DateUtil.endOfDay(DateUtil.date())));
-            showNightFlag = ((DateUtil.between(startTime, currentTime, DateUnit.SECOND, Boolean.FALSE) > 0L)
-                    && (DateUtil.between(currentTime, endOfDay, DateUnit.SECOND, Boolean.FALSE) > 0L))
-                    || ((DateUtil.between(beginOfDay, currentTime, DateUnit.SECOND, Boolean.FALSE) > 0L)
-                    && (DateUtil.between(currentTime, endTime, DateUnit.SECOND, Boolean.FALSE) > 0L));
+            DateTime startTime = DateUtil.parseTime(timeStr.split(Constant.DEFAULT_SPLIT_SEPARATOR)[0]);
+            DateTime endTime = DateUtil.parseTime(timeStr.split(Constant.DEFAULT_SPLIT_SEPARATOR)[1]);
+
+            long timeDiffLong = DateUtil.between(startTime, endTime, DateUnit.SECOND, Boolean.FALSE);
+            boolean flag = timeDiffLong > 0L;
+
+
+            //午夜场时间段不跨天
+            DateTime currentTime = DateUtil.parseTime(DateUtil.formatTime(DateUtil.date()));
+            if (flag) {
+                showNightFlag = (DateUtil.between(startTime, currentTime, DateUnit.SECOND, Boolean.FALSE) > 0L)
+                        && (DateUtil.between(currentTime, endTime, DateUnit.SECOND, Boolean.FALSE) > 0L);
+                //午夜场时间段跨天
+            } else {
+                DateTime beginOfDay = DateUtil.parseTime(DateUtil.formatTime(DateUtil.beginOfDay(DateUtil.date())));
+                DateTime endOfDay = DateUtil.parseTime(DateUtil.formatTime(DateUtil.endOfDay(DateUtil.date())));
+                showNightFlag = ((DateUtil.between(startTime, currentTime, DateUnit.SECOND, Boolean.FALSE) > 0L)
+                        && (DateUtil.between(currentTime, endOfDay, DateUnit.SECOND, Boolean.FALSE) > 0L))
+                        || ((DateUtil.between(beginOfDay, currentTime, DateUnit.SECOND, Boolean.FALSE) > 0L)
+                        && (DateUtil.between(currentTime, endTime, DateUnit.SECOND, Boolean.FALSE) > 0L));
+            }
         }
 
         List<Category> categoryList = categoryService.findAllAccompanyPlayCategory();

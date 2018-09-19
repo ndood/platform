@@ -33,4 +33,4 @@ CREATE TABLE `t_user_night_info` (
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `del_flag` tinyint(1) DEFAULT '0' COMMENT '删除标记（0：未删除，1：已删除）',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COMMENT='午夜场陪玩师信息表';
+) COMMENT='午夜场陪玩师信息表';

@@ -1,7 +1,7 @@
 package com.fulu.game.admin.controller;
 
 import com.fulu.game.common.Result;
-import com.fulu.game.core.entity.UserNightInfo;
+import com.fulu.game.core.entity.vo.UserNightInfoVO;
 import com.fulu.game.core.service.MidnightService;
 import com.fulu.game.core.service.UserNightInfoService;
 import com.github.pagehelper.PageInfo;
@@ -49,7 +49,7 @@ public class MidnightController extends BaseController {
      */
     @PostMapping("/service-user/list")
     public Result list(@RequestParam Integer pageNum, @RequestParam Integer pageSize) {
-        PageInfo<UserNightInfo> pageInfo = userNightInfoService.list(pageNum, pageSize);
+        PageInfo<UserNightInfoVO> pageInfo = userNightInfoService.list(pageNum, pageSize);
         return Result.success().data(pageInfo).msg("查询成功！");
     }
 

@@ -15,7 +15,7 @@ import com.github.pagehelper.PageInfo;
  */
 public interface UserNightInfoService extends ICommonService<UserNightInfo, Integer> {
 
-    PageInfo<UserNightInfo> list(Integer pageNum, Integer pageSize);
+    PageInfo<UserNightInfoVO> list(Integer pageNum, Integer pageSize);
 
     void remove(Integer id);
 
