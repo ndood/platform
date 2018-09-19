@@ -3,12 +3,22 @@ package com.fulu.game.core.entity.vo;
 import com.fulu.game.core.entity.Order;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class OrderDetailsVO extends Order {
 
     private String serverHeadUrl;
 
     private String serverNickName;
+
+    //陪玩师年龄
+    private Integer serverAge;
+    //陪玩师平均分
+    private BigDecimal serverScoreAvg;
+    //陪玩师性别
+    private Integer serverGender;
+
 
     private String categoryName;
 

@@ -194,6 +194,9 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
         User server = userService.findById(order.getServiceUserId());
         orderDetailsVO.setServerHeadUrl(server.getHeadPortraitsUrl());
         orderDetailsVO.setServerNickName(server.getNickname());
+        orderDetailsVO.setServerAge(server.getAge());
+        orderDetailsVO.setServerGender(server.getGender());
+        orderDetailsVO.setServerScoreAvg(server.getScoreAvg());
 
         User user = userService.findById(order.getUserId());
         orderDetailsVO.setUserHeadUrl(user.getHeadPortraitsUrl());
