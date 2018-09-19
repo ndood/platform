@@ -199,7 +199,8 @@ public class ImController extends BaseController {
     //搜索陪玩师
     @RequestMapping("/search-auth/list")
     public Result searchAuthUserList(@RequestParam("pageNum") Integer pageNum,
-                                     @RequestParam("pageSize") Integer pageSize, String searchWord){
+                                     @RequestParam("pageSize") Integer pageSize, 
+                                     String searchWord){
 
         Admin ad = adminService.getCurrentUser();
         
@@ -212,9 +213,11 @@ public class ImController extends BaseController {
     //搜索用户
     @RequestMapping("/search-user/list")
     public Result searchUserList(@RequestParam("pageNum") Integer pageNum,
-                                     @RequestParam("pageSize") Integer pageSize, String searchWord){
+                                 @RequestParam("pageSize") Integer pageSize,
+                                 Integer currentAuthUserId ,
+                                 String searchWord){
 
-        PageInfo<User> pageInfo = userService.searchByUserInfo(pageNum,pageSize,searchWord);
+        PageInfo<User> pageInfo = userService.searchByUserInfo(pageNum,pageSize,currentAuthUserId,searchWord);
 
         return Result.success().data(pageInfo).msg("操作成功");
     }

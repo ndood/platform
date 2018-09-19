@@ -789,8 +789,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         User user = this.getCurrentUser();
         UserInfoAuth ua = userInfoAuthService.findByUserId(user.getId());
         if (active) {
-
-            uo.setOpenAgentIm(ua.isOpenSubstituteIm());
+            
             uo.setNeedSayHello(this.getUserRandStatus(user.getId()));
             
             log.info("userId:{}用户上线了!;version:{}", user.getId(), version);
@@ -799,7 +798,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
             if (ua != null && ua.getImSubstituteId() != null) {
 
-
+                uo.setOpenAgentIm(ua.isOpenSubstituteIm());
+                
                 //删除陪玩师的未读信息数量
                 Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()));
 
@@ -859,10 +859,10 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
 
     @Override
-    public PageInfo<User> searchByUserInfo(Integer pageNum, Integer pageSize,String searchword) {
+    public PageInfo<User> searchByUserInfo(Integer pageNum, Integer pageSize,Integer currentAuthUserId,String searchword) {
         PageHelper.startPage(pageNum, pageSize);
 
-        List<User> list = userDao.searchByUserInfo(searchword);
+        List<User> list = userDao.searchByUserInfo(searchword , currentAuthUserId);
 
         return new PageInfo<User>(list);
     }

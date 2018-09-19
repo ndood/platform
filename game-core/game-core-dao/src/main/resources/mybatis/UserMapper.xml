@@ -461,7 +461,7 @@
         t1.*
         from t_user t1
         where
-        t1.id = #{searchWord} or t1.nickname like '%${searchWord}%'
+        t1.id != #{currentAuthUserId} and (t1.id = #{searchWord} or t1.nickname like '%${searchWord}%')
     </select>
     
 </mapper>
