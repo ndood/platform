@@ -49,6 +49,8 @@
         <result column="serverHeadUrl" property="serverHeadUrl"/>
         <result column="categoryName" property="categoryName"/>
         <result column="categoryIcon" property="categoryIcon"/>
+        <result column="productAmount" property="productAmount"/>
+        <result column="productUnit" property="productUnit"/>
     </resultMap>
 
     <resultMap id="PointOrderDetailsVOMap" type="com.fulu.game.core.entity.vo.PointOrderDetailsVO"
@@ -619,11 +621,14 @@
     <select id="getBannerOrderList" resultMap="OrderDetailsVOMap">
         SELECT
         o.*,
-        c.name as categoryName
-        c.category_icon as categoryIcon
+        c.name as categoryName,
+        c.category_icon as categoryIcon,
+        o.amount as productAmount,
+        o.unit as productUnit
         FROM
         t_order o
         INNER JOIN t_category c on c.id = o.category_id
+        INNER JOIN t_order_product p on p.order_no = o.order_no 
         where
             o.type = 1 and o.service_user_id = #{authUserId} and o.user_id = #{bossUserId} 
             <if test="statusList != null">

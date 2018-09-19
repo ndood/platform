@@ -32,4 +32,7 @@ public class OrderDetailsVO extends Order {
     
     private Boolean waitingRead;
 
+    private Integer productAmount;
+    
+    private String productUnit;
 }
