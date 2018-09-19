@@ -48,6 +48,7 @@
         <result column="userHeadUrl" property="userHeadUrl"/>
         <result column="serverHeadUrl" property="serverHeadUrl"/>
         <result column="categoryName" property="categoryName"/>
+        <result column="categoryIcon" property="categoryIcon"/>
     </resultMap>
 
     <resultMap id="PointOrderDetailsVOMap" type="com.fulu.game.core.entity.vo.PointOrderDetailsVO"
@@ -619,6 +620,7 @@
         SELECT
         o.*,
         c.name as categoryName
+        c.category_icon as categoryIcon
         FROM
         t_order o
         INNER JOIN t_category c on c.id = o.category_id
@@ -630,6 +632,7 @@
                     #{s}
                 </foreach>
             </if>
+        order by o.create_time desc
     </select>
     
     

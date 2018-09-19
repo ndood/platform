@@ -100,7 +100,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     public List<Order> getBannerOrderList(Integer authUserId, Integer bossUserId) {
 
         List<Integer> list = new ArrayList<Integer>();
-        list.add(OrderStatusEnum.NON_PAYMENT.getStatus());
         list.add(OrderStatusEnum.WAIT_SERVICE.getStatus());
         list.add(OrderStatusEnum.ALREADY_RECEIVING.getStatus());
         list.add(OrderStatusEnum.SERVICING.getStatus());
