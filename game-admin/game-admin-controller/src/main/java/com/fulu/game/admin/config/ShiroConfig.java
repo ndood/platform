@@ -4,7 +4,10 @@ import com.fulu.game.admin.shiro.AclFilter;
 import com.fulu.game.admin.shiro.MyShiroRealm;
 import com.fulu.game.admin.shiro.RetryLimitHashedCredentialsMatcher;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
+import org.apache.shiro.authz.Authorizer;
+import org.apache.shiro.authz.ModularRealmAuthorizer;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.context.annotation.Bean;
@@ -12,10 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
 import javax.servlet.Filter;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 @Configuration
 public class ShiroConfig {
@@ -78,6 +78,17 @@ public class ShiroConfig {
         return securityManager;
     }
 
+
+    @Bean("authorizer")
+    public Authorizer authorizer(Realm...realms) {
+        ModularRealmAuthorizer authenticator = new ModularRealmAuthorizer();
+        Collection<Realm> crealms = new ArrayList<>(realms.length);
+        for (Realm oneRealm : realms) {
+            crealms.add(oneRealm);
+        }
+        authenticator.setRealms(crealms );
+        return authenticator;
+    }
 
     @Bean(name = "simpleMappingExceptionResolver")
     public SimpleMappingExceptionResolver

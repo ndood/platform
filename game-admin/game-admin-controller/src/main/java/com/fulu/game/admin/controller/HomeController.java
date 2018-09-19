@@ -2,6 +2,7 @@ package com.fulu.game.admin.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.codec.Base64;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.RSA;
 import com.alibaba.fastjson.JSONObject;
@@ -9,8 +10,13 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.config.WxMpServiceSupply;
+import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Admin;
+import com.fulu.game.core.entity.SysRole;
+import com.fulu.game.core.entity.SysRouter;
+import com.fulu.game.core.service.SysRoleService;
+import com.fulu.game.core.service.SysRouterService;
 import com.github.binarywang.wxpay.bean.entpay.EntPayRequest;
 import com.github.binarywang.wxpay.constant.WxPayConstants;
 import com.github.binarywang.wxpay.exception.WxPayException;
@@ -27,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -38,6 +45,8 @@ public class HomeController {
     @Autowired
     private WxMaServiceSupply wxMaServiceSupply;
 
+    @Autowired
+    private SysRouterService sysRouterService;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index() {
@@ -56,6 +65,9 @@ public class HomeController {
             Admin admin = (Admin) subject.getPrincipal();
             Map<String, Object> map = BeanUtil.beanToMap(admin);
             map.put("token", SubjectUtil.getToken());
+            //获取用户菜单
+            List<SysRouter> routerList = sysRouterService.findSysRouterListByAdminId(admin.getId());
+            map.put("routes",routerList);
             return Result.success().data(map).msg("登录成功!");
         } catch (AuthenticationException e) {
             log.error("shiro验证失败", e);

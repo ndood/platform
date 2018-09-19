@@ -29,7 +29,10 @@ public class UserException extends BizException {
         BODY_NO_AUTH(21006, "用户未进行身份验证"),
         BODY_ALREADY_AUTH(21007, "用户已经认证了身份"),
         MOBILE_NOT_MATCH_EXCEPTION(21008, "登录手机号不匹配！"),
-        NO_AVAILABLE_OPENID(21009, "无法打款，用户没有有效的openId");
+        NO_AVAILABLE_OPENID(21009, "无法打款，用户没有有效的openId"),
+        NO_PERMISSION(21010, "用户无此访问权限"),
+        NO_ROLE(21011, "用户未设置角色信息"),
+        NO_ROLE_CLOSE(21012, "账号权限已关闭");
 
         private int code;
         private String msg;

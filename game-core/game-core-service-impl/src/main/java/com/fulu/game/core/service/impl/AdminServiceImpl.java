@@ -9,6 +9,7 @@ import com.fulu.game.core.dao.AdminDao;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.vo.AdminVO;
+import com.fulu.game.core.service.AdminRoleService;
 import com.fulu.game.core.service.AdminService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -26,6 +27,9 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
 
     @Autowired
     private AdminDao adminDao;
+
+    @Autowired
+    private AdminRoleService adminRoleService;
 
     @Override
     public ICommonDao<Admin, Integer> getDao() {
@@ -45,6 +49,9 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
 
     @Override
     public Admin save(AdminVO adminVO) {
+        if(adminVO != null && (adminVO.getRoleId() == null || adminVO.getRoleId().intValue() <= 0)){
+            throw new UserException(UserException.ExceptionCode.NO_ROLE);
+        }
         //判断username是否重名
         AdminVO requestVO = new AdminVO();
         requestVO.setName(adminVO.getName());
@@ -59,6 +66,7 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
                 throw new UserException(UserException.ExceptionCode.USERNAME_DUMPLICATE_EXCEPTION);
             }
         }
+
         Admin admin = new Admin();
         admin.setName(adminVO.getName());
         admin.setUsername(adminVO.getUsername());
@@ -68,7 +76,16 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
         admin.setSalt(password.getSalt());
         admin.setCreateTime(new Date());
         admin.setUpdateTime(admin.getCreateTime());
-        adminDao.create(admin);
+        if(adminVO.getId() != null && admin.getId().intValue() > 0){
+            admin.setId(adminVO.getId());
+            //登录名不允许修改
+            admin.setUsername(null);
+            adminDao.update(admin);
+        } else {
+            adminDao.create(admin);
+        }
+        //设置用户角色信息
+        adminRoleService.save(admin);
         return admin;
     }
 
