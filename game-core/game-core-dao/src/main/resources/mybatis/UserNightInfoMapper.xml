@@ -84,10 +84,12 @@
     <select id="list" resultType="com.fulu.game.core.entity.vo.UserNightInfoVO">
         SELECT
             info.*, tuser.mobile,
-            tuser.nickname
+            tuser.nickname,
+            tcat.`name` AS category_name
         FROM
             t_user_night_info info
         LEFT JOIN t_user tuser ON info.user_id = tuser.id
+        LEFT JOIN t_category tcat ON info.category_id = tcat.id
         WHERE
             info.del_flag = 0
         ORDER BY
