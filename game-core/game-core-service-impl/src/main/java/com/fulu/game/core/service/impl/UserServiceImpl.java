@@ -792,14 +792,16 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             
             uo.setNeedSayHello(this.getUserRandStatus(user.getId()));
             
+            if( ua != null ){
+                uo.setOpenAgentIm(ua.isOpenSubstituteIm());
+            }
+            
             log.info("userId:{}用户上线了!;version:{}", user.getId(), version);
             redisOpenService.set(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()), user.getType() + "");
 
 
             if (ua != null && ua.getImSubstituteId() != null) {
 
-                uo.setOpenAgentIm(ua.isOpenSubstituteIm());
-                
                 //删除陪玩师的未读信息数量
                 Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.IM_COMPANY_UNREAD.generateKey(ua.getImSubstituteId().intValue()));
 
