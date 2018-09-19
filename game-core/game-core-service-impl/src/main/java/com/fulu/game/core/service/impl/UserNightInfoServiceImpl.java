@@ -7,10 +7,7 @@ import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserNightInfoDao;
 import com.fulu.game.core.entity.*;
-import com.fulu.game.core.entity.vo.ProductShowCaseVO;
-import com.fulu.game.core.entity.vo.SalesModeVO;
-import com.fulu.game.core.entity.vo.UserInfoVO;
-import com.fulu.game.core.entity.vo.UserNightInfoVO;
+import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -72,11 +69,16 @@ public class UserNightInfoServiceImpl extends AbsCommonService<UserNightInfo, In
         List<UserTechAuth> techAuthList = userTechAuthService.findByStatusAndUserId(userId,
                 TechAuthStatusEnum.NORMAL.getType());
 
-        List<SalesMode> salesModes = new ArrayList<>();
+
+        List<UserTechAuthVO> techAuthVOList = new ArrayList<>();
+
         if (CollectionUtils.isNotEmpty(techAuthList)) {
             for (UserTechAuth meta : techAuthList) {
+                UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
+                BeanUtil.copyProperties(meta, userTechAuthVO);
                 Integer cId = meta.getCategoryId();
-                salesModes = salesModeService.findByCategory(cId);
+                userTechAuthVO.setSalesModeList(salesModeService.findByCategory(cId));
+                techAuthVOList.add(userTechAuthVO);
             }
         }
 
@@ -94,8 +96,7 @@ public class UserNightInfoServiceImpl extends AbsCommonService<UserNightInfo, In
         if (category != null) {
             resultVo.setCategoryName(category.getName());
         }
-        resultVo.setAllUserTechs(techAuthList);
-        resultVo.setAllSalesModes(salesModes);
+        resultVo.setAllUserTechs(techAuthVOList);
         return resultVo;
     }
 
