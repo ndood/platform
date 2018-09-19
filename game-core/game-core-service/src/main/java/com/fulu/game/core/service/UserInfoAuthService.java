@@ -1,5 +1,6 @@
 package com.fulu.game.core.service;
 
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
@@ -127,4 +128,7 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
      *
      */
     UserInfoAuthVO randGetAuthUser();
+    
+    
+    void setUserAgentImStatus(boolean agentStatus , User userInfo);
 }

@@ -7,12 +7,16 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.FileTypeEnum;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
 import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.properties.Config;
+import com.fulu.game.common.utils.MailUtil;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.*;
 import com.fulu.game.core.entity.*;
@@ -66,6 +70,10 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     private VirtualProductAttachService virtualProductAttachService;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private Config configProperties;
     
     
 
@@ -953,5 +961,31 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         UserInfoAuthVO uav = userInfoAuthDao.getTop1ByMinId(id);
 
         return uav;
+    }
+
+
+    @Override
+    public void setUserAgentImStatus(boolean agentStatus, User userInfo) {
+        
+        if(!agentStatus){
+            //判断用户24小时内是否可将开关关闭
+            String openStr = redisOpenService.get(RedisKeyEnum.USER_AGENT_IM_OPEN.generateKey(userInfo.getId()));
+            if(StringUtils.isNotBlank(openStr)){
+                throw new UserAuthException(UserAuthException.ExceptionCode.USER_AGENT_IM_CD);
+            }
+        }else{
+            //保存开关CD  24小时
+            redisOpenService.set(RedisKeyEnum.USER_AGENT_IM_OPEN.generateKey(userInfo.getId()),"true", Constant.ONE_DAY);
+            
+            //发送邮件
+            MailUtil.sendMail(configProperties.getOrdermail().getAddress(),configProperties.getOrdermail().getPassword(),"陪玩师申请开通代聊服务",userInfo.getNickname()+"申请开通代聊服务，ID："+userInfo.getId()+"，手机号："+userInfo.getMobile()+"，请与之联系获取私照",new String[]{configProperties.getOrdermail().getAddress()});
+        }
+        
+
+        UserInfoAuth u = new UserInfoAuth();
+        u.setOpenSubstituteIm(agentStatus);
+        u.setUserId(userInfo.getId());
+
+        this.updateByUserId(u);
     }
 }

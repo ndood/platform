@@ -60,7 +60,9 @@ public enum RedisKeyEnum {
     //用户未读订单
     USER_WAITING_READ_ORDER,
     //午夜场标记
-    MIDNIGHT;
+    MIDNIGHT,
+    //用户24小时内开启了代聊
+    USER_AGENT_IM_OPEN;
 
 
     public static final String SPLIT = "-";

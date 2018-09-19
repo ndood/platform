@@ -622,9 +622,9 @@
         SELECT
         o.*,
         c.name as categoryName,
-        c.category_icon as categoryIcon,
-        o.amount as productAmount,
-        o.unit as productUnit
+        c.icon as categoryIcon,
+        p.amount as productAmount,
+        p.unit as productUnit
         FROM
         t_order o
         INNER JOIN t_category c on c.id = o.category_id

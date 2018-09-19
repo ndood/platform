@@ -657,11 +657,7 @@ public class UserController extends BaseController {
     public Result setUserAgentImStatus(boolean agentStatus) {
         User user = userService.getCurrentUser();
 
-        UserInfoAuth u = new UserInfoAuth();
-        u.setOpenSubstituteIm(agentStatus);
-        u.setUserId(user.getId());
-
-        userInfoAuthService.updateByUserId(u);
+        userInfoAuthService.setUserAgentImStatus(agentStatus,user);
 
         return Result.success().msg("设置成功！");
     }
