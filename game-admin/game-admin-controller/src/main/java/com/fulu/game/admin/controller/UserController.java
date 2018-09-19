@@ -550,7 +550,7 @@ public class UserController extends BaseController {
      */
     @RequestMapping("/night-config/get")
     public Result getNightConfig(@RequestParam Integer userId) {
-        UserNightInfo info = userNightInfoService.getNightConfig(userId);
+        UserNightInfoVO info = userNightInfoService.getNightConfig(userId);
         return Result.success().data(info).msg("查询成功！");
     }
 

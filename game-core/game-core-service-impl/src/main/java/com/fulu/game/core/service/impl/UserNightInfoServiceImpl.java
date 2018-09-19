@@ -40,6 +40,8 @@ public class UserNightInfoServiceImpl extends AbsCommonService<UserNightInfo, In
     private UserInfoAuthServiceImpl userInfoAuthService;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private CategoryService categoryService;
 
     @Override
     public ICommonDao<UserNightInfo, Integer> getDao() {
@@ -88,6 +90,10 @@ public class UserNightInfoServiceImpl extends AbsCommonService<UserNightInfo, In
         }
         UserNightInfoVO resultVo = new UserNightInfoVO();
         BeanUtil.copyProperties(info, resultVo);
+        Category category = categoryService.findById(resultVo.getCategoryId());
+        if (category != null) {
+            resultVo.setCategoryName(category.getName());
+        }
         resultVo.setAllUserTechs(techAuthList);
         resultVo.setAllSalesModes(salesModes);
         return resultVo;

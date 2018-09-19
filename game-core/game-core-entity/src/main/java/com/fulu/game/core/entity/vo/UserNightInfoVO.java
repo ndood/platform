@@ -28,6 +28,11 @@ public class UserNightInfoVO extends UserNightInfo {
     private String mobile;
 
     /**
+     * 游戏种类名称
+     */
+    private String categoryName;
+
+    /**
      * 性别
      */
     private Integer gender;
