@@ -6,11 +6,14 @@ import com.fulu.game.core.service.MidnightService;
 import com.fulu.game.core.service.UserNightInfoService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 /**
  * 午夜场管理Controller
@@ -35,9 +38,25 @@ public class MidnightController extends BaseController {
      * @return 封装结果集
      */
     @PostMapping("/time/config")
-    public Result setConfig(@RequestParam String startTime, @RequestParam String endTime) {
+    public Result setTimeConfig(@RequestParam String startTime, @RequestParam String endTime) {
         midnightService.setConfig(startTime, endTime);
         return Result.success().msg("设置成功");
+    }
+
+
+    /**
+     * 获取午夜场起止时间
+     *
+     * @return 封装结果集
+     */
+    @PostMapping("/time/get")
+    public Result getTimeConfig() {
+        Map<String, Object> resultMap = midnightService.getConfig();
+        if (MapUtils.isEmpty(resultMap)) {
+            return Result.error().msg("无数据！");
+        }
+
+        return Result.success().data(resultMap).msg("设置成功");
     }
 
     /**

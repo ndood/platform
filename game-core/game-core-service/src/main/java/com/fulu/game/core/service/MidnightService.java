@@ -1,5 +1,7 @@
 package com.fulu.game.core.service;
 
+import java.util.Map;
+
 /**
  * todo：描述文字
  *
@@ -9,4 +11,6 @@ package com.fulu.game.core.service;
 public interface MidnightService {
 
     void setConfig(String startTime, String endTime);
+
+    Map<String, Object> getConfig();
 }
