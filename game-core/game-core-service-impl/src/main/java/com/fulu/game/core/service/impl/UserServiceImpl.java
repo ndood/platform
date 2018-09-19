@@ -793,7 +793,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             uo.setNeedSayHello(this.getUserRandStatus(user.getId()));
             
             if( ua != null ){
-                uo.setOpenAgentIm(ua.isOpenSubstituteIm());
+                uo.setOpenAgentIm(ua.getOpenSubstituteIm());
             }
             
             log.info("userId:{}用户上线了!;version:{}", user.getId(), version);
