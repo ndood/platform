@@ -96,24 +96,26 @@
 
     <select id="findNightUser" resultType="com.fulu.game.core.entity.vo.ProductShowCaseVO">
         SELECT
-            t1.*, t2.user_id AS userId,
-            t2.category_id AS categoryId,
-            t2.tech_auth_id AS techAuthId,
-            t2.gender AS gender,
-            t2.product_name AS productName,
-            t2.price AS price,
-            t2.unit AS unit,
-            t2.`status` AS STATUS,
-            t2.create_time AS createTime
+        t1.*, t2.user_id AS userId,
+        t2.category_id AS categoryId,
+        t2.tech_auth_id AS techAuthId,
+        t2.gender AS gender,
+        t2.product_name AS productName,
+        t2.price AS price,
+        t2.unit AS unit,
+        t2.`status` AS STATUS,
+        t2.create_time AS createTime
         FROM
-            t_user_night_info t1
+        t_user_night_info t1
         LEFT JOIN t_product t2 ON t1.user_id = t2.user_id
         AND t1.category_id = t2.category_id
         AND t1.sales_mode_id = t2.sales_mode_id
         WHERE
-            t2.del_flag = FALSE
+        t2.del_flag = FALSE
         AND t2.is_activate = TRUE
-        AND t2.gender = #{gender}
+        <if test="gender != null">
+            AND t2.gender = #{gender}
+        </if>
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">
