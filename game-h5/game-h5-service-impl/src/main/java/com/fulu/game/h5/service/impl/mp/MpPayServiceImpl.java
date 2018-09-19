@@ -61,10 +61,6 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
 
 
 
-
-
-
-
     /**
      * 提交充值订单
      *
@@ -165,73 +161,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
         }
     }
 
-    /**
-     * 支付成功
-     *
-     * @param orderNo     订单号
-     * @param actualMoney 实付金额
-     * @return 订单Bean
-     */
-    private VirtualPayOrder successPayOrder(String orderNo, BigDecimal actualMoney) {
-        log.info("用户支付订单orderNo:{},actualMoney:{}", orderNo, actualMoney);
-        VirtualPayOrder order = virtualPayOrderService.findByOrderNo(orderNo);
 
-        log.info("订单详情：" + order.toString());
-
-        if (order.getIsPayCallback()) {
-            throw new OrderException(orderNo, "重复支付订单![" + order.toString() + "]");
-        }
-        order.setIsPayCallback(true);
-        order.setPayTime(DateUtil.date());
-        order.setUpdateTime(DateUtil.date());
-        virtualPayOrderService.update(order);
-
-
-        Integer type = order.getType();
-        User user = userService.findById(order.getUserId());
-        if (type.equals(VirtualPayOrderTypeEnum.VIRTUAL_ORDER.getType())) {
-            user.setVirtualBalance((user.getVirtualBalance() == null ? 0 : user.getVirtualBalance())
-                    + order.getVirtualMoney());
-
-            //记录虚拟币流水
-            VirtualDetails details = new VirtualDetails();
-            details.setUserId(user.getId());
-            details.setRelevantNo(order.getOrderNo());
-            details.setSum(user.getVirtualBalance());
-            details.setMoney(order.getVirtualMoney());
-            details.setType(VirtualDetailsTypeEnum.VIRTUAL_MONEY.getType());
-            details.setRemark(VirtualDetailsRemarkEnum.CHARGE.getMsg());
-            details.setCreateTime(DateUtil.date());
-            virtualDetailsService.create(details);
-        } else {
-            //余额充值订单，需要记录零钱流水
-            MoneyDetails mDetails = new MoneyDetails();
-            mDetails.setOperatorId(order.getUserId());
-            mDetails.setTargetId(order.getUserId());
-            mDetails.setMoney(order.getMoney());
-            mDetails.setAction(MoneyOperateTypeEnum.WITHDRAW_BALANCE.getType());
-            BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
-            mDetails.setSum(user.getBalance().add(chargeBalance));
-            mDetails.setRemark(MoneyOperateTypeEnum.WITHDRAW_BALANCE.getMsg() + "订单号: " + orderNo);
-            mDetails.setCreateTime(DateUtil.date());
-            moneyDetailsService.drawSave(mDetails);
-
-            user.setChargeBalance(chargeBalance.add(order.getMoney()));
-        }
-        userService.update(user);
-        userService.updateRedisUser(user);
-
-        //记录平台流水
-        platformMoneyDetailsService.createOrderDetails(
-                PlatFormMoneyTypeEnum.VIRTUAL_ORDER_PAY,
-                order.getOrderNo(),
-                order.getActualMoney());
-
-        //记录订单流水
-        orderMoneyDetailsService.create(order.getOrderNo(), order.getUserId(), DetailsEnum.VIRTUAL_ORDER_PAY, actualMoney);
-        //fixme 留言通知推送
-        return order;
-    }
 
     private String generateVirtualPayOrderNo() {
         String orderNo = "C_" + GenIdUtil.GetOrderNo();

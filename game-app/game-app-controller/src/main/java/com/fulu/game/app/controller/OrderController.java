@@ -80,11 +80,16 @@ public class OrderController extends BaseController {
         try {
             ClientInfo clientInfo = SubjectUtil.getUserClientInfo();
             int platform;
-            if (clientInfo.get_platform().equalsIgnoreCase("ios")) {
-                platform = PlatformEcoEnum.IOS.getType();
-            } else {
-                platform = PlatformEcoEnum.ANDROID.getType();
+            if(clientInfo!=null){
+                if (clientInfo.get_platform().equalsIgnoreCase("ios")) {
+                    platform = PlatformEcoEnum.IOS.getType();
+                } else {
+                    platform = PlatformEcoEnum.ANDROID.getType();
+                }
+            }else{
+                platform =  PlatformEcoEnum.ANDROID.getType();
             }
+
             String ip = RequestUtil.getIpAdrress(request);
             String orderNo = appOrderServiceImpl.submit(productId, num, payment, platform, beginTime, remark, couponNo, ip);
             return Result.success().data(orderNo).msg("创建订单成功!");

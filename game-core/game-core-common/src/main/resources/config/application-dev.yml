@@ -96,8 +96,8 @@ config:
       subMchId:
       keyPath: E:\cert\apiclient_cert.p12
       tradeType: APP
-      notifyUrl: https://t-api-app.wzpeilian.com/wechat/pay/callback
-      payVirtualProductNotifyUrl: http://z3tfsd.natappfree.cc/wechat/pay/callback
+      notifyUrl: https://t-api-app.wzpeilian.com/wechat/pay/order/callback
+      payVirtualProductNotifyUrl: http://z3tfsd.natappfree.cc/pay/virtualproduct/callback
     im:
       urlPrefix: http://a1.easemob.com
       appKey: 1183180421228734#game-test
