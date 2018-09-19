@@ -14,7 +14,9 @@ import com.fulu.game.core.entity.payment.model.PayRequestModel;
 import com.fulu.game.core.entity.payment.model.RefundModel;
 import com.fulu.game.core.entity.payment.res.PayCallbackRes;
 import com.fulu.game.core.entity.payment.res.PayRequestRes;
+import com.github.binarywang.wxpay.bean.notify.WxPayOrderNotifyResult;
 import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderRequest;
+import com.github.binarywang.wxpay.bean.result.BaseWxPayResult;
 import com.github.binarywang.wxpay.config.WxPayConfig;
 import com.github.binarywang.wxpay.service.WxPayService;
 import com.github.binarywang.wxpay.service.impl.WxPayServiceImpl;
@@ -54,14 +56,28 @@ public class WeChatPayPaymentComponent implements PaymentComponent{
     }
 
 
-
     @Override
     public PayCallbackRes payCallBack(PayCallbackModel payCallbackVO) {
-        return null;
+        WxPayService wxPayService = buildPayService(payCallbackVO.getPayBusinessEnum(),payCallbackVO.getPlatform());
+        PayCallbackRes payCallbackTO = new PayCallbackRes();
+        payCallbackTO.setSuccess(false);
+         try {
+             WxPayOrderNotifyResult result = wxPayService.parseOrderNotifyResult(payCallbackVO.getWechatXmlResult());
+             payCallbackTO.setOrderNO(result.getOutTradeNo());
+             payCallbackTO.setPayMoney(BaseWxPayResult.feeToYuan(result.getTotalFee()));
+             payCallbackTO.setSuccess(true);
+         }catch (Exception e){
+             log.info("微信回调解析异常:", e);
+         }
+        return payCallbackTO;
     }
+
+
 
     @Override
     public boolean refund(RefundModel refundVO) {
+
+
         return false;
     }
 

@@ -50,6 +50,19 @@ public class OrderController extends BaseController {
     @Autowired
     private UserCommentService userCommentService;
 
+
+    /**
+     *
+     * @param productId
+     * @param num
+     * @param payment
+     * @param beginTime
+     * @param couponNo
+     * @param sessionkey
+     * @param remark
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "submit")
     public Result submit(@RequestParam(required = true) Integer productId,
                          @RequestParam(required = true) Integer num,
@@ -97,6 +110,8 @@ public class OrderController extends BaseController {
         PayRequestRes res = appPayService.payRequest(model);
         return Result.success().data(res);
     }
+
+
 
 
 

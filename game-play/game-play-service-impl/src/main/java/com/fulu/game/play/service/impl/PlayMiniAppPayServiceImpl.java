@@ -4,6 +4,7 @@ import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.payment.model.RefundModel;
 import com.fulu.game.core.service.impl.pay.MiniAppOrderPayServiceImpl;
 import com.github.binarywang.wxpay.bean.notify.WxPayOrderNotifyResult;
 import com.github.binarywang.wxpay.bean.order.WxPayMpOrderResult;
@@ -57,5 +58,6 @@ public class PlayMiniAppPayServiceImpl extends MiniAppOrderPayServiceImpl {
     public WxPayRefundResult refund(WxPayRefundRequest wxPayRefundRequest) throws WxPayException {
         return wxMaServiceSupply.playWxPayService().refund(wxPayRefundRequest);
     }
+
 
 }

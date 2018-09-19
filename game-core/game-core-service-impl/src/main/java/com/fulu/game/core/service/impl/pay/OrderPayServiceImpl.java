@@ -78,6 +78,10 @@ public abstract class OrderPayServiceImpl<T> implements OrderPayService {
 
 
 
+
+
+
+
     /**
      * 待废弃
      * @param order
@@ -105,6 +109,9 @@ public abstract class OrderPayServiceImpl<T> implements OrderPayService {
             throw new OrderException(order.getOrderNo(), "订单无法支付!");
         }
     }
+
+
+
 
     /**
      * 修改订单的支付状态

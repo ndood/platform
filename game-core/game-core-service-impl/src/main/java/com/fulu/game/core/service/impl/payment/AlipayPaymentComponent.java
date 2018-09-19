@@ -55,6 +55,7 @@ public class AlipayPaymentComponent implements PaymentComponent {
     }
 
 
+
     @Override
     public PayCallbackRes payCallBack(PayCallbackModel payCallbackModel) {
         PayCallbackRes payCallbackTO = new PayCallbackRes();
@@ -71,6 +72,8 @@ public class AlipayPaymentComponent implements PaymentComponent {
         }
         return payCallbackTO;
     }
+
+
 
 
     @Override

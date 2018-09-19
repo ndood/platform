@@ -34,6 +34,9 @@ public class PayCallbackModel {
      */
     private String wechatXmlResult;
 
+
+
+
     private PayCallbackModel(Builder builder) {
         setPayment(builder.payment);
         setPlatform(builder.platform);

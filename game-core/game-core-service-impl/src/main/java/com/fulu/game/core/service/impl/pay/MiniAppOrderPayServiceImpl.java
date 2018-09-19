@@ -35,6 +35,7 @@ public abstract class MiniAppOrderPayServiceImpl extends OrderPayServiceImpl<WxP
         return orderRequest;
     }
 
+
     @Override
     public String getOrderNo(WxPayOrderNotifyResult result) {
         return result.getOutTradeNo();

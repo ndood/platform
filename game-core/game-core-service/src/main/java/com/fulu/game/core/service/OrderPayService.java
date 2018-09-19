@@ -5,6 +5,7 @@ import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.payment.model.PayCallbackModel;
 import com.fulu.game.core.entity.payment.model.PayRequestModel;
+import com.fulu.game.core.entity.payment.model.RefundModel;
 import com.fulu.game.core.entity.payment.res.PayRequestRes;
 import com.github.binarywang.wxpay.exception.WxPayException;
 
@@ -21,8 +22,18 @@ public interface OrderPayService {
     PayRequestRes payRequest(PayRequestModel payRequestModel);
 
 
-
+    /**
+     * 支付回调
+     * @param payCallbackModel
+     * @return
+     */
     boolean payResult(PayCallbackModel payCallbackModel);
+
+
+
+
+
+
 
 
     /**
