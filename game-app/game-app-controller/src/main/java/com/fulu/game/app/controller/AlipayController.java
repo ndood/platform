@@ -1,6 +1,7 @@
 package com.fulu.game.app.controller;
 
 import com.fulu.game.app.service.impl.AppOrderPayServiceImpl;
+import com.fulu.game.common.enums.PayBusinessEnum;
 import com.fulu.game.common.enums.PaymentEnum;
 import com.fulu.game.core.entity.payment.model.PayCallbackModel;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ public class AlipayController {
 
     /**
      * 订单业务回调
+     *
      * @param request
      * @return
      */
@@ -33,7 +35,8 @@ public class AlipayController {
     @RequestMapping("/pay/order/callback")
     public String payOrderNotify(HttpServletRequest request) {
         Map<String, String> params = getAlipayParams(request.getParameterMap());
-        PayCallbackModel payCallbackModel = PayCallbackModel.newBuilder(PaymentEnum.ALIPAY_PAY.getType()).aliPayParameterMap(params).build();
+        PayCallbackModel payCallbackModel = PayCallbackModel.newBuilder(PaymentEnum.ALIPAY_PAY.getType(),PayBusinessEnum.ORDER)
+                .aliPayParameterMap(params).build();
         if (appOrderPayService.payResult(payCallbackModel)) {
             return "success";
         }
@@ -42,6 +45,7 @@ public class AlipayController {
 
     /**
      * 虚拟充值回调
+     *
      * @return
      */
     @ResponseBody

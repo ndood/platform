@@ -1,5 +1,9 @@
 package com.fulu.game.play.controller;
 
+import com.fulu.game.common.enums.PayBusinessEnum;
+import com.fulu.game.common.enums.PaymentEnum;
+import com.fulu.game.common.enums.PlatformEcoEnum;
+import com.fulu.game.core.entity.payment.model.PayCallbackModel;
 import com.fulu.game.play.service.impl.PlayMiniAppPayServiceImpl;
 import com.github.binarywang.wxpay.bean.notify.WxPayNotifyResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -26,12 +30,19 @@ public class WechatController {
                             HttpServletResponse response) {
         try {
             String xmlResult = IOUtils.toString(request.getInputStream(), request.getCharacterEncoding());
-            return playMiniAppPayService.payResult(xmlResult);
+            PayCallbackModel payCallbackModel = PayCallbackModel.newBuilder(PaymentEnum.WECHAT_PAY.getType(), PayBusinessEnum.ORDER)
+                    .platform(PlatformEcoEnum.PLAY.getType())
+                    .wechatXmlResult(xmlResult)
+                    .build();
+            boolean res = playMiniAppPayService.payResult(payCallbackModel);
+            if (res) {
+                return WxPayNotifyResponse.success("支付成功");
+            }
         } catch (Exception e) {
             log.error("xml消息转换异常{}", e.getMessage());
-            return WxPayNotifyResponse.fail(e.getMessage());
         }
-
+        return WxPayNotifyResponse.fail("支付失败");
     }
 
 }
+

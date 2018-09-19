@@ -15,8 +15,10 @@ import com.fulu.game.core.entity.payment.model.RefundModel;
 import com.fulu.game.core.entity.payment.res.PayCallbackRes;
 import com.fulu.game.core.entity.payment.res.PayRequestRes;
 import com.github.binarywang.wxpay.bean.notify.WxPayOrderNotifyResult;
+import com.github.binarywang.wxpay.bean.request.WxPayRefundRequest;
 import com.github.binarywang.wxpay.bean.request.WxPayUnifiedOrderRequest;
 import com.github.binarywang.wxpay.bean.result.BaseWxPayResult;
+import com.github.binarywang.wxpay.bean.result.WxPayRefundResult;
 import com.github.binarywang.wxpay.config.WxPayConfig;
 import com.github.binarywang.wxpay.service.WxPayService;
 import com.github.binarywang.wxpay.service.impl.WxPayServiceImpl;
@@ -36,8 +38,19 @@ import java.util.Date;
 public class WeChatPayPaymentComponent implements PaymentComponent{
 
 
+
+    private final Config configProperties;
+
+
+    @Autowired
+    public WeChatPayPaymentComponent(Config configProperties) {
+        this.configProperties = configProperties;
+    }
+
+
     @Override
     public PayRequestRes payRequest(PayRequestModel paymentVO) {
+        log.info("执行微信支付请求:{}",paymentVO);
         PayRequestRes payRequestRes = new PayRequestRes(false);
         WxPayUnifiedOrderRequest request = null;
         User user = paymentVO.getUser();
@@ -58,6 +71,7 @@ public class WeChatPayPaymentComponent implements PaymentComponent{
 
     @Override
     public PayCallbackRes payCallBack(PayCallbackModel payCallbackVO) {
+        log.info("执行微信支付回调方法:{}",payCallbackVO);
         WxPayService wxPayService = buildPayService(payCallbackVO.getPayBusinessEnum(),payCallbackVO.getPlatform());
         PayCallbackRes payCallbackTO = new PayCallbackRes();
         payCallbackTO.setSuccess(false);
@@ -76,20 +90,29 @@ public class WeChatPayPaymentComponent implements PaymentComponent{
 
     @Override
     public boolean refund(RefundModel refundVO) {
-
-
+        log.info("执行微信退款业务方法:{}",refundVO);
+        WxPayService wxPayService = buildPayService(refundVO.getPayBusinessEnum(),refundVO.getPlatform());
+        Integer totalMoneyInt = (refundVO.getTotalMoney().multiply(new BigDecimal(100))).intValue();
+        Integer refundMoneyInt;
+        if (refundVO.getRefundMoney() == null) {
+            refundMoneyInt = totalMoneyInt;
+        } else {
+            refundMoneyInt = (refundVO.getRefundMoney().multiply(new BigDecimal(100))).intValue();
+        }
+        WxPayRefundRequest request = new WxPayRefundRequest();
+        request.setOutTradeNo(refundVO.getOrderNo());
+        request.setOutRefundNo(refundVO.getOrderNo() + "E");
+        request.setTotalFee(totalMoneyInt);
+        request.setRefundFee(refundMoneyInt);
+        try {
+            wxPayService.refund(request);
+            return true;
+        }catch (Exception e){
+            log.info("微信退款异常:", e);
+        }
         return false;
     }
 
-
-
-    private final Config configProperties;
-
-
-    @Autowired
-    public WeChatPayPaymentComponent(Config configProperties) {
-        this.configProperties = configProperties;
-    }
 
 
     /**

@@ -6,10 +6,11 @@ import com.fulu.game.common.exception.DataException;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.payment.model.PayRequestModel;
+import com.fulu.game.core.entity.payment.res.PayRequestRes;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.entity.vo.OrderEventVO;
-import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.OrderDealService;
 import com.fulu.game.core.service.OrderEventService;
 import com.fulu.game.core.service.UserService;
@@ -43,7 +44,7 @@ public class OrderController extends BaseController {
     private final RedisOpenServiceImpl redisOpenService;
     private final H5OrderServiceImpl orderService;
     private final OrderDealService orderDealService;
-    private final H5PayServiceImpl fenqilePayService;
+    private final H5PayServiceImpl h5PayService;
     private final H5PushServiceImpl h5PushService;
 
 
@@ -58,7 +59,7 @@ public class OrderController extends BaseController {
         this.redisOpenService = redisOpenService;
         this.orderService = orderService;
         this.orderDealService = orderDealService;
-        this.fenqilePayService = fenqilePayService;
+        this.h5PayService = fenqilePayService;
         this.h5PushService = h5PushService;
     }
 
@@ -171,8 +172,9 @@ public class OrderController extends BaseController {
         String ip = RequestUtil.getIpAdrress(request);
         Order order = orderService.findByOrderNo(orderNo);
         User user = userService.findById(order.getUserId());
-        Object result = fenqilePayService.payOrder(order, user, ip);
-        return Result.success().data(result);
+        PayRequestModel model =  PayRequestModel.newBuilder().order(order).user(user).build();
+        PayRequestRes res = h5PayService.payRequest(model);
+        return Result.success().data(res);
     }
 
 

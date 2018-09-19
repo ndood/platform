@@ -7,6 +7,8 @@ import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.DataException;
 import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.payment.model.PayRequestModel;
+import com.fulu.game.core.entity.payment.res.PayRequestRes;
 import com.fulu.game.core.entity.to.OrderPointProductTO;
 import com.fulu.game.core.entity.vo.OrderEventVO;
 import com.fulu.game.core.entity.vo.OrderPointProductVO;
@@ -210,8 +212,9 @@ public class OrderController extends BaseController {
         String ip = RequestUtil.getIpAdrress(request);
         Order order = pointMiniAppOrderServiceImpl.findByOrderNo(orderNo);
         User user = userService.findById(order.getUserId());
-        Object result = pointMiniAppPayService.payOrder(order, user, ip);
-        return Result.success().data(result);
+        PayRequestModel model =  PayRequestModel.newBuilder().order(order).user(user).build();
+        PayRequestRes res = pointMiniAppPayService.payRequest(model);
+        return Result.success().data(res.getRequestParameter());
     }
 
     /**

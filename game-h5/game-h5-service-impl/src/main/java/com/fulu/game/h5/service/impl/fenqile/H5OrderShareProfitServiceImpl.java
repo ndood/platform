@@ -1,9 +1,11 @@
 package com.fulu.game.h5.service.impl.fenqile;
 
+import com.fulu.game.common.enums.PayBusinessEnum;
 import com.fulu.game.common.enums.PlatFormMoneyTypeEnum;
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderShareProfit;
+import com.fulu.game.core.entity.payment.model.RefundModel;
 import com.fulu.game.core.service.CategoryService;
 import com.fulu.game.core.service.MoneyDetailsService;
 import com.fulu.game.core.service.PlatformMoneyDetailsService;
@@ -28,7 +30,8 @@ public class H5OrderShareProfitServiceImpl extends OrderShareProfitServiceImpl {
     private MoneyDetailsService moneyDetailsService;
     @Autowired
     private PlatformMoneyDetailsService platformMoneyDetailsService;
-
+    @Autowired
+    private H5PayServiceImpl h5PayServiceImpl;
 
     /**
      * 订单正常完成状态分润
@@ -63,7 +66,13 @@ public class H5OrderShareProfitServiceImpl extends OrderShareProfitServiceImpl {
 
 
     @Override
-    public  <T> T refund(Order order, BigDecimal actualMoney, BigDecimal refundUserMoney) throws WxPayException {
-        return null;
+    public  Boolean refund(Order order, BigDecimal actualMoney, BigDecimal refundUserMoney)  {
+        RefundModel model = RefundModel.newBuilder(order.getPayment(), PayBusinessEnum.ORDER)
+                .orderNo(order.getOrderNo())
+                .refundMoney(refundUserMoney)
+                .totalMoney(actualMoney)
+                .platform(order.getPlatform())
+                .build();
+        return h5PayServiceImpl.refund(model);
     }
 }

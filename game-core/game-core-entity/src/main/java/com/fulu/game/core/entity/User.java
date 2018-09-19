@@ -30,12 +30,19 @@ public class User implements Serializable {
     private String nickname;
     //性别(0不公开,1男,2女)
     private Integer gender;
+
     private Integer age;
+
     private String constellation;
+
     private String birth;
+
     private String realname;
+
     private String country;
+
     private String province;
+
     private String city;
     //头像URL
     private String headPortraitsUrl;

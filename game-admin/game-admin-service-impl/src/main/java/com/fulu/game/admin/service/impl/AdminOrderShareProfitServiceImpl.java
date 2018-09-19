@@ -25,17 +25,17 @@ public class AdminOrderShareProfitServiceImpl extends OrderShareProfitServiceImp
 
     @Autowired
     private PlayOrderShareProfitServiceImpl playOrderShareProfitService;
-
     @Autowired
     private PointOrderShareProfitServiceImpl pointOrderShareProfitService;
-
     @Autowired
     private OrderShareProfitDao orderShareProfitDao;
     @Autowired
     private H5OrderShareProfitServiceImpl h5OrderShareProfitService;
 
     @Override
-    protected Boolean refund(Order order, BigDecimal actualMoney, BigDecimal refundUserMoney) throws WxPayException {
+    protected Boolean refund(Order order, BigDecimal actualMoney, BigDecimal refundUserMoney){
+
+
         if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
             return playOrderShareProfitService.refund(order, actualMoney, refundUserMoney);
         } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {

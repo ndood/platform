@@ -15,7 +15,7 @@ public class PayCallbackModel {
     private Integer payment;
 
     /**
-     * 支付平台
+     * 支付平台(假如是微信平台该参数必填)
      */
     private Integer platform;
 
@@ -47,8 +47,8 @@ public class PayCallbackModel {
 
 
 
-    public static Builder newBuilder(Integer payment) {
-        return new Builder(payment);
+    public static Builder newBuilder(Integer payment,PayBusinessEnum payBusinessEnum) {
+        return new Builder(payment,payBusinessEnum);
     }
 
 
@@ -59,8 +59,9 @@ public class PayCallbackModel {
         private Map<String, String> aliPayParameterMap;
         private String wechatXmlResult;
 
-        private Builder(Integer payment) {
+        private Builder(Integer payment,PayBusinessEnum payBusinessEnum) {
             this.payment = payment;
+            this.payBusinessEnum = payBusinessEnum;
         }
 
 
@@ -69,10 +70,6 @@ public class PayCallbackModel {
             return this;
         }
 
-        public Builder payBusinessEnum(PayBusinessEnum val) {
-            payBusinessEnum = val;
-            return this;
-        }
 
         public Builder aliPayParameterMap(Map<String, String> val) {
             aliPayParameterMap = val;

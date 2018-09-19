@@ -18,6 +18,8 @@ public class OrderDetailsVO extends Order {
     private BigDecimal serverScoreAvg;
     //陪玩师性别
     private Integer serverGender;
+    //陪玩师收入
+    private BigDecimal serverIncome;
 
 
     private String categoryName;
@@ -28,6 +30,11 @@ public class OrderDetailsVO extends Order {
     private String userHeadUrl;
 
     private String userNickName;
+
+    private Integer userAge;
+
+    private Integer userGender;
+
     //订单状态
     private String statusStr;
     //订单状态描述

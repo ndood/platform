@@ -294,7 +294,6 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
 
     /**
      * 陪玩师开始服务
-     *
      * @param orderNo
      * @return
      */
@@ -309,11 +308,12 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         order.setStatus(OrderStatusEnum.SERVICING.getStatus());
         order.setUpdateTime(new Date());
         orderService.update(order);
-        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
+        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(),24*60);
         //推送通知
         getMinAppPushService().start(order);
         return order.getOrderNo();
     }
+
 
     /**
      * 申请协商处理

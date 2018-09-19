@@ -30,46 +30,16 @@ public interface OrderPayService {
     boolean payResult(PayCallbackModel payCallbackModel);
 
 
-
-
-
-
-
-
     /**
-     * 订单支付
-     *
-     * @return 返回支付状态
-     */
-
-    Object payOrder(Order order, User user, String requestIp);
-
-    /**
-     * 支付回调
-     *
-     * @param xmlResult 回调的结果字符串
+     * 退款
+     * @param refundModel
      * @return
      */
-    String payResult(String xmlResult);
 
-    /**
-     * 部分退款
-     *
-     * @param orderNo
-     * @param totalMoney
-     * @param RefundMoney
-     * @return
-     * @throws WxPayException
-     */
-    Boolean refund(String orderNo, BigDecimal totalMoney, BigDecimal RefundMoney) throws WxPayException;
+    boolean refund(RefundModel refundModel);
 
-    /**
-     * 退全款
-     *
-     * @param orderNo
-     * @param totalMoney
-     * @return
-     * @throws WxPayException
-     */
-    Boolean refund(String orderNo, BigDecimal totalMoney) throws WxPayException;
+
+
+    void payOrder(Integer payment,String orderNo, BigDecimal actualMoney);
+
 }

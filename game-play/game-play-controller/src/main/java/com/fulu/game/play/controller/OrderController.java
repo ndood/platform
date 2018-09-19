@@ -6,6 +6,8 @@ import com.fulu.game.common.exception.DataException;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.payment.model.PayRequestModel;
+import com.fulu.game.core.entity.payment.res.PayRequestRes;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.entity.vo.OrderEventVO;
@@ -144,11 +146,11 @@ public class OrderController extends BaseController {
     @Deprecated
     public Result pay(@RequestParam(required = true) String orderNo,
                       HttpServletRequest request) {
-        String ip = RequestUtil.getIpAdrress(request);
         Order order = orderService.findByOrderNo(orderNo);
         User user = userService.findById(order.getUserId());
-        Object result = playMiniAppPayService.payOrder(order, user, ip);
-        return Result.success().data(result);
+        PayRequestModel model =  PayRequestModel.newBuilder().order(order).user(user).build();
+        PayRequestRes res = playMiniAppPayService.payRequest(model);
+        return Result.success().data(res.getRequestParameter());
     }
 
     /**

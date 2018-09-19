@@ -183,7 +183,6 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
         if (invisibleContactList.contains(order.getStatus())) {
             orderDetailsVO.setContactInfo(null);
         }
-
         Category category = categoryService.findById(order.getCategoryId());
 
         orderDetailsVO.setCategoryIcon(category.getIcon());
@@ -197,10 +196,15 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
         orderDetailsVO.setServerAge(server.getAge());
         orderDetailsVO.setServerGender(server.getGender());
         orderDetailsVO.setServerScoreAvg(server.getScoreAvg());
+        orderDetailsVO.setServerIncome(orderDetailsVO.getTotalMoney().multiply(orderDetailsVO.getCharges()));
+
 
         User user = userService.findById(order.getUserId());
         orderDetailsVO.setUserHeadUrl(user.getHeadPortraitsUrl());
         orderDetailsVO.setUserNickName(user.getNickname());
+        orderDetailsVO.setServerAge(user.getAge());
+        orderDetailsVO.setServerGender(user.getGender());
+
 
         //orderStatus
         long countDown = orderStatusDetailsService.getCountDown(orderNo, order.getStatus());
