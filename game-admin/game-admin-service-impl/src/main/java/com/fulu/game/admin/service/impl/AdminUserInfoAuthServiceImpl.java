@@ -217,9 +217,12 @@ public class AdminUserInfoAuthServiceImpl extends UserInfoAuthServiceImpl implem
             //陪玩师对应的商品设置为“求单ing”状态
             if (CollectionUtils.isNotEmpty(productList)) {
                 for (Product meta : productList) {
-                    meta.setStatus(true);
-                    meta.setUpdateTime(DateUtil.date());
-                    productService.update(meta);
+                    boolean flag = !meta.getDelFlag() && meta.getIsActivate();
+                    if(flag) {
+                        meta.setStatus(true);
+                        meta.setUpdateTime(DateUtil.date());
+                        productService.update(meta);
+                    }
                 }
             }
         }
