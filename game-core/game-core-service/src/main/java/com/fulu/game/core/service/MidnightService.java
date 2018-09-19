@@ -3,7 +3,7 @@ package com.fulu.game.core.service;
 import java.util.Map;
 
 /**
- * todo：描述文字
+ * 午夜场服务类接口
  *
  * @author Gong ZeChun
  * @date 2018/9/17 14:53

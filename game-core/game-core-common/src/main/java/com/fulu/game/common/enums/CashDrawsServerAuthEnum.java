@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * todo：描述文字
+ * 提现运营处理状态枚举类
  *
  * @author Gong ZeChun
  * @date 2018/9/10 17:32
