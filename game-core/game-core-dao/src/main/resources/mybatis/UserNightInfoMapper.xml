@@ -81,7 +81,7 @@
         </where>
     </select>
 
-    <select id="list" resultType="com.fulu.game.core.entity.UserNightInfo">
+    <select id="list" resultType="com.fulu.game.core.entity.vo.UserNightInfoVO">
         SELECT
             info.*, tuser.mobile,
             tuser.nickname

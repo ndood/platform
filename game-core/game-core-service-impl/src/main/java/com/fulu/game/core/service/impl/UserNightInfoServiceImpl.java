@@ -47,11 +47,11 @@ public class UserNightInfoServiceImpl extends AbsCommonService<UserNightInfo, In
     }
 
     @Override
-    public PageInfo<UserNightInfo> list(Integer pageNum, Integer pageSize) {
+    public PageInfo<UserNightInfoVO> list(Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize, "info.sort ASC");
         UserNightInfoVO vo = new UserNightInfoVO();
         vo.setDelFlag(Boolean.FALSE);
-        List<UserNightInfo> infoList = userNightInfoDao.list(vo);
+        List<UserNightInfoVO> infoList = userNightInfoDao.list(vo);
         return new PageInfo<>(infoList);
     }
 

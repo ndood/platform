@@ -18,6 +18,16 @@ import java.util.List;
 @Data
 public class UserNightInfoVO extends UserNightInfo {
     /**
+     * 昵称
+     */
+    private String nickname;
+
+    /**
+     * 手机号
+     */
+    private String mobile;
+
+    /**
      * 性别
      */
     private Integer gender;
