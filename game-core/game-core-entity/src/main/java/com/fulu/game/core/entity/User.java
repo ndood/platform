@@ -98,6 +98,8 @@ public class User implements Serializable {
     private String registIp;
     //登录ip
     private String loginIp;
+    /** 陪玩师综合评分 */
+    private BigDecimal serverScoreAvg;
     //注册时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @Excel(name = "注册时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "9", width = 35)

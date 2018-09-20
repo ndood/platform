@@ -502,3 +502,19 @@ CREATE TABLE `t_appstore_pay_detail` (
 ) COMMENT='苹果内购支付流水表';
 
 
+create table t_server_comment
+(
+   id                   int(11) not null auto_increment,
+   order_no             varchar(128) comment '订单编号',
+   user_id              int(11) comment '下单用户id（被评论用户id）',
+   server_user_id       int(11) comment '陪玩师id（评论用户id）',
+   score                int(1) comment '评分(几颗星1-5分)',
+   score_avg            decimal(2,1) comment '平均得星数(不超过5.0,1位小数)',
+   content              varchar(128) comment '评论内容（不超过100个字）',
+   create_time          datetime comment '评论创建时间',
+   update_time          datetime comment '修改时间',
+   primary key (id)
+)COMMENT='陪玩师评价用户表';
+
+ALTER TABLE `t_user` ADD COLUMN `server_score_avg`  decimal(2,1) DEFAULT NULL COMMENT '陪玩师评价平均分' after `score_avg`;
+
