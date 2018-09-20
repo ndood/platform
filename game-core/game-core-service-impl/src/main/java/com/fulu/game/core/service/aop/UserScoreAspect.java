@@ -155,8 +155,7 @@ public class UserScoreAspect {
             modifyUserScoreByOrderNo(details, orderNo, UserScoreEnum.USER_CANCEL_ORDER);
         } else if (userScoreEnum.getDescription().equals(Constant.SERVICE_USER_CANCEL_ORDER)) {
             Object[] array = joinPoint.getArgs();
-            String orderNo = (String) array[0];
-            Order order = orderService.findByOrderNo(orderNo);
+            Order order = (Order) array[0];
             details.setUserId(order.getServiceUserId());
             details.setScore(UserScoreEnum.SERVICE_USER_CANCEL_ORDER.getScore());
             details.setDescription(UserScoreEnum.SERVICE_USER_CANCEL_ORDER.getDescription());
