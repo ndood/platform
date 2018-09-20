@@ -42,6 +42,7 @@ public class OrderAdminRemarkServiceImpl extends AbsCommonService<OrderAdminRema
         
         //更新备注
         if(CollectionUtils.isNotEmpty(resultOar)){
+            oar.setId(resultOar.get(0).getId());
             oar.setUpdateTime(new Date());
             orderAdminRemarkDao.update(oar);
         }else{

@@ -1,5 +1,7 @@
 package com.fulu.game.play.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.DataException;
@@ -21,6 +23,7 @@ import com.fulu.game.play.service.impl.PlayMiniAppPushServiceImpl;
 import com.fulu.game.play.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -445,5 +448,27 @@ public class OrderController extends BaseController {
         return Result.success().data(orderDetailsVO);
     }
 
+
+    /**
+     * 获取用户未读订单的数量
+     *
+     * @return
+     */
+    @RequestMapping(value = "/waiting-read/count")
+    public Result getWaitingReadCount() {
+
+        User user = userService.getCurrentUser();
+        
+        
+        String waitingReadOrderNo = redisOpenService.get(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(user.getId()));
+        
+        if(StringUtils.isNotBlank(waitingReadOrderNo)){
+            JSONArray wronArr = JSONObject.parseArray(waitingReadOrderNo);
+            return Result.success().data(wronArr.size());
+        }
+        
+        return Result.success().data(0);
+        
+    }
 
 }
