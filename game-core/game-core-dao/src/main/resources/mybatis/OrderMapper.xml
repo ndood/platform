@@ -637,7 +637,7 @@
                     #{s}
                 </foreach>
             </if>
-        order by o.create_time desc
+        order by o.create_time limit 10
     </select>
     
     
