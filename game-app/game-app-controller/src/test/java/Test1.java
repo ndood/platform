@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
+import java.net.URL;
+
 
 @Slf4j
 public class Test1 {
@@ -35,5 +37,17 @@ public class Test1 {
 
     }
 
+    @Test
+    public void test2(){
+        try {
+            String url1 ="http:\\/\\/test-game-play.oss-cn-hangzhou.aliyuncs.com\\/temp\\/2018\\/9\\/20\\/7a2ecd4ea2d34fe2a5fbca2eea6943de.png";
+            URL url =new URL(url1);
+            System.out.println( url.getPath().substring(1));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+    }
 
 }

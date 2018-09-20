@@ -18,5 +18,7 @@ public interface SalesModeService extends ICommonService<SalesMode,Integer>{
 
     List<SalesMode> findByCategory(Integer categoryId);
 
+    List<SalesMode> findByCategoryAndPlatformShow(Integer categoryId,List<Integer> platForm);
+
     SalesMode update(Integer id,String name,BigDecimal price,Integer rank);
 }

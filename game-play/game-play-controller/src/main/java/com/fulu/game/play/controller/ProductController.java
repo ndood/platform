@@ -2,6 +2,7 @@ package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.PlatformShowEnum;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Product;
@@ -138,7 +139,7 @@ public class ProductController extends BaseController {
     @RequestMapping(value = "/order-receive/tech/list")
     public Result techList() {
         User user = userService.getCurrentUser();
-        List<TechAuthProductVO> techAuthProductVOS = productService.techAuthProductList(user.getId());
+        List<TechAuthProductVO> techAuthProductVOS = productService.techAuthProductList(user.getId(), PlatformShowEnum.PLAY);
         return Result.success().data(techAuthProductVOS);
     }
 

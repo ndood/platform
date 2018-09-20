@@ -26,47 +26,30 @@ import java.util.List;
 @Service
 @Slf4j
 public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
-
-    private final UserService userService;
-    private final ProductService productService;
-    private final CategoryService categoryService;
-    private final UserContactService userContactService;
-    private final OrderProductService orderProductService;
-    private final OrderStatusDetailsService orderStatusDetailsService;
-    private final OrderDao orderDao;
-    private final UserCommentService userCommentService;
-    private final H5PushServiceImpl h5PushService;
-    private final H5OrderShareProfitServiceImpl h5OrderShareProfitService;
-    private final OrderService orderService;
-    private final CouponService couponService;
-
     @Autowired
-    public H5OrderServiceImpl(UserService userService,
-                              ProductService productService,
-                              CategoryService categoryService,
-                              UserContactService userContactService,
-                              OrderProductService orderProductService,
-                              OrderStatusDetailsService orderStatusDetailsService,
-                              OrderDao orderDao,
-                              CouponService couponService,
-                              UserCommentService userCommentService,
-                              H5PushServiceImpl h5PushService,
-                              H5OrderShareProfitServiceImpl h5OrderShareProfitService,
-                              OrderService orderService) {
-        this.userService = userService;
-        this.productService = productService;
-        this.categoryService = categoryService;
-        this.userContactService = userContactService;
-        this.orderProductService = orderProductService;
-        this.orderStatusDetailsService = orderStatusDetailsService;
-        this.orderDao = orderDao;
-        this.userCommentService = userCommentService;
-        this.couponService = couponService;
-        this.h5PushService = h5PushService;
-        this.h5OrderShareProfitService = h5OrderShareProfitService;
-        this.orderService=orderService;
-    }
-
+    private UserService userService;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private UserContactService userContactService;
+    @Autowired
+    private OrderProductService orderProductService;
+    @Autowired
+    private OrderStatusDetailsService orderStatusDetailsService;
+    @Autowired
+    private OrderDao orderDao;
+    @Autowired
+    private UserCommentService userCommentService;
+    @Autowired
+    private H5PushServiceImpl h5PushService;
+    @Autowired
+    private H5OrderShareProfitServiceImpl h5OrderShareProfitService;
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private CouponService couponService;
 
     @Override
     protected MiniAppPushServiceImpl getMinAppPushService() {

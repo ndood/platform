@@ -4,6 +4,7 @@ package com.fulu.game.core.entity.vo;
 import com.fulu.game.core.entity.OrderEvent;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,10 @@ public class OrderEventVO extends OrderEvent {
     private Integer currentOrderStatus;
     //当前状态中文
     private String currentOrderStatusStr;
+
+    private BigDecimal actualMoney;
+
+    private BigDecimal totalMoney;
 
     //
     List<OrderDealVO> orderDealList = new ArrayList<>();

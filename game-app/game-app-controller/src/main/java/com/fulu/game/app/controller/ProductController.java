@@ -1,10 +1,14 @@
 package com.fulu.game.app.controller;
 
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.PlatformShowEnum;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.ProductDetailsVO;
+import com.fulu.game.core.entity.vo.TechAuthProductVO;
 import com.fulu.game.core.service.ProductService;
+import com.fulu.game.core.service.TechTagService;
 import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -30,6 +35,8 @@ public class ProductController extends BaseController {
     private ProductService productService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private TechTagService techTagService;
 
     /**
      * 获取商品列表
@@ -57,5 +64,72 @@ public class ProductController extends BaseController {
         ProductDetailsVO productDetailsVO = productService.findDetailsByProductId(productId);
         return Result.success().data(productDetailsVO);
     }
+
+
+    /**
+     * 用户所有接单方式列表
+     * @return
+     */
+    @RequestMapping(value = "/order-receive/tech/list")
+    public Result techList() {
+        User user = userService.getCurrentUser();
+        List<TechAuthProductVO> techAuthProductVOS = productService.techAuthProductList(user.getId(), PlatformShowEnum.APP);
+        return Result.success().data(techAuthProductVOS);
+    }
+
+
+    /**
+     * 技能接单方式激活
+     * @param techId
+     * @param status
+     * @return
+     */
+    @RequestMapping(value = "/order-receive/tech/enable")
+    public Result techEnable(@RequestParam(required = true) Integer techId,
+                             @RequestParam(required = true) Boolean status) {
+        productService.techEnable(techId, status);
+        if (status) {
+            return Result.success().msg("开启");
+        } else {
+            return Result.success().msg("关闭");
+        }
+    }
+
+
+
+    /**
+     * 保存陪玩师的技能标签
+     * @param techId
+     * @return
+     */
+    @RequestMapping(value = "/tech-tag/save")
+    public Result saveTechTag(@RequestParam(required = true) Integer techId,
+                              @RequestParam(required = true) Integer[] tagIds) {
+        techTagService.saveTechTag(techId,tagIds);
+        return Result.success().msg("开启");
+    }
+
+
+
+    /**
+     * 保存用户接单方式价格
+     * @param techId
+     * @param price
+     * @param unitId
+     * @return
+     */
+    @RequestMapping(value = "/order-receive/save")
+    public Result save(@RequestParam(required = true) Integer techId,
+                       @RequestParam(required = true) BigDecimal price,
+                       @RequestParam(required = true) Integer unitId) {
+        if (new BigDecimal(Constant.DEF_RECEIVING_ORDER_PRICE).compareTo(price) > 0) {
+            return Result.error().msg("接单价格不能低于" + Constant.DEF_RECEIVING_ORDER_PRICE + "元");
+        }
+        productService.save(techId, price, unitId);
+        return Result.success().msg("修改价格成功!");
+    }
+
+
+
 
 }
