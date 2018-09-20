@@ -156,6 +156,9 @@
             <if test="userId != null">
                 and uia.user_id = #{userId}
             </if>
+            <if test="mobile != null">
+                and u.mobile = #{mobile}
+            </if>
             <if test="autoSayHello != null">
                 and uia.auto_say_hello = #{autoSayHello}
             </if>
