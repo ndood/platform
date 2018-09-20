@@ -2,10 +2,12 @@ package com.fulu.game.core.entity.payment.model;
 
 import com.fulu.game.common.enums.PayBusinessEnum;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 
 @Getter
+@ToString
 public class RefundModel {
 
 

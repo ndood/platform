@@ -3,10 +3,12 @@ package com.fulu.game.core.entity.payment.model;
 import com.fulu.game.common.enums.PayBusinessEnum;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.Map;
 
 @Data
+@ToString
 public class PayCallbackModel {
 
     /**

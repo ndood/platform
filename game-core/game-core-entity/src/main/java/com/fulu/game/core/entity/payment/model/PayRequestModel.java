@@ -6,8 +6,10 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.VirtualPayOrder;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public class PayRequestModel {
 
     //支付业务

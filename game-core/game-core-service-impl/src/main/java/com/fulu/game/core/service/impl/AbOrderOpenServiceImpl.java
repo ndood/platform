@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import javax.mail.Message;
@@ -37,6 +38,7 @@ import static com.fulu.game.common.enums.OrderStatusEnum.NON_PAYMENT;
 
 @Slf4j
 @Service
+@Transactional
 public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
 
     @Autowired

@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 @Service
@@ -78,6 +79,10 @@ public class AlipayPaymentComponent implements PaymentComponent {
 
     @Override
     public boolean refund(RefundModel refundModel) {
+        log.info("执行支付宝退款业务方法:{}",refundModel);
+        if(new BigDecimal(0).compareTo(refundModel.getRefundMoney())<=0){
+            return true;
+        }
         AlipayTradeRefundApplyModel model = buildAlipayRefund(refundModel.getOrderNo(), refundModel.getRefundMoney().toPlainString());
         return alipayRefundRequest(model);
     }

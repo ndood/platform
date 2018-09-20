@@ -89,19 +89,22 @@ public class WeChatPayPaymentComponent implements PaymentComponent{
 
 
     @Override
-    public boolean refund(RefundModel refundVO) {
-        log.info("执行微信退款业务方法:{}",refundVO);
-        WxPayService wxPayService = buildPayService(refundVO.getPayBusinessEnum(),refundVO.getPlatform());
-        Integer totalMoneyInt = (refundVO.getTotalMoney().multiply(new BigDecimal(100))).intValue();
+    public boolean refund(RefundModel refundModel) {
+        log.info("执行微信退款业务方法:{}",refundModel);
+        if(new BigDecimal(0).compareTo(refundModel.getRefundMoney())<=0){
+            return true;
+        }
+        WxPayService wxPayService = buildPayService(refundModel.getPayBusinessEnum(),refundModel.getPlatform());
+        Integer totalMoneyInt = (refundModel.getTotalMoney().multiply(new BigDecimal(100))).intValue();
         Integer refundMoneyInt;
-        if (refundVO.getRefundMoney() == null) {
+        if (refundModel.getRefundMoney() == null) {
             refundMoneyInt = totalMoneyInt;
         } else {
-            refundMoneyInt = (refundVO.getRefundMoney().multiply(new BigDecimal(100))).intValue();
+            refundMoneyInt = (refundModel.getRefundMoney().multiply(new BigDecimal(100))).intValue();
         }
         WxPayRefundRequest request = new WxPayRefundRequest();
-        request.setOutTradeNo(refundVO.getOrderNo());
-        request.setOutRefundNo(refundVO.getOrderNo() + "E");
+        request.setOutTradeNo(refundModel.getOrderNo());
+        request.setOutRefundNo(refundModel.getOrderNo() + "E");
         request.setTotalFee(totalMoneyInt);
         request.setRefundFee(refundMoneyInt);
         try {

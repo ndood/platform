@@ -78,6 +78,7 @@ public abstract class OrderPayServiceImpl implements BusinessPayService {
      */
     @Override
     public boolean refund(RefundModel refundModel){
+
         PaymentComponent paymentComponent = paymentFactory.build(refundModel.getPayment());
         boolean refundResult = paymentComponent.refund(refundModel);
         return refundResult;

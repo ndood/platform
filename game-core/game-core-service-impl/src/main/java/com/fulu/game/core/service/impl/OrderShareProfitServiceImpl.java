@@ -196,11 +196,15 @@ public abstract class OrderShareProfitServiceImpl extends AbsCommonService<Order
 
         //记录陪玩师加零钱
         moneyDetailsService.orderSave(refundServiceUserMoney, order.getServiceUserId(), orderNo);
-
-        //退款给用户
-        if (!refund(order, order.getActualMoney(), refundUserMoney)) {
-            throw new OrderException(orderNo, "订单退款失败!");
+        try {
+            //退款给用户
+            if (!refund(order, order.getActualMoney(), refundUserMoney)) {
+                throw new OrderException(orderNo, "订单退款失败!");
+            }
+        }catch (Exception e){
+            log.error("退款异常",e);
         }
+
 
     }
 

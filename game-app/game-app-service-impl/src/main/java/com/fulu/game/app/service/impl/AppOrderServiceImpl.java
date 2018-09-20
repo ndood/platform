@@ -281,7 +281,9 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
             //订单已评价状态显示订单评价的分数
             if(orderDetailsVO.getStatus().equals(OrderStatusEnum.ALREADY_APPRAISE.getStatus())){
                 UserComment userComment = userCommentService.findByOrderNo(orderDetailsVO.getOrderNo());
-                orderDetailsVO.setCommentScore(userComment.getScore());
+                if(userComment!=null){
+                    orderDetailsVO.setCommentScore(userComment.getScore());
+                }
             }
 
         }

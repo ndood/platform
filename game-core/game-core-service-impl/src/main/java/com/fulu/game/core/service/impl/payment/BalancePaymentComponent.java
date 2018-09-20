@@ -74,6 +74,7 @@ public class BalancePaymentComponent implements PaymentComponent {
         if(refundVO.getTotalMoney().compareTo(refundVO.getRefundMoney())<0){
             throw new IllegalArgumentException("退款金额比订单金额要大!");
         }
+
         User user = userService.findById(refundVO.getUserId());
         BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
         user.setChargeBalance(chargeBalance.add(refundVO.getRefundMoney()));
