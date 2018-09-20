@@ -88,16 +88,27 @@ public class AdminController extends BaseController {
     }
 
     /**
-     * 查询-角色-列表
+     * 查询-所有角色-列表
      *
      * @return
      */
     @PostMapping("sys-role/all-list")
-    public Result sysRoleList() {
+    public Result sysRoleAllList() {
         List<SysRole> list = sysRoleService.findAll();
         return Result.success().data(list).msg("查询列表成功！");
     }
 
+    /**
+     * 分页查询-角色-列表
+     *
+     * @return
+     */
+    @PostMapping("sys-role/list")
+    public Result sysRoleList(@RequestParam("pageNum") Integer pageNum,
+                              @RequestParam("pageSize") Integer pageSize) {
+        PageInfo<SysRole> list = sysRoleService.list(pageNum,pageSize);
+        return Result.success().data(list).msg("查询列表成功！");
+    }
 
 
 }

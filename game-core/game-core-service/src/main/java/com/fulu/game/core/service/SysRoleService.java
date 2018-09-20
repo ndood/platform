@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.SysRole;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -20,4 +21,12 @@ public interface SysRoleService extends ICommonService<SysRole,Integer>{
      * @return
      */
     List<SysRole> findByAdminId(Integer id);
+
+    /**
+     * 分页获取角色列表
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    PageInfo<SysRole> list(Integer pageNum, Integer pageSize);
 }

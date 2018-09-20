@@ -2,6 +2,9 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.entity.vo.SysRoleVO;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,5 +38,21 @@ public class SysRoleServiceImpl extends AbsCommonService<SysRole,Integer> implem
     @Override
     public List<SysRole> findByAdminId(Integer id) {
         return sysRoleDao.findByAdminId(id);
+    }
+
+    /**
+     * 分页获取角色列表
+     *
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public PageInfo<SysRole> list(Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize, "id DESC");
+        SysRoleVO sysRoleVO = new SysRoleVO();
+        sysRoleVO.setIsDel(0);
+        List<SysRole> list = sysRoleDao.findByParameter(sysRoleVO);
+        return new PageInfo(list);
     }
 }
