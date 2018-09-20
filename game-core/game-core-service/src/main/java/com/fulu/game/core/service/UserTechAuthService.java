@@ -28,6 +28,13 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
     UserTechAuthTO save(UserTechAuthTO userTechAuthTO);
 
 
+    /**
+     * 设置
+     * @param techId
+     */
+    void settingsTechMain(int techId);
+
+
 
     /**
      * 用户技能认证信息(包括标签和段位)

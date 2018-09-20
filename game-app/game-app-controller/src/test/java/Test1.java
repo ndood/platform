@@ -3,13 +3,17 @@ import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Slf4j
 public class Test1 {
+
 
 
     @Test
@@ -38,16 +42,61 @@ public class Test1 {
     }
 
     @Test
-    public void test2(){
+    public void test2() {
         try {
-            String url1 ="http:\\/\\/test-game-play.oss-cn-hangzhou.aliyuncs.com\\/temp\\/2018\\/9\\/20\\/7a2ecd4ea2d34fe2a5fbca2eea6943de.png";
-            URL url =new URL(url1);
-            System.out.println( url.getPath().substring(1));
-        }catch (Exception e){
+            String url1 = "http:\\/\\/test-game-play.oss-cn-hangzhou.aliyuncs.com\\/temp\\/2018\\/9\\/20\\/7a2ecd4ea2d34fe2a5fbca2eea6943de.png";
+            URL url = new URL(url1);
+            System.out.println(url.getPath().substring(1));
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
+
+    @Test
+    public void test3() {
+
+        int a = Integer.parseInt("0000000", 2);
+        int b = Integer.parseInt("1101111", 2);
+
+        String c = Integer.toBinaryString(a | b);
+
+
+        System.out.println(a + "," + b + "," + c);
+    }
+
+    @Test
+    public void test4() {
+        int[] arr = new int[]{1, 3, 6};
+
+        int a = bin2Str(arr);
+        System.out.println(a);
+        Integer[] s = bin2Location(a);
+        System.out.println(s);
+    }
+
+
+
+    public Integer[] bin2Location(int bin){
+        List<Integer> list = new ArrayList();
+        String c = Integer.toBinaryString(bin);
+        char[] s = c.toCharArray();
+        for(int i =0;i<s.length;i++){
+          if(String.valueOf(s[i]).equals("1")){
+              list.add(i+1);
+          }
+        }
+        return list.toArray(new Integer[]{});
+    }
+
+
+
+    public int bin2Str(int[] locationArr) {
+        String[] binArr = new String[]{"0", "0", "0", "0", "0", "0", "0"};
+        for (int i : locationArr) {
+            binArr[i - 1] = "1";
+        }
+        return Integer.parseInt(StringUtils.join(binArr), 2);
+    }
+
 
 }

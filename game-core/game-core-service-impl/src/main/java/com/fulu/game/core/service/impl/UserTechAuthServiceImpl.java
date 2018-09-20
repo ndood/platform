@@ -73,6 +73,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuthTO.setCategoryName(category.getName());
         userTechAuthTO.setUpdateTime(new Date());
         userTechAuthTO.setIsActivate(false);
+        userTechAuthTO.setIsMain(false);
         if (userTechAuthTO.getId() == null){
             //查询是否有重复技能
             List<UserTechAuth> userTechAuthes = findByCategoryAndUser(userTechAuthTO.getCategoryId(), userTechAuthTO.getUserId());
@@ -108,6 +109,17 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
 
         return userTechAuthTO;
+    }
+
+
+    @Override
+    public void settingsTechMain(int techId) {
+        UserTechAuth userTechAuth = findById(techId);
+        userTechAuthDao.updateTechNotMain(userTechAuth.getUserId(),userTechAuth.getCategoryId());
+        UserTechAuth updateUserTechAuth = new  UserTechAuth();
+        updateUserTechAuth.setId(userTechAuth.getId());
+        updateUserTechAuth.setIsMain(true);
+        update(userTechAuth);
     }
 
 

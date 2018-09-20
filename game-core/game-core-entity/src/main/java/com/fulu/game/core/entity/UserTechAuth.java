@@ -32,6 +32,9 @@ public class UserTechAuth implements Serializable {
     private Integer status;
     //是否激活
     private Boolean isActivate;
+
+    private Boolean isMain;
+
     // 用户该技能接单数
     private Integer orderCount;
 

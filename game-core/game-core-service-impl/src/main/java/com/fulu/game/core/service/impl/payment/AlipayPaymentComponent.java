@@ -89,8 +89,6 @@ public class AlipayPaymentComponent implements PaymentComponent {
 
 
 
-
-
     public AlipayTradeAppPayModel buildAlipayRequest(Order order) {
         AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
         model.setBody(order.getName());

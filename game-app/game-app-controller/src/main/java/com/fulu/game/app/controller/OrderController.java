@@ -21,6 +21,7 @@ import com.fulu.game.core.service.ServerCommentService;
 import com.fulu.game.core.service.UserCommentService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.core.service.impl.push.MobileAppPushServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,8 +50,8 @@ public class OrderController extends BaseController {
     private UserCommentService userCommentService;
     @Autowired
     private ServerCommentService serverCommentService;
-
-
+    @Autowired
+    private MobileAppPushServiceImpl mobileAppPushService;
     /**
      *
      * @param productId
@@ -381,4 +382,40 @@ public class OrderController extends BaseController {
         return Result.success().data(serverCommentVO).msg("获取评论成功！");
     }
 
+
+
+
+    /**
+     * 提醒接单
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/remind/receive-order")
+    public Result remindOrder(@RequestParam(required = true) String orderNo) {
+        if (redisOpenService.isTimeIntervalInside(orderNo)) {
+            return Result.error().msg("不能频繁提醒接单!");
+        }
+        Order order = appOrderServiceImpl.findByOrderNo(orderNo);
+        mobileAppPushService.remindReceive(order);
+        redisOpenService.setTimeInterval(orderNo, 5 * 60);
+        return Result.success().msg("提醒接单成功!");
+    }
+
+
+    /**
+     * 提醒开始服务
+     *
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/remind/start-order")
+    public Result remindStartOrder(@RequestParam(required = true) String orderNo) {
+        if (redisOpenService.isTimeIntervalInside(orderNo)) {
+            return Result.error().msg("不能频繁提醒开始!");
+        }
+        Order order = appOrderServiceImpl.findByOrderNo(orderNo);
+        mobileAppPushService.remindStart(order);
+        redisOpenService.setTimeInterval(orderNo, 5 * 60);
+        return Result.success().msg("提醒开始成功!");
+    }
 }

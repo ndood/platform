@@ -464,6 +464,8 @@ ALTER TABLE `t_user_tech_auth` ADD COLUMN `resource_type`  tinyint(1) DEFAULT '1
 -- 添加技能平均得分
 ALTER TABLE `t_user_tech_auth` ADD COLUMN `score_avg` decimal(2,1) DEFAULT NULL COMMENT '技能评分' after `resource_type`;
 
+ALTER TABLE `t_user_tech_auth` ADD COLUMN `is_main` tinyint(1) DEFAULT '0' COMMENT '是否是主要技能' after `is_activate`;
+
 
 -- 分类表新增：
 ALTER TABLE `t_category` ADD COLUMN `example_pic_url`  varchar(512) DEFAULT NULL COMMENT '示例图片url地址' after `charges`;

@@ -49,6 +49,7 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
         return virtualPayOrderDao;
     }
 
+
     /**
      * 钻石充值
      *
