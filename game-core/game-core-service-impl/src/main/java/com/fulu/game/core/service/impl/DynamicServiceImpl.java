@@ -125,10 +125,10 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
     public Page<DynamicDoc> list(Integer pageSize, Integer slide, Integer id, Integer type) {
         List<String> userIdList = null;
         User user = null;
-        try {
+        String token = SubjectUtil.getToken();
+        //用户已登录，获取用户信息
+        if(token != null && !"".equals(token)){
             user = userService.getCurrentUser();
-        } catch (UserException e){
-            log.info("当前用户未登录时，捕获消息");
         }
         if(type != null && type.intValue() == 2){
             user = userService.getCurrentUser();
