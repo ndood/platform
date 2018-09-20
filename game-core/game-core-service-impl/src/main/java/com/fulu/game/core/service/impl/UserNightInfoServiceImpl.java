@@ -144,6 +144,7 @@ public class UserNightInfoServiceImpl extends AbsCommonService<UserNightInfo, In
         PageHelper.startPage(pageNum, pageSize, orderBy);
         UserNightInfoVO vo = new UserNightInfoVO();
         vo.setGender(gender);
+        vo.setDelFlag(Boolean.FALSE);
         List<ProductShowCaseVO> caseVOList = userNightInfoDao.findNightUser(vo);
 
         if (CollectionUtils.isNotEmpty(caseVOList)) {
