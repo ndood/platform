@@ -130,7 +130,7 @@
         SELECT
         <include refid="Base_Column_List"/>
         FROM t_user_friend
-        where from_user_id = #{0}
+        where from_user_id = #{0} and is_attention = 1
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">
