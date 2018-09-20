@@ -17,6 +17,11 @@ create table t_sys_router
    primary key (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='路由表';
 
+-- 添加排序号
+ALTER TABLE `t_sys_router` ADD COLUMN `sort` int(11) DEFAULT NULL
+COMMENT '排序号' after `hidden`;
+
+
 
 drop table if exists t_sys_role;
 create table t_sys_role

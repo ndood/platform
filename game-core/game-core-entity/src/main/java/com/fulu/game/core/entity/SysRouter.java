@@ -33,6 +33,8 @@ public class SysRouter implements Serializable {
 	private String iconcls;
 	//是否显示（1：是；0：否）
 	private Integer hidden;
+	// 排序号
+	private Integer sort;
 	//操作员id
 	private Integer operatorId;
 	//操作员名称
