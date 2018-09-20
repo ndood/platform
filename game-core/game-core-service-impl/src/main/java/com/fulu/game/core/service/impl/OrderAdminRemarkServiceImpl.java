@@ -36,7 +36,6 @@ public class OrderAdminRemarkServiceImpl extends AbsCommonService<OrderAdminRema
 
         OrderAdminRemarkVO param = new OrderAdminRemarkVO();
         param.setOrderId(oar.getOrderId());
-        param.setAgentAdminId(oar.getAgentAdminId());
 
         List<OrderAdminRemark> resultOar = orderAdminRemarkDao.findByParameter(param);
         
