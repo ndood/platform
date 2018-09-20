@@ -35,7 +35,8 @@ public class WechatController {
                             HttpServletResponse response) {
         try {
             String xmlResult = IOUtils.toString(request.getInputStream(), request.getCharacterEncoding());
-            PayCallbackModel payCallbackModel = PayCallbackModel.newBuilder(PaymentEnum.WECHAT_PAY.getType(), PayBusinessEnum.ORDER)
+            PayCallbackModel payCallbackModel = PayCallbackModel.newBuilder(PaymentEnum.WECHAT_PAY.getType(),
+                    PayBusinessEnum.VIRTUAL_PRODUCT)
                     .platform(PlatformEcoEnum.MP.getType())
                     .wechatXmlResult(xmlResult)
                     .build();

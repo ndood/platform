@@ -13,8 +13,8 @@ import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.VirtualPayOrderService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.payment.BalancePaymentComponent;
-import com.fulu.game.core.service.impl.payment.WeChatPayPaymentComponent;
 import com.fulu.game.h5.controller.BaseController;
+import com.fulu.game.h5.service.impl.H5VirtualOrderPayServiceImpl;
 import com.fulu.game.h5.utils.RequestUtil;
 import com.github.binarywang.wxpay.bean.order.WxPayMpOrderResult;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +50,7 @@ public class MpOrderController extends BaseController {
     @Autowired
     private BalancePaymentComponent balancePayment;
     @Autowired
-    private WeChatPayPaymentComponent weChatPayPayment;
+    private H5VirtualOrderPayServiceImpl h5VirtualOrderPayService;
 
     /**
      * 提交虚拟币充值订单
@@ -114,7 +114,7 @@ public class MpOrderController extends BaseController {
         User user = userService.findById(order.getUserId());
 
         PayRequestModel model = PayRequestModel.newBuilder().virtualPayOrder(order).user(user).build();
-        PayRequestRes payRequestRes = weChatPayPayment.payRequest(model);
+        PayRequestRes payRequestRes = h5VirtualOrderPayService.payRequest(model);
         WxPayMpOrderResult wxPayMpOrderResult = (WxPayMpOrderResult) payRequestRes.getRequestParameter();
         Map<String, Object> result = new HashMap<>();
         if (wxPayMpOrderResult != null) {
