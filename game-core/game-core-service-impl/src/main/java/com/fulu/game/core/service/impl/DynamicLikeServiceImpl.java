@@ -93,7 +93,7 @@ public class DynamicLikeServiceImpl extends AbsCommonService<DynamicLike,Integer
             // 推送push消息，以及点赞
             Map<String, String> extras = extras = AppRouteFactory.buildDynamicRoute(dynamicLikeVO.getDynamicId());
             String content = "点了一个赞";
-            AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(dynamic.getUserId()).title("点赞").alert(content).extras(extras).build();
+            AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(dynamic.getUserId()).title("动态消息").alert(user.getNickname() + "进行了点赞").extras(extras).build();
             //发送push消息
             mobileAppPushService.pushMsg(appPushMsgVO);
             // 保存push消息

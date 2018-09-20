@@ -78,7 +78,7 @@ public class DynamicCommentServiceImpl extends AbsCommonService<DynamicComment,I
         // 发送Jpush消息，通知被评论用户
         Dynamic dynamic = dynamicService.findById(dynamicCommentVO.getDynamicId());
         Map<String, String> extras = extras = AppRouteFactory.buildDynamicRoute(dynamicCommentVO.getDynamicId());
-        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(dynamic.getUserId()).title("评论").alert(dynamicCommentVO.getContent()).extras(extras).build();
+        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(dynamic.getUserId()).title("动态消息").alert(user.getNickname() + "进行了评论").extras(extras).build();
         //发送push消息
         mobileAppPushService.pushMsg(appPushMsgVO);
         // 保存push消息

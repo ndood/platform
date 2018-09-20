@@ -89,7 +89,7 @@ public class RewardServiceImpl extends AbsCommonService<Reward, Integer> impleme
             //修改动态打赏次数
             dynamicService.updateIndexFilesById(rewardVO.getResourceId(),true, 0, 0,false);
             Map<String, String> extras = extras = AppRouteFactory.buildDynamicRoute(rewardVO.getResourceId());
-            AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(rewardVO.getToUserId()).title("打赏").alert(virtualProduct.getName()).extras(extras).build();
+            AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(rewardVO.getToUserId()).title("动态消息").alert(user.getNickname() + "进行了打赏").extras(extras).build();
             //发送push消息
             mobileAppPushService.pushMsg(appPushMsgVO);
             // 保存push消息
