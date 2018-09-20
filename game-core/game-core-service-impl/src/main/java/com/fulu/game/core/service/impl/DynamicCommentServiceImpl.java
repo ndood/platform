@@ -78,7 +78,8 @@ public class DynamicCommentServiceImpl extends AbsCommonService<DynamicComment,I
         // 发送Jpush消息，通知被评论用户
         Dynamic dynamic = dynamicService.findById(dynamicCommentVO.getDynamicId());
         Map<String, String> extras = extras = AppRouteFactory.buildDynamicRoute(dynamicCommentVO.getDynamicId());
-        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(dynamic.getUserId()).title("动态消息").alert(user.getNickname() + "进行了评论").extras(extras).build();
+        String nikename = user.getNickname() == null || "".equals(user.getNickname()) ? user.getId() + "" : user.getNickname();
+        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(dynamic.getUserId()).title("动态消息").alert(nikename + "进行了评论").extras(extras).build();
         //发送push消息
         mobileAppPushService.pushMsg(appPushMsgVO);
         // 保存push消息
@@ -86,7 +87,7 @@ public class DynamicCommentServiceImpl extends AbsCommonService<DynamicComment,I
         dynamicPushMsg.setDynamicId(dynamicCommentVO.getDynamicId());
         dynamicPushMsg.setFromUserId(user.getId());
         dynamicPushMsg.setFromUserHeadUrl(user.getHeadPortraitsUrl());
-        dynamicPushMsg.setFromUserNickname(user.getNickname());
+        dynamicPushMsg.setFromUserNickname(nikename);
         dynamicPushMsg.setToUserId(dynamic.getUserId());
         //push消息类型（1：点赞；2：评论；3打赏）
         dynamicPushMsg.setPushType(2);
