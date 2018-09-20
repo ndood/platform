@@ -162,8 +162,11 @@ public class AuthController extends BaseController {
     @PostMapping(value = "/tech-info/save")
     public Result techAuthSave(UserTechAuthTO userTechAuthTO) {
         User user = userService.getCurrentUser();
-        //验证用户的认证信息
-        userService.checkUserInfoAuthStatus(user.getId(), UserInfoAuthStatusEnum.ALREADY_PERFECT.getType());
+        //验证用户的认证信息(暂改为只验证是否冻结)
+//        userService.checkUserInfoAuthStatus(user.getId(), UserInfoAuthStatusEnum.ALREADY_PERFECT.getType());
+        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
+            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE);
+        }
         if (userTechAuthTO.getId() != null) {
             UserTechAuth userTechAuth = userTechAuthService.findById(userTechAuthTO.getId());
             userService.isCurrentUser(userTechAuth.getUserId());

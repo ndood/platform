@@ -53,7 +53,7 @@ public class MpHomeController extends BaseController {
                             @RequestParam(value = "sourceId", required = false) Integer sourceId,
                             HttpServletRequest request) {
         log.info("==调用/test/login方法==");
-        PlayUserToken playUserToken = PlayUserToken.newBuilder(PlayUserToken.Platform.FENQILE).fqlOpenid(openId).build();
+        PlayUserToken playUserToken = PlayUserToken.newBuilder(PlayUserToken.Platform.MP).mpOpenId(openId).build();
         String ip = RequestUtil.getIpAdrress(request);
         playUserToken.setHost(ip);
         Subject subject = SecurityUtils.getSubject();

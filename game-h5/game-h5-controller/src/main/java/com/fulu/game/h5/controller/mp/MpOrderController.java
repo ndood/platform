@@ -1,12 +1,20 @@
 package com.fulu.game.h5.controller.mp;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.PaymentEnum;
+import com.fulu.game.common.enums.PlatformEcoEnum;
+import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.exception.DataException;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.VirtualPayOrder;
+import com.fulu.game.core.entity.payment.model.PayRequestModel;
+import com.fulu.game.core.entity.payment.res.PayRequestRes;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.VirtualPayOrderService;
+import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.core.service.impl.payment.BalancePaymentComponent;
+import com.fulu.game.core.service.impl.payment.WeChatPayPaymentComponent;
 import com.fulu.game.h5.controller.BaseController;
-import com.fulu.game.h5.service.impl.mp.MpPayServiceImpl;
 import com.fulu.game.h5.utils.RequestUtil;
 import com.github.binarywang.wxpay.bean.order.WxPayMpOrderResult;
 import lombok.extern.slf4j.Slf4j;
@@ -34,11 +42,15 @@ import java.util.Map;
 public class MpOrderController extends BaseController {
     @Autowired
     private UserService userService;
-    @Autowired
-    private MpPayServiceImpl payService;
     @Qualifier("virtualPayOrderServiceImpl")
     @Autowired
     private VirtualPayOrderService virtualPayOrderService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private BalancePaymentComponent balancePayment;
+    @Autowired
+    private WeChatPayPaymentComponent weChatPayPayment;
 
     /**
      * 提交虚拟币充值订单
@@ -54,9 +66,38 @@ public class MpOrderController extends BaseController {
                          @RequestParam String sessionkey,
                          @RequestParam Integer virtualMoney,
                          @RequestParam Integer payment) {
+
+        User user = userService.getCurrentUser();
+
+        if (!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))) {
+            log.error("验证sessionkey错误:sessionkey:{};payment:{};;userId:{}", sessionkey, payment, user.getId());
+            throw new DataException(DataException.ExceptionCode.NO_FORM_TOKEN_ERROR);
+        }
+
+        int platform = PlatformEcoEnum.MP.getType();
         String ip = RequestUtil.getIpAdrress(request);
-        Map<String, Object> resultMap = payService.submit(sessionkey, virtualMoney, ip, payment);
-        return Result.success().data(resultMap).msg("创建订单成功!");
+        VirtualPayOrder order = virtualPayOrderService.diamondCharge(user.getId(), virtualMoney, payment, platform, ip);
+
+        Map<String, Object> resultMap = new HashMap<>(4);
+        try {
+            if (payment.equals(PaymentEnum.WECHAT_PAY.getType())) {
+                resultMap.put("orderNo", order.getOrderNo());
+                resultMap.put("paySuccess", 0);
+            } else if (payment.equals(PaymentEnum.BALANCE_PAY.getType())) {
+                boolean flag = balancePayment.balancePayVirtualMoney(user.getId(),
+                        order.getActualMoney(), order.getOrderNo());
+                if (flag) {
+                    virtualPayOrderService.successPayOrder(order.getOrderNo(), order.getActualMoney());
+                    resultMap.put("orderNo", order.getOrderNo());
+                    resultMap.put("paySuccess", 1);
+                } else {
+                    return Result.error().msg("余额充钻失败！");
+                }
+            }
+            return Result.success().data(resultMap).msg("创建订单成功!");
+        } finally {
+            redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));
+        }
     }
 
     /**
@@ -69,10 +110,12 @@ public class MpOrderController extends BaseController {
     @RequestMapping(value = "/wechat/pay")
     public Result wechatPay(HttpServletRequest request,
                             @RequestParam String orderNo) {
-        String ip = RequestUtil.getIpAdrress(request);
         VirtualPayOrder order = virtualPayOrderService.findByOrderNo(orderNo);
         User user = userService.findById(order.getUserId());
-        WxPayMpOrderResult wxPayMpOrderResult = payService.payOrder(order, user, ip);
+
+        PayRequestModel model = PayRequestModel.newBuilder().virtualPayOrder(order).user(user).build();
+        PayRequestRes payRequestRes = weChatPayPayment.payRequest(model);
+        WxPayMpOrderResult wxPayMpOrderResult = (WxPayMpOrderResult) payRequestRes.getRequestParameter();
         Map<String, Object> result = new HashMap<>();
         if (wxPayMpOrderResult != null) {
             result.put("appId", wxPayMpOrderResult.getAppId());
@@ -97,8 +140,22 @@ public class MpOrderController extends BaseController {
     public Result balanceCharge(HttpServletRequest request,
                                 @RequestParam String sessionkey,
                                 @RequestParam BigDecimal money) {
-        String ip = RequestUtil.getIpAdrress(request);
-        Map<String, Object> resultMap = payService.balanceCharge(sessionkey, money, ip);
-        return Result.success().data(resultMap).msg("创建订单成功!");
+        User user = userService.getCurrentUser();
+        int payment = PaymentEnum.WECHAT_PAY.getType();
+        int payPath = PlatformEcoEnum.MP.getType();
+        if (!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))) {
+            log.error("验证sessionkey错误:sessionkey:{};payment:{};;userId:{}", sessionkey, payment, user.getId());
+            throw new DataException(DataException.ExceptionCode.NO_FORM_TOKEN_ERROR);
+        }
+
+        try {
+            String ip = RequestUtil.getIpAdrress(request);
+            VirtualPayOrder virtualPayOrder = virtualPayOrderService.balanceCharge(user.getId(), money, payment, payPath, ip);
+            Map<String, Object> resultMap = new HashMap<>(4);
+            resultMap.put("orderNo", virtualPayOrder.getOrderNo());
+            return Result.success().data(resultMap).msg("创建订单成功!");
+        } finally {
+            redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));
+        }
     }
 }
