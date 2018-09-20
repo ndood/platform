@@ -39,23 +39,19 @@ public class BalancePaymentComponent implements PaymentComponent {
     private MoneyDetailsService moneyDetailsService;
 
 
-
-
     @Override
     public PayRequestRes payRequest(PayRequestModel paymentVO) {
         boolean flag = false;
         User user = paymentVO.getUser();
         if (paymentVO.getPayBusinessEnum().equals(PayBusinessEnum.ORDER)) {
             Order order = paymentVO.getOrder();
-            flag =balancePayOrder(user.getId(),order.getActualMoney(),order.getOrderNo());
-        }else if(paymentVO.getPayBusinessEnum().equals(PayBusinessEnum.VIRTUAL_PRODUCT)){
+            flag = balancePayOrder(user.getId(), order.getActualMoney(), order.getOrderNo());
+        } else if (paymentVO.getPayBusinessEnum().equals(PayBusinessEnum.VIRTUAL_PRODUCT)) {
             VirtualPayOrder order = paymentVO.getVirtualPayOrder();
-            flag =balancePayOrder(user.getId(),order.getActualMoney(),order.getOrderNo());
+            flag = balancePayOrder(user.getId(), order.getActualMoney(), order.getOrderNo());
         }
         return new PayRequestRes(flag);
     }
-
-
 
 
     @Override
@@ -64,14 +60,13 @@ public class BalancePaymentComponent implements PaymentComponent {
     }
 
 
-
     @Override
     public boolean refund(RefundModel refundVO) {
-        log.info("执行余额退款方法refundVO:{}",refundVO);
-        if(refundVO.getUserId()==null){
+        log.info("执行余额退款方法refundVO:{}", refundVO);
+        if (refundVO.getUserId() == null) {
             throw new IllegalArgumentException("余额退款缺少userId!");
         }
-        if(refundVO.getTotalMoney().compareTo(refundVO.getRefundMoney())<0){
+        if (refundVO.getTotalMoney().compareTo(refundVO.getRefundMoney()) < 0) {
             throw new IllegalArgumentException("退款金额比订单金额要大!");
         }
         User user = userService.findById(refundVO.getUserId());
@@ -89,7 +84,7 @@ public class BalancePaymentComponent implements PaymentComponent {
         mDetails.setTargetId(user.getId());
         mDetails.setMoney(refundVO.getRefundMoney());
         mDetails.setAction(MoneyOperateTypeEnum.ORDER_REFUND.getType());
-        mDetails.setSum(user.getBalance().add(chargeBalance));
+        mDetails.setSum(user.getBalance().add(user.getChargeBalance()));
         mDetails.setRemark(MoneyOperateTypeEnum.ORDER_REFUND.getMsg() + "订单号：" + refundVO.getRefundMoney());
         mDetails.setCreateTime(DateUtil.date());
         moneyDetailsService.drawSave(mDetails);
@@ -99,6 +94,7 @@ public class BalancePaymentComponent implements PaymentComponent {
 
     /**
      * 余额支付虚拟货币
+     *
      * @param userId
      * @param actualMoney
      * @param orderNo
@@ -110,6 +106,7 @@ public class BalancePaymentComponent implements PaymentComponent {
 
     /**
      * 余额支付订单
+     *
      * @param userId
      * @param actualMoney
      * @param orderNo
@@ -155,7 +152,7 @@ public class BalancePaymentComponent implements PaymentComponent {
         mDetails.setTargetId(user.getId());
         mDetails.setMoney(actualMoney.negate());
         mDetails.setAction(moneyOperateTypeEnum.getType());
-        mDetails.setSum(user.getBalance().add(chargeBalance));
+        mDetails.setSum(user.getBalance().add(user.getChargeBalance()));
         mDetails.setRemark(moneyOperateTypeEnum.getMsg() + "订单号：" + orderNo);
         mDetails.setCreateTime(DateUtil.date());
         moneyDetailsService.drawSave(mDetails);

@@ -57,7 +57,8 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
      * @param payment
      * @return
      */
-    public VirtualPayOrder diamondCharge(Integer userId,Integer virtualMoney, Integer payment,Integer payPath,String ip) {
+    @Override
+    public VirtualPayOrder diamondCharge(Integer userId, Integer virtualMoney, Integer payment, Integer payPath, String ip) {
         BigDecimal actualMoney = new BigDecimal(virtualMoney).divide(new BigDecimal(10)).setScale(2, BigDecimal.ROUND_HALF_UP);
         VirtualPayOrder order = new VirtualPayOrder();
         order.setName("虚拟币充值订单：付款金额：¥" + actualMoney + "，虚拟币数量：" + virtualMoney + "");
@@ -69,7 +70,7 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
         order.setOrderIp(ip);
         order.setPayPath(payPath);
         //创建订单
-        return create(order,VirtualPayOrderTypeEnum.VIRTUAL_ORDER);
+        return create(order, VirtualPayOrderTypeEnum.VIRTUAL_ORDER);
     }
 
 
@@ -80,6 +81,7 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
      * @param ip
      * @return
      */
+    @Override
     public VirtualPayOrder balanceCharge(Integer userId,
                                          BigDecimal money,
                                          Integer payment,
@@ -99,18 +101,18 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
         order.setOrderIp(ip);
         order.setPayPath(payPath);
         //创建订单
-        return create(order,VirtualPayOrderTypeEnum.BALANCE_ORDER);
+        return create(order, VirtualPayOrderTypeEnum.BALANCE_ORDER);
     }
-
 
 
     /**
      * 创建充值订单统一接口
+     *
      * @param order
      * @param virtualPayOrderTypeEnum
      * @return
      */
-    private VirtualPayOrder create(VirtualPayOrder order,VirtualPayOrderTypeEnum virtualPayOrderTypeEnum){
+    private VirtualPayOrder create(VirtualPayOrder order, VirtualPayOrderTypeEnum virtualPayOrderTypeEnum) {
         order.setType(virtualPayOrderTypeEnum.getType());
         order.setIsPayCallback(false);
         order.setUpdateTime(new Date());
@@ -120,8 +122,6 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
     }
 
 
-
-
     /**
      * 支付成功
      *
@@ -129,6 +129,7 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
      * @param actualMoney 实付金额
      * @return 订单Bean
      */
+    @Override
     public VirtualPayOrder successPayOrder(String orderNo, BigDecimal actualMoney) {
         log.info("用户支付订单orderNo:{},actualMoney:{}", orderNo, actualMoney);
         VirtualPayOrder order = findByOrderNo(orderNo);
@@ -146,6 +147,7 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
         User user = userService.findById(order.getUserId());
         if (type.equals(VirtualPayOrderTypeEnum.VIRTUAL_ORDER.getType())) {
             user.setVirtualBalance((user.getVirtualBalance() == null ? 0 : user.getVirtualBalance()) + order.getVirtualMoney());
+            user.setUpdateTime(DateUtil.date());
             //记录虚拟币流水
             VirtualDetails details = new VirtualDetails();
             details.setUserId(user.getId());
@@ -170,6 +172,7 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
             moneyDetailsService.drawSave(mDetails);
 
             user.setChargeBalance(chargeBalance.add(order.getMoney()));
+            user.setUpdateTime(DateUtil.date());
         }
         userService.update(user);
         userService.updateRedisUser(user);
@@ -205,7 +208,7 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
         List<VirtualPayOrderVO> voList = virtualPayOrderDao.chargeList(payOrderVO);
         if (CollectionUtils.isNotEmpty(voList)) {
             for (VirtualPayOrderVO vo : voList) {
-                vo.setPayPath(vo.getPayPath() == null ? VirtualPayOrderPayPathEnum.MP.getType() : vo.getPayPath());
+                vo.setPayPath(vo.getPayPath() == null ? PlatformEcoEnum.MP.getType() : vo.getPayPath());
             }
         }
         return new PageInfo<>(voList);
