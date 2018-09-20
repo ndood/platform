@@ -32,7 +32,7 @@ public class AppVirtualPayOrderServiceImpl extends VirtualPayOrderServiceImpl {
      * @return
      */
 
-    public Boolean iosChargeDiamond(String receiptData, int userId, String ip) {
+    public synchronized Boolean  iosChargeDiamond(String receiptData, int userId, String ip) {
         AppstorePayDetail detail = appleStorePayService.diamondPay(receiptData);
         if (detail == null) {
             return false;

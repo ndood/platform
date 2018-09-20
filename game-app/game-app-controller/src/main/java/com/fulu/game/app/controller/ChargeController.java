@@ -3,7 +3,6 @@ package com.fulu.game.app.controller;
 
 import com.fulu.game.app.service.impl.AppVirtualOrderPayServiceImpl;
 import com.fulu.game.app.service.impl.AppVirtualPayOrderServiceImpl;
-import com.fulu.game.app.service.impl.AppleStorePayService;
 import com.fulu.game.app.util.RequestUtil;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.domain.ClientInfo;
@@ -40,8 +39,7 @@ public class ChargeController extends BaseController {
     private UserService userService;
     @Autowired
     private AppVirtualOrderPayServiceImpl appVirtualOrderPayService;
-    @Autowired
-    private AppleStorePayService appleStorePayService;
+
 
     /**
      * 余额充值接口
@@ -131,8 +129,8 @@ public class ChargeController extends BaseController {
         String ip = RequestUtil.getIpAdrress(request);
         User user = userService.getCurrentUser();
         boolean flag = appVirtualPayOrderService.iosChargeDiamond(receiptData, user.getId(), ip);
-        if(flag){
-            return Result.success();
+        if (flag) {
+            return Result.success().msg("支付成功!");
         }
         return Result.error().msg("支付失败!");
 
