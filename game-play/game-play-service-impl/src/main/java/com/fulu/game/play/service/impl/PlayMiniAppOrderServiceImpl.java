@@ -173,14 +173,14 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
 
         //删除订单未读状态
 
-        String wronJsonStr = redisOpenService.get(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(user.getId()));
+        String wronJsonStr = redisOpenService.get(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(order.getServiceUserId()));
         if (StringUtils.isNotBlank(wronJsonStr)) {
             JSONArray waitingReadOrderNo = JSONObject.parseArray(wronJsonStr);
 
             for (int i = 0; i < waitingReadOrderNo.size(); i++) {
                 if (waitingReadOrderNo.getString(i).equals(order.getOrderNo())) {
                     waitingReadOrderNo.remove(i);
-                    redisOpenService.set(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(user.getId()), waitingReadOrderNo.toJSONString());
+                    redisOpenService.set(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(order.getServiceUserId()), waitingReadOrderNo.toJSONString());
                     break;
                 }
             }
@@ -262,22 +262,6 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
         orderProductService.create(order, product, num);
         //计算订单状态倒计时24小时
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
-
-        //保存陪玩师的未读订单信息
-
-        JSONArray waitingReadOrderNo = null;
-
-        String wronJsonStr = redisOpenService.get(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(product.getUserId()));
-
-        if (StringUtils.isBlank(wronJsonStr)) {
-            waitingReadOrderNo = new JSONArray();
-        } else {
-            waitingReadOrderNo = JSONObject.parseArray(wronJsonStr);
-        }
-
-        waitingReadOrderNo.add(order.getOrderNo());
-
-        redisOpenService.set(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(product.getUserId()), waitingReadOrderNo.toJSONString());
 
         return order.getOrderNo();
     }

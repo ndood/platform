@@ -1,6 +1,8 @@
 package com.fulu.game.core.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.*;
@@ -268,6 +270,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         order.setUpdateTime(new Date());
         order.setPayTime(new Date());
         orderService.update(order);
+        
         //记录平台流水
         platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_PAY, order.getOrderNo(), order.getTotalMoney());
         if (order.getCouponNo() != null) {
@@ -277,6 +280,24 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         orderMoneyDetailsService.create(order.getOrderNo(), order.getUserId(), DetailsEnum.ORDER_PAY, orderMoney);
 
         dealOrderAfterPay(order);
+
+
+        //保存陪玩师的未读订单信息
+
+        JSONArray waitingReadOrderNo = null;
+
+        String wronJsonStr = redisOpenService.get(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(order.getServiceUserId()));
+
+        if (StringUtils.isBlank(wronJsonStr)) {
+            waitingReadOrderNo = new JSONArray();
+        } else {
+            waitingReadOrderNo = JSONObject.parseArray(wronJsonStr);
+        }
+
+        waitingReadOrderNo.add(order.getOrderNo());
+
+        redisOpenService.set(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(order.getServiceUserId()), waitingReadOrderNo.toJSONString());
+        
 
         return orderConvertVo(order);
     }
