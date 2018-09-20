@@ -1,5 +1,6 @@
 package com.fulu.game.core.service;
 
+import com.fulu.game.common.enums.PlatformShowEnum;
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.ProductTop;
@@ -251,7 +252,7 @@ public interface ProductService extends ICommonService<Product,Integer>{
      * @param userId
      * @return
      */
-    List<TechAuthProductVO> techAuthProductList(int userId);
+    List<TechAuthProductVO> techAuthProductList(int userId,PlatformShowEnum platformShowEnum);
 
 
     /**

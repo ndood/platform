@@ -31,6 +31,19 @@
         </where>
     </select>
 
+    <select id="findByCategoryAndPlatformShow" resultMap="SalesModeResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_sales_mode
+        <where>
+            category_id = #{categoryId}  and del_flag = FALSE
+            and platform_show in
+            <foreach collection="platformShowList" item="platformShow" index="index" open="(" close=")" separator=",">
+                #{platformShow}
+            </foreach>
+        </where>
+    </select>
+
     <select id="findAll" resultMap="SalesModeResultMap">
         select
         <include refid="Base_Column_List"/>

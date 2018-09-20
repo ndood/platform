@@ -20,4 +20,7 @@ public interface TechTagService extends ICommonService<TechTag,Integer>{
     List<TechTag> findByTechAuthId(Integer techAuthId);
 
     int updateTechTagByTag(Tag tag);
+
+
+    void saveTechTag(Integer techAuthId, Integer[] tags);
 }

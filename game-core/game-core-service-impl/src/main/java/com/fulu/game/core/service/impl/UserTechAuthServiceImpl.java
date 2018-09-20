@@ -1,19 +1,13 @@
 package com.fulu.game.core.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
-import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserTechAuthDao;
-import com.fulu.game.core.dao.VirtualProductAttachDao;
-import com.fulu.game.core.dao.VirtualProductDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserTechAuthTO;
 import com.fulu.game.core.entity.vo.TagVO;
@@ -29,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -39,8 +32,6 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
     @Autowired
     private UserTechAuthDao userTechAuthDao;
-    @Autowired
-    private TechTagService techTagService;
     @Autowired
     private TechAttrService techAttrService;
     @Autowired
@@ -61,8 +52,8 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     private OssUtil ossUtil;
     @Autowired
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
-    
-
+    @Autowired
+    private TechTagService techTagService;
 
     @Override
     public ICommonDao<UserTechAuth, Integer> getDao() {
@@ -111,7 +102,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
         }
         //创建技能标签关联
-        saveTechTag(userTechAuthTO.getId(), userTechAuthTO.getTagIds());
+        techTagService.saveTechTag(userTechAuthTO.getId(), userTechAuthTO.getTagIds());
         //创建游戏段位
         saveTechAttr(userTechAuthTO);
 
@@ -256,7 +247,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
     private List<TagVO> findAllCategoryTagSelected(int categoryId, Integer userTechAuthId,Boolean ignoreNotUser) {
         List<TechTag> techTagList = techTagService.findByTechAuthId(userTechAuthId);
-        List<Tag> categoryTags = tagService.findAllCategoryTags(categoryId);
+        List<Tag> categoryTags = tagService.findCategoryParentTags(categoryId);
         List<TagVO> groupTags = CollectionUtil.copyNewCollections(categoryTags,TagVO.class);
         for(TagVO groupTag : groupTags){
            List<Tag> sonTags = tagService.findByPid(groupTag.getId());
@@ -382,36 +373,6 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
 
-    /**
-     * 创建用户技能标签
-     *
-     * @param techAuthId
-     * @param tags
-     */
-    private void saveTechTag(Integer techAuthId, Integer[] tags) {
-        if (tags == null) {
-            return;
-        }
-        List<TechTag> techTagList = techTagService.findByTechAuthId(techAuthId);
-        List<Integer> tagList = new ArrayList<>(Arrays.asList(tags));
-        for(TechTag techTag : techTagList){
-            if(!tagList.contains(techTag.getId())){
-                techTagService.deleteById(techTag.getId());
-            }else {
-                tagList.remove(techTag.getTagId());
-            }
-        }
-        for (Integer tagId : tagList) {
-            Tag tag = tagService.findById(tagId);
-            TechTag techTag = new TechTag();
-            techTag.setTagId(tagId);
-            techTag.setName(tag.getName());
-            techTag.setTechAuthId(techAuthId);
-            techTag.setCreateTime(new Date());
-            techTag.setUpdateTime(new Date());
-            techTagService.create(techTag);
-        }
-    }
 
 
 

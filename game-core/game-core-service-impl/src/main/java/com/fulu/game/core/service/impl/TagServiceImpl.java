@@ -58,7 +58,7 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
     }
 
 
-    public List<Tag> findAllCategoryTags(int categoryId){
+    public List<Tag> findCategoryParentTags(int categoryId){
         TagVO tagVO = new TagVO();
         tagVO.setType(TagTypeEnum.GAME.getType());
         tagVO.setCategoryId(categoryId);
@@ -84,7 +84,7 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
 
     @Override
     @Deprecated
-    public TagVO oldFindTagsByCategoryId(Integer categoryId) {
+    public TagVO findTagsByCategoryId(Integer categoryId) {
         List<Tag> tagList = findGroupTagByCategoryId(categoryId);
         if(tagList.isEmpty()){
             return null;

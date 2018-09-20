@@ -1,21 +1,16 @@
 package com.fulu.game.admin.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.admin.service.AdminUserTechAuthService;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
-import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserTechAuthDao;
-import com.fulu.game.core.dao.VirtualProductAttachDao;
-import com.fulu.game.core.dao.VirtualProductDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserTechAuthTO;
 import com.fulu.game.core.entity.vo.TagVO;
@@ -24,7 +19,6 @@ import com.fulu.game.core.entity.vo.TechValueVO;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
 import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
 import com.fulu.game.core.service.*;
-import com.fulu.game.core.service.impl.AbsCommonService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
 import com.github.pagehelper.PageHelper;
@@ -399,7 +393,7 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
 
     private List<TagVO> findAllCategoryTagSelected(int categoryId, Integer userTechAuthId,Boolean ignoreNotUser) {
         List<TechTag> techTagList = techTagService.findByTechAuthId(userTechAuthId);
-        List<Tag> categoryTags = tagService.findAllCategoryTags(categoryId);
+        List<Tag> categoryTags = tagService.findCategoryParentTags(categoryId);
         List<TagVO> groupTags = CollectionUtil.copyNewCollections(categoryTags,TagVO.class);
         for(TagVO groupTag : groupTags){
            List<Tag> sonTags = tagService.findByPid(groupTag.getId());

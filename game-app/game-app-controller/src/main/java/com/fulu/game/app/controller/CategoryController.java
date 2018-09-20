@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -146,7 +144,7 @@ public class CategoryController extends BaseController {
      */
     @PostMapping(value = "/tag/list")
     public Result techTags(@RequestParam(required = true) Integer categoryId) {
-        TagVO tagVO = tagService.oldFindTagsByCategoryId(categoryId);
+        TagVO tagVO = tagService.findTagsByCategoryId(categoryId);
         if (tagVO == null) {
             return Result.error().msg("该游戏没有设置标签!");
         }

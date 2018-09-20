@@ -38,6 +38,11 @@ public class SalesModeServiceImpl extends AbsCommonService<SalesMode,Integer> im
     }
 
     @Override
+    public List<SalesMode> findByCategoryAndPlatformShow(Integer categoryId,List<Integer> platFormList) {
+        return salesModeDao.findByCategoryAndPlatformShow(categoryId, platFormList);
+    }
+
+    @Override
     public SalesMode update(Integer id, String name, BigDecimal price, Integer rank) {
         SalesMode salesMode = findById(id);
         salesMode.setName(name);

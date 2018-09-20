@@ -387,6 +387,9 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         if (orderEventVO == null) {
             throw new OrderException(orderNo, "该协商已经被取消!");
         }
+        orderEventVO.setActualMoney(order.getActualMoney());
+        orderEventVO.setTotalMoney(order.getTotalMoney());
+
         User currentUser = userService.getCurrentUser();
         if (currentUser.getId().equals(orderEventVO.getUserId())) {
             orderEventVO.setIdentity(UserTypeEnum.GENERAL_USER.getType());

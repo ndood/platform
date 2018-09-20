@@ -1,5 +1,6 @@
 package com.fulu.game.core.entity.vo;
 
+import com.fulu.game.core.entity.TechTag;
 import com.fulu.game.core.entity.UserTechAuth;
 import lombok.Data;
 
@@ -14,6 +15,8 @@ public class TechAuthProductVO extends UserTechAuth {
     private String categoryIcon;
 
     List<ModelPrice> modelPriceList = new ArrayList<>();
+
+    private List<TechTag> techTagList;
 
     public void addModelPrice(ModelPrice modelPrice){
         this.modelPriceList.add(modelPrice);
