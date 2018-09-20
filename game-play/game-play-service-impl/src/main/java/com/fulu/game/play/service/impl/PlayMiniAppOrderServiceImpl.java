@@ -114,7 +114,7 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
                 JSONArray waitingReadOrderNo = JSONObject.parseArray(wronJsonStr);
 
                 for (int i = 0; i < waitingReadOrderNo.size(); i++) {
-                    if (waitingReadOrderNo.getIntValue(i) == orderDetailsVO.getId()) {
+                    if (waitingReadOrderNo.getString(i).equals(orderDetailsVO.getOrderNo())) {
                         orderDetailsVO.setWaitingRead(true);
                         break;
                     }
@@ -178,7 +178,7 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
             JSONArray waitingReadOrderNo = JSONObject.parseArray(wronJsonStr);
 
             for (int i = 0; i < waitingReadOrderNo.size(); i++) {
-                if (waitingReadOrderNo.getIntValue(i) == order.getId()) {
+                if (waitingReadOrderNo.getString(i).equals(order.getOrderNo())) {
                     waitingReadOrderNo.remove(i);
                     redisOpenService.set(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(user.getId()), waitingReadOrderNo.toJSONString());
                     break;
@@ -275,7 +275,7 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
             waitingReadOrderNo = JSONObject.parseArray(wronJsonStr);
         }
 
-        waitingReadOrderNo.add(order.getId());
+        waitingReadOrderNo.add(order.getOrderNo());
 
         redisOpenService.set(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(product.getUserId()), waitingReadOrderNo.toJSONString());
 
