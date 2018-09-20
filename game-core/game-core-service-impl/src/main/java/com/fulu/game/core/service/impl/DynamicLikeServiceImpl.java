@@ -93,7 +93,8 @@ public class DynamicLikeServiceImpl extends AbsCommonService<DynamicLike,Integer
             // 推送push消息，以及点赞
             Map<String, String> extras = extras = AppRouteFactory.buildDynamicRoute(dynamicLikeVO.getDynamicId());
             String content = "点了一个赞";
-            AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(dynamic.getUserId()).title("动态消息").alert(user.getNickname() + "进行了点赞").extras(extras).build();
+            String nikename = user.getNickname() == null || "".equals(user.getNickname()) ? user.getId() + "" : user.getNickname();
+            AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(dynamic.getUserId()).title("动态消息").alert(nikename + "进行了点赞").extras(extras).build();
             //发送push消息
             mobileAppPushService.pushMsg(appPushMsgVO);
             // 保存push消息
@@ -101,7 +102,7 @@ public class DynamicLikeServiceImpl extends AbsCommonService<DynamicLike,Integer
             dynamicPushMsg.setDynamicId(dynamicLikeVO.getDynamicId());
             dynamicPushMsg.setFromUserId(user.getId());
             dynamicPushMsg.setFromUserHeadUrl(user.getHeadPortraitsUrl());
-            dynamicPushMsg.setFromUserNickname(user.getNickname());
+            dynamicPushMsg.setFromUserNickname(nikename);
             dynamicPushMsg.setToUserId(dynamic.getUserId());
             //push消息类型（1：点赞；2：评论；3打赏）
             dynamicPushMsg.setPushType(1);

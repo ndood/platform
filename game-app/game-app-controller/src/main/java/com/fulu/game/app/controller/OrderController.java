@@ -15,11 +15,9 @@ import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.payment.model.PayRequestModel;
 import com.fulu.game.core.entity.payment.res.PayRequestRes;
-import com.fulu.game.core.entity.vo.OrderDetailsVO;
-import com.fulu.game.core.entity.vo.OrderEventVO;
-import com.fulu.game.core.entity.vo.PayRequestVO;
-import com.fulu.game.core.entity.vo.UserCommentVO;
+import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.service.OrderEventService;
+import com.fulu.game.core.service.ServerCommentService;
 import com.fulu.game.core.service.UserCommentService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
@@ -49,6 +47,8 @@ public class OrderController extends BaseController {
     private AppOrderPayServiceImpl appPayService;
     @Autowired
     private UserCommentService userCommentService;
+    @Autowired
+    private ServerCommentService serverCommentService;
 
 
     /**
@@ -355,6 +355,30 @@ public class OrderController extends BaseController {
             return Result.error().msg("该评论不存在！");
         }
         return Result.success().data(comment).msg("查询成功！");
+    }
+
+
+    /**
+     * 陪玩师-添加评价
+     *
+     * @return
+     */
+    @RequestMapping("/server-comment/save")
+    public Result serverCommentSave(ServerCommentVO serverCommentVO) {
+        serverCommentService.save(serverCommentVO);
+        return Result.success().msg("评论成功！");
+    }
+
+    /**
+     * 陪玩师-查询评价
+     *
+     * @return
+     */
+    @RequestMapping("/server-comment/get")
+    public Result serverCommentGet(@RequestParam("orderNo") String orderNo) {
+        //此处评论信息不存在的话，也需要返回用户昵称、头像、性别、年龄和im信息
+        ServerCommentVO serverCommentVO = serverCommentService.findByOrderNo(orderNo);
+        return Result.success().data(serverCommentVO).msg("获取评论成功！");
     }
 
 }
