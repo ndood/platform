@@ -281,24 +281,6 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
 
         dealOrderAfterPay(order);
 
-
-        //保存陪玩师的未读订单信息
-
-        JSONArray waitingReadOrderNo = null;
-
-        String wronJsonStr = redisOpenService.get(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(order.getServiceUserId()));
-
-        if (StringUtils.isBlank(wronJsonStr)) {
-            waitingReadOrderNo = new JSONArray();
-        } else {
-            waitingReadOrderNo = JSONObject.parseArray(wronJsonStr);
-        }
-
-        waitingReadOrderNo.add(order.getOrderNo());
-
-        redisOpenService.set(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(order.getServiceUserId()), waitingReadOrderNo.toJSONString());
-        
-
         return orderConvertVo(order);
     }
 
