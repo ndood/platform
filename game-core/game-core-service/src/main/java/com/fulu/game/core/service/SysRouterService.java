@@ -27,4 +27,11 @@ public interface SysRouterService extends ICommonService<SysRouter,Integer>{
      * @return
      */
     List<SysRouter> findSysRouterListByAdminId(Integer id);
+
+    /**
+     * 通过type获取Router集合
+     * @param type
+     * @return
+     */
+    List<SysRouter> findByType(Integer type);
 }

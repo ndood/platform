@@ -50,6 +50,13 @@
         </where>
     </delete>
 
+    <delete id="deleteByRoleId"  parameterType="java.lang.Integer">
+        delete from t_role_router
+        <where>
+            role_id = #{0}
+        </where>
+    </delete>
+
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.RoleRouter">
         insert into
         t_role_router (role_id,router_id)

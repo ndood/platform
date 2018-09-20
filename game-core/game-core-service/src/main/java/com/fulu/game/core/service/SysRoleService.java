@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.SysRole;
+import com.fulu.game.core.entity.vo.SysRoleVO;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
@@ -29,4 +30,17 @@ public interface SysRoleService extends ICommonService<SysRole,Integer>{
      * @return
      */
     PageInfo<SysRole> list(Integer pageNum, Integer pageSize);
+
+    /**
+     * 查询角色详情，包含Router信息，以及Router是否选中信息
+     * @param id
+     * @return
+     */
+    SysRoleVO findDetailById(Integer id);
+
+    /**
+     * 保存角色信息
+     * @param sysRoleVO
+     */
+    void save(SysRoleVO sysRoleVO);
 }

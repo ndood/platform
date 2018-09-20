@@ -18,4 +18,9 @@ public interface RoleRouterDao extends ICommonDao<RoleRouter,Integer>{
 
     List<RoleRouter> findByParameter(RoleRouterVO roleRouterVO);
 
+    /**
+     * 通过角色id删除当前角色所有的角色路由信息
+     * @param id
+     */
+    void deleteByRoleId(Integer id);
 }

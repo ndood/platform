@@ -5,6 +5,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.SysRole;
 import com.fulu.game.core.entity.vo.AdminVO;
+import com.fulu.game.core.entity.vo.SysRoleVO;
 import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.SysRoleService;
 import com.github.pagehelper.PageInfo;
@@ -110,5 +111,27 @@ public class AdminController extends BaseController {
         return Result.success().data(list).msg("查询列表成功！");
     }
 
+    /**
+     * 查询-角色信息
+     *
+     * @return
+     */
+    @PostMapping("sys-role/query")
+    public Result sysRoleQuery(@RequestParam("id") Integer id) {
+        SysRoleVO sysRoleVO = sysRoleService.findDetailById(id);
+        return Result.success().data(sysRoleVO).msg("查询成功！");
+    }
+
+    /**
+     * 保存-角色信息（新增/修改）
+     *
+     * @return
+     */
+    @PostMapping("sys-role/save")
+    public Result sysRoleSave(SysRoleVO sysRoleVO) {
+        sysRoleService.save(sysRoleVO);
+        String msgPrefix = sysRoleVO != null && sysRoleVO.getId() != null && sysRoleVO.getId().intValue() > 0 ? "修改" :"新增";
+        return Result.success().msg(msgPrefix + "成功！");
+    }
 
 }

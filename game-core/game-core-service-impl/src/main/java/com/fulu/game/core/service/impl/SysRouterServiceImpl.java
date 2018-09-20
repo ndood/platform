@@ -3,6 +3,8 @@ package com.fulu.game.core.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.entity.vo.SysRouterVO;
+import com.fulu.game.core.service.util.SysRouterUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,27 +52,22 @@ public class SysRouterServiceImpl extends AbsCommonService<SysRouter,Integer> im
     @Override
     public List<SysRouter> findSysRouterListByAdminId(Integer id) {
         List<SysRouter> list = sysRouterDao.findSysRouterListByAdminId(id);
-        List<SysRouter> resultList = new ArrayList<>();
-        for (SysRouter router1 : list) {
-            boolean flag = false;
-            for (SysRouter router2 : list) {
-                if(router1.getPid() != null)
-                {
-                    if (router1.getPid().equals(router2.getId())) {
-                        flag = true;
-                        if (router2.getChild() == null) {
-                            router2.setChild(new ArrayList<SysRouter>());
-                        }
-                        router2.getChild().add(router1);
-                        break;
-                    }
-                }
-            }
-            if (!flag) {
-                resultList.add(router1);
-            }
-        }
-
-        return resultList;
+        return SysRouterUtil.formatRouter(list);
     }
+
+    /**
+     * 通过type获取Router集合
+     *
+     * @param type
+     * @return
+     */
+    @Override
+    public List<SysRouter> findByType(Integer type) {
+        SysRouterVO sysRouterVO = new SysRouterVO();
+        sysRouterVO.setType(type);
+        sysRouterVO.setIsDel(0);
+        return sysRouterDao.findByParameter(sysRouterVO);
+    }
+
+
 }

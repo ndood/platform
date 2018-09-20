@@ -48,4 +48,6 @@ public class SysRouter implements Serializable {
 
 	private List<SysRouter> child;
 
+	/** 是否已选中，角色编辑时使用 */
+	private boolean selected;
 }

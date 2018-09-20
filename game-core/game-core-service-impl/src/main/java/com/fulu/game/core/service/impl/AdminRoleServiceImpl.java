@@ -3,6 +3,7 @@ package com.fulu.game.core.service.impl;
 
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Admin;
+import com.fulu.game.core.entity.vo.AdminRoleVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ import com.fulu.game.core.dao.AdminRoleDao;
 import com.fulu.game.core.entity.AdminRole;
 import com.fulu.game.core.service.AdminRoleService;
 
+import java.util.List;
 
 
 @Service
@@ -43,5 +45,18 @@ public class AdminRoleServiceImpl extends AbsCommonService<AdminRole,Integer> im
             adminRole.setRoleId(admin.getRoleId());
             adminRoleDao.create(adminRole);
         }
+    }
+
+    /**
+     * 获取用户角色信息列表
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public List<AdminRole> findByAdminId(Integer id) {
+        AdminRoleVO adminRoleVO = new AdminRoleVO();
+        adminRoleVO.setAdminId(id);
+        return adminRoleDao.findByParameter(adminRoleVO);
     }
 }
