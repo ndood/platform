@@ -597,7 +597,8 @@ public class UserController extends BaseController {
             authInfo = userBodyAuthService.getUserAuthInfo(user.getId());
         }catch (Exception e){
             log.error("/api/v1/user/body-auth/get",e.getMessage());
-            return Result.error().msg("用户未进行身份验证");
+            return Result.error().data("errcode", UserException.ExceptionCode.BODY_NO_AUTH.getCode()).msg(UserException.ExceptionCode.BODY_NO_AUTH.getMsg());
+
         }
 
         return Result.success().data(authInfo).msg("查询成功！");
