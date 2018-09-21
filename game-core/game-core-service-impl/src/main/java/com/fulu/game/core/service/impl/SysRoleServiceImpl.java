@@ -129,16 +129,25 @@ public class SysRoleServiceImpl extends AbsCommonService<SysRole,Integer> implem
         if(!CollectionUtil.isEmpty(sysRoleList)){
             throw new UserException(UserException.ExceptionCode.ROLE_NAME_EXIST);
         }
+        Admin admin = adminService.getCurrentUser();
+        sysRole.setOperatorId(admin.getId());
+        sysRole.setOperatorName(admin.getName());
+        sysRole.setUpdateTime(new Date());
         if(sysRoleVO.getId() != null && sysRoleVO.getId().intValue() > 0){
             sysRoleDao.update(sysRole);
             flag = true;
         } else {
+            sysRole.setCreateTime(new Date());
+            sysRole.setStatus(1);
+            sysRole.setIsDel(0);
             sysRoleDao.create(sysRole);
         }
         // 修改角色router信息
-        if(flag && sysRoleVO.getRouterIds() != null){
+        if(sysRoleVO.getRouterIds() != null){
             //删除当前角色之前所有的角色路由中间表信息
-            roleRouterService.deleteByRoleId(sysRoleVO.getId());
+            if(flag){
+                roleRouterService.deleteByRoleId(sysRoleVO.getId());
+            }
             Integer[] routerIds = sysRoleVO.getRouterIds();
             RoleRouter roleRouter = new RoleRouter();
             roleRouter.setRoleId(sysRoleVO.getId());
