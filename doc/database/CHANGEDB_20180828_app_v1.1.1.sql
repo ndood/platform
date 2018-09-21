@@ -520,3 +520,16 @@ create table t_server_comment
 
 ALTER TABLE `t_user` ADD COLUMN `server_score_avg`  decimal(2,1) DEFAULT NULL COMMENT '陪玩师评价平均分' after `score_avg`;
 
+CREATE TABLE `t_assign_order_setting` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL COMMENT '用户ID',
+  `enable` tinyint(1) NOT NULL COMMENT '激活',
+  `begin_time` varchar(255) DEFAULT NULL COMMENT '设置开始时间',
+  `end_time` varchar(255) DEFAULT NULL COMMENT '设置结束时间',
+  `week_day_bins` int(11) DEFAULT NULL COMMENT '每周那天接单',
+  `create_time` datetime NOT NULL,
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id` (`user_id`) USING BTREE
+)  COMMENT='派单设置';
+

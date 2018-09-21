@@ -4,20 +4,24 @@ import cn.hutool.core.util.StrUtil;
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.vo.AppPushMsgVO;
+import com.fulu.game.core.service.queue.AppPushContainer;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
 public class MobileAppPushServiceImpl extends PushServiceImpl implements IBusinessPushService {
 
+    @Autowired
+    private AppPushContainer appPushContainer;
 
+    /**
+     * 执行推送方法
+     * @param appPushMsgVO
+     */
     public void pushMsg(AppPushMsgVO appPushMsgVO) {
-        if (appPushMsgVO.getSendAll()) {
-            pushMsg(appPushMsgVO.getTitle(), appPushMsgVO.getAlert(), appPushMsgVO.getExtras());
-        } else {
-            pushMsg(appPushMsgVO.getTitle(), appPushMsgVO.getAlert(), appPushMsgVO.getExtras(), appPushMsgVO.getUserIds());
-        }
+        appPushContainer.add(appPushMsgVO);
     }
 
 

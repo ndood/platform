@@ -35,6 +35,12 @@ public class OrderDetailsVO extends Order {
 
     private Integer userGender;
 
+    private BigDecimal userScoreAvg;
+
+    //陪玩师是否已经评价过用户
+    private Boolean  isCommentedUser;
+
+
     //订单状态
     private String statusStr;
     //订单状态描述

@@ -37,7 +37,7 @@ public class AppPushContainer extends RedisTaskContainer {
     private void init() {
         redisQueue = new RedisQueue<AppPushMsgVO>(APP_PUSH_QUEQUE, redisOpenService);
         if (!configProperties.getQueue().isMiniappPush()) {
-            log.info("无需开启小程序推送队列消费线程");
+            log.info("无需开启APP推送队列消费线程");
             es.shutdown();
             return;
         }
@@ -53,16 +53,21 @@ public class AppPushContainer extends RedisTaskContainer {
         }
     }
 
-
     private void process(AppPushMsgVO appPushMsgVO){
-        mobileAppPushService.pushMsg(appPushMsgVO);
+        if (appPushMsgVO.getSendAll()) {
+            mobileAppPushService.pushMsg(appPushMsgVO.getTitle(), appPushMsgVO.getAlert(), appPushMsgVO.getExtras());
+        } else {
+            mobileAppPushService.pushMsg(appPushMsgVO.getTitle(), appPushMsgVO.getAlert(), appPushMsgVO.getExtras(), appPushMsgVO.getUserIds());
+        }
+
+
     }
 
     /**
      * 添加app推送对象到队列
      */
-    public void add(WechatFormid wechatFormid) {
-        redisQueue.pushFromHead(wechatFormid);
+    public void add(AppPushMsgVO appPushMsgVO) {
+        redisQueue.pushFromHead(appPushMsgVO);
     }
 
     @PreDestroy
