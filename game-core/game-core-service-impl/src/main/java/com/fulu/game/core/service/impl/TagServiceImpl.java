@@ -91,6 +91,17 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
 
 
     @Override
+    public void delUserTag(Integer userId, int tagId) {
+          Tag tag = findById(tagId);
+          if(userId.equals(tag.getUserId())){
+              deleteById(tagId);
+          }else{
+              throw new IllegalArgumentException("不能删除不属于自己的标签!");
+          }
+    }
+
+
+    @Override
     public TagVO findTagsByTagPid(Integer tagPid) {
         Tag tag = findById(tagPid);
         TagVO tagVO = new TagVO();

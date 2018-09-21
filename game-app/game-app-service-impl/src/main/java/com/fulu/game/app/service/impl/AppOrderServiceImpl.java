@@ -292,6 +292,8 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
     @Override
     protected void shareProfit(Order order) {
         appOrderShareProfitService.shareProfit(order);
+        //todo 添加陪玩师相关技能的单数
+
     }
 
 

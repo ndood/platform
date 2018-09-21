@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.PriceRule;
+import com.fulu.game.core.entity.vo.PriceRuleVO;
 
 import java.util.List;
 
@@ -20,4 +21,6 @@ public interface PriceRuleService extends ICommonService<PriceRule,Integer>{
      * @return
      */
     List<PriceRule> findByCategoryId(Integer id);
+
+    List<PriceRuleVO> findUserPriceByCategoryId(Integer id,int userId);
 }

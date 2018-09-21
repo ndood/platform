@@ -27,6 +27,8 @@ public interface TagService extends ICommonService<Tag,Integer>{
      */
     Tag createUserCustomTag(int userId,int categoryId,String tagName);
 
+     void delUserTag(Integer userId, int tagId);
+
     Tag update(Integer id, String tagName,Integer gender);
 
     PageInfo<Tag> parentList(Integer pageNum, Integer pageSize);

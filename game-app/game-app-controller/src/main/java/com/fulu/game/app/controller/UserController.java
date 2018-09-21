@@ -73,7 +73,7 @@ public class UserController extends BaseController {
     @RequestMapping("update")
     public Result update(UserVO userVO) {
         User user = new User();
-        if(userVO.getBirth() != null){
+        if (userVO.getBirth() != null) {
             user.setAge(DateUtil.ageOfNow(userVO.getBirth()));
         }
         user.setId(userService.getCurrentUser().getId());
@@ -287,7 +287,6 @@ public class UserController extends BaseController {
     }
 
 
-
     /**
      * 用户-查询余额
      * 账户金额不能从缓存取，因为存在管理员给用户加零钱缓存并未更新
@@ -410,43 +409,54 @@ public class UserController extends BaseController {
 
     /**
      * 陪玩师技能标签列表
+     *
      * @return
      */
     @PostMapping("/tech/tags")
     public Result getUserTechTags(@RequestParam(required = true) Integer userId,
-                                  @RequestParam(required = true) Integer categoryId){
-        UserTechAuth userTechAuth = userTechAuthService.findTechByCategoryAndUser(categoryId,userId);
+                                  @RequestParam(required = true) Integer categoryId) {
+        UserTechAuth userTechAuth = userTechAuthService.findTechByCategoryAndUser(categoryId, userId);
         List<TechTag> techTags = new ArrayList<>();
-        if(userTechAuth!=null){
+        if (userTechAuth != null) {
             techTags = techTagService.findByTechAuthId(userTechAuth.getId());
         }
         return Result.success().data(techTags);
     }
 
 
-
     /**
      * 陪玩师添加自己的技能标签
+     *
      * @param categoryId
      * @return
      */
     @PostMapping("/tech/tag/add")
     public Result getUserTechTagAdd(@RequestParam(required = true) String tagName,
-                                  @RequestParam(required = true) Integer categoryId){
+                                    @RequestParam(required = true) Integer categoryId) {
         User user = userService.getCurrentUser();
-        Tag tag = tagService.createUserCustomTag(user.getId(),categoryId,tagName);
+        Tag tag = tagService.createUserCustomTag(user.getId(), categoryId, tagName);
         return Result.success().data(tag).msg("创建自定义标签成功!");
     }
 
 
+    /**
+     * 陪玩师添加自己的技能标签
+     *
+     * @return
+     */
+    @PostMapping("/tech/tag/del")
+    public Result getUserTechTagAdd(@RequestParam(required = true) Integer tagId) {
+        User user = userService.getCurrentUser();
+        tagService.delUserTag(user.getId(), tagId);
+        return Result.success().msg("删除标签成功!!");
+    }
 
 
     /**
      * 获取用户职业列表
-     *
      * @return
      */
-    @RequestMapping("user-profession/all-list")
+    @RequestMapping("/user-profession/all-list")
     public Result userProfessionList() {
         List<UserProfession> userProfessions = userProfessionService.findUserProfessionList();
         return Result.success().data(userProfessions);

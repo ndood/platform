@@ -5,6 +5,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.CategoryParentEnum;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.vo.PriceRuleVO;
 import com.fulu.game.core.entity.vo.ProductShowCaseVO;
 import com.fulu.game.core.entity.vo.TagVO;
 import com.fulu.game.core.service.*;
@@ -36,6 +37,8 @@ public class CategoryController extends BaseController {
     private SalesModeService salesModeService;
     @Autowired
     private TagService tagService;
+    @Autowired
+    private UserService userService;
     @Autowired
     private TechValueService techValueService;
     @Autowired
@@ -166,16 +169,18 @@ public class CategoryController extends BaseController {
         return Result.success().data(techValueList);
     }
 
+
     /**
      * 查询游戏所有定价规则
-     *
      * @return
      */
     @PostMapping(value = "/price-rule/list")
     public Result priceRuleList(@RequestParam(required = true) Integer categoryId) {
-        List<PriceRule> priceRuleList = priceRuleService.findByCategoryId(categoryId);
+        User user = userService.getCurrentUser();
+        List<PriceRuleVO> priceRuleList = priceRuleService.findUserPriceByCategoryId(categoryId,user.getId());
         return Result.success().data(priceRuleList);
     }
+
 
 
 }
