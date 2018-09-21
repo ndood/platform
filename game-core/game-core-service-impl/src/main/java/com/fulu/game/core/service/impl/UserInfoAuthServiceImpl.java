@@ -7,7 +7,6 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.FileTypeEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
@@ -18,7 +17,9 @@ import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.properties.Config;
 import com.fulu.game.common.utils.MailUtil;
 import com.fulu.game.common.utils.OssUtil;
-import com.fulu.game.core.dao.*;
+import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.dao.UserInfoAuthDao;
+import com.fulu.game.core.dao.UserInfoAuthFileTempDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.vo.*;
@@ -74,8 +75,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     private RedisOpenServiceImpl redisOpenService;
     @Autowired
     private Config configProperties;
-    
-    
+
 
     @Override
     public ICommonDao<UserInfoAuth, Integer> getDao() {
@@ -243,7 +243,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     @Override
     public void saveSort(UserInfoAuthTO userInfoAuthTO) {
 
-        userInfoAuthDao.updateUserSort(userInfoAuthTO.getUserId(),userInfoAuthTO.getSort());
+        userInfoAuthDao.updateUserSort(userInfoAuthTO.getUserId(), userInfoAuthTO.getSort());
 
     }
 
@@ -312,7 +312,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         vpav.setDelFlag(false);
         vpav.setType(VirtualProductTypeEnum.PERSONAL_PICS.getType());
         vpav.setUserId(userId);
-        
+
         List<VirtualProductAttachVO> attachList = virtualProductAttachService.findDetailByVo(vpav);
 
         //将私密照片分组归类
@@ -539,7 +539,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             vpv.setUserId(userInfoAuthVO.getUserId());
             vpv.setDelFlag(false);
             vpv.setType(VirtualProductTypeEnum.PERSONAL_PICS.getType());
-            
+
             List<VirtualProductVO> vpList = virtualProductService.findByVirtualProductVo(vpv);
             userInfoAuthVO.setGroupPicCount(vpList.size());
 
@@ -950,31 +950,32 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     @Override
     public List<UserInfoAuthVO> getAutoSayHelloUser() {
-        
+
         //取出自动问好陪玩师信息
         List<UserInfoAuthVO> uav = userInfoAuthDao.getAutoSayHelloUser();
-        
+
         return uav;
     }
 
 
     @Override
     public void setUserAgentImStatus(boolean agentStatus, User userInfo) {
-        
-        if(!agentStatus){
+
+        if (!agentStatus) {
             //判断用户24小时内是否可将开关关闭
             String openStr = redisOpenService.get(RedisKeyEnum.USER_AGENT_IM_OPEN.generateKey(userInfo.getId()));
-            if(StringUtils.isNotBlank(openStr)){
+            if (StringUtils.isNotBlank(openStr)) {
                 throw new UserAuthException(UserAuthException.ExceptionCode.USER_AGENT_IM_CD);
             }
-        }else{
+        } else {
             //保存开关CD  24小时
-            redisOpenService.set(RedisKeyEnum.USER_AGENT_IM_OPEN.generateKey(userInfo.getId()),"true", 30);
+            //fixme gzc 改回24小时
+            redisOpenService.set(RedisKeyEnum.USER_AGENT_IM_OPEN.generateKey(userInfo.getId()), "true", 30);
 
             //发送邮件
-            MailUtil.sendMail(configProperties.getOrdermail().getAddress(),configProperties.getOrdermail().getPassword(),"陪玩师申请开通代聊服务",userInfo.getNickname()+"申请开通代聊服务，ID："+userInfo.getId()+"，手机号："+userInfo.getMobile()+"，请与之联系获取私照",new String[]{configProperties.getOrdermail().getAddress()});
+            MailUtil.sendMail(configProperties.getOrdermail().getAddress(), configProperties.getOrdermail().getPassword(), "陪玩师申请开通代聊服务", userInfo.getNickname() + "申请开通代聊服务，ID：" + userInfo.getId() + "，手机号：" + userInfo.getMobile() + "，请与之联系获取私照", new String[]{configProperties.getOrdermail().getAddress()});
         }
-        
+
 
         UserInfoAuth u = new UserInfoAuth();
         u.setOpenSubstituteIm(agentStatus);
