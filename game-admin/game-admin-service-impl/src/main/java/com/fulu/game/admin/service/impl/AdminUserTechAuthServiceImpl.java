@@ -177,10 +177,10 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
 
 
     @Override
-    public UserTechAuth pass(Integer id, BigDecimal maxPrice) {
+    public UserTechAuth pass(Integer id, BigDecimal maxPrice, String level) {
         try {
             Admin admin = adminService.getCurrentUser();
-            log.info("技能审核通过:管理员操作:adminId:{};adminName:{};authInfoId:{}",admin.getId(),admin.getName(),id);
+            log.info("技能审核通过:管理员操作:adminId:{};adminName:{};authInfoId:{};maxPrice:{};level:{}",admin.getId(),admin.getName(),id, maxPrice, level);
         }catch (Exception e){
             log.info("技能审核通过:用户好友操作:authInfoId:{}",id);
         }
@@ -188,16 +188,24 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
         if(userTechAuth.getStatus().equals(TechAuthStatusEnum.FREEZE.getType())){
             throw new  UserAuthException(UserAuthException.ExceptionCode.USER_TECH_FREEZE);
         }
+        Integer techStatus = userTechAuth.getStatus();
         userTechAuth.setStatus(TechAuthStatusEnum.NORMAL.getType());
-        if(maxPrice != null){
+        //maxprice只可以改大，不可以该校
+        if(maxPrice != null && (userTechAuth.getMaxPrice() == null || maxPrice.compareTo(userTechAuth.getMaxPrice()) > 0)){
             userTechAuth.setMaxPrice(maxPrice);
         }
+        if(level != null){
+            userTechAuth.setLevel(level);
+        }
         update(userTechAuth);
-        //给用户推送通知
-        adminPushService.techAuthAuditSuccess(userTechAuth.getUserId());
+        // 当仅为修改最大价格或者修改技能等级时，不用发送推送信息，
+        if(techStatus == null || techStatus.intValue() != TechAuthStatusEnum.NORMAL.getType().intValue()){
+            //给用户推送通知
+            adminPushService.techAuthAuditSuccess(userTechAuth.getUserId());
 
-        //技能下商品置为正常
-        productService.recoverProductActivateByTechAuthId(userTechAuth.getId());
+            //技能下商品置为正常
+            productService.recoverProductActivateByTechAuthId(userTechAuth.getId());
+        }
         return userTechAuth;
     }
 
