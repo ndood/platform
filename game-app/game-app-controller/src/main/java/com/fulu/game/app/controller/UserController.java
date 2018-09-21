@@ -51,6 +51,8 @@ public class UserController extends BaseController {
     private AdviceService adviceService;
     @Autowired
     private UserInfoAuthFileService userInfoAuthFileService;
+    @Autowired
+    private UserProfessionService userProfessionService;
 
 
     /**
@@ -303,5 +305,16 @@ public class UserController extends BaseController {
         Map<String, Object> resultMap = new HashMap<>(2);
         resultMap.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
         return Result.success().data(resultMap).msg("查询成功！");
+    }
+
+    /**
+     * 获取用户职业列表
+     *
+     * @return
+     */
+    @RequestMapping("user-profession/all-list")
+    public Result userProfessionList() {
+        List<UserProfession> userProfessions = userProfessionService.findUserProfessionList();
+        return Result.success().data(userProfessions);
     }
 }
