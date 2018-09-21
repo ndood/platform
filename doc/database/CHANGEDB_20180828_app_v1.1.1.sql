@@ -444,6 +444,8 @@ CREATE TABLE `t_price_rule` (
 ALTER TABLE `t_user_tech_auth` ADD COLUMN `order_count` int(11) DEFAULT '0' COMMENT '接单数' after `status`;
 -- 添加用户最大接单技能价格
 ALTER TABLE `t_user_tech_auth` ADD COLUMN `max_price`  decimal(10,2) DEFAULT '0' COMMENT '定价允许最大价格限制' after `order_count`;
+-- 添加技能等级
+ALTER TABLE `t_user_tech_auth` ADD COLUMN `level`  varchar(32) COMMENT '技能等级' after `max_price`;
 
 
 

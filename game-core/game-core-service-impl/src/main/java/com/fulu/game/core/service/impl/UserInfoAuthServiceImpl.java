@@ -373,6 +373,14 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userInfoAuthVO.setHistoryBrowseCount(redisOpenService.getInteger(RedisKeyEnum.HISTORY_BROWSE_COUNT.generateKey(userId)));
         userInfoAuthVO.setHistoryAccessedCount(redisOpenService.getInteger(RedisKeyEnum.HISTORY_ACCESSED_COUNT.generateKey(userId)));
         userInfoAuthVO.setDynamicCount(redisOpenService.getInteger(RedisKeyEnum.DYNAMIC_COUNT.generateKey(userId)));
+        // 新增用户认证图片、语音、和视频文件列表
+        List<UserInfoAuthFile> portraitFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthVO.getId(), FileTypeEnum.PIC.getType());
+        userInfoAuthVO.setPortraitList(portraitFiles);
+        List<UserInfoAuthFile> voiceFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthVO.getId(), FileTypeEnum.VOICE.getType());
+        userInfoAuthVO.setVoiceList(voiceFiles);
+        //添加视频信息
+        List<UserInfoAuthFile> videoFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthVO.getId(), FileTypeEnum.VIDEO.getType());
+        userInfoAuthVO.setVideoList(videoFiles);
         // TODO shijiaoyun 此处还需要添加主接单技能和订单信息
     }
 
