@@ -67,10 +67,11 @@ public class UserController extends BaseController {
      */
     @RequestMapping("update")
     public Result update(UserVO userVO) {
-        User user = userService.findById(userService.getCurrentUser().getId());
+        User user = new User();
         if(userVO.getBirth() != null){
             user.setAge(DateUtil.ageOfNow(userVO.getBirth()));
         }
+        user.setId(userService.getCurrentUser().getId());
         user.setGender(userVO.getGender());
         user.setCity(userVO.getCity());
         user.setProvince(userVO.getProvince());
@@ -80,6 +81,7 @@ public class UserController extends BaseController {
         user.setNickname(userVO.getNickname());
         user.setHeadPortraitsUrl(ossUtil.activateOssFile(userVO.getHeadPortraitsUrl()));
         userService.update(user);
+        user = userService.findById(userService.getCurrentUser().getId());
         userService.updateRedisUser(user);
         // 保存用户认证信息
         saveUserInfoAuth(userVO);
