@@ -447,8 +447,6 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         if (orderEvent == null || !order.getOrderNo().equals(orderEvent.getOrderNo())) {
             throw new OrderException(order.getOrderNo(), "拒绝协商订单不匹配!");
         }
-        User user = userService.getCurrentUser();
-        userService.isCurrentUser(order.getServiceUserId());
         if (!order.getStatus().equals(OrderStatusEnum.CONSULTING.getStatus())) {
             throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES, order.getOrderNo());
         }
