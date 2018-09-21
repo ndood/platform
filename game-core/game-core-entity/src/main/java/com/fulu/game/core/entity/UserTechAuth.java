@@ -40,6 +40,8 @@ public class UserTechAuth implements Serializable {
 
     //用户最大定价价格
     private BigDecimal maxPrice;
+    //用户技能等级
+    private String level;
 
     //虚拟接单数
     private Integer virtualOrderCount;

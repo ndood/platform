@@ -23,7 +23,7 @@ public interface AdminUserTechAuthService extends UserTechAuthService {
      * @param maxPrice 最大定价价格
      * @return
      */
-    UserTechAuth pass(Integer id, BigDecimal maxPrice);
+    UserTechAuth pass(Integer id, BigDecimal maxPrice, String level);
 
     /**
      * 冻结用户技能认证

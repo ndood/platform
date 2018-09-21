@@ -444,6 +444,8 @@ CREATE TABLE `t_price_rule` (
 ALTER TABLE `t_user_tech_auth` ADD COLUMN `order_count` int(11) DEFAULT '0' COMMENT '接单数' after `status`;
 -- 添加用户最大接单技能价格
 ALTER TABLE `t_user_tech_auth` ADD COLUMN `max_price`  decimal(10,2) DEFAULT '0' COMMENT '定价允许最大价格限制' after `order_count`;
+-- 添加技能等级
+ALTER TABLE `t_user_tech_auth` ADD COLUMN `level`  varchar(32) COMMENT '技能等级' after `max_price`;
 
 
 
@@ -535,3 +537,16 @@ CREATE TABLE `t_assign_order_setting` (
   UNIQUE KEY `user_id` (`user_id`) USING BTREE
 )  COMMENT='派单设置';
 
+
+
+-- 添加用户职业表
+create table t_user_profession
+(
+   id                   int(11) not null auto_increment,
+   name                 varchar(32) comment '职业名称',
+   sort                 int(11) comment '排序号',
+   create_time          datetime comment '创建时间',
+   update_time          datetime comment '修改时间',
+   is_del               tinyint(1) comment '删除标志（1：删除；0：未删除）',
+   primary key (id)
+)comment '用户职业表';

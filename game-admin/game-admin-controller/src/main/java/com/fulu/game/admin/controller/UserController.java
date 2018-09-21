@@ -302,8 +302,9 @@ public class UserController extends BaseController {
      * @return
      */
     @PostMapping(value = "/tech-auth/pass")
-    public Result techAuthPass(Integer id, @RequestParam(required = false) BigDecimal maxPrice) {
-        userTechAuthService.pass(id,maxPrice);
+    public Result techAuthPass(Integer id, @RequestParam(required = false) BigDecimal maxPrice,
+                               @RequestParam(required = false) String level) {
+        userTechAuthService.pass(id,maxPrice,level);
         return Result.success().msg("技能审核通过!");
     }
 
