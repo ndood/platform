@@ -68,7 +68,9 @@ public class UserController extends BaseController {
     @RequestMapping("update")
     public Result update(UserVO userVO) {
         User user = userService.findById(userService.getCurrentUser().getId());
-        user.setAge(DateUtil.ageOfNow(userVO.getBirth()));
+        if(userVO.getBirth() != null){
+            user.setAge(DateUtil.ageOfNow(userVO.getBirth()));
+        }
         user.setGender(userVO.getGender());
         user.setCity(userVO.getCity());
         user.setProvince(userVO.getProvince());
