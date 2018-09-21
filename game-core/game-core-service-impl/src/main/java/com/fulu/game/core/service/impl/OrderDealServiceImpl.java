@@ -2,7 +2,6 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.ArrayUtil;
 import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -50,10 +48,11 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal, Integer> i
 
     @Override
     public void create(OrderDeal orderDeal, String... fileUrls) {
+        
         orderDeal.setCreateTime(new Date());
         create(orderDeal);
-       
-        if (ArrayUtil.isNotEmpty(fileUrls)) {
+        
+        if (fileUrls != null) {
             for (String url : fileUrls) {
                 OrderDealFile orderDealFile = new OrderDealFile();
                 orderDealFile.setFileUrl(ossUtil.activateOssFile(url));

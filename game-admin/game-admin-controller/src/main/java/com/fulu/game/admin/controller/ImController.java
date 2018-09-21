@@ -264,7 +264,7 @@ public class ImController extends BaseController {
     public Result consultReject(@RequestParam(required = true) String orderNo,
                                 Integer orderEventId,
                                 String remark,
-                                @RequestParam(required = true) String[] fileUrl , Integer userId) {
+                                @RequestParam(required = false) String[] fileUrl , Integer userId) {
         
         Order order = orderService.findByOrderNo(orderNo);
         playMiniAppOrderServiceImpl.consultRejectOrder(order, orderEventId, remark, fileUrl , userId);
