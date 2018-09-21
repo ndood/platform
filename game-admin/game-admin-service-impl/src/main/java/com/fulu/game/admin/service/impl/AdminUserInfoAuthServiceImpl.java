@@ -208,7 +208,6 @@ public class AdminUserInfoAuthServiceImpl extends UserInfoAuthServiceImpl implem
     @Override
     public UserInfoAuth setVest(Integer id) {
         UserInfoAuth userInfoAuth = userInfoAuthDao.findById(id);
-
         //没有认证技能的情况，抛出提示
         List<UserTechAuth> authList = userTechAuthServiceImpl.findUserNormalTechs(userInfoAuth.getUserId());
         if (CollectionUtils.isEmpty(authList)) {
@@ -216,41 +215,12 @@ public class AdminUserInfoAuthServiceImpl extends UserInfoAuthServiceImpl implem
         }
 
         Boolean vestFlag = userInfoAuth.getVestFlag() == null ? false : userInfoAuth.getVestFlag();
-
-
         if (vestFlag) {
-            userInfoAuth.setVestFlag(false);
-            List<Product> productList = productService.findByUserId(userInfoAuth.getUserId());
-            for (UserTechAuth techAuth : authList) {
-                techAuth.setIsActivate(false);
-                userTechAuthServiceImpl.update(techAuth);
-            }
-
-            if (CollectionUtils.isNotEmpty(productList)) {
-                for (Product meta : productList) {
-                    meta.setStatus(false);
-                    meta.setUpdateTime(DateUtil.date());
-                    productService.update(meta);
-                    productService.stopOrderReceiving(meta.getUserId());
-                }
-            }
+            productService.stopOrderReceiving(userInfoAuth.getUserId());
         } else {
-            for (UserTechAuth techAuth : authList) {
-                techAuth.setIsActivate(true);
-                userTechAuthServiceImpl.update(techAuth);
-            }
-            userInfoAuth.setVestFlag(true);
-            List<Product> productList = productService.findByUserId(userInfoAuth.getUserId());
-            //陪玩师对应的商品设置为“求单ing”状态，激活技能接单方式
-            if (CollectionUtils.isNotEmpty(productList)) {
-                for (Product meta : productList) {
-                    meta.setStatus(true);
-                    meta.setUpdateTime(DateUtil.date());
-                    productService.update(meta);
-                    productService.startOrderReceiving(24 * 30F, meta.getUserId());
-                }
-            }
+            productService.startOrderReceiving(24 * 30F, userInfoAuth.getUserId());
         }
+        userInfoAuth.setVestFlag(!vestFlag);
         userInfoAuthDao.update(userInfoAuth);
         return userInfoAuth;
     }
