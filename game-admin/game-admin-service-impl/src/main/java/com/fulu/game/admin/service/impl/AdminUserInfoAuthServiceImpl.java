@@ -226,7 +226,6 @@ public class AdminUserInfoAuthServiceImpl extends UserInfoAuthServiceImpl implem
                 for (Product meta : productList) {
                     boolean flag = !meta.getDelFlag() && meta.getIsActivate();
                     if (flag) {
-                        meta.setIsActivate(true);
                         meta.setStatus(true);
                         meta.setUpdateTime(DateUtil.date());
                         productService.update(meta);
