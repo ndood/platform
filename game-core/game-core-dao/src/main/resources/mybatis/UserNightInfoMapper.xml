@@ -240,7 +240,7 @@
             </if>
         </set>
         <where>
-            user_id = #{userId}
+            user_id = #{userId} and del_flag = 0
         </where>
     </update>
 </mapper>

@@ -4,6 +4,8 @@ package com.fulu.game.core.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
+import com.fulu.game.common.exception.ServiceErrorException;
+import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserNightInfoDao;
 import com.fulu.game.core.entity.*;
@@ -104,6 +106,16 @@ public class UserNightInfoServiceImpl extends AbsCommonService<UserNightInfo, In
     public UserNightInfo setNightConfig(Integer userId, Integer sort, Integer categoryId, Integer salesModeId) {
         Admin admin = adminService.getCurrentUser();
 
+        ProductVO productVO = new ProductVO();
+        productVO.setSalesModeId(salesModeId);
+        productVO.setCategoryId(categoryId);
+        productVO.setUserId(userId);
+        productVO.setDelFlag(false);
+        List<Product> products = productService.findByParameter(productVO);
+        if (CollectionUtils.isEmpty(products)) {
+            throw new ServiceErrorException("当前陪玩师无对应的可用商品！");
+        }
+
         SalesModeVO vo = new SalesModeVO();
         vo.setId(salesModeId);
         vo.setDelFlag(0);
@@ -128,10 +140,13 @@ public class UserNightInfoServiceImpl extends AbsCommonService<UserNightInfo, In
 
         UserNightInfoVO infoVO = new UserNightInfoVO();
         infoVO.setUserId(userId);
-        infoVO.setDelFlag(Boolean.FALSE);
+        infoVO.setCategoryId(categoryId);
+        infoVO.setSalesModeId(salesModeId);
         List<UserNightInfo> infoList = userNightInfoDao.findByParameter(infoVO);
         if (CollectionUtils.isNotEmpty(infoList)) {
-            userNightInfoDao.updateByUserId(info);
+            //todo gzc 优化
+            info.setId(infoList.get(0).getId());
+            userNightInfoDao.update(info);
         } else {
             userNightInfoDao.create(info);
         }

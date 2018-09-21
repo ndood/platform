@@ -310,4 +310,6 @@ public interface ProductService extends ICommonService<Product, Integer> {
      * @return 分页获取查询VO
      */
     PageInfo<ProductShowCaseVO> findAllNightProductByPage(Integer gender, Integer pageNum, Integer pageSize);
+
+    List<Product> findByParameter(ProductVO productVO);
 }
