@@ -39,6 +39,7 @@ config:
       appId: 2018091361378432
       appPrivateKey: "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCu6Uf2OpJEEeJ+ydLZVErFsd+2RoqglP7KwDjSGParuS7sq/e9llR4aJzAvYd+hoc9WxCau3pLVYUrofEVEyC8YQC4vT/U9MI/JbRfEs/KEFQAmF80rLxFMZChavQczhsEvyRhuo3R2pZHVmcDoqKpUhlDDxr1aPEG8pgxciPRZy2N3MweQg5mRVJhCm+jrv5povmBCgQemj5xTKWjF8KNXROKG2xaXs5XoGsj7sWVRbrgTkGzJ0tv1cCo2yAGIeErIPNJnkTWbili1suz14AZ6nOSzeBCBVHdEUC+HbrEogL3TkAdaSHwdK46lcvZmq3nFaCDac0yrYODAnryDTKzAgMBAAECggEANJMUOVPjsSg7D2c0xHSMwR21I8HSW3BNob3jlmtAgd941lTec5MjMsonC9wsRQDE19FujUP6/3fmPnY/09jbBySVJfJkpGspk/eOXuF1qcP8q+0g+OFO+fFrCsnuNFZTUrrtgZ6kkEaG00yKTFJvWDvAMiLxNIDlqfPzgTFQyNkeWwFO58YiM4aZIg/3JClj+4r9FvHqGYu9iI3R3qGI01Z6jWdT2xHl8awPejdSr2zpyFAmD5BIwHO2NtLbzqHaPiaRegINqteYRxN0fHyOxaY0AQrsBJqCc1QEfSWimsjZq0xqVsAG6l+qTqi9hK0UfVSBSSoAIHGMBH25ohqfMQKBgQDZgs4BE8F8zdgCdLq95E2xOjx0khOYe89RWOgoRLi6HRGM2sF5LCoRZ5mV5HWZdbTsry9MzuJO+JFEF4SWQq44kWdVvjpymqAZUS6Mk1s7KdLl/rbEx3IEgKyaSvHt7bskK2g0SZAzHfSVDje1cjMKRExJOf8TYv5ghdxj0hgCqQKBgQDN3LhLsjxXnRGr+agPyC8mUPSXffPzYb0mWZmLkSPEZTtZGRXCO+TAApjqFtoK75QDPKYeapMImB1FL8QpIot+fqhgB2ZfYUfhvnaEp25VrGlMvYVpvo+6SsCIBmwk/vy/vC+UdgBkT2S1Ma6ebFyDSNgYj7gjATbr6b/uMOM/+wKBgQCULdd3xmSvSHBbI/jAOtNu5HShGY7994LCMWZfYInUSM9W/QSHLz4tgz2Pbwdql1S9VY9MrThhglc8YyUxVJXp9azHLgQVZR+if7rNi+nAAXsqsn8Cybj0NlDgACSW6bjvKB8iV+dD26lvDjOHihgZa3PpAvix1WPkj+0Xl95BmQKBgFCkm0mD6+GCdS7CYRS1ncrLwdUqkQsRibBhPyYOWE2SPnp7uitZnRWertpc01OfYIMYGhcmNq0SMb0tphFbJ/wIj9r2ayMID8md+/2hPTawkJtwTrgK33Dh4aQnp+uiO868YIMu6p5g/5l/eeEzn9YKDiUo/8AutJ4b9oTPf+ZLAoGBAJlqBpn0lOUWVSb/ja0RaTQMfXRH7tt4g1iH2dFP9VQOXwUMTk7doQPyAUhlNdadobOJwXppOUCO//YrXyhUxaucztjZTtkPLsFGZ2ryIAzYpupbOR8reluN8a3gLHjuw7NoUex1oWUQiLx/8uL8RpyxlQcWB+rKQcOtfK34B4p2"
       alipayPublicKey: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArulH9jqSRBHifsnS2VRKxbHftkaKoJT+ysA40hj2q7ku7Kv3vZZUeGicwL2HfoaHPVsQmrt6S1WFK6HxFRMgvGEAuL0/1PTCPyW0XxLPyhBUAJhfNKy8RTGQoWr0HM4bBL8kYbqN0dqWR1ZnA6KiqVIZQw8a9WjxBvKYMXIj0WctjdzMHkIOZkVSYQpvo67+aaL5gQoEHpo+cUyloxfCjV0TihtsWl7OV6BrI+7FlUW64E5BsydLb9XAqNsgBiHhKyDzSZ5E1m4pYtbLs9eAGepzks3gQgVR3RFAvh26xKIC905AHWkh8HSuOpXL2Zqt5xWgg2nNMq2DgwJ68g0yswIDAQAB"
+      alipayCallBackPublicKey: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhS+NqT4gQhAyR/R+2CmvD8dQi5P05sJcNOKNDESDrHfSSGyToY3x65DQkp8Ilh8D5RoOAsnJw0OehesXfmtKnUgc22kyjPoUAKWoTTEQUsqqq120rHA5M7k1ThExHfQbRWr+jDTyLz+Q36tZzTY0hE5i9ncDQtNqec/ChlcYBybgOrKf2EGk5YSDf/N413TzJTWFSHJhllQVp2dfiliRfxAYENA3x+BAGtXhFyTMeQodUMecDer2DkfIbTbvvBF1U48Yy+4rxTXpmTWNyPPPzqtCZuJLSzV7EIUr8sPW9KJLWPInkZEEQfKuyaMvOsa6PtsqGSe7KZ3COYuVidDvuQIDAQAB"
       payOrderNotifyUrl: http://t-api-app.wzpeilian.com/alipay/pay/order/callback
       payVirtualProductNotifyUrl: http://t-api-app.wzpeilian.com/alipay/pay/virtualproduct/callback
       payGateway: https://openapi.alipaydev.com/gateway.do
@@ -85,16 +86,16 @@ config:
       notifyUrl: https://t-api-h5.wzpeilian.com/wechat/mp/pay/callback
       payVirtualProductNotifyUrl: http://z3tfsd.natappfree.cc/wechat/pay/callback
     wechat_app:
-      appId: wxc848a7d200e9fc4c
-      secret: 38bbed52fcf066e0f050a2abe76444df
+      appId: wx051631e81ea04ba0
+      secret: 49c81a99b6b45ff167bf986b667b2bcd
       token: 111
       aesKey: 111
       msgDataFormat: JSON
-      mchId: 1502601051
+      mchId: 1514946151
       mchKey: 24d1b993f21046a296b0846f62d3e431
       subAppId:
       subMchId:
-      keyPath: E:\cert\apiclient_cert.p12
+      keyPath: E:\cert_app\apiclient_cert.p12
       tradeType: APP
       notifyUrl: https://t-api-app.wzpeilian.com/wechat/pay/order/callback
       payVirtualProductNotifyUrl: http://z3tfsd.natappfree.cc/pay/virtualproduct/callback

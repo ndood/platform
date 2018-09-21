@@ -37,6 +37,7 @@ public abstract class VirtualOrderPayServiceImpl implements BusinessPayService {
         try {
             PaymentComponent paymentComponent = paymentFactory.build(order.getPayment());
             PayRequestRes res= paymentComponent.payRequest(payRequestModel);
+            log.info("支付请求结果:{}",res);
             if(res.isDirectPay()){
                 payOrder(order.getOrderNo(), order.getActualMoney());
             }
@@ -51,8 +52,11 @@ public abstract class VirtualOrderPayServiceImpl implements BusinessPayService {
     public boolean payResult(PayCallbackModel payCallbackModel) {
         PaymentComponent paymentComponent = paymentFactory.build(payCallbackModel.getPayment());
         PayCallbackRes res =paymentComponent.payCallBack(payCallbackModel);
+        log.info("回调结果:{}",res);
         if(res.isSuccess()){
             payOrder(res.getOrderNO(),new BigDecimal(res.getPayMoney()));
+        }else{
+            log.error("回调参数验证异常:{}",res);
         }
         return res.isSuccess();
     }
