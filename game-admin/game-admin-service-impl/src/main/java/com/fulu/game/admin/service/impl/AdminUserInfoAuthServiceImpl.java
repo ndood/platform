@@ -210,6 +210,15 @@ public class AdminUserInfoAuthServiceImpl extends UserInfoAuthServiceImpl implem
         UserInfoAuth userInfoAuth = userInfoAuthDao.findById(id);
         //没有认证技能的情况，抛出提示
         List<UserTechAuth> authList = userTechAuthServiceImpl.findUserNormalTechs(userInfoAuth.getUserId());
+        for(UserTechAuth techAuth : authList){
+            techAuth.setIsActivate(true);
+            userTechAuthServiceImpl.update(techAuth);
+        }
+        List<Product> productList =    productService.findByUserId(userInfoAuth.getUserId());
+        for(Product product : productList){
+            product.setStatus(true);
+            productService.update(product);
+        }
         if (CollectionUtils.isEmpty(authList)) {
             throw new ServiceErrorException("该用户没有可用的技能！");
         }
