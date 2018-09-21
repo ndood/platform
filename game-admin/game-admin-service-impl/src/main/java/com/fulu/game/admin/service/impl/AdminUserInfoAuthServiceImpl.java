@@ -14,7 +14,10 @@ import com.fulu.game.core.dao.UserInfoAuthDao;
 import com.fulu.game.core.dao.UserInfoAuthFileTempDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.UserInfoAuthFileTempVO;
-import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.AdminService;
+import com.fulu.game.core.service.ProductService;
+import com.fulu.game.core.service.UserInfoAuthRejectService;
+import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.UserInfoAuthServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -46,8 +49,6 @@ public class AdminUserInfoAuthServiceImpl extends UserInfoAuthServiceImpl implem
     private AdminPushServiceImpl adminPushService;
     @Autowired
     private UserInfoAuthFileTempDao userInfoAuthFileTempDao;
-    @Autowired
-    private UserTechAuthService userTechAuthService;
 
     @Override
     public ICommonDao<UserInfoAuth, Integer> getDao() {
@@ -209,7 +210,7 @@ public class AdminUserInfoAuthServiceImpl extends UserInfoAuthServiceImpl implem
         UserInfoAuth userInfoAuth = userInfoAuthDao.findById(id);
 
         //没有认证技能的情况，抛出提示
-        List<UserTechAuth> authList = userTechAuthService.findUserNormalTechs(userInfoAuth.getUserId());
+        List<UserTechAuth> authList = userTechAuthServiceImpl.findUserNormalTechs(userInfoAuth.getUserId());
         if (CollectionUtils.isEmpty(authList)) {
             throw new ServiceErrorException("该用户没有可用的技能！");
         }
