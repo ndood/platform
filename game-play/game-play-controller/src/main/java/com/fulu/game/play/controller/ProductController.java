@@ -245,7 +245,6 @@ public class ProductController extends BaseController {
         User user = userService.getCurrentUser();
         log.info("用户开始接单:userId:{};hour:{};", user.getId(), hour);
         userService.isCurrentUser(user.getId());
-
         productService.startOrderReceiving(hour, user.getId());
         return Result.success().data("已经开始自动接单!");
     }

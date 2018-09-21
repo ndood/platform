@@ -2,6 +2,7 @@ package com.fulu.game.admin.service.impl;
 
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DateUtil;
 import com.fulu.game.admin.service.AdminUserInfoAuthService;
 import com.fulu.game.common.enums.FileTypeEnum;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
@@ -218,12 +219,11 @@ public class AdminUserInfoAuthServiceImpl extends UserInfoAuthServiceImpl implem
         if (vestFlag) {
             userInfoAuth.setVestFlag(false);
             List<Product> productList = productService.findByUserId(userInfoAuth.getUserId());
-            //陪玩师对应的商品设置为“求单ing”状态，激活技能接单方式
             if (CollectionUtils.isNotEmpty(productList)) {
                 for (Product meta : productList) {
-                    //取消技能
-                    productService.techEnable(meta.getTechAuthId(), false, meta.getUserId());
-                    //停止接单
+                    meta.setStatus(false);
+                    meta.setUpdateTime(DateUtil.date());
+                    productService.update(meta);
                     productService.stopOrderReceiving(meta.getUserId());
                 }
             }
@@ -233,10 +233,10 @@ public class AdminUserInfoAuthServiceImpl extends UserInfoAuthServiceImpl implem
             //陪玩师对应的商品设置为“求单ing”状态，激活技能接单方式
             if (CollectionUtils.isNotEmpty(productList)) {
                 for (Product meta : productList) {
-                    //激活技能
-                    productService.techEnable(meta.getTechAuthId(), true, meta.getUserId());
-                    //开始接单
-                    productService.startOrderReceiving(null, meta.getUserId());
+                    meta.setStatus(true);
+                    meta.setUpdateTime(DateUtil.date());
+                    productService.update(meta);
+                    productService.startOrderReceiving(24 * 30F, meta.getUserId());
                 }
             }
         }

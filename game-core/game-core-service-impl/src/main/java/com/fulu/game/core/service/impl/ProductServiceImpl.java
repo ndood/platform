@@ -388,15 +388,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         if (products.isEmpty()) {
             throw new ServiceErrorException("请选择技能后再点击开始接单!");
         }
-
-        if (hour == null) {
-            redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(userId), "HOUR", hour, true);
-            redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(userId), "START_TIME", System.currentTimeMillis(), true);
-        } else {
-            redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(userId), "HOUR", hour, expire);
-            redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(userId), "START_TIME", System.currentTimeMillis(), expire);
-        }
-
+        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(userId), "HOUR", hour, expire);
+        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(userId), "START_TIME", System.currentTimeMillis(), expire);
         for (Product product : products) {
             ProductVO productVO = new ProductVO();
             BeanUtil.copyProperties(product, productVO);
@@ -404,11 +397,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             productVO.setStartTime(new Date());
             try {
                 log.info("开始接单设置:userId:{};product:{};beginOrderDate:{};orderHour:{};", product.getUserId(), product, System.currentTimeMillis(), hour);
-                if (hour == null) {
-                    redisOpenService.hset(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(product.getId()), BeanUtil.beanToMap(productVO), true);
-                } else {
-                    redisOpenService.hset(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(product.getId()), BeanUtil.beanToMap(productVO), expire);
-                }
+                redisOpenService.hset(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(product.getId()), BeanUtil.beanToMap(productVO), expire);
             } catch (Exception e) {
                 log.error("开始接单设置失败", e);
                 throw new ServiceErrorException("开始接单操作失败!");
