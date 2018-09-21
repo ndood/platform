@@ -32,7 +32,8 @@ public class UserException extends BizException {
         NO_AVAILABLE_OPENID(21009, "无法打款，用户没有有效的openId"),
         NO_PERMISSION(21010, "用户无此访问权限"),
         NO_ROLE(21011, "用户未设置角色信息"),
-        NO_ROLE_CLOSE(21012, "账号权限已关闭");
+        NO_ROLE_CLOSE(21012, "账号权限已关闭"),
+        ROLE_NAME_EXIST(21013,"角色名已存在");
 
         private int code;
         private String msg;

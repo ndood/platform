@@ -2,7 +2,9 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import com.fulu.game.common.enums.SysRouterTypeEnum;
+import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.SysRoleVO;
@@ -120,6 +122,13 @@ public class SysRoleServiceImpl extends AbsCommonService<SysRole,Integer> implem
         SysRole sysRole = new SysRole();
         BeanUtil.copyProperties(sysRoleVO, sysRole);
         boolean flag = false;
+        SysRoleVO params = new SysRoleVO();
+        params.setName(sysRoleVO.getName());
+        params.setId(sysRoleVO.getId());
+        List<SysRole> sysRoleList = sysRoleDao.findByParameter(params);
+        if(!CollectionUtil.isEmpty(sysRoleList)){
+            throw new UserException(UserException.ExceptionCode.ROLE_NAME_EXIST);
+        }
         if(sysRoleVO.getId() != null && sysRoleVO.getId().intValue() > 0){
             sysRoleDao.update(sysRole);
             flag = true;
