@@ -3,9 +3,14 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradeAppPayModel;
+import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
+import lombok.ToString;
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class PayTest2 {
 
@@ -49,6 +54,8 @@ public class PayTest2 {
                     "Gepzks3gQgVR3RFAvh26xKIC905AHWkh8HSuOpXL2Zqt5xWgg2nNMq2DgwJ68g0y" +
                     "swIDAQAB";
 
+    public final static String ALIPAY_CALLBACK_PUBLIC_KEY ="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhS+NqT4gQhAyR/R+2CmvD8dQi5P05sJcNOKNDESDrHfSSGyToY3x65DQkp8Ilh8D5RoOAsnJw0OehesXfmtKnUgc22kyjPoUAKWoTTEQUsqqq120rHA5M7k1ThExHfQbRWr+jDTyLz+Q36tZzTY0hE5i9ncDQtNqec/ChlcYBybgOrKf2EGk5YSDf/N413TzJTWFSHJhllQVp2dfiliRfxAYENA3x+BAGtXhFyTMeQodUMecDer2DkfIbTbvvBF1U48Yy+4rxTXpmTWNyPPPzqtCZuJLSzV7EIUr8sPW9KJLWPInkZEEQfKuyaMvOsa6PtsqGSe7KZ3COYuVidDvuQIDAQAB";
+
     @Test
     public void aliPayTest1() throws Exception {
         //实例化客户端
@@ -74,8 +81,21 @@ public class PayTest2 {
         }
     }
 
+    @Test
+    public void signTest(){
+        String sign ="UgFR511FvbctZjiwehJP8EMGVFJqfg9tufZ4MtbqaCdXjw5jXIsulBLzTzJa5c7W/S+CHwW6df6BTqfb5lNBZ7l0Zzs2x2jsse+gUO7BNkOhdbQQrUvEI+lB0g32fETC6E+qYX2DXPSP0b6okQ6GaYDp9aMV1PYiJ9+v0/ka2XuYq7bTug18s33Gwk46JXdKOj9waHftnncdrYDZ9dtvBbQsz2F5fHLZVDPRSu/uFisUTdJxmeADiilJweUOWZzDDNhpKgBGO7G0C3YqT0o+FiKH/ohXdtIyDy9KLvw/HR/foVlJCT8++9hBu7t3WqwWKXXCd9S2YT0H3ADvefa2RA==";
+        Map<String,String> map = new HashMap<>();
+        map.put("sign",sign);
+        try {
+            boolean flag = AlipaySignature.rsaCheckV2(map, ALIPAY_CALLBACK_PUBLIC_KEY, "utf-8", "RSA2");
+            System.out.println(flag);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
 
+
+    }
 
 
 

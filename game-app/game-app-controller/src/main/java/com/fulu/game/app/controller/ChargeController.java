@@ -63,7 +63,7 @@ public class ChargeController extends BaseController {
             ClientInfo clientInfo = SubjectUtil.getUserClientInfo();
             int platform;
             if (clientInfo != null) {
-                if (clientInfo.get_platform().equalsIgnoreCase("ios")) {
+                if ("ios".equalsIgnoreCase(clientInfo.get_platform())) {
                     platform = PlatformEcoEnum.IOS.getType();
                 } else {
                     platform = PlatformEcoEnum.ANDROID.getType();
@@ -104,7 +104,7 @@ public class ChargeController extends BaseController {
             ClientInfo clientInfo = SubjectUtil.getUserClientInfo();
             int platform;
             if (clientInfo != null) {
-                if (clientInfo.get_platform().equalsIgnoreCase("ios")) {
+                if ("ios".equalsIgnoreCase(clientInfo.get_platform())) {
                     platform = PlatformEcoEnum.IOS.getType();
                 } else {
                     platform = PlatformEcoEnum.ANDROID.getType();

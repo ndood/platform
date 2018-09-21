@@ -43,6 +43,7 @@ public class AlipayPaymentComponent implements PaymentComponent {
 
     @Override
     public PayRequestRes payRequest(PayRequestModel payRequestModel) {
+        log.info("执行支付宝支付:{}",payRequestModel);
         PayRequestRes payRequestRes = new PayRequestRes(false);
         AlipayTradeAppPayModel model = null;
         if (payRequestModel.getPayBusinessEnum().equals(PayBusinessEnum.VIRTUAL_PRODUCT)) {
@@ -59,9 +60,10 @@ public class AlipayPaymentComponent implements PaymentComponent {
 
     @Override
     public PayCallbackRes payCallBack(PayCallbackModel payCallbackModel) {
+        log.info("调用支付宝回调方法:{}",payCallbackModel);
         PayCallbackRes payCallbackTO = new PayCallbackRes();
         try {
-            boolean flag = AlipaySignature.rsaCheckV1(payCallbackModel.getAliPayParameterMap(), configProperties.getAlipayPay().getAlipayPublicKey(), "utf-8", "RSA2");
+            boolean flag = AlipaySignature.rsaCheckV1(payCallbackModel.getAliPayParameterMap(), configProperties.getAlipayPay().getAlipayCallBackPublicKey(), "utf-8", "RSA2");
             payCallbackTO.setSuccess(flag);
             if (flag) {
                 Map<String, String> result = payCallbackModel.getAliPayParameterMap();
@@ -168,7 +170,8 @@ public class AlipayPaymentComponent implements PaymentComponent {
         try {
             //这里和普通的接口调用不同，使用的是sdkExecute
             AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
-            return JSONObject.toJSONString(response.getParams());
+            log.info("支付宝responsebody{}",response.getBody());
+            return response.getBody();
         } catch (AlipayApiException e) {
             log.error("支付宝发起支付请求异常:", e);
         }

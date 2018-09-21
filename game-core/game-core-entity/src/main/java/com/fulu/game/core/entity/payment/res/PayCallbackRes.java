@@ -1,9 +1,11 @@
 package com.fulu.game.core.entity.payment.res;
 
 import lombok.Data;
+import lombok.ToString;
 
 //todo 支付宝和微信可能有各自的回调业务参数在我们自己的业务中要使用，假如有那么需要建各自的回调类
 @Data
+@ToString
 public class PayCallbackRes {
 
 

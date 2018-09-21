@@ -37,11 +37,24 @@ public class AlipayController {
     @RequestMapping("/pay/order/callback")
     public String payOrderNotify(HttpServletRequest request) {
         Map<String, String> params = getAlipayParams(request.getParameterMap());
+        log.info("订单方法接收支付宝回调:{}",params);
         PayCallbackModel payCallbackModel = PayCallbackModel.newBuilder(PaymentEnum.ALIPAY_PAY.getType(),PayBusinessEnum.ORDER)
                 .aliPayParameterMap(params).build();
         if (appOrderPayService.payResult(payCallbackModel)) {
             return "success";
         }
+        return "fail";
+    }
+    /**
+     * 订单业务回调
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/pay/callback")
+    public String payCallbackTest(HttpServletRequest request) {
+        Map<String, String> params = getAlipayParams(request.getParameterMap());
+        log.info("支付宝调用了错误的回调:{}",params);
         return "fail";
     }
 
@@ -54,6 +67,7 @@ public class AlipayController {
     @RequestMapping("/pay/virtualproduct/callback")
     public String virtualProductOrderNotify(HttpServletRequest request) {
         Map<String, String> params = getAlipayParams(request.getParameterMap());
+        log.info("充值方法接收支付宝回调:{}",params);
         PayCallbackModel payCallbackModel = PayCallbackModel.newBuilder(PaymentEnum.ALIPAY_PAY.getType(),PayBusinessEnum.VIRTUAL_PRODUCT)
                 .aliPayParameterMap(params).build();
         if (appVirtualOrderPayService.payResult(payCallbackModel)) {

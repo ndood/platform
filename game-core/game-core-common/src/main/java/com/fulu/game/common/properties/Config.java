@@ -133,6 +133,7 @@ public class Config {
         private String appId;
         private String appPrivateKey;
         private String alipayPublicKey;
+        private String alipayCallBackPublicKey;
         private String payOrderNotifyUrl;
         private String payVirtualProductNotifyUrl;
         private String payGateway;
