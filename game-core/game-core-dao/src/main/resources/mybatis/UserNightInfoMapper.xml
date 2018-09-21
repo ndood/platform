@@ -98,7 +98,9 @@
 
     <select id="findNightUser" resultType="com.fulu.game.core.entity.vo.ProductShowCaseVO">
         SELECT
-        t1.*, t2.user_id AS userId,
+        t1.*,
+        t2.id AS productId,
+        t2.user_id AS userId,
         t2.category_id AS categoryId,
         t2.tech_auth_id AS techAuthId,
         t2.gender AS gender,
