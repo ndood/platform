@@ -214,7 +214,7 @@ public class AdminUserInfoAuthServiceImpl extends UserInfoAuthServiceImpl implem
             throw new ServiceErrorException("该用户没有可用的技能！");
         }
 
-        Boolean vestFlag = userInfoAuth.getVestFlag();
+        Boolean vestFlag = userInfoAuth.getVestFlag() == null ? false : userInfoAuth.getVestFlag();
         if (vestFlag) {
             userInfoAuth.setVestFlag(false);
             List<Product> productList = productService.findByUserId(userInfoAuth.getUserId());

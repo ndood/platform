@@ -243,9 +243,9 @@ public class PushServiceImpl implements PushService {
                 log.error("user或者formId为null无法给用户推送消息user:{};content:{};formId:{}", user, content, formId);
                 if (StringUtils.isNotEmpty(user.getMobile())) {
                     UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
-                    boolean vestFlag = false;
+                    Boolean vestFlag = false;
                     if (userInfoAuth != null) {
-                        vestFlag = userInfoAuth.getVestFlag();
+                        vestFlag = userInfoAuth.getVestFlag() == null ? false : userInfoAuth.getVestFlag();
                     }
 
                     if (!vestFlag) {

@@ -21,9 +21,9 @@ public class PlayMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
     @Override
     protected void push(int userId, WechatTemplateMsgEnum wechatTemplateMsgEnum, String... replaces) {
         UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(userId);
-        boolean vestFlag = false;
+        Boolean vestFlag = false;
         if (userInfoAuth != null) {
-            vestFlag = userInfoAuth.getVestFlag();
+            vestFlag = userInfoAuth.getVestFlag() == null ? false : userInfoAuth.getVestFlag();
         }
 
         if (!vestFlag) {
@@ -41,9 +41,9 @@ public class PlayMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
     protected void push(int userId, Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum,
                         WechatTemplateMsgTypeEnum wechatTemplateMsgTypeEnum, String... replaces) {
         UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(userId);
-        boolean vestFlag = false;
+        Boolean vestFlag = false;
         if (userInfoAuth != null) {
-            vestFlag = userInfoAuth.getVestFlag();
+            vestFlag = userInfoAuth.getVestFlag() == null ? false : userInfoAuth.getVestFlag();
         }
 
         if (!vestFlag) {

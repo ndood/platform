@@ -273,9 +273,9 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
         //发送短信通知给陪玩师
         User server = userService.findById(order.getServiceUserId());
         UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(order.getServiceUserId());
-        boolean vestFlag = false;
+        Boolean vestFlag = false;
         if (userInfoAuth != null) {
-            vestFlag = userInfoAuth.getVestFlag();
+            vestFlag = userInfoAuth.getVestFlag() == null ? false : userInfoAuth.getVestFlag();
         }
 
         if (!vestFlag) {
@@ -300,7 +300,7 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
         waitingReadOrderNo.add(order.getOrderNo());
 
         redisOpenService.set(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(order.getServiceUserId()), waitingReadOrderNo.toJSONString());
-        
+
     }
 
     @Override
