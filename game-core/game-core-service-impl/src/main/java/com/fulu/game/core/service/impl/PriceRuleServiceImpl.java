@@ -64,7 +64,7 @@ public class PriceRuleServiceImpl extends AbsCommonService<PriceRule,Integer> im
         List<PriceRule> priceRuleList = findByCategoryId(categoryId);
         List<PriceRuleVO> priceRuleVOList  = CollectionUtil.copyNewCollections(priceRuleList,PriceRuleVO.class);
         for(PriceRuleVO ruleVO : priceRuleVOList){
-            if(maxPrice.compareTo(ruleVO.getPrice())>0){
+            if(maxPrice.compareTo(ruleVO.getPrice())>=0){
                 ruleVO.setUsable(true);
             }else{
                 ruleVO.setUsable(false);
