@@ -55,6 +55,9 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
         //判断username是否重名
         AdminVO requestVO = new AdminVO();
         requestVO.setName(adminVO.getName());
+        if(adminVO.getId() != null){
+            requestVO.setId(adminVO.getId());
+        }
         List<Admin> adminList = adminDao.findByParameter(requestVO);
         if (!CollectionUtil.isEmpty(adminList)) {
             throw new UserException(UserException.ExceptionCode.NAME_DUMPLICATE_EXCEPTION);
@@ -70,18 +73,25 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
         Admin admin = new Admin();
         admin.setName(adminVO.getName());
         admin.setUsername(adminVO.getUsername());
-        admin.setStatus(AdminStatus.ENABLE.getType());
-        Password password = EncryptUtil.PiecesEncode(adminVO.getPassword());
-        admin.setPassword(password.getPassword());
-        admin.setSalt(password.getSalt());
-        admin.setCreateTime(new Date());
-        admin.setUpdateTime(admin.getCreateTime());
-        if(adminVO.getId() != null && admin.getId().intValue() > 0){
+        admin.setStatus(adminVO.getStatus());
+        if(adminVO.getId() != null && adminVO.getId().intValue() > 0){
             admin.setId(adminVO.getId());
             //登录名不允许修改
             admin.setUsername(null);
+            if(adminVO.getPassword() != null && !"".equals(adminVO.getPassword())){
+                Password password = EncryptUtil.PiecesEncode(adminVO.getPassword());
+                admin.setPassword(password.getPassword());
+                admin.setSalt(password.getSalt());
+            }
+            admin.setUpdateTime(new Date());
             adminDao.update(admin);
         } else {
+            Password password = EncryptUtil.PiecesEncode(adminVO.getPassword());
+            admin.setPassword(password.getPassword());
+            admin.setSalt(password.getSalt());
+            admin.setStatus(AdminStatus.ENABLE.getType());
+            admin.setCreateTime(new Date());
+            admin.setUpdateTime(admin.getCreateTime());
             adminDao.create(admin);
         }
         //设置用户角色信息

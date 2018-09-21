@@ -2,8 +2,11 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.fulu.game.common.Constant;
 import com.fulu.game.core.dao.ICommonDao;
+import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.vo.SysRouterVO;
+import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.util.SysRouterUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,9 @@ public class SysRouterServiceImpl extends AbsCommonService<SysRouter,Integer> im
 
     @Autowired
 	private SysRouterDao sysRouterDao;
+
+    @Autowired
+    private AdminService adminService;
 
 
 
@@ -51,7 +57,14 @@ public class SysRouterServiceImpl extends AbsCommonService<SysRouter,Integer> im
      */
     @Override
     public List<SysRouter> findSysRouterListByAdminId(Integer id) {
-        List<SysRouter> list = sysRouterDao.findSysRouterListByAdminId(id);
+        Admin admin = adminService.findById(id);
+        List<SysRouter> list = new ArrayList<>();
+        // 非超级管理员只获取权限之内的router
+        if(admin != null && !Constant.ADMIN_USERNAME.equals(admin.getUsername())){
+            list = sysRouterDao.findSysRouterListByAdminId(id);
+        } else {
+            list = findAll();
+        }
         return SysRouterUtil.formatRouter(list);
     }
 
