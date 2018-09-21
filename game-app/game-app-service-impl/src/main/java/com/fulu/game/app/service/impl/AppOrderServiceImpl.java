@@ -198,13 +198,12 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
         orderDetailsVO.setServerScoreAvg(server.getScoreAvg());
         orderDetailsVO.setServerIncome(orderDetailsVO.getTotalMoney().multiply(orderDetailsVO.getCharges()));
 
-
         User user = userService.findById(order.getUserId());
         orderDetailsVO.setUserHeadUrl(user.getHeadPortraitsUrl());
         orderDetailsVO.setUserNickName(user.getNickname());
         orderDetailsVO.setServerAge(user.getAge());
         orderDetailsVO.setServerGender(user.getGender());
-
+        orderDetailsVO.setUserScoreAvg(user.getServerScoreAvg());
 
         //orderStatus
         long countDown = orderStatusDetailsService.getCountDown(orderNo, order.getStatus());

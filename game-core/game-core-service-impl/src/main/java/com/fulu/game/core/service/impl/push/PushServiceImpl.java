@@ -261,7 +261,7 @@ public class PushServiceImpl implements PushService {
      * @param alert
      * @param extras
      */
-    protected void pushMsg(String title, String alert, Map<String, String> extras) {
+    public void pushMsg(String title, String alert, Map<String, String> extras) {
         JPushClient jpushClient = new JPushClient(configProperties.getJpush().getAppSecret(), configProperties.getJpush().getAppKey());
         PushPayload payload = buildPushPayload(title, alert, extras, Audience.all());
         try {
@@ -289,7 +289,7 @@ public class PushServiceImpl implements PushService {
      * @param userIds
      * @param extras
      */
-    protected void pushMsg(String title, String alert, Map<String, String> extras, Integer[] userIds) {
+    public void pushMsg(String title, String alert, Map<String, String> extras, Integer... userIds) {
         if (userIds == null) {
             throw new ServiceErrorException("消息推送Id不能为空");
         }

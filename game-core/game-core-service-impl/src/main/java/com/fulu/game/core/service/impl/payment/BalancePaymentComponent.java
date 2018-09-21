@@ -76,7 +76,7 @@ public class BalancePaymentComponent implements PaymentComponent {
         user.setUpdateTime(new Date());
         int result = userService.update(user);
         if (result < 1) {
-            return true;
+            return false;
         }
 
         //记录零钱流水
@@ -90,7 +90,7 @@ public class BalancePaymentComponent implements PaymentComponent {
         mDetails.setCreateTime(DateUtil.date());
         moneyDetailsService.drawSave(mDetails);
 
-        return false;
+        return true;
     }
 
     /**
