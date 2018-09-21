@@ -216,9 +216,16 @@ public class AdminUserInfoAuthServiceImpl extends UserInfoAuthServiceImpl implem
         }
 
         Boolean vestFlag = userInfoAuth.getVestFlag() == null ? false : userInfoAuth.getVestFlag();
+
+
         if (vestFlag) {
             userInfoAuth.setVestFlag(false);
             List<Product> productList = productService.findByUserId(userInfoAuth.getUserId());
+            for (UserTechAuth techAuth : authList) {
+                techAuth.setIsActivate(false);
+                userTechAuthServiceImpl.update(techAuth);
+            }
+
             if (CollectionUtils.isNotEmpty(productList)) {
                 for (Product meta : productList) {
                     meta.setStatus(false);
@@ -228,6 +235,10 @@ public class AdminUserInfoAuthServiceImpl extends UserInfoAuthServiceImpl implem
                 }
             }
         } else {
+            for (UserTechAuth techAuth : authList) {
+                techAuth.setIsActivate(true);
+                userTechAuthServiceImpl.update(techAuth);
+            }
             userInfoAuth.setVestFlag(true);
             List<Product> productList = productService.findByUserId(userInfoAuth.getUserId());
             //陪玩师对应的商品设置为“求单ing”状态，激活技能接单方式
