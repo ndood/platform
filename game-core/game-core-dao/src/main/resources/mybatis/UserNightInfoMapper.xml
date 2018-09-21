@@ -117,6 +117,7 @@
         WHERE
         t2.del_flag = FALSE
         AND t2.is_activate = TRUE
+        AND t1.del_flag = FALSE
         <if test="gender != null">
             AND t2.gender = #{gender}
         </if>
