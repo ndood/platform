@@ -3,6 +3,7 @@ package com.fulu.game.core.service;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderDeal;
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.OrderEventVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import org.springframework.web.context.request.async.DeferredResult;
@@ -42,7 +43,7 @@ public interface OrderOpenService {
      * @param orderNo
      * @return
      */
-    OrderEventVO findOrderEvent(String orderNo);
+    OrderEventVO findOrderEvent(String orderNo,User currentUser);
 
     /**
      * 陪玩师拒绝协商订单

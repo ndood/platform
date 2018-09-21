@@ -363,7 +363,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
     }
 
     @Override
-    public OrderEventVO findOrderEvent(String orderNo) {
+    public OrderEventVO findOrderEvent(String orderNo,User currentUser) {
         Order order = orderService.findByOrderNo(orderNo);
         if (order == null) {
             throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST, orderNo);
@@ -374,12 +374,12 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         } else if (Arrays.asList(OrderStatusGroupEnum.APPEAL_ALL.getStatusList()).contains(order.getStatus())) {
             type = OrderEventTypeEnum.APPEAL.getType();
         }
-        User user = userService.getCurrentUser();
-        OrderEventVO orderEventVO = orderEventService.getOrderEvent(order, user, type);
+        
+        OrderEventVO orderEventVO = orderEventService.getOrderEvent(order, currentUser, type);
         if (orderEventVO == null) {
             throw new OrderException(orderNo, "该协商已经被取消!");
         }
-        User currentUser = userService.getCurrentUser();
+        
         if (currentUser.getId().equals(orderEventVO.getUserId())) {
             orderEventVO.setIdentity(UserTypeEnum.GENERAL_USER.getType());
         } else if (currentUser.getId().equals(orderEventVO.getServiceUserId())) {

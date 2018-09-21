@@ -249,7 +249,8 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/event")
     public Result orderEvent(@RequestParam(required = true) String orderNo) {
-        OrderEventVO orderEventVO = orderService.findOrderEvent(orderNo);
+        User user = userService.getCurrentUser();
+        OrderEventVO orderEventVO = orderService.findOrderEvent(orderNo,user);
         return Result.success().data(orderEventVO);
     }
 

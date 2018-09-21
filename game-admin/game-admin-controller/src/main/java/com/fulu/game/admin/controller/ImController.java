@@ -6,10 +6,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.entity.*;
-import com.fulu.game.core.entity.vo.AdminImLogVO;
-import com.fulu.game.core.entity.vo.OrderVO;
-import com.fulu.game.core.entity.vo.UserInfoAuthVO;
-import com.fulu.game.core.entity.vo.UserInfoVO;
+import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.play.service.impl.PlayMiniAppOrderServiceImpl;
@@ -237,6 +234,22 @@ public class ImController extends BaseController {
         
         playMiniAppOrderServiceImpl.consultAgreeOrder(order, orderEventId , userId);
         return Result.success().data(orderNo);
+    }
+
+
+    /**
+     * 订单事件查询（查询协商和申诉）
+     *
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/order/event")
+    public Result orderEvent(@RequestParam(required = true) String orderNo,Integer userId) {
+        
+        User user = userService.findById(userId);
+        OrderEventVO orderEventVO = playMiniAppOrderServiceImpl.findOrderEvent(orderNo,user);
+        return Result.success().data(orderEventVO);
+        
     }
 
 
