@@ -150,6 +150,7 @@ public class UserNightInfoServiceImpl extends AbsCommonService<UserNightInfo, In
         if (CollectionUtils.isNotEmpty(caseVOList)) {
             for (ProductShowCaseVO showCaseVO : caseVOList) {
                 UserInfoVO userInfoVO = userInfoAuthService.findUserCardByUserId(showCaseVO.getUserId(), false, false, true, false);
+                showCaseVO.setId(showCaseVO.getProductId());
                 showCaseVO.setNickName(userInfoVO.getNickName());
                 showCaseVO.setGender(userInfoVO.getGender());
                 showCaseVO.setMainPhoto(userInfoVO.getMainPhotoUrl());

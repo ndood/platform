@@ -2,7 +2,6 @@ package com.fulu.game.admin.service.impl;
 
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.date.DateUtil;
 import com.fulu.game.admin.service.AdminUserInfoAuthService;
 import com.fulu.game.common.enums.FileTypeEnum;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
@@ -215,21 +214,29 @@ public class AdminUserInfoAuthServiceImpl extends UserInfoAuthServiceImpl implem
             throw new ServiceErrorException("该用户没有可用的技能！");
         }
 
-        Boolean vestFlag = userInfoAuth.getVestFlag();
+        Boolean vestFlag = userInfoAuth.getVestFlag() == null ? false : userInfoAuth.getVestFlag();
         if (vestFlag) {
             userInfoAuth.setVestFlag(false);
+            List<Product> productList = productService.findByUserId(userInfoAuth.getUserId());
+            //陪玩师对应的商品设置为“求单ing”状态，激活技能接单方式
+            if (CollectionUtils.isNotEmpty(productList)) {
+                for (Product meta : productList) {
+                    //取消技能
+                    productService.techEnable(meta.getTechAuthId(), false, meta.getUserId());
+                    //停止接单
+                    productService.stopOrderReceiving(meta.getUserId());
+                }
+            }
         } else {
             userInfoAuth.setVestFlag(true);
             List<Product> productList = productService.findByUserId(userInfoAuth.getUserId());
-            //陪玩师对应的商品设置为“求单ing”状态
+            //陪玩师对应的商品设置为“求单ing”状态，激活技能接单方式
             if (CollectionUtils.isNotEmpty(productList)) {
                 for (Product meta : productList) {
-                    boolean flag = !meta.getDelFlag() && meta.getIsActivate();
-                    if (flag) {
-                        meta.setStatus(true);
-                        meta.setUpdateTime(DateUtil.date());
-                        productService.update(meta);
-                    }
+                    //激活技能
+                    productService.techEnable(meta.getTechAuthId(), true, meta.getUserId());
+                    //开始接单
+                    productService.startOrderReceiving(null, meta.getUserId());
                 }
             }
         }

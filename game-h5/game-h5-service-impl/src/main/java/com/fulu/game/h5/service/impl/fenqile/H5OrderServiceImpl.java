@@ -87,9 +87,9 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         User server = userService.findById(order.getServiceUserId());
 
         UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(order.getServiceUserId());
-        boolean vestFlag = false;
+        Boolean vestFlag = false;
         if (userInfoAuth != null) {
-            vestFlag = userInfoAuth.getVestFlag();
+            vestFlag = userInfoAuth.getVestFlag() == null ? false : userInfoAuth.getVestFlag();
         }
 
         if (!vestFlag) {

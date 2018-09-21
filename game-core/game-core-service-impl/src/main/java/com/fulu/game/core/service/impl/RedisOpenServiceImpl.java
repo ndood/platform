@@ -128,6 +128,22 @@ public class RedisOpenServiceImpl {
     }
 
     /**
+     * 根据key设置某个hash的值
+     *
+     * @param key
+     * @param hash
+     * @param value
+     * @param isPerpetual 是否永久保存（true：是；false：否）
+     */
+    public void hset(String key, String hash, Object value, boolean isPerpetual) {
+        if (isPerpetual) {
+            redisTemplate.opsForHash().put(key, hash, value);
+        } else {
+            hset(key, hash, value, TIME);
+        }
+    }
+
+    /**
      * 根据key设置某个hash的值及存活时间
      *
      * @param key
@@ -148,6 +164,21 @@ public class RedisOpenServiceImpl {
      */
     public void hset(String key, Map<String, Object> map) {
         hset(key, map, TIME);
+    }
+
+    /**
+     * 根据key设置hashtable的值
+     *
+     * @param key
+     * @param map
+     * @param isPerpetual 是否永久保存（true：是；false：否）
+     */
+    public void hset(String key, Map<String, Object> map, boolean isPerpetual) {
+        if (isPerpetual) {
+            redisTemplate.opsForHash().putAll(key, map);
+        } else {
+            hset(key, map, TIME);
+        }
     }
 
     /**
@@ -313,10 +344,11 @@ public class RedisOpenServiceImpl {
 
     /**
      * 通配符查找redis的key
+     *
      * @param parttern
      * @return
      */
-    public Set<String> keys(String parttern){
+    public Set<String> keys(String parttern) {
         return redisTemplate.keys(parttern);
     }
 
