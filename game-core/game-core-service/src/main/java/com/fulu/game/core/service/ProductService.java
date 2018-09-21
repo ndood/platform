@@ -93,7 +93,7 @@ public interface ProductService extends ICommonService<Product, Integer> {
      * @param status
      * @return
      */
-    Product enable(Product product, boolean status);
+    Product enable(Product product, boolean status, Integer userId);
 
     /**
      * 技能下所有商品激活和失效
@@ -101,7 +101,7 @@ public interface ProductService extends ICommonService<Product, Integer> {
      * @param techId
      * @param status
      */
-    void techEnable(int techId, boolean status);
+    void techEnable(int techId, boolean status, Integer userId);
 
 
     /**
@@ -126,12 +126,12 @@ public interface ProductService extends ICommonService<Product, Integer> {
      *
      * @param hour
      */
-    void startOrderReceiving(Float hour);
+    void startOrderReceiving(Float hour, Integer userId);
 
     /**
      * 停止接单
      */
-    void stopOrderReceiving();
+    void stopOrderReceiving(Integer userId);
 
 
     /**

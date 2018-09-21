@@ -215,8 +215,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * @return
      */
     @Override
-    public Product enable(Product product, boolean status) {
-        User user = userService.getCurrentUser();
+    public Product enable(Product product, boolean status, Integer userId) {
+        User user = userService.findById(userId);
         log.info("激活或者取消激活商品:userId:{};product:{};status:{};", user.getId(), product, status);
         //检查用户认证的状态
         userService.checkUserInfoAuthStatus(user.getId());
@@ -233,9 +233,9 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
 
     @Override
-    public void techEnable(int techId, boolean status) {
+    public void techEnable(int techId, boolean status, Integer userId) {
         log.info("激活或取消该技能下所有商品:techId:{};status:{};", techId, status);
-        User user = userService.getCurrentUser();
+        User user = userService.findById(userId);
         //检验用户激活状态
         userService.checkUserInfoAuthStatus(user.getId());
         //检验该技能激活状态
@@ -249,7 +249,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             throw new ServiceErrorException("必须先填写价格才能激活!");
         }
         for (Product product : products) {
-            enable(product, status);
+            enable(product, status, user.getId());
         }
     }
 
@@ -380,19 +380,23 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * 开始接单业务
      */
     @Override
-    public void startOrderReceiving(Float hour) {
-        User user = userService.getCurrentUser();
-        log.info("用户开始接单:userId:{};hour:{};", user.getId(), hour);
-        userService.isCurrentUser(user.getId());
+    public void startOrderReceiving(Float hour, Integer userId) {
         //检查用户认证的状态
-        userService.checkUserInfoAuthStatus(user.getId());
+        userService.checkUserInfoAuthStatus(userId);
         Long expire = (long) (hour * 3600);
-        List<Product> products = findEnabledProductByUser(user.getId());
+        List<Product> products = findEnabledProductByUser(userId);
         if (products.isEmpty()) {
             throw new ServiceErrorException("请选择技能后再点击开始接单!");
         }
-        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()), "HOUR", hour, expire);
-        redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(user.getId()), "START_TIME", System.currentTimeMillis(), expire);
+
+        if (hour == null) {
+            redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(userId), "HOUR", hour, true);
+            redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(userId), "START_TIME", System.currentTimeMillis(), true);
+        } else {
+            redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(userId), "HOUR", hour, expire);
+            redisOpenService.hset(RedisKeyEnum.USER_ORDER_RECEIVE_TIME_KEY.generateKey(userId), "START_TIME", System.currentTimeMillis(), expire);
+        }
+
         for (Product product : products) {
             ProductVO productVO = new ProductVO();
             BeanUtil.copyProperties(product, productVO);
@@ -400,14 +404,18 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             productVO.setStartTime(new Date());
             try {
                 log.info("开始接单设置:userId:{};product:{};beginOrderDate:{};orderHour:{};", product.getUserId(), product, System.currentTimeMillis(), hour);
-                redisOpenService.hset(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(product.getId()), BeanUtil.beanToMap(productVO), expire);
+                if (hour == null) {
+                    redisOpenService.hset(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(product.getId()), BeanUtil.beanToMap(productVO), true);
+                } else {
+                    redisOpenService.hset(RedisKeyEnum.PRODUCT_ENABLE_KEY.generateKey(product.getId()), BeanUtil.beanToMap(productVO), expire);
+                }
             } catch (Exception e) {
                 log.error("开始接单设置失败", e);
                 throw new ServiceErrorException("开始接单操作失败!");
             }
         }
         //添加商品到首页
-        updateUserProductIndex(user.getId(), Boolean.TRUE);
+        updateUserProductIndex(userId, Boolean.TRUE);
     }
 
 
@@ -415,8 +423,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * 手动停止接单
      */
     @Override
-    public void stopOrderReceiving() {
-        User user = userService.getCurrentUser();
+    public void stopOrderReceiving(Integer userId) {
+        User user = userService.findById(userId);
         log.info("用户停止接单:userId:{};", user.getId());
         //检查用户认证的状态
         userService.checkUserInfoAuthStatus(user.getId());
@@ -975,25 +983,4 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     public ProductShowCaseVO findRecommendProductByUserId(Integer userId) {
         return productDao.findRecommendProductByUserId(userId);
     }
-
-    //fixme gzc
-//    public static void main(String[] args) {
-//        String str = "20:23:23";
-//        String str1 = "22:55:55";
-//        DateTime startTime = DateUtil.parseTime(str);
-//        DateTime endTime = DateUtil.parseTime(str1);
-//
-//        //负数 str>str1 正数 str<str1
-//        long timeDiffLong = DateUtil.between(startTime, endTime, DateUnit.SECOND, Boolean.FALSE);
-//
-//        System.out.println(timeDiffLong);
-//
-//        System.out.println(startTime);
-//
-//        DateTime xx = DateUtil.parseTime(DateUtil.formatTime(DateUtil.date()));
-//        System.out.println(xx);
-//
-//        DateTime xxx = DateUtil.parseTime(DateUtil.formatTime(DateUtil.endOfDay(DateUtil.date())));
-//        System.out.println(xxx);
-//    }
 }
