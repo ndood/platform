@@ -29,7 +29,8 @@ public class UserException extends BizException {
         BODY_NO_AUTH(21006, "用户未进行身份验证"),
         BODY_ALREADY_AUTH(21007, "用户已经认证了身份"),
         MOBILE_NOT_MATCH_EXCEPTION(21008, "登录手机号不匹配！"),
-        NO_AVAILABLE_OPENID(21009, "无法打款，用户没有有效的openId");
+        NO_AVAILABLE_OPENID(21009, "无法打款，用户没有有效的openId"),
+        USER_CUSTOM_TAG_OVERFLOW(21010, "不能创建太多的自定义标签");
 
         private int code;
         private String msg;

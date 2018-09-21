@@ -18,14 +18,28 @@ public interface TagService extends ICommonService<Tag,Integer>{
 
     Tag create(Integer categoryId, Integer pid, String tagName);
 
+    /**
+     * 创建用户自定义标签
+     * @param userId
+     * @param categoryId
+     * @param tagName
+     * @return
+     */
+    Tag createUserCustomTag(int userId,int categoryId,String tagName);
+
     Tag update(Integer id, String tagName,Integer gender);
 
     PageInfo<Tag> parentList(Integer pageNum, Integer pageSize);
 
     List<Tag> findByPid(int tagPid);
 
-    List<Tag> findGroupTagByCategoryId(int categoryId);
-
+    /**
+     * 查找所有用户标签
+     * @param userId
+     * @param categoryId
+     * @return
+     */
+    List<Tag> findUserTags(int userId,int categoryId);
     /**
      * 查询所有个人标签
      * @return
@@ -53,6 +67,13 @@ public interface TagService extends ICommonService<Tag,Integer>{
      */
     TagVO findTagsByCategoryId(Integer categoryId);
 
+    /**
+     * 查询用户自定义表情和游戏分类标签
+     * @param userId
+     * @param categoryId
+     * @return
+     */
+    List<Tag> findByUserCategoryId(int userId,int categoryId);
     /**
      * 内容管理-删除标签组（和相关子标签）
      * @param tag

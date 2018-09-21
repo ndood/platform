@@ -59,6 +59,9 @@ public class UserController extends BaseController {
     @Autowired
     private UserCommentTagService userCommentTagService;
 
+    @Autowired
+    private TagService tagService;
+
     /**
      * 修改/填写资料
      *
@@ -417,6 +420,22 @@ public class UserController extends BaseController {
         }
         return Result.success().data(techTags);
     }
+
+
+
+    /**
+     * 陪玩师添加自己的技能标签
+     * @param categoryId
+     * @return
+     */
+    @PostMapping("/tech/tag/add")
+    public Result getUserTechTagAdd(@RequestParam(required = true) String tagName,
+                                  @RequestParam(required = true) Integer categoryId){
+        User user = userService.getCurrentUser();
+        Tag tag = tagService.createUserCustomTag(user.getId(),categoryId,tagName);
+        return Result.success().data(tag).msg("创建自定义标签成功!");
+    }
+
 
 
 

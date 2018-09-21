@@ -3,10 +3,7 @@ package com.fulu.game.app.controller;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.PlatformShowEnum;
-import com.fulu.game.core.entity.AssignOrderSetting;
-import com.fulu.game.core.entity.PriceRule;
-import com.fulu.game.core.entity.Product;
-import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.AssignOrderSettingVO;
 import com.fulu.game.core.entity.vo.ProductDetailsVO;
 import com.fulu.game.core.entity.vo.TechAuthProductVO;
@@ -46,7 +43,8 @@ public class ProductController extends BaseController {
     private PriceRuleService priceRuleService;
     @Autowired
     private AssignOrderSettingService assignOrderSettingService;
-
+    @Autowired
+    private TagService tagService;
     /**
      * 获取商品列表
      * @param userId
@@ -106,6 +104,15 @@ public class ProductController extends BaseController {
         } else {
             return Result.success().msg("关闭");
         }
+    }
+
+
+
+    @RequestMapping(value = "/category/tags")
+    public Result allCategoryUserTags(@RequestParam(required = true)Integer categoryId){
+        User user = userService.getCurrentUser();
+        List<Tag> tagList  =   tagService.findByUserCategoryId(user.getId(),categoryId);
+        return Result.success().data(tagList);
     }
 
 

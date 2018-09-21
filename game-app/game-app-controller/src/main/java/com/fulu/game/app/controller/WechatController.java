@@ -30,6 +30,7 @@ public class WechatController {
     public String payOrderNotify(HttpServletRequest request) {
         try {
             String xmlResult = IOUtils.toString(request.getInputStream(), request.getCharacterEncoding());
+            log.info("订单支付方法接收微信回调:{}",xmlResult);
             PayCallbackModel payCallbackModel = PayCallbackModel.newBuilder(PaymentEnum.WECHAT_PAY.getType(), PayBusinessEnum.ORDER)
                     .platform(PlatformEcoEnum.APP.getType())
                     .wechatXmlResult(xmlResult)
@@ -39,7 +40,7 @@ public class WechatController {
                 return WxPayNotifyResponse.success("支付成功");
             }
         } catch (Exception e) {
-            log.error("xml消息转换异常{}", e.getMessage());
+            log.error("xml消息转换异常", e);
         }
         return WxPayNotifyResponse.fail("支付失败");
     }
@@ -50,6 +51,7 @@ public class WechatController {
     public String virtualProductOrderNotify(HttpServletRequest request) {
         try {
             String xmlResult = IOUtils.toString(request.getInputStream(), request.getCharacterEncoding());
+            log.info("充值方法接收微信回调:{}",xmlResult);
             PayCallbackModel payCallbackModel = PayCallbackModel.newBuilder(PaymentEnum.WECHAT_PAY.getType(), PayBusinessEnum.VIRTUAL_PRODUCT)
                     .platform(PlatformEcoEnum.APP.getType())
                     .wechatXmlResult(xmlResult)
@@ -59,7 +61,7 @@ public class WechatController {
                 return WxPayNotifyResponse.success("支付成功");
             }
         } catch (Exception e) {
-            log.error("xml消息转换异常{}", e.getMessage());
+            log.error("xml消息转换异常", e);
         }
         return WxPayNotifyResponse.fail("支付失败");
     }

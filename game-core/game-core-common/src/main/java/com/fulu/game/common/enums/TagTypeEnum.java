@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum TagTypeEnum implements TypeEnum<Integer> {
 
     PERSON(1, "个人标签"),
-    GAME(2, "游戏标签");
+    GAME(2, "游戏标签"),
+    CUSTOM(3, "用户自定义标签");
 
     private Integer type;
     private String msg;

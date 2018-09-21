@@ -45,18 +45,6 @@ public class AlipayController {
         }
         return "fail";
     }
-    /**
-     * 订单业务回调
-     * @param request
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping("/pay/callback")
-    public String payCallbackTest(HttpServletRequest request) {
-        Map<String, String> params = getAlipayParams(request.getParameterMap());
-        log.info("支付宝调用了错误的回调:{}",params);
-        return "fail";
-    }
 
 
     /**

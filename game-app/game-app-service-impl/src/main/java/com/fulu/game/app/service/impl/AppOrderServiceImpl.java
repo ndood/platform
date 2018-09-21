@@ -284,7 +284,6 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
                     orderDetailsVO.setCommentScore(userComment.getScore());
                 }
             }
-
         }
         return new PageInfo<>(list);
     }

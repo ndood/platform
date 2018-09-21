@@ -81,7 +81,7 @@ public class WeChatPayPaymentComponent implements PaymentComponent{
              payCallbackTO.setPayMoney(BaseWxPayResult.feeToYuan(result.getTotalFee()));
              payCallbackTO.setSuccess(true);
          }catch (Exception e){
-             log.info("微信回调解析异常:", e);
+             log.error("微信回调解析异常:", e);
          }
         return payCallbackTO;
     }

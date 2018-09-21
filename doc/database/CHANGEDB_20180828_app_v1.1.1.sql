@@ -465,6 +465,8 @@ ALTER TABLE `t_user_tech_auth` ADD COLUMN `resource_type`  tinyint(1) DEFAULT '1
 ALTER TABLE `t_user_tech_auth` ADD COLUMN `score_avg` decimal(2,1) DEFAULT NULL COMMENT '技能评分' after `resource_type`;
 
 ALTER TABLE `t_user_tech_auth` ADD COLUMN `is_main` tinyint(1) DEFAULT '0' COMMENT '是否是主要技能' after `is_activate`;
+-- 添加用户自定义标签
+ALTER TABLE `t_tag` ADD COLUMN `user_id` int(11) DEFAULT NULL COMMENT '用户ID' after `category_id`;
 
 
 -- 分类表新增：

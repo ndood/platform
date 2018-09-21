@@ -39,7 +39,7 @@ public class WechatController {
                 return WxPayNotifyResponse.success("支付成功");
             }
         } catch (Exception e) {
-            log.error("xml消息转换异常{}", e.getMessage());
+            log.error("xml消息转换异常", e);
         }
         return WxPayNotifyResponse.fail("支付失败");
     }

@@ -25,6 +25,7 @@ public abstract class VirtualOrderPayServiceImpl implements BusinessPayService {
 
     @Override
     public PayRequestRes payRequest(PayRequestModel payRequestModel) {
+        log.info("充值业务调用支付请求:{}",payRequestModel);
         VirtualPayOrder order = payRequestModel.getVirtualPayOrder();
         if (order.getIsPayCallback()) {
             throw new OrderException(order.getOrderNo(), "已支付的订单不能支付!");
@@ -52,17 +53,18 @@ public abstract class VirtualOrderPayServiceImpl implements BusinessPayService {
     public boolean payResult(PayCallbackModel payCallbackModel) {
         PaymentComponent paymentComponent = paymentFactory.build(payCallbackModel.getPayment());
         PayCallbackRes res =paymentComponent.payCallBack(payCallbackModel);
-        log.info("回调结果:{}",res);
+        log.info("支付回调结果:{}",res);
         if(res.isSuccess()){
             payOrder(res.getOrderNO(),new BigDecimal(res.getPayMoney()));
         }else{
-            log.error("回调参数验证异常:{}",res);
+            log.error("支付回调参数验证异常:{}",res);
         }
         return res.isSuccess();
     }
 
     @Override
     public boolean refund(RefundModel refundModel) {
+        log.info("充值业务调用退款请求:{}",refundModel);
         PaymentComponent paymentComponent = paymentFactory.build(refundModel.getPayment());
         boolean refundResult = paymentComponent.refund(refundModel);
         return refundResult;
