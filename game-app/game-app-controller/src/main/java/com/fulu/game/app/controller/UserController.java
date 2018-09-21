@@ -58,6 +58,8 @@ public class UserController extends BaseController {
 
     @Autowired
     private UserCommentTagService userCommentTagService;
+    @Autowired
+    private UserProfessionService userProfessionService;
 
     /**
      * 修改/填写资料
@@ -419,6 +421,15 @@ public class UserController extends BaseController {
     }
 
 
-
+    /**
+     * 获取用户职业列表
+     *
+     * @return
+     */
+    @RequestMapping("user-profession/all-list")
+    public Result userProfessionList() {
+        List<UserProfession> userProfessions = userProfessionService.findUserProfessionList();
+        return Result.success().data(userProfessions);
+    }
 
 }
