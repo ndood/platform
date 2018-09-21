@@ -3,6 +3,7 @@ package com.fulu.game.core.entity.vo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Data
@@ -36,11 +37,11 @@ public class AppPushMsgVO {
     }
 
     public static Builder newBuilder(Integer userId) {
-        return new Builder(Boolean.TRUE,userId);
+        return new Builder(Boolean.FALSE,userId);
     }
 
     public static Builder newBuilder(Integer[] userIds) {
-        return new Builder(Boolean.TRUE,userIds);
+        return new Builder(Boolean.FALSE,userIds);
     }
 
 
@@ -85,6 +86,9 @@ public class AppPushMsgVO {
 
 
         public AppPushMsgVO build() {
+            if(extras==null){
+                extras = new HashMap<>();
+            }
             return new AppPushMsgVO(this);
         }
     }

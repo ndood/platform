@@ -289,7 +289,7 @@ public class PushServiceImpl implements PushService {
      * @param userIds
      * @param extras
      */
-    protected void pushMsg(String title, String alert, Map<String, String> extras, Integer[] userIds) {
+    protected void pushMsg(String title, String alert, Map<String, String> extras, Integer... userIds) {
         if (userIds == null) {
             throw new ServiceErrorException("消息推送Id不能为空");
         }
