@@ -7,6 +7,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.FileTypeEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
@@ -969,8 +970,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             }
         } else {
             //保存开关CD  24小时
-            //fixme gzc 改回24小时
-            redisOpenService.set(RedisKeyEnum.USER_AGENT_IM_OPEN.generateKey(userInfo.getId()), "true", 30);
+            redisOpenService.set(RedisKeyEnum.USER_AGENT_IM_OPEN.generateKey(userInfo.getId()), "true", Constant.ONE_DAY);
 
             //发送邮件
             MailUtil.sendMail(configProperties.getOrdermail().getAddress(), configProperties.getOrdermail().getPassword(), "陪玩师申请开通代聊服务", userInfo.getNickname() + "申请开通代聊服务，ID：" + userInfo.getId() + "，手机号：" + userInfo.getMobile() + "，请与之联系获取私照", new String[]{configProperties.getOrdermail().getAddress()});
