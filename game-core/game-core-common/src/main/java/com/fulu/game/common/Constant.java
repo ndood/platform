@@ -211,5 +211,5 @@ public interface Constant {
     Map<String, Object> RSA_MAP = new HashMap<>();
 
     /** 超级管理员用户名 */
-    String ADMIN_USERNAME = "administrator";
+    String ADMIN_USERNAME = "admin";
 }
