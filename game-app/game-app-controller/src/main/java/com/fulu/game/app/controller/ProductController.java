@@ -5,6 +5,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.PlatformShowEnum;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.AssignOrderSettingVO;
+import com.fulu.game.core.entity.vo.PriceRuleVO;
 import com.fulu.game.core.entity.vo.ProductDetailsVO;
 import com.fulu.game.core.entity.vo.TechAuthProductVO;
 import com.fulu.game.core.service.*;
@@ -174,7 +175,7 @@ public class ProductController extends BaseController {
         User user = userService.getCurrentUser();
         assignOrderSettingVO.setUserId(user.getId());
         assignOrderSettingService.save(assignOrderSettingVO);
-        return Result.success().msg("设置成功！");
+        return Result.success().data(assignOrderSettingVO).msg("设置成功！");
     }
 
 

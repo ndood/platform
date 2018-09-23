@@ -14,7 +14,9 @@ public class TechAuthProductVO extends UserTechAuth {
     private String categoryName;
     private String categoryIcon;
 
-    List<ModelPrice> modelPriceList = new ArrayList<>();
+    private List<ModelPrice> modelPriceList = new ArrayList<>();
+
+    private List<PriceRuleVO> priceRuleList = new ArrayList<>();
 
     private List<TechTag> techTagList;
 

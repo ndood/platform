@@ -54,6 +54,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     private ProductSearchComponent productSearchComponent;
     @Autowired
     private ProductTopService productTopService;
+    @Autowired
+    private PriceRuleService priceRuleService;
 
     @Override
     public ICommonDao<Product, Integer> getDao() {
@@ -343,6 +345,10 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             }
             List<TechTag> techTagList = techTagService.findByTechAuthId(userTechAuth.getId());
             techAuthProductVO.setTechTagList(techTagList);
+            //添加每一个技能的价格规则
+            List<PriceRuleVO> priceRuleList = priceRuleService.findUserPriceByCategoryId(userTechAuth.getCategoryId(),userId);
+            techAuthProductVO.setPriceRuleList(priceRuleList);
+
             resultList.add(techAuthProductVO);
         }
         return resultList;
