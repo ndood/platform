@@ -235,6 +235,7 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
 
     /**
      * 用户验收订单
+     *
      * @param orderNo
      * @return
      */
@@ -261,31 +262,37 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
 
     /**
      * 订单列表
+     *
      * @param pageNum
      * @param pageSize
      * @param type     1是用户2是陪玩师
      * @return
      */
-    public PageInfo<OrderDetailsVO> orderList(int pageNum, int pageSize, Integer type,List<Integer> statusList) {
+    public PageInfo<OrderDetailsVO> orderList(int pageNum, int pageSize, Integer type, List<Integer> statusList) {
         PageHelper.startPage(pageNum, pageSize, "id DESC");
         User user = userService.getCurrentUser();
-        List<OrderDetailsVO> list = orderService.orderList(type, user.getId(),statusList);
+        List<OrderDetailsVO> list = orderService.orderList(type, user.getId(), statusList);
         for (OrderDetailsVO orderDetailsVO : list) {
             String categoryName = orderDetailsVO.getName().substring(0, orderDetailsVO.getName().indexOf(" "));
             orderDetailsVO.setCategoryName(categoryName);
             orderDetailsVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderDetailsVO.getStatus()));
             orderDetailsVO.setStatusNote(OrderStatusEnum.getNoteByStatus(orderDetailsVO.getStatus()));
             OrderProduct orderProduct = orderProductService.findByOrderNo(orderDetailsVO.getOrderNo());
-            orderDetailsVO.setPriceUnit(orderProduct.getUnit()+"/"+orderProduct.getPrice()+"元*"+orderProduct.getAmount());
+            orderDetailsVO.setPriceUnit(orderProduct.getUnit() + "/" + orderProduct.getPrice() + "元*" + orderProduct.getAmount());
             //订单已评价状态显示订单评价的分数
-            if(orderDetailsVO.getStatus().equals(OrderStatusEnum.ALREADY_APPRAISE.getStatus())){
+            if (orderDetailsVO.getStatus().equals(OrderStatusEnum.ALREADY_APPRAISE.getStatus())) {
                 UserComment userComment = userCommentService.findByOrderNo(orderDetailsVO.getOrderNo());
-                if(userComment!=null){
+                if (userComment != null) {
                     orderDetailsVO.setCommentScore(userComment.getScore());
                 }
             }
 
+            if (orderDetailsVO.getStatus().equals(OrderStatusEnum.COMPLETE.getStatus())
+                    || orderDetailsVO.getStatus().equals(OrderStatusEnum.SYSTEM_COMPLETE.getStatus())
+                    || orderDetailsVO.getStatus().equals(OrderStatusEnum.ALREADY_APPRAISE.getStatus())) {
 
+
+            }
 
 
         }
@@ -322,8 +329,8 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
      */
     private int receiveOrderTime(Date payTime, Date beginTime) {
         //todo 因为小程序没有提交开始时间 这里为了测试给一个开始时间
-        if(beginTime==null){
-            beginTime = DateUtil.offsetMinute(payTime,30);
+        if (beginTime == null) {
+            beginTime = DateUtil.offsetMinute(payTime, 30);
         }
         int timeMinute = 15;
         Long minute = DateUtil.between(payTime, beginTime, DateUnit.MINUTE);
@@ -345,8 +352,8 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
     private int beginOrderTime(Date receivingTime, Date beginTime) {
         //todo 因为小程序没有提交开始时间 这里为了测试给一个开始时间
 
-        if(beginTime==null){
-            beginTime = DateUtil.offsetMinute(receivingTime,30);
+        if (beginTime == null) {
+            beginTime = DateUtil.offsetMinute(receivingTime, 30);
         }
         int timeMinute = 15;
         Long minute = DateUtil.between(receivingTime, beginTime, DateUnit.MINUTE);
@@ -369,8 +376,8 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
     private int waitForPayTime(Date orderTime, Date beginTime) {
         //todo 因为小程序没有提交开始时间 这里为了测试给一个开始时间
 
-        if(beginTime==null){
-            beginTime = DateUtil.offsetMinute(orderTime,30);
+        if (beginTime == null) {
+            beginTime = DateUtil.offsetMinute(orderTime, 30);
         }
 
         int timeMinute = 30;
