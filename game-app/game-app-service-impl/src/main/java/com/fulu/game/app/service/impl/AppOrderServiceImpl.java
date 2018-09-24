@@ -48,15 +48,14 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
     private OrderProductService orderProductService;
     @Autowired
     private OrderStatusDetailsService orderStatusDetailsService;
-
     @Autowired
     private MobileAppPushServiceImpl mobileAppPushServiceImpl;
-
     @Autowired
     private AppOrderShareProfitServiceImpl appOrderShareProfitService;
-
     @Autowired
     private UserCommentService userCommentService;
+    @Autowired
+    private ServerCommentService serverCommentService;
 
     /**
      * 用户提交订单
@@ -290,8 +289,9 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
             if (orderDetailsVO.getStatus().equals(OrderStatusEnum.COMPLETE.getStatus())
                     || orderDetailsVO.getStatus().equals(OrderStatusEnum.SYSTEM_COMPLETE.getStatus())
                     || orderDetailsVO.getStatus().equals(OrderStatusEnum.ALREADY_APPRAISE.getStatus())) {
-
-
+                ServerComment serverComment = serverCommentService.findByOrderNo(orderDetailsVO.getOrderNo());
+                boolean flag = (serverComment != null);
+                orderDetailsVO.setIsCommentedUser(flag);
             }
 
 

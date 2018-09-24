@@ -426,7 +426,7 @@ public class OrderController extends BaseController {
     @RequestMapping("/server-comment/get")
     public Result serverCommentGet(@RequestParam("orderNo") String orderNo) {
         //此处评论信息不存在的话，也需要返回用户昵称、头像、性别、年龄和im信息
-        ServerCommentVO serverCommentVO = serverCommentService.findByOrderNo(orderNo);
+        ServerCommentVO serverCommentVO = serverCommentService.findCommentInfoByOrderNo(orderNo);
         return Result.success().data(serverCommentVO).msg("获取评论成功！");
     }
 

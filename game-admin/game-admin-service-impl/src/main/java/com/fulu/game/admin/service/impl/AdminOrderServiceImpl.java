@@ -446,7 +446,7 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
             //添加订单商品信息
             OrderProduct orderProduct = orderProductService.findByOrderNo(orderResVO.getOrderNo());
             orderResVO.setOrderProduct(orderProduct);
-//            OrderMarketProduct orderMarketProduct = orderMarketProductService.findByOrderNo(orderResVO.getOrderNo());
+//            OrderMarketProduct orderMarketProduct = orderMarketProductService.findCommentInfoByOrderNo(orderResVO.getOrderNo());
 //            orderResVO.setOrderMarketProduct(orderMarketProduct);
             //添加订单状态
             orderResVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderResVO.getStatus()));

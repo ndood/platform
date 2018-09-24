@@ -79,6 +79,15 @@ public class ServerCommentServiceImpl extends AbsCommonService<ServerComment,Int
         userService.update(updateUser);
     }
 
+
+    public ServerComment findByOrderNo(String orderNo){
+        ServerCommentVO param = new ServerCommentVO();
+        List<ServerComment> list = serverCommentDao.findByParameter(param);
+        ServerComment serverComment = (list != null && list.size() > 0) ? list.get(0) : null;
+        return serverComment;
+    }
+
+
     /**
      * 查询评价信息
      *
@@ -86,7 +95,7 @@ public class ServerCommentServiceImpl extends AbsCommonService<ServerComment,Int
      * @return
      */
     @Override
-    public ServerCommentVO findByOrderNo(String orderNo) {
+    public ServerCommentVO findCommentInfoByOrderNo(String orderNo) {
         Order order = orderService.findByOrderNo(orderNo);
         if (null == order) {
             throw new OrderException(order.getOrderNo(), "订单不存在!");
@@ -97,8 +106,7 @@ public class ServerCommentServiceImpl extends AbsCommonService<ServerComment,Int
         }
         ServerCommentVO serverCommentVO = new ServerCommentVO();
         serverCommentVO.setOrderNo(orderNo);
-        List<ServerComment> list = serverCommentDao.findByParameter(serverCommentVO);
-        ServerComment serverComment = (list != null && list.size() > 0) ? list.get(0) : null;
+        ServerComment serverComment =findByOrderNo(orderNo);
         if(serverComment == null){
             serverComment = new ServerComment();
             serverComment.setOrderNo(orderNo);

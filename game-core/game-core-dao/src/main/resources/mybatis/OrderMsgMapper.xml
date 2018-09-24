@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.OrderMsgDao">
+    <resultMap id="OrderMsgResultMap" type="com.fulu.game.core.entity.OrderMsg">
+        <id column="id" property="id"/>
+        <result column="message" property="message"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="user_id" property="userId"/>
+        <result column="opp_username" property="oppUsername"/>
+        <result column="opp_head_url" property="oppHeadUrl"/>
+        <result column="order_name" property="orderName"/>
+        <result column="order_time" property="orderTime"/>
+        <result column="order_status" property="orderStatus"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="OrderMsgResultVOMap" type="com.fulu.game.core.entity.vo.OrderMsgVO" extends="OrderMsgResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,message,order_no,user_id,opp_username,opp_head_url,order_name,order_time,order_status,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="OrderMsgResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_order_msg
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="OrderMsgResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_order_msg
+    </select>
+
+    <select id="findByParameter" resultMap="OrderMsgResultMap" parameterType="com.fulu.game.core.entity.vo.OrderMsgVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_order_msg
+        <where>
+            <if test="message != null">
+                and message = #{message}
+            </if>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="oppUsername != null">
+                and opp_username = #{oppUsername}
+            </if>
+            <if test="oppHeadUrl != null">
+                and opp_head_url = #{oppHeadUrl}
+            </if>
+            <if test="orderName != null">
+                and order_name = #{orderName}
+            </if>
+            <if test="orderTime != null">
+                and order_time = #{orderTime}
+            </if>
+            <if test="orderStatus != null">
+                and order_status = #{orderStatus}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_order_msg
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.OrderMsg">
+        insert into
+        t_order_msg (message,order_no,user_id,opp_username,opp_head_url,order_name,order_time,order_status,create_time,update_time)
+        values
+        (#{message},#{orderNo},#{userId},#{oppUsername},#{oppHeadUrl},#{orderName},#{orderTime},#{orderStatus},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.OrderMsg">
+        update t_order_msg
+        <set>
+
+            <if test="message != null">
+                message = #{message},
+            </if>
+
+            <if test="orderNo != null">
+                order_no = #{orderNo},
+            </if>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="oppUsername != null">
+                opp_username = #{oppUsername},
+            </if>
+
+            <if test="oppHeadUrl != null">
+                opp_head_url = #{oppHeadUrl},
+            </if>
+
+            <if test="orderName != null">
+                order_name = #{orderName},
+            </if>
+
+            <if test="orderTime != null">
+                order_time = #{orderTime},
+            </if>
+
+            <if test="orderStatus != null">
+                order_status = #{orderStatus},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

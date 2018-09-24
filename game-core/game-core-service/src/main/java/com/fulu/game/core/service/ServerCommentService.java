@@ -24,5 +24,12 @@ public interface ServerCommentService extends ICommonService<ServerComment,Integ
      * @param orderNo
      * @return
      */
-    ServerCommentVO findByOrderNo(String orderNo);
+    ServerCommentVO findCommentInfoByOrderNo(String orderNo);
+
+    /**
+     * 根据订单查询陪玩师给用户评论
+     * @param orderNo
+     * @return
+     */
+    ServerComment findByOrderNo(String orderNo);
 }
