@@ -73,5 +73,5 @@ public interface OrderService extends ICommonService<Order, Integer> {
 
 
 
-    List<OrderDetailsVO> orderList(int type, int userId);
+    List<OrderDetailsVO> orderList(int type, int userId,List<Integer> statusList);
 }

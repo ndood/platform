@@ -36,11 +36,22 @@ public enum OrderStatusGroupEnum {
     ADMIN_COMPLETE("订单完成", "ADMIN", 28, new Integer[]{500, 410, 415, 416, 420, 501, 502, 600}),
     RECON_ALL("分期乐对账状态", "ADMIN", 35, new Integer[]{500, 410, 420, 501, 502, 600, 415, 416}),
 
+    //集市订单
     MARKET_ALL("全部", "MARKET", 30, new Integer[]{210, 220, 300, 500, 501, 502, 600}),
     MARKET_WAIT_SERVICE("等待陪玩", "MARKET", 31, new Integer[]{210}),
     MARKET_SERVING("陪玩中", "MARKET", 32, new Integer[]{220}),
     MARKET_CHECK("等待验收", "MARKET", 33, new Integer[]{300}),
     MARKET_COMPLETE("订单完成", "MARKET", 34, new Integer[]{500, 501, 502, 600}),
+
+    //APP筛选订单状态
+    APP_USER_ALL("全部","APP_USER",50,null),
+    APP_USER_UNFINISHED("未完成","APP_USER",51,new Integer[]{200,210,220,400, 401,300,350,352}),
+    APP_USER_COMPLETED("已结束","APP_USER",52,new Integer[]{500, 410, 415, 416, 420, 501, 502, 600}),
+
+    APP_SERVER_ALL("全部","APP_SERVER",60,null),
+    APP_SERVER_UNFINISHED("全部","APP_SERVER",61,new Integer[]{210,220,400, 401,300,350,352}),
+    APP_SERVER_COMPLETED("全部","APP_SERVER",62,new Integer[]{500, 410, 415, 416, 420, 501, 502, 600}),
+
 
 
     MARKET_ORDER_REMARK_VISIBLE("接单者可见订单", "REMARK_VISIBLE", 200, new Integer[]{210, 220, 300}),

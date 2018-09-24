@@ -85,7 +85,7 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
     public PageInfo<OrderDetailsVO> list(int pageNum, int pageSize, Integer type) {
         PageHelper.startPage(pageNum, pageSize, "id DESC");
         User user = userService.getCurrentUser();
-        List<OrderDetailsVO> list = orderDao.listOrderDetails(type, user.getId());
+        List<OrderDetailsVO> list = orderDao.listOrderDetails(type, user.getId(),null);
         for (OrderDetailsVO orderDetailsVO : list) {
             if (user.getId().equals(orderDetailsVO.getUserId())) {
                 orderDetailsVO.setIdentity(UserTypeEnum.GENERAL_USER.getType());

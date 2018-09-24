@@ -6,8 +6,10 @@ import com.fulu.game.app.service.impl.AppOrderServiceImpl;
 import com.fulu.game.app.util.RequestUtil;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.domain.ClientInfo;
+import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.exception.DataException;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Order;
@@ -15,7 +17,10 @@ import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.payment.model.PayRequestModel;
 import com.fulu.game.core.entity.payment.res.PayRequestRes;
-import com.fulu.game.core.entity.vo.*;
+import com.fulu.game.core.entity.vo.OrderDetailsVO;
+import com.fulu.game.core.entity.vo.OrderEventVO;
+import com.fulu.game.core.entity.vo.ServerCommentVO;
+import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.service.OrderEventService;
 import com.fulu.game.core.service.ServerCommentService;
 import com.fulu.game.core.service.UserCommentService;
@@ -31,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.util.*;
 
 @RestController
 @Slf4j
@@ -52,8 +57,8 @@ public class OrderController extends BaseController {
     private ServerCommentService serverCommentService;
     @Autowired
     private MobileAppPushServiceImpl mobileAppPushService;
+
     /**
-     *
      * @param productId
      * @param num
      * @param payment
@@ -81,14 +86,14 @@ public class OrderController extends BaseController {
         try {
             ClientInfo clientInfo = SubjectUtil.getUserClientInfo();
             int platform;
-            if(clientInfo!=null){
+            if (clientInfo != null) {
                 if (clientInfo.get_platform().equalsIgnoreCase("ios")) {
                     platform = PlatformEcoEnum.IOS.getType();
                 } else {
                     platform = PlatformEcoEnum.ANDROID.getType();
                 }
-            }else{
-                platform =  PlatformEcoEnum.ANDROID.getType();
+            } else {
+                platform = PlatformEcoEnum.ANDROID.getType();
             }
 
             String ip = RequestUtil.getIpAdrress(request);
@@ -102,6 +107,7 @@ public class OrderController extends BaseController {
 
     /**
      * 订单支付接口
+     *
      * @param orderNo
      * @return
      */
@@ -112,15 +118,10 @@ public class OrderController extends BaseController {
         Order order = appOrderServiceImpl.findByOrderNo(orderNo);
         order.setPayment(payment);
         User user = userService.findById(order.getUserId());
-        PayRequestModel model =    PayRequestModel.newBuilder().order(order).user(user).build();
+        PayRequestModel model = PayRequestModel.newBuilder().order(order).user(user).build();
         PayRequestRes res = appPayService.payRequest(model);
         return Result.success().data(res);
     }
-
-
-
-
-
 
 
     /**
@@ -150,6 +151,46 @@ public class OrderController extends BaseController {
 
 
     /**
+     * 订单状态过滤
+     *
+     * @return 封装结果集
+     */
+    @RequestMapping("/filter")
+    public Result userStatusList(@RequestParam(required = true) Integer type) {
+
+        List<Map<String, Object>> userFilter = new ArrayList<>();
+        List<Map<String, Object>> serverFilter = new ArrayList<>();
+
+        for (OrderStatusGroupEnum groupEnum : OrderStatusGroupEnum.values()) {
+            Map<String, Object> statusMap = new LinkedHashMap<>();
+            if ("APP_USER".equals(groupEnum.getType())) {
+                statusMap.put("status", groupEnum.getValue());
+                statusMap.put("name", groupEnum.getName());
+                userFilter.add(statusMap);
+            }
+        }
+
+        for (OrderStatusGroupEnum groupEnum : OrderStatusGroupEnum.values()) {
+            Map<String, Object> statusMap = new LinkedHashMap<>();
+            if ("APP_SERVER".equals(groupEnum.getType())) {
+                statusMap.put("status", groupEnum.getValue());
+                statusMap.put("name", groupEnum.getName());
+                serverFilter.add(statusMap);
+            }
+        }
+
+        List<Map<String, Object>> list = null;
+        if (UserTypeEnum.GENERAL_USER.getType().equals(type)) {
+            list = userFilter;
+        } else {
+            list = serverFilter;
+        }
+        return Result.success().data(list);
+
+    }
+
+
+    /**
      * 订单列表
      *
      * @param pageNum
@@ -160,8 +201,15 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/list")
     public Result userOrderList(@RequestParam(required = true) Integer pageNum,
                                 @RequestParam(required = true) Integer pageSize,
-                                Integer type) {
-        PageInfo<OrderDetailsVO> orderList = appOrderServiceImpl.orderList(pageNum, pageSize, type);
+                                Integer type,
+                                Integer filter) {
+
+        List<Integer> statusList = null;
+        Integer[] statusArr = OrderStatusGroupEnum.getByValue(filter);
+        if (statusArr != null) {
+            statusList = Arrays.asList(statusArr);
+        }
+        PageInfo<OrderDetailsVO> orderList = appOrderServiceImpl.orderList(pageNum, pageSize, type, statusList);
         return Result.success().data(orderList);
     }
 
@@ -383,10 +431,9 @@ public class OrderController extends BaseController {
     }
 
 
-
-
     /**
      * 提醒接单
+     *
      * @param orderNo
      * @return
      */

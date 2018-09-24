@@ -96,8 +96,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     }
 
     @Override
-    public List<OrderDetailsVO> orderList(int type, int userId) {
-        List<OrderDetailsVO> list = orderDao.listOrderDetails(type, userId);
+    public List<OrderDetailsVO> orderList(int type, int userId,List<Integer> statusList) {
+        List<OrderDetailsVO> list = orderDao.listOrderDetails(type, userId,statusList);
         return list;
     }
 

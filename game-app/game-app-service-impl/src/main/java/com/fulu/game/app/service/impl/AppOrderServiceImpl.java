@@ -266,10 +266,10 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
      * @param type     1是用户2是陪玩师
      * @return
      */
-    public PageInfo<OrderDetailsVO> orderList(int pageNum, int pageSize, Integer type) {
+    public PageInfo<OrderDetailsVO> orderList(int pageNum, int pageSize, Integer type,List<Integer> statusList) {
         PageHelper.startPage(pageNum, pageSize, "id DESC");
         User user = userService.getCurrentUser();
-        List<OrderDetailsVO> list = orderService.orderList(type, user.getId());
+        List<OrderDetailsVO> list = orderService.orderList(type, user.getId(),statusList);
         for (OrderDetailsVO orderDetailsVO : list) {
             String categoryName = orderDetailsVO.getName().substring(0, orderDetailsVO.getName().indexOf(" "));
             orderDetailsVO.setCategoryName(categoryName);
@@ -284,6 +284,10 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
                     orderDetailsVO.setCommentScore(userComment.getScore());
                 }
             }
+
+
+
+
         }
         return new PageInfo<>(list);
     }

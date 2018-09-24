@@ -172,6 +172,12 @@
             <if test="type == 2">
                 and o.service_user_id = #{userId} AND o.`status` NOT IN (100,200)
             </if>
+            <if test="statusList != null">
+                and o.status in
+                <foreach collection="statusList" item="s" index="index" open="(" close=")" separator=",">
+                    #{s}
+                </foreach>
+            </if>
         </where>
     </select>
 
