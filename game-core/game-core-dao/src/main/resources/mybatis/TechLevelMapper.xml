@@ -61,7 +61,11 @@
             <if test="isDel != null">
                 and is_del = #{isDel}
             </if>
+            <if test="id != null">
+                and id != #{id}
+            </if>
         </where>
+        order by sort desc
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">

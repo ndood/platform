@@ -125,6 +125,13 @@ public class ExceptionHandlerAdvice {
         return Result.error().data("errcode", e.getCode()).msg(e.getMessage());
     }
 
+
+    @ExceptionHandler(TechLevelException.class)
+    public Result TechLevelException(TechLevelException e) {
+        log.error(e.getMessage(), e);
+        return Result.error().data("errcode", e.getCode()).msg(e.getMessage());
+    }
+
     /**
      * 上传文件过大异常
      *

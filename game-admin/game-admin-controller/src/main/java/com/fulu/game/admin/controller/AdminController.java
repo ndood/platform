@@ -4,10 +4,13 @@ import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.SysRole;
+import com.fulu.game.core.entity.TechLevel;
 import com.fulu.game.core.entity.vo.AdminVO;
 import com.fulu.game.core.entity.vo.SysRoleVO;
+import com.fulu.game.core.entity.vo.TechLevelVO;
 import com.fulu.game.core.service.AdminService;
 import com.fulu.game.core.service.SysRoleService;
+import com.fulu.game.core.service.TechLevelService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +30,8 @@ public class AdminController extends BaseController {
     private AdminService adminService;
     @Autowired
     private SysRoleService sysRoleService;
+    @Autowired
+    private TechLevelService techLevelService;
 
     /**
      * 查询-管理员-列表
@@ -132,6 +137,44 @@ public class AdminController extends BaseController {
         sysRoleService.save(sysRoleVO);
         String msgPrefix = sysRoleVO != null && sysRoleVO.getId() != null && sysRoleVO.getId().intValue() > 0 ? "修改" :"新增";
         return Result.success().msg(msgPrefix + "成功！");
+    }
+
+    /**
+     * 查询-技能等级-列表
+     *
+     * @return
+     */
+    @PostMapping("tech-level/all-list")
+    public Result techLevelAllList() {
+        List<TechLevel> list = techLevelService.list();
+        return Result.success().data(list).msg("查询列表成功！");
+    }
+
+
+    /**
+     * 保存-技能等级信息（新增/修改）
+     *
+     * @return
+     */
+    @PostMapping("tech-level/save")
+    public Result techLevelSave(TechLevelVO techLevelVO) {
+        techLevelService.save(techLevelVO);
+        String msgPrefix = techLevelVO != null && techLevelVO.getId() != null && techLevelVO.getId().intValue() > 0 ? "修改" :"新增";
+        return Result.success().msg(msgPrefix + "成功！");
+    }
+
+    /**
+     * 删除-技能等级信息
+     *
+     * @return
+     */
+    @PostMapping("tech-level/del")
+    public Result techLevelDelete(@RequestParam("id") Integer id) {
+        TechLevelVO techLevelVO = new TechLevelVO();
+        techLevelVO.setId(id);
+        techLevelVO.setIsDel(1);
+        techLevelService.update(techLevelVO);
+        return Result.success().msg("删除成功！");
     }
 
 }
