@@ -72,6 +72,13 @@ config:
       keyPath: /data/cert/apiclient_cert.p12
       tradeType: JSAPI
       notifyUrl: https://api-h5.wzpeilian.com/wechat/mp/pay/callback
+    fenqile:
+      sellerId: PMC20180807003400547501
+      clientId：kaihei
+      version：1.4
+      clientSecret: fe3a2eb4d6661dd36af8fb45f50ac8de
+      partnerId: PAI201808080000195
+      partnerKey: 43ea4b7f27e36f2eb7b194b3924291ca
     im:
       urlPrefix: http://a1.easemob.com
       appKey: 1183180421228734#game-play
