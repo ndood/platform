@@ -228,27 +228,16 @@ public class UserAutoReceiveOrderServiceImpl extends AbsCommonService<UserAutoRe
         if (StringUtils.isBlank(orderBy)) {
             orderBy = "auto.create_time desc";
         }
-        PageHelper.startPage(pageNum, pageSize, orderBy);
+        if (pageNum != null && pageSize != null) {
+            PageHelper.startPage(pageNum, pageSize, orderBy);
+        } else {
+            PageHelper.orderBy(orderBy);
+        }
         List<UserAutoReceiveOrderVO> voList =
                 userAutoReceiveOrderDao.findAutoReceiveUserInfoAuthList(userInfoAuthSearchVO);
         if (CollectionUtil.isEmpty(voList)) {
             return null;
         }
         return new PageInfo<>(voList);
-    }
-
-    @Override
-    public List<UserAutoReceiveOrderVO> autoReceiveUserInfoAuthListByVO(UserInfoAuthSearchVO userInfoAuthSearchVO) {
-        String orderBy = userInfoAuthSearchVO.getOrderBy();
-        if (StringUtils.isBlank(orderBy)) {
-            orderBy = "auto.create_time desc";
-        }
-        userInfoAuthSearchVO.setOrderBy(orderBy);
-        List<UserAutoReceiveOrderVO> voList =
-                userAutoReceiveOrderDao.findAutoReceiveUserInfoAuthList(userInfoAuthSearchVO);
-        if (CollectionUtil.isEmpty(voList)) {
-            return null;
-        }
-        return voList;
     }
 }
