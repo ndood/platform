@@ -103,7 +103,7 @@ public interface OrderOpenService {
      * @param orderNo
      * @return
      */
-    OrderVO serverAcceptanceOrder(String orderNo, String remark, String[] fileUrl);
+    OrderVO serverAcceptanceOrder(Order order, String remark, User user ,String[] fileUrl);
 
     /**
      * 用户验收订单

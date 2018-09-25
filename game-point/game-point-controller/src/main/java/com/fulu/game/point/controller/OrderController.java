@@ -393,7 +393,12 @@ public class OrderController extends BaseController {
     public Result serverAcceptanceOrder(@RequestParam(required = true) String orderNo,
                                         String remark,
                                         String[] fileUrl) {
-        OrderVO orderVO = pointMiniAppOrderServiceImpl.serverAcceptanceOrder(orderNo, remark, fileUrl);
+
+        Order order = pointMiniAppOrderServiceImpl.findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getServiceUserId());
+        User user = userService.getCurrentUser();
+        
+        OrderVO orderVO = pointMiniAppOrderServiceImpl.serverAcceptanceOrder(order, remark, user,fileUrl);
         return Result.success().data(orderVO).msg("提交订单验收成功!");
     }
 

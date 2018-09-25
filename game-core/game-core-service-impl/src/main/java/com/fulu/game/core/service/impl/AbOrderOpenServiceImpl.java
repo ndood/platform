@@ -617,15 +617,11 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
     /**
      * 陪玩师提交验收订单
      *
-     * @param orderNo
      * @return
      */
     @Override
-    public OrderVO serverAcceptanceOrder(String orderNo, String remark, String[] fileUrl) {
-        log.info("打手提交验收订单orderNo:{}", orderNo);
-        Order order = orderService.findByOrderNo(orderNo);
-        userService.isCurrentUser(order.getServiceUserId());
-        User user = userService.getCurrentUser();
+    public OrderVO serverAcceptanceOrder(Order order, String remark, User user ,String[] fileUrl) {
+        log.info("打手提交验收订单orderNo:{}", order.getOrderNo());
         if (!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有陪玩中的订单才能验收!");
         }

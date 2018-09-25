@@ -8,6 +8,8 @@ import com.fulu.game.common.enums.WechatTemplateMsgTypeEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.UserInfoAuth;
+import com.fulu.game.core.service.UserInfoAuthService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.aop.UserScore;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
@@ -23,6 +25,8 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
     private UserService userService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
 
 
     /**
@@ -208,6 +212,13 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
                                       String acceptImId,
                                       String imId) {
         User acceptUser = userService.findByImId(acceptImId);
+
+        UserInfoAuth uia = userInfoAuthService.findByUserId(acceptUser.getId());
+        
+        if(uia!=null && uia.getOpenSubstituteIm()!=null && uia.getOpenSubstituteIm().booleanValue() == true){
+            return "用户开启了代聊,不推送微信消息!";
+        }
+        
         if (acceptUser == null || acceptUser.getOpenId() == null) {
             log.error("acceptImId为:{}", acceptImId);
             throw new ServiceErrorException("AcceptIM不存在!");
