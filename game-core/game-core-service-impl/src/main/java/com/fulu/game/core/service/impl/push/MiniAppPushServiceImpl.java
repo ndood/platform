@@ -15,6 +15,7 @@ import com.fulu.game.core.service.aop.UserScore;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,6 +26,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
     private UserService userService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Qualifier(value = "userInfoAuthServiceImpl")
     @Autowired
     private UserInfoAuthService userInfoAuthService;
 
