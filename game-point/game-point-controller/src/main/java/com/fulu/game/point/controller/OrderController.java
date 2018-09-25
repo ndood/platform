@@ -365,8 +365,8 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/user/verify")
     public Result userVerifyOrder(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = pointMiniAppOrderServiceImpl.userVerifyOrder(orderNo);
-        return Result.success().data(orderVO).msg("订单验收成功!");
+        pointMiniAppOrderServiceImpl.userVerifyOrder(orderNo);
+        return Result.success().data(orderNo).msg("订单验收成功!");
     }
 
 

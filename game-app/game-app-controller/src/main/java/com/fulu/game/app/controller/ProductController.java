@@ -99,7 +99,8 @@ public class ProductController extends BaseController {
     @RequestMapping(value = "/order-receive/tech/enable")
     public Result techEnable(@RequestParam(required = true) Integer techId,
                              @RequestParam(required = true) Boolean status) {
-        productService.techEnable(techId, status);
+        User user = userService.getCurrentUser();
+        productService.techEnable(techId, status,user.getId());
         if (status) {
             return Result.success().msg("开启");
         } else {

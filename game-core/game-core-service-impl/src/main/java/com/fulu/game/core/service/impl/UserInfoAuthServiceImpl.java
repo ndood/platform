@@ -240,6 +240,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     }
 
 
+
+
     /**
      * 保存用户认证的个人信息的排序号
      *
@@ -248,9 +250,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
      */
     @Override
     public void saveSort(UserInfoAuthTO userInfoAuthTO) {
-
         userInfoAuthDao.updateUserSort(userInfoAuthTO.getUserId(),userInfoAuthTO.getSort());
-
     }
 
 

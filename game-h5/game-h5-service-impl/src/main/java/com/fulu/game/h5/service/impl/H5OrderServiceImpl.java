@@ -51,6 +51,8 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
     private OrderService orderService;
     @Autowired
     private CouponService couponService;
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
 
     @Override
     protected MiniAppPushServiceImpl getMinAppPushService() {

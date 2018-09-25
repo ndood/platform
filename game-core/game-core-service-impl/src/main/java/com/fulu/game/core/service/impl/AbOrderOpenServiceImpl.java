@@ -298,7 +298,6 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
 
     /**
      * 陪玩师开始服务
-     * @param orderNo
      * @return
      */
     @Override
@@ -432,7 +431,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         OrderDeal orderDeal = new OrderDeal();
         orderDeal.setTitle("拒绝了协商");
         orderDeal.setType(OrderEventTypeEnum.CONSULT.getType());
-        orderDeal.setUserId(user.getId());
+        orderDeal.setUserId(userId);
         orderDeal.setRemark(remark);
         orderDeal.setOrderNo(order.getOrderNo());
         orderDeal.setOrderEventId(orderEvent.getId());
@@ -521,7 +520,6 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
     /**
      * 陪玩师取消订单
      *
-     * @param orderNo
      * @return
      */
     @Override

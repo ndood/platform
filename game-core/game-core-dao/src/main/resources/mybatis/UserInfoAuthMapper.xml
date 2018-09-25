@@ -368,4 +368,8 @@
         where auto_say_hello != '' and auto_say_hello is not null
     </select>
 
+
+    <update id="updateUserSort">
+        update t_user_info_auth set sort = #{sort} where user_id = #{userId}
+    </update>
 </mapper>

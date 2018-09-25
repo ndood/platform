@@ -92,7 +92,7 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
     public PageInfo<OrderDetailsVO> list(int pageNum, int pageSize, Integer type) {
         PageHelper.startPage(pageNum, pageSize, "id DESC");
         User user = userService.getCurrentUser();
-        List<OrderDetailsVO> list = orderDao.listOrderDetails(type, user.getId());
+        List<OrderDetailsVO> list = orderDao.listOrderDetails(type, user.getId(),null);
 
         //获取未读订单
         String wronJsonStr = redisOpenService.get(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(user.getId()));

@@ -37,6 +37,9 @@ public interface UserInfoAuthDao extends ICommonDao<UserInfoAuth, Integer> {
      */
     int saveOtherInfo(UserInfoAuthTO userInfoAuthTO);
 
+    int updateUserSort(@Param(value = "userId")Integer userId , @Param(value = "sort")Integer sort);
+
+
 
     List<UserInfoAuthVO> getAutoSayHelloUser();
 }

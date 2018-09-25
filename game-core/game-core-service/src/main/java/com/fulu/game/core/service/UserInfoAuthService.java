@@ -20,6 +20,8 @@ import java.util.List;
 public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Integer> {
 
 
+
+     void saveSort(UserInfoAuthTO userInfoAuthTO);
     /**
      * 保存用户认证个人信息
      *
@@ -29,13 +31,7 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
     UserInfoAuth save(UserInfoAuthTO userInfoAuthTO);
 
 
-    /**
-     * 保存用户认证个人信息的序号
-     *
-     * @param userInfoAuthTO
-     * @return
-     */
-    void saveOtherInfo(UserInfoAuthTO userInfoAuthTO);
+
 
     /**
      * 通过用户ID查询用户认证信息
