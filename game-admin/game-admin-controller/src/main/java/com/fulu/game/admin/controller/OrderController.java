@@ -8,7 +8,6 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.core.entity.ArbitrationDetails;
 import com.fulu.game.core.entity.OrderAdminRemark;
-import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderStatusDetailsVO;
 import com.fulu.game.core.entity.vo.OrderVO;
@@ -41,10 +40,10 @@ public class OrderController extends BaseController {
     public OrderController(AdminOrderServiceImpl orderService) {
         this.orderService = orderService;
     }
-    
+
     @Autowired
     public OrderAdminRemarkService orderAdminRemarkService;
-    
+
 
     /**
      * 管理员-订单列表
@@ -62,6 +61,26 @@ public class OrderController extends BaseController {
                        OrderSearchVO orderSearchVO) {
         PageInfo<OrderResVO> orderList = orderService.list(orderSearchVO, pageNum, pageSize, orderBy);
         return Result.success().data(orderList).msg("查询列表成功！");
+    }
+
+    /**
+     * 订单列表导出
+     *
+     * @param response
+     * @throws Exception
+     */
+    @RequestMapping("/export")
+    public void orderExport(HttpServletResponse response,
+                            OrderSearchVO orderSearchVO) throws Exception {
+        String title = "订单列表";
+        List<OrderResVO> orderResVOList = orderService.list(orderSearchVO, null, null, null).getList();
+        ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, OrderResVO.class, orderResVOList);
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("content-Type", "application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));
+        workbook.write(response.getOutputStream());
+        workbook.close();
     }
 
     /**
@@ -209,26 +228,6 @@ public class OrderController extends BaseController {
     }
 
     /**
-     * 订单列表导出
-     *
-     * @param response
-     * @throws Exception
-     */
-    @RequestMapping("/export")
-    public void orderExport(HttpServletResponse response,
-                            OrderSearchVO orderSearchVO) throws Exception {
-        String title = "订单列表";
-        List<OrderResVO> orderResVOList = orderService.findBySearchVO(orderSearchVO);
-        ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
-        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, OrderResVO.class, orderResVOList);
-        response.setCharacterEncoding("UTF-8");
-        response.setHeader("content-Type", "application/vnd.ms-excel");
-        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));
-        workbook.write(response.getOutputStream());
-        workbook.close();
-    }
-
-    /**
      * 未接单订单列表
      *
      * @param pageNum       页码
@@ -250,7 +249,7 @@ public class OrderController extends BaseController {
 
     //管理员设置处理备注
     @RequestMapping("/set-order/remark")
-    public Result setAdminOrderRemark(Integer orderId,Integer adminId,String adminName,String remark){
+    public Result setAdminOrderRemark(Integer orderId, Integer adminId, String adminName, String remark) {
 
         OrderAdminRemark oar = new OrderAdminRemark();
         oar.setOrderId(orderId);
