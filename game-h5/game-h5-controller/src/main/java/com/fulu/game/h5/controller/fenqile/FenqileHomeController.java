@@ -69,10 +69,9 @@ public class FenqileHomeController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/login")
     @ResponseBody
     public Result login(@RequestParam("code") String code,
-                        @RequestParam(value = "sourceId", required = false) Integer sourceId,
                         HttpServletRequest request) throws WxErrorException {
         if (StringUtils.isBlank(code)) {
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
@@ -116,7 +115,7 @@ public class FenqileHomeController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/test/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/test/login")
     @ResponseBody
     public Result testLogin(String openId,
                             @RequestParam(value = "sourceId", required = false) Integer sourceId,

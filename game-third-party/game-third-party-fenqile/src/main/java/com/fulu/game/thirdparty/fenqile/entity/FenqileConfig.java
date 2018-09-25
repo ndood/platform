@@ -14,7 +14,6 @@ public class FenqileConfig {
 
     private String v;
 
-
     private String clientId;
 
     private String clientSecret;

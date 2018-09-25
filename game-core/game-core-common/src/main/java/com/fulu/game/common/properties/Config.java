@@ -38,6 +38,8 @@ public class Config {
 
     private Ordermail ordermail = new Ordermail();
 
+    private Fenqile fenqile = new Fenqile();
+
     @Data
     public static class Evn {
         private String prefix;
@@ -117,5 +119,15 @@ public class Config {
         private boolean appPush;
         private boolean userScore;
         private boolean formId;
+    }
+
+    @Data
+    public static class Fenqile{
+        private String sellerId;
+        private String clientId;
+        private String clientSecret;
+        private String version;
+        private String partnerId;
+        private String partnerKey;
     }
 }

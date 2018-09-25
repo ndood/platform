@@ -76,9 +76,9 @@ config:
       notifyUrl: https://t-api-h5.wzpeilian.com/wechat/mp/pay/callback
     fenqile:
       sellerId: PMC20180807003400547501
-      clientId：kaihei
-      version：1.4
+      clientId: kaihei
       clientSecret: fe3a2eb4d6661dd36af8fb45f50ac8de
+      version: 1.4
       partnerId: PAI201808080000195
       partnerKey: 43ea4b7f27e36f2eb7b194b3924291ca
     im:
