@@ -55,3 +55,66 @@ create table t_role_router
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='角色路由表';
 
 
+drop table if exists t_tech_level;
+create table t_tech_level
+(
+   id                   int(11) not null auto_increment,
+   name                 varchar(64) comment '技能等级名称',
+   sort                 int(11) comment '排序号',
+   operator_id          int(11) comment '操作员id',
+   operator_name        varchar(32) comment '操作员名称',
+   create_time          datetime comment '创建时间',
+   update_time          datetime comment '修改时间',
+   is_del               tinyint(1) comment '删除标志（1：删除；0：未删除）',
+   primary key (id)
+) comment '技能等级表';
+
+
+drop table if exists t_conversion_rate;
+create table t_conversion_rate
+(
+   id                   int(11) not null auto_increment,
+   name                 varchar(64) comment '统计显示名称',
+   time_bucket          varchar(64) comment '统计时间段',
+   peoples              int(11) comment '下单人数',
+   orders               int(11) comment '下单数',
+   amount               decimal(10,2) comment '下单总金额',
+   new_peoples          int(11) comment '新人下单人数',
+   new_orders           int(11) comment '新人下单数',
+   new_amount           decimal(10,2) comment '新人下单总金额',
+   new_pays             int(11) comment '新人付款人数',
+   new_order_rate       decimal(5,2) comment '新人下单转化率',
+   new_pay_rate         decimal(5,2) comment '新人付款转化率',
+   repeat_orders        int(11) comment '复购下单人数',
+   repeat_pays          int(11) comment '复购付款人数',
+   repeat_order_rate    decimal(5,2) comment '复购下单转化率',
+   repeat_pay_rate      decimal(5,2) comment '复购付款转化率',
+   create_time          datetime comment '统计时间',
+   update_time          datetime comment '修改时间',
+   primary key (id)
+) comment '转换率统计表';
+
+
+drop table if exists t_conversion_rate_history;
+create table t_conversion_rate_history
+(
+   id                   int(11) not null auto_increment,
+   name                 varchar(64) comment '统计显示名称',
+   time_bucket          varchar(64) comment '统计时间段',
+   peoples              int(11) comment '下单人数',
+   orders               int(11) comment '下单数',
+   amount               decimal(10,2) comment '下单总金额',
+   new_peoples          int(11) comment '新人下单人数',
+   new_orders           int(11) comment '新人下单数',
+   new_amount           decimal(10,2) comment '新人下单总金额',
+   new_pays             int(11) comment '新人付款人数',
+   new_order_rate       decimal(5,2) comment '新人下单转化率',
+   new_pay_rate         decimal(5,2) comment '新人付款转化率',
+   repeat_orders        int(11) comment '复购下单人数',
+   repeat_pays          int(11) comment '复购付款人数',
+   repeat_order_rate    decimal(5,2) comment '复购下单转化率',
+   repeat_pay_rate      decimal(5,2) comment '复购付款转化率',
+   create_time          datetime comment '统计时间',
+   update_time          datetime comment '修改时间',
+   primary key (id)
+) comment '转换率历史统计表';
