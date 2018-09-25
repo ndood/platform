@@ -3,6 +3,8 @@ package com.fulu.game.core.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+
+import lombok.Builder;
 import lombok.Data;
 
 
@@ -28,9 +30,9 @@ public class ConversionRate implements Serializable {
 	private Integer orders;
 	//下单总金额
 	private BigDecimal amount;
-	//新人下单人数
+	//新人数
 	private Integer newPeoples;
-	//新人下单数
+	//新人下单人数
 	private Integer newOrders;
 	//新人下单总金额
 	private BigDecimal newAmount;
