@@ -57,6 +57,19 @@ public class OrderController extends BaseController {
         return Result.success().data(orderList).msg("查询列表成功！");
     }
 
+
+    /**
+     * 获取订单详情
+     *
+     * @return 封装结果集
+     */
+    @RequestMapping("/order-detail/get")
+    public Result getOrderDetailById(Integer orderId) {
+        OrderResVO orderInfo = orderService.getOrderDetailById(orderId);
+        return Result.success().data(orderInfo).msg("查询详情成功！");
+    }
+    
+
     /**
      * 管理员-延迟未接订单列表（八分钟未接的订单）
      *

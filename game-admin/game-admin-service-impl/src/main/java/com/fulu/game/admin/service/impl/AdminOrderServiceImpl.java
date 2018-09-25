@@ -436,15 +436,9 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
         List<OrderResVO> list = orderDao.list(orderSearchVO);
         for (OrderResVO orderResVO : list) {
             //添加订单投诉和验证信息
-            OrderDealVO userOrderDealVO = orderDealService.findByUserAndOrderNo(orderResVO.getUserId(), orderResVO.getOrderNo());
-            orderResVO.setUserOrderDeal(userOrderDealVO);
-            OrderDealVO serviceUserOrderDealVO = orderDealService.findByUserAndOrderNo(orderResVO.getServiceUserId(), orderResVO.getOrderNo());
-            orderResVO.setServerOrderDeal(serviceUserOrderDealVO);
+            this.setOrderDeal(orderResVO);
             //添加用户和陪玩师信息
-            User user = userService.findById(orderResVO.getUserId());
-            orderResVO.setUser(user);
-            User serviceUser = userService.findById(orderResVO.getServiceUserId());
-            orderResVO.setServerUser(serviceUser);
+            this.setOrderUserInfo(orderResVO);
             //添加订单商品信息
             OrderProduct orderProduct = orderProductService.findByOrderNo(orderResVO.getOrderNo());
             orderResVO.setOrderProduct(orderProduct);
@@ -469,6 +463,60 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
         return new PageInfo<>(list);
     }
 
+    public OrderResVO getOrderDetailById(Integer orderId) {
+
+        Order order = orderDao.findById(orderId);
+
+        OrderResVO orderResVO = new OrderResVO();
+
+        BeanUtil.copyProperties(order, orderResVO);
+        
+        //添加订单投诉和验证信息
+        
+        this.setOrderDeal(orderResVO);
+        
+        //添加用户和陪玩师信息
+        
+        this.setOrderUserInfo(orderResVO);
+        
+        //添加订单商品信息
+        OrderProduct orderProduct = orderProductService.findByOrderNo(orderResVO.getOrderNo());
+        orderResVO.setOrderProduct(orderProduct);
+        //添加订单状态
+        orderResVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderResVO.getStatus()));
+
+        OrderShareProfitVO profitVO = new OrderShareProfitVO();
+        profitVO.setOrderNo(orderResVO.getOrderNo());
+
+        //订单状态过滤
+        getShareProfitMoney(orderResVO);
+
+        //设置应付金额
+        Integer orderStatus = orderResVO.getStatus();
+        orderResVO.setPayableMoney(orderResVO.getActualMoney());
+        if (OrderStatusEnum.NON_PAYMENT.getStatus().equals(orderStatus)) {
+            orderResVO.setActualMoney(null);
+        }
+        
+        return orderResVO;
+    }
+
+    //添加用户和陪玩师信息
+    public void setOrderUserInfo(OrderResVO orderResVO){
+        User user = userService.findById(orderResVO.getUserId());
+        orderResVO.setUser(user);
+        User serviceUser = userService.findById(orderResVO.getServiceUserId());
+        orderResVO.setServerUser(serviceUser);
+    }
+
+    //添加订单投诉和验证信息
+    public void setOrderDeal(OrderResVO orderResVO){
+        OrderDealVO userOrderDealVO = orderDealService.findByUserAndOrderNo(orderResVO.getUserId(), orderResVO.getOrderNo());
+        orderResVO.setUserOrderDeal(userOrderDealVO);
+        OrderDealVO serviceUserOrderDealVO = orderDealService.findByUserAndOrderNo(orderResVO.getServiceUserId(), orderResVO.getOrderNo());
+        orderResVO.setServerOrderDeal(serviceUserOrderDealVO);
+    }
+    
 
     public PageInfo<OrderResVO> delayList(OrderSearchVO orderSearchVO,
                                           Integer pageNum,
