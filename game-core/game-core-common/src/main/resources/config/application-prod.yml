@@ -81,7 +81,7 @@ config:
       subMchId:
       keyPath: /data/cert/apiclient_cert.p12
       tradeType: JSAPI
-      notifyUrl: https://t-api-h5.wzpeilian.com/wechat/mp/pay/callback
+      notifyUrl: https://api-h5.wzpeilian.com/wechat/mp/pay/callback
       payVirtualProductNotifyUrl: https://t-api-h5.wzpeilian.com/wechat/pay/virtualproduct/callback
     wechat_app:
       appId: wx051631e81ea04ba0

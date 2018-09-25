@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.UserNightInfoDao">
+    <resultMap id="UserNightInfoResultMap" type="com.fulu.game.core.entity.UserNightInfo">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="sales_mode_id" property="salesModeId"/>
+        <result column="type" property="type"/>
+        <result column="name" property="name"/>
+        <result column="sort" property="sort"/>
+        <result column="admin_id" property="adminId"/>
+        <result column="admin_name" property="adminName"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="del_flag" property="delFlag"/>
+    </resultMap>
+
+    <resultMap id="UserNightInfoResultVOMap" type="com.fulu.game.core.entity.vo.UserNightInfoVO"
+               extends="UserNightInfoResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,category_id,sales_mode_id,type,name,sort,admin_id,admin_name,update_time,create_time,del_flag    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="UserNightInfoResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user_night_info
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="UserNightInfoResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user_night_info
+    </select>
+
+    <select id="findByParameter" resultMap="UserNightInfoResultMap"
+            parameterType="com.fulu.game.core.entity.vo.UserNightInfoVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_user_night_info
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="salesModeId != null">
+                and sales_mode_id = #{salesModeId}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="sort != null">
+                and sort = #{sort}
+            </if>
+            <if test="adminId != null">
+                and admin_id = #{adminId}
+            </if>
+            <if test="adminName != null">
+                and admin_name = #{adminName}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="delFlag != null">
+                and del_flag = #{delFlag}
+            </if>
+        </where>
+    </select>
+
+    <select id="list" resultType="com.fulu.game.core.entity.vo.UserNightInfoVO">
+        SELECT
+            info.*, tuser.mobile,
+            tuser.nickname,
+            tcat.`name` AS category_name
+        FROM
+            t_user_night_info info
+        LEFT JOIN t_user tuser ON info.user_id = tuser.id
+        LEFT JOIN t_category tcat ON info.category_id = tcat.id
+        WHERE
+            info.del_flag = 0
+        ORDER BY
+            info.sort ASC;
+    </select>
+
+    <select id="findNightUser" resultType="com.fulu.game.core.entity.vo.ProductShowCaseVO">
+        SELECT
+        t1.*,
+        t2.id AS productId,
+        t2.user_id AS userId,
+        t2.category_id AS categoryId,
+        t2.tech_auth_id AS techAuthId,
+        t2.gender AS gender,
+        t2.product_name AS productName,
+        t2.price AS price,
+        t2.unit AS unit,
+        t2.`status` AS STATUS,
+        t2.create_time AS createTime
+        FROM
+        t_user_night_info t1
+        LEFT JOIN t_product t2 ON t1.user_id = t2.user_id
+        AND t1.category_id = t2.category_id
+        AND t1.sales_mode_id = t2.sales_mode_id
+        WHERE
+        t2.del_flag = FALSE
+        AND t2.is_activate = TRUE
+        AND t1.del_flag = FALSE
+        <if test="gender != null">
+            AND t2.gender = #{gender}
+        </if>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_user_night_info
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.UserNightInfo">
+        insert into
+        t_user_night_info (user_id,category_id,sales_mode_id,type,name,sort,admin_id,admin_name,update_time,create_time,del_flag)
+        values
+        (#{userId},#{categoryId},#{salesModeId},#{type},#{name},#{sort},#{adminId},#{adminName},#{updateTime},#{createTime},#{delFlag})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.UserNightInfo">
+        update t_user_night_info
+        <set>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+
+            <if test="salesModeId != null">
+                sales_mode_id = #{salesModeId},
+            </if>
+
+            <if test="type != null">
+                type = #{type},
+            </if>
+
+            <if test="name != null">
+                name = #{name},
+            </if>
+
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+
+            <if test="adminId != null">
+                admin_id = #{adminId},
+            </if>
+
+            <if test="adminName != null">
+                admin_name = #{adminName},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="delFlag != null">
+                del_flag = #{delFlag},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+
+    <update id="updateByUserId" parameterType="com.fulu.game.core.entity.UserNightInfo">
+        update t_user_night_info
+        <set>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+
+            <if test="salesModeId != null">
+                sales_mode_id = #{salesModeId},
+            </if>
+
+            <if test="type != null">
+                type = #{type},
+            </if>
+
+            <if test="name != null">
+                name = #{name},
+            </if>
+
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+
+            <if test="adminId != null">
+                admin_id = #{adminId},
+            </if>
+
+            <if test="adminName != null">
+                admin_name = #{adminName},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="delFlag != null">
+                del_flag = #{delFlag},
+            </if>
+        </set>
+        <where>
+            user_id = #{userId} and del_flag = 0
+        </where>
+    </update>
+</mapper>

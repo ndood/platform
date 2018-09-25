@@ -14,11 +14,10 @@ import org.springframework.data.redis.core.RedisConnectionUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -147,6 +146,22 @@ public class RedisOpenServiceImpl {
     }
 
     /**
+     * 根据key设置某个hash的值
+     *
+     * @param key
+     * @param hash
+     * @param value
+     * @param isPerpetual 是否永久保存（true：是；false：否）
+     */
+    public void hset(String key, String hash, Object value, boolean isPerpetual) {
+        if (isPerpetual) {
+            redisTemplate.opsForHash().put(key, hash, value);
+        } else {
+            hset(key, hash, value, TIME);
+        }
+    }
+
+    /**
      * 根据key设置某个hash的值及存活时间
      *
      * @param key
@@ -167,6 +182,21 @@ public class RedisOpenServiceImpl {
      */
     public void hset(String key, Map<String, Object> map) {
         hset(key, map, TIME);
+    }
+
+    /**
+     * 根据key设置hashtable的值
+     *
+     * @param key
+     * @param map
+     * @param isPerpetual 是否永久保存（true：是；false：否）
+     */
+    public void hset(String key, Map<String, Object> map, boolean isPerpetual) {
+        if (isPerpetual) {
+            redisTemplate.opsForHash().putAll(key, map);
+        } else {
+            hset(key, map, TIME);
+        }
     }
 
     /**
@@ -310,7 +340,7 @@ public class RedisOpenServiceImpl {
      *
      * @return
      */
-    public <T> T takeFromHead(String key,int timeout) throws InterruptedException {
+    public <T> T takeFromHead(String key, int timeout) throws InterruptedException {
         //        lock.lockInterruptibly();
         RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
         RedisConnection connection = connectionFactory.getConnection();
@@ -386,6 +416,16 @@ public class RedisOpenServiceImpl {
     public Integer getInteger(String key) {
         Object value = redisTemplate.opsForValue().get(key);
         return (value != null) ? (Integer) value : 0;
+    }
+
+    /**
+     * 通配符查找redis的key
+     *
+     * @param parttern
+     * @return
+     */
+    public Set<String> keys(String parttern) {
+        return redisTemplate.keys(parttern);
     }
 
 }

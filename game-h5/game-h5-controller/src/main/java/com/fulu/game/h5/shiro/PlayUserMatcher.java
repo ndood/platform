@@ -107,7 +107,7 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
         }
         //用户信息写redis
         Map<String, Object> userMap = BeanUtil.beanToMap(user);
-        String gToken = GenIdUtil.GetToken();
+        String gToken = GenIdUtil.GetToken()+"#"+user.getId();
         redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(gToken), userMap);
         SubjectUtil.setToken(gToken);
         SubjectUtil.setCurrentUser(user);

@@ -145,7 +145,8 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/server/start-serve")
     public Result startServerOrder(@RequestParam(required = true) String orderNo) {
-        appOrderServiceImpl.serverStartServeOrder(orderNo);
+        Order order =appOrderServiceImpl.findByOrderNo(orderNo);
+        appOrderServiceImpl.serverStartServeOrder(order);
         return Result.success().data(orderNo).msg("开始服务!");
     }
 
@@ -243,7 +244,9 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/server/consult-appeal")
     public Result consultAppeal(@RequestParam(required = true) String orderNo,
                                 Integer orderEventId) {
-        appOrderServiceImpl.consultAgreeOrder(orderNo, orderEventId);
+        Order order = appOrderServiceImpl.findByOrderNo(orderNo);
+        User user = userService.getCurrentUser();
+        appOrderServiceImpl.consultAgreeOrder(order, orderEventId,user.getId());
         return Result.success().data(orderNo).msg("同意订单协商!");
     }
 
@@ -260,7 +263,9 @@ public class OrderController extends BaseController {
                                 Integer orderEventId,
                                 String remark,
                                 @RequestParam(required = true) String[] fileUrl) {
-        appOrderServiceImpl.consultRejectOrder(orderNo, orderEventId, remark, fileUrl);
+        Order order = appOrderServiceImpl.findByOrderNo(orderNo);
+        User user = userService.getCurrentUser();
+        appOrderServiceImpl.consultRejectOrder(order, orderEventId, remark, fileUrl,user.getId());
         return Result.success().data(orderNo).msg("拒绝协商订单!");
     }
 
@@ -312,8 +317,9 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/server/cancel")
     public Result serverCancelOrder(@RequestParam(required = true) String orderNo, String reason) {
+        Order order = appOrderServiceImpl.findByOrderNo(orderNo);
         log.info("{}订单取消,原因:{}", reason);
-        appOrderServiceImpl.serverCancelOrder(orderNo);
+        appOrderServiceImpl.serverCancelOrder(order);
         return Result.success().data(orderNo).msg("取消订单成功!");
     }
 
@@ -326,7 +332,8 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/event")
     public Result orderEvent(@RequestParam(required = true) String orderNo) {
-        OrderEventVO orderEventVO = appOrderServiceImpl.findOrderEvent(orderNo);
+        User user = userService.getCurrentUser();
+        OrderEventVO orderEventVO = appOrderServiceImpl.findOrderEvent(orderNo,user);
         return Result.success().data(orderEventVO);
     }
 
