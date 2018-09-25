@@ -5,7 +5,6 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
-import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserNightInfoDao;
 import com.fulu.game.core.entity.*;
@@ -143,11 +142,17 @@ public class UserNightInfoServiceImpl extends AbsCommonService<UserNightInfo, In
         infoVO.setCategoryId(categoryId);
         infoVO.setSalesModeId(salesModeId);
         List<UserNightInfo> infoList = userNightInfoDao.findByParameter(infoVO);
-        if (CollectionUtils.isNotEmpty(infoList)) {
-            //todo gzc 优化
+
+        if (CollectionUtils.isEmpty(infoList)) {
+            userNightInfoDao.create(info);
+        } else if (infoList.size() == 1) {
             info.setId(infoList.get(0).getId());
             userNightInfoDao.update(info);
         } else {
+            //如果产生脏数据，则进行物理删除，然后插入新数据
+            for (UserNightInfo nightInfo : infoList) {
+                userNightInfoDao.deleteById(nightInfo.getId());
+            }
             userNightInfoDao.create(info);
         }
         return info;
