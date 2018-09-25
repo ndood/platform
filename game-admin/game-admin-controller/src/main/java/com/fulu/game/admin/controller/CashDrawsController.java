@@ -46,6 +46,26 @@ public class CashDrawsController extends BaseController {
         return Result.success().data(cashDrawsList).msg("查询列表成功！");
     }
 
+    /**
+     * 提现申请单导出
+     *
+     * @param response
+     * @throws Exception
+     */
+    @RequestMapping("/export")
+    public void orderExport(HttpServletResponse response,
+                            CashDrawsVO cashDrawsVO) throws Exception {
+        String title = "提现申请单列表";
+        PageInfo<CashDrawsVO> cashDrawsList = cashDrawsService.list(cashDrawsVO);
+        ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, CashDrawsVO.class, cashDrawsList.getList());
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("content-Type", "application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));
+        workbook.write(response.getOutputStream());
+        workbook.close();
+    }
+
 
     /**
      * 财务-查看提现申请列表
@@ -62,15 +82,17 @@ public class CashDrawsController extends BaseController {
     }
 
     /**
-     * 提现申请单导出
+     * 财务打款管理excel导出
      *
      * @param response
+     * @param cashDrawsVO
      * @throws Exception
      */
-    @RequestMapping("/export")
-    public void orderExport(HttpServletResponse response,
-                            CashDrawsVO cashDrawsVO) throws Exception {
-        String title = "提现申请单列表";
+    @RequestMapping("/financer-auth/export")
+    public void financerAuthOrderExport(HttpServletResponse response,
+                                        CashDrawsVO cashDrawsVO) throws Exception {
+        String title = "财务打款管理列表";
+        cashDrawsVO.setServerAuth(CashServerAuthStatusEnum.AUTH_SUCCESS.getType());
         PageInfo<CashDrawsVO> cashDrawsList = cashDrawsService.list(cashDrawsVO);
         ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
         Workbook workbook = ExcelExportUtil.exportExcel(exportParams, CashDrawsVO.class, cashDrawsList.getList());
