@@ -4,6 +4,7 @@ import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.VirtualPayOrderTypeEnum;
 import com.fulu.game.core.entity.vo.VirtualPayOrderVO;
 import com.fulu.game.core.service.VirtualPayOrderService;
 import com.github.pagehelper.PageInfo;
@@ -60,8 +61,9 @@ public class ChargeController extends BaseController {
      */
     @RequestMapping("/export")
     public void orderExport(HttpServletResponse response,
-                            VirtualPayOrderVO payOrderVO) throws Exception {
-        String title = "提现申请单列表";
+                            VirtualPayOrderVO payOrderVO,
+                            @RequestParam Integer type) throws Exception {
+        String title = VirtualPayOrderTypeEnum.getMsgByType(type);
         PageInfo<VirtualPayOrderVO> voPageInfo = payOrderService.chargeList(payOrderVO, null, null, null);
         ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
         Workbook workbook = ExcelExportUtil.exportExcel(exportParams, VirtualPayOrderVO.class, voPageInfo.getList());
