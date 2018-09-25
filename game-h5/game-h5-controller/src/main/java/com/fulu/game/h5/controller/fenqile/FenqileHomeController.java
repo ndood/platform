@@ -73,7 +73,7 @@ public class FenqileHomeController extends BaseController {
         return Result.success().data(bannerList);
     }
 
-
+    //todo 这个版本需要把订单平台属性加上
     @RequestMapping(value = "/login")
     @ResponseBody
     public Result login(@RequestParam("code") String code,
