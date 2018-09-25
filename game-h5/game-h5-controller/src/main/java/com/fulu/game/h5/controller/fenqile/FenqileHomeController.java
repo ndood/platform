@@ -2,6 +2,7 @@ package com.fulu.game.h5.controller.fenqile;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.exception.LoginException;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SubjectUtil;
@@ -14,6 +15,8 @@ import com.fulu.game.h5.controller.BaseController;
 import com.fulu.game.h5.shiro.PlayUserToken;
 import com.fulu.game.h5.utils.RequestUtil;
 import com.fulu.game.thirdparty.fenqile.entity.CodeSessionResult;
+import com.fulu.game.thirdparty.fenqile.service.FenqileAuthService;
+import com.fulu.game.thirdparty.fenqile.service.impl.FenqileAuthServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import org.apache.commons.lang.StringUtils;
@@ -44,14 +47,16 @@ public class FenqileHomeController extends BaseController {
 
     private final UserService userService;
 
-
+    private final FenqileAuthService FenqileAuthService;
 
 
     @Autowired
     public FenqileHomeController(BannerService bannerService,
-                                 UserService userService) {
+                                 UserService userService,
+                                 FenqileAuthService fenqileAuthService) {
         this.bannerService = bannerService;
         this.userService = userService;
+        this.FenqileAuthService = fenqileAuthService;
     }
 
 
@@ -76,13 +81,23 @@ public class FenqileHomeController extends BaseController {
         if (StringUtils.isBlank(code)) {
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
-        CodeSessionResult session = new CodeSessionResult();
-        session.setUid(code);
-        session.setAccessToken("tempaccesstoken");
-        String openId = session.getUid();
+
+        CodeSessionResult session = null;
+        if(code.length()<=6){
+            session = new CodeSessionResult();
+            session.setUid(code);
+            session.setAccessToken("tempaccesstoken");
+        }else{
+            try {
+                session = FenqileAuthService.accessToken(code);
+            }catch (Exception e){
+                log.error("分期乐授权错误",e);
+                throw new LoginException(LoginException.ExceptionCode.FENQILE_AUTH_ERROR);
+            }
+        }
         //1.认证和凭据的token
         PlayUserToken playUserToken = PlayUserToken.newBuilder(PlayUserToken.Platform.FENQILE)
-                                                        .fqlOpenid(openId)
+                                                        .fqlOpenid(session.getUid())
                                                         .accessToken(session.getAccessToken())
                                                         .build();
 
@@ -103,7 +118,7 @@ public class FenqileHomeController extends BaseController {
         catch (AuthenticationException e) {
             if(e.getCause() instanceof UserException){
                 if(UserException.ExceptionCode.USER_BANNED_EXCEPTION.equals(((UserException) e.getCause()).getExceptionCode())){
-                    log.error("用户被封禁,openId:{}", openId);
+                    log.error("用户被封禁,openId:{}", session);
                     return Result.userBanned();
                 }
             }
