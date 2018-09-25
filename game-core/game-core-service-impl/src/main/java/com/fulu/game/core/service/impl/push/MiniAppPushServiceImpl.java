@@ -180,7 +180,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void acceptOrder(Order order) {
-        push(order.getUserId(), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_AFFIRM_SERVER,
+        push(order.getServiceUserId(), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_AFFIRM_SERVER,
                 WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
     }
 

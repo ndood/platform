@@ -507,8 +507,6 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
 
     /**
      * 陪玩师取消订单
-     *
-     * @param orderNo
      * @return
      */
     @Override
