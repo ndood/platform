@@ -164,6 +164,15 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
     public PageInfo<CashDrawsVO> list(CashDrawsVO cashDrawsVO, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize, "t1.create_time DESC , FIELD(t1.cash_status, 0, 2, 1) , t1.server_auth DESC");
         List<CashDrawsVO> list = cashDrawsDao.findDetailByParameter(cashDrawsVO);
+        if (CollectionUtils.isNotEmpty(list)) {
+            for (CashDrawsVO meta : list) {
+                CashDrawsVO paramVO = new CashDrawsVO();
+                paramVO.setUserId(meta.getUserId());
+                BigDecimal unCashDrawsSum = cashDrawsDao.findUnCashDrawsSum(paramVO);
+                meta.setBalance(meta.getBalance().add(unCashDrawsSum == null ? BigDecimal.ZERO : unCashDrawsSum));
+            }
+        }
+
         this.charmToMoney(list);
 
         //添加md5加密签名
@@ -287,7 +296,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         //提现金额单位换算(单位：分)
         Integer totalFee = (cashDraws.getMoney().multiply(new BigDecimal(100))).intValue();
 
-        if (totalFee < 30 || totalFee > 20000) {
+        if (totalFee < 30 || totalFee > 2000000) {
             throw new CashException(CashException.ExceptionCode.CASH_THRSHLD);
         }
 

@@ -1,7 +1,6 @@
 package com.fulu.game.point.controller;
 
 import com.fulu.game.common.Result;
-import com.fulu.game.core.entity.CashDraws;
 import com.fulu.game.core.entity.vo.CashDrawsVO;
 import com.fulu.game.core.service.CashDrawsService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +34,8 @@ public class CashDrawsController extends BaseController {
      */
     @PostMapping("/save")
     public Result save(CashDrawsVO cashDrawsVO) {
-        CashDraws cashDraws = cashDrawsService.save(cashDrawsVO);
-        return Result.success().data(cashDraws).msg("提现申请成功！");
+//        CashDraws cashDraws = cashDrawsService.save(cashDrawsVO);
+        return Result.error().msg("因提现需要实名认证，请到开黑陪玩小程序进行提现！");
     }
 
 

@@ -2,15 +2,13 @@ package com.fulu.game.core.service.impl;
 
 
 import com.fulu.game.core.dao.ICommonDao;
-import com.fulu.game.core.entity.vo.SalesModeVO;
-import com.fulu.game.core.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-
 import com.fulu.game.core.dao.SalesModeDao;
 import com.fulu.game.core.entity.SalesMode;
+import com.fulu.game.core.entity.vo.SalesModeVO;
+import com.fulu.game.core.service.ProductService;
 import com.fulu.game.core.service.SalesModeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -18,10 +16,10 @@ import java.util.List;
 
 
 @Service
-public class SalesModeServiceImpl extends AbsCommonService<SalesMode,Integer> implements SalesModeService {
+public class SalesModeServiceImpl extends AbsCommonService<SalesMode, Integer> implements SalesModeService {
 
     @Autowired
-	private SalesModeDao salesModeDao;
+    private SalesModeDao salesModeDao;
     @Autowired
     private ProductService productService;
 
@@ -38,6 +36,11 @@ public class SalesModeServiceImpl extends AbsCommonService<SalesMode,Integer> im
     }
 
     @Override
+    public List<SalesMode> findByParameter(SalesModeVO salesModeVO) {
+        return salesModeDao.findByParameter(salesModeVO);
+    }
+
+    @Override
     public List<SalesMode> findByCategoryAndPlatformShow(Integer categoryId,List<Integer> platFormList) {
         return salesModeDao.findByCategoryAndPlatformShow(categoryId, platFormList);
     }
@@ -49,7 +52,7 @@ public class SalesModeServiceImpl extends AbsCommonService<SalesMode,Integer> im
         salesMode.setPrice(price);
         salesMode.setRank(rank);
         salesMode.setUpdateTime(new Date());
-        int result =  update(salesMode);
+        int result = update(salesMode);
         //更新商品的销售方式
         productService.updateProductSalesModel(salesMode);
         return salesMode;

@@ -102,11 +102,10 @@ public class UserScoreAspect {
 
         } else if (userScoreEnum.getDescription().equals(Constant.ACCEPT_ORDER)) {
             Object[] array = joinPoint.getArgs();
-            String orderNo = (String) array[0];
-            Order order = orderService.findByOrderNo(orderNo);
+            Order order = (Order) array[0];
             details.setUserId(order.getServiceUserId());
             long minutes = DateUtil.between(order.getCreateTime(), new Date(), DateUnit.MINUTE);
-            modifyUserScoreByAcceptOrder(details, minutes, orderNo);
+            modifyUserScoreByAcceptOrder(details, minutes, order.getOrderNo());
         } else if (userScoreEnum.getDescription().equals(Constant.USER_COMMENT)) {
             Object[] array = joinPoint.getArgs();
             UserCommentVO vo = (UserCommentVO) array[0];
@@ -147,16 +146,15 @@ public class UserScoreAspect {
             details.setDescription(Constant.NEGOTIATE);
         } else if (userScoreEnum.getDescription().equals(Constant.CONSULT)) {
             Object[] array = joinPoint.getArgs();
-            String orderNo = (String) array[0];
-            modifyUserScoreByOrderNo(details, orderNo, UserScoreEnum.CONSULT);
+            Order order = (Order) array[0];
+            modifyUserScoreByOrderNo(details, order.getOrderNo(), UserScoreEnum.CONSULT);
         } else if (userScoreEnum.getDescription().equals(Constant.USER_CANCEL_ORDER)) {
             Object[] array = joinPoint.getArgs();
             String orderNo = (String) array[0];
             modifyUserScoreByOrderNo(details, orderNo, UserScoreEnum.USER_CANCEL_ORDER);
         } else if (userScoreEnum.getDescription().equals(Constant.SERVICE_USER_CANCEL_ORDER)) {
             Object[] array = joinPoint.getArgs();
-            String orderNo = (String) array[0];
-            Order order = orderService.findByOrderNo(orderNo);
+            Order order = (Order) array[0];
             details.setUserId(order.getServiceUserId());
             details.setScore(UserScoreEnum.SERVICE_USER_CANCEL_ORDER.getScore());
             details.setDescription(UserScoreEnum.SERVICE_USER_CANCEL_ORDER.getDescription());

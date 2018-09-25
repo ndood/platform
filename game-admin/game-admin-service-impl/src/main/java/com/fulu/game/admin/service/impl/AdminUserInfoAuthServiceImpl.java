@@ -2,22 +2,26 @@ package com.fulu.game.admin.service.impl;
 
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DateUtil;
 import com.fulu.game.admin.service.AdminUserInfoAuthService;
 import com.fulu.game.common.enums.FileTypeEnum;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
 import com.fulu.game.common.enums.UserTypeEnum;
+import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserInfoAuthDao;
 import com.fulu.game.core.dao.UserInfoAuthFileTempDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.UserInfoAuthFileTempVO;
-import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.AdminService;
+import com.fulu.game.core.service.ProductService;
+import com.fulu.game.core.service.UserInfoAuthRejectService;
+import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.UserInfoAuthServiceImpl;
-import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -193,7 +197,7 @@ public class AdminUserInfoAuthServiceImpl extends UserInfoAuthServiceImpl implem
         user.setUpdateTime(new Date());
         userService.update(user);
         //同步恢复用户正确技能的商品状态
-        List<UserTechAuth> userTechAuthList =userTechAuthServiceImpl.findUserNormalTechs(userInfoAuth.getUserId());
+        List<UserTechAuth> userTechAuthList = userTechAuthServiceImpl.findUserNormalTechs(userInfoAuth.getUserId());
         for (UserTechAuth userTechAuth : userTechAuthList) {
             productService.recoverProductActivateByTechAuthId(userTechAuth.getId());
         }
@@ -201,5 +205,32 @@ public class AdminUserInfoAuthServiceImpl extends UserInfoAuthServiceImpl implem
         return userInfoAuth;
     }
 
+    @Override
+    public UserInfoAuth setVest(Integer id) {
+        UserInfoAuth userInfoAuth = userInfoAuthDao.findById(id);
+        //没有认证技能的情况，抛出提示
+        List<UserTechAuth> authList = userTechAuthServiceImpl.findUserNormalTechs(userInfoAuth.getUserId());
+        for(UserTechAuth techAuth : authList){
+            techAuth.setIsActivate(true);
+            userTechAuthServiceImpl.update(techAuth);
+        }
+        List<Product> productList =    productService.findByUserId(userInfoAuth.getUserId());
+        for(Product product : productList){
+            product.setStatus(true);
+            productService.update(product);
+        }
+        if (CollectionUtils.isEmpty(authList)) {
+            throw new ServiceErrorException("该用户没有可用的技能！");
+        }
 
+        Boolean vestFlag = userInfoAuth.getVestFlag() == null ? false : userInfoAuth.getVestFlag();
+        if (vestFlag) {
+            productService.stopOrderReceiving(userInfoAuth.getUserId());
+        } else {
+            productService.startOrderReceiving(24 * 30F, userInfoAuth.getUserId());
+        }
+        userInfoAuth.setVestFlag(!vestFlag);
+        userInfoAuthDao.update(userInfoAuth);
+        return userInfoAuth;
+    }
 }

@@ -5,12 +5,11 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.core.entity.AdminImLog;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.UserInfoAuthVO;
+import com.fulu.game.core.entity.vo.UserOnlineVO;
 import com.fulu.game.core.entity.vo.VirtualProductAttachVO;
 import com.fulu.game.core.entity.vo.VirtualProductVO;
-import com.fulu.game.core.service.ImService;
-import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.VirtualProductAttachService;
-import com.fulu.game.core.service.VirtualProductService;
+import com.fulu.game.core.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +32,8 @@ public class ImLogController extends BaseController {
     private VirtualProductAttachService virtualProductAttachService;
     @Autowired
     private ImService imService;
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
 
     @PostMapping(value = "collect")
     public Result log(String content) {
@@ -44,9 +45,9 @@ public class ImLogController extends BaseController {
     @PostMapping(value = "online")
     public Result userOnline(@RequestParam(required = true) Boolean active, String version) {
 
-        List<AdminImLog> list = userService.userOnline(active, version);
+        UserOnlineVO uo = userService.userOnline(active, version);
 
-        return Result.success().data(list).msg("查询成功！");
+        return Result.success().data(uo).msg("查询成功！");
     }
 
 
@@ -94,6 +95,17 @@ public class ImLogController extends BaseController {
         List<VirtualProductAttachVO> list = virtualProductAttachService.findByOrderProIdUserId(user.getId(), virtualProductId);
 
         return Result.success().data(list).msg("查询成功");
+    }
+
+    /**
+     *
+     * 获取所有自动问号陪玩师
+     * @return
+     */
+    @PostMapping(value = "/auto-hello/query")
+    public Result getAutoSayHelloUser() {
+        List<UserInfoAuthVO> userInfoAuthVO = userInfoAuthService.getAutoSayHelloUser();
+        return Result.success().data(userInfoAuthVO);
     }
 
 }

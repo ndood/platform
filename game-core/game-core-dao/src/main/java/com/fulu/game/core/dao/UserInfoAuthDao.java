@@ -1,6 +1,7 @@
 package com.fulu.game.core.dao;
 
 import com.fulu.game.core.entity.UserInfoAuth;
+import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -31,10 +32,11 @@ public interface UserInfoAuthDao extends ICommonDao<UserInfoAuth, Integer> {
     int updateByUserId(UserInfoAuth userInfoAuth);
 
     /**
-     * 更新陪玩师的排序号
-     * @param userId
-     * @param sort
+     * 更新陪玩师的信息
      * @return
      */
-    int updateUserSort(@Param(value = "userId")Integer userId , @Param(value = "sort")Integer sort);
+    int saveOtherInfo(UserInfoAuthTO userInfoAuthTO);
+
+
+    List<UserInfoAuthVO> getAutoSayHelloUser();
 }

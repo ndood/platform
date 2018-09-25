@@ -60,6 +60,9 @@
         FROM t_sales_mode
         <where>
             del_flag = FALSE
+            <if test="id != null">
+                and id = #{id}
+            </if>
             <if test="categoryId != null">
                 and category_id = #{categoryId}
             </if>

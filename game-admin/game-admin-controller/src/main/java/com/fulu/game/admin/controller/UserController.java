@@ -6,7 +6,6 @@ import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.fulu.game.admin.service.AdminUserInfoAuthService;
 import com.fulu.game.admin.service.AdminUserTechAuthService;
 import com.fulu.game.common.Result;
-import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.core.entity.*;
@@ -16,10 +15,8 @@ import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
 import com.fulu.game.core.service.*;
-import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +26,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -64,6 +60,8 @@ public class UserController extends BaseController {
     private UserBodyAuthService userBodyAuthService;
     @Autowired
     private VirtualDetailsService virtualDetailsService;
+    @Autowired
+    private UserNightInfoService userNightInfoService;
 
     /**
      * 陪玩师认证信息列表
@@ -79,6 +77,18 @@ public class UserController extends BaseController {
                                    UserInfoAuthSearchVO userInfoAuthSearchVO) {
         PageInfo<UserInfoAuthVO> pageInfo = userInfoAuthService.list(pageNum, pageSize, userInfoAuthSearchVO);
         return Result.success().data(pageInfo);
+    }
+
+    /**
+     * 设置是否马甲
+     *
+     * @param id 认证id
+     * @return 封装结果集
+     */
+    @PostMapping(value = "/info-auth/vest/set")
+    public Result setVest(@RequestParam Integer id) {
+        UserInfoAuth userInfoAuth = userInfoAuthService.setVest(id);
+        return Result.success().data(userInfoAuth).msg("操作成功！");
     }
 
     /**
@@ -198,7 +208,6 @@ public class UserController extends BaseController {
         return Result.success().data(userInfoAuthVO);
     }
 
-
     /**
      * 通过用户手机查询用户信息
      *
@@ -279,7 +288,6 @@ public class UserController extends BaseController {
 //        workbook.close();
 //        fos.close();
     }
-    
 
 
     /**
@@ -395,8 +403,12 @@ public class UserController extends BaseController {
      */
     @PostMapping("/lock")
     public Result lock(@RequestParam("id") Integer id) {
-        userService.lock(id);
-        return Result.success().msg("操作成功！");
+        Boolean flag = userService.lock(id);
+        if(flag){
+            return Result.success().msg("封禁用户并且剔除用户登录状态成功！");
+        }else{
+            return Result.success().msg("封禁用户未找到用户登录状态！");
+        }
     }
 
     /**
@@ -518,6 +530,7 @@ public class UserController extends BaseController {
 
     /**
      * 获取钻石/魅力值明细
+     *
      * @return
      */
     @RequestMapping("/virtual-detail/list")
@@ -528,10 +541,40 @@ public class UserController extends BaseController {
         VirtualDetailsVO vd = new VirtualDetailsVO();
         vd.setUserId(userId);
         vd.setType(type);
-        
-        PageInfo<VirtualDetails> list = virtualDetailsService.findByParameterWithPage(vd , pageSize , pageNum , " create_time desc" );
+
+        PageInfo<VirtualDetails> list = virtualDetailsService.findByParameterWithPage(vd, pageSize, pageNum, " create_time desc");
 
         return Result.success().data(list).msg("查询列表成功！");
     }
-    
+
+    /**
+     * 获取午夜场陪玩师设置
+     *
+     * @param userId 用户id
+     * @return 封装结果集
+     */
+    @RequestMapping("/night-config/get")
+    public Result getNightConfig(@RequestParam Integer userId) {
+        UserNightInfoVO info = userNightInfoService.getNightConfig(userId);
+        return Result.success().data(info).msg("查询成功！");
+    }
+
+    /**
+     * 设置午夜场陪玩师信息
+     *
+     * @param userId      陪玩师id
+     * @param sort        排序权重
+     * @param categoryId  游戏分类id
+     * @param salesModeId 单位id
+     * @return 封装结果集
+     */
+    @RequestMapping("/night-config/set")
+    public Result setNightConfig(@RequestParam Integer userId,
+                                 @RequestParam Integer sort,
+                                 @RequestParam Integer categoryId,
+                                 @RequestParam Integer salesModeId) {
+        UserNightInfo info = userNightInfoService.setNightConfig(userId, sort, categoryId, salesModeId);
+        return Result.success().data(info).msg("设置成功！");
+    }
+
 }
