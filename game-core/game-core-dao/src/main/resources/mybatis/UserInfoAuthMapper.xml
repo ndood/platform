@@ -334,8 +334,10 @@
     </update>
 
 
-    <update id="updateUserSort">
-        update t_user_info_auth set sort = #{sort} where user_id = #{userId}
+    <update id="saveOtherInfo" parameterType="com.fulu.game.core.entity.to.UserInfoAuthTO">
+        update t_user_info_auth 
+        set sort = #{sort} , auto_say_hello = #{autoSayHello}
+        where user_id = #{userId}
     </update>
 
     <select id="getAutoSayHelloUser" resultMap="UserInfoAuthResultVOMap" parameterType="java.lang.Integer">

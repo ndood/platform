@@ -35,7 +35,7 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
      * @param userInfoAuthTO
      * @return
      */
-    void saveSort(UserInfoAuthTO userInfoAuthTO);
+    void saveOtherInfo(UserInfoAuthTO userInfoAuthTO);
 
     /**
      * 通过用户ID查询用户认证信息

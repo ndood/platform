@@ -97,9 +97,8 @@ public class UserController extends BaseController {
     public Result userInfoAuthCreate(UserInfoAuthTO userInfoAuthTO) {
         userInfoAuthService.save(userInfoAuthTO);
 
-        if (userInfoAuthTO.getSort() == null) {
-            userInfoAuthService.saveSort(userInfoAuthTO);
-        }
+        //更新一些特定为空的字段
+        userInfoAuthService.saveOtherInfo(userInfoAuthTO);
 
         return Result.success().data(userInfoAuthTO);
     }

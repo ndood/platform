@@ -242,9 +242,9 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
      * @return
      */
     @Override
-    public void saveSort(UserInfoAuthTO userInfoAuthTO) {
+    public void saveOtherInfo(UserInfoAuthTO userInfoAuthTO) {
 
-        userInfoAuthDao.updateUserSort(userInfoAuthTO.getUserId(), userInfoAuthTO.getSort());
+        userInfoAuthDao.saveOtherInfo(userInfoAuthTO);
 
     }
 
