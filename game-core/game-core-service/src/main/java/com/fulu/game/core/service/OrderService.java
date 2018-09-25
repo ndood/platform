@@ -70,4 +70,11 @@ public interface OrderService extends ICommonService<Order, Integer> {
      */
     List<Order> findWaitSendEmailOrder(Integer status , Integer waitMins);
 
+
+    /**
+     * 获取im聊天Banner订单
+     *
+     * @return
+     */
+    List<Order> getBannerOrderList(Integer authUserId , Integer bossUserId);
 }

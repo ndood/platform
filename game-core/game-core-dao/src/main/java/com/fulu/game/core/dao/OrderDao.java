@@ -66,4 +66,8 @@ public interface OrderDao extends ICommonDao<Order, Integer> {
      */
     List<Order> findDayReconOrders(OrderSearchVO orderSearchVO);
 
+
+
+    List<Order> getBannerOrderList(@Param(value = "authUserId") Integer authUserId, @Param(value = "bossUserId") Integer bossUserId , @Param(value = "statusList") List<Integer> statusList);
+
 }

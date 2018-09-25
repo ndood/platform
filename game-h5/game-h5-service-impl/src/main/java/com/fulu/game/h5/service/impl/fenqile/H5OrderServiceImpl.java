@@ -19,6 +19,7 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -42,6 +43,7 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
     private final H5OrderShareProfitServiceImpl h5OrderShareProfitService;
     private final OrderService orderService;
     private final CouponService couponService;
+    private final UserInfoAuthService userInfoAuthService;
 
     @Autowired
     public H5OrderServiceImpl(UserService userService,
@@ -55,7 +57,7 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
                               UserCommentService userCommentService,
                               H5PushServiceImpl h5PushService,
                               H5OrderShareProfitServiceImpl h5OrderShareProfitService,
-                              OrderService orderService) {
+                              OrderService orderService, @Qualifier(value = "userInfoAuthServiceImpl") UserInfoAuthService userInfoAuthService) {
         this.userService = userService;
         this.productService = productService;
         this.categoryService = categoryService;
@@ -67,7 +69,8 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         this.couponService = couponService;
         this.h5PushService = h5PushService;
         this.h5OrderShareProfitService = h5OrderShareProfitService;
-        this.orderService=orderService;
+        this.orderService = orderService;
+        this.userInfoAuthService = userInfoAuthService;
     }
 
 
@@ -82,9 +85,18 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
         //发送短信通知给陪玩师
         User server = userService.findById(order.getServiceUserId());
-        SMSUtil.sendOrderReceivingRemind(server.getMobile(), order.getName());
-        //推送通知
-        h5PushService.orderPay(order);
+
+        UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(order.getServiceUserId());
+        Boolean vestFlag = false;
+        if (userInfoAuth != null) {
+            vestFlag = userInfoAuth.getVestFlag() == null ? false : userInfoAuth.getVestFlag();
+        }
+
+        if (!vestFlag) {
+            SMSUtil.sendOrderReceivingRemind(server.getMobile(), order.getName());
+            //推送通知
+            h5PushService.orderPay(order);
+        }
     }
 
     @Override

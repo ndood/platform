@@ -22,7 +22,6 @@ public enum OrderStatusEnum {
     CONSULT_REJECT(352,"协商拒绝","陪玩师拒绝退款，等待老板回应##超时将取消退款申请"),
     CONSULT_CANCEL(354,"协商取消",""),
     APPEALING(400, "仲裁中","客服即将介入，请上传凭证##请在2个小时内上传凭证"), //用户申诉订单
-    APPEALING_ADMIN(401, "仲裁中","客服即将介入，请上传凭证##请在2个小时内上传凭证"), //管理员申诉订单
     ADMIN_REFUND(410, "仲裁完成:老板胜诉",""),//管理员退款用户
     CONSULT_COMPLETE(415, "协商完成",""),//陪玩师退钱给用户
     SYSTEM_CONSULT_COMPLETE(416, "协商完成",""),//陪玩师退钱给用户

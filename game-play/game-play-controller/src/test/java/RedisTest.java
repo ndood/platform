@@ -1,3 +1,4 @@
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.play.PlayApplication;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = PlayApplication.class)
@@ -34,7 +36,8 @@ public class RedisTest {
         //StringRedisSerializer
         //Jackson2JsonRedisSerializer
 
-        redisOpenServiceImpl.set("xxada","123",10);
+        Set<String> sets =  redisOpenServiceImpl.keys(RedisKeyEnum.PLAY_TOKEN.generateKey()+"*#48");
+        System.out.println(sets);
     }
 
     /**

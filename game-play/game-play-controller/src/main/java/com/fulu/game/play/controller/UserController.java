@@ -5,6 +5,7 @@ import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
@@ -75,6 +76,8 @@ public class UserController extends BaseController {
     private SpringThreadPoolExecutor springThreadPoolExecutor;
     @Autowired
     private UserBodyAuthService userBodyAuthService;
+    @Autowired
+    private OrderService orderService;
 
     @RequestMapping("tech/list")
     public Result userTechList() {
@@ -278,6 +281,20 @@ public class UserController extends BaseController {
                 });
             }
         }
+        
+        //保存需要打招呼的用户
+        String userIdJsonStr = redisOpenService.get(RedisKeyEnum.AUTO_SAY_HELLO_USER_LIST.generateKey());
+        JSONArray userIdArr = null;
+        if(StringUtils.isNotBlank(userIdJsonStr)){
+            userIdArr = JSONObject.parseArray(userIdJsonStr);
+        }else{
+            userIdArr = new JSONArray();
+            
+        }
+        
+        userIdArr.add(user.getId().intValue());
+        redisOpenService.set(RedisKeyEnum.AUTO_SAY_HELLO_USER_LIST.generateKey(),userIdArr.toJSONString());
+        
         return Result.success().data(resultUser);
     }
 
@@ -575,8 +592,14 @@ public class UserController extends BaseController {
     @PostMapping("/body-auth/get")
     public Result getUserAuthInfo() {
         User user = userService.getCurrentUser();
+        UserBodyAuth authInfo = null;
+        try {
+            authInfo = userBodyAuthService.getUserAuthInfo(user.getId());
+        }catch (Exception e){
+            log.error("/api/v1/user/body-auth/get",e.getMessage());
+            return Result.error().data("errcode", UserException.ExceptionCode.BODY_NO_AUTH.getCode()).msg(UserException.ExceptionCode.BODY_NO_AUTH.getMsg());
 
-        UserBodyAuth authInfo = userBodyAuthService.getUserAuthInfo(user.getId());
+        }
 
         return Result.success().data(authInfo).msg("查询成功！");
     }
@@ -604,4 +627,44 @@ public class UserController extends BaseController {
         return Result.success().msg("提交成功！");
     }
 
+    /**
+     * 设置一个用户的自动问好状态
+     *
+     * @return
+     */
+    @PostMapping("/rand-status/set")
+    public Result setUserRandStatus() {
+        User user = userService.getCurrentUser();
+
+        userService.setUserRandStatus(user.getId());
+
+        return Result.success().msg("设置成功！");
+    }
+
+
+    //获取该陪玩师与老板的订单
+    @RequestMapping("/banner-order/get")
+    public Result getBannerOrderList(Integer bossUserId){
+
+        User user = userService.getCurrentUser();
+        
+        List<Order> list = orderService.getBannerOrderList(user.getId(),bossUserId);
+
+        return Result.success().data(list).msg("操作成功");
+    }
+
+
+    /**
+     * 设置一个用户的代聊开关
+     *
+     * @return
+     */
+    @PostMapping("/agent-im/set")
+    public Result setUserAgentImStatus(boolean agentStatus) {
+        User user = userService.getCurrentUser();
+
+        userInfoAuthService.setUserAgentImStatus(agentStatus,user);
+
+        return Result.success().msg("设置成功！");
+    }
 }

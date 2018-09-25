@@ -48,8 +48,10 @@ public class OrderDealServiceImpl extends AbsCommonService<OrderDeal, Integer> i
 
     @Override
     public void create(OrderDeal orderDeal, String... fileUrls) {
+        
         orderDeal.setCreateTime(new Date());
         create(orderDeal);
+        
         if (fileUrls != null) {
             for (String url : fileUrls) {
                 OrderDealFile orderDealFile = new OrderDealFile();

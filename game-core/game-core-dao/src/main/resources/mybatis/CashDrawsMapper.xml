@@ -171,6 +171,7 @@
         WHERE
             type = 1
         AND cash_status = 0
+        AND server_auth = 0
         AND user_id = #{userId}
     </select>
 

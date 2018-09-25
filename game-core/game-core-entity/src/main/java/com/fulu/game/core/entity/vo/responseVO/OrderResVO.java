@@ -38,4 +38,9 @@ public class OrderResVO extends Order {
      */
     @Excel(name = "应付金额", orderNum = "8", width = 15)
     private BigDecimal payableMoney;
+
+
+    private Integer agentAdminId;
+    private String agentAdminName;
+    private String proRemark;
 }

@@ -24,4 +24,5 @@ public class OrderDealFile implements Serializable {
 	//
 	private Date createTime;
 
+
 }
