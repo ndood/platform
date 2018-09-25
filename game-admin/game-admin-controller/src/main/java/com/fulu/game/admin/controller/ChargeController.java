@@ -62,7 +62,7 @@ public class ChargeController extends BaseController {
     public void orderExport(HttpServletResponse response,
                             VirtualPayOrderVO payOrderVO) throws Exception {
         String title = "提现申请单列表";
-        PageInfo<VirtualPayOrderVO> voPageInfo = payOrderService.chargeList(payOrderVO);
+        PageInfo<VirtualPayOrderVO> voPageInfo = payOrderService.chargeList(payOrderVO, null, null, null);
         ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
         Workbook workbook = ExcelExportUtil.exportExcel(exportParams, VirtualPayOrderVO.class, voPageInfo.getList());
         response.setCharacterEncoding("UTF-8");
