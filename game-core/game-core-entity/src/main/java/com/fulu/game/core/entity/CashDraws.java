@@ -17,6 +17,7 @@ public class CashDraws implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //提现记录id
+    @Excel(name = "申请id", orderNum = "0", width = 15)
     private Integer cashId;
     //申请人
     @Excel(name = "申请人", orderNum = "1", width = 15)
