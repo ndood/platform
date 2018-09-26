@@ -1,6 +1,7 @@
 package com.fulu.game.core.entity.vo;
 
 
+import com.fulu.game.core.entity.UserCommentTag;
 import lombok.Builder;
 import lombok.Data;
 
@@ -48,6 +49,7 @@ public class ProductDetailsVO {
 
     private List<ProductVO> otherProduct = new ArrayList<ProductVO>();
 
-
+    /** 用户评论标签 */
+    private List<UserCommentTag> userCommentTagList;
 
 }
