@@ -56,7 +56,7 @@ public class CashDrawsController extends BaseController {
     public void orderExport(HttpServletResponse response,
                             CashDrawsVO cashDrawsVO) throws Exception {
         String title = "提现申请单列表";
-        PageInfo<CashDrawsVO> cashDrawsList = cashDrawsService.list(cashDrawsVO);
+        PageInfo<CashDrawsVO> cashDrawsList = cashDrawsService.list(cashDrawsVO, null, null);
         ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
         Workbook workbook = ExcelExportUtil.exportExcel(exportParams, CashDrawsVO.class, cashDrawsList.getList());
         response.setCharacterEncoding("UTF-8");
@@ -93,7 +93,7 @@ public class CashDrawsController extends BaseController {
                                         CashDrawsVO cashDrawsVO) throws Exception {
         String title = "财务打款管理列表";
         cashDrawsVO.setServerAuth(CashServerAuthStatusEnum.AUTH_SUCCESS.getType());
-        PageInfo<CashDrawsVO> cashDrawsList = cashDrawsService.list(cashDrawsVO);
+        PageInfo<CashDrawsVO> cashDrawsList = cashDrawsService.list(cashDrawsVO, null, null);
         ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
         Workbook workbook = ExcelExportUtil.exportExcel(exportParams, CashDrawsVO.class, cashDrawsList.getList());
         response.setCharacterEncoding("UTF-8");
