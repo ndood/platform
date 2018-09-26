@@ -6,6 +6,7 @@ import com.fulu.game.app.shiro.AppUserToken;
 import com.fulu.game.app.util.RequestUtil;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.CategoryParentEnum;
 import com.fulu.game.common.enums.PlatformBannerEnum;
 import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
@@ -13,11 +14,17 @@ import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Banner;
+import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.BannerVO;
+import com.fulu.game.core.entity.vo.CategoryVO;
+import com.fulu.game.core.entity.vo.ProductShowCaseVO;
 import com.fulu.game.core.service.BannerService;
+import com.fulu.game.core.service.CategoryService;
+import com.fulu.game.core.service.ProductService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -25,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +50,11 @@ public class HomeController extends BaseController {
 
     @Autowired
     private BannerService bannerService;
+
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private ProductService productService;
 
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -124,4 +137,43 @@ public class HomeController extends BaseController {
         List<Banner> bannerList = bannerService.findByParam(bannerVO);
         return Result.success().data(bannerList);
     }
+
+
+    /**
+     * 获取首页信息接口
+     * @return
+     */
+    @PostMapping("/home/index")
+    @ResponseBody
+    public Result homeIndex() {
+        BannerVO bannerVO = new BannerVO();
+        bannerVO.setDisable(true);
+        bannerVO.setPlatformType(PlatformBannerEnum.APP.getType());
+        // 获取banner列表
+        List<Banner> bannerList = bannerService.findByParam(bannerVO);
+        Map<String, Object> map = new HashMap<>();
+        map.put("bannerList",bannerList);
+        //获取一级分类
+        List<Category> categoryList = categoryService.findByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType(), true);
+        for (Category category : categoryList) {
+            if (category.getIndexIcon() != null) {
+                category.setIcon(category.getIndexIcon());
+            }
+        }
+        map.put("firstList",categoryList);
+        //获取所有小的分类
+        List<Category> categorySecondList = categoryService.findAllAccompanyPlayCategory();
+        for (Category category : categorySecondList) {
+            if (category.getIndexIcon() != null) {
+                category.setIcon(category.getIndexIcon());
+            }
+            PageInfo<ProductShowCaseVO> pageInfo = productService.findProductShowCase(category.getId(), null, 1, 8, null, null, null);
+            if(pageInfo != null){
+                category.setProductList(pageInfo.getList());
+            }
+        }
+        map.put("categoryList",categorySecondList);
+        return Result.success().data(map);
+    }
+
 }

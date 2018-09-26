@@ -46,6 +46,8 @@ public class ProductController extends BaseController {
     private AssignOrderSettingService assignOrderSettingService;
     @Autowired
     private TagService tagService;
+    @Autowired
+    private UserCommentTagService userCommentTagService;
     /**
      * 获取商品列表
      * @param userId
@@ -70,6 +72,10 @@ public class ProductController extends BaseController {
     @RequestMapping(value = "/details")
     public Result findByProductId(Integer productId) {
         ProductDetailsVO productDetailsVO = productService.findDetailsByProductId(productId);
+        if(productDetailsVO != null && productDetailsVO.getUserInfo() != null){
+            PageInfo<UserCommentTag> page = userCommentTagService.findByServerId(1, 10, productDetailsVO.getUserInfo().getUserId());
+            productDetailsVO.setUserCommentTagList(page.getList());
+        }
         return Result.success().data(productDetailsVO);
     }
 

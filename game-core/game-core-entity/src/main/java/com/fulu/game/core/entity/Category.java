@@ -3,6 +3,10 @@ package com.fulu.game.core.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
+
+import com.fulu.game.core.entity.vo.ProductShowCaseVO;
+import com.github.pagehelper.PageInfo;
 import lombok.Data;
 
 
@@ -43,5 +47,8 @@ public class Category implements Serializable {
 	private Date createTime;
 	//
 	private Date updateTime;
+
+	//分类下的商品分页列表信息
+	private List<ProductShowCaseVO> productList;
 
 }

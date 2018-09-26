@@ -11,6 +11,7 @@ import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.HttpUtils;
+import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.common.utils.geo.GeoHashUtil;
 import com.fulu.game.common.utils.geo.Point;
@@ -66,6 +67,8 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
 
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private OssUtil ossUtil;
 
 
     @Override
@@ -470,7 +473,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
                     DynamicFileVO dynamicFileVO = new DynamicFileVO();
                     dynamicFileVO.setDynamicId(dynamicVO.getId());
                     dynamicFileVO.setType(dynamicVO.getType());
-                    dynamicFileVO.setUrl(fileObject.getString("url"));
+                    dynamicFileVO.setUrl(ossUtil.activateOssFile(fileObject.getString("url")));
                     dynamicFileVO.setWidth(fileObject.getInteger("width") == null ? 0:fileObject.getInteger("width"));
                     dynamicFileVO.setHeight(fileObject.getInteger("height") == null ? 0:fileObject.getInteger("height"));
                     dynamicFileVO.setDuration(fileObject.getInteger("duration") == null ? 0:fileObject.getInteger("duration"));

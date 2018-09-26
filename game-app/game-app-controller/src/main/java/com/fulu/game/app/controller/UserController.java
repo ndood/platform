@@ -174,7 +174,7 @@ public class UserController extends BaseController {
                 if (picUrls != null && picUrls.length > 0) {
                     for (int i = 0; i < picUrls.length; i++) {
                         UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
-                        userInfoAuthFile.setUrl(picUrls[i]);
+                        userInfoAuthFile.setUrl(ossUtil.activateOssFile(picUrls[i]));
                         userInfoAuthFile.setInfoAuthId(userInfoAuth.getId());
                         userInfoAuthFile.setType(FileTypeEnum.PIC.getType());
                         userInfoAuthFile.setName("相册" + (i + 1));
@@ -184,7 +184,7 @@ public class UserController extends BaseController {
                 }
                 if (userVO != null && userVO.getVideoUrl() != null) {
                     UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
-                    userInfoAuthFile.setUrl(userVO.getVideoUrl());
+                    userInfoAuthFile.setUrl(ossUtil.activateOssFile(userVO.getVideoUrl()));
                     userInfoAuthFile.setInfoAuthId(userInfoAuth.getId());
                     userInfoAuthFile.setType(FileTypeEnum.VIDEO.getType());
                     userInfoAuthFile.setName("视频");
@@ -306,7 +306,7 @@ public class UserController extends BaseController {
         data.put("charm", leftCharm);
         data.put("charmMoney", new BigDecimal(leftCharm)
                 .multiply(Constant.CHARM_TO_MONEY_RATE).setScale(2, BigDecimal.ROUND_HALF_DOWN));
-        data.put("chargeBalance", user.getChargeBalance());
+        data.put("chargeBalance", user.getChargeBalance()==null?0:user.getChargeBalance());
         return Result.success().data(data).msg("查询成功！");
     }
 
