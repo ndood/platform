@@ -16,7 +16,6 @@ import com.fulu.game.h5.shiro.PlayUserToken;
 import com.fulu.game.h5.utils.RequestUtil;
 import com.fulu.game.thirdparty.fenqile.entity.CodeSessionResult;
 import com.fulu.game.thirdparty.fenqile.service.FenqileAuthService;
-import com.fulu.game.thirdparty.fenqile.service.impl.FenqileAuthServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import org.apache.commons.lang.StringUtils;
@@ -47,7 +46,7 @@ public class FenqileHomeController extends BaseController {
 
     private final UserService userService;
 
-    private final FenqileAuthService FenqileAuthService;
+    private final FenqileAuthService fenqileAuthService;
 
 
     @Autowired
@@ -56,7 +55,7 @@ public class FenqileHomeController extends BaseController {
                                  FenqileAuthService fenqileAuthService) {
         this.bannerService = bannerService;
         this.userService = userService;
-        this.FenqileAuthService = fenqileAuthService;
+        this.fenqileAuthService = fenqileAuthService;
     }
 
 
@@ -81,15 +80,18 @@ public class FenqileHomeController extends BaseController {
         if (StringUtils.isBlank(code)) {
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
-
+        log.info("分期乐code:{}",code);
         CodeSessionResult session = null;
         if(code.length()<=6){
             session = new CodeSessionResult();
             session.setUid(code);
             session.setAccessToken("tempaccesstoken");
+            log.info("使用假的分期乐code登录");
         }else{
             try {
-                session = FenqileAuthService.accessToken(code);
+                session = fenqileAuthService.accessToken(code);
+                log.info("分期乐授权成功session:{}",session);
+
             }catch (Exception e){
                 log.error("分期乐授权错误",e);
                 throw new LoginException(LoginException.ExceptionCode.FENQILE_AUTH_ERROR);
