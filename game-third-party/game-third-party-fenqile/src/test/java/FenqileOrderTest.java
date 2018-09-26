@@ -1,4 +1,8 @@
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.thirdparty.fenqile.entity.FenqileConfig;
+import com.fulu.game.thirdparty.fenqile.entity.FenqileOrderNotice;
 import com.fulu.game.thirdparty.fenqile.entity.FenqileOrderRequest;
 import com.fulu.game.thirdparty.fenqile.service.impl.FenqileOrderServiceImpl;
 import org.junit.Test;
@@ -41,7 +45,7 @@ public class FenqileOrderTest {
     }
 
     @Test
-    public void testFenqilePay(){
+    public void testFenqilePay() {
         FenqileOrderServiceImpl fenqileOrderService = new FenqileOrderServiceImpl();
         fenqileOrderService.setConfig(getFenqileConfig());
         FenqileOrderRequest fenqileOrderRequest = new FenqileOrderRequest();
@@ -51,23 +55,34 @@ public class FenqileOrderTest {
         fenqileOrderRequest.setThirdUid("d5f13ace409b75d56f92a79e82b1cbef5e3d55db");
         fenqileOrderRequest.setAmount(new BigDecimal(20));
         fenqileOrderRequest.setCreateTime("2017-09-26 18:40:30");
-        Object o=    fenqileOrderService.createOrder(fenqileOrderRequest);
+        Object o = fenqileOrderService.createOrder(fenqileOrderRequest);
         System.out.println(o);
     }
 
-        @Test
-    public void testNoticeModify(){
+    @Test
+    public void testNoticeModify() {
+//        FenqileOrderServiceImpl fenqileOrderService = new FenqileOrderServiceImpl();
+//        fenqileOrderService.setConfig(getFenqileConfig());
+//
+//        fenqileOrderService.noticeQuery(1);
+
+        String result = "{\"sign\":\"45f6ba64d0d2247f468d85242f1cb9f2\",\"amount\":0.01,\"subject\":\"绝地求生：刺激战场 1*局\",\"third_order_id\":\"TEST180926997162\",\"merch_sale_state\":10,\"order_id\":\"O20180926620566103844\"}";
+
+        JSONObject jso = JSONObject.parseObject(result);
+        FenqileOrderNotice fenqileOrderNotice = BeanUtil.fillBeanWithMap(jso.getInnerMap(),new FenqileOrderNotice(), true,true);
+        System.out.println(fenqileOrderNotice);
+    }
+
+    @Test
+    public void testFenqileOrderStatus() {
         FenqileOrderServiceImpl fenqileOrderService = new FenqileOrderServiceImpl();
         fenqileOrderService.setConfig(getFenqileConfig());
 
-         fenqileOrderService.noticeModify(1,"https://t-api-h5.wzpeilian.com/fenqile/callback/order");
+        fenqileOrderService.noticeFenqileOrderStatus("TEST180926258117","O20180926624512203256",15);
     }
 
 
-
-
-
-    public FenqileConfig getFenqileConfig(){
+    public FenqileConfig getFenqileConfig() {
         FenqileConfig fenqileConfig = new FenqileConfig();
         fenqileConfig.setPartnerId("PAI201808080000195");
         fenqileConfig.setPartnerKey("43ea4b7f27e36f2eb7b194b3924291ca");
@@ -78,4 +93,11 @@ public class FenqileOrderTest {
         return fenqileConfig;
     }
 
+    @Test
+    public void testMap() {
+        Map<String, String> map = new HashMap<>();
+        map.put("xx", "11");
+
+        System.out.println(map);
+    }
 }
