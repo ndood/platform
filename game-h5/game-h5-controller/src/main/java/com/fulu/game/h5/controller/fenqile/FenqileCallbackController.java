@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 
 @Controller
@@ -23,9 +24,12 @@ public class FenqileCallbackController {
                               BigDecimal amount,
                               String subject,
                               String body,
-                              String attach) {
+                              String attach,
+                              HttpServletRequest request) {
         log.info("third_order_id:{},order_id:{},merch_sale_state:{},sign:{},amount:{},subject:{},body:{},attach:{}",
-                third_order_id,order_id,merch_sale_state,sign,amount,subject,body,attach);
+                third_order_id, order_id, merch_sale_state, sign, amount, subject, body, attach);
+
+        request.getParameterMap();
 
         return "";
     }
