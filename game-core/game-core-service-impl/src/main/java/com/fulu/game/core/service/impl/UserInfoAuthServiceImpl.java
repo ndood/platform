@@ -676,7 +676,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
      * @param userId
      * @return
      */
-    private List<TagVO> findAllUserTagSelected(int userId, Boolean ignoreNotUser) {
+    public List<TagVO> findAllUserTagSelected(int userId, Boolean ignoreNotUser) {
         List<Tag> allPersonTags = tagService.findAllPersonTags();
         List<TagVO> tagVOList = new ArrayList<>();
         Map<Integer, TagVO> tagVOMap = new HashMap<>();

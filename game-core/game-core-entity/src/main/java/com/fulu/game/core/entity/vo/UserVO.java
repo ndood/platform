@@ -59,4 +59,14 @@ public class UserVO extends User {
     /** 是否已关注（1：是；0：否） */
     private int isAttention = 0;
 
+    /** 收入金额 */
+    private BigDecimal incomeSum;
+    /** 服务订单数 */
+    private Integer serviceOrderCount;
+    /** 消费客单价 */
+    private BigDecimal payUnitPrice;
+    /** 收入客单价 */
+    private BigDecimal incomeUnitPrice;
+    //标签组
+    private List<TagVO> groupTags;
 }

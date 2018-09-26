@@ -74,6 +74,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     private AdminImLogService adminImLogService;
 
 
+
     @Override
     public ICommonDao<User, Integer> getDao() {
         return userDao;
@@ -825,5 +826,40 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             redisOpenService.delete(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()));
         }
         return null;
+    }
+
+    /**
+     * 获取用户信息
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public UserVO findUserVOById(Integer id) {
+        UserVO userVO = new UserVO();
+        User user = findById(id);
+        if(user == null ){
+            throw new UserException(UserException.ExceptionCode.USER_INFO_NULL_EXCEPTION);
+        }
+        BeanUtil.copyProperties(user,userVO);
+        // 设置用户扩展信息（兴趣、职业、简介、视频、以及相册）
+        setUserExtInfo(userVO, id);
+        //查询用户所有标签
+        List<TagVO> allPersonTagVos = userInfoAuthService.findAllUserTagSelected(id, false);
+        userVO.setGroupTags(allPersonTagVos);
+        UserVO params = new UserVO();
+        params.setId(id);
+        //设置收入和消费信息
+        List<UserVO> list = userDao.findBySearch(params);
+        if(CollectionUtil.isNotEmpty(list)){
+            UserVO tmp = list.get(0);
+            userVO.setPaySum(tmp.getPaySum());
+            userVO.setOrderCount(tmp.getOrderCount());
+            userVO.setPayUnitPrice(tmp.getPayUnitPrice());
+            userVO.setIncomeSum(tmp.getIncomeSum());
+            userVO.setServiceOrderCount(tmp.getServiceOrderCount());
+            userVO.setIncomeUnitPrice(tmp.getIncomeUnitPrice());
+        }
+        return userVO;
     }
 }

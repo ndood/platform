@@ -436,6 +436,18 @@ public class UserController extends BaseController {
     }
 
     /**
+     * 查询-用户信息
+     * 管理后台使用
+     * @param id
+     * @return
+     */
+    @PostMapping("/query")
+    public Result list(@RequestParam Integer id) {
+        UserVO userVO = userService.findUserVOById(id);
+        return Result.success().data(userVO).msg("查询用户成功！");
+    }
+
+    /**
      * 添加用户
      *
      * @param userVO

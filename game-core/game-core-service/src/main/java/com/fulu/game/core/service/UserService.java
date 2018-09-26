@@ -296,4 +296,11 @@ public interface UserService extends ICommonService<User, Integer> {
 
 
     List<AdminImLog> userOnline(Boolean active, String version);
+
+    /**
+     * 获取用户信息
+     * @param id
+     * @return
+     */
+    UserVO findUserVOById(Integer id);
 }
