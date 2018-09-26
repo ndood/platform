@@ -97,7 +97,10 @@ public class UserController extends BaseController {
     public Result getBalance() {
         User user = userService.findById(userService.getCurrentUser().getId());
         JSONObject data = new JSONObject();
-        data.put("balance", user.getBalance());
+        //总余额
+        data.put("balance", user.getBalance()
+                .add(user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance())
+                .setScale(2, BigDecimal.ROUND_HALF_DOWN));
         data.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
         Integer totalCharm = user.getCharm() == null ? 0 : user.getCharm();
         Integer charmDrawSum = user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum();
@@ -105,7 +108,10 @@ public class UserController extends BaseController {
         data.put("charm", leftCharm);
         data.put("charmMoney", new BigDecimal(leftCharm)
                 .multiply(Constant.CHARM_TO_MONEY_RATE).setScale(2, BigDecimal.ROUND_HALF_DOWN));
-        data.put("chargeBalance", user.getChargeBalance()==null?0:user.getChargeBalance());
+        //可提现余额
+        data.put("drawsBalance", user.getBalance());
+        //不可提现余额
+        data.put("chargeBalance", user.getChargeBalance() == null ? 0 : user.getChargeBalance());
         return Result.success().data(data).msg("查询成功！");
     }
 
@@ -281,20 +287,20 @@ public class UserController extends BaseController {
                 });
             }
         }
-        
+
         //保存需要打招呼的用户
         String userIdJsonStr = redisOpenService.get(RedisKeyEnum.AUTO_SAY_HELLO_USER_LIST.generateKey());
         JSONArray userIdArr = null;
-        if(StringUtils.isNotBlank(userIdJsonStr)){
+        if (StringUtils.isNotBlank(userIdJsonStr)) {
             userIdArr = JSONObject.parseArray(userIdJsonStr);
-        }else{
+        } else {
             userIdArr = new JSONArray();
-            
+
         }
-        
+
         userIdArr.add(user.getId().intValue());
-        redisOpenService.set(RedisKeyEnum.AUTO_SAY_HELLO_USER_LIST.generateKey(),userIdArr.toJSONString());
-        
+        redisOpenService.set(RedisKeyEnum.AUTO_SAY_HELLO_USER_LIST.generateKey(), userIdArr.toJSONString());
+
         return Result.success().data(resultUser);
     }
 
@@ -595,8 +601,8 @@ public class UserController extends BaseController {
         UserBodyAuth authInfo = null;
         try {
             authInfo = userBodyAuthService.getUserAuthInfo(user.getId());
-        }catch (Exception e){
-            log.error("/api/v1/user/body-auth/get",e.getMessage());
+        } catch (Exception e) {
+            log.error("/api/v1/user/body-auth/get", e.getMessage());
             return Result.error().data("errcode", UserException.ExceptionCode.BODY_NO_AUTH.getCode()).msg(UserException.ExceptionCode.BODY_NO_AUTH.getMsg());
 
         }
@@ -644,11 +650,11 @@ public class UserController extends BaseController {
 
     //获取该陪玩师与老板的订单
     @RequestMapping("/banner-order/get")
-    public Result getBannerOrderList(Integer bossUserId){
+    public Result getBannerOrderList(Integer bossUserId) {
 
         User user = userService.getCurrentUser();
-        
-        List<Order> list = orderService.getBannerOrderList(user.getId(),bossUserId);
+
+        List<Order> list = orderService.getBannerOrderList(user.getId(), bossUserId);
 
         return Result.success().data(list).msg("操作成功");
     }
@@ -663,7 +669,7 @@ public class UserController extends BaseController {
     public Result setUserAgentImStatus(boolean agentStatus) {
         User user = userService.getCurrentUser();
 
-        userInfoAuthService.setUserAgentImStatus(agentStatus,user);
+        userInfoAuthService.setUserAgentImStatus(agentStatus, user);
 
         return Result.success().msg("设置成功！");
     }

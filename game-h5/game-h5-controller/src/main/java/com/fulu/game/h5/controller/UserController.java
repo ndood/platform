@@ -265,7 +265,10 @@ public class UserController extends BaseController {
     public Result getBalance() {
         User user = userService.findById(userService.getCurrentUser().getId());
         JSONObject data = new JSONObject();
-        data.put("balance", user.getBalance());
+        //总余额
+        data.put("balance", user.getBalance()
+                .add(user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance())
+                .setScale(2, BigDecimal.ROUND_HALF_DOWN));
         data.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
         Integer totalCharm = user.getCharm() == null ? 0 : user.getCharm();
         Integer charmDrawSum = user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum();
@@ -273,7 +276,10 @@ public class UserController extends BaseController {
         data.put("charm", leftCharm);
         data.put("charmMoney", new BigDecimal(leftCharm)
                 .multiply(Constant.CHARM_TO_MONEY_RATE).setScale(2, BigDecimal.ROUND_HALF_DOWN));
-        data.put("chargeBalance", user.getChargeBalance());
+        //可提现余额
+        data.put("drawsBalance", user.getBalance());
+        //不可提现余额
+        data.put("chargeBalance", user.getChargeBalance() == null ? 0 : user.getChargeBalance());
         return Result.success().data(data).msg("查询成功！");
     }
 }
