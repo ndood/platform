@@ -105,11 +105,124 @@
         </where>
     </select>
 
+    <select id="getOrderCount" resultType="com.fulu.game.core.entity.ConversionRate"
+            parameterType="com.fulu.game.core.entity.vo.ConversionRateVO">
+        select ifnull(count(1),0) as newOrders,ifnull(count(DISTINCT user_id),0) as newPeoples,
+        ifnull(sum(total_money),0) as newAmount from t_order
+        <where>
+            <!--
+            <if test="statusList != null">
+                and status in
+                <foreach collection="statusList" item="s" index="index" open="(" close=")" separator=",">
+                    #{s}
+                </foreach>
+            </if>
+            -->
+            <if test="beginTime != null">
+                and create_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime}
+            </if>
+        </where>
+        <if test="isRepeact != null">
+            HAVING ifnull(count(1),0) > 2
+        </if>
+    </select>
+
+    <select id="getNewOrderCount" resultType="com.fulu.game.core.entity.ConversionRate"
+            parameterType="com.fulu.game.core.entity.vo.ConversionRateVO">
+        select ifnull(count(1),0) as newOrders,ifnull(count(DISTINCT user_id),0) as newPeoples,
+        ifnull(sum(total_money),0) as newAmount from t_order
+        <where>
+            <!--
+            <if test="statusList != null">
+                and status in
+                <foreach collection="statusList" item="s" index="index" open="(" close=")" separator=",">
+                    #{s}
+                </foreach>
+            </if>
+            -->
+            <if test="beginTime != null">
+                and create_time &gt;= #{beginTime} and user_id in (select id from t_user where create_time &gt;=
+                #{beginTime})
+            </if>
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime} and user_id in (select id from t_user where create_time &lt;=
+                #{endTime})
+            </if>
+            <if test="isPay != null">
+                and is_pay = #{isPay}
+            </if>
+        </where>
+        <if test="isRepeact != null">
+            HAVING ifnull(count(1),0) > 2
+        </if>
+    </select>
+
+    <select id="selectInto">
+        INSERT INTO t_conversion_rate_history (
+            `name`,
+            `time_bucket`,
+            `peoples`,
+            `orders`,
+            `amount`,
+            `new_peoples`,
+            `new_orders`,
+            `new_amount`,
+            `new_pays`,
+            `new_order_rate`,
+            `new_pay_rate`,
+            `repeat_orders`,
+            `repeat_pays`,
+            `repeat_order_rate`,
+            `repeat_pay_rate`,
+            `create_time`,
+            `update_time`
+        ) SELECT
+            `name`,
+            `time_bucket`,
+            `peoples`,
+            `orders`,
+            `amount`,
+            `new_peoples`,
+            `new_orders`,
+            `new_amount`,
+            `new_pays`,
+            `new_order_rate`,
+            `new_pay_rate`,
+            `repeat_orders`,
+            `repeat_pays`,
+            `repeat_order_rate`,
+            `repeat_pay_rate`,
+            `create_time`,
+            `update_time`
+        FROM
+            t_conversion_rate
+    </select>
+
+    <select id="getNewPeopleCount" resultType="com.fulu.game.core.entity.ConversionRate">
+        select ifnull(count(1),0) as newPeoples  from t_user
+        <where>
+            <if test="beginTime != null">
+                and create_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_conversion_rate
         <where>
             id = #{id}
         </where>
+    </delete>
+
+    <delete id="deleteAll">
+        delete from t_conversion_rate
     </delete>
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id"

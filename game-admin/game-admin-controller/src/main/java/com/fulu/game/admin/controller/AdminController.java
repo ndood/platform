@@ -3,12 +3,14 @@ package com.fulu.game.admin.controller;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.Admin;
+import com.fulu.game.core.entity.ConversionRate;
 import com.fulu.game.core.entity.SysRole;
 import com.fulu.game.core.entity.TechLevel;
 import com.fulu.game.core.entity.vo.AdminVO;
 import com.fulu.game.core.entity.vo.SysRoleVO;
 import com.fulu.game.core.entity.vo.TechLevelVO;
 import com.fulu.game.core.service.AdminService;
+import com.fulu.game.core.service.ConversionRateService;
 import com.fulu.game.core.service.SysRoleService;
 import com.fulu.game.core.service.TechLevelService;
 import com.github.pagehelper.PageInfo;
@@ -32,6 +34,8 @@ public class AdminController extends BaseController {
     private SysRoleService sysRoleService;
     @Autowired
     private TechLevelService techLevelService;
+    @Autowired
+    private ConversionRateService conversionRateService;
 
     /**
      * 查询-管理员-列表
@@ -158,8 +162,8 @@ public class AdminController extends BaseController {
      */
     @PostMapping("tech-level/save")
     public Result techLevelSave(TechLevelVO techLevelVO) {
-        techLevelService.save(techLevelVO);
         String msgPrefix = techLevelVO != null && techLevelVO.getId() != null && techLevelVO.getId().intValue() > 0 ? "修改" :"新增";
+        techLevelService.save(techLevelVO);
         return Result.success().msg(msgPrefix + "成功！");
     }
 
@@ -175,6 +179,17 @@ public class AdminController extends BaseController {
         techLevelVO.setIsDel(1);
         techLevelService.update(techLevelVO);
         return Result.success().msg("删除成功！");
+    }
+
+    /**
+     * 查询-转化率-列表
+     *
+     * @return
+     */
+    @PostMapping("conversion-rate/all-list")
+    public Result conversionRateAllList() {
+        List<ConversionRate> list = conversionRateService.findAll();
+        return Result.success().data(list).msg("查询列表成功！");
     }
 
 }
