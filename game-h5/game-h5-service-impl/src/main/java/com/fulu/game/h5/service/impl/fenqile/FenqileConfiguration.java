@@ -22,11 +22,11 @@ public class FenqileConfiguration {
         Config.Fenqile fenqile = configProperties.getFenqile();
         FenqileConfig fenqileConfig = new FenqileConfig();
         fenqileConfig.setV(fenqile.getVersion());
-        fenqileConfig.setClientId(fenqileConfig.getClientId());
-        fenqileConfig.setClientSecret(fenqileConfig.getClientSecret());
-        fenqileConfig.setSellerId(fenqileConfig.getSellerId());
-        fenqileConfig.setPartnerKey(fenqileConfig.getPartnerKey());
-        fenqileConfig.setPartnerId(fenqileConfig.getPartnerId());
+        fenqileConfig.setClientId(fenqile.getClientId());
+        fenqileConfig.setClientSecret(fenqile.getClientSecret());
+        fenqileConfig.setSellerId(fenqile.getSellerId());
+        fenqileConfig.setPartnerKey(fenqile.getPartnerKey());
+        fenqileConfig.setPartnerId(fenqile.getPartnerId());
         return fenqileConfig;
     }
 
