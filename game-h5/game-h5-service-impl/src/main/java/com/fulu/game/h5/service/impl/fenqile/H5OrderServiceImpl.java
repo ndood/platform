@@ -124,7 +124,8 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         //创建订单
         Order order = new Order();
         order.setName(product.getProductName() + " " + num + "*" + product.getUnit());
-        order.setType(OrderTypeEnum.H5.getType());
+        //分期乐订单属于陪玩订单
+        order.setType(OrderTypeEnum.PLATFORM.getType());
         order.setOrderNo(generateOrderNo());
         order.setUserId(user.getId());
         order.setServiceUserId(product.getUserId());
