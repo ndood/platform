@@ -3,6 +3,7 @@ package com.fulu.game.core.entity.vo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.UserInfoAuthFile;
 import com.fulu.game.core.entity.UserTechAuth;
 import lombok.Data;
 
@@ -69,4 +70,6 @@ public class UserVO extends User {
     private BigDecimal incomeUnitPrice;
     //标签组
     private List<TagVO> groupTags;
+    //声音文件
+    private List<UserInfoAuthFile> voiceList;
 }

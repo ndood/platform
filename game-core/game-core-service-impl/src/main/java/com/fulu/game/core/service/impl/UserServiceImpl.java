@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service("userService")
@@ -776,6 +777,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             }
             List<Product> productList = productService.findByUserId(userId);
             userVO.setUserProducts(productList);
+            List<UserInfoAuthFile> voiceFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(), 2);
+            //设置用户语音信息
+            userVO.setVoiceList(voiceFiles);
             List<DynamicVO> newestDynamicList = dynamicService.getNewestDynamicList(userId);
             userVO.setNewestDynamics(newestDynamicList);
         }
@@ -935,6 +939,13 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             userVO.setIncomeSum(tmp.getIncomeSum());
             userVO.setServiceOrderCount(tmp.getServiceOrderCount());
             userVO.setIncomeUnitPrice(tmp.getIncomeUnitPrice());
+        } else {
+            userVO.setPaySum(new BigDecimal("0.00"));
+            userVO.setOrderCount(0);
+            userVO.setPayUnitPrice(new BigDecimal("0.00"));
+            userVO.setIncomeSum(new BigDecimal("0.00"));
+            userVO.setServiceOrderCount(0);
+            userVO.setIncomeUnitPrice(new BigDecimal("0.00"));
         }
         return userVO;
     }
