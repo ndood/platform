@@ -318,20 +318,6 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
                 cashDraws.setCashStatus(CashProcessStatusEnum.DONE.getType());
                 cashDraws.setProcessTime(new Date());
                 cashDrawsDao.update(cashDraws);
-
-                //记录虚拟物品流水表
-                VirtualDetails details = new VirtualDetails();
-                details.setUserId(user.getId());
-                details.setRelevantNo(cashDraws.getCashNo());
-                Integer totalCharm = user.getCharm() == null ? 0 : user.getCharm();
-                Integer charmDrawSum = user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum();
-                Integer leftCharm = totalCharm - charmDrawSum;
-                details.setSum(leftCharm);
-                details.setMoney(cashDraws.getCharm());
-                details.setType(VirtualDetailsTypeEnum.CHARM.getType());
-                details.setRemark("魅力值提现");
-                details.setCreateTime(DateUtil.date());
-                virtualDetailsService.create(details);
                 return cashDraws;
             } catch (WxPayException e) {
                 e.printStackTrace();

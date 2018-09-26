@@ -203,7 +203,7 @@ public class MpPayServiceImpl extends VirtualPayOrderServiceImpl {
             mDetails.setMoney(order.getMoney());
             mDetails.setAction(MoneyOperateTypeEnum.WITHDRAW_BALANCE.getType());
             BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
-            mDetails.setSum(user.getBalance().add(chargeBalance));
+            mDetails.setSum(user.getBalance().add(chargeBalance).add(order.getMoney()));
             mDetails.setRemark(MoneyOperateTypeEnum.WITHDRAW_BALANCE.getMsg() + "订单号: " + orderNo);
             mDetails.setCreateTime(DateUtil.date());
             moneyDetailsService.drawSave(mDetails);
