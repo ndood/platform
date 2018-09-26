@@ -3,6 +3,7 @@ package com.fulu.game.core.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
+import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.utils.CollectionUtil;
@@ -174,6 +175,9 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     @Override
     public TechProductOrderVO getTechProductByProductId(Integer productId) {
         Product product =  productService.findById(productId);
+        if (product == null) {
+            throw new ProductException(ProductException.ExceptionCode.PRODUCT_NOT_EXIST);
+        }
         User serverUser = userService.findById(product.getUserId());
         TechProductOrderVO techProductOrderVO = new TechProductOrderVO();
         techProductOrderVO.setProductId(product.getId());
