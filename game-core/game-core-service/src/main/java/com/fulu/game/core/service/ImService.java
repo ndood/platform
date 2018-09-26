@@ -4,6 +4,7 @@ import com.fulu.game.core.entity.ImUser;
 import com.fulu.game.core.entity.vo.ImUserVo;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ImService {
 
@@ -34,11 +35,11 @@ public interface ImService {
     /**
      * 发送陪玩师已接单的IM信息到用户
      *
-     * @param imId   环信id
-     * @param action
      * @return 是否发送成功
      */
-    boolean sendMsgToImUser(String imId, String action);
+    boolean sendMsgToImUser(String targetImId, String action);
+
+    boolean sendMsgToImUser(String[] targetImId, String fromImId , String action , Map<String, String> extMap);
 
     /**
      * 增加陪玩师未读消息
