@@ -14,8 +14,8 @@ import com.fulu.game.core.service.OrderDealService;
 import com.fulu.game.core.service.OrderEventService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.h5.service.impl.fenqile.H5FenqilePayServiceImpl;
 import com.fulu.game.h5.service.impl.fenqile.H5OrderServiceImpl;
-import com.fulu.game.h5.service.impl.fenqile.H5PayServiceImpl;
 import com.fulu.game.h5.service.impl.fenqile.H5PushServiceImpl;
 import com.fulu.game.h5.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
@@ -43,22 +43,22 @@ public class OrderController extends BaseController {
     private final RedisOpenServiceImpl redisOpenService;
     private final H5OrderServiceImpl orderService;
     private final OrderDealService orderDealService;
-    private final H5PayServiceImpl fenqilePayService;
+    private final H5FenqilePayServiceImpl h5FenqilePayService;
     private final H5PushServiceImpl h5PushService;
 
 
     @Autowired
     public OrderController(UserService userService,
                            RedisOpenServiceImpl redisOpenService,
-                           H5OrderServiceImpl orderService,
+                           H5FenqilePayServiceImpl h5FenqilePayService,
                            OrderDealService orderDealService,
-                           H5PayServiceImpl fenqilePayService,
+                           H5OrderServiceImpl orderService,
                            H5PushServiceImpl h5PushService) {
         this.userService = userService;
         this.redisOpenService = redisOpenService;
         this.orderService = orderService;
         this.orderDealService = orderDealService;
-        this.fenqilePayService = fenqilePayService;
+        this.h5FenqilePayService = h5FenqilePayService;
         this.h5PushService = h5PushService;
     }
 
@@ -171,7 +171,7 @@ public class OrderController extends BaseController {
         String ip = RequestUtil.getIpAdrress(request);
         Order order = orderService.findByOrderNo(orderNo);
         User user = userService.findById(order.getUserId());
-        Object result = fenqilePayService.payOrder(order, user, ip);
+        Object result = h5FenqilePayService.payOrder(order, user, ip);
         return Result.success().data(result);
     }
 
