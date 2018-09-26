@@ -1,6 +1,7 @@
 package com.fulu.game.h5.service.impl.fenqile;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
 import com.fulu.game.common.enums.OrderTypeEnum;
@@ -31,47 +32,35 @@ import java.util.List;
 @Slf4j
 public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
 
-    private final UserService userService;
-    private final ProductService productService;
-    private final CategoryService categoryService;
-    private final UserContactService userContactService;
-    private final OrderProductService orderProductService;
-    private final OrderStatusDetailsService orderStatusDetailsService;
-    private final OrderDao orderDao;
-    private final UserCommentService userCommentService;
-    private final H5PushServiceImpl h5PushService;
-    private final H5OrderShareProfitServiceImpl h5OrderShareProfitService;
-    private final OrderService orderService;
-    private final CouponService couponService;
-    private final UserInfoAuthService userInfoAuthService;
-
     @Autowired
-    public H5OrderServiceImpl(UserService userService,
-                              ProductService productService,
-                              CategoryService categoryService,
-                              UserContactService userContactService,
-                              OrderProductService orderProductService,
-                              OrderStatusDetailsService orderStatusDetailsService,
-                              OrderDao orderDao,
-                              CouponService couponService,
-                              UserCommentService userCommentService,
-                              H5PushServiceImpl h5PushService,
-                              H5OrderShareProfitServiceImpl h5OrderShareProfitService,
-                              OrderService orderService, @Qualifier(value = "userInfoAuthServiceImpl") UserInfoAuthService userInfoAuthService) {
-        this.userService = userService;
-        this.productService = productService;
-        this.categoryService = categoryService;
-        this.userContactService = userContactService;
-        this.orderProductService = orderProductService;
-        this.orderStatusDetailsService = orderStatusDetailsService;
-        this.orderDao = orderDao;
-        this.userCommentService = userCommentService;
-        this.couponService = couponService;
-        this.h5PushService = h5PushService;
-        this.h5OrderShareProfitService = h5OrderShareProfitService;
-        this.orderService = orderService;
-        this.userInfoAuthService = userInfoAuthService;
-    }
+    private UserService userService;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private UserContactService userContactService;
+    @Autowired
+    private OrderProductService orderProductService;
+    @Autowired
+    private OrderStatusDetailsService orderStatusDetailsService;
+    @Autowired
+    private OrderDao orderDao;
+    @Autowired
+    private UserCommentService userCommentService;
+    @Autowired
+    private H5PushServiceImpl h5PushService;
+    @Autowired
+    private H5OrderShareProfitServiceImpl h5OrderShareProfitService;
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private CouponService couponService;
+    @Autowired
+    @Qualifier(value = "userInfoAuthServiceImpl")
+    private UserInfoAuthService userInfoAuthService;
+    @Autowired
+    private FenqileOrderService fenqileOrderService;
 
 
     @Override
@@ -164,6 +153,14 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         }
         //创建订单商品
         orderProductService.create(order, product, num);
+
+        //新建分期乐订单数据
+        FenqileOrder fenqileOrder = new FenqileOrder();
+        fenqileOrder.setOrderNo(order.getOrderNo());
+        fenqileOrder.setUpdateTime(DateUtil.date());
+        fenqileOrder.setCreateTime(DateUtil.date());
+        fenqileOrderService.create(fenqileOrder);
+
         //计算订单状态倒计时24小时
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
         return order.getOrderNo();
