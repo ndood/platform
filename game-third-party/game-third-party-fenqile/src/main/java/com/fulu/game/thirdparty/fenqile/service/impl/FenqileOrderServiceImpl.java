@@ -33,7 +33,7 @@ public class FenqileOrderServiceImpl implements FenqileOrderService {
     }
 
     @Override
-    public <T> T createOrder(FenqileOrderRequest fenqileOrderRequest,Class<T> clazz) {
+    public String createOrder(FenqileOrderRequest fenqileOrderRequest) {
         String method = "fenqile.third.order.create";
         Map<String, Object> params = BeanUtil.beanToMap(fenqileOrderRequest, Boolean.TRUE, Boolean.TRUE);
         params.putAll(getConfMap(method));
@@ -51,16 +51,15 @@ public class FenqileOrderServiceImpl implements FenqileOrderService {
             if(jso.containsKey("error_response")){
                 throw new ApiErrorException(result);
             }
-            resultMap = jso.getInnerMap();
+            return result;
         } catch (Exception e) {
             throw new ApiErrorException(e.getMessage());
         }
-        return BeanUtil.mapToBean(resultMap,clazz,CopyOptions.create().setIgnoreCase(true).setIgnoreNullValue(true));
     }
 
 
     @Override
-    public <T> T noticeModify(Integer noticeType,String noticeUrl,Class<T> clazz){
+    public void noticeModify(Integer noticeType,String noticeUrl){
         String method = "fenqile.third.notice.modify";
         Map<String,Object> params = getConfMap(method);
         params.put("notice_type",noticeType);
@@ -68,7 +67,6 @@ public class FenqileOrderServiceImpl implements FenqileOrderService {
         String sign = SignUtil.createSign(params, "MD5", getConfig().getPartnerKey());
         params.put("sign", sign);
         log.info("请求参数params:{}", HttpUtil.toParams(params));
-        Map<String,Object> resultMap = null;
         try {
             String result = HttpUtil.post(BASE_API, params);
             if(result==null){
@@ -79,11 +77,10 @@ public class FenqileOrderServiceImpl implements FenqileOrderService {
             if(jso.containsKey("error_response")){
                 throw new ApiErrorException(result);
             }
-            resultMap = jso.getInnerMap();
         } catch (Exception e) {
             throw new ApiErrorException(e.getMessage());
         }
-        return BeanUtil.mapToBean(resultMap,clazz,CopyOptions.create().setIgnoreCase(true));
+        log.info("修改分期乐订单通知url:{}",noticeUrl);
     }
 
 

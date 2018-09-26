@@ -81,6 +81,7 @@ config:
       version: 1.4
       partnerId: PAI201808080000195
       partnerKey: 43ea4b7f27e36f2eb7b194b3924291ca
+      orderNoticeUrl: https://t-api-h5.wzpeilian.com/fenqile/callback/order
     im:
       urlPrefix: http://a1.easemob.com
       appKey: 1183180421228734#game-test

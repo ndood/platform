@@ -2,10 +2,7 @@ package com.fulu.game.h5.service.impl.fenqile;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
-import com.fulu.game.common.enums.OrderStatusEnum;
-import com.fulu.game.common.enums.OrderStatusGroupEnum;
-import com.fulu.game.common.enums.OrderTypeEnum;
-import com.fulu.game.common.enums.UserTypeEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.utils.SMSUtil;
@@ -74,13 +71,11 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
         //发送短信通知给陪玩师
         User server = userService.findById(order.getServiceUserId());
-
         UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(order.getServiceUserId());
         Boolean vestFlag = false;
         if (userInfoAuth != null) {
             vestFlag = userInfoAuth.getVestFlag() == null ? false : userInfoAuth.getVestFlag();
         }
-
         if (!vestFlag) {
             SMSUtil.sendOrderReceivingRemind(server.getMobile(), order.getName());
             //推送通知
@@ -120,6 +115,7 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         order.setServiceUserId(product.getUserId());
         order.setCategoryId(product.getCategoryId());
         order.setIsPay(false);
+        order.setPayment(PaymentEnum.FENQILE_PAY.getType());
         order.setIsPayCallback(false);
         order.setTotalMoney(totalMoney);
         order.setActualMoney(totalMoney);

@@ -129,5 +129,6 @@ public class Config {
         private String version;
         private String partnerId;
         private String partnerKey;
+        private String orderNoticeUrl;
     }
 }

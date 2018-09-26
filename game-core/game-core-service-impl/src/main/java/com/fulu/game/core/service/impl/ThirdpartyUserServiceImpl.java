@@ -46,6 +46,17 @@ public class ThirdpartyUserServiceImpl extends AbsCommonService<ThirdpartyUser,I
     }
 
     @Override
+    public ThirdpartyUser findByUserId(Integer userId) {
+        ThirdpartyUserVO param = new ThirdpartyUserVO();
+        param.setUserId(userId);
+        List<ThirdpartyUser> list = thirdpartyUserDao.findByParameter(param);
+        if(list.isEmpty()){
+            return null;
+        }
+        return list.get(0);
+    }
+
+    @Override
     public ThirdpartyUser createFenqileUser(String fqlOpenId,String ip) {
         User user = userService.createThirdPartyUser(SourceIdEnum.FENQILE.getType(),ip);
         ThirdpartyUser thirdpartyUser = new ThirdpartyUser();

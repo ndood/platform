@@ -11,7 +11,7 @@ public interface FenqileOrderService {
      * @param <T>
      * @return
      */
-    <T> T createOrder(FenqileOrderRequest fenqileOrderRequest, Class<T> clazz);
+    String createOrder(FenqileOrderRequest fenqileOrderRequest);
 
 
     /**
@@ -22,5 +22,5 @@ public interface FenqileOrderService {
      * @param <T>
      * @return
      */
-    <T> T noticeModify(Integer noticeType,String noticeUrl,Class<T> clazz);
+    void noticeModify(Integer noticeType,String noticeUrl);
 }

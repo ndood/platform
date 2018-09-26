@@ -18,6 +18,8 @@ public class FenqileConfig {
 
     private String clientSecret;
 
+    private String orderNoticeUrl;
+
 
 
 }

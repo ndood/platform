@@ -17,7 +17,8 @@ public enum PaymentEnum implements TypeEnum<Integer> {
     WECHAT_PAY(1, "微信支付"),
     BALANCE_PAY(2, "账户余额支付"),
     ALIPAY_PAY(3, "支付宝支付"),
-    APPLE_STORE_PAY(4, "苹果内购支付");
+    APPLE_STORE_PAY(4, "苹果内购支付"),
+    FENQILE_PAY(5, "分期了乐支付");
 
     private Integer type;
     private String msg;
