@@ -111,7 +111,6 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
         return page;
     }
 
-
     /**
      * 分类商品查询
      *
@@ -124,11 +123,13 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
      * @throws IOException
      */
     public <T> Page<T> searchShowCaseDoc(int categoryId,
-                                                      Integer gender,
-                                                      Integer pageNum,
-                                                      Integer pageSize,
-                                                      String orderBy,
-                                                      Class<T> type) throws IOException {
+                                         Integer gender,
+                                         Integer pageNum,
+                                         Integer pageSize,
+                                         String orderBy,
+                                         String dans,
+                                         String prices,
+                                         Class<T> type) throws IOException {
         //封装查询条件
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
@@ -138,14 +139,25 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
 
         boolQueryBuilder.filter(QueryBuilders.termQuery("categoryId", categoryId));
         boolQueryBuilder.filter(QueryBuilders.termQuery("isIndexShow", true));
+        if(dans != null && !"".equals(dans)){
+            String[] dansArr = dans.split(",");
+            boolQueryBuilder.filter(QueryBuilders.termsQuery("dan", dansArr));
+        }
+        if(prices != null && !"".equals(prices)){
+            String[] priceArr = prices.split(",");
+            boolQueryBuilder.filter(QueryBuilders.termsQuery("price", priceArr));
+        }
         searchSourceBuilder.query(boolQueryBuilder);
+
+        //置顶排序
+        FieldSortBuilder topSort = SortBuilders.fieldSort("topSort").order(SortOrder.DESC);
+        searchSourceBuilder.sort(topSort);
+
         //排序
         //在线状态排在前面
         FieldSortBuilder onLineSort = SortBuilders.fieldSort("onLine").order(SortOrder.DESC);
         searchSourceBuilder.sort(onLineSort);
-        //置顶排序
-        FieldSortBuilder topSort = SortBuilders.fieldSort("topSort").order(SortOrder.DESC);
-        searchSourceBuilder.sort(topSort);
+
         //切换排序规则
         if (StringUtils.isBlank(orderBy)) {
             orderBy = OrderType.sales.name();
@@ -183,75 +195,25 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
 
 
     /**
-     * CJ首页下的分类商品查询
+     * 分类商品查询
      *
-     * @param categoryId 分类id
-     * @param gender     性别
-     * @param pageNum    页码
-     * @param pageSize   每页显示数据条数
-     * @param orderBy    排序字符串
-     * @return 分页结果集
+     * @param categoryId
+     * @param gender
+     * @param pageNum
+     * @param pageSize
+     * @param orderBy
+     * @return
      * @throws IOException
      */
-    public Page<ProductShowCaseDoc> searchCjShowCaseDoc(int categoryId,
-                                                        Integer gender,
-                                                        Integer pageNum,
-                                                        Integer pageSize,
-                                                        String orderBy,
-                                                        List<String> userIdList) throws IOException {
-        //封装查询条件
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-        if (gender != null) {
-            boolQueryBuilder.filter(QueryBuilders.termQuery("gender", gender));
-        }
-
-        //获取CJ陪玩师
-        boolQueryBuilder.filter(QueryBuilders.termsQuery("userId", userIdList));
-        boolQueryBuilder.filter(QueryBuilders.termQuery("categoryId", categoryId));
-        boolQueryBuilder.filter(QueryBuilders.termQuery("isIndexShow", true));
-        searchSourceBuilder.query(boolQueryBuilder);
-        //排序
-        //在线状态排在前面
-        FieldSortBuilder onLineSort = SortBuilders.fieldSort("onLine").order(SortOrder.DESC);
-        searchSourceBuilder.sort(onLineSort);
-        //置顶排序
-        FieldSortBuilder topSort = SortBuilders.fieldSort("topSort").order(SortOrder.DESC);
-        searchSourceBuilder.sort(topSort);
-        //切换排序规则
-        if (StringUtils.isBlank(orderBy)) {
-            orderBy = OrderType.sales.name();
-        }
-        if (OrderType.newman.name().equals(orderBy)) {
-            //排序
-            FieldSortBuilder sorter = SortBuilders.fieldSort("createTime").order(SortOrder.DESC);
-            searchSourceBuilder.sort(sorter);
-        } else if (OrderType.sales.name().equals(orderBy)) {
-            FieldSortBuilder sorter = SortBuilders.fieldSort("orderCount").order(SortOrder.DESC);
-            searchSourceBuilder.sort(sorter);
-        }
-
-        //分页
-        int form = (pageNum - 1) * pageSize;
-        searchSourceBuilder.from(form).size(pageSize);
-        String sql = searchSourceBuilder.toString();
-        log.info("分页查询类别下商品:{}", sql);
-        //查询
-        Search search = new Search.Builder(sql)
-                .addIndex(getIndexDB())
-                .addType(getIndexType())
-                .build();
-        SearchResult result = jestClient.execute(search);
-        if (!result.isSucceeded()) {
-            throw new SearchException(SearchException.ExceptionCode.FIND_EXCEPTION, sql, result.getErrorMessage());
-        }
-        List<ProductShowCaseDoc> showCaseDocList = result.getSourceAsObjectList(ProductShowCaseDoc.class, false);
-        Page<ProductShowCaseDoc> page = new Page<>(pageNum, pageSize);
-        page.addAll(showCaseDocList);
-        page.setTotal(result.getTotal());
-        page.setOrderBy(orderBy);
-        return page;
+    public <T> Page<T> searchShowCaseDoc(int categoryId,
+                                                      Integer gender,
+                                                      Integer pageNum,
+                                                      Integer pageSize,
+                                                      String orderBy,
+                                                      Class<T> type) throws IOException {
+        return searchShowCaseDoc( categoryId, gender, pageNum, pageSize, orderBy, null, null,type);
     }
+
 
     @Override
     protected String getIndexType() {

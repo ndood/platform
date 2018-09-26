@@ -14,6 +14,7 @@
         <result column="realname" property="realname"/>
         <result column="idcard" property="idcard"/>
         <result column="type" property="type"/>
+        <result column="register_type" property="registerType"/>
         <result column="user_info_auth" property="userInfoAuth"/>
         <result column="balance" property="balance"/>
         <result column="charge_balance" property="chargeBalance"/>
@@ -40,6 +41,7 @@
         <result column="regist_ip" property="registIp"/>
         <result column="login_ip" property="loginIp"/>
         <result column="login_time" property="loginTime"/>
+        <result column="server_score_avg" property="serverScoreAvg"/>
     </resultMap>
 
     <resultMap id="UserResultVOMap" type="com.fulu.game.core.entity.vo.UserVO" extends="UserResultMap">
@@ -53,7 +55,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,charge_balance,virtual_balance,charm,charm_draw_sum,status,create_time,update_time,open_id,point_open_id,public_open_id,union_id,city,province,country,score_avg,user_score,constellation,birth,age,im_id,im_psw,source_id,regist_ip,login_ip,login_time
+        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,register_type,user_info_auth,balance,charge_balance,virtual_balance,charm,charm_draw_sum,status,create_time,update_time,open_id,point_open_id,public_open_id,union_id,city,province,country,score_avg,server_score_avg,user_score,constellation,birth,age,im_id,im_psw,source_id,regist_ip,login_ip,login_time
     </sql>
 
     <select id="findUserVOByUserIds" resultMap="UserResultVOMap">
@@ -133,6 +135,9 @@
             <if test="type != null">
                 and type = #{type}
             </if>
+            <if test="registerType != null">
+                and register_type = #{registerType}
+            </if>
             <if test="userInfoAuth != null">
                 and user_info_auth = #{userInfoAuth}
             </if>
@@ -177,6 +182,9 @@
             <if test="type != null">
                 and type = #{type}
             </if>
+            <if test="registerType != null">
+                and register_type = #{registerType}
+            </if>
             <if test="startTime != null">
                 and login_time &gt;= #{startTime}
             </if>
@@ -206,6 +214,9 @@
             </if>
             <if test="type != null">
                 and u.type = #{type}
+            </if>
+            <if test="registerType != null">
+                and u.register_type = #{registerType}
             </if>
             <if test="nickname != null">
                 and u.nickname LIKE CONCAT('%', #{nickname},'%')
@@ -256,6 +267,9 @@
             <if test="type != null">
                 and type = #{type}
             </if>
+            <if test="registerType != null" >
+                and register_type = #{registerType}
+            </if>
             <if test="userInfoAuth != null">
                 and user_info_auth = #{userInfoAuth}
             </if>
@@ -286,9 +300,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.User">
         insert into
-        t_user (mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,user_info_auth,balance,charge_balance,virtual_balance,charm,charm_draw_sum,status,create_time,update_time,open_id,point_open_id,public_open_id,union_id,city,province,country,score_avg,user_score,constellation,birth,im_id,im_psw,source_id,regist_ip,login_ip,login_time)
+        t_user (mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,register_type,user_info_auth,balance,charge_balance,virtual_balance,charm,charm_draw_sum,status,create_time,update_time,open_id,point_open_id,public_open_id,union_id,city,province,country,score_avg,server_score_avg,user_score,constellation,birth,im_id,im_psw,source_id,regist_ip,login_ip,login_time)
         values
-        (#{mobile},#{nickname},#{gender},#{headPortraitsUrl},#{password},#{salt},#{realname},#{idcard},#{type},#{userInfoAuth},#{balance},#{virtualBalance},#{virtualBalance},#{charm},#{charmDrawSum},#{status},#{createTime},#{updateTime},#{openId},#{pointOpenId},#{publicOpenId},#{unionId},#{city},#{province},#{country},#{scoreAvg},#{userScore},#{constellation},#{birth},#{imId},#{imPsw},#{sourceId},#{registIp},#{loginIp},#{loginTime})
+        (#{mobile},#{nickname},#{gender},#{headPortraitsUrl},#{password},#{salt},#{realname},#{idcard},#{type},#{registerType},#{userInfoAuth},#{balance},#{virtualBalance},#{virtualBalance},#{charm},#{charmDrawSum},#{status},#{createTime},#{updateTime},#{openId},#{pointOpenId},#{publicOpenId},#{unionId},#{city},#{province},#{country},#{scoreAvg},#{serverScoreAvg},#{userScore},#{constellation},#{birth},#{imId},#{imPsw},#{sourceId},#{registIp},#{loginIp},#{loginTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.User">
@@ -329,6 +343,9 @@
 
             <if test="type != null">
                 type = #{type},
+            </if>
+            <if test="registerType != null">
+                register_type = #{registerType},
             </if>
 
             <if test="userInfoAuth != null">
@@ -382,6 +399,9 @@
             </if>
             <if test="scoreAvg != null">
                 score_avg = #{scoreAvg},
+            </if>
+            <if test="serverScoreAvg != null">
+                server_score_avg = #{serverScoreAvg},
             </if>
             <if test="userScore != null">
                 user_score = #{userScore},
@@ -443,4 +463,25 @@
         WHERE
             id = #{userId} FOR UPDATE;
     </select>
+
+
+    <select id="searchByAuthUserInfo" parameterType="java.lang.String" resultMap="UserResultMap">
+        select
+        t1.*
+        from t_user t1 INNER JOIN t_user_info_auth t2
+        ON t1.id = t2.user_id
+        where
+        t2.im_substitute_id = #{currentAdminId}  
+        and (t1.id = #{searchWord} or t1.nickname like '%${searchWord}%')
+
+    </select>
+
+    <select id="searchByUserInfo" parameterType="java.lang.String" resultMap="UserResultMap">
+        select
+        t1.*
+        from t_user t1
+        where
+        t1.id != #{currentAuthUserId} and (t1.id = #{searchWord} or t1.nickname like '%${searchWord}%')
+    </select>
+    
 </mapper>

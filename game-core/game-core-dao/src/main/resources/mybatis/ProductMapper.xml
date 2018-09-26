@@ -52,7 +52,7 @@
         <include refid="Base_Column_List"/>
         from t_product
         <where>
-            user_id = #{userId} and (platform_show = 2 or platform_show = 3)
+            user_id = #{userId} and (platform_show = 2 or platform_show = 3) and del_flag = false and is_activate = true
         </where>
     </select>
 

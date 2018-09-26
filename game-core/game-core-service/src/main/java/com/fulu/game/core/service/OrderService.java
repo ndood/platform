@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Order;
+import com.fulu.game.core.entity.vo.OrderDetailsVO;
 
 import java.util.Date;
 import java.util.List;
@@ -70,4 +71,14 @@ public interface OrderService extends ICommonService<Order, Integer> {
      */
     List<Order> findWaitSendEmailOrder(Integer status , Integer waitMins);
 
+
+    /**
+     * 获取im聊天Banner订单
+     *
+     * @return
+     */
+    List<Order> getBannerOrderList(Integer authUserId , Integer bossUserId);
+
+
+    List<OrderDetailsVO> orderList(int type, int userId,List<Integer> statusList);
 }

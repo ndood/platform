@@ -11,6 +11,7 @@
         <result column="service_user_id" property="serviceUserId"/>
         <result column="name" property="name"/>
         <result column="type" property="type"/>
+        <result column="platform" property="platform"/>
         <result column="channel_id" property="channelId"/>
         <result column="remark" property="remark"/>
         <result column="is_pay" property="isPay"/>
@@ -48,6 +49,10 @@
         <result column="serverNickName" property="serverNickName"/>
         <result column="userHeadUrl" property="userHeadUrl"/>
         <result column="serverHeadUrl" property="serverHeadUrl"/>
+        <result column="categoryName" property="categoryName"/>
+        <result column="categoryIcon" property="categoryIcon"/>
+        <result column="productAmount" property="productAmount"/>
+        <result column="productUnit" property="productUnit"/>
     </resultMap>
 
     <resultMap id="PointOrderDetailsVOMap" type="com.fulu.game.core.entity.vo.PointOrderDetailsVO"
@@ -62,7 +67,7 @@
 
 
     <sql id="Base_Column_List">
-        id,order_no,coupon_no,category_id,user_id,service_user_id,name,type,channel_id,remark,is_pay,commission_money,is_pay_callback,payment,status,contact_type,contact_info,total_money,actual_money,server_money,coupon_money,charges,create_time,update_time,pay_time,complete_time,order_ip,receiving_time,begin_time
+        id,order_no,coupon_no,platform,category_id,user_id,service_user_id,name,type,channel_id,remark,is_pay,commission_money,is_pay_callback,payment,status,contact_type,contact_info,total_money,actual_money,server_money,coupon_money,charges,create_time,update_time,pay_time,complete_time,order_ip,receiving_time,begin_time
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="OrderResultMap">
@@ -171,6 +176,12 @@
             <if test="type == 2">
                 and o.service_user_id = #{userId} AND o.`status` NOT IN (100,200)
             </if>
+            <if test="statusList != null">
+                and o.status in
+                <foreach collection="statusList" item="s" index="index" open="(" close=")" separator=",">
+                    #{s}
+                </foreach>
+            </if>
         </where>
     </select>
 
@@ -264,6 +275,9 @@
             <if test="categoryId != null">
                 and category_id = #{categoryId}
             </if>
+            <if test="platform != null">
+                and platform = #{platform}
+            </if>
             <if test="userId != null">
                 and user_id = #{userId}
             </if>
@@ -338,6 +352,9 @@
             <if test="categoryId != null">
                 and category_id = #{categoryId}
             </if>
+            <if test="platform != null">
+                and platform = #{platform}
+            </if>
             <if test="userId != null">
                 and user_id = #{userId}
             </if>
@@ -385,41 +402,44 @@
 
     <select id="list" resultMap="OrderResVOMap" parameterType="com.fulu.game.core.entity.vo.searchVO.OrderSearchVO">
         SELECT
-        <include refid="Base_Column_List"/>
-        FROM t_order
+        t1.* , 
+        t2.agent_admin_id as agentAdminId,
+        t2.agent_admin_name as agentAdminName,
+        t2.remark as proRemark
+        FROM t_order t1 LEFT JOIN t_order_admin_remark t2 ON t2.order_id = t1.id
         <where>
             <if test="type != null">
-                and type = #{type}
+                and t1.type = #{type}
             </if>
             <if test="categoryId != null">
-                and category_id = #{categoryId}
+                and t1.category_id = #{categoryId}
             </if>
             <if test="orderNo != null">
-                and order_no = #{orderNo}
+                and t1.order_no = #{orderNo}
             </if>
             <if test="channelId != null">
-                and channel_id = #{channelId}
+                and t1.channel_id = #{channelId}
             </if>
             <if test="userId != null">
-                and user_id = #{userId}
+                and t1.user_id = #{userId}
             </if>
             <if test="serviceUserId != null">
-                and service_user_id = #{serviceUserId}
+                and t1.service_user_id = #{serviceUserId}
             </if>
             <if test="startTime != null">
-                and create_time &gt;= #{startTime}
+                and t1.create_time &gt;= #{startTime}
             </if>
             <if test="endTime != null">
-                and create_time &lt;= #{endTime}
+                and t1.create_time &lt;= #{endTime}
             </if>
             <if test="gtInterval != null">
-                and TIMESTAMPDIFF(SECOND,create_time,receiving_time) &gt;= #{gtInterval}
+                and TIMESTAMPDIFF(SECOND,t1.create_time,t1.receiving_time) &gt;= #{gtInterval}
             </if>
             <if test="ltInterval != null">
-                and TIMESTAMPDIFF(SECOND,create_time,receiving_time) &lt;= #{ltInterval}
+                and TIMESTAMPDIFF(SECOND,t1.create_time,t1.receiving_time) &lt;= #{ltInterval}
             </if>
             <if test="statusList != null">
-                and status in
+                and t1.status in
                 <foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
                     #{item}
                 </foreach>
@@ -505,9 +525,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Order">
         insert into
-        t_order (order_no,coupon_no,category_id,user_id,service_user_id,name,type,channel_id,remark,is_pay,is_pay_callback,payment,status,contact_type,contact_info,commission_money,total_money,actual_money,server_money,coupon_money,charges,create_time,update_time,pay_time,complete_time,order_ip,receiving_time,begin_time)
+        t_order (order_no,coupon_no,category_id,platform,user_id,service_user_id,name,type,channel_id,remark,is_pay,is_pay_callback,payment,status,contact_type,contact_info,commission_money,total_money,actual_money,server_money,coupon_money,charges,create_time,update_time,pay_time,complete_time,order_ip,receiving_time,begin_time)
         values
-        (#{orderNo},#{couponNo},#{categoryId},#{userId},#{serviceUserId},#{name},#{type},#{channelId},#{remark},#{isPay},#{isPayCallback},#{payment},#{status},#{contactType},#{contactInfo},#{commissionMoney},#{totalMoney},#{actualMoney},#{serverMoney},#{couponMoney},#{charges},#{createTime},#{updateTime},#{payTime},#{completeTime},#{orderIp},#{receivingTime},#{beginTime})
+        (#{orderNo},#{couponNo},#{categoryId},#{platform},#{userId},#{serviceUserId},#{name},#{type},#{channelId},#{remark},#{isPay},#{isPayCallback},#{payment},#{status},#{contactType},#{contactInfo},#{commissionMoney},#{totalMoney},#{actualMoney},#{serverMoney},#{couponMoney},#{charges},#{createTime},#{updateTime},#{payTime},#{completeTime},#{orderIp},#{receivingTime},#{beginTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Order">
@@ -521,6 +541,9 @@
             </if>
             <if test="categoryId != null">
                 category_id = #{categoryId},
+            </if>
+            <if test="platform != null">
+                platform = #{platform},
             </if>
 
             <if test="userId != null">
@@ -619,4 +642,28 @@
         OR DATE_FORMAT(complete_time, '%Y-%m-%d') = date_sub(curdate(), INTERVAL 1 DAY);
     </select>
 
+
+    <select id="getBannerOrderList" resultMap="OrderDetailsVOMap">
+        SELECT
+        o.*,
+        c.name as categoryName,
+        c.icon as categoryIcon,
+        p.amount as productAmount,
+        p.unit as productUnit
+        FROM
+        t_order o
+        INNER JOIN t_category c on c.id = o.category_id
+        INNER JOIN t_order_product p on p.order_no = o.order_no 
+        where
+            o.type = 1 and o.service_user_id = #{authUserId} and o.user_id = #{bossUserId} 
+            <if test="statusList != null">
+                and o.status in
+                <foreach collection="statusList" item="s" index="index" open="(" close=")" separator=",">
+                    #{s}
+                </foreach>
+            </if>
+        order by o.create_time limit 10
+    </select>
+    
+    
 </mapper>

@@ -1,8 +1,7 @@
 package com.fulu.game.h5.controller;
 
 import com.fulu.game.common.Result;
-import com.fulu.game.h5.controller.BaseController;
-import com.fulu.game.h5.service.impl.fenqile.H5PushServiceImpl;
+import com.fulu.game.h5.service.impl.H5PushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

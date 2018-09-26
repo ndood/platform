@@ -5,6 +5,9 @@ spring:
        multipart:
           max-file-size: 500MB
           max-request-size: 500MB
+    jackson:
+       time-zone: GMT+8
+       date-format: yyyy-MM-dd HH:mm:ss
 config:
     queue:
         miniappPush: false

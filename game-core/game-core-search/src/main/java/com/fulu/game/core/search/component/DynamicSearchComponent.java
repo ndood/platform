@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
@@ -125,17 +126,19 @@ public class DynamicSearchComponent  extends AbsSearchComponent<DynamicDoc, Inte
      * @param orderBy 排序属性
      * @param userIdList 用户id集合
      * @param gender 性别【预留】
+     * @param isPicOrVideo 是否只获取图片和视频动态（true：是；false：否）
      * @return
      * @throws IOException
      */
     public Page<DynamicDoc> searchDynamicDocList( Integer slide,
-                                              Integer id,
-                                              Integer isTop,
-                                              Integer isHot,
-                                              Integer pageSize,
-                                              String orderBy,
-                                              List<String> userIdList,
-                                              Integer gender ) throws IOException {
+                                                  Integer id,
+                                                  Integer isTop,
+                                                  Integer isHot,
+                                                  Integer pageSize,
+                                                  String orderBy,
+                                                  List<String> userIdList,
+                                                  Integer gender,
+                                                  boolean isPicOrVideo) throws IOException {
         //封装查询条件
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
@@ -157,6 +160,12 @@ public class DynamicSearchComponent  extends AbsSearchComponent<DynamicDoc, Inte
         //关注用户id包含自己id
         if(userIdList != null){
             boolQueryBuilder.filter(QueryBuilders.termsQuery("userId", userIdList));
+        }
+        if(isPicOrVideo){
+            List<String> types = new ArrayList<>();
+            types.add("1");
+            types.add("2");
+            boolQueryBuilder.filter(QueryBuilders.termsQuery("type", types));
         }
         searchSourceBuilder.query(boolQueryBuilder);
         //排序
@@ -194,6 +203,30 @@ public class DynamicSearchComponent  extends AbsSearchComponent<DynamicDoc, Inte
         page.setTotal(result.getTotal());
         page.setOrderBy(orderBy);
         return page;
+    }
+
+    /**
+     * 获取动态列表
+     * @param slide 0：下滑刷新；1：上划加载更多
+     * @param id 上划：传客户端最大id；下滑：传客户端最小id
+     * @param isTop 是否置顶（1：是；0：否）
+     * @param isHot 是否热门（1：是；0：否）
+     * @param pageSize 每页数量
+     * @param orderBy 排序属性
+     * @param userIdList 用户id集合
+     * @param gender 性别【预留】
+     * @return
+     * @throws IOException
+     */
+    public Page<DynamicDoc> searchDynamicDocList( Integer slide,
+                                              Integer id,
+                                              Integer isTop,
+                                              Integer isHot,
+                                              Integer pageSize,
+                                              String orderBy,
+                                              List<String> userIdList,
+                                              Integer gender ) throws IOException {
+        return searchDynamicDocList( slide, id, isTop, isHot, pageSize, orderBy, userIdList, gender, false);
     }
 
 

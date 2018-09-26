@@ -60,9 +60,6 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         String orderBy = "tmd.create_time desc";
         PageHelper.startPage(pageNum, pageSize, orderBy);
         List<MoneyDetailsVO> list = moneyDetailsDao.findByUser(moneyDetailsVO);
-        if (CollectionUtil.isEmpty(list)) {
-            return null;
-        }
         for (MoneyDetailsVO vo : list) {
             if (vo.getAction().equals(MoneyOperateTypeEnum.USER_DRAW_CASH.getType())) {
                 if (vo.getCashStatus() == null) {
@@ -76,18 +73,11 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
                         vo.setCashStatusMsg(CashProcessStatusEnum.WAITING.getMsg());
                     }
                 }
-            } else if (vo.getAction().equals(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType())) {
-                vo.setCashStatusMsg(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getMsg());
-            } else if (vo.getAction().equals(MoneyOperateTypeEnum.ORDER_COMPLETE.getType())) {
-                vo.setCashStatusMsg(MoneyOperateTypeEnum.ORDER_COMPLETE.getMsg());
+                //todo gzc 判断逻辑很繁琐、后续优化
             } else if (vo.getAction().equals(MoneyOperateTypeEnum.ADMIN_REFUSE_REMIT.getType())) {
                 vo.setCashStatusMsg(CashProcessStatusEnum.REFUND.getMsg());
-            }else if (vo.getAction().equals(MoneyOperateTypeEnum.USER_CHARM_WITHDRAW.getType())) {
-                vo.setCashStatusMsg(MoneyOperateTypeEnum.USER_CHARM_WITHDRAW.getMsg());
-            }else if (vo.getAction().equals(MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY.getType())) {
-                vo.setCashStatusMsg(MoneyOperateTypeEnum.WITHDRAW_VIRTUAL_MONEY.getMsg());
-            }else if (vo.getAction().equals(MoneyOperateTypeEnum.WITHDRAW_BALANCE.getType())) {
-                vo.setCashStatusMsg(MoneyOperateTypeEnum.WITHDRAW_BALANCE.getMsg());
+            }else{
+                vo.setCashStatusMsg(MoneyOperateTypeEnum.getMsgByType(vo.getAction()));
             }
         }
         return new PageInfo(list);
@@ -181,6 +171,18 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
     public BigDecimal weekIncome(Integer targetId) {
         Date startTime = DateUtil.beginOfWeek(new Date());
         Date endTime = DateUtil.endOfWeek(new Date());
+        List<MoneyDetails> moneyDetailsList = findUserMoneyByAction(targetId, startTime, endTime);
+        BigDecimal sum = new BigDecimal(0);
+        for (MoneyDetails moneyDetails : moneyDetailsList) {
+            sum = sum.add(moneyDetails.getMoney());
+        }
+        return sum;
+    }
+
+    @Override
+    public BigDecimal monthIncome(Integer targetId) {
+        Date startTime = DateUtil.beginOfMonth(new Date());
+        Date endTime = DateUtil.endOfMonth(new Date());
         List<MoneyDetails> moneyDetailsList = findUserMoneyByAction(targetId, startTime, endTime);
         BigDecimal sum = new BigDecimal(0);
         for (MoneyDetails moneyDetails : moneyDetailsList) {

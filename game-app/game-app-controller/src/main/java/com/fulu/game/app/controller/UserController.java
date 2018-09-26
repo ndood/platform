@@ -12,6 +12,7 @@ import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.UserBodyAuthVO;
 import com.fulu.game.core.entity.vo.UserCommentVO;
+import com.fulu.game.core.entity.vo.UserOnlineVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
@@ -26,10 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @Slf4j
@@ -56,7 +54,16 @@ public class UserController extends BaseController {
     private UserCommentService commentService;
     @Autowired
     private UserBodyAuthService userBodyAuthService;
+    @Autowired
+    private TechTagService techTagService;
 
+    @Autowired
+    private UserCommentTagService userCommentTagService;
+    @Autowired
+    private UserProfessionService userProfessionService;
+
+    @Autowired
+    private TagService tagService;
 
     /**
      * 修改/填写资料
@@ -66,8 +73,11 @@ public class UserController extends BaseController {
      */
     @RequestMapping("update")
     public Result update(UserVO userVO) {
-        User user = userService.findById(userService.getCurrentUser().getId());
-        user.setAge(DateUtil.ageOfNow(userVO.getBirth()));
+        User user = new User();
+        if (userVO.getBirth() != null) {
+            user.setAge(DateUtil.ageOfNow(userVO.getBirth()));
+        }
+        user.setId(userService.getCurrentUser().getId());
         user.setGender(userVO.getGender());
         user.setCity(userVO.getCity());
         user.setProvince(userVO.getProvince());
@@ -77,6 +87,7 @@ public class UserController extends BaseController {
         user.setNickname(userVO.getNickname());
         user.setHeadPortraitsUrl(ossUtil.activateOssFile(userVO.getHeadPortraitsUrl()));
         userService.update(user);
+        user = userService.findById(userService.getCurrentUser().getId());
         userService.updateRedisUser(user);
         // 保存用户认证信息
         saveUserInfoAuth(userVO);
@@ -120,7 +131,8 @@ public class UserController extends BaseController {
         User user = userService.getCurrentUser();
         // 当存在用户认证信息时取修改
         if (userVO != null && (userVO.getInterests() != null ||
-                userVO.getProfession() != null || userVO.getAbout() != null)) {
+                userVO.getProfession() != null || userVO.getAbout() != null ||
+                userVO.getPicUrls() != null || userVO.getVideoUrl() != null)) {
             UserInfoAuth userInfoAuth = new UserInfoAuth();
             userInfoAuth.setUserId(user.getId());
             if (userVO.getInterests() != null) {
@@ -157,12 +169,12 @@ public class UserController extends BaseController {
             // 先删除所有以前图片，然后插入
             userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(), FileTypeEnum.PIC.getType());
             userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(), FileTypeEnum.VIDEO.getType());
-            if (userVO != null && (userVO.getPicUrls() != null || userVO.getVideoUrl() != null)) {
+            if (userVO != null) {
                 String[] picUrls = userVO.getPicUrls();
                 if (picUrls != null && picUrls.length > 0) {
                     for (int i = 0; i < picUrls.length; i++) {
                         UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
-                        userInfoAuthFile.setUrl(picUrls[i]);
+                        userInfoAuthFile.setUrl(ossUtil.activateOssFile(picUrls[i]));
                         userInfoAuthFile.setInfoAuthId(userInfoAuth.getId());
                         userInfoAuthFile.setType(FileTypeEnum.PIC.getType());
                         userInfoAuthFile.setName("相册" + (i + 1));
@@ -172,7 +184,7 @@ public class UserController extends BaseController {
                 }
                 if (userVO != null && userVO.getVideoUrl() != null) {
                     UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
-                    userInfoAuthFile.setUrl(userVO.getVideoUrl());
+                    userInfoAuthFile.setUrl(ossUtil.activateOssFile(userVO.getVideoUrl()));
                     userInfoAuthFile.setInfoAuthId(userInfoAuth.getId());
                     userInfoAuthFile.setType(FileTypeEnum.VIDEO.getType());
                     userInfoAuthFile.setName("视频");
@@ -187,9 +199,9 @@ public class UserController extends BaseController {
     @PostMapping(value = "online")
     public Result userOnline(@RequestParam(required = true) Boolean active, String version) {
 
-        List<AdminImLog> list = userService.userOnline(active, version);
+        UserOnlineVO uo = userService.userOnline(active, version);
 
-        return Result.success().data(list).msg("查询成功！");
+        return Result.success().data(uo).msg("查询成功！");
     }
 
 
@@ -276,7 +288,6 @@ public class UserController extends BaseController {
     }
 
 
-
     /**
      * 用户-查询余额
      * 账户金额不能从缓存取，因为存在管理员给用户加零钱缓存并未更新
@@ -347,6 +358,22 @@ public class UserController extends BaseController {
     }
 
     /**
+     * 查询陪玩师评论标签列表接口
+     *
+     * @param pageNum
+     * @param pageSize
+     * @param serverId
+     * @return
+     */
+    @RequestMapping(value = "/comment-tag/list")
+    public Result findCommentsTagList(Integer pageNum,
+                                      Integer pageSize,
+                                      Integer serverId) {
+        PageInfo<UserCommentTag> page = userCommentTagService.findByServerId(pageNum, pageSize, serverId);
+        return Result.success().data(page);
+    }
+
+    /**
      * 用户-提交用户认证信息
      *
      * @return
@@ -376,9 +403,64 @@ public class UserController extends BaseController {
     @PostMapping("/body-auth/get")
     public Result getUserAuthInfo() {
         User user = userService.getCurrentUser();
-
         UserBodyAuth authInfo = userBodyAuthService.getUserAuthInfo(user.getId());
-
         return Result.success().data(authInfo).msg("查询成功！");
     }
+
+
+    /**
+     * 陪玩师技能标签列表
+     *
+     * @return
+     */
+    @PostMapping("/tech/tags")
+    public Result getUserTechTags(@RequestParam(required = true) Integer userId,
+                                  @RequestParam(required = true) Integer categoryId) {
+        UserTechAuth userTechAuth = userTechAuthService.findTechByCategoryAndUser(categoryId, userId);
+        List<TechTag> techTags = new ArrayList<>();
+        if (userTechAuth != null) {
+            techTags = techTagService.findByTechAuthId(userTechAuth.getId());
+        }
+        return Result.success().data(techTags);
+    }
+
+
+    /**
+     * 陪玩师添加自己的技能标签
+     *
+     * @param categoryId
+     * @return
+     */
+    @PostMapping("/tech/tag/add")
+    public Result getUserTechTagAdd(@RequestParam(required = true) String tagName,
+                                    @RequestParam(required = true) Integer categoryId) {
+        User user = userService.getCurrentUser();
+        Tag tag = tagService.createUserCustomTag(user.getId(), categoryId, tagName);
+        return Result.success().data(tag).msg("创建自定义标签成功!");
+    }
+
+
+    /**
+     * 陪玩师添加自己的技能标签
+     *
+     * @return
+     */
+    @PostMapping("/tech/tag/del")
+    public Result getUserTechTagAdd(@RequestParam(required = true) Integer tagId) {
+        User user = userService.getCurrentUser();
+        tagService.delUserTag(user.getId(), tagId);
+        return Result.success().msg("删除标签成功!!");
+    }
+
+
+    /**
+     * 获取用户职业列表
+     * @return
+     */
+    @RequestMapping("/user-profession/all-list")
+    public Result userProfessionList() {
+        List<UserProfession> userProfessions = userProfessionService.findUserProfessionList();
+        return Result.success().data(userProfessions);
+    }
+
 }

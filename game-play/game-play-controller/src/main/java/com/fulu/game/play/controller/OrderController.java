@@ -1,11 +1,15 @@
 package com.fulu.game.play.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.DataException;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.payment.model.PayRequestModel;
+import com.fulu.game.core.entity.payment.res.PayRequestRes;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.entity.vo.OrderEventVO;
@@ -21,6 +25,7 @@ import com.fulu.game.play.service.impl.PlayMiniAppPushServiceImpl;
 import com.fulu.game.play.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -145,16 +150,15 @@ public class OrderController extends BaseController {
     @Deprecated
     public Result pay(@RequestParam(required = true) String orderNo,
                       HttpServletRequest request) {
-        String ip = RequestUtil.getIpAdrress(request);
         Order order = orderService.findByOrderNo(orderNo);
         User user = userService.findById(order.getUserId());
-        Object result = playMiniAppPayService.payOrder(order, user, ip);
-        return Result.success().data(result);
+        PayRequestModel model =  PayRequestModel.newBuilder().order(order).user(user).build();
+        PayRequestRes res = playMiniAppPayService.payRequest(model);
+        return Result.success().data(res.getRequestParameter());
     }
 
     /**
      * 订单列表
-     *
      * @param pageNum
      * @param pageSize
      * @param type
@@ -176,8 +180,8 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/user/cancel")
     public Result userCancelOrder(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = orderService.userCancelOrder(orderNo);
-        return Result.success().data(orderVO).msg("取消订单成功!");
+        orderService.userCancelOrder(orderNo);
+        return Result.success().data(orderNo).msg("取消订单成功!");
     }
 
 
@@ -262,7 +266,11 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/server/consult-appeal")
     public Result consultAppeal(@RequestParam(required = true) String orderNo,
                                 Integer orderEventId) {
-        orderService.consultAgreeOrder(orderNo, orderEventId);
+        Order order = orderService.findByOrderNo(orderNo);
+        User user = userService.getCurrentUser();
+        userService.isCurrentUser(order.getServiceUserId());
+
+        orderService.consultAgreeOrder(order, orderEventId,user.getId());
         return Result.success().data(orderNo);
     }
 
@@ -279,7 +287,11 @@ public class OrderController extends BaseController {
                                 Integer orderEventId,
                                 String remark,
                                 @RequestParam(required = true) String[] fileUrl) {
-        orderService.consultRejectOrder(orderNo, orderEventId, remark, fileUrl);
+        Order order = orderService.findByOrderNo(orderNo);
+        User user = userService.getCurrentUser();
+        userService.isCurrentUser(order.getServiceUserId());
+
+        orderService.consultRejectOrder(order, orderEventId, remark, fileUrl,user.getId());
         return Result.success().data(orderNo);
     }
 
@@ -306,7 +318,11 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/server/receive")
     public Result serverReceiveOrder(@RequestParam String orderNo,
                                      String version) {
-        orderService.serverReceiveOrder(orderNo);
+
+        Order order = orderService.findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getServiceUserId());
+
+        orderService.serverReceiveOrder(order);
         return Result.success().data(orderNo).msg("接单成功!");
     }
 
@@ -318,7 +334,11 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/server/start-serve")
     public Result startServerOrder(@RequestParam(required = true) String orderNo) {
-        orderService.serverStartServeOrder(orderNo);
+
+        Order order = orderService.findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getServiceUserId());
+
+        orderService.serverStartServeOrder(order);
         return Result.success().data(orderNo).msg("接单成功!");
     }
 
@@ -331,8 +351,8 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/user/verify")
     public Result userVerifyOrder(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = orderService.userVerifyOrder(orderNo);
-        return Result.success().data(orderVO).msg("订单验收成功!");
+        orderService.userVerifyOrder(orderNo);
+        return Result.success().data(orderNo).msg("订单验收成功!");
     }
 
 
@@ -344,7 +364,11 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/server/cancel")
     public Result serverCancelOrder(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = orderService.serverCancelOrder(orderNo);
+
+        Order order = orderService.findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getServiceUserId());
+
+        OrderVO orderVO = orderService.serverCancelOrder(order);
         return Result.success().data(orderVO).msg("取消订单成功!");
     }
 
@@ -358,8 +382,8 @@ public class OrderController extends BaseController {
     public Result serverAcceptanceOrder(@RequestParam(required = true) String orderNo,
                                         String remark,
                                         String[] fileUrl) {
-        OrderVO orderVO = orderService.serverAcceptanceOrder(orderNo, remark, fileUrl);
-        return Result.success().data(orderVO).msg("提交订单验收成功!");
+         orderService.serverAcceptanceOrder(orderNo, remark, fileUrl);
+        return Result.success().data(orderNo).msg("提交订单验收成功!");
     }
 
 
@@ -371,7 +395,8 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/event")
     public Result orderEvent(@RequestParam(required = true) String orderNo) {
-        OrderEventVO orderEventVO = orderService.findOrderEvent(orderNo);
+        User user = userService.getCurrentUser();
+        OrderEventVO orderEventVO = orderService.findOrderEvent(orderNo,user);
         return Result.success().data(orderEventVO);
     }
 
@@ -424,5 +449,27 @@ public class OrderController extends BaseController {
         return Result.success().data(orderDetailsVO);
     }
 
+
+    /**
+     * 获取用户未读订单的数量
+     *
+     * @return
+     */
+    @RequestMapping(value = "/waiting-read/count")
+    public Result getWaitingReadCount() {
+
+        User user = userService.getCurrentUser();
+
+
+        String waitingReadOrderNo = redisOpenService.get(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(user.getId()));
+
+        if(StringUtils.isNotBlank(waitingReadOrderNo)){
+            JSONArray wronArr = JSONObject.parseArray(waitingReadOrderNo);
+            return Result.success().data(wronArr.size());
+        }
+
+        return Result.success().data(0);
+
+    }
 
 }

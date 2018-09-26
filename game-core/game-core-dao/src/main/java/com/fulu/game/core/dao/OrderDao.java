@@ -35,7 +35,7 @@ public interface OrderDao extends ICommonDao<Order, Integer> {
 
     List<Order> findBySearchVO(OrderSearchVO orderSearchVO);
 
-    List<OrderDetailsVO> listOrderDetails(@Param(value = "type") Integer type, @Param(value = "userId") Integer userId);
+    List<OrderDetailsVO> listOrderDetails(@Param(value = "type") Integer type, @Param(value = "userId") Integer userId,@Param(value = "statusList") List<Integer> statusList);
 
     /**
      * 分期乐订单列表
@@ -65,5 +65,9 @@ public interface OrderDao extends ICommonDao<Order, Integer> {
      * @return
      */
     List<Order> findDayReconOrders(OrderSearchVO orderSearchVO);
+
+
+
+    List<Order> getBannerOrderList(@Param(value = "authUserId") Integer authUserId, @Param(value = "bossUserId") Integer bossUserId , @Param(value = "statusList") List<Integer> statusList);
 
 }

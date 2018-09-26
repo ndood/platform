@@ -5,6 +5,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.CategoryParentEnum;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.vo.PriceRuleVO;
 import com.fulu.game.core.entity.vo.ProductShowCaseVO;
 import com.fulu.game.core.entity.vo.TagVO;
 import com.fulu.game.core.service.*;
@@ -36,6 +37,8 @@ public class CategoryController extends BaseController {
     private SalesModeService salesModeService;
     @Autowired
     private TagService tagService;
+    @Autowired
+    private UserService userService;
     @Autowired
     private TechValueService techValueService;
     @Autowired
@@ -108,6 +111,8 @@ public class CategoryController extends BaseController {
      * @param pageNum
      * @param pageSize
      * @param orderBy
+     * @param dans 单位信息
+     * @param prices 价格信息
      * @return
      */
     @RequestMapping(value = "/product/list")
@@ -115,8 +120,10 @@ public class CategoryController extends BaseController {
                                       Integer gender,
                                       @RequestParam(required = true) Integer pageNum,
                                       @RequestParam(required = true) Integer pageSize,
-                                      String orderBy) {
-        PageInfo<ProductShowCaseVO> pageInfo = productService.findProductShowCase(categoryId, gender, pageNum, pageSize, orderBy);
+                                      String orderBy,
+                                      String dans,
+                                      String prices) {
+        PageInfo<ProductShowCaseVO> pageInfo = productService.findProductShowCase(categoryId, gender, pageNum, pageSize, orderBy, dans, prices);
         return Result.success().data(pageInfo);
     }
 
@@ -140,7 +147,7 @@ public class CategoryController extends BaseController {
      */
     @PostMapping(value = "/tag/list")
     public Result techTags(@RequestParam(required = true) Integer categoryId) {
-        TagVO tagVO = tagService.oldFindTagsByCategoryId(categoryId);
+        TagVO tagVO = tagService.findTagsByCategoryId(categoryId);
         if (tagVO == null) {
             return Result.error().msg("该游戏没有设置标签!");
         }
@@ -162,15 +169,18 @@ public class CategoryController extends BaseController {
         return Result.success().data(techValueList);
     }
 
+
     /**
      * 查询游戏所有定价规则
-     *
      * @return
      */
     @PostMapping(value = "/price-rule/list")
     public Result priceRuleList(@RequestParam(required = true) Integer categoryId) {
-        List<PriceRule> priceRuleList = priceRuleService.findByCategoryId(categoryId);
+        User user = userService.getCurrentUser();
+        List<PriceRuleVO> priceRuleList = priceRuleService.findUserPriceByCategoryId(categoryId,user.getId());
         return Result.success().data(priceRuleList);
     }
+
+
 
 }

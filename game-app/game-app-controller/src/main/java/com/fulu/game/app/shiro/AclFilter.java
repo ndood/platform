@@ -9,6 +9,7 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
+import org.apache.commons.io.IOUtils;
 import org.apache.shiro.web.filter.AccessControlFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,6 +28,17 @@ import java.util.Map;
  */
 @Slf4j
 public class AclFilter extends AccessControlFilter {
+
+    /** 不需要登录的请求 */
+    private static List<String> NOT_REQUIRE_LOGIN_ACTION = new ArrayList<>();
+
+    static {
+        try {
+            NOT_REQUIRE_LOGIN_ACTION = IOUtils.readLines(AclFilter.class.getClassLoader().getResourceAsStream("notRequireLoginAction.data"), "UTF-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
@@ -34,6 +48,27 @@ public class AclFilter extends AccessControlFilter {
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
+        List<String> urls = NOT_REQUIRE_LOGIN_ACTION;
+        if(urls != null && urls.size() > 0){
+            HttpServletRequest httpRequest = (HttpServletRequest) request;
+            String action = httpRequest.getRequestURI().replace(httpRequest.getContextPath(), "");
+            String token = httpRequest.getHeader("token");
+            boolean flag = false;
+            for(String url: urls){
+                if(action != null && !"".equals(action) && url != null &&
+                        !"".equals(url) && url.equals(action)){
+                    log.info("notRequireLoginAction: " + action);
+                    flag = true;
+                    break;
+                }
+            }
+            // 不需权限验证，但是如果登录的话，需要设置当前线程变量信息
+            if(flag){
+                // 设置当前线程变量信息
+                setThreadLocalInfo(token);
+                return true;
+            }
+        }
         return false;
     }
 
@@ -75,14 +110,25 @@ public class AclFilter extends AccessControlFilter {
             }
             return false;
         }
-        Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.PLAY_TOKEN.generateKey(token));
-        redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token), map, Constant.APP_EXPIRE_TIME);
-        //已登录的，就保存该token从redis查到的用户信息
-        User user = BeanUtil.mapToBean(map, User.class, Boolean.TRUE);
-        SubjectUtil.setCurrentUser(user);
-        log.info("AclFilter验证通过，续存token {}", token);
-        SubjectUtil.setToken(token);
+        //设置当前线程变量信息
+        setThreadLocalInfo(token);
         return true;
+    }
+
+    /**
+     * 设置当前线程变量信息
+     * @param token
+     */
+    private void setThreadLocalInfo(String token){
+        if(redisOpenService.hasKey(RedisKeyEnum.PLAY_TOKEN.generateKey(token))){
+            Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.PLAY_TOKEN.generateKey(token));
+            redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token), map, Constant.APP_EXPIRE_TIME);
+            //已登录的，就保存该token从redis查到的用户信息
+            User user = BeanUtil.mapToBean(map, User.class, Boolean.TRUE);
+            SubjectUtil.setCurrentUser(user);
+            log.info("AclFilter验证通过，续存token {}", token);
+            SubjectUtil.setToken(token);
+        }
     }
 
 }

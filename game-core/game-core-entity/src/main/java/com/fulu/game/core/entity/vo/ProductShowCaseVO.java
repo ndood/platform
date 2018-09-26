@@ -20,6 +20,8 @@ public class ProductShowCaseVO {
     private Integer gender;
     //游戏ID
     private Integer categoryId;
+    //商品id
+    private Integer productId;
     //游戏名称
     private String productName;
     //价格

@@ -2,6 +2,9 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.UserBodyAuthStatusEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
@@ -30,6 +33,8 @@ public class UserBodyAuthServiceImpl extends AbsCommonService<UserBodyAuth, Inte
     private UserBodyAuthDao userBodyAuthDao;
     @Autowired
     private AdminService adminService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
 
     @Override
     public ICommonDao<UserBodyAuth, Integer> getDao() {
@@ -146,5 +151,5 @@ public class UserBodyAuthServiceImpl extends AbsCommonService<UserBodyAuth, Inte
         
         return authInfo;
     }
-    
+
 }

@@ -25,4 +25,6 @@ public interface TagDao extends ICommonDao<Tag,Integer>{
     boolean deleteByPid(Integer pid);
 
 
+    List<Tag> findByTagIds(List<Integer> tagIds);
+
 }

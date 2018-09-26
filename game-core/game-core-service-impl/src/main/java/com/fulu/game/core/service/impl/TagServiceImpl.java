@@ -4,6 +4,7 @@ package com.fulu.game.core.service.impl;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.GenderEnum;
 import com.fulu.game.common.enums.TagTypeEnum;
+import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.vo.TagVO;
@@ -51,18 +52,52 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
         return tagDao.findByParameter(tagVO);
     }
 
-    public List<Tag> findGroupTagByCategoryId(int categoryId){
-        TagVO param = new TagVO();
-        param.setCategoryId(categoryId);
-        return tagDao.findByParameter(param);
-    }
 
 
-    public List<Tag> findAllCategoryTags(int categoryId){
+    public List<Tag> findCategoryParentTags(int categoryId){
         TagVO tagVO = new TagVO();
         tagVO.setType(TagTypeEnum.GAME.getType());
         tagVO.setCategoryId(categoryId);
         return tagDao.findByParameter(tagVO);
+    }
+
+
+    public List<Tag> findUserTags(int userId,int categoryId){
+        TagVO param = new TagVO();
+        param.setType(TagTypeEnum.CUSTOM.getType());
+        param.setCategoryId(categoryId);
+        param.setUserId(userId);
+        return tagDao.findByParameter(param);
+    }
+
+
+    public Tag createUserCustomTag(int userId,int categoryId,String tagName){
+        List<Tag> userTags = findUserTags(userId,categoryId);
+        if(userTags.size()>=3){
+            throw new UserException(UserException.ExceptionCode.USER_CUSTOM_TAG_OVERFLOW);
+        }
+        Tag tag = new Tag();
+        tag.setName(tagName);
+        tag.setCategoryId(categoryId);
+        tag.setUserId(userId);
+        tag.setPid(Constant.DEF_PID);
+        tag.setType(TagTypeEnum.CUSTOM.getType());
+        tag.setCreateTime(new Date());
+        tag.setUpdateTime(new Date());
+        tag.setGender(GenderEnum.ASEXUALITY.getType());
+        create(tag);
+        return tag;
+    }
+
+
+    @Override
+    public void delUserTag(Integer userId, int tagId) {
+          Tag tag = findById(tagId);
+          if(userId.equals(tag.getUserId())){
+              deleteById(tagId);
+          }else{
+              throw new IllegalArgumentException("不能删除不属于自己的标签!");
+          }
     }
 
 
@@ -84,12 +119,24 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
 
     @Override
     @Deprecated
-    public TagVO oldFindTagsByCategoryId(Integer categoryId) {
-        List<Tag> tagList = findGroupTagByCategoryId(categoryId);
+    public TagVO findTagsByCategoryId(Integer categoryId) {
+        List<Tag> tagList = findCategoryParentTags(categoryId);
         if(tagList.isEmpty()){
             return null;
         }
         return findTagsByTagPid(tagList.get(0).getId());
+    }
+
+
+    @Override
+    public List<Tag> findByUserCategoryId(int userId,int categoryId) {
+        List<Tag> tagList = findCategoryParentTags(categoryId);
+        if(tagList.isEmpty()){
+            return null;
+        }
+        List<Tag> categoryTags = findByPid(tagList.get(0).getId());
+        categoryTags.addAll(  findUserTags(userId,categoryId))  ;
+        return categoryTags;
     }
 
     @Override
@@ -170,5 +217,10 @@ public class TagServiceImpl extends AbsCommonService<Tag,Integer> implements Tag
             return false;
         }
         return true;
+    }
+
+    @Override
+    public List<Tag> findByTagIds(List<Integer> tagIds) {
+        return tagDao.findByTagIds(tagIds);
     }
 }

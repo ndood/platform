@@ -5,7 +5,6 @@
     <resultMap id="UserInfoAuthResultMap" type="com.fulu.game.core.entity.UserInfoAuth">
         <id column="id" property="id"/>
         <result column="user_id" property="userId"/>
-        <result column="mobile" property="mobile"/>
         <result column="qq" property="qq"/>
         <result column="wechat" property="wechat"/>
         <result column="is_reject_submit" property="isRejectSubmit"/>
@@ -13,18 +12,24 @@
         <result column="push_time_interval" property="pushTimeInterval"/>
         <result column="allow_export" property="allowExport"/>
         <result column="sort" property="sort"/>
+        <result column="auto_say_hello" property="autoSayHello"/>
+        <result column="vest_flag" property="vestFlag"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="im_substitute_id" property="imSubstituteId"/>
         <result column="interests" property="interests"/>
         <result column="profession" property="profession"/>
         <result column="about" property="about"/>
+        <result column="open_substitute_im" property="openSubstituteIm"/>
+        <result column="virtual_fans_count" property="virtualFansCount"/>
     </resultMap>
 
     <resultMap id="UserInfoAuthResultVOMap" type="com.fulu.game.core.entity.vo.UserInfoAuthVO"
                extends="UserInfoAuthResultMap">
         <result column="money_sum" property="moneySum"/>
         <result column="order_count" property="orderCount"/>
+        <result column="expend_money_sum" property="expendMoneySum"/>
+        <result column="expend_order_count" property="expendOrderCount"/>
         <result column="user_info_auth" property="userInfoAuth"/>
         <result column="head_portraits_url" property="headUrl"/>
         <result column="gender" property="gender"/>
@@ -36,7 +41,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,mobile,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,sort,create_time,update_time,im_substitute_id,interests,profession,about
+        id,user_id,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,auto_say_hello,sort,create_time,update_time,im_substitute_id,interests,profession,about,virtual_fans_count,open_substitute_im
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserInfoAuthResultMap">
@@ -75,8 +80,11 @@
             <if test="userId != null">
                 and user_id = #{userId}
             </if>
-            <if test="mobile != null">
-                and mobile = #{mobile}
+            <if test="autoSayHello != null">
+                and auto_say_hello = #{autoSayHello}
+            </if>
+            <if test="vestFlag != null">
+                and vest_flag = #{vestFlag}
             </if>
             <if test="qq != null">
                 and qq = #{qq}
@@ -117,6 +125,10 @@
             <if test="imSubstituteId != null">
                 and im_substitute_id = #{imSubstituteId}
             </if>
+            <if test="openSubstituteIm != null">
+                and open_substitute_im = #{openSubstituteIm}
+            </if>
+
         </where>
     </select>
 
@@ -133,18 +145,28 @@
         u.nickname,
         IFNULL( sum( o.total_money ), 0 ) AS money_sum,
         count( o.service_user_id ) AS order_count,
+        IFNULL( sum( expendOrder.total_money ), 0 ) AS expend_money_sum,
+        count( expendOrder.user_id ) AS expend_order_count,
         (select count(1) from t_user_tech_auth tuta where tuta.user_id = uia.user_id) AS tech_auth_count
         FROM
         t_user_info_auth uia
         LEFT JOIN t_user u ON uia.user_id = u.id
         LEFT JOIN ( SELECT service_user_id, total_money FROM t_order WHERE STATUS &gt;= 500 AND STATUS &lt;= 600 ) o ON
         uia.user_id = o.service_user_id
+        LEFT JOIN ( SELECT user_id, total_money FROM t_order WHERE STATUS &gt;= 500 AND STATUS &lt;= 600 ) expendOrder ON
+        uia.user_id = expendOrder.user_id
         <where>
+            <if test="id != null">
+                and uia.id = #{id}
+            </if>
             <if test="userId != null">
                 and uia.user_id = #{userId}
             </if>
             <if test="mobile != null">
-                and uia.mobile = #{mobile}
+                and u.mobile = #{mobile}
+            </if>
+            <if test="autoSayHello != null">
+                and uia.auto_say_hello = #{autoSayHello}
             </if>
             <if test="nickname != null">
                 and u.nickname LIKE CONCAT('%', #{nickname},'%')
@@ -173,6 +195,9 @@
             <if test="imSubstituteId != null">
                 and uia.im_substitute_id = #{imSubstituteId}
             </if>
+            <if test="openSubstituteIm != null">
+                and open_substitute_im = #{openSubstituteIm}
+            </if>
         </where>
         GROUP BY
         uia.id
@@ -187,21 +212,22 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserInfoAuth">
         insert into
-        t_user_info_auth (user_id,mobile,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,sort,create_time,update_time,interests,profession,about)
+        t_user_info_auth (user_id,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,auto_say_hello,vest_flag,sort,create_time,update_time,interests,profession,about,virtual_fans_count,open_substitute_im)
         values
-        (#{userId},#{mobile},#{qq},#{wechat},#{isRejectSubmit},#{mainPicUrl},#{pushTimeInterval},#{allowExport},#{sort},#{createTime},#{updateTime},#{interests},#{profession},#{about})
+        (#{userId},#{qq},#{wechat},#{isRejectSubmit},#{mainPicUrl},#{pushTimeInterval},#{allowExport},#{autoSayHello},#{vestFlag},#{sort},#{createTime},#{updateTime},#{interests},#{profession},#{about},#{virtualFansCount},#{openSubstituteIm})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.UserInfoAuth">
         update t_user_info_auth
         <set>
-
+            <if test="autoSayHello != null">
+                auto_say_hello = #{autoSayHello},
+            </if>
+            <if test="vestFlag != null">
+                vest_flag = #{vestFlag},
+            </if>
             <if test="userId != null">
                 user_id = #{userId},
-            </if>
-
-            <if test="mobile != null">
-                mobile = #{mobile},
             </if>
 
             <if test="qq != null">
@@ -242,6 +268,15 @@
             <if test="about != null">
                 about = #{about},
             </if>
+            <if test="virtualFansCount != null">
+                virtual_fans_count = #{virtualFansCount},
+            </if>
+            <if test="imSubstituteId != null">
+                im_substitute_id = #{imSubstituteId},
+            </if>
+            <if test="openSubstituteIm != null">
+                open_substitute_im = #{openSubstituteIm},
+            </if>
         </set>
         <where>
             id = #{id}
@@ -251,13 +286,11 @@
     <update id="updateByUserId" parameterType="com.fulu.game.core.entity.UserInfoAuth">
         update t_user_info_auth
         <set>
-
+            <if test="autoSayHello != null">
+                auto_say_hello = #{autoSayHello},
+            </if>
             <if test="userId != null">
                 user_id = #{userId},
-            </if>
-
-            <if test="mobile != null">
-                mobile = #{mobile},
             </if>
 
             <if test="qq != null">
@@ -300,6 +333,12 @@
             <if test="about != null">
                 about = #{about},
             </if>
+            <if test="virtualFansCount != null">
+                virtual_fans_count = #{virtualFansCount},
+            </if>
+            <if test="openSubstituteIm != null">
+                open_substitute_im = #{openSubstituteIm},
+            </if>
         </set>
         <where>
             user_id = #{userId}
@@ -307,8 +346,30 @@
     </update>
 
 
+    <update id="saveOtherInfo" parameterType="com.fulu.game.core.entity.to.UserInfoAuthTO">
+        update t_user_info_auth
+        set sort = #{sort} , auto_say_hello = #{autoSayHello}
+        where user_id = #{userId}
+    </update>
+
+    <select id="getAutoSayHelloUser" resultMap="UserInfoAuthResultVOMap" parameterType="java.lang.Integer">
+        SELECT
+        uia.*,
+        u.user_info_auth,
+        u.head_portraits_url,
+        u.im_id,
+        u.mobile,
+        u.gender,
+        u.age,
+        u.nickname
+        FROM
+        t_user_info_auth uia
+        LEFT JOIN t_user u ON uia.user_id = u.id
+        where auto_say_hello != '' and auto_say_hello is not null
+    </select>
+
+
     <update id="updateUserSort">
         update t_user_info_auth set sort = #{sort} where user_id = #{userId}
     </update>
-    
 </mapper>

@@ -2,9 +2,11 @@ package com.fulu.game.admin.controller;
 
 
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.service.ProductService;
+import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +23,9 @@ public class GlobalController extends BaseController{
     private OssUtil ossUtil;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
+
 
 
     @PostMapping(value = "upload")
@@ -43,5 +48,26 @@ public class GlobalController extends BaseController{
         return Result.success().msg("删除所有索引完成!");
     }
 
+    /**
+     * 获取聊天室虚拟人数
+     * @return
+     */
+    @PostMapping("/chat-room/get-virtual-count")
+    public Result getChatRoomVirtualCount(){
+        String count = redisOpenService.get(RedisKeyEnum.CHAT_ROOM_VIRTUAL_COUNT.generateKey());
+        count = count == null || "".equals(count) ? "0" : count;
+        return Result.success().msg("获取聊天室虚拟人数成功").data(count);
+    }
+
+    /**
+     * 设置聊天室虚拟人数
+     * @param count
+     * @return
+     */
+    @PostMapping("/chat-room/save-virtual-count")
+    public Result saveChatRoomVirtualCount(@RequestParam(required = true) String count){
+        redisOpenService.set(RedisKeyEnum.CHAT_ROOM_VIRTUAL_COUNT.generateKey(),count,true);
+        return Result.success().msg("设置聊天室虚拟人数成功!").data(count);
+    }
 
 }

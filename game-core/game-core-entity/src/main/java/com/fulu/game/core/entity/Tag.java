@@ -21,6 +21,8 @@ public class Tag implements Serializable {
 	private Integer pid;
 	//分类ID
 	private Integer categoryId;
+	//用户ID
+	private Integer userId;
 	//标签名称
 	private String name;
 	//类型

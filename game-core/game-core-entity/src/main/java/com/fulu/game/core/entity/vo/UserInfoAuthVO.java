@@ -27,6 +27,8 @@ public class UserInfoAuthVO extends UserInfoAuth {
 
     private String birth;
 
+    private String mobile;
+
     private String constellation;
 
     private Integer age;
@@ -76,6 +78,31 @@ public class UserInfoAuthVO extends UserInfoAuth {
     private Integer groupPicCount;
     
     private Integer recommendProductId;
-    
+
+    //综合得星评分数
+    private BigDecimal scoreAvg;
+    // 注册来源类型
+    private Integer registerType;
+    //关注用户数
+    private Integer attentions;
+    //粉丝数
+    private Integer fansCount;
+    //虚拟粉丝数
+    private Integer virtualFansCount;
+    //历史浏览次数
+    private Integer historyBrowseCount;
+    //历史被访问次数
+    private Integer historyAccessedCount;
+    //发布动态数
+    private Integer dynamicCount;
+    //总消费金额
+    private BigDecimal expendMoneySum;
+    //总消费订单数
+    private Integer expendOrderCount;
+    //可提现余额
+    private BigDecimal balance;
+    //充值零钱（不可提现）
+    private BigDecimal chargeBalance;
+
     private List<PicGroupVO> groupList = new ArrayList<>();
 }

@@ -58,6 +58,17 @@ public class Product implements Serializable {
 	//删除标记
 	private Boolean delFlag;
 
+	// 用户该技能接单数
+	private Integer orderCount;
+	//虚拟接单数
+	private Integer virtualOrderCount;
+	//语音地址
+	private String voice;
+	//语音时长
+	private Integer voiceDuration;
+	// 技能综合评分
+	private BigDecimal scoreAvg;
+
 
 	@Override
 	public String toString() {

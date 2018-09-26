@@ -6,17 +6,18 @@ import com.fulu.game.common.exception.DataException;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.payment.model.PayRequestModel;
+import com.fulu.game.core.entity.payment.res.PayRequestRes;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.entity.vo.OrderEventVO;
-import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.OrderDealService;
 import com.fulu.game.core.service.OrderEventService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.fulu.game.h5.service.impl.fenqile.H5OrderServiceImpl;
-import com.fulu.game.h5.service.impl.fenqile.H5PayServiceImpl;
-import com.fulu.game.h5.service.impl.fenqile.H5PushServiceImpl;
+import com.fulu.game.h5.service.impl.H5OrderServiceImpl;
+import com.fulu.game.h5.service.impl.H5PayServiceImpl;
+import com.fulu.game.h5.service.impl.H5PushServiceImpl;
 import com.fulu.game.h5.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +44,7 @@ public class OrderController extends BaseController {
     private final RedisOpenServiceImpl redisOpenService;
     private final H5OrderServiceImpl orderService;
     private final OrderDealService orderDealService;
-    private final H5PayServiceImpl fenqilePayService;
+    private final H5PayServiceImpl h5PayService;
     private final H5PushServiceImpl h5PushService;
 
 
@@ -58,7 +59,7 @@ public class OrderController extends BaseController {
         this.redisOpenService = redisOpenService;
         this.orderService = orderService;
         this.orderDealService = orderDealService;
-        this.fenqilePayService = fenqilePayService;
+        this.h5PayService = fenqilePayService;
         this.h5PushService = h5PushService;
     }
 
@@ -119,8 +120,8 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/user/cancel")
     public Result userCancelOrder(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = orderService.userCancelOrder(orderNo);
-        return Result.success().data(orderVO).msg("取消订单成功!");
+        orderService.userCancelOrder(orderNo);
+        return Result.success().data(orderNo).msg("取消订单成功!");
     }
 
 
@@ -171,8 +172,9 @@ public class OrderController extends BaseController {
         String ip = RequestUtil.getIpAdrress(request);
         Order order = orderService.findByOrderNo(orderNo);
         User user = userService.findById(order.getUserId());
-        Object result = fenqilePayService.payOrder(order, user, ip);
-        return Result.success().data(result);
+        PayRequestModel model =  PayRequestModel.newBuilder().order(order).user(user).build();
+        PayRequestRes res = h5PayService.payRequest(model);
+        return Result.success().data(res);
     }
 
 
@@ -236,8 +238,8 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/user/verify")
     public Result userVerifyOrder(@RequestParam(required = true) String orderNo) {
-        OrderVO orderVO = orderService.userVerifyOrder(orderNo);
-        return Result.success().data(orderVO).msg("订单验收成功!");
+        orderService.userVerifyOrder(orderNo);
+        return Result.success().data(orderNo).msg("订单验收成功!");
     }
 
 
@@ -249,7 +251,8 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/event")
     public Result orderEvent(@RequestParam(required = true) String orderNo) {
-        OrderEventVO orderEventVO = orderService.findOrderEvent(orderNo);
+        User user = userService.getCurrentUser();
+        OrderEventVO orderEventVO = orderService.findOrderEvent(orderNo,user);
         return Result.success().data(orderEventVO);
     }
 

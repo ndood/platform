@@ -62,5 +62,9 @@ public class UserVO extends User {
     private int attentions = 0;
     /** 粉丝数 */
     private int fans = 0;
+    /** 用户月收入 */
+    private BigDecimal monthIncome;
+    // 来访次数
+    private Integer accessCount;
 
 }

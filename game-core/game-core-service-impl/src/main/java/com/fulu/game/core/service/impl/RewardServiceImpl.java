@@ -83,11 +83,14 @@ public class RewardServiceImpl extends AbsCommonService<Reward, Integer> impleme
             VirtualProduct virtualProduct = virtualProductService.findById(rewardVO.getGiftId().intValue());
             rewardVO.setGiftUrl(virtualProduct.getObjectUrl());
             rewardVO.setGiftPrice(virtualProduct.getPrice());
+            rewardVO.setCreateTime(new Date());
+            rewardVO.setStatus(1);
             create(rewardVO);
             //修改动态打赏次数
             dynamicService.updateIndexFilesById(rewardVO.getResourceId(),true, 0, 0,false);
             Map<String, String> extras = extras = AppRouteFactory.buildDynamicRoute(rewardVO.getResourceId());
-            AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(rewardVO.getToUserId()).title("打赏").alert(virtualProduct.getName()).extras(extras).build();
+            String nikename = user.getNickname() == null || "".equals(user.getNickname()) ? user.getId() + "" : user.getNickname();
+            AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(rewardVO.getToUserId()).title("动态消息").alert(nikename + "进行了打赏").extras(extras).build();
             //发送push消息
             mobileAppPushService.pushMsg(appPushMsgVO);
             // 保存push消息
@@ -95,7 +98,7 @@ public class RewardServiceImpl extends AbsCommonService<Reward, Integer> impleme
             dynamicPushMsg.setDynamicId(rewardVO.getResourceId());
             dynamicPushMsg.setFromUserId(user.getId());
             dynamicPushMsg.setFromUserHeadUrl(user.getHeadPortraitsUrl());
-            dynamicPushMsg.setFromUserNickname(user.getNickname());
+            dynamicPushMsg.setFromUserNickname(nikename);
             dynamicPushMsg.setToUserId(rewardVO.getToUserId());
             //push消息类型（1：点赞；2：评论；3打赏）
             dynamicPushMsg.setPushType(3);

@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 技能认证表
@@ -23,4 +24,12 @@ public interface UserTechAuthDao extends ICommonDao<UserTechAuth,Integer>{
     List<UserTechAuth> search(UserTechAuthSearchVO userTechAuthSearchVO);
 
     int updateByCategory(Category category);
+
+    /**
+     * 更新所有的技能不为主要的技能
+     * @param userId
+     * @param categoryId
+     * @return
+     */
+    int updateTechNotMain(@Param(value = "userId") Integer userId,@Param(value = "categoryId") Integer categoryId);
 }

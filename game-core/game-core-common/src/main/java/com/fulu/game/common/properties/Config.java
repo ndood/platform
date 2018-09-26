@@ -27,6 +27,10 @@ public class Config {
     //微信公众号
     private Wechat wechat_mp = new Wechat();
 
+    private Wechat wechat_app = new Wechat();
+
+    private AppleStore appleStore = new AppleStore();
+
     private Elasticsearch elasticsearch = new Elasticsearch();
 
     //环信账户配置信息
@@ -37,6 +41,8 @@ public class Config {
     private Queue queue = new Queue();
 
     private Ordermail ordermail = new Ordermail();
+
+    private AlipayPay alipayPay = new AlipayPay();
 
     @Data
     public static class Evn {
@@ -75,7 +81,10 @@ public class Config {
         private String subMchId;
         private String keyPath;
         private String tradeType;
+        //订单支付回调
         private String notifyUrl;
+        //充值支付回调
+        private String payVirtualProductNotifyUrl;
 
     }
 
@@ -118,4 +127,21 @@ public class Config {
         private boolean userScore;
         private boolean formId;
     }
+
+    @Data
+    public static class AlipayPay{
+        private String appId;
+        private String appPrivateKey;
+        private String alipayPublicKey;
+        private String alipayCallBackPublicKey;
+        private String payOrderNotifyUrl;
+        private String payVirtualProductNotifyUrl;
+        private String payGateway;
+    }
+
+    @Data
+    public static class AppleStore{
+        private String checkPayUrl;
+    }
+
 }

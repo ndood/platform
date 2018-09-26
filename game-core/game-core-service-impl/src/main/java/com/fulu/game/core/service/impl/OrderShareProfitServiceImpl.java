@@ -12,7 +12,6 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.OrderShareProfitDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.service.*;
-import com.github.binarywang.wxpay.exception.WxPayException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,6 +49,7 @@ public abstract class OrderShareProfitServiceImpl extends AbsCommonService<Order
 
     /**
      * 订单正常完成状态分润
+     *
      * @param order
      */
     @Override
@@ -128,22 +128,19 @@ public abstract class OrderShareProfitServiceImpl extends AbsCommonService<Order
         }
         //记录订单流水
         orderMoneyDetailsService.create(order.getOrderNo(), order.getUserId(), DetailsEnum.ORDER_USER_CANCEL, refundMoney.negate());
-        try {
-            refund(order, order.getActualMoney(), refundMoney);
-            if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
-                if (OrderStatusEnum.CONSULT_COMPLETE.getStatus().equals(order.getStatus()) || OrderStatusEnum.SYSTEM_CONSULT_COMPLETE.getStatus().equals(order.getStatus())) {
-                    userAutoReceiveOrderService.addOrderDisputeNum(order.getServiceUserId(), order.getCategoryId());
-                } else {
-                    if (order.getServiceUserId() != null) {
-                        userAutoReceiveOrderService.addOrderCancelNum(order.getServiceUserId(), order.getCategoryId());
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.error("退款失败:{}", order.getOrderNo());
-            log.error("退款失败", e);
+        if (!refund(order, order.getActualMoney(), refundMoney)) {
             throw new OrderException(order.getOrderNo(), "订单退款失败!");
         }
+        if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
+            if (OrderStatusEnum.CONSULT_COMPLETE.getStatus().equals(order.getStatus()) || OrderStatusEnum.SYSTEM_CONSULT_COMPLETE.getStatus().equals(order.getStatus())) {
+                userAutoReceiveOrderService.addOrderDisputeNum(order.getServiceUserId(), order.getCategoryId());
+            } else {
+                if (order.getServiceUserId() != null) {
+                    userAutoReceiveOrderService.addOrderCancelNum(order.getServiceUserId(), order.getCategoryId());
+                }
+            }
+        }
+
     }
 
     /**
@@ -181,10 +178,8 @@ public abstract class OrderShareProfitServiceImpl extends AbsCommonService<Order
         create(profit);
 
         //记录平台流水
-        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_REFUND,
-                orderNo, refundUserMoney.negate());
-        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_REFUND,
-                orderNo, refundServiceUserMoney.negate());
+        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_REFUND, orderNo, refundUserMoney.negate());
+        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_REFUND, orderNo, refundServiceUserMoney.negate());
 
         //记录仲裁结果流水表
         ArbitrationDetails arbitrationDetails = new ArbitrationDetails();
@@ -201,16 +196,20 @@ public abstract class OrderShareProfitServiceImpl extends AbsCommonService<Order
 
         //记录陪玩师加零钱
         moneyDetailsService.orderSave(refundServiceUserMoney, order.getServiceUserId(), orderNo);
-
-        //微信退款给用户
         try {
-            refund(order, order.getActualMoney(), refundUserMoney);
-        } catch (Exception e) {
-            log.error("退款失败{}", orderNo, e.getMessage());
-            throw new OrderException(orderNo, "订单退款失败!");
+            //退款给用户
+            if (!refund(order, order.getActualMoney(), refundUserMoney)) {
+                throw new OrderException(orderNo, "订单退款失败!");
+            }
+        }catch (Exception e){
+            log.error("退款异常",e);
         }
+
+
     }
 
 
-    protected abstract <T> T refund(Order order, BigDecimal actualMoney, BigDecimal refundUserMoney) throws WxPayException;
+    protected abstract Boolean refund(Order order, BigDecimal actualMoney, BigDecimal refundUserMoney);
+
+
 }

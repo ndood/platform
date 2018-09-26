@@ -13,7 +13,7 @@ public class GenerateTest {
 
     @Test
     public void test1() {
-        codeGenerateForTable("wangbin","t_official_notice");
+        codeGenerateForTable("wangbin","t_order_msg");
     }
 
 
@@ -24,7 +24,7 @@ public class GenerateTest {
 
     public void codeGenerateForTable(String author,String ... tableName){
         String driver = "com.mysql.jdbc.Driver";
-        String uri = "jdbc:mysql://10.0.2.190:3306/game_service?&characterEncoding=utf-8&useUnicode=true";
+        String uri = "jdbc:mysql://localhost:3306/game_service?&characterEncoding=utf-8&useUnicode=true";
         String username = "root";
         String password = "123456";
         Connection connection = DBUtils.getConnectionByJDBC(driver, uri, username, password);

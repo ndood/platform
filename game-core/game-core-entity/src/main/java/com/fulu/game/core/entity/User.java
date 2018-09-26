@@ -30,12 +30,19 @@ public class User implements Serializable {
     private String nickname;
     //性别(0不公开,1男,2女)
     private Integer gender;
+
     private Integer age;
+
     private String constellation;
+
     private String birth;
+
     private String realname;
+
     private String country;
+
     private String province;
+
     private String city;
     //头像URL
     private String headPortraitsUrl;
@@ -91,6 +98,8 @@ public class User implements Serializable {
     private String registIp;
     //登录ip
     private String loginIp;
+    /** 陪玩师综合评分 */
+    private BigDecimal serverScoreAvg;
     //注册时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @Excel(name = "注册时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "9", width = 35)
@@ -102,5 +111,7 @@ public class User implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @Excel(name = "最后登录登录时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "10", width = 35)
     private Date loginTime;
+    // 注册来源类型
+    private Integer registerType;
 
 }

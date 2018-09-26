@@ -10,7 +10,7 @@ spring:
        date-format: yyyy-MM-dd HH:mm:ss
 config:
     queue:
-        miniappPush: true
-        appPush: true
+        miniappPush: false
+        appPush: false
         userScore: false
         formId: false

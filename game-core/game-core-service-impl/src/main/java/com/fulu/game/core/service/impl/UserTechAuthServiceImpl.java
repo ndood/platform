@@ -1,19 +1,14 @@
 package com.fulu.game.core.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import cn.hutool.core.bean.BeanUtil;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.common.enums.TechAuthStatusEnum;
-import com.fulu.game.common.enums.VirtualProductTypeEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserTechAuthDao;
-import com.fulu.game.core.dao.VirtualProductAttachDao;
-import com.fulu.game.core.dao.VirtualProductDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserTechAuthTO;
 import com.fulu.game.core.entity.vo.TagVO;
@@ -24,12 +19,10 @@ import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import cn.hutool.core.bean.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -39,8 +32,6 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
     @Autowired
     private UserTechAuthDao userTechAuthDao;
-    @Autowired
-    private TechTagService techTagService;
     @Autowired
     private TechAttrService techAttrService;
     @Autowired
@@ -61,8 +52,8 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     private OssUtil ossUtil;
     @Autowired
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
-    
-
+    @Autowired
+    private TechTagService techTagService;
 
     @Override
     public ICommonDao<UserTechAuth, Integer> getDao() {
@@ -70,11 +61,10 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
 
-
     @Override
     public UserTechAuthTO save(UserTechAuthTO userTechAuthTO) {
-        log.info("修改认证技能:userTechAuthVO:{}",userTechAuthTO);
-        User user = userService.getCurrentUser();
+        log.info("修改认证技能:userTechAuthVO:{}", userTechAuthTO);
+        User user = userService.findById(userService.getCurrentUser().getId());
         Category category = categoryService.findById(userTechAuthTO.getCategoryId());
         userTechAuthTO.setStatus(TechAuthStatusEnum.AUTHENTICATION_ING.getType());
         userTechAuthTO.setMobile(user.getMobile());
@@ -82,6 +72,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         userTechAuthTO.setCategoryName(category.getName());
         userTechAuthTO.setUpdateTime(new Date());
         userTechAuthTO.setIsActivate(false);
+        userTechAuthTO.setIsMain(false);
         if (userTechAuthTO.getId() == null){
             //查询是否有重复技能
             List<UserTechAuth> userTechAuthes = findByCategoryAndUser(userTechAuthTO.getCategoryId(), userTechAuthTO.getUserId());
@@ -90,10 +81,10 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
             }
             userTechAuthTO.setCreateTime(new Date());
             create(userTechAuthTO);
-        }else {
+        } else {
             UserTechAuth oldUserTechAuth = findById(userTechAuthTO.getId());
-            if(oldUserTechAuth.getStatus().equals(TechAuthStatusEnum.FREEZE.getType())){
-                throw new  UserAuthException(UserAuthException.ExceptionCode.USER_TECH_FREEZE);
+            if (oldUserTechAuth.getStatus().equals(TechAuthStatusEnum.FREEZE.getType())) {
+                throw new UserAuthException(UserAuthException.ExceptionCode.USER_TECH_FREEZE);
             }
             if (!oldUserTechAuth.getId().equals(userTechAuthTO.getId())) {
                 //查询是否有重复技能
@@ -111,12 +102,23 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
         }
         //创建技能标签关联
-        saveTechTag(userTechAuthTO.getId(), userTechAuthTO.getTagIds());
+        techTagService.saveTechTag(userTechAuthTO.getId(), userTechAuthTO.getTagIds());
         //创建游戏段位
         saveTechAttr(userTechAuthTO);
 
 
         return userTechAuthTO;
+    }
+
+
+    @Override
+    public void settingsTechMain(int techId) {
+        UserTechAuth userTechAuth = findById(techId);
+        userTechAuthDao.updateTechNotMain(userTechAuth.getUserId(),userTechAuth.getCategoryId());
+        UserTechAuth updateUserTechAuth = new  UserTechAuth();
+        updateUserTechAuth.setId(userTechAuth.getId());
+        updateUserTechAuth.setIsMain(true);
+        update(userTechAuth);
     }
 
 
@@ -130,7 +132,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
     @Override
     public void updateByCategory(Category category) {
-        if(category.getName()==null){
+        if (category.getName() == null) {
             return;
         }
         userTechAuthDao.updateByCategory(category);
@@ -152,17 +154,17 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
             userTechAuthVO.setNickname(user.getNickname());
             userTechAuthVO.setGender(user.getGender());
             //查找用户技能标签
-            List<TagVO> groupTags = findAllCategoryTagSelected(userTechAuth.getCategoryId(),userTechAuth.getId(),Boolean.TRUE);
+            List<TagVO> groupTags = findAllCategoryTagSelected(userTechAuth.getCategoryId(), userTechAuth.getId(), Boolean.TRUE);
             userTechAuthVO.setGroupTags(groupTags);
             //查找用户段位和大区
-            List<TechAttrVO> groupAttrs = findAllCategoryAttrSelected(userTechAuth.getCategoryId(),userTechAuth.getId(),Boolean.TRUE);
+            List<TechAttrVO> groupAttrs = findAllCategoryAttrSelected(userTechAuth.getCategoryId(), userTechAuth.getId(), Boolean.TRUE);
             userTechAuthVO.setGroupAttrs(groupAttrs);
             userTechAuthVOList.add(userTechAuthVO);
             //查询是否存在开始接单
-            UserAutoReceiveOrder autoReceiveOrder =   userAutoReceiveOrderService.findByTechId(userTechAuth.getId());
-            if(autoReceiveOrder==null){
+            UserAutoReceiveOrder autoReceiveOrder = userAutoReceiveOrderService.findByTechId(userTechAuth.getId());
+            if (autoReceiveOrder == null) {
                 userTechAuthVO.setAutoOrder(false);
-            }else{
+            } else {
                 userTechAuthVO.setAutoOrder(true);
             }
         }
@@ -179,12 +181,21 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         return userTechAuthDao.findByParameter(param);
     }
 
+    @Override
+    public UserTechAuth findTechByCategoryAndUser(Integer categoryId, Integer userId) {
+        List<UserTechAuth> userTechAuths = findByCategoryAndUser(categoryId,userId);
+        if(userTechAuths.isEmpty()){
+            return null;
+        }
+        return userTechAuths.get(0);
+    }
+
 
     @Override
-    public UserTechAuthVO findTechAuthVOById(Integer id,Integer categoryId) {
+    public UserTechAuthVO findTechAuthVOById(Integer id, Integer categoryId) {
         UserTechAuth userTechAuth = findById(id);
         if (userTechAuth == null) {
-            if(categoryId==null){
+            if (categoryId == null) {
                 throw new ServiceErrorException("没有选择游戏!");
             }
             userTechAuth = new UserTechAuth();
@@ -192,10 +203,10 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         }
         UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
         BeanUtil.copyProperties(userTechAuth, userTechAuthVO);
-        if(userTechAuthVO.getId()!=null){
+        if (userTechAuthVO.getId() != null) {
             //审核不通过原因
-            UserTechAuthReject techAuthReject =userTechAuthRejectService.findLastRecordByTechAuth(userTechAuthVO.getId(),userTechAuthVO.getStatus());
-            if(techAuthReject!=null){
+            UserTechAuthReject techAuthReject = userTechAuthRejectService.findLastRecordByTechAuth(userTechAuthVO.getId(), userTechAuthVO.getStatus());
+            if (techAuthReject != null) {
                 userTechAuthVO.setReason(techAuthReject.getReason());
             }
         }
@@ -209,32 +220,32 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         Category category = categoryService.findById(userTechAuthVO.getCategoryId());
         userTechAuthVO.setCategory(category);
         //游戏标签组
-        List<TagVO> groupTags = findAllCategoryTagSelected(userTechAuthVO.getCategoryId(),userTechAuthVO.getId(),Boolean.FALSE);
+        List<TagVO> groupTags = findAllCategoryTagSelected(userTechAuthVO.getCategoryId(), userTechAuthVO.getId(), Boolean.FALSE);
         userTechAuthVO.setGroupTags(groupTags);
         //段位和大区
-        List<TechAttrVO> groupAttrs = findAllCategoryAttrSelected(userTechAuthVO.getCategoryId(),userTechAuthVO.getId(),Boolean.FALSE);
+        List<TechAttrVO> groupAttrs = findAllCategoryAttrSelected(userTechAuthVO.getCategoryId(), userTechAuthVO.getId(), Boolean.FALSE);
         userTechAuthVO.setGroupAttrs(groupAttrs);
 
         return userTechAuthVO;
     }
 
-    private List<TechAttrVO> findAllCategoryAttrSelected(int categoryId, Integer userTechAuthId,Boolean ignoreNotUser){
+    private List<TechAttrVO> findAllCategoryAttrSelected(int categoryId, Integer userTechAuthId, Boolean ignoreNotUser) {
         List<TechAttr> techAttrList = techAttrService.findByCategory(categoryId);
         List<UserTechInfo> userTechInfoList = userTechInfoService.findByTechAuthId(userTechAuthId);
         List<TechAttrVO> techAttrVOList = new ArrayList<>();
-        for(TechAttr techAttr : techAttrList){
+        for (TechAttr techAttr : techAttrList) {
             TechAttrVO techAttrVO = new TechAttrVO();
             BeanUtil.copyProperties(techAttr, techAttrVO);
             List<TechValue> techValueList = techValueService.findByTechAttrId(techAttrVO.getId());
             List<TechValueVO> techValueVOList = CollectionUtil.copyNewCollections(techValueList, TechValueVO.class);
-            ListIterator<TechValueVO> techValueVOListIt =  techValueVOList.listIterator();
-            while (techValueVOListIt.hasNext()){
+            ListIterator<TechValueVO> techValueVOListIt = techValueVOList.listIterator();
+            while (techValueVOListIt.hasNext()) {
                 TechValueVO techValueVO = techValueVOListIt.next();
-                if(isUserSelectTechValue(userTechInfoList,techValueVO)){
+                if (isUserSelectTechValue(userTechInfoList, techValueVO)) {
                     techValueVO.setSelected(true);
-                }else{
+                } else {
                     techValueVO.setSelected(false);
-                    if(ignoreNotUser){
+                    if (ignoreNotUser) {
                         techValueVOListIt.remove();
                     }
                 }
@@ -245,9 +256,9 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         return techAttrVOList;
     }
 
-    private List<TagVO> findAllCategoryTagSelected(int categoryId, Integer userTechAuthId,Boolean ignoreNotUser) {
+    private List<TagVO> findAllCategoryTagSelected(int categoryId, Integer userTechAuthId, Boolean ignoreNotUser) {
         List<TechTag> techTagList = techTagService.findByTechAuthId(userTechAuthId);
-        List<Tag> categoryTags = tagService.findAllCategoryTags(categoryId);
+        List<Tag> categoryTags = tagService.findCategoryParentTags(categoryId);
         List<TagVO> groupTags = CollectionUtil.copyNewCollections(categoryTags,TagVO.class);
         for(TagVO groupTag : groupTags){
            List<Tag> sonTags = tagService.findByPid(groupTag.getId());
@@ -290,10 +301,11 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
     /**
      * 查询用户可用的技能
+     *
      * @param userId
      * @return
      */
-    public List<UserTechAuth> findUserNormalTechs(Integer userId){
+    public List<UserTechAuth> findUserNormalTechs(Integer userId) {
         List<UserTechAuth> techAuthList = findByStatusAndUserId(userId, TechAuthStatusEnum.NORMAL.getType());
         return techAuthList;
     }
@@ -302,7 +314,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     public List<Integer> findUserNormalCategoryIds(Integer userId) {
         List<Integer> categoryIds = new ArrayList<>();
         List<UserTechAuth> techAuthList = findUserNormalTechs(userId);
-        for(UserTechAuth techAuth :techAuthList){
+        for (UserTechAuth techAuth : techAuthList) {
             categoryIds.add(techAuth.getCategoryId());
         }
         return categoryIds;
@@ -310,14 +322,15 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
     /**
      * 查询用户段位信息
+     *
      * @param techAuthId
      * @return
      */
     public UserTechInfo findDanInfo(Integer techAuthId) {
         List<UserTechInfo> userTechInfoList = userTechInfoService.findByTechAuthId(techAuthId);
-        for(UserTechInfo techInfo : userTechInfoList){
+        for (UserTechInfo techInfo : userTechInfoList) {
             TechAttr techAttr = techAttrService.findById(techInfo.getTechAttrId());
-            if(techAttr.getType().equals(TechAttrTypeEnum.DAN.getType())){
+            if (techAttr.getType().equals(TechAttrTypeEnum.DAN.getType())) {
                 return techInfo;
             }
         }
@@ -325,15 +338,15 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
 
-    public void checkUserTechAuth(Integer techAuthId){
+    public void checkUserTechAuth(Integer techAuthId) {
         UserTechAuth userTechAuth = findById(techAuthId);
-        if(userTechAuth.getStatus().equals(TechAuthStatusEnum.AUTHENTICATION_ING.getType())){
+        if (userTechAuth.getStatus().equals(TechAuthStatusEnum.AUTHENTICATION_ING.getType())) {
             throw new UserAuthException(UserAuthException.ExceptionCode.USER_TECH_AUTHENTICATION_ING);
         }
-        if(userTechAuth.getStatus().equals(TechAuthStatusEnum.NO_AUTHENTICATION.getType())){
+        if (userTechAuth.getStatus().equals(TechAuthStatusEnum.NO_AUTHENTICATION.getType())) {
             throw new UserAuthException(UserAuthException.ExceptionCode.USER_TECH_NO_AUTHENTICATION);
         }
-        if(userTechAuth.getStatus().equals(TechAuthStatusEnum.FREEZE.getType())){
+        if (userTechAuth.getStatus().equals(TechAuthStatusEnum.FREEZE.getType())) {
             throw new UserAuthException(UserAuthException.ExceptionCode.USER_TECH_FREEZE);
         }
     }
@@ -350,6 +363,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
     /**
      * 通过用户Id查询用户技能认证信息
+     *
      * @param userId
      * @return
      */
@@ -373,42 +387,11 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
 
-    /**
-     * 创建用户技能标签
-     *
-     * @param techAuthId
-     * @param tags
-     */
-    private void saveTechTag(Integer techAuthId, Integer[] tags) {
-        if (tags == null) {
-            return;
-        }
-        List<TechTag> techTagList = techTagService.findByTechAuthId(techAuthId);
-        List<Integer> tagList = new ArrayList<>(Arrays.asList(tags));
-        for(TechTag techTag : techTagList){
-            if(!tagList.contains(techTag.getId())){
-                techTagService.deleteById(techTag.getId());
-            }else {
-                tagList.remove(techTag.getTagId());
-            }
-        }
-        for (Integer tagId : tagList) {
-            Tag tag = tagService.findById(tagId);
-            TechTag techTag = new TechTag();
-            techTag.setTagId(tagId);
-            techTag.setName(tag.getName());
-            techTag.setTechAuthId(techAuthId);
-            techTag.setCreateTime(new Date());
-            techTag.setUpdateTime(new Date());
-            techTagService.create(techTag);
-        }
-    }
-
-
 
 
     /**
      * 创建用户游戏段位
+     *
      * @param techAuthId
      * @param categoryId
      * @param attrId
@@ -435,28 +418,28 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
 
 
     private void saveTechAttr(UserTechAuthTO userTechAuthTO) {
-        if(userTechAuthTO.getAttrId()==null&&userTechAuthTO.getDanId()==null){
+        if (userTechAuthTO.getAttrId() == null && userTechAuthTO.getDanId() == null) {
             return;
         }
-        if(userTechAuthTO.getAttrId()==null&&userTechAuthTO.getDanId()!=null){
-            saveTechAttr(userTechAuthTO.getId(),userTechAuthTO.getCategoryId(),userTechAuthTO.getDanId());
+        if (userTechAuthTO.getAttrId() == null && userTechAuthTO.getDanId() != null) {
+            saveTechAttr(userTechAuthTO.getId(), userTechAuthTO.getCategoryId(), userTechAuthTO.getDanId());
             return;
         }
         //
         List<Integer> attrIds = new ArrayList<>(Arrays.asList(userTechAuthTO.getAttrId()));
-        List<UserTechInfo> userTechInfos =  userTechInfoService.findByTechAuthId(userTechAuthTO.getId());
-        for(UserTechInfo userTechInfo :userTechInfos){
-            if(!attrIds.contains(userTechInfo.getTechValueId())){
+        List<UserTechInfo> userTechInfos = userTechInfoService.findByTechAuthId(userTechAuthTO.getId());
+        for (UserTechInfo userTechInfo : userTechInfos) {
+            if (!attrIds.contains(userTechInfo.getTechValueId())) {
                 userTechInfoService.deleteById(userTechInfo.getId());
-            }else{
-                log.info("attrIds:{}",attrIds);
-                log.info("userTechInfo:{}",userTechInfo);
+            } else {
+                log.info("attrIds:{}", attrIds);
+                log.info("userTechInfo:{}", userTechInfo);
                 attrIds.remove(userTechInfo.getTechValueId());
             }
         }
-        for(Integer attrId : attrIds){
+        for (Integer attrId : attrIds) {
             TechValue techValue = techValueService.findById(attrId);
-            if(techValue==null){
+            if (techValue == null) {
                 throw new ServiceErrorException("大区不存在,请重新选择!");
             }
             TechAttr techAttr = techAttrService.findById(techValue.getTechAttrId());

@@ -2,6 +2,7 @@ package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.PlatformShowEnum;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Product;
@@ -14,11 +15,9 @@ import com.fulu.game.core.service.MoneyDetailsService;
 import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.ProductService;
 import com.fulu.game.core.service.UserService;
-import com.fulu.game.play.service.impl.PlayMiniAppOrderServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -122,7 +121,8 @@ public class ProductController extends BaseController {
     @RequestMapping(value = "/order-receive/tech/enable")
     public Result techEnable(@RequestParam(required = true) Integer techAuthId,
                              @RequestParam(required = true) Boolean status) {
-        productService.techEnable(techAuthId, status);
+        User user = userService.getCurrentUser();
+        productService.techEnable(techAuthId, status, user.getId());
         if (status) {
             return Result.success().msg("开启");
         } else {
@@ -138,7 +138,7 @@ public class ProductController extends BaseController {
     @RequestMapping(value = "/order-receive/tech/list")
     public Result techList() {
         User user = userService.getCurrentUser();
-        List<TechAuthProductVO> techAuthProductVOS = productService.techAuthProductList(user.getId());
+        List<TechAuthProductVO> techAuthProductVOS = productService.techAuthProductList(user.getId(), PlatformShowEnum.PLAY);
         return Result.success().data(techAuthProductVOS);
     }
 
@@ -202,7 +202,8 @@ public class ProductController extends BaseController {
         if (product == null) {
             throw new ProductException(ProductException.ExceptionCode.PRODUCT_REVIEW_ING);
         }
-        productService.enable(product, status);
+        User user = userService.getCurrentUser();
+        productService.enable(product, status, user.getId());
         if (status) {
             return Result.success().msg("开启");
         } else {
@@ -242,7 +243,10 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "/order-receive/start")
     public Result orderReceiveStart(Float hour) {
-        productService.startOrderReceiving(hour);
+        User user = userService.getCurrentUser();
+        log.info("用户开始接单:userId:{};hour:{};", user.getId(), hour);
+        userService.isCurrentUser(user.getId());
+        productService.startOrderReceiving(hour, user.getId());
         return Result.success().data("已经开始自动接单!");
     }
 
@@ -253,7 +257,8 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "/order-receive/stop")
     public Result orderReceiveStop() {
-        productService.stopOrderReceiving();
+        User user = userService.getCurrentUser();
+        productService.stopOrderReceiving(user.getId());
         return Result.success().data("已经停止自动接单!");
     }
 
@@ -266,8 +271,8 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "/recommend/list")
     public Result getRecommendList(@RequestParam(required = true) Integer pageNum,
-                                      @RequestParam(required = true) Integer pageSize) {
-        PageInfo<ProductShowCaseVO> pageInfo = productService.getRecommendList(pageNum,pageSize);
+                                   @RequestParam(required = true) Integer pageSize) {
+        PageInfo<ProductShowCaseVO> pageInfo = productService.getRecommendList(pageNum, pageSize);
         return Result.success().data(pageInfo);
     }
 

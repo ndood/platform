@@ -3,9 +3,13 @@ package com.fulu.game.core.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.Week;
+import cn.hutool.crypto.SecureUtil;
 import com.fulu.game.common.Constant;
+import com.fulu.game.common.config.WxMaServiceSupply;
+import com.fulu.game.common.config.WxMpServiceSupply;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.CashException;
+import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.dao.CashDrawsDao;
@@ -14,10 +18,14 @@ import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.CashDrawsVO;
 import com.fulu.game.core.entity.vo.UserBodyAuthVO;
 import com.fulu.game.core.service.*;
+import com.github.binarywang.wxpay.bean.entpay.EntPayRequest;
+import com.github.binarywang.wxpay.constant.WxPayConstants;
+import com.github.binarywang.wxpay.exception.WxPayException;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +49,12 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
     private MoneyDetailsService mdService;
     @Autowired
     private UserBodyAuthService userBodyAuthService;
+    @Autowired
+    private WxMaServiceSupply wxMaServiceSupply;
+    @Autowired
+    private WxMpServiceSupply wxMpServiceSupply;
+    @Autowired
+    private VirtualDetailsService virtualDetailsService;
 
     @Override
     public ICommonDao<CashDraws, Integer> getDao() {
@@ -102,9 +116,11 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         cashDraws.setUserId(user.getId());
         cashDraws.setNickname(user.getNickname());
         cashDraws.setMobile(user.getMobile());
+        cashDraws.setType(CashDrawsTypeEnum.BALANCE_WITHDRAW.getType());
         cashDraws.setCashStatus(CashProcessStatusEnum.WAITING.getType());
         cashDraws.setServerAuth(CashDrawsServerAuthEnum.UN_PROCESS.getType());
         cashDraws.setCreateTime(new Date());
+        cashDraws.setCashNo(generateCashNo());
         cashDrawsDao.create(cashDraws);
         log.info("生成提款申请记录");
         MoneyDetails moneyDetails = new MoneyDetails();
@@ -148,11 +164,35 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
     public PageInfo<CashDrawsVO> list(CashDrawsVO cashDrawsVO, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize, "t1.create_time DESC , FIELD(t1.cash_status, 0, 2, 1) , t1.server_auth DESC");
         List<CashDrawsVO> list = cashDrawsDao.findDetailByParameter(cashDrawsVO);
+        if (CollectionUtils.isNotEmpty(list)) {
+            for (CashDrawsVO meta : list) {
+                CashDrawsVO paramVO = new CashDrawsVO();
+                paramVO.setUserId(meta.getUserId());
+                BigDecimal unCashDrawsSum = cashDrawsDao.findUnCashDrawsSum(paramVO);
+                meta.setBalance(meta.getBalance().add(unCashDrawsSum == null ? BigDecimal.ZERO : unCashDrawsSum));
+            }
+        }
 
         this.charmToMoney(list);
 
-        //todo gzc 遍历list在每个对象中set加密的sign参数
-
+        //添加md5加密签名
+        if (CollectionUtils.isNotEmpty(list)) {
+            for (CashDrawsVO vo : list) {
+                Integer cashId = vo.getCashId();
+                String codeStr =
+                        "/api/v1/cashDraws/financer-auth/list"
+                                + Constant.DEFAULT_SPLIT_SEPARATOR
+                                + vo.getCreateTime().toString()
+                                + Constant.DEFAULT_SPLIT_SEPARATOR
+                                + vo.getUserId().toString()
+                                + Constant.DEFAULT_SPLIT_SEPARATOR
+                                + vo.getNickname()
+                                + Constant.DEFAULT_SPLIT_SEPARATOR
+                                + cashId;
+                String sign = SecureUtil.md5(codeStr);
+                vo.setSign(sign);
+            }
+        }
 
         return new PageInfo(list);
     }
@@ -178,9 +218,9 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         for (int i = 0; i < list.size(); i++) {
 
             Integer charm = list.get(i).getCharm();
-            if(charm == null){
+            if (charm == null) {
                 list.get(i).setCharmMoney(new BigDecimal("0"));
-            }else{
+            } else {
                 BigDecimal charmMoney = new BigDecimal(charm).multiply(new BigDecimal("0.07"));
                 list.get(i).setCharmMoney(charmMoney.setScale(2, BigDecimal.ROUND_DOWN));
             }
@@ -210,11 +250,145 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
 //        cashDraws.setCashNo(null);
         cashDraws.setProcessTime(new Date());
         cashDrawsDao.update(cashDraws);
-
-        //todo gzc 加密处理 自定义的sign
-
-
         return cashDraws;
+    }
+
+    @Override
+    public CashDraws directDraw(Integer cashId, String sign, String comment) {
+        Admin admin = adminService.getCurrentUser();
+        log.info("调用打款接口,入参cashId:{},操作人:{}", cashId, admin.getId());
+        CashDraws cashDraws = findById(cashId);
+        if (null == cashDraws) {
+            return null;
+        }
+
+        //sign签名校验
+        String codeStr =
+                "/api/v1/cashDraws/financer-auth/list"
+                        + Constant.DEFAULT_SPLIT_SEPARATOR
+                        + cashDraws.getCreateTime().toString()
+                        + Constant.DEFAULT_SPLIT_SEPARATOR
+                        + cashDraws.getUserId().toString()
+                        + Constant.DEFAULT_SPLIT_SEPARATOR
+                        + cashDraws.getNickname()
+                        + Constant.DEFAULT_SPLIT_SEPARATOR
+                        + cashId;
+        String compareSign = SecureUtil.md5(codeStr);
+        if (!sign.equals(compareSign)) {
+            log.error("签名校验失败，不能进行打款操作！");
+            throw new ServiceErrorException("签名校验失败，不能进行打款操作！");
+        }
+
+        Integer cashStatus = cashDraws.getCashStatus();
+        if (!cashStatus.equals(CashProcessStatusEnum.WAITING.getType())) {
+            log.error("只有处于提现(审核中)状态的提款单才能进行打款，cashId：{}", cashId);
+            throw new ServiceErrorException("只有处于提现(审核中)状态的提款单才能进行打款!");
+        }
+
+        //打款操作
+        Integer userId = cashDraws.getUserId();
+        String cashNo = cashDraws.getCashNo();
+        Integer type = cashDraws.getType();
+        User user = userService.findById(userId);
+        String openId = user.getOpenId();
+        String pointOpenId = user.getPointOpenId();
+        String publicOpenId = user.getPublicOpenId();
+        //提现金额单位换算(单位：分)
+        Integer totalFee = (cashDraws.getMoney().multiply(new BigDecimal(100))).intValue();
+
+        if (totalFee < 30 || totalFee > 2000000) {
+            throw new CashException(CashException.ExceptionCode.CASH_THRSHLD);
+        }
+
+        boolean flag = StringUtils.isBlank(openId)
+                && StringUtils.isBlank(pointOpenId)
+                && StringUtils.isBlank(publicOpenId);
+        if (flag) {
+            throw new UserException(UserException.ExceptionCode.NO_AVAILABLE_OPENID);
+        }
+
+        if (StringUtils.isNotBlank(publicOpenId)) {
+            EntPayRequest request = getEntPayRequest(cashNo, publicOpenId, totalFee, CashDrawsTypeEnum.getMsgByType(type));
+            try {
+                String resultStr = this.wxMpServiceSupply.wxMpPayService().getEntPayService().entPay(request).toString();
+                log.info("微信打款返回：" + resultStr);
+                cashDraws.setOperator(admin.getName());
+                cashDraws.setComment(comment);
+                //修改为已处理状态
+                cashDraws.setCashStatus(CashProcessStatusEnum.DONE.getType());
+                cashDraws.setProcessTime(new Date());
+                cashDrawsDao.update(cashDraws);
+
+                //记录虚拟物品流水表
+                VirtualDetails details = new VirtualDetails();
+                details.setUserId(user.getId());
+                details.setRelevantNo(cashDraws.getCashNo());
+                Integer totalCharm = user.getCharm() == null ? 0 : user.getCharm();
+                Integer charmDrawSum = user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum();
+                Integer leftCharm = totalCharm - charmDrawSum;
+                details.setSum(leftCharm);
+                details.setMoney(cashDraws.getCharm());
+                details.setType(VirtualDetailsTypeEnum.CHARM.getType());
+                details.setRemark("魅力值提现");
+                details.setCreateTime(DateUtil.date());
+                virtualDetailsService.create(details);
+                return cashDraws;
+            } catch (WxPayException e) {
+                e.printStackTrace();
+                log.error("企业打款到微信零钱失败！", e);
+                return null;
+            }
+        }
+
+        if (StringUtils.isNotBlank(openId)) {
+            EntPayRequest request = getEntPayRequest(cashNo, openId, totalFee, CashDrawsTypeEnum.getMsgByType(type));
+            try {
+                String resultStr = this.wxMaServiceSupply.playWxPayService().getEntPayService().entPay(request).toString();
+                log.info("微信打款返回：" + resultStr);
+                cashDraws.setOperator(admin.getName());
+                cashDraws.setComment(comment);
+                //修改为已处理状态
+                cashDraws.setCashStatus(CashProcessStatusEnum.DONE.getType());
+                cashDraws.setProcessTime(new Date());
+                cashDrawsDao.update(cashDraws);
+                return cashDraws;
+            } catch (WxPayException e) {
+                e.printStackTrace();
+                log.error("企业打款到微信零钱失败！", e);
+                return null;
+            }
+        }
+
+        if (StringUtils.isNotBlank(pointOpenId)) {
+            EntPayRequest request = getEntPayRequest(cashNo, pointOpenId, totalFee, CashDrawsTypeEnum.getMsgByType(type));
+            try {
+                String resultStr = this.wxMaServiceSupply.pointWxPayService().getEntPayService().entPay(request).toString();
+                log.info("微信打款返回：" + resultStr);
+                cashDraws.setOperator(admin.getName());
+                cashDraws.setComment(comment);
+                //修改为已处理状态
+                cashDraws.setCashStatus(CashProcessStatusEnum.DONE.getType());
+                cashDraws.setProcessTime(new Date());
+                cashDrawsDao.update(cashDraws);
+                return cashDraws;
+            } catch (WxPayException e) {
+                e.printStackTrace();
+                log.error("企业打款到微信零钱失败！", e);
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private EntPayRequest getEntPayRequest(String cashNo, String openId, Integer totalFee, String msg) {
+        return EntPayRequest.newBuilder()
+                .partnerTradeNo(cashNo)
+                .openid(openId)
+                .amount(totalFee)
+                .spbillCreateIp("10.10.10.10")
+                .checkName(WxPayConstants.CheckNameOption.NO_CHECK)
+                .description(msg)
+                .build();
     }
 
     @Override
@@ -227,6 +401,10 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         }
 
         Integer type = cashDraws.getType();
+        if (type == null) {
+            type = CashDrawsTypeEnum.BALANCE_WITHDRAW.getType();
+            cashDraws.setType(CashDrawsTypeEnum.BALANCE_WITHDRAW.getType());
+        }
 
         cashDraws.setOperator(admin.getName());
         cashDraws.setComment(comment);
@@ -262,30 +440,11 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         } else {
             //返款
             User user = userService.findById(cashDraws.getUserId());
-            BigDecimal balance = user.getBalance();
-            log.info("管理员拒绝打款前，用户账户余额:{}", balance);
-            balance = balance.subtract(cashDraws.getMoney());
-            log.info("管理员拒绝打款后，用户账户余额:{}", balance);
-
-            MoneyDetails moneyDetails = new MoneyDetails();
-            moneyDetails.setOperatorId(admin.getId());
-            moneyDetails.setAction(MoneyOperateTypeEnum.ADMIN_REFUSE_REMIT.getType());
-            moneyDetails.setTargetId(cashDraws.getUserId());
-            BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
-            moneyDetails.setSum(balance.add(chargeBalance));
-            moneyDetails.setMoney(cashDraws.getMoney());
-            moneyDetails.setCashId(cashId);
-            moneyDetails.setRemark(comment);
-            moneyDetails.setCreateTime(new Date());
-            mdService.create(moneyDetails);
-
-            user.setBalance(balance);
             user.setCharmDrawSum((user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum()) - cashDraws.getCharm());
             user.setUpdateTime(new Date());
             userService.update(user);
             return true;
         }
-
     }
 
     @Override
@@ -310,7 +469,6 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         BigDecimal charmMoney = new BigDecimal(charm).multiply(Constant.CHARM_TO_MONEY_RATE)
                 .setScale(2, ROUND_HALF_DOWN);
 
-        user.setBalance(user.getBalance().add(charmMoney));
         user.setCharmDrawSum((user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum()) + charm);
         user.setUpdateTime(DateUtil.date());
         userService.update(user);
@@ -327,17 +485,6 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         cashDraws.setCashNo(generateCashNo());
         cashDraws.setCreateTime(DateUtil.date());
         cashDrawsDao.create(cashDraws);
-
-        MoneyDetails details = new MoneyDetails();
-        details.setOperatorId(user.getId());
-        details.setTargetId(user.getId());
-        details.setMoney(charmMoney);
-        details.setAction(MoneyOperateTypeEnum.USER_CHARM_WITHDRAW.getType());
-        details.setCashId(cashDraws.getCashId());
-        BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
-        details.setSum(user.getBalance().add(chargeBalance));
-        details.setCreateTime(DateUtil.date());
-        mdService.drawSave(details);
 
         CashDrawsVO vo = new CashDrawsVO();
         BeanUtil.copyProperties(cashDraws, vo);

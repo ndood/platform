@@ -6,6 +6,7 @@ import com.fulu.game.core.entity.vo.SalesModeVO;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 
@@ -17,5 +18,8 @@ import org.apache.ibatis.annotations.Mapper;
 public interface SalesModeDao extends ICommonDao<SalesMode,Integer>{
 
     List<SalesMode> findByParameter(SalesModeVO salesModeVO);
+
+    List<SalesMode> findByCategoryAndPlatformShow(@Param(value = "categoryId") Integer categoryId,@Param(value = "platformShowList") List<Integer> platformShowList);
+
 
 }

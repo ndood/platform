@@ -5,7 +5,7 @@ server:
     port: 8888
 config:
     queue:
-        miniappPush: true
-        appPush: true
+        miniappPush: false
+        appPush: false
         userScore: false
         formId: false

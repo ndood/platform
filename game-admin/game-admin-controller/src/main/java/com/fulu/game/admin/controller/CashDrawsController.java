@@ -81,17 +81,36 @@ public class CashDrawsController extends BaseController {
         workbook.close();
     }
 
+//    /**
+//     * 财务-打款动作
+//     *
+//     * @return
+//     */
+//    @PostMapping("/draw")
+//    public Result draw(@RequestParam("cashId") Integer cashId,
+//                       @RequestParam(name = "comment", required = false) String comment) {
+//        CashDraws cashDraws = cashDrawsService.draw(cashId, comment);
+//        if (null == cashDraws) {
+//            return Result.error().msg("申请单不存在！");
+//        }
+//        return Result.success().data(cashDraws).msg("打款成功！");
+//    }
+
     /**
-     * 管理员-打款动作
+     * 财务-打款动作（直接打款到用户微信零钱）
      *
-     * @return
+     * @param cashId  提现id
+     * @param sign    签名
+     * @param comment 备注
+     * @return 封装结果集
      */
     @PostMapping("/draw")
-    public Result draw(@RequestParam("cashId") Integer cashId,
-                       @RequestParam(name = "comment", required = false) String comment) {
-        CashDraws cashDraws = cashDrawsService.draw(cashId, comment);
+    public Result directDraw(@RequestParam Integer cashId,
+                             @RequestParam String sign,
+                             @RequestParam(name = "comment", required = false) String comment) {
+        CashDraws cashDraws = cashDrawsService.directDraw(cashId, sign, comment);
         if (null == cashDraws) {
-            return Result.error().msg("申请单不存在！");
+            return Result.error().msg("打款失败！");
         }
         return Result.success().data(cashDraws).msg("打款成功！");
     }

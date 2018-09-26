@@ -52,14 +52,7 @@ public class PointMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
                 replaces);
     }
 
-    public void orderPay(Order order){
-        if(order.getServiceUserId()!=null){
-            push(order.getServiceUserId(),
-                    order,
-                    WechatTemplateMsgEnum.POINT_TOSE_ORDER_RECEIVING,
-                    WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
-        }
-    }
+
 
 
     /**

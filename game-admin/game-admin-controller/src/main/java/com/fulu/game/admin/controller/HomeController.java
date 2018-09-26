@@ -20,8 +20,6 @@ import java.util.Map;
 @Controller
 @Slf4j
 public class HomeController {
-
-
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index() {
         return "index";
@@ -48,6 +46,4 @@ public class HomeController {
             return Result.error().msg("登录异常");
         }
     }
-
-
 }

@@ -49,6 +49,8 @@ public interface MoneyDetailsService extends ICommonService<MoneyDetails, Intege
 
     BigDecimal weekIncome(Integer targetId);
 
+    BigDecimal monthIncome(Integer targetId);
+
     /**
      * 管理员查看用户账户流水明细
      */

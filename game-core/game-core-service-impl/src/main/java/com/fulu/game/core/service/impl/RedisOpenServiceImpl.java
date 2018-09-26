@@ -14,10 +14,10 @@ import org.springframework.data.redis.core.RedisConnectionUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PreDestroy;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -38,6 +38,7 @@ public class RedisOpenServiceImpl {
     @Autowired
     private RedisTemplate redisTemplate;
 
+
     /**
      * 获取某个key的值
      *
@@ -48,6 +49,7 @@ public class RedisOpenServiceImpl {
         Object value = redisTemplate.opsForValue().get(key);
         return (value != null) ? value.toString() : null;
     }
+
 
     /**
      * 统计bit位为1的总数
@@ -63,7 +65,6 @@ public class RedisOpenServiceImpl {
             }
         });
     }
-
 
     /**
      * 添加一个BitSet
@@ -117,6 +118,22 @@ public class RedisOpenServiceImpl {
         redisTemplate.opsForValue().set(key, value, time, TimeUnit.SECONDS);
     }
 
+
+    /**
+     * 设置某个key的值
+     *
+     * @param key
+     * @param value
+     * @param isPerpetual 是否永久保存（true：是；false：否）
+     */
+    public void set(String key, String value, boolean isPerpetual) {
+        if(isPerpetual){
+            redisTemplate.opsForValue().set(key, value);
+        } else {
+            set(key, value);
+        }
+    }
+
     /**
      * 根据key设置某个hash的值
      *
@@ -126,6 +143,22 @@ public class RedisOpenServiceImpl {
      */
     public void hset(String key, String hash, Object value) {
         hset(key, hash, value, TIME);
+    }
+
+    /**
+     * 根据key设置某个hash的值
+     *
+     * @param key
+     * @param hash
+     * @param value
+     * @param isPerpetual 是否永久保存（true：是；false：否）
+     */
+    public void hset(String key, String hash, Object value, boolean isPerpetual) {
+        if (isPerpetual) {
+            redisTemplate.opsForHash().put(key, hash, value);
+        } else {
+            hset(key, hash, value, TIME);
+        }
     }
 
     /**
@@ -149,6 +182,21 @@ public class RedisOpenServiceImpl {
      */
     public void hset(String key, Map<String, Object> map) {
         hset(key, map, TIME);
+    }
+
+    /**
+     * 根据key设置hashtable的值
+     *
+     * @param key
+     * @param map
+     * @param isPerpetual 是否永久保存（true：是；false：否）
+     */
+    public void hset(String key, Map<String, Object> map, boolean isPerpetual) {
+        if (isPerpetual) {
+            redisTemplate.opsForHash().putAll(key, map);
+        } else {
+            hset(key, map, TIME);
+        }
     }
 
     /**
@@ -292,20 +340,19 @@ public class RedisOpenServiceImpl {
      *
      * @return
      */
-    public <T> T takeFromHead(String key,int timeout) throws InterruptedException {
-//        lock.lockInterruptibly();
+    public <T> T takeFromHead(String key, int timeout) throws InterruptedException {
+        //        lock.lockInterruptibly();
         RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
         RedisConnection connection = connectionFactory.getConnection();
         try {
             byte[] rawKey = redisTemplate.getKeySerializer().serialize(key);
-
             List<byte[]> results = connection.bLPop(timeout, rawKey);
             if (CollectionUtils.isEmpty(results)) {
                 return null;
             }
             return (T) redisTemplate.getValueSerializer().deserialize(results.get(1));
         } catch (Exception e) {
-            log.info("获取队列信息异常:", e);
+            log.error("获取队列信息异常:", e);
             return null;
         } finally {
 //            lock.unlock();
@@ -313,11 +360,72 @@ public class RedisOpenServiceImpl {
         }
     }
 
-    @PreDestroy
-    public void destroy() {
-        RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
-        RedisConnection connection = connectionFactory.getConnection();
-        log.info("关闭redis连结");
-        RedisConnectionUtils.releaseConnection(connection, connectionFactory);
+
+
+    /**
+     * 自增
+     * @param key
+     * @return
+     */
+    public long incr(String key) {
+        return incr( key, 1);
     }
+
+
+    /**
+     * 递增
+     * @param key
+     * @param delta 递增因子，必须大于0
+     * @return
+     */
+    public long incr(String key, long delta) {
+        if (delta < 0) {
+            throw new RuntimeException("递增因子必须大于0");
+        }
+        return redisTemplate.opsForValue().increment(key, delta);
+    }
+
+    /**
+     * 自减
+     * @param key 键
+     * @return
+     */
+    public long decr(String key){
+        return decr( key, 1);
+    }
+
+    /**
+     * 递减
+     * @param key 键
+     * @param delta 要减少几(小于0)
+     * @return
+     */
+    public long decr(String key, long delta){
+        if(delta<0){
+            throw new RuntimeException("递减因子必须大于0");
+        }
+        return redisTemplate.opsForValue().increment(key, -delta);
+    }
+
+
+    /**
+     * 获取Integer类型的值
+     * @param key
+     * @return
+     */
+    public Integer getInteger(String key) {
+        Object value = redisTemplate.opsForValue().get(key);
+        return (value != null) ? (Integer) value : 0;
+    }
+
+    /**
+     * 通配符查找redis的key
+     *
+     * @param parttern
+     * @return
+     */
+    public Set<String> keys(String parttern) {
+        return redisTemplate.keys(parttern);
+    }
+
 }

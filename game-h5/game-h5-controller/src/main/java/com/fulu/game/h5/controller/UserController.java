@@ -1,6 +1,7 @@
 package com.fulu.game.h5.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -265,7 +267,12 @@ public class UserController extends BaseController {
         JSONObject data = new JSONObject();
         data.put("balance", user.getBalance());
         data.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
-        data.put("charm", user.getCharm() == null ? 0 : user.getCharm());
+        Integer totalCharm = user.getCharm() == null ? 0 : user.getCharm();
+        Integer charmDrawSum = user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum();
+        Integer leftCharm = totalCharm - charmDrawSum;
+        data.put("charm", leftCharm);
+        data.put("charmMoney", new BigDecimal(leftCharm)
+                .multiply(Constant.CHARM_TO_MONEY_RATE).setScale(2, BigDecimal.ROUND_HALF_DOWN));
         data.put("chargeBalance", user.getChargeBalance());
         return Result.success().data(data).msg("查询成功！");
     }

@@ -52,5 +52,8 @@ public class Reward implements Serializable {
 	private Integer status;
 	//打赏订单号
 	private String orderNo;
+	//评论用户年龄
+	private Integer age;
+
 
 }

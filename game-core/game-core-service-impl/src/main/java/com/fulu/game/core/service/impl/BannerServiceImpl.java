@@ -69,6 +69,7 @@ public class BannerServiceImpl extends AbsCommonService<Banner, Integer> impleme
         banner.setOperatorId(admin.getId());
         banner.setOperatorName(admin.getName());
         banner.setUpdateTime(new Date());
+        banner.setPlatformType(bannerVO.getPlatformType());
         bannerDao.update(banner);
         log.info("管理员id={}修改banner", admin.getId());
         return banner;

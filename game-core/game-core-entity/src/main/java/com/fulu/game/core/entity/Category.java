@@ -34,6 +34,11 @@ public class Category implements Serializable {
 	private BigDecimal charges;
 
 	private Boolean isPoint;
+
+	// 示例图片
+	private String examplePicUrl;
+	// 示例说明
+	private String exampleAbout;
 	//
 	private Date createTime;
 	//

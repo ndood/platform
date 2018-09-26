@@ -102,11 +102,12 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
             return false;
         }
         if (UserStatusEnum.BANNED.getType().equals(user.getStatus())) {
+            log.error("用户id：{}被封禁", user.getId());
             throw new UserException(UserException.ExceptionCode.USER_BANNED_EXCEPTION);
         }
         //用户信息写redis
         Map<String, Object> userMap = BeanUtil.beanToMap(user);
-        String gToken = GenIdUtil.GetToken();
+        String gToken = GenIdUtil.GetToken()+"#"+user.getId();
         redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(gToken), userMap);
         SubjectUtil.setToken(gToken);
         SubjectUtil.setCurrentUser(user);
@@ -129,6 +130,7 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
         String orgUnionId = user.getUnionId();
 
         if (StringUtils.isNotBlank(orgMobile) && StringUtils.isNotBlank(mobile) && !orgMobile.equals(mobile)) {
+            log.info("用户id：{}，数据库中存储的手机号：{}，token中获取的手机号：{}", user.getId(), orgMobile, mobile);
             throw new UserException(UserException.ExceptionCode.MOBILE_NOT_MATCH_EXCEPTION);
         }
 

@@ -403,7 +403,7 @@ update `t_banner` set platform_type = 1 where ifnull(platform_type,1) = 1
 
 
 
--- 优惠券表修改
+-- 王彬优惠券表修改
 ALTER TABLE `t_coupon_group` ADD COLUMN `category_id`  int(11) NOT NULL DEFAULT 1 COMMENT '限品类(1则为陪玩全品类,10为游戏全品类,11为娱乐全品类)' AFTER `is_new_user`;
 ALTER TABLE `t_coupon_group` ADD COLUMN `type`  tinyint(1) NOT NULL DEFAULT 1 COMMENT '类型(1满减，2折扣)' AFTER `category_id`;
 ALTER TABLE `t_coupon_group` ADD COLUMN `full_reduction`  decimal(11,2) NOT NULL DEFAULT 0  COMMENT '多少金额可用' AFTER `type`;
@@ -416,6 +416,10 @@ ALTER TABLE `t_coupon` ADD COLUMN `category_name`  varchar(255) NULL COMMENT '�
 
 UPDATE `t_coupon_group` SET `category_id` = 1,`type`=1,`full_reduction`=0;
 UPDATE `t_coupon` SET `category_id` = 1,`type`=1,`full_reduction`=0,`category_name`='全品类';
+
+-- 订单表修改
+ALTER TABLE `t_order` ADD COLUMN `begin_time`  datetime NOT NULL COMMENT '订单开始时间' AFTER `charges`;
+ALTER TABLE `t_order` ADD COLUMN `platform`  tinyint(1) NULL COMMENT '平台(1陪玩，2上分,4ios,5android)' AFTER `type`;
 
 
 
@@ -440,19 +444,109 @@ CREATE TABLE `t_price_rule` (
 ALTER TABLE `t_user_tech_auth` ADD COLUMN `order_count` int(11) DEFAULT '0' COMMENT '接单数' after `status`;
 -- 添加用户最大接单技能价格
 ALTER TABLE `t_user_tech_auth` ADD COLUMN `max_price`  decimal(10,2) DEFAULT '0' COMMENT '定价允许最大价格限制' after `order_count`;
+-- 添加技能等级
+ALTER TABLE `t_user_tech_auth` ADD COLUMN `level`  varchar(32) COMMENT '技能等级' after `max_price`;
 
 
 
+-- 添加注册来源（加t_user还是t_user_info_auth）暂定t_user表：
+ALTER TABLE `t_user` ADD COLUMN `register_type` tinyint(1) DEFAULT '1' COMMENT '用户注册来源（1：小程序；2：APP）' after `type`;
+-- 添加虚拟粉丝数：
+ALTER TABLE `t_user_info_auth` ADD COLUMN `virtual_fans_count` int(11) DEFAULT '0' COMMENT '虚拟粉丝数' after `about`;
+
+
+-- 添加技能虚拟接单数
+ALTER TABLE `t_user_tech_auth` ADD COLUMN `virtual_order_count` int(11) DEFAULT '0' COMMENT '虚拟接单数' after `order_count`;
+-- 添加技能认证语音
+ALTER TABLE `t_user_tech_auth` ADD COLUMN `voice`  varchar(512) DEFAULT NULL COMMENT '语音文件地址' after `grade_pic_url`;
+-- 添加技能认证语音时长
+ALTER TABLE `t_user_tech_auth` ADD COLUMN `voice_duration`  int(11) DEFAULT NULL COMMENT '语音时长' after `voice`;
+-- 添加技能认证来源（小程序、APP）
+ALTER TABLE `t_user_tech_auth` ADD COLUMN `resource_type`  tinyint(1) DEFAULT '1' COMMENT '技能认证来源（1：小程序；2：APP）' after `voice_duration`;
+-- 添加技能平均得分
+ALTER TABLE `t_user_tech_auth` ADD COLUMN `score_avg` decimal(2,1) DEFAULT NULL COMMENT '技能评分' after `resource_type`;
+
+ALTER TABLE `t_user_tech_auth` ADD COLUMN `is_main` tinyint(1) DEFAULT '0' COMMENT '是否是主要技能' after `is_activate`;
+-- 添加用户自定义标签
+ALTER TABLE `t_tag` ADD COLUMN `user_id` int(11) DEFAULT NULL COMMENT '用户ID' after `category_id`;
+
+
+-- 分类表新增：
+ALTER TABLE `t_category` ADD COLUMN `example_pic_url`  varchar(512) DEFAULT NULL COMMENT '示例图片url地址' after `charges`;
+ALTER TABLE `t_category` ADD COLUMN `example_about`  varchar(128) DEFAULT NULL COMMENT '示例说明' after `example_pic_url`;
 
 
 
+-- 用户评论
+ALTER TABLE `t_user_comment` ADD COLUMN `category_id`  int(11) DEFAULT NULL COMMENT '游戏分类' after `order_no`;
+ALTER TABLE `t_user_comment` ADD COLUMN `tech_auth_id`  int(11) DEFAULT NULL COMMENT '游戏技能ID' after `category_id`;
+
+CREATE TABLE `t_user_comment_tag` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `comment_id` int(11) NOT NULL COMMENT '评论ID',
+  `user_id` int(11) NOT NULL COMMENT '陪玩师用户ID',
+  `tech_auth_id` int(11) NOT NULL COMMENT '技能ID',
+  `tag_id` int(11) NOT NULL COMMENT '标签ID',
+  `tag_name` varchar(255) NOT NULL,
+  `create_time` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) COMMENT='用户评论标签表';
+
+
+CREATE TABLE `t_appstore_pay_detail` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `transaction_id` varchar(128) NOT NULL,
+  `original_transaction_id` varchar(128) NOT NULL,
+  `product_id` varchar(128) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `purchase_date` varchar(128) NOT NULL,
+  `order_no` varchar(128) DEFAULT NULL,
+  `create_date` datetime NOT NULL,
+  `update_date` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `transaction_id` (`transaction_id`)
+) COMMENT='苹果内购支付流水表';
+
+
+create table t_server_comment
+(
+   id                   int(11) not null auto_increment,
+   order_no             varchar(128) comment '订单编号',
+   user_id              int(11) comment '下单用户id（被评论用户id）',
+   server_user_id       int(11) comment '陪玩师id（评论用户id）',
+   score                int(1) comment '评分(几颗星1-5分)',
+   score_avg            decimal(2,1) comment '平均得星数(不超过5.0,1位小数)',
+   content              varchar(128) comment '评论内容（不超过100个字）',
+   create_time          datetime comment '评论创建时间',
+   update_time          datetime comment '修改时间',
+   primary key (id)
+)COMMENT='陪玩师评价用户表';
+
+ALTER TABLE `t_user` ADD COLUMN `server_score_avg`  decimal(2,1) DEFAULT NULL COMMENT '陪玩师评价平均分' after `score_avg`;
+
+CREATE TABLE `t_assign_order_setting` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL COMMENT '用户ID',
+  `enable` tinyint(1) NOT NULL COMMENT '激活',
+  `begin_time` varchar(255) DEFAULT NULL COMMENT '设置开始时间',
+  `end_time` varchar(255) DEFAULT NULL COMMENT '设置结束时间',
+  `week_day_bins` int(11) DEFAULT NULL COMMENT '每周那天接单',
+  `create_time` datetime NOT NULL,
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id` (`user_id`) USING BTREE
+)  COMMENT='派单设置';
 
 
 
-
-
-
-
-
-
-
+-- 添加用户职业表
+create table t_user_profession
+(
+   id                   int(11) not null auto_increment,
+   name                 varchar(32) comment '职业名称',
+   sort                 int(11) comment '排序号',
+   create_time          datetime comment '创建时间',
+   update_time          datetime comment '修改时间',
+   is_del               tinyint(1) comment '删除标志（1：删除；0：未删除）',
+   primary key (id)
+)comment '用户职业表';

@@ -128,8 +128,7 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
                     || meta.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())
                     || meta.getStatus().equals(OrderStatusEnum.CHECK.getStatus())
                     || meta.getStatus().equals(OrderStatusEnum.CONSULTING.getStatus())
-                    || meta.getStatus().equals(OrderStatusEnum.APPEALING.getStatus())
-                    || meta.getStatus().equals(OrderStatusEnum.APPEALING_ADMIN.getStatus());
+                    || meta.getStatus().equals(OrderStatusEnum.APPEALING.getStatus());
             if (flag) {
                 runningOrderNum++;
             }
@@ -242,8 +241,7 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
         Order order = orderService.findByOrderNo(orderNo);
         details.setUserId(order.getUserId());
         details.setServiceUserId(order.getServiceUserId());
-        if (!order.getStatus().equals(OrderStatusEnum.APPEALING.getStatus())
-                && !order.getStatus().equals(OrderStatusEnum.APPEALING_ADMIN.getStatus())) {
+        if (!order.getStatus().equals(OrderStatusEnum.APPEALING.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有申诉中的订单才能操作!");
         }
         order.setStatus(OrderStatusEnum.ADMIN_NEGOTIATE.getStatus());
@@ -448,7 +446,7 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
             //添加订单商品信息
             OrderProduct orderProduct = orderProductService.findByOrderNo(orderResVO.getOrderNo());
             orderResVO.setOrderProduct(orderProduct);
-//            OrderMarketProduct orderMarketProduct = orderMarketProductService.findByOrderNo(orderResVO.getOrderNo());
+//            OrderMarketProduct orderMarketProduct = orderMarketProductService.findCommentInfoByOrderNo(orderResVO.getOrderNo());
 //            orderResVO.setOrderMarketProduct(orderMarketProduct);
             //添加订单状态
             orderResVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderResVO.getStatus()));

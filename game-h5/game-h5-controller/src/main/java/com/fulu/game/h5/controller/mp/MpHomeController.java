@@ -53,7 +53,7 @@ public class MpHomeController extends BaseController {
                             @RequestParam(value = "sourceId", required = false) Integer sourceId,
                             HttpServletRequest request) {
         log.info("==调用/test/login方法==");
-        PlayUserToken playUserToken = PlayUserToken.newBuilder(PlayUserToken.Platform.FENQILE).fqlOpenid(openId).build();
+        PlayUserToken playUserToken = PlayUserToken.newBuilder(PlayUserToken.Platform.MP).mpOpenId(openId).build();
         String ip = RequestUtil.getIpAdrress(request);
         playUserToken.setHost(ip);
         Subject subject = SecurityUtils.getSubject();
@@ -115,7 +115,13 @@ public class MpHomeController extends BaseController {
                     return Result.userBanned();
                 }
             }
-            return Result.error();
+            if (e.getCause() instanceof UserException) {
+                if (UserException.ExceptionCode.MOBILE_NOT_MATCH_EXCEPTION.equals(((UserException) e.getCause()).getExceptionCode())) {
+                    log.error("登录手机号mobile:{}不匹配！", mobile);
+                    return Result.error().msg(UserException.ExceptionCode.MOBILE_NOT_MATCH_EXCEPTION.getMsg());
+                }
+            }
+            return Result.error().msg("用户信息认证失败！");
         } catch (Exception e) {
             log.error("登录异常!", e);
             return Result.error().msg("登陆异常！");

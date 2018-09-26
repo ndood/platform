@@ -8,8 +8,10 @@ import com.fulu.game.common.domain.ClientInfo;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.CommonException;
 import com.fulu.game.common.exception.ParamsException;
+import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.HttpUtils;
+import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.common.utils.geo.GeoHashUtil;
 import com.fulu.game.common.utils.geo.Point;
@@ -65,6 +67,8 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
 
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private OssUtil ossUtil;
 
 
     @Override
@@ -108,6 +112,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
         saveDynamic(dynamicVO);
         saveDynamicFiles(dynamicVO);
         saveDynamicES(dynamicVO);
+        redisOpenService.incr(RedisKeyEnum.DYNAMIC_COUNT.generateKey(dynamicVO.getUserId()));
         return null;
     }
 
@@ -122,8 +127,15 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
     @Override
     public Page<DynamicDoc> list(Integer pageSize, Integer slide, Integer id, Integer type) {
         List<String> userIdList = null;
-        User user = userService.getCurrentUser();
-        if(type != null && type == 2){
+        User user = null;
+        String token = SubjectUtil.getToken();
+        //用户已登录，获取用户信息
+        if(token != null && !"".equals(token)){
+            user = userService.getCurrentUser();
+        }
+        if(type != null && type.intValue() == 2){
+            user = userService.getCurrentUser();
+            log.info("userInfo: {}", JSONObject.toJSON(user) );
             userIdList = new ArrayList<>();
             userIdList.add(user.getId() + "");
             List<UserFriend> list = userFriendService.getAllAttentionsByUserId(user.getId());
@@ -133,7 +145,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
                 }
             }
         }
-        return getDynamicList( pageSize, slide, id, userIdList, user);
+        return getDynamicList( pageSize, slide, id, userIdList, user, false);
     }
 
 
@@ -147,7 +159,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
      * @return
      */
     @Override
-    public Page<DynamicDoc> userDynamicList(Integer pageSize, Integer slide, Integer id, Integer userId) {
+    public Page<DynamicDoc> userDynamicList(Integer pageSize, Integer slide, Integer id, Integer userId, boolean isPicOrVideo) {
         List<String> userIdList = new ArrayList<>();
         User user = userService.getCurrentUser();
         if(userId == null){
@@ -155,7 +167,20 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
         } else {
             userIdList.add(userId + "");
         }
-        return getDynamicList( pageSize, slide, id, userIdList, user);
+        return getDynamicList( pageSize, slide, id, userIdList, user, isPicOrVideo);
+    }
+
+    /**
+     * 获取用户动态列表接口
+     * @param pageSize 每页数量
+     * @param slide    0：下滑刷新；1：上划加载更多
+     * @param id       上划：传客户端最大id；下滑：传客户端最小id
+     * @param userId   非必传，不传查用户自己动态，传了查其他用户动态
+     * @return
+     */
+    @Override
+    public Page<DynamicDoc> userDynamicList(Integer pageSize, Integer slide, Integer id, Integer userId) {
+        return userDynamicList( pageSize, slide, id, userId, false);
     }
 
 
@@ -181,9 +206,18 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
     @Override
     public List<DynamicVO> getNewestDynamicList(Integer userId) {
         List<DynamicVO> result = new ArrayList<>();
-        Page<DynamicDoc> page = userDynamicList(4, 0, 0, userId);
+        DynamicVO params = new DynamicVO();
+        // 先获取最新的图片和视频动态
+        Page<DynamicDoc> page = userDynamicList(4, 0, 0, userId,true);
         if(page != null){
             List<DynamicDoc> list = page.getResult();
+            if(list == null || list.isEmpty()){
+                //不存在图片和视频动态，则获取最新的一条动态
+                page = userDynamicList(1, 0, 0, userId,false);
+                if(page != null){
+                    list = page.getResult();
+                }
+            }
             if(list != null && !list.isEmpty()){
                 for(DynamicDoc doc: list){
                     DynamicVO dynamicVO = new DynamicVO();
@@ -208,6 +242,9 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
         return result;
     }
 
+
+
+
     /**
      * 通过ID删除动态信息
      * @param id
@@ -227,6 +264,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
             throw new UserException(UserException.ExceptionCode.USER_MISMATCH_EXCEPTION);
         }
         deleteDynamicEsById(id);
+        redisOpenService.decr(RedisKeyEnum.DYNAMIC_COUNT.generateKey(id));
         return deleteById(id);
     }
 
@@ -324,10 +362,10 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
      * @param user
      * @return
      */
-    private Page<DynamicDoc> getDynamicList(Integer pageSize, Integer slide, Integer id, List<String> userIdList, User user){
+    private Page<DynamicDoc> getDynamicList(Integer pageSize, Integer slide, Integer id, List<String> userIdList, User user, boolean isPicOrVideo){
         Page<DynamicDoc> page = null;
         try {
-            page = dynamicSearchComponent.searchDynamicDocList(slide, id, null, null,pageSize, "",userIdList ,null);
+            page = dynamicSearchComponent.searchDynamicDocList(slide, id, null, null,pageSize, "",userIdList ,null, isPicOrVideo);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -435,7 +473,7 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
                     DynamicFileVO dynamicFileVO = new DynamicFileVO();
                     dynamicFileVO.setDynamicId(dynamicVO.getId());
                     dynamicFileVO.setType(dynamicVO.getType());
-                    dynamicFileVO.setUrl(fileObject.getString("url"));
+                    dynamicFileVO.setUrl(ossUtil.activateOssFile(fileObject.getString("url")));
                     dynamicFileVO.setWidth(fileObject.getInteger("width") == null ? 0:fileObject.getInteger("width"));
                     dynamicFileVO.setHeight(fileObject.getInteger("height") == null ? 0:fileObject.getInteger("height"));
                     dynamicFileVO.setDuration(fileObject.getInteger("duration") == null ? 0:fileObject.getInteger("duration"));
@@ -469,6 +507,8 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
         dynamicDoc.setCityName(dynamicVO.getCityName());
         dynamicDoc.setClicks(dynamicVO.getClicks());
         dynamicDoc.setComments(dynamicVO.getComments());
+        dynamicDoc.setLikes(dynamicVO.getLikes());
+        dynamicDoc.setRewards(dynamicVO.getRewards());
         dynamicDoc.setGeohash(dynamicVO.getGeohash());
         dynamicDoc.setGethashShort(dynamicVO.getGeohashShort());
         dynamicDoc.setType(dynamicVO.getType());
@@ -483,6 +523,9 @@ public class DynamicServiceImpl extends AbsCommonService<Dynamic,Integer> implem
         if(dynamicVO.getProductId() != null && dynamicVO.getProductId() > 0){
             //获取商品信息、设置动态下单商品信息
             Product product = productService.findById(dynamicVO.getProductId());
+            if(product == null){
+                throw new ProductException(ProductException.ExceptionCode.PRODUCT_NOT_EXIST);
+            }
             dynamicDoc.setProductName(product.getProductName());
             dynamicDoc.setProductPrice(product.getPrice());
             dynamicDoc.setProductUnit(product.getUnit());

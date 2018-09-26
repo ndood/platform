@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -142,8 +143,8 @@ public class AuthController extends BaseController {
      * @return
      */
     @PostMapping(value = "/tech-info/query")
-    public Result techAuthQuery(Integer id,
-                                Integer categoryId) {
+    public Result techAuthQuery(@RequestParam(name = "id", required = false) Integer id,
+                                @RequestParam(name = "categoryId", required = false) Integer categoryId) {
         UserTechAuthVO userTechAuthVO = userTechAuthService.findTechAuthVOById(id, categoryId);
         if (userTechAuthVO.getUserId() != null) {
             userService.isCurrentUser(userTechAuthVO.getUserId());
@@ -161,8 +162,11 @@ public class AuthController extends BaseController {
     @PostMapping(value = "/tech-info/save")
     public Result techAuthSave(UserTechAuthTO userTechAuthTO) {
         User user = userService.getCurrentUser();
-        //验证用户的认证信息
-        userService.checkUserInfoAuthStatus(user.getId(), UserInfoAuthStatusEnum.ALREADY_PERFECT.getType());
+        //验证用户的认证信息(暂改为只验证是否冻结)
+//        userService.checkUserInfoAuthStatus(user.getId(), UserInfoAuthStatusEnum.ALREADY_PERFECT.getType());
+        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
+            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE);
+        }
         if (userTechAuthTO.getId() != null) {
             UserTechAuth userTechAuth = userTechAuthService.findById(userTechAuthTO.getId());
             userService.isCurrentUser(userTechAuth.getUserId());

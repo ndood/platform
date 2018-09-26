@@ -1,6 +1,5 @@
 package com.fulu.game.schedule.service.impl;
 
-import com.fulu.game.common.enums.OrderDealTypeEnum;
 import com.fulu.game.common.enums.OrderEventTypeEnum;
 import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.enums.OrderTypeEnum;
@@ -17,7 +16,7 @@ import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.OrderStatusDetailsService;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
-import com.fulu.game.h5.service.impl.fenqile.H5OrderShareProfitServiceImpl;
+import com.fulu.game.h5.service.impl.H5OrderShareProfitServiceImpl;
 import com.fulu.game.play.service.impl.PlayOrderShareProfitServiceImpl;
 import com.fulu.game.point.service.impl.PointOrderShareProfitServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -67,9 +66,9 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
         } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
             //上分订单
             playOrderShareProfitService.shareProfit(order);
-        } else if (OrderTypeEnum.H5.getType().equals(order.getType())) {
-            h5OrderShareProfitService.shareProfit(order);
-        }else {
+        }
+        //todo 分润逻辑需要按照平台来而不是订单类型
+        else {
             log.error("订单类型不匹配:{}",order);
             throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING,order.getOrderNo());
         }
@@ -86,9 +85,9 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
         } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
             //上分订单
             pointOrderShareProfitService.orderRefund(order, refundMoney);
-        } else if (OrderTypeEnum.H5.getType().equals(order.getType())) {
-            h5OrderShareProfitService.orderRefund(order,refundMoney);
-        }else {
+        }
+        //todo 退款逻辑需要按照平台来
+        else {
             log.error("订单类型不匹配:{}",order);
             throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING,order.getOrderNo());
         }
@@ -180,7 +179,7 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
         String title = "系统自动同意了协商，￥" + orderEvent.getRefundMoney().toPlainString() + "已经退款结算";
         OrderDeal orderDeal = new OrderDeal();
         orderDeal.setTitle(title);
-        orderDeal.setType(OrderDealTypeEnum.CONSULT.getType());
+        orderDeal.setType(OrderEventTypeEnum.CONSULT.getType());
         orderDeal.setUserId(order.getServiceUserId());
         orderDeal.setRemark("系统自动同意协商");
         orderDeal.setOrderNo(order.getOrderNo());

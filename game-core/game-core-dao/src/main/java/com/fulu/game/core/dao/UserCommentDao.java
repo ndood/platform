@@ -20,7 +20,6 @@ public interface UserCommentDao extends ICommonDao<UserComment,Integer>{
 
     List<UserCommentVO> findVOByParameter(UserCommentVO userCommentVO);
 
-    void callScoreAvgProc(Integer id);
 
     BigDecimal findScoreAvgByServerUserId(int serverUserId);
 }

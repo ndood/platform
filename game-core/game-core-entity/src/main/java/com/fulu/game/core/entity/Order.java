@@ -58,6 +58,7 @@ public class Order implements Serializable {
     private Date beginTime;
 
 
+
     //下单用户ID
     @Excel(name = "下单用户ID", orderNum = "7", width = 15)
     private Integer userId;
@@ -78,6 +79,9 @@ public class Order implements Serializable {
     private String name;
     //备注
     private String remark;
+
+
+    private Integer platform;
 
     //实付金额
     @Excel(name = "实付金额", orderNum = "9", width = 15)

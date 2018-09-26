@@ -13,83 +13,87 @@ public class AppRouteFactory {
 
 
     @Getter
-    public enum RouteType{
-        OFFICIAL_NOTICE("khpw://IM_GonggaoActivity","khpw://KHOfficialNoticeViewController"), //官方公告
-        INDEX("androidRoute","iosRoute"), //首页
-        DYNAMIC("khpw://DongTaiDetailActivity","khpw://KHDynamicDetailController"), //动态
-        WEBVIEW("androidRoute","iosRoute");
-
+    public enum RouteType {
+        OFFICIAL_NOTICE("khpw://IM_GonggaoActivity", "khpw://KHOfficialNoticeViewController"), //官方公告
+        INDEX("androidRoute", "iosRoute"), //首页
+        DYNAMIC("khpw://DongTaiDetailActivity", "khpw://KHDynamicDetailController"), //动态
+        WEBVIEW("androidRoute", "iosRoute"),
+        ORDER("androidRoute", "iosRoute");
 
         private String androidRoute;
         private String iosRoute;
 
         RouteType(String androidRoute, String iosRoute) {
-            this.androidRoute =androidRoute;
+            this.androidRoute = androidRoute;
             this.iosRoute = iosRoute;
         }
-    }
 
+
+    }
 
 
     /**
      * 消息跳转路由定义
+     *
      * @return
      */
-    public static Map<String,String> buildIndexRoute(){
-        Map<String,String> route = newRoute(RouteType.INDEX);
-        return route;
-    }
-
-
-    /**
-     * 构建H5跳转路由
-     * @param url
-     * @return
-     */
-    public static Map<String,String> buildH5Route(String url){
-        Map<String,String> route = newRoute(RouteType.WEBVIEW);
-        route.put("url",url);
+    public static Map<String, String> buildIndexRoute() {
+        Map<String, String> route = newRoute(RouteType.INDEX);
         return route;
     }
 
     /**
      * 构建官方公告跳转路由
+     *
      * @return
      */
-    public static Map<String,String> buildOfficialNoticeRoute(){
-        Map<String,String> route = newRoute(RouteType.OFFICIAL_NOTICE);
+    public static Map<String, String> buildOfficialNoticeRoute() {
+        Map<String, String> route = newRoute(RouteType.OFFICIAL_NOTICE);
         return route;
     }
 
     /**
      * 消息跳转路由定义
+     *
      * @return
      */
-    public static Map<String,String> buildDynamicRoute(Integer dynamicId){
+    public static Map<String, String> buildDynamicRoute(Integer dynamicId) {
         Map<String, String> map = new HashMap<>();
-        map.put("id",dynamicId + "");
-        Map<String,String> route = newRoute(RouteType.DYNAMIC,map);
+        map.put("id", dynamicId + "");
+        Map<String, String> route = newRoute(RouteType.DYNAMIC, map);
+        return route;
+    }
+
+    /**
+     * 构建订单路由
+     * @return
+     */
+    public static Map<String, String> buildOrderRoute() {
+        Map<String, String> route = newRoute(RouteType.ORDER);
         return route;
     }
 
     /**
      * 创建一个路由map
+     *
      * @param routeType
      * @return
      */
-    private static Map<String,String> newRoute(RouteType routeType,Map<String,String> params){
+    private static Map<String, String> newRoute(RouteType routeType, Map<String, String> params) {
         String paramStr = "";
-        if(!params.isEmpty()){
-            paramStr = "?params="+ JSONObject.toJSONString(params);
+        if (!params.isEmpty()) {
+            paramStr = "?params=" + JSONObject.toJSONString(params);
         }
-        Map<String,String> route = new HashMap<>();
-        route.put("androidRoute",routeType.getAndroidRoute()+paramStr);
-        route.put("iosRoute",routeType.getIosRoute()+paramStr);
+        Map<String, String> route = new HashMap<>();
+        route.put("androidRoute", routeType.getAndroidRoute() + paramStr);
+        route.put("iosRoute", routeType.getIosRoute() + paramStr);
         return route;
     }
 
-    private static Map<String,String> newRoute(RouteType routeType){
-        return newRoute(routeType,new HashMap<>());
+    private static Map<String, String> newRoute(RouteType routeType) {
+        return newRoute(routeType, new HashMap<>());
     }
+
+
 
 }

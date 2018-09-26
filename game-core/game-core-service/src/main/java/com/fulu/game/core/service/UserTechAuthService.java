@@ -28,6 +28,13 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
     UserTechAuthTO save(UserTechAuthTO userTechAuthTO);
 
 
+    /**
+     * 设置
+     * @param techId
+     */
+    void settingsTechMain(int techId);
+
+
 
     /**
      * 用户技能认证信息(包括标签和段位)
@@ -84,6 +91,14 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
      * @return
      */
     List<UserTechAuth> findByCategoryAndUser(Integer categoryId, Integer userId);
+
+    /**
+     * 通过游戏分类和用户ID查询用户技能
+     * @param categoryId
+     * @param userId
+     * @return
+     */
+    UserTechAuth findTechByCategoryAndUser(Integer categoryId, Integer userId);
 
     /**
      * 通过用户ID查询技能认证

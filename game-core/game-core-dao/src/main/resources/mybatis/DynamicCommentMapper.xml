@@ -95,10 +95,12 @@
 
     <select id="list" parameterType="com.fulu.game.core.entity.vo.DynamicCommentVO"
             resultType="com.fulu.game.core.entity.vo.DynamicCommentVO">
-        select dynamic_comment.*,dynamic_comment_replay.content as toContent
+        select dynamic_comment.*,dynamic_comment_replay.content as toContent,tuser.age
         from t_dynamic_comment dynamic_comment
         LEFT JOIN t_dynamic_comment dynamic_comment_replay
         on dynamic_comment.comment_id = dynamic_comment_replay.id
+        LEFT JOIN t_user tuser
+        on dynamic_comment.from_user_id = tuser.id
         where dynamic_comment.dynamic_id = #{dynamicId} and
             dynamic_comment.status = 1 and
             ifnull(dynamic_comment_replay.status,1) = 1

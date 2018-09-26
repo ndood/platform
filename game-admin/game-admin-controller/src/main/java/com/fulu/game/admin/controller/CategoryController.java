@@ -270,4 +270,30 @@ public class CategoryController extends BaseController {
         return Result.success().msg("定价规则删除成功!");
     }
 
+    /**
+     * 查询游戏所有定价规则
+     *
+     * @return
+     */
+    @PostMapping(value = "/price-rule/list")
+    public Result priceRuleList(@RequestParam(required = true) Integer categoryId) {
+        List<PriceRule> priceRuleList = priceRuleService.findByCategoryId(categoryId);
+        return Result.success().data(priceRuleList);
+    }
+
+    /**
+     * 获取一级分类列表（例如：游戏和娱乐）
+     * @return
+     */
+    @PostMapping( value = "first-list")
+    public Result firstList() {
+        List<Category> categoryList = categoryService.findByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType(), true);
+        for (Category category : categoryList) {
+            if (category.getIndexIcon() != null) {
+                category.setIcon(category.getIndexIcon());
+            }
+        }
+        return Result.success().data(categoryList);
+    }
+
 }

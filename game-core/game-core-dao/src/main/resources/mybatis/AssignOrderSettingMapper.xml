@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.AssignOrderSettingDao">
+    <resultMap id="AssignOrderSettingResultMap" type="com.fulu.game.core.entity.AssignOrderSetting">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="enable" property="enable"/>
+        <result column="begin_time" property="beginTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="week_day_bins" property="weekDayBins"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="AssignOrderSettingResultVOMap" type="com.fulu.game.core.entity.vo.AssignOrderSettingVO"
+               extends="AssignOrderSettingResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,enable,begin_time,end_time,week_day_bins,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="AssignOrderSettingResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_assign_order_setting
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="AssignOrderSettingResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_assign_order_setting
+    </select>
+
+    <select id="findByParameter" resultMap="AssignOrderSettingResultMap"
+            parameterType="com.fulu.game.core.entity.vo.AssignOrderSettingVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_assign_order_setting
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="enable != null">
+                and enable = #{enable}
+            </if>
+            <if test="beginTime != null">
+                and begin_time = #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and end_time = #{endTime}
+            </if>
+            <if test="weekDayBins != null">
+                and week_day_bins = #{weekDayBins}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_assign_order_setting
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.AssignOrderSetting">
+        insert into
+        t_assign_order_setting (user_id,enable,begin_time,end_time,week_day_bins,create_time,update_time)
+        values
+        (#{userId},#{enable},#{beginTime},#{endTime},#{weekDayBins},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.AssignOrderSetting">
+        update t_assign_order_setting
+        <set>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="enable != null">
+                enable = #{enable},
+            </if>
+
+            <if test="beginTime != null">
+                begin_time = #{beginTime},
+            </if>
+
+            <if test="endTime != null">
+                end_time = #{endTime},
+            </if>
+
+            <if test="weekDayBins != null">
+                week_day_bins = #{weekDayBins},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>
