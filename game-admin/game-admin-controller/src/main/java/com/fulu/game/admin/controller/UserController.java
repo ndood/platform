@@ -5,6 +5,7 @@ import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.fulu.game.admin.service.AdminUserInfoAuthService;
 import com.fulu.game.admin.service.AdminUserTechAuthService;
+import com.fulu.game.admin.service.impl.AdminUserTechAuthServiceImpl;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.utils.CollectionUtil;
@@ -19,6 +20,7 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -59,6 +61,9 @@ public class UserController extends BaseController {
     private VirtualDetailsService virtualDetailsService;
     @Autowired
     private UserNightInfoService userNightInfoService;
+    @Qualifier(value = "adminUserTechAuthServiceImpl")
+    @Autowired
+    private AdminUserTechAuthServiceImpl adminUserTechAuthService;
 
     /**
      * 陪玩师认证信息列表
@@ -201,6 +206,9 @@ public class UserController extends BaseController {
     @PostMapping(value = "/info-auth/query")
     public Result userAuthInfo(@RequestParam(required = false, name = "userId") Integer userId) {
         UserInfoAuthVO userInfoAuthVO = userInfoAuthService.findUserInfoAuthByUserId(userId);
+        //获取用户所有认证技能信息
+        List<UserTechAuthVO> list = adminUserTechAuthService.findUserTechAuthList(userId);
+        userInfoAuthVO.setUserTechAuthVOList(list);
         return Result.success().data(userInfoAuthVO);
     }
 
@@ -305,8 +313,8 @@ public class UserController extends BaseController {
      * @return
      */
     @PostMapping(value = "/tech-auth/pass")
-    public Result techAuthPass(Integer id) {
-        userTechAuthService.pass(id);
+    public Result techAuthPass(Integer id, Integer techLevelId) {
+        userTechAuthService.pass(id,techLevelId);
         return Result.success().msg("技能审核通过!");
     }
 

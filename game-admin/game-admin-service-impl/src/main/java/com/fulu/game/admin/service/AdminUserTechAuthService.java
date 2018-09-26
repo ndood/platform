@@ -20,7 +20,7 @@ public interface AdminUserTechAuthService extends UserTechAuthService {
      * @param id
      * @return
      */
-    UserTechAuth pass(Integer id);
+    UserTechAuth pass(Integer id, Integer techLevelId);
 
     /**
      * 冻结用户技能认证

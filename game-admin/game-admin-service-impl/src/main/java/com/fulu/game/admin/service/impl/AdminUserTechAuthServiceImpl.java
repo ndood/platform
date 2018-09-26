@@ -22,8 +22,10 @@ import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,6 +63,10 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
     @Autowired
     private AdminPushServiceImpl adminPushService;
+
+    @Qualifier(value = "userInfoAuthServiceImpl")
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
 
     @Override
     public ICommonDao<UserTechAuth, Integer> getDao() {
@@ -151,7 +157,7 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
 
 
     @Override
-    public UserTechAuth pass(Integer id) {
+    public UserTechAuth pass(Integer id, Integer techLevelId) {
         try {
             Admin admin = adminService.getCurrentUser();
             log.info("技能审核通过:管理员操作:adminId:{};adminName:{};authInfoId:{}", admin.getId(), admin.getName(), id);
@@ -163,6 +169,12 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
             throw new UserAuthException(UserAuthException.ExceptionCode.USER_TECH_FREEZE);
         }
         userTechAuth.setStatus(TechAuthStatusEnum.NORMAL.getType());
+        // 修改陪玩师技能等级
+        UserInfoAuth userInfoAuth = new UserInfoAuth();
+        userInfoAuth.setUserId(userTechAuth.getUserId());
+        userInfoAuth.setTechLevelId(techLevelId);
+        userInfoAuthService.updateByUserId(userInfoAuth);
+        // 修改用户技能认证信息
         update(userTechAuth);
         //给用户推送通知
         adminPushService.techAuthAuditSuccess(userTechAuth.getUserId());
@@ -269,6 +281,20 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
         param.setCategoryId(categoryId);
         param.setUserId(userId);
         return userTechAuthDao.findByParameter(param);
+    }
+
+    /** 获取用户所有技能认证信息列表 */
+    public List<UserTechAuthVO> findUserTechAuthList(Integer userId){
+        List<UserTechAuthVO> resultList = new ArrayList<>();
+        UserTechAuthVO param = new UserTechAuthVO();
+        param.setUserId(userId);
+        List<UserTechAuth> list = userTechAuthDao.findByParameter(param);
+        if(CollectionUtils.isNotEmpty(list)){
+            for(UserTechAuth tmp: list){
+                resultList.add(findTechAuthVOById(tmp.getId(), tmp.getCategoryId()));
+            }
+        }
+        return resultList;
     }
 
 

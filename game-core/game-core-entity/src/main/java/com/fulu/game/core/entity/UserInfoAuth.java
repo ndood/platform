@@ -64,4 +64,6 @@ public class UserInfoAuth implements Serializable {
 
     //是否开启代聊  0关闭  1开启
     private Boolean openSubstituteIm;
+    /** 陪玩师技能所属等级id */
+    private Integer techLevelId;
 }

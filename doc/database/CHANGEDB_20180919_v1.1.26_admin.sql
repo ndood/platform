@@ -118,3 +118,8 @@ create table t_conversion_rate_history
    update_time          datetime comment '修改时间',
    primary key (id)
 ) comment '转换率历史统计表';
+
+-- 添加陪玩师技能等级id
+ALTER TABLE `t_user_info_auth` ADD COLUMN `tech_level_id` int(11) DEFAULT NULL
+COMMENT '技能等级id' after `about`;
+
