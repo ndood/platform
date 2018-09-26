@@ -178,6 +178,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         TechProductOrderVO techProductOrderVO = new TechProductOrderVO();
         techProductOrderVO.setProductId(product.getId());
         techProductOrderVO.setProductName(product.getProductName());
+        techProductOrderVO.setCategoryId(product.getCategoryId());
         techProductOrderVO.setPrice(product.getPrice());
         techProductOrderVO.setUnit(product.getUnit());
         techProductOrderVO.setServerHeadUrl(serverUser.getHeadPortraitsUrl());
@@ -198,6 +199,9 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
                 TechProductOrderVO.OtherProduct otherProduct = new TechProductOrderVO.OtherProduct();
                 otherProduct.setProductId(product.getId());
                 otherProduct.setProductName(product.getProductName());
+                otherProduct.setCategoryId(product.getCategoryId());
+                otherProduct.setPrice(product.getPrice());
+                otherProduct.setUnit(product.getUnit());
                 productList.add(otherProduct);
             }
         }

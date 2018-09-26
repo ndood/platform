@@ -12,6 +12,8 @@ public class TechProductOrderVO {
 
     private Integer productId;
 
+    private Integer categoryId;
+
     private String serverHeadUrl;
 
     private String serverNickname;
@@ -29,6 +31,9 @@ public class TechProductOrderVO {
     public static class OtherProduct{
         private Integer productId;
         private String productName;
+        private Integer categoryId;
+        private BigDecimal price;
+        private String unit;
     }
 
 }
