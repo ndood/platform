@@ -172,6 +172,11 @@ public interface Constant {
     String SERVICE_USER_ACCEPT_ORDER = "1";
 
     /**
+     * 用户订单已付款
+     */
+    String SERVICE_USER_PAY_ORDER = "2";
+
+    /**
      * 分期乐订单--已对账
      */
     Integer IS_RECON = 1;

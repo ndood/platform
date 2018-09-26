@@ -105,8 +105,18 @@ public class ImServiceImpl implements ImService {
     }
 
     @Override
-    public boolean sendMsgToImUser(String imId, String action) {
-        log.info("正在发送IM通知消息给老板，imId:{}", imId);
+    public boolean sendMsgToImUser(String targetImId, String action) {
+
+        Map<String, String> extMap = new HashMap<>();
+        extMap.put("flag", Constant.SERVICE_USER_ACCEPT_ORDER);
+        return sendMsgToImUser(new String[]{targetImId}, "admin" ,action,extMap);
+    }
+
+
+
+    @Override
+    public boolean sendMsgToImUser(String[] targetImId, String fromImId , String action , Map<String, String> extMap) {
+        log.info("正在发送IM通知消息给老板，imId:{}", targetImId);
         String token = imUtil.getImToken();
         if (StringUtils.isBlank(token)) {
             token = getToken();
@@ -122,19 +132,16 @@ public class ImServiceImpl implements ImService {
 
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("target_type", "users");
-        String[] userArr = {imId};
-        paramMap.put("target", userArr);
+        paramMap.put("target", targetImId);
 
         Map<String, String> msgMap = new HashMap<>();
         msgMap.put("type", "cmd");
         msgMap.put("action", action);
         paramMap.put("msg", msgMap);
 
-        Map<String, String> extMap = new HashMap<>();
-        extMap.put("flag", Constant.SERVICE_USER_ACCEPT_ORDER);
         paramMap.put("ext", extMap);
 
-        paramMap.put("from", "admin");
+        paramMap.put("from", fromImId);
 
         JSONObject jsonObject = new JSONObject(paramMap);
         String body = jsonObject.toString();
@@ -142,6 +149,7 @@ public class ImServiceImpl implements ImService {
         log.info("im消息的返回状态:{}，消息内容:{}", httpResponse.getStatus(), httpResponse);
         return true;
     }
+    
 
     public ImUser registerUser(String imId, String imPsw) {
         String token = getToken();
