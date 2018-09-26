@@ -61,7 +61,11 @@ public class H5FenqilePayServiceImpl extends PayServiceImpl<FenqileOrderNotice> 
             // 结果正确
             String orderNo = getOrderNo(result);
             String totalYuan = getTotal(result);
-            payOrder(orderNo, new BigDecimal(totalYuan));
+            if("12".equals(result.getMerchSaleState())){
+                payOrder(orderNo, new BigDecimal(totalYuan));
+            }else if("15".equals(result.getMerchSaleState())){
+                //todo 取消订单
+            }
             return "success";
         } catch (Exception e) {
             log.error("回调报文:{}", xmlResult);
