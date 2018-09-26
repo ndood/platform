@@ -17,14 +17,8 @@ import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.payment.model.PayRequestModel;
 import com.fulu.game.core.entity.payment.res.PayRequestRes;
-import com.fulu.game.core.entity.vo.OrderDetailsVO;
-import com.fulu.game.core.entity.vo.OrderEventVO;
-import com.fulu.game.core.entity.vo.ServerCommentVO;
-import com.fulu.game.core.entity.vo.UserCommentVO;
-import com.fulu.game.core.service.OrderEventService;
-import com.fulu.game.core.service.ServerCommentService;
-import com.fulu.game.core.service.UserCommentService;
-import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.entity.vo.*;
+import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.MobileAppPushServiceImpl;
 import com.github.pagehelper.PageInfo;
@@ -57,6 +51,9 @@ public class OrderController extends BaseController {
     private ServerCommentService serverCommentService;
     @Autowired
     private MobileAppPushServiceImpl mobileAppPushService;
+
+    @Autowired
+    private UserTechAuthService userTechAuthService;
 
     /**
      * @param productId
@@ -152,8 +149,18 @@ public class OrderController extends BaseController {
 
 
     /**
+     * 下单页面接口
+     * @return
+     */
+    @RequestMapping(value = "/product")
+    public Result orderProduct(@RequestParam(required = true) Integer productId){
+        TechProductOrderVO techProductOrderVO = userTechAuthService.getTechProductByProductId(productId);
+        return Result.success().data(techProductOrderVO);
+    }
+
+
+    /**
      * 订单状态过滤
-     *
      * @return 封装结果集
      */
     @RequestMapping("/filter")

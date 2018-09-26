@@ -4,6 +4,7 @@ import com.fulu.game.core.entity.Category;
 import com.fulu.game.core.entity.UserTechAuth;
 import com.fulu.game.core.entity.UserTechInfo;
 import com.fulu.game.core.entity.to.UserTechAuthTO;
+import com.fulu.game.core.entity.vo.TechProductOrderVO;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
 import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
 import com.github.pagehelper.PageInfo;
@@ -112,5 +113,12 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
 
 
     PageInfo<UserTechAuthVO> list(Integer pageNum, Integer pageSize, UserTechAuthSearchVO userTechAuthSearchVO);
+
+    /**
+     * 查询陪玩师所有可下单的商品
+     * @param productId
+     * @return
+     */
+    TechProductOrderVO getTechProductByProductId(Integer productId);
 
 }

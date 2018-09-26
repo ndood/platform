@@ -11,10 +11,7 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserTechAuthDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserTechAuthTO;
-import com.fulu.game.core.entity.vo.TagVO;
-import com.fulu.game.core.entity.vo.TechAttrVO;
-import com.fulu.game.core.entity.vo.TechValueVO;
-import com.fulu.game.core.entity.vo.UserTechAuthVO;
+import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
@@ -172,6 +169,41 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         page.setList(userTechAuthVOList);
         return page;
     }
+
+
+    @Override
+    public TechProductOrderVO getTechProductByProductId(Integer productId) {
+        Product product =  productService.findById(productId);
+        User serverUser = userService.findById(product.getUserId());
+        TechProductOrderVO techProductOrderVO = new TechProductOrderVO();
+        techProductOrderVO.setProductId(product.getId());
+        techProductOrderVO.setProductName(product.getProductName());
+        techProductOrderVO.setPrice(product.getPrice());
+        techProductOrderVO.setUnit(product.getUnit());
+        techProductOrderVO.setServerHeadUrl(serverUser.getHeadPortraitsUrl());
+        techProductOrderVO.setServerNickname(serverUser.getNickname());
+        //
+        List<UserTechAuth> userTechAuthList = findUserUsableTechs(serverUser.getId());
+        List<TechProductOrderVO.OtherProduct> otherProducts= findTechProductsByUser(userTechAuthList);
+        techProductOrderVO.setOtherProductList(otherProducts);
+        return techProductOrderVO;
+    }
+
+
+    public List<TechProductOrderVO.OtherProduct> findTechProductsByUser(List<UserTechAuth> techAuthList){
+        List<TechProductOrderVO.OtherProduct> productList = new ArrayList<>();
+        for(UserTechAuth userTechAuth : techAuthList){
+            if(userTechAuth.getIsActivate()&&TechAuthStatusEnum.NORMAL.getType().equals(userTechAuth.getStatus())){
+                Product product = productService.findAppProductByTech(userTechAuth.getId());
+                TechProductOrderVO.OtherProduct otherProduct = new TechProductOrderVO.OtherProduct();
+                otherProduct.setProductId(product.getId());
+                otherProduct.setProductName(product.getProductName());
+                productList.add(otherProduct);
+            }
+        }
+        return productList;
+    }
+
 
 
     public List<UserTechAuth> findByCategoryAndUser(Integer categoryId, Integer userId) {
@@ -387,6 +419,18 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
 
+    /**
+     * 查找用户通过并且激活的技能
+     * @param userId
+     * @return
+     */
+    private List<UserTechAuth> findUserUsableTechs(Integer userId){
+        UserTechAuthVO param = new UserTechAuthVO();
+        param.setStatus(TechAuthStatusEnum.NORMAL.getType());
+        param.setUserId(userId);
+        param.setIsActivate(true);
+        return userTechAuthDao.findByParameter(param);
+    }
 
 
     /**
