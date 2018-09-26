@@ -177,11 +177,11 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
 
                 Integer unDrawCharm = cashDrawsDao.findUnDrawCharm(paramVO) == null ? 0 : cashDrawsDao.findUnDrawCharm(paramVO);
                 User user = userService.findById(meta.getUserId());
-                if(user == null) {
+                if (user == null) {
                     continue;
                 }
 
-                Integer charm = user.getCharm() - (user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum()) + unDrawCharm;
+                Integer charm = (user.getCharm() == null ? 0 : user.getCharm()) - (user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum()) + unDrawCharm;
                 meta.setCharmMoney(new BigDecimal(charm)
                         .multiply(Constant.CHARM_TO_MONEY_RATE)
                         .setScale(2, BigDecimal.ROUND_HALF_DOWN));

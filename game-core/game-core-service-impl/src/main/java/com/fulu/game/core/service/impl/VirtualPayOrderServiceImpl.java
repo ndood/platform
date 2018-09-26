@@ -53,6 +53,7 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
         if (CollectionUtils.isNotEmpty(voList)) {
             for (VirtualPayOrderVO vo : voList) {
                 vo.setPayPath(vo.getPayPath() == null ? PlatformEcoEnum.MP.getType() : vo.getPayPath());
+                vo.setPayPathStr(PlatformEcoEnum.getMsgByType(vo.getPayPath()));
             }
         }
         return new PageInfo<>(voList);
