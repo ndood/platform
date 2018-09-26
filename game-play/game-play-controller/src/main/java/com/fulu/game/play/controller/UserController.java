@@ -102,7 +102,7 @@ public class UserController extends BaseController {
         data.put("charm", leftCharm);
         data.put("charmMoney", new BigDecimal(leftCharm)
                 .multiply(Constant.CHARM_TO_MONEY_RATE).setScale(2, BigDecimal.ROUND_HALF_DOWN));
-        data.put("chargeBalance", user.getChargeBalance());
+        data.put("chargeBalance", user.getChargeBalance()==null?0:user.getChargeBalance());
         return Result.success().data(data).msg("查询成功！");
     }
 
