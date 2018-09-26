@@ -251,7 +251,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         user.setRegistIp(ip);
         user.setSourceId(sourceId);
         user.setNickname("游客");
-        user.setHeadPortraitsUrl("http://game-play.oss-cn-hangzhou.aliyuncs.com/2018/8/16/939794a1be2d46e9955db88716e24e54.png");
+        user.setHeadPortraitsUrl("http://game-play.oss-cn-hangzhou.aliyuncs.com/2018/9/26/ae7d72062f6a4c78a1a8d20250bb64a5.png");
         return createNewUser(user);
     }
 
@@ -332,7 +332,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         String token = SubjectUtil.getToken();
         Map<String, Object> userMap = new HashMap<String, Object>();
         userMap = BeanUtil.beanToMap(user);
-        redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token+"#"+user.getId()), userMap);
+        redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token + "#" + user.getId()), userMap);
     }
 
 
@@ -657,7 +657,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     public User modifyCharm(Integer userId, Integer charm) {
         User user = findById(userId);
-        if(user == null) {
+        if (user == null) {
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
 
@@ -785,17 +785,17 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     public UserOnlineVO userOnline(Boolean active, String version) {
 
         UserOnlineVO uo = new UserOnlineVO();
-        
+
         User user = this.getCurrentUser();
         UserInfoAuth ua = userInfoAuthService.findByUserId(user.getId());
         if (active) {
-            
+
             uo.setNeedSayHello(this.getUserRandStatus(user.getId()));
-            
-            if( ua != null ){
+
+            if (ua != null) {
                 uo.setOpenAgentIm(ua.getOpenSubstituteIm());
             }
-            
+
             log.info("userId:{}用户上线了!;version:{}", user.getId(), version);
             redisOpenService.set(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()), user.getType() + "");
 
@@ -821,9 +821,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
                 AdminImLogVO ail = new AdminImLogVO();
                 ail.setOwnerUserId(user.getId());
                 List<AdminImLog> list = adminImLogService.findByParameter(ail);
-                
+
                 uo.setImLogList(list);
-                
+
                 //删除带聊天记录
                 adminImLogService.deleteByOwnerUserId(user.getId());
 
@@ -838,12 +838,12 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public Boolean removeUserLoginToken(Integer userId) {
-        Set<String> keys =  redisOpenService.keys(RedisKeyEnum.PLAY_TOKEN.generateKey()+"*#"+userId);
-        log.info("查找到用户对应的token有:{}"+keys);
-        if(keys.isEmpty()){
+        Set<String> keys = redisOpenService.keys(RedisKeyEnum.PLAY_TOKEN.generateKey() + "*#" + userId);
+        log.info("查找到用户对应的token有:{}" + keys);
+        if (keys.isEmpty()) {
             return false;
         }
-        for(String key:keys){
+        for (String key : keys) {
             redisOpenService.delete(key);
         }
         return true;
@@ -851,20 +851,20 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
 
     @Override
-    public PageInfo<User> searchByAuthUserInfo(Integer pageNum, Integer pageSize,Integer currentAdminId ,String searchword) {
+    public PageInfo<User> searchByAuthUserInfo(Integer pageNum, Integer pageSize, Integer currentAdminId, String searchword) {
         PageHelper.startPage(pageNum, pageSize);
-        
-        List<User> list = userDao.searchByAuthUserInfo(searchword,currentAdminId);
-        
+
+        List<User> list = userDao.searchByAuthUserInfo(searchword, currentAdminId);
+
         return new PageInfo<User>(list);
     }
 
 
     @Override
-    public PageInfo<User> searchByUserInfo(Integer pageNum, Integer pageSize,Integer currentAuthUserId,String searchword) {
+    public PageInfo<User> searchByUserInfo(Integer pageNum, Integer pageSize, Integer currentAuthUserId, String searchword) {
         PageHelper.startPage(pageNum, pageSize);
 
-        List<User> list = userDao.searchByUserInfo(searchword , currentAuthUserId);
+        List<User> list = userDao.searchByUserInfo(searchword, currentAuthUserId);
 
         return new PageInfo<User>(list);
     }
@@ -873,11 +873,11 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     public boolean getUserRandStatus(Integer userId) {
         String userIdJsonStr = redisOpenService.get(RedisKeyEnum.AUTO_SAY_HELLO_USER_LIST.generateKey());
 
-        if(StringUtils.isNotBlank(userIdJsonStr)){
+        if (StringUtils.isNotBlank(userIdJsonStr)) {
             JSONArray userIdArr = com.alibaba.fastjson.JSONObject.parseArray(userIdJsonStr);
 
-            for(int i = 0 ; i <userIdArr.size() ; i++){
-                if(userIdArr.getIntValue(i) == userId.intValue()){
+            for (int i = 0; i < userIdArr.size(); i++) {
+                if (userIdArr.getIntValue(i) == userId.intValue()) {
                     return true;
                 }
             }
@@ -890,13 +890,13 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     public void setUserRandStatus(Integer userId) {
         String userIdJsonStr = redisOpenService.get(RedisKeyEnum.AUTO_SAY_HELLO_USER_LIST.generateKey());
 
-        if(StringUtils.isNotBlank(userIdJsonStr)){
+        if (StringUtils.isNotBlank(userIdJsonStr)) {
             JSONArray userIdArr = com.alibaba.fastjson.JSONObject.parseArray(userIdJsonStr);
 
-            for(int i = 0 ; i <userIdArr.size() ; i++){
-                if(userIdArr.getIntValue(i) == userId.intValue()){
+            for (int i = 0; i < userIdArr.size(); i++) {
+                if (userIdArr.getIntValue(i) == userId.intValue()) {
                     userIdArr.remove(i);
-                    redisOpenService.set(RedisKeyEnum.AUTO_SAY_HELLO_USER_LIST.generateKey(),userIdArr.toJSONString());
+                    redisOpenService.set(RedisKeyEnum.AUTO_SAY_HELLO_USER_LIST.generateKey(), userIdArr.toJSONString());
                     return;
                 }
             }
