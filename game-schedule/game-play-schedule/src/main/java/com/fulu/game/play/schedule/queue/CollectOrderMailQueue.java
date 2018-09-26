@@ -58,7 +58,7 @@ public class CollectOrderMailQueue implements Runnable{
                     continue;
                 }
 
-                MailUtil.sendMail(configProperties.getOrdermail().getAddress(),configProperties.getOrdermail().getPassword(),"陪玩师8分钟仍然未接单","陪玩师8分钟仍然未接单，订单号为："+o.getOrderNo(),new String[]{configProperties.getOrdermail().getAddress()});
+                MailUtil.sendMail(configProperties.getOrdermail().getAddress(),configProperties.getOrdermail().getPassword(),"陪玩师8分钟仍然未接单","陪玩师8分钟仍然未接单，订单号为："+o.getOrderNo(),new String[]{"m18507140487@163.com","xiaosong@fulu.com"});
             } catch (Exception e) {
                 log.error("CollectOrderMailQueue run exp", e);
             }
