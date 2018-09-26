@@ -162,8 +162,8 @@ public class AdminController extends BaseController {
      */
     @PostMapping("tech-level/save")
     public Result techLevelSave(TechLevelVO techLevelVO) {
-        techLevelService.save(techLevelVO);
         String msgPrefix = techLevelVO != null && techLevelVO.getId() != null && techLevelVO.getId().intValue() > 0 ? "修改" :"新增";
+        techLevelService.save(techLevelVO);
         return Result.success().msg(msgPrefix + "成功！");
     }
 

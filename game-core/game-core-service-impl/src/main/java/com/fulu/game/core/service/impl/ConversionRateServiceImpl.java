@@ -92,6 +92,8 @@ public class ConversionRateServiceImpl extends AbsCommonService<ConversionRate,I
                     conversionRate.setNewOrderRate(new BigDecimal("0.00"));
                     conversionRate.setNewPayRate(new BigDecimal("0.00"));
                 }
+                conversionRate.setCreateTime(new Date());
+                conversionRate.setUpdateTime(new Date());
                 conversionRateDao.create(conversionRate);
             }
         }
