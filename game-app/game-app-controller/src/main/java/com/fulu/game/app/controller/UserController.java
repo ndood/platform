@@ -7,6 +7,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.entity.*;
+import com.fulu.game.core.entity.vo.UserOnlineVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
@@ -182,9 +183,9 @@ public class UserController extends BaseController {
     @PostMapping(value = "online")
     public Result userOnline(@RequestParam(required = true) Boolean active, String version) {
 
-        List<AdminImLog> list = userService.userOnline(active, version);
+        UserOnlineVO uo = userService.userOnline(active, version);
 
-        return Result.success().data(list).msg("查询成功！");
+        return Result.success().data(uo).msg("查询成功！");
     }
 
 

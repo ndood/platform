@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class UserInfoAuthSearchVO {
 
+    private Integer id;
     private String nickname;
     private Integer userId;
     private String mobile;
@@ -17,7 +18,11 @@ public class UserInfoAuthSearchVO {
     private Integer endAge;
     private String orderBy;
     private Boolean userAutoSetting;
-    
+    //自动问好
+    private String autoSayHello;
+    //是否开启代聊  0关闭  1开启
+    private Boolean openSubstituteIm;
+
     /**
      * 外链id
      */

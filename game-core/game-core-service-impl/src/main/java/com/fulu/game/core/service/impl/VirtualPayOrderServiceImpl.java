@@ -1,7 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 
-import com.fulu.game.common.enums.VirtualPayOrderPayPathEnum;
+import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.VirtualPayOrderDao;
 import com.fulu.game.core.entity.VirtualPayOrder;
@@ -44,21 +44,17 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
         if (StringUtils.isBlank(orderBy)) {
             orderBy = "vpo.pay_time DESC";
         }
-
-        PageHelper.startPage(pageNum, pageSize, orderBy);
+        if (pageNum != null && pageSize != null) {
+            PageHelper.startPage(pageNum, pageSize, orderBy);
+        } else {
+            PageHelper.orderBy(orderBy);
+        }
         List<VirtualPayOrderVO> voList = virtualPayOrderDao.chargeList(payOrderVO);
         if (CollectionUtils.isNotEmpty(voList)) {
             for (VirtualPayOrderVO vo : voList) {
-                vo.setPayPath(vo.getPayPath() == null ? VirtualPayOrderPayPathEnum.MP.getType() : vo.getPayPath());
+                vo.setPayPath(vo.getPayPath() == null ? PlatformEcoEnum.MP.getType() : vo.getPayPath());
             }
         }
-        return new PageInfo<>(voList);
-    }
-
-    @Override
-    public PageInfo<VirtualPayOrderVO> chargeList(VirtualPayOrderVO payOrderVO) {
-        PageHelper.startPage("vpo.pay_time DESC");
-        List<VirtualPayOrderVO> voList = virtualPayOrderDao.chargeList(payOrderVO);
         return new PageInfo<>(voList);
     }
 }

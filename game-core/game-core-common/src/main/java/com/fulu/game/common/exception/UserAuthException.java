@@ -20,7 +20,8 @@ public class UserAuthException extends BizException{
         SERVICE_USER_FREEZE_ADMIN(40003, "当前陪玩师身份为冻结状态,不能操作!"),
         USER_TECH_NO_AUTHENTICATION(41001, "该技能未认证通过不能操作接单方式。"),
         USER_TECH_AUTHENTICATION_ING(41002, "该技能在认证中不能操作接单方式。"),
-        USER_TECH_FREEZE(41003, "该技能被冻结,不能继续操作。");
+        USER_TECH_FREEZE(41003, "该技能被冻结,不能继续操作。"),
+        USER_AGENT_IM_CD(41004, "代聊开关CD中，24小时内不可关闭。");
         private int code;
         private String msg;
     }

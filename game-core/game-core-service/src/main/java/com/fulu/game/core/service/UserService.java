@@ -3,6 +3,7 @@ package com.fulu.game.core.service;
 import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.core.entity.AdminImLog;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.UserOnlineVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.github.pagehelper.PageInfo;
 import me.chanjar.weixin.common.exception.WxErrorException;
@@ -109,7 +110,7 @@ public interface UserService extends ICommonService<User, Integer> {
      *
      * @param id
      */
-    void lock(int id);
+    boolean lock(int id);
 
     /**
      * 后台解封用户(仅修改user表用户的状态)
@@ -295,7 +296,7 @@ public interface UserService extends ICommonService<User, Integer> {
     UserVO getUserInfo(Integer userId);
 
 
-    List<AdminImLog> userOnline(Boolean active, String version);
+    
 
     /**
      * 获取用户信息
@@ -303,4 +304,39 @@ public interface UserService extends ICommonService<User, Integer> {
      * @return
      */
     UserVO findUserVOById(Integer id);
+    
+    UserOnlineVO userOnline(Boolean active, String version);
+
+    /**
+     * 删除用户登录的token
+     * @return
+     */
+    Boolean removeUserLoginToken(Integer userId);
+
+    /**
+     * 根据关键字搜索陪玩师用户
+     *
+     * @return
+     */
+    PageInfo<User> searchByAuthUserInfo(Integer pageNum, Integer pageSize,Integer currentAdminId ,String searchword);
+
+
+    /**
+     * 根据关键字搜索用户
+     *
+     * @return
+     */
+    PageInfo<User> searchByUserInfo(Integer pageNum, Integer pageSize,Integer currentAuthUserId ,String searchword);
+    
+
+    /**
+     * 判断用户是否需要取一个随机自动问好
+     */
+    boolean getUserRandStatus(Integer userId);
+
+
+    /**
+     * 判断用户是否需要取一个随机自动问好
+     */
+    void setUserRandStatus(Integer userId);
 }

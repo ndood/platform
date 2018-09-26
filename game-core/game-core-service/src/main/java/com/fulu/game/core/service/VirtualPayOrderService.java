@@ -19,6 +19,4 @@ public interface VirtualPayOrderService extends ICommonService<VirtualPayOrder, 
     VirtualPayOrder findByOrderNo(String orderNo);
 
     PageInfo<VirtualPayOrderVO> chargeList(VirtualPayOrderVO payOrderVO, Integer pageNum, Integer pageSize, String orderBy);
-
-    PageInfo<VirtualPayOrderVO> chargeList(VirtualPayOrderVO payOrderVO);
 }

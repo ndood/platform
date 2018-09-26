@@ -55,4 +55,5 @@ public interface UserBodyAuthService extends ICommonService<UserBodyAuth, Intege
 
 
     UserBodyAuth getUserAuthInfo(Integer userId);
+
 }

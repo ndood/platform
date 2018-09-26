@@ -17,7 +17,7 @@ public enum RedisKeyEnum {
     ADMIN_TOKEN,
     //用户token
     PLAY_TOKEN,
-    //用户token
+    //小程序的sessionKey
     WX_SESSION_KEY,
     //短信
     SMS,
@@ -56,9 +56,15 @@ public enum RedisKeyEnum {
     //未接单的订单ID
     ORDER_WAITING_SERVICE_ID,
     // 管理后台授权
-    ADMIN_AUTHED;
-
-
+    ADMIN_AUTHED,
+    //需要随机自动问好的用户
+    AUTO_SAY_HELLO_USER_LIST,
+    //用户未读订单
+    USER_WAITING_READ_ORDER,
+    //午夜场标记
+    MIDNIGHT,
+    //用户24小时内开启了代聊
+    USER_AGENT_IM_OPEN;
 
 
     public static final String SPLIT = "-";

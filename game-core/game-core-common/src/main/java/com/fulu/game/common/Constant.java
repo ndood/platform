@@ -1,9 +1,5 @@
 package com.fulu.game.common;
 
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.crypto.asymmetric.RSA;
-import sun.security.krb5.internal.crypto.RsaMd5CksumType;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -174,6 +170,11 @@ public interface Constant {
      * 陪玩师接单
      */
     String SERVICE_USER_ACCEPT_ORDER = "1";
+
+    /**
+     * 用户订单已付款
+     */
+    String SERVICE_USER_PAY_ORDER = "2";
 
     /**
      * 分期乐订单--已对账

@@ -1,5 +1,6 @@
 package com.fulu.game.core.service;
 
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
@@ -34,7 +35,7 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
      * @param userInfoAuthTO
      * @return
      */
-    void saveSort(UserInfoAuthTO userInfoAuthTO);
+    void saveOtherInfo(UserInfoAuthTO userInfoAuthTO);
 
     /**
      * 通过用户ID查询用户认证信息
@@ -120,4 +121,14 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
      * @param id 客服ID
      */
     void setSubstitute(int id, Integer substituteId);
+
+
+    /**
+     * 随机取一个自动问好的陪玩师
+     *
+     */
+    List<UserInfoAuthVO> getAutoSayHelloUser();
+    
+    
+    void setUserAgentImStatus(boolean agentStatus , User userInfo);
 }
