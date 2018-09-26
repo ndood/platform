@@ -1,5 +1,6 @@
 package com.fulu.game.common.enums;
 
+import com.fulu.game.common.exception.PayException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
