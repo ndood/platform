@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
+
 /**
  * @Author: shijiaoyun.
  * @Date: 2018/9/25 14:24.
@@ -25,7 +27,11 @@ public class ConversionRateTask {
     @Scheduled(cron = "0 0 2 * * ? ")
     public void statisticsConversionRate() {
         log.info("开始统计转化率");
-        conversionRateService.statisticsConversionRate();
+        try {
+            conversionRateService.statisticsConversionRate();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         log.info("结束统计转化率");
     }
 
