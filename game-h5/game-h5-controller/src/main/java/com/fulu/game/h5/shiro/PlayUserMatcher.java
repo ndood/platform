@@ -59,6 +59,7 @@ public class PlayUserMatcher extends HashedCredentialsMatcher implements Initial
                 ThirdpartyUser thirdpartyUser = thirdpartyUserService.findByFqlOpenid(openId);
                 if (thirdpartyUser != null) {
                     log.info("openId为{} 的用户已存在", openId);
+                    user = userService.findById(thirdpartyUser.getUserId());
                 } else {
                     //新创建的用户记录注册的ip
                     String ip = userToken.getHost();

@@ -496,6 +496,12 @@ public class UserController extends BaseController {
             default:
                 title = "所有用户列表";
         }
+
+        //todo gzc 陪玩师列表excel导出和用户列表excel导出
+
+
+
+
         userList = userService.findByLoginTime(userType, startTime, endTime);
         ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
         Workbook workbook = ExcelExportUtil.exportExcel(exportParams, User.class, userList);
