@@ -332,9 +332,14 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
         //段位和大区
         List<TechAttrVO> groupAttrs = findAllCategoryAttrSelected(userTechAuthVO.getCategoryId(), userTechAuthVO.getId(), Boolean.FALSE);
         userTechAuthVO.setGroupAttrs(groupAttrs);
-
+        // 设置用户技能对应商品信息 add by shijiaoyun begin
+        List<Product> productList = productService.findByTechId(userTechAuthVO.getId());
+        userTechAuthVO.setProductList(productList);
+        // 设置用户技能对应商品信息 add by shijiaoyun end
         return userTechAuthVO;
     }
+
+
 
     private List<TechAttrVO> findAllCategoryAttrSelected(int categoryId, Integer userTechAuthId, Boolean ignoreNotUser) {
         List<TechAttr> techAttrList = techAttrService.findByCategory(categoryId);

@@ -54,4 +54,6 @@ public class UserTechAuthVO extends UserTechAuth {
         this.statusStr = statusStr;
     }
 
+    /** 技能对应商品信息 */
+    private List<Product> productList;
 }
