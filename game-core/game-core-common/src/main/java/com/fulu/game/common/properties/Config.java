@@ -130,5 +130,6 @@ public class Config {
         private String partnerId;
         private String partnerKey;
         private String orderNoticeUrl;
+        private String orderDetailsUrl;
     }
 }

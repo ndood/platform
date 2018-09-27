@@ -46,4 +46,9 @@ public interface FenqileOrderService {
      * @return
      */
     boolean completeFenqileOrder(String orderNo, String fenqileOrderNo);
+
+    /**
+     * 更改平台url
+     */
+    void modifyPlatformUrl();
 }

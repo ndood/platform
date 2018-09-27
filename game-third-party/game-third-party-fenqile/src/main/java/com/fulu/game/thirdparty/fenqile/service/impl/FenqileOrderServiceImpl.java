@@ -57,7 +57,11 @@ public class FenqileOrderServiceImpl implements FenqileOrderService {
         }
     }
 
-
+    /**
+     * 更改回调和详情url
+     * @param noticeType
+     * @param noticeUrl
+     */
     @Override
     public void noticeModify(Integer noticeType,String noticeUrl){
         String method = "fenqile.third.notice.modify";
@@ -80,7 +84,16 @@ public class FenqileOrderServiceImpl implements FenqileOrderService {
         } catch (Exception e) {
             throw new ApiErrorException(e.getMessage());
         }
-        log.info("修改分期乐订单通知url:{}",noticeUrl);
+        log.info("修改分期乐通知url:{}",noticeUrl);
+    }
+
+
+    @Override
+    public void modifyPlatformUrl(){
+        //修改订单通知回调
+        noticeModify(1,getConfig().getOrderNoticeUrl());
+        //修改订单详情页地址
+        noticeModify(2,getConfig().getOrderDetailsUrl());
     }
 
 
@@ -109,6 +122,10 @@ public class FenqileOrderServiceImpl implements FenqileOrderService {
             throw new ApiErrorException(e.getMessage());
         }
     }
+
+
+
+
 
 
     /**
@@ -166,10 +183,6 @@ public class FenqileOrderServiceImpl implements FenqileOrderService {
             return false;
         }
     }
-
-
-
-
 
 
     private Map<String,Object> getConfMap(String method){

@@ -20,6 +20,7 @@ public class FenqileConfig {
 
     private String orderNoticeUrl;
 
+    private String orderDetailsUrl;
 
 
 }

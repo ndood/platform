@@ -30,6 +30,7 @@ public class FenqileConfiguration {
         fenqileConfig.setPartnerKey(fenqile.getPartnerKey());
         fenqileConfig.setPartnerId(fenqile.getPartnerId());
         fenqileConfig.setOrderNoticeUrl(fenqile.getOrderNoticeUrl());
+        fenqileConfig.setOrderDetailsUrl(fenqile.getOrderDetailsUrl());
         return fenqileConfig;
     }
 
@@ -43,11 +44,9 @@ public class FenqileConfiguration {
 
 
     @Bean
-    public FenqileOrderServiceImpl FenqileOrderService(FenqileConfig fenqileConfig){
+    public FenqileOrderServiceImpl fenqileOrderService(FenqileConfig fenqileConfig){
         FenqileOrderServiceImpl fenqileAuthService = new FenqileOrderServiceImpl();
         fenqileAuthService.setConfig(fenqileConfig);
-        log.info("执行分期乐修改订单回调通知接口");
-        fenqileAuthService.noticeModify(1,fenqileConfig.getOrderNoticeUrl());
         return fenqileAuthService;
     }
 
