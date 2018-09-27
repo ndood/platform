@@ -3,6 +3,7 @@ package com.fulu.game.core.dao;
 import com.fulu.game.core.entity.ImUser;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserVO;
+import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -28,7 +29,7 @@ public interface UserDao extends ICommonDao<User, Integer> {
      * @param userIds
      * @return
      */
-    List<User> findByUserIds(@Param(value = "userIds") List<Integer> userIds,@Param(value = "disabled")Boolean disabled);
+    List<User> findByUserIds(@Param(value = "userIds") List<Integer> userIds, @Param(value = "disabled") Boolean disabled);
 
     List<ImUser> findImNullUser();
 
@@ -42,6 +43,8 @@ public interface UserDao extends ICommonDao<User, Integer> {
 
     List<UserVO> findBySearch(UserVO userVO);
 
+    List<UserVO> findServiceUserBySearch(UserInfoAuthSearchVO userInfoAuthSearchVO);
+
     List<User> findByExportParam(UserVO userVO);
 
     /**
@@ -51,13 +54,14 @@ public interface UserDao extends ICommonDao<User, Integer> {
 
     /**
      * 用户下单数量
+     *
      * @return
      */
     Integer countUserOrder(Integer userId);
 
 
-    List<User> searchByAuthUserInfo(@Param(value = "searchWord") String searchWord , @Param(value = "currentAdminId")Integer currentAdminId);
+    List<User> searchByAuthUserInfo(@Param(value = "searchWord") String searchWord, @Param(value = "currentAdminId") Integer currentAdminId);
 
 
-    List<User> searchByUserInfo(@Param(value = "searchWord") String searchWord , @Param(value = "currentAuthUserId") Integer currentAuthUserId);
+    List<User> searchByUserInfo(@Param(value = "searchWord") String searchWord, @Param(value = "currentAuthUserId") Integer currentAuthUserId);
 }

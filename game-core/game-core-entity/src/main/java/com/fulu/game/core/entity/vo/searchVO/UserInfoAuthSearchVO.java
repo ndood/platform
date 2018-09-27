@@ -18,10 +18,17 @@ public class UserInfoAuthSearchVO {
     private Integer endAge;
     private String orderBy;
     private Boolean userAutoSetting;
+    /**
+     * //1:普通用户,2:陪玩师
+     */
+    private Integer type;
     //自动问好
     private String autoSayHello;
     //是否开启代聊  0关闭  1开启
     private Boolean openSubstituteIm;
+
+    //注册来源名
+    private String sourceName;
 
     /**
      * 外链id

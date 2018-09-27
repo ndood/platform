@@ -1,10 +1,10 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.common.enums.PlatformEcoEnum;
-import com.fulu.game.core.entity.AdminImLog;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.UserOnlineVO;
 import com.fulu.game.core.entity.vo.UserVO;
+import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.github.pagehelper.PageInfo;
 import me.chanjar.weixin.common.exception.WxErrorException;
 
@@ -128,6 +128,14 @@ public interface UserService extends ICommonService<User, Integer> {
      * @return
      */
     PageInfo<UserVO> list(UserVO userVO, Integer pageNum, Integer pageSize);
+
+    /**
+     * 查询陪玩师列表
+     *
+     * @param userInfoAuthSearchVO 查询VO
+     * @return 陪玩师列表
+     */
+    List<UserVO> list(UserInfoAuthSearchVO userInfoAuthSearchVO);
 
     /**
      * 第三方(分期乐)创建用户接口
@@ -296,19 +304,19 @@ public interface UserService extends ICommonService<User, Integer> {
     UserVO getUserInfo(Integer userId);
 
 
-    
-
     /**
      * 获取用户信息
+     *
      * @param id
      * @return
      */
     UserVO findUserVOById(Integer id);
-    
+
     UserOnlineVO userOnline(Boolean active, String version);
 
     /**
      * 删除用户登录的token
+     *
      * @return
      */
     Boolean removeUserLoginToken(Integer userId);
@@ -318,7 +326,7 @@ public interface UserService extends ICommonService<User, Integer> {
      *
      * @return
      */
-    PageInfo<User> searchByAuthUserInfo(Integer pageNum, Integer pageSize,Integer currentAdminId ,String searchword);
+    PageInfo<User> searchByAuthUserInfo(Integer pageNum, Integer pageSize, Integer currentAdminId, String searchword);
 
 
     /**
@@ -326,8 +334,8 @@ public interface UserService extends ICommonService<User, Integer> {
      *
      * @return
      */
-    PageInfo<User> searchByUserInfo(Integer pageNum, Integer pageSize,Integer currentAuthUserId ,String searchword);
-    
+    PageInfo<User> searchByUserInfo(Integer pageNum, Integer pageSize, Integer currentAuthUserId, String searchword);
+
 
     /**
      * 判断用户是否需要取一个随机自动问好

@@ -318,7 +318,7 @@ public class UserController extends BaseController {
      */
     @PostMapping(value = "/tech-auth/pass")
     public Result techAuthPass(Integer id, Integer techLevelId) {
-        userTechAuthService.pass(id,techLevelId);
+        userTechAuthService.pass(id, techLevelId);
         return Result.success().msg("技能审核通过!");
     }
 
@@ -410,9 +410,9 @@ public class UserController extends BaseController {
     @PostMapping("/lock")
     public Result lock(@RequestParam("id") Integer id) {
         Boolean flag = userService.lock(id);
-        if(flag){
+        if (flag) {
             return Result.success().msg("封禁用户并且剔除用户登录状态成功！");
-        }else{
+        } else {
             return Result.success().msg("封禁用户未找到用户登录状态！");
         }
     }
@@ -459,6 +459,7 @@ public class UserController extends BaseController {
     /**
      * 查询-用户信息
      * 管理后台使用
+     *
      * @param id
      * @return
      */
@@ -501,13 +502,15 @@ public class UserController extends BaseController {
     public void userExport(HttpServletResponse response,
                            @PathVariable(name = "type", required = true) Integer type,
                            @RequestParam(value = "startTime", required = false) Date startTime,
-                           @RequestParam(value = "endTime", required = false) Date endTime) throws Exception {
+                           @RequestParam(value = "endTime", required = false) Date endTime,
+                           UserInfoAuthSearchVO userInfoAuthSearchVO,
+                           UserVO userVO) throws Exception {
         Integer userType = null;
         String title;
-        List<User> userList;
         switch (type) {
             case 0:
                 title = "所有用户列表";
+                userType = null;
                 break;
             case 1:
                 title = "普通玩家列表";
@@ -521,14 +524,16 @@ public class UserController extends BaseController {
                 title = "所有用户列表";
         }
 
-        //todo gzc 陪玩师列表excel导出和用户列表excel导出
+        userVO.setType(userType);
+        List<UserVO> voList;
+        if (UserTypeEnum.ACCOMPANY_PLAYER.getType().equals(userType)) {
+            voList = userService.list(userInfoAuthSearchVO);
+        } else {
+            voList = userService.list(userVO, null, null).getList();
+        }
 
-
-
-
-        userList = userService.findByLoginTime(userType, startTime, endTime);
         ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
-        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, User.class, userList);
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, UserVO.class, voList);
         response.setCharacterEncoding("UTF-8");
         response.setHeader("content-Type", "application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));
@@ -612,7 +617,7 @@ public class UserController extends BaseController {
     public Result update(UserVO userVO) {
         User user = new User();
         user.setId(userVO.getId());
-        if(userVO.getBirth() != null){
+        if (userVO.getBirth() != null) {
             user.setAge(DateUtil.ageOfNow(userVO.getBirth()));
         }
         user.setGender(userVO.getGender());
@@ -653,7 +658,7 @@ public class UserController extends BaseController {
             if (userVO.getAbout() != null) {
                 userInfoAuth.setAbout(userVO.getAbout());
             }
-            if(userVO.getMainPicUrl() != null){
+            if (userVO.getMainPicUrl() != null) {
                 userInfoAuth.setMainPicUrl(userVO.getMainPicUrl());
             }
             // 判断认证信息是否存在，不存在就新增
@@ -679,7 +684,7 @@ public class UserController extends BaseController {
         if (userInfoAuth != null) {
             // 先删除语音
             userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(), 2);
-            if (userVO != null && ( userVO.getVoiceUrl() != null || userVO.getDuration() != null)) {
+            if (userVO != null && (userVO.getVoiceUrl() != null || userVO.getDuration() != null)) {
                 UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
                 userInfoAuthFile.setUrl(ossUtil.activateOssFile(userVO.getVoiceUrl()));
                 userInfoAuthFile.setDuration(userVO.getDuration());
