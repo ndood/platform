@@ -44,20 +44,20 @@ public class AclFilter extends AccessControlFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest request,
                                       ServletResponse response, Object mappedValue) throws Exception {
-
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        String action = httpRequest.getRequestURI().replace(httpRequest.getContextPath(), "");
-        try {
-            Subject subject = SecurityUtils.getSubject();
-            Admin admin = (Admin) subject.getPrincipal();
-            // 非超级用户，需要走权限验证
-            if(admin != null && !Constant.ADMIN_USERNAME.equals(admin.getUsername())){
-                subject.checkPermission(action);
-            }
-        } catch (UnauthorizedException exception){
-            log.info("用户无此访问权限");
-            throw new UserException(UserException.ExceptionCode.NO_PERMISSION);
-        }
+        // TODO 权限控制由前端控制，后端暂不做控制，当需要后端控制时，再打开注释
+//        HttpServletRequest httpRequest = (HttpServletRequest) request;
+//        String action = httpRequest.getRequestURI().replace(httpRequest.getContextPath(), "");
+//        try {
+//            Subject subject = SecurityUtils.getSubject();
+//            Admin admin = (Admin) subject.getPrincipal();
+//            // 非超级用户，需要走权限验证
+//            if(admin != null && !Constant.ADMIN_USERNAME.equals(admin.getUsername())){
+//                subject.checkPermission(action);
+//            }
+//        } catch (UnauthorizedException exception){
+//            log.info("用户无此访问权限");
+//            throw new UserException(UserException.ExceptionCode.NO_PERMISSION);
+//        }
         return false;
     }
 
