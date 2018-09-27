@@ -68,12 +68,12 @@ public class HomeController {
             Map<String, Object> map = BeanUtil.beanToMap(admin);
             map.put("token", SubjectUtil.getToken());
             //获取用户菜单
-            List<SysRouter> routerList = sysRouterService.findSysRouterListByAdminId(admin.getId());
-            map.put("routes",routerList);
+//            List<SysRouter> routerList = sysRouterService.findSysRouterListByAdminId(admin.getId());
+//            map.put("routes",routerList);
             return Result.success().data(map).msg("登录成功!");
         } catch (AuthenticationException e) {
             log.error("shiro验证失败", e);
-            return Result.error().msg("登录失败,请联系管理员");
+            return Result.error().msg("登录失败,用户名或者密码错误");
         } catch (Exception e) {
             log.error("登录异常", e);
             return Result.error().msg("登录异常");
