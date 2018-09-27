@@ -49,5 +49,5 @@ public class UserTechAuth implements Serializable {
     private Integer techLevelId;
 
     /** 技能等级名称 */
-    private Integer techLevelName;
+    private String techLevelName;
 }
