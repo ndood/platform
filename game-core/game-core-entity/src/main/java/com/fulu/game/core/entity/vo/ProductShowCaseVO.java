@@ -46,5 +46,6 @@ public class ProductShowCaseVO {
 
     private String city;
 
-
+    //周销售量
+    private Integer orderCount;
 }
