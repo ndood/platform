@@ -84,17 +84,17 @@ public class SysRoleServiceImpl extends AbsCommonService<SysRole,Integer> implem
         BeanUtil.copyProperties(sysRole,sysRoleVO);
         List<SysRouter> list = sysRouterService.findByType(SysRouterTypeEnum.MENUS.getType());
         Map<String, RoleRouter> adminHadRouterIdMap = new HashMap<>();
-        Admin admin = adminService.getCurrentUser();
-        List<AdminRole> adminRoleList = adminRoleService.findByAdminId(admin.getId());
-        // TODO 此处可以一个SQL查询所有用户选中的router集合 shijiaoyun
-        if(CollectionUtils.isNotEmpty(adminRoleList)){
-            for(AdminRole adminRole: adminRoleList){
-                List<RoleRouter>  roleRouterList = roleRouterService.findByRoleId(adminRole.getRoleId());
-                if(CollectionUtils.isNotEmpty(roleRouterList)){
-                    for(RoleRouter roleRouter: roleRouterList){
-                        adminHadRouterIdMap.put(roleRouter.getRouterId().toString(), roleRouter);
-                    }
-                }
+//        Admin admin = adminService.getCurrentUser();
+//        List<AdminRole> adminRoleList = adminRoleService.findByAdminId(admin.getId());
+//        if(CollectionUtils.isNotEmpty(adminRoleList)){
+//            for(AdminRole adminRole: adminRoleList){
+//
+//            }
+//        }
+        List<RoleRouter>  roleRouterList = roleRouterService.findByRoleId(id);
+        if(CollectionUtils.isNotEmpty(roleRouterList)){
+            for(RoleRouter roleRouter: roleRouterList){
+                adminHadRouterIdMap.put(roleRouter.getRouterId().toString(), roleRouter);
             }
         }
         // 设置router选中状态

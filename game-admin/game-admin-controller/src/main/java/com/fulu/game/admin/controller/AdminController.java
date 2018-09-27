@@ -59,8 +59,8 @@ public class AdminController extends BaseController {
      */
     @PostMapping("/save")
     public Result save(AdminVO adminVO) {
-        Admin admin = adminService.save(adminVO);
         String msgPrefix = adminVO.getId() != null && adminVO.getId().intValue() > 0 ? "修改" : "新增";
+        Admin admin = adminService.save(adminVO);
         return Result.success().data(admin).msg(msgPrefix + "管理员成功！");
     }
 
