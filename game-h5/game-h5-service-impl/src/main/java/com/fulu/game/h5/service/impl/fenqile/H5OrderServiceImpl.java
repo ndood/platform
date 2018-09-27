@@ -1,7 +1,6 @@
 package com.fulu.game.h5.service.impl.fenqile;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ProductException;
@@ -10,9 +9,7 @@ import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
-import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.*;
-import com.fulu.game.core.service.aop.UserScore;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
 import com.fulu.game.thirdparty.fenqile.service.FenqileSdkOrderService;
@@ -95,28 +92,26 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
     }
 
 
-
     @Override
     protected void shareProfit(Order order) {
         h5OrderShareProfitService.shareProfit(order);
         try {
             //订单完成通知分期乐完成订单
             FenqileOrder fenqileOrder = fenqileOrderService.findByOrderNo(order.getOrderNo());
-            if(fenqileOrder==null){
-               log.info("没有对应的分期乐订单:order:{}",order);
+            if (fenqileOrder == null) {
+                log.info("没有对应的分期乐订单:order:{}", order);
             }
-            fenqileSdkOrderService.completeFenqileOrder(order.getOrderNo(),fenqileOrder.getFenqileNo());
-        }catch (Exception e){
-            log.error("订单分润异常",e);
+            fenqileSdkOrderService.completeFenqileOrder(order.getOrderNo(), fenqileOrder.getFenqileNo());
+        } catch (Exception e) {
+            log.error("订单分润异常", e);
         }
 
     }
 
 
-
     @Override
     protected void orderRefund(Order order, BigDecimal refundMoney) {
-        h5OrderShareProfitService.orderRefund(order,refundMoney);
+        h5OrderShareProfitService.orderRefund(order, refundMoney);
     }
 
     public String submit(Integer productId, Integer num, String couponNo, String userIp,
@@ -173,6 +168,14 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         if (coupon != null) {
             couponService.updateCouponUseStatus(order.getOrderNo(), userIp, coupon);
         }
+
+        //新建分期乐订单数据
+        FenqileOrder fenqileOrder = new FenqileOrder();
+        fenqileOrder.setOrderNo(order.getOrderNo());
+        fenqileOrder.setUpdateTime(new Date());
+        fenqileOrder.setCreateTime(new Date());
+        fenqileOrderService.create(fenqileOrder);
+
         //创建订单商品
         orderProductService.create(order, product, num);
         //计算订单状态倒计时24小时
@@ -200,18 +203,17 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
     }
 
 
-
-
     /**
      * 分期乐用户取消订单
+     *
      * @param orderNo
      * @return
      */
     public String fenqileUserCancelOrder(String orderNo) {
         log.info("分期乐用户取消订单orderNo:{}", orderNo);
         Order order = orderService.findByOrderNo(orderNo);
-        if(order.getStatus()<200){
-            log.info("orderNo:{}该订单已经是取消状态",orderNo);
+        if (order.getStatus() < 200) {
+            log.info("orderNo:{}该订单已经是取消状态", orderNo);
             return orderNo;
         }
         if (!order.getStatus().equals(NON_PAYMENT.getStatus())) {
@@ -286,7 +288,6 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         getMinAppPushService().consult(order);
         return orderNo;
     }
-
 
 
     /**
