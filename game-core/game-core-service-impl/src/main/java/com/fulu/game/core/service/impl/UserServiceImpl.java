@@ -806,18 +806,19 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
                 }
             }
             userVO.setUserProducts(productList);
-            List<DynamicVO> newestDynamicList = dynamicService.getNewestDynamicList(userId);
-            userVO.setNewestDynamics(newestDynamicList);
-            Integer currentUserId = getCurrentUser().getId();
-            Integer isAttention = redisOpenService.getBitSet(RedisKeyEnum.ATTENTION_USERS.generateKey(currentUserId),userId) ? 1: 0;
-            userVO.setIsAttention(isAttention);
-            //获取关注数
-            int attentions = redisOpenService.bitCount(RedisKeyEnum.ATTENTION_USERS.generateKey(userId)).intValue();
-            //获取粉丝数
-            int fans = redisOpenService.bitCount(RedisKeyEnum.ATTENTIONED_USERS.generateKey(userId)).intValue();
-            userVO.setAttentions(attentions);
-            userVO.setFans(fans);
         }
+        // 为认证用户信息一样可以获取动态相关信息
+        List<DynamicVO> newestDynamicList = dynamicService.getNewestDynamicList(userId);
+        userVO.setNewestDynamics(newestDynamicList);
+        Integer currentUserId = getCurrentUser().getId();
+        Integer isAttention = redisOpenService.getBitSet(RedisKeyEnum.ATTENTION_USERS.generateKey(currentUserId),userId) ? 1: 0;
+        userVO.setIsAttention(isAttention);
+        //获取关注数
+        int attentions = redisOpenService.bitCount(RedisKeyEnum.ATTENTION_USERS.generateKey(userId)).intValue();
+        //获取粉丝数
+        int fans = redisOpenService.bitCount(RedisKeyEnum.ATTENTIONED_USERS.generateKey(userId)).intValue();
+        userVO.setAttentions(attentions);
+        userVO.setFans(fans);
     }
 
 
