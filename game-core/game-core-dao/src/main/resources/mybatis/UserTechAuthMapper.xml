@@ -104,6 +104,9 @@
             <if test="status != null">
                 and uta.status = #{status}
             </if>
+            <if test="userId != null">
+                and uta.user_id = #{userId}
+            </if>
         </where>
     </select>
 

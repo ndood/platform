@@ -12,4 +12,5 @@ public class UserTechAuthSearchVO {
     private Integer categoryId;
     private Integer status;
     private String orderBy;
+    private Integer userId;
 }

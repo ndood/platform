@@ -44,13 +44,17 @@
 
     <select id="findByParameter" resultMap="AdminResultMap" parameterType="com.fulu.game.core.entity.vo.AdminVO">
         SELECT
-        <include refid="Base_Column_List"/>
-        FROM t_admin
+            admin.*,sysRole.id as role_id, sysRole.name as role_name
+        FROM t_admin admin
+        LEFT JOIN t_admin_role adminRole
+        on admin.id = adminRole.admin_id
+        LEFT JOIN t_sys_role sysRole
+        on adminRole.role_id = sysRole.id
         <where>
-            <if test="username != null">and username = #{username}</if>
-            <if test="name != null">and name = #{name}</if>
-            <if test="adminName != null">and username != #{adminName}</if>
-            <if test="id != null">and id != #{id}</if>
+            <if test="username != null">and admin.username = #{username}</if>
+            <if test="name != null">and admin.name = #{name}</if>
+            <if test="adminName != null">and admin.username != #{adminName}</if>
+            <if test="id != null">and admin.id != #{id}</if>
         </where>
     </select>
 
