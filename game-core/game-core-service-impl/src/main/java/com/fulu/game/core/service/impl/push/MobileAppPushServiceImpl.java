@@ -41,13 +41,20 @@ public class MobileAppPushServiceImpl extends PushServiceImpl implements IBusine
     }
 
 
+    /**
+     * 用户评价订单
+     * @param order
+     */
+    public void userCommentOrder(Order order) {
+        orderMsgService.createServerOrderMsg(order,"订单已评价");
+        orderMsgService.createUserOrderMsg(order,"订单已完成,已评价");
+    }
+
+
     @Override
     public void receiveOrder(Order order) {
-        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(order.getUserId())
-                .title("订单消息")
-                .alert(WechatTemplateMsgEnum.ORDER_TOUSER_AFFIRM_RECEIVE.getContent())
-                .build();
-        pushMsg(appPushMsgVO);
+        orderMsgService.createUserOrderMsg(order,"陪玩师已接单");
+
     }
 
 
@@ -107,6 +114,8 @@ public class MobileAppPushServiceImpl extends PushServiceImpl implements IBusine
             String date =  DateUtil.format(DateUtil.offsetHour(orderStatusDetails.getTriggerTime(),24), "MM月dd日 HH:mm");
             String orderMessage = StrUtil.format("订单将在{}默认完成",date);
             orderMsgService.createServerOrderMsg(order,orderMessage);
+            orderMsgService.createUserOrderMsg(order,"陪玩师已开始服务");
+
         }catch (Exception e){
             log.error("推送消息错误",e);
         }
@@ -116,29 +125,19 @@ public class MobileAppPushServiceImpl extends PushServiceImpl implements IBusine
 
     @Override
     public void consult(Order order) {
-        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(order.getServiceUserId())
-                .title("订单消息")
-                .alert(WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT.getContent())
-                .build();
-        pushMsg(appPushMsgVO);
+        orderMsgService.createServerOrderMsg(order,"用户发起协商处理");
     }
 
     @Override
     public void rejectConsult(Order order) {
-        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(order.getUserId())
-                .title("订单消息")
-                .alert(WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_REJECT.getContent())
-                .build();
-        pushMsg(appPushMsgVO);
+        orderMsgService.createUserOrderMsg(order,"陪玩师拒绝协商");
     }
 
     @Override
     public void agreeConsult(Order order) {
-        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(order.getUserId())
-                .title("订单消息")
-                .alert(WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE.getContent())
-                .build();
-        pushMsg(appPushMsgVO);
+        orderMsgService.createServerOrderMsg(order,"协商完成");
+        orderMsgService.createUserOrderMsg(order,"协商完成");
+
     }
 
     @Override
@@ -152,38 +151,26 @@ public class MobileAppPushServiceImpl extends PushServiceImpl implements IBusine
 
     @Override
     public void cancelOrderByServer(Order order) {
-        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(order.getUserId())
-                .title("订单消息")
-                .alert(WechatTemplateMsgEnum.ORDER_TOUSER_REJECT_RECEIVE.getContent())
-                .build();
-        pushMsg(appPushMsgVO);
+        orderMsgService.createUserOrderMsg(order,"陪玩师取消订单,金额退回!");
+
     }
 
     @Override
     public void cancelOrderByUser(Order order) {
-        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(order.getServiceUserId())
-                .title("订单消息")
-                .alert(WechatTemplateMsgEnum.ORDER_TOSERVICE_ORDER_CANCEL.getContent())
-                .build();
-        pushMsg(appPushMsgVO);
+        orderMsgService.createServerOrderMsg(order,"很遗憾,老板取消了订单");
+
     }
 
     @Override
     public void appealByServer(Order order) {
-        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(order.getUserId())
-                .title("订单消息")
-                .alert(WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL.getContent())
-                .build();
-        pushMsg(appPushMsgVO);
+        orderMsgService.createUserOrderMsg(order,"陪玩师发起了仲裁!");
+
     }
 
     @Override
     public void appealByUser(Order order) {
-        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(order.getServiceUserId())
-                .title("订单消息")
-                .alert(WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL.getContent())
-                .build();
-        pushMsg(appPushMsgVO);
+        orderMsgService.createServerOrderMsg(order,"用户发起仲裁处理");
+
     }
 
     @Override
@@ -224,11 +211,9 @@ public class MobileAppPushServiceImpl extends PushServiceImpl implements IBusine
 
     @Override
     public void acceptOrder(Order order) {
-        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(order.getUserId())
-                .title("订单消息")
-                .alert(WechatTemplateMsgEnum.ORDER_TOSERVICE_AFFIRM_SERVER.getContent())
-                .build();
-        pushMsg(appPushMsgVO);
+        orderMsgService.createServerOrderMsg(order,"订单完成,请对用户进行评价");
+        orderMsgService.createUserOrderMsg(order,"订单已完成,待评价");
+
     }
 
 

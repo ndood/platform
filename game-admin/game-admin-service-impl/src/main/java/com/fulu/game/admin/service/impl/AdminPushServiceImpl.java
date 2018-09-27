@@ -110,6 +110,7 @@ public class AdminPushServiceImpl extends PushServiceImpl {
                     WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE,
                     msg);
         }
+        //todo APP协商处理结果
     }
 
     /**

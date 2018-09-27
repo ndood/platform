@@ -550,3 +550,20 @@ create table t_user_profession
    is_del               tinyint(1) comment '删除标志（1：删除；0：未删除）',
    primary key (id)
 )comment '用户职业表';
+
+
+CREATE TABLE `t_order_msg` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `message` varchar(255) DEFAULT NULL COMMENT '消息内容',
+  `order_no` varchar(255) NOT NULL COMMENT '订单号',
+  `user_id` int(11) NOT NULL COMMENT '消息人ID',
+  `opp_username` varchar(255) DEFAULT NULL COMMENT '对方昵称',
+  `opp_head_url` varchar(255) DEFAULT NULL COMMENT '对方头像',
+  `order_name` varchar(255) NOT NULL COMMENT '订单名称',
+  `order_time` datetime DEFAULT NULL COMMENT '订单服务时间',
+  `order_status` int(11) NOT NULL COMMENT '订单状态',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) comment '订单消息表';
+

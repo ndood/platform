@@ -398,6 +398,7 @@ public class OrderController extends BaseController {
     @RequestMapping("/comment/save")
     public Result save(UserCommentVO commentVO) {
         userCommentService.save(commentVO);
+
         return Result.success().msg("评论成功！");
     }
 
@@ -425,6 +426,8 @@ public class OrderController extends BaseController {
     @RequestMapping("/server-comment/save")
     public Result serverCommentSave(ServerCommentVO serverCommentVO) {
         serverCommentService.save(serverCommentVO);
+        Order order = appOrderServiceImpl.findByOrderNo(serverCommentVO.getOrderNo());
+        mobileAppPushService.userCommentOrder(order);
         return Result.success().msg("评论成功！");
     }
 
