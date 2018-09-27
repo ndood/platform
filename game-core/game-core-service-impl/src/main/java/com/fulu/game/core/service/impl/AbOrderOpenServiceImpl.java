@@ -531,7 +531,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         }
         
         //发送邮件
-        MailUtil.sendMail(configProperties.getOrdermail().getAddress(),configProperties.getOrdermail().getPassword(),"陪玩师取消了订单："+order.getOrderNo(),"陪玩师取消了订单，订单号"+order.getOrderNo(),new String[]{"m18507140487@163.com","xiaosong@fulu.com"});
+        MailUtil.sendMail(configProperties.getOrdermail().getAddress(),configProperties.getOrdermail().getPassword(),"陪玩师取消了订单："+order.getOrderNo(),"陪玩师取消了订单，订单号"+order.getOrderNo(),new String[]{configProperties.getOrdermail().getTargetAddress()});
         return orderConvertVo(order);
     }
     

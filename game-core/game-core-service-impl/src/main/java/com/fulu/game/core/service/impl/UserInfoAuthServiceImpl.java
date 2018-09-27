@@ -972,7 +972,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             //保存开关CD  24小时
             redisOpenService.set(RedisKeyEnum.USER_AGENT_IM_OPEN.generateKey(userInfo.getId()), "true", Constant.ONE_DAY);
             //发送邮件
-            MailUtil.sendMail(configProperties.getOrdermail().getAddress(), configProperties.getOrdermail().getPassword(), "陪玩师申请开通代聊服务", userInfo.getNickname() + "申请开通代聊服务，ID：" + userInfo.getId() + "，手机号：" + userInfo.getMobile() + "，请与之联系获取私照", new String[]{"m18507140487@163.com","xiaosong@fulu.com"});
+            MailUtil.sendMail(configProperties.getOrdermail().getAddress(), configProperties.getOrdermail().getPassword(), "陪玩师申请开通代聊服务", userInfo.getNickname() + "申请开通代聊服务，ID：" + userInfo.getId() + "，手机号：" + userInfo.getMobile() + "，请与之联系获取私照", new String[]{configProperties.getOrdermail().getTargetAddress()});
         }
 
 

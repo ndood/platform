@@ -109,6 +109,7 @@ public class Config {
     public static class Ordermail {
         private String address;
         private String password;
+        private String targetAddress;
     }
 
     @Data
