@@ -42,6 +42,12 @@ public class UserTechAuth implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
+    /** 技能接单量 */
+    private Integer orderCount;
 
+    /** 技能等级id */
+    private Integer techLevelId;
 
+    /** 技能等级名称 */
+    private Integer techLevelName;
 }
