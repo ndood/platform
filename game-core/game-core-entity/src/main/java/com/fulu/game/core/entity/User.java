@@ -46,7 +46,7 @@ public class User implements Serializable {
     //1:普通用户,2:打手,3:渠道商
 //    @Excel(name = "类型", orderNum = "3", replace = {"玩家_1", "陪玩师_2", "渠道商_3"}, width = 15)
     private Integer type;
-    //信息认证(0未完善,1已完善,2审核通过)
+    //信息认证(0未认证,1认证中,2审核通过,3冻结)
 //    @Excel(name = "认证状态", orderNum = "4", replace = {"未完善_1", "已完善_2", "审核通过_3"}, width = 15)
     private Integer userInfoAuth;
     @JsonIgnore
