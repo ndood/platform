@@ -95,7 +95,7 @@ public class AlipayPaymentComponent implements PaymentComponent {
         AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
         model.setBody(order.getName());
         model.setSubject(order.getName());
-        model.setOutTradeNo(order.getCouponNo());
+        model.setOutTradeNo(order.getOrderNo());
         model.setTimeoutExpress("30m");
         model.setTotalAmount(order.getActualMoney().toPlainString());
         model.setProductCode("QUICK_MSECURITY_PAY");
@@ -170,7 +170,7 @@ public class AlipayPaymentComponent implements PaymentComponent {
         try {
             //这里和普通的接口调用不同，使用的是sdkExecute
             AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
-            log.info("支付宝responsebody{}",response.getBody());
+            log.info("支付宝responsebody:{}",response.getBody());
             return response.getBody();
         } catch (AlipayApiException e) {
             log.error("支付宝发起支付请求异常:", e);

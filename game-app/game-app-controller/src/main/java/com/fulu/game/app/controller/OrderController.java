@@ -51,7 +51,6 @@ public class OrderController extends BaseController {
     private ServerCommentService serverCommentService;
     @Autowired
     private MobileAppPushServiceImpl mobileAppPushService;
-
     @Autowired
     private UserTechAuthService userTechAuthService;
 

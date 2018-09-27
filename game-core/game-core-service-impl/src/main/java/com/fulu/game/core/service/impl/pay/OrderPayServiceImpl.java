@@ -37,15 +37,15 @@ public abstract class OrderPayServiceImpl implements BusinessPayService {
         if (order.getIsPay() && !order.getStatus().equals(OrderStatusEnum.NON_PAYMENT.getStatus())) {
             throw new OrderException(order.getOrderNo(), "已支付的订单不能支付!");
         }
-        Integer totalFee = (order.getActualMoney().multiply(new BigDecimal(100))).intValue();
         //如果订单金额为0,则直接调用支付成功接口
-        if (totalFee.equals(0)) {
+        if (order.getActualMoney().compareTo(new BigDecimal(0))==0) {
             payOrder(order.getPayment(),order.getOrderNo(), order.getActualMoney());
             return new PayRequestRes(true);
         }
         try {
             PaymentComponent paymentComponent = paymentFactory.build(order.getPayment());
             PayRequestRes res= paymentComponent.payRequest(payRequestModel);
+            log.info("支付请求结果:{}",res);
             if(res.isDirectPay()){
                 payOrder(order.getPayment(),order.getOrderNo(), order.getActualMoney());
             }

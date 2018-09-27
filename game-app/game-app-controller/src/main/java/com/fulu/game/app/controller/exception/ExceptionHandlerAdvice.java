@@ -141,8 +141,9 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(PayException.class)
     public Result handlePayException (PayException e) {
         log.error("支付异常", e);
-        return Result.dataError().data("errcode", e.getCode()).msg(e.getMessage());
+        return Result.error().data("errcode", e.getCode()).msg(e.getMessage());
     }
+
 
     /**
      * 数据异常

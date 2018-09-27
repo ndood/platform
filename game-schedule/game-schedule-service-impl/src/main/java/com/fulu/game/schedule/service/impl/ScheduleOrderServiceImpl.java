@@ -47,8 +47,6 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
     @Autowired
     private PointOrderShareProfitServiceImpl pointOrderShareProfitService;
     @Autowired
-    private H5OrderShareProfitServiceImpl h5OrderShareProfitService;
-    @Autowired
     private SchedulePushServiceImpl schedulePushService;
     @Autowired
     private OrderService orderService;
@@ -67,7 +65,7 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
             //上分订单
             playOrderShareProfitService.shareProfit(order);
         }
-        //todo 分润逻辑需要按照平台来而不是订单类型
+        //todo 分润逻辑需要按照支付方式来而不是订单类型
         else {
             log.error("订单类型不匹配:{}",order);
             throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING,order.getOrderNo());
@@ -86,7 +84,7 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
             //上分订单
             pointOrderShareProfitService.orderRefund(order, refundMoney);
         }
-        //todo 退款逻辑需要按照平台来
+        //todo 退款逻辑需要按照支付方式来
         else {
             log.error("订单类型不匹配:{}",order);
             throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING,order.getOrderNo());
@@ -120,8 +118,8 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
     public void systemCompleteOrder(String orderNo) {
         Order order = orderService.findByOrderNo(orderNo);
         log.info("系统开始完成订单order:{}", order);
-        if (!order.getStatus().equals(OrderStatusEnum.CHECK.getStatus())) {
-            throw new OrderException(order.getOrderNo(), "只有待验收订单才能验收!");
+        if (!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())) {
+            throw new OrderException(order.getOrderNo(), "只有陪玩中的订单才能验收!");
         }
         order.setStatus(OrderStatusEnum.SYSTEM_COMPLETE.getStatus());
         order.setUpdateTime(new Date());

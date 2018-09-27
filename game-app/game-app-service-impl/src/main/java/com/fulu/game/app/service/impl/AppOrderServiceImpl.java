@@ -194,6 +194,9 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
         orderDetailsVO.setServerAge(server.getAge());
         orderDetailsVO.setServerGender(server.getGender());
         orderDetailsVO.setServerScoreAvg(server.getScoreAvg());
+        if(orderDetailsVO.getCharges()==null){
+            orderDetailsVO.setCharges(new BigDecimal("0.1"));
+        }
         orderDetailsVO.setServerIncome(orderDetailsVO.getTotalMoney().multiply(orderDetailsVO.getCharges()));
 
         User user = userService.findById(order.getUserId());
