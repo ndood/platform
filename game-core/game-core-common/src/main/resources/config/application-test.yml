@@ -94,3 +94,4 @@ config:
     ordermail:
       address: xiaosong@fulu.com
       password: fulu&2018
+      targetAddress: xiaosong@fulu.com

@@ -92,3 +92,4 @@ config:
     ordermail:
       address: yangxudong@fulu.com
       password: Yang37520
+      targetAddress: m18507140487@163.com
