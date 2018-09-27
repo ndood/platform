@@ -56,7 +56,7 @@ public class User implements Serializable {
     private String imPsw;
     @Excel(name = "来源Id", orderNum = "8", width = 15)
     private Integer sourceId;
-    @JsonIgnore
+//    @JsonIgnore
     private BigDecimal balance;
     //充值零钱（不可提现）
     private BigDecimal chargeBalance;

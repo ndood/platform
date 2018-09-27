@@ -1,6 +1,8 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.SysRouter;
+import com.fulu.game.core.entity.vo.SysRouterVO;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -34,4 +36,17 @@ public interface SysRouterService extends ICommonService<SysRouter,Integer>{
      * @return
      */
     List<SysRouter> findByType(Integer type);
+
+    /**
+     * 获取用户所有router，用户id不传表示获取所有
+     * @param userId
+     * @return
+     */
+    List<SysRouter> findByUserId(Integer userId);
+
+    /**
+     * 保存router信息
+     * @param sysRouterVO
+     */
+    void save(SysRouterVO sysRouterVO);
 }

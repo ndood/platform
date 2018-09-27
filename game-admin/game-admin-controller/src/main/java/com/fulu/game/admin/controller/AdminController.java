@@ -2,17 +2,12 @@ package com.fulu.game.admin.controller;
 
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
-import com.fulu.game.core.entity.Admin;
-import com.fulu.game.core.entity.ConversionRate;
-import com.fulu.game.core.entity.SysRole;
-import com.fulu.game.core.entity.TechLevel;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.AdminVO;
 import com.fulu.game.core.entity.vo.SysRoleVO;
+import com.fulu.game.core.entity.vo.SysRouterVO;
 import com.fulu.game.core.entity.vo.TechLevelVO;
-import com.fulu.game.core.service.AdminService;
-import com.fulu.game.core.service.ConversionRateService;
-import com.fulu.game.core.service.SysRoleService;
-import com.fulu.game.core.service.TechLevelService;
+import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +31,8 @@ public class AdminController extends BaseController {
     private TechLevelService techLevelService;
     @Autowired
     private ConversionRateService conversionRateService;
+    @Autowired
+    private SysRouterService sysRouterService;
 
     /**
      * 查询-管理员-列表
@@ -138,8 +135,8 @@ public class AdminController extends BaseController {
      */
     @PostMapping("sys-role/save")
     public Result sysRoleSave(SysRoleVO sysRoleVO) {
-        sysRoleService.save(sysRoleVO);
         String msgPrefix = sysRoleVO != null && sysRoleVO.getId() != null && sysRoleVO.getId().intValue() > 0 ? "修改" :"新增";
+        sysRoleService.save(sysRoleVO);
         return Result.success().msg(msgPrefix + "成功！");
     }
 
@@ -190,6 +187,51 @@ public class AdminController extends BaseController {
     public Result conversionRateAllList() {
         List<ConversionRate> list = conversionRateService.findAll();
         return Result.success().data(list).msg("查询列表成功！");
+    }
+
+    /**
+     * 查询-路由-列表
+     *
+     * @return
+     */
+    @PostMapping("sys-router/list-all")
+    public Result sysRouterList(@RequestParam(required = false) Integer userId) {
+        List<SysRouter> list = sysRouterService.findByUserId(userId);
+        return Result.success().data(list).msg("查询列表成功！");
+    }
+
+    /**
+     * 保存-路由信息（新增/修改）
+     *
+     * @return
+     */
+    @PostMapping("sys-router/save")
+    public Result sysRouterSave(SysRouterVO sysRouterVO) {
+        String msgPrefix = sysRouterVO != null && sysRouterVO.getId() != null && sysRouterVO.getId().intValue() > 0 ? "修改" :"新增";
+        sysRouterService.save(sysRouterVO);
+        return Result.success().msg(msgPrefix + "成功！");
+    }
+
+    /**
+     * 删除路由信息
+     *
+     * @return
+     */
+    @PostMapping("sys-router/query")
+    public Result sysRouterQuery(@RequestParam("id") Integer id) {
+        SysRouter sysRouter = sysRouterService.findById(id);
+        return Result.success().data(sysRouter).msg("查询成功！");
+    }
+
+    /**
+     * 删除路由信息
+     *
+     * @return
+     */
+    @PostMapping("sys-router/del")
+    public Result sysRouterDelete(@RequestParam("id") Integer id) {
+        sysRouterService.deleteById(id);
+        return Result.success().msg("删除成功！");
     }
 
 }
