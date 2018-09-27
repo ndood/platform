@@ -23,4 +23,8 @@ public interface FenqileOrderService extends ICommonService<FenqileOrder, Intege
 //    List<FenqileOrderVO> list(FenqileOrderSearchVO searchVO);
 
     FenqileOrderVO getTotalReconAmount(FenqileOrderSearchVO searchVO);
+
+
+    FenqileOrder findByOrderNo(String orderNo);
+
 }

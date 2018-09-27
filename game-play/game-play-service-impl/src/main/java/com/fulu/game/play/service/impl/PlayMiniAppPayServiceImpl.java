@@ -2,6 +2,7 @@ package com.fulu.game.play.service.impl;
 
 import com.fulu.game.common.config.WxMaServiceSupply;
 import com.fulu.game.common.exception.OrderException;
+import com.fulu.game.common.exception.PayException;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.impl.pay.MiniAppPayServiceImpl;
@@ -47,13 +48,23 @@ public class PlayMiniAppPayServiceImpl extends MiniAppPayServiceImpl {
     }
 
     @Override
-    public WxPayOrderNotifyResult parseResult(String xmlResult) throws WxPayException {
-        return wxMaServiceSupply.playWxPayService().parseOrderNotifyResult(xmlResult);
+    public WxPayOrderNotifyResult parseResult(String xmlResult)  {
+        try {
+            return wxMaServiceSupply.playWxPayService().parseOrderNotifyResult(xmlResult);
+        }catch (Exception e){
+            throw new PayException(PayException.ExceptionCode.CALLBACK_FAIL);
+        }
+
     }
 
     @Override
-    public WxPayRefundResult refund(WxPayRefundRequest wxPayRefundRequest) throws WxPayException {
-        return wxMaServiceSupply.playWxPayService().refund(wxPayRefundRequest);
+    public WxPayRefundResult refund(WxPayRefundRequest wxPayRefundRequest){
+        try {
+            return wxMaServiceSupply.playWxPayService().refund(wxPayRefundRequest);
+        }catch (Exception e){
+            throw new PayException(PayException.ExceptionCode.THIRD_REFUND_FAIL);
+        }
+
     }
 
 }

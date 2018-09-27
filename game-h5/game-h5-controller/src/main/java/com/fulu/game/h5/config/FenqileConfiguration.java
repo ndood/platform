@@ -4,7 +4,7 @@ package com.fulu.game.h5.config;
 import com.fulu.game.common.properties.Config;
 import com.fulu.game.thirdparty.fenqile.entity.FenqileConfig;
 import com.fulu.game.thirdparty.fenqile.service.impl.FenqileAuthServiceImpl;
-import com.fulu.game.thirdparty.fenqile.service.impl.FenqileOrderServiceImpl;
+import com.fulu.game.thirdparty.fenqile.service.impl.FenqileSdkOrderServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -44,8 +44,8 @@ public class FenqileConfiguration {
 
 
     @Bean
-    public FenqileOrderServiceImpl fenqileOrderService(FenqileConfig fenqileConfig){
-        FenqileOrderServiceImpl fenqileAuthService = new FenqileOrderServiceImpl();
+    public FenqileSdkOrderServiceImpl fenqileOrderService(FenqileConfig fenqileConfig){
+        FenqileSdkOrderServiceImpl fenqileAuthService = new FenqileSdkOrderServiceImpl();
         fenqileAuthService.setConfig(fenqileConfig);
         return fenqileAuthService;
     }

@@ -8,9 +8,6 @@ import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.fulu.game.h5.controller.BaseController;
-import com.fulu.game.thirdparty.fenqile.service.FenqileAuthService;
-import com.fulu.game.thirdparty.fenqile.service.impl.FenqileOrderServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,8 +33,7 @@ public class GlobalController extends BaseController {
     private RedisOpenServiceImpl redisOpenService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private FenqileOrderServiceImpl fenqileOrderService;
+
 
 
     @PostMapping(value = "upload")

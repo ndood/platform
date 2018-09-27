@@ -46,7 +46,7 @@ public abstract class MiniAppPayServiceImpl extends PayServiceImpl<WxPayOrderNot
     }
 
     @Override
-    public boolean thirdRefund(String orderNo, Integer totalMoney, Integer refundMoney) throws WxPayException {
+    public boolean thirdRefund(String orderNo, Integer totalMoney, Integer refundMoney)  {
         WxPayRefundRequest request = new WxPayRefundRequest();
         request.setOutTradeNo(orderNo);
         request.setOutRefundNo(orderNo + "E");
@@ -56,6 +56,6 @@ public abstract class MiniAppPayServiceImpl extends PayServiceImpl<WxPayOrderNot
         return wxPayRefundResult != null;
     }
 
-    protected abstract WxPayRefundResult refund(WxPayRefundRequest wxPayRefundRequest) throws WxPayException;
+    protected abstract WxPayRefundResult refund(WxPayRefundRequest wxPayRefundRequest) ;
 
 }

@@ -1,42 +1,47 @@
 package com.fulu.game.h5.service.impl.fenqile;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.fulu.game.common.exception.PayException;
+import com.fulu.game.core.entity.FenqileOrder;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.ThirdpartyUser;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.service.FenqileOrderService;
 import com.fulu.game.core.service.ThirdpartyUserService;
+import com.fulu.game.core.service.impl.FenqileOrderServiceImpl;
 import com.fulu.game.core.service.impl.pay.PayServiceImpl;
-import com.fulu.game.thirdparty.fenqile.entity.CodeSessionResult;
 import com.fulu.game.thirdparty.fenqile.entity.FenqileOrderNotice;
 import com.fulu.game.thirdparty.fenqile.entity.FenqileOrderRequest;
-import com.fulu.game.thirdparty.fenqile.service.FenqileOrderService;
-import com.github.binarywang.wxpay.bean.notify.WxPayNotifyResponse;
+import com.fulu.game.thirdparty.fenqile.service.FenqileSdkOrderService;
 import com.github.binarywang.wxpay.exception.WxPayException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Service
 @Slf4j
 public class H5FenqilePayServiceImpl extends PayServiceImpl<FenqileOrderNotice> {
 
     @Autowired
-    private FenqileOrderService fenqileOrderService;
+    private FenqileSdkOrderService fenqileSdkOrderService;
     @Autowired
     private ThirdpartyUserService thirdpartyUserService;
     @Autowired
     private H5OrderServiceImpl h5OrderService;
+    @Autowired
+    private FenqileOrderService fenqileOrderService;
 
 
     @Override
     protected void payOrder(String orderNo, BigDecimal actualMoney) {
         h5OrderService.payOrder(orderNo,actualMoney);
     }
+
 
     @Override
     protected Object pay(Order order, User user, String ip) {
@@ -48,10 +53,9 @@ public class H5FenqilePayServiceImpl extends PayServiceImpl<FenqileOrderNotice> 
         fenqileOrderRequest.setThirdUid(thirdpartyUser.getFqlOpenid());
         fenqileOrderRequest.setAmount(order.getActualMoney());
         fenqileOrderRequest.setCreateTime(DateUtil.now());
-        String result = fenqileOrderService.createOrder(fenqileOrderRequest);
+        String result = fenqileSdkOrderService.createOrder(fenqileOrderRequest);
         return result;
     }
-
 
 
     @Override
@@ -61,22 +65,34 @@ public class H5FenqilePayServiceImpl extends PayServiceImpl<FenqileOrderNotice> 
             // 结果正确
             String orderNo = getOrderNo(result);
             String totalYuan = getTotal(result);
-            if("12".equals(result.getMerchSaleState())){
+            if(Integer.valueOf(12).equals(result.getMerchSaleState())){
                 payOrder(orderNo, new BigDecimal(totalYuan));
-            }else if("15".equals(result.getMerchSaleState())){
+            }else if(Integer.valueOf(15).equals(result.getMerchSaleState())){
                 //todo 取消订单
+                h5OrderService.fenqileUserCancelOrder(orderNo);
+            }else if(Integer.valueOf(10).equals(result.getMerchSaleState())){
+                FenqileOrder origOrder = fenqileOrderService.findByOrderNo(orderNo);
+                if(origOrder==null){
+                    //新建分期乐订单数据
+                    FenqileOrder fenqileOrder = new FenqileOrder();
+                    fenqileOrder.setOrderNo(orderNo);
+                    fenqileOrder.setFenqileNo(result.getOrderId());
+                    fenqileOrder.setUpdateTime(new Date());
+                    fenqileOrder.setCreateTime(new Date());
+                    fenqileOrderService.create(fenqileOrder);
+                }
             }
-            return "success";
+            return "{\"result\":0}";
         } catch (Exception e) {
             log.error("回调报文:{}", xmlResult);
             log.error("回调结果异常,异常原因:", e);
-            return "error";
+            return "{\"result\":1}";
         }
     }
 
 
     @Override
-    protected FenqileOrderNotice parseResult(String result) throws WxPayException {
+    protected FenqileOrderNotice parseResult(String result)  {
         //{"sign":"45f6ba64d0d2247f468d85242f1cb9f2","amount":0.01,"subject":"绝地求生：刺激战场 1*局","third_order_id":"TEST180926997162","merch_sale_state":10,"order_id":"O20180926620566103844"}
         JSONObject jso = JSONObject.parseObject(result);
         FenqileOrderNotice fenqileOrderNotice = BeanUtil.fillBeanWithMap(jso.getInnerMap(),new FenqileOrderNotice(), true,true);
@@ -94,7 +110,18 @@ public class H5FenqilePayServiceImpl extends PayServiceImpl<FenqileOrderNotice> 
     }
 
     @Override
-    protected boolean thirdRefund(String orderNo, Integer totalMoney, Integer refundMoney) throws WxPayException {
-        return false;
+    protected boolean thirdRefund(String orderNo, Integer totalMoney, Integer refundMoney) {
+        FenqileOrder fenqileOrder = fenqileOrderService.findByOrderNo(orderNo);
+        if (fenqileOrder == null) {
+            throw new PayException(PayException.ExceptionCode.THIRD_REFUND_FAIL, orderNo);
+        }
+        if (totalMoney.equals(refundMoney)) {
+            log.info("调用分期乐全部退款:fenqileOrder:{},totalMoney:{},refundMoney:{}",fenqileOrder,totalMoney,refundMoney);
+            return fenqileSdkOrderService.cancelFenqileOrder(orderNo, fenqileOrder.getFenqileNo());
+        } else {
+            log.info("调用分期乐部分退款:fenqileOrder:{},totalMoney:{},refundMoney:{}",fenqileOrder,totalMoney,refundMoney);
+            return fenqileSdkOrderService.noticeFenqileRefund(orderNo, fenqileOrder.getFenqileNo(), new BigDecimal(Double.valueOf(refundMoney) / 100).setScale(2, BigDecimal.ROUND_HALF_UP));
+        }
     }
+
 }

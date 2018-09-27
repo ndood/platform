@@ -3,15 +3,19 @@ package com.fulu.game.h5.service.impl.fenqile;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.enums.*;
+import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
+import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.aop.UserScore;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
+import com.fulu.game.thirdparty.fenqile.service.FenqileSdkOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +28,8 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import static com.fulu.game.common.enums.OrderStatusEnum.NON_PAYMENT;
 
 @Service
 @Slf4j
@@ -57,8 +63,13 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
     @Qualifier(value = "userInfoAuthServiceImpl")
     private UserInfoAuthService userInfoAuthService;
     @Autowired
+    private OrderEventService orderEventService;
+    @Autowired
+    private OrderDealService orderDealService;
+    @Autowired
     private FenqileOrderService fenqileOrderService;
-
+    @Autowired
+    private FenqileSdkOrderService fenqileSdkOrderService;
 
     @Override
     protected MiniAppPushServiceImpl getMinAppPushService() {
@@ -83,14 +94,29 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         }
     }
 
+
+
     @Override
     protected void shareProfit(Order order) {
         h5OrderShareProfitService.shareProfit(order);
+        try {
+            //订单完成通知分期乐完成订单
+            FenqileOrder fenqileOrder = fenqileOrderService.findByOrderNo(order.getOrderNo());
+            if(fenqileOrder==null){
+               log.info("没有对应的分期乐订单:order:{}",order);
+            }
+            fenqileSdkOrderService.completeFenqileOrder(order.getOrderNo(),fenqileOrder.getFenqileNo());
+        }catch (Exception e){
+            log.error("订单分润异常",e);
+        }
+
     }
+
+
 
     @Override
     protected void orderRefund(Order order, BigDecimal refundMoney) {
-
+        h5OrderShareProfitService.orderRefund(order,refundMoney);
     }
 
     public String submit(Integer productId, Integer num, String couponNo, String userIp,
@@ -149,14 +175,6 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         }
         //创建订单商品
         orderProductService.create(order, product, num);
-
-        //新建分期乐订单数据
-        FenqileOrder fenqileOrder = new FenqileOrder();
-        fenqileOrder.setOrderNo(order.getOrderNo());
-        fenqileOrder.setUpdateTime(DateUtil.date());
-        fenqileOrder.setCreateTime(DateUtil.date());
-        fenqileOrderService.create(fenqileOrder);
-
         //计算订单状态倒计时24小时
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
         return order.getOrderNo();
@@ -180,6 +198,94 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         }
         return new PageInfo<>(list);
     }
+
+
+
+
+    /**
+     * 分期乐用户取消订单
+     * @param orderNo
+     * @return
+     */
+    public OrderVO fenqileUserCancelOrder(String orderNo) {
+        log.info("分期乐用户取消订单orderNo:{}", orderNo);
+        Order order = orderService.findByOrderNo(orderNo);
+        userService.isCurrentUser(order.getUserId());
+        if (!order.getStatus().equals(NON_PAYMENT.getStatus())) {
+            throw new OrderException(order.getOrderNo(), "未支付的订单才能取消!");
+        }
+        if (order.getIsPay()) {
+            order.setStatus(OrderStatusEnum.USER_CANCEL.getStatus());
+        } else {
+            order.setStatus(OrderStatusEnum.UNPAY_ORDER_CLOSE.getStatus());
+        }
+        order.setUpdateTime(new Date());
+        order.setCompleteTime(new Date());
+        orderService.update(order);
+        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
+        return orderConvertVo(order);
+    }
+
+
+    /**
+     * 申请协商处理
+     *
+     * @param orderNo
+     * @param refundMoney
+     * @param remark
+     * @param fileUrls
+     * @return
+     */
+    @Override
+    public String userConsultOrder(String orderNo, BigDecimal refundMoney, String remark, String[] fileUrls) {
+        //todo 分期乐订单不能部分退款
+        log.info("用户协商订单orderNo:{}", orderNo);
+        Order order = orderService.findByOrderNo(orderNo);
+        if (refundMoney == null) {
+            throw new OrderException(orderNo, "协商处理金额不能为空!");
+        }
+        String refundType = "";
+        if (refundMoney.compareTo(order.getActualMoney()) > 0) {
+            throw new OrderException(orderNo, "协商处理金额不能大于订单支付金额!");
+        }
+        if (refundMoney.compareTo(order.getActualMoney()) == 0) {
+            refundType = "全部退款";
+        } else {
+            refundType = "部分退款";
+            throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_PORTION_REFUND,orderNo);
+        }
+
+        User user = userService.getCurrentUser();
+        userService.isCurrentUser(order.getUserId());
+        if (!order.getStatus().equals(OrderStatusEnum.ALREADY_RECEIVING.getStatus()) &&
+                !order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus()) &&
+                !order.getStatus().equals(OrderStatusEnum.CHECK.getStatus())) {
+            throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES, orderNo);
+        }
+        //提交申诉
+        OrderEvent orderEvent = orderEventService.createConsult(order, user, order.getStatus(), refundMoney);
+        order.setStatus(OrderStatusEnum.CONSULTING.getStatus());
+        order.setUpdateTime(new Date());
+        orderService.update(order);
+        //提交协商处理
+        String title = "发起了协商-" + refundType + " ￥" + refundMoney.toPlainString();
+        OrderDeal orderDeal = new OrderDeal();
+        orderDeal.setTitle(title);
+        orderDeal.setType(OrderDealTypeEnum.CONSULT.getType());
+        orderDeal.setUserId(user.getId());
+        orderDeal.setRemark(remark);
+        orderDeal.setOrderNo(order.getOrderNo());
+        orderDeal.setOrderEventId(orderEvent.getId());
+        orderDeal.setCreateTime(new Date());
+        orderDealService.create(orderDeal, fileUrls);
+        //倒计时24小时后处理
+        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
+        //推送通知
+        getMinAppPushService().consult(order);
+        return orderNo;
+    }
+
+
 
     /**
      * 获取订单详情

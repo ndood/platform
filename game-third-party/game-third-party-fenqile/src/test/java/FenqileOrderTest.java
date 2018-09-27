@@ -1,10 +1,9 @@
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.bean.copier.CopyOptions;
 import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.thirdparty.fenqile.entity.FenqileConfig;
 import com.fulu.game.thirdparty.fenqile.entity.FenqileOrderNotice;
 import com.fulu.game.thirdparty.fenqile.entity.FenqileOrderRequest;
-import com.fulu.game.thirdparty.fenqile.service.impl.FenqileOrderServiceImpl;
+import com.fulu.game.thirdparty.fenqile.service.impl.FenqileSdkOrderServiceImpl;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -34,7 +33,7 @@ public class FenqileOrderTest {
 
 
     public static void test1() {
-        FenqileOrderServiceImpl orderService = new FenqileOrderServiceImpl();
+        FenqileSdkOrderServiceImpl orderService = new FenqileSdkOrderServiceImpl();
         FenqileConfig fenqileConfig = new FenqileConfig();
         fenqileConfig.setPartnerId("PAI201808080000195");
         fenqileConfig.setPartnerKey("43ea4b7f27e36f2eb7b194b3924291ca");
@@ -46,7 +45,7 @@ public class FenqileOrderTest {
 
     @Test
     public void testFenqilePay() {
-        FenqileOrderServiceImpl fenqileOrderService = new FenqileOrderServiceImpl();
+        FenqileSdkOrderServiceImpl fenqileOrderService = new FenqileSdkOrderServiceImpl();
         fenqileOrderService.setConfig(getFenqileConfig());
         FenqileOrderRequest fenqileOrderRequest = new FenqileOrderRequest();
         fenqileOrderRequest.setSubject("xxx");
@@ -61,7 +60,7 @@ public class FenqileOrderTest {
 
     @Test
     public void testNoticeModify() {
-//        FenqileOrderServiceImpl fenqileOrderService = new FenqileOrderServiceImpl();
+//        FenqileSdkOrderServiceImpl fenqileOrderService = new FenqileSdkOrderServiceImpl();
 //        fenqileOrderService.setConfig(getFenqileConfig());
 //
 //        fenqileOrderService.noticeQuery(1);
@@ -75,7 +74,7 @@ public class FenqileOrderTest {
 
     @Test
     public void testFenqileOrderStatus() {
-        FenqileOrderServiceImpl fenqileOrderService = new FenqileOrderServiceImpl();
+        FenqileSdkOrderServiceImpl fenqileOrderService = new FenqileSdkOrderServiceImpl();
         fenqileOrderService.setConfig(getFenqileConfig());
 
         fenqileOrderService.noticeFenqileOrderStatus("TEST180926258117","O20180926624512203256",15);

@@ -2,14 +2,14 @@ package com.fulu.game.thirdparty.fenqile.service;
 
 import com.fulu.game.thirdparty.fenqile.entity.FenqileOrderRequest;
 
-public interface FenqileOrderService {
+import java.math.BigDecimal;
+
+public interface FenqileSdkOrderService {
 
     /**
      * 创建订单接口
      *
      * @param fenqileOrderRequest
-     * @param clazz
-     * @param <T>
      * @return
      */
     String createOrder(FenqileOrderRequest fenqileOrderRequest);
@@ -37,6 +37,14 @@ public interface FenqileOrderService {
      * @return
      */
     boolean cancelFenqileOrder(String orderNo, String fenqileOrderNo);
+
+    /**
+     * 分期乐部分退款
+     * @param orderNo
+     * @param fenqileOrderNo
+     * @param amount
+     */
+    boolean noticeFenqileRefund(String orderNo, String fenqileOrderNo, BigDecimal amount);
 
     /**
      * 完成分期乐订单

@@ -137,4 +137,15 @@ public class FenqileOrderServiceImpl extends AbsCommonService<FenqileOrder, Inte
         resultVO.setTotalAmount(resultVO.getTotalAmount() == null ? new BigDecimal(0) : resultVO.getTotalAmount());
         return resultVO;
     }
+
+    @Override
+    public FenqileOrder findByOrderNo(String orderNo) {
+        FenqileOrderVO param = new FenqileOrderVO();
+        param.setOrderNo(orderNo);
+        List<FenqileOrder> fenqileOrders =    fenqileOrderDao.findByParameter(param);
+        if(fenqileOrders.isEmpty()){
+            return null;
+        }
+        return fenqileOrders.get(0);
+    }
 }

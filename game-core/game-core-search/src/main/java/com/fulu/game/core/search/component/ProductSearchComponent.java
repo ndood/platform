@@ -1,6 +1,5 @@
 package com.fulu.game.core.search.component;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.fulu.game.common.exception.SearchException;
 import com.fulu.game.common.properties.Config;
 import com.fulu.game.core.search.domain.Criteria;
@@ -39,11 +38,6 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
     @Autowired
     private Config configProperties;
 
-
-    enum OrderType{
-        sales,newman
-    }
-
     /**
      * 保存商品索引
      *
@@ -64,7 +58,6 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
         List<Criteria> criterias = Lists.newArrayList(new Criteria("userId", userId));
         return search(criterias, ProductShowCaseDoc.class);
     }
-
 
     /**
      * 昵称查询
@@ -111,7 +104,6 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
         return page;
     }
 
-
     /**
      * 分类商品查询
      *
@@ -124,11 +116,11 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
      * @throws IOException
      */
     public <T> Page<T> searchShowCaseDoc(int categoryId,
-                                                      Integer gender,
-                                                      Integer pageNum,
-                                                      Integer pageSize,
-                                                      String orderBy,
-                                                      Class<T> type) throws IOException {
+                                         Integer gender,
+                                         Integer pageNum,
+                                         Integer pageSize,
+                                         String orderBy,
+                                         Class<T> type) throws IOException {
         //封装查询条件
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
@@ -184,7 +176,6 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
         return page;
     }
 
-
     @Override
     protected String getIndexType() {
         return INDEX_TYPE;
@@ -198,6 +189,10 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
     @Override
     protected JestClient getJestClient() {
         return jestClient;
+    }
+
+    enum OrderType {
+        sales, newman
     }
 
 

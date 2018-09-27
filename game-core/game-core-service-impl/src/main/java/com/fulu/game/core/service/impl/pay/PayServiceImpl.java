@@ -56,19 +56,16 @@ public abstract class PayServiceImpl<T> implements PayService {
         }
     }
 
-    protected abstract T parseResult(String xmlResult) throws WxPayException;
+    protected abstract T parseResult(String xmlResult) ;
 
     protected abstract String getOrderNo(T result);
 
     protected abstract String getTotal(T result);
 
-    @Override
-    public Boolean refund(String orderNo, BigDecimal totalMoney) throws WxPayException {
-        return refund(orderNo, totalMoney, null);
-    }
+
 
     @Override
-    public Boolean refund(String orderNo, BigDecimal totalMoney, BigDecimal refundMoney) throws WxPayException {
+    public Boolean refund(String orderNo, BigDecimal totalMoney, BigDecimal refundMoney)  {
         Integer totalMoneyInt = (totalMoney.multiply(new BigDecimal(100))).intValue();
         Integer refundMoneyInt;
         if (refundMoney == null) {
@@ -81,6 +78,6 @@ public abstract class PayServiceImpl<T> implements PayService {
         return (refundMoneyInt.equals(0)) || thirdRefund(orderNo, totalMoneyInt, refundMoneyInt);
     }
 
-    protected abstract boolean thirdRefund(String orderNo, Integer totalMoney, Integer refundMoney) throws WxPayException;
+    protected abstract boolean thirdRefund(String orderNo, Integer totalMoney, Integer refundMoney) ;
 
 }

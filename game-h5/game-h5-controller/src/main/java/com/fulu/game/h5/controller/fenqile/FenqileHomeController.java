@@ -16,7 +16,7 @@ import com.fulu.game.h5.shiro.PlayUserToken;
 import com.fulu.game.h5.utils.RequestUtil;
 import com.fulu.game.thirdparty.fenqile.entity.CodeSessionResult;
 import com.fulu.game.thirdparty.fenqile.service.FenqileAuthService;
-import com.fulu.game.thirdparty.fenqile.service.FenqileOrderService;
+import com.fulu.game.thirdparty.fenqile.service.FenqileSdkOrderService;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import org.apache.commons.lang.StringUtils;
@@ -49,18 +49,18 @@ public class FenqileHomeController extends BaseController {
 
     private final FenqileAuthService fenqileAuthService;
 
-    private final FenqileOrderService fenqileOrderService;
+    private final FenqileSdkOrderService fenqileSdkOrderService;
 
 
     @Autowired
     public FenqileHomeController(BannerService bannerService,
                                  UserService userService,
                                  FenqileAuthService fenqileAuthService,
-                                 FenqileOrderService fenqileOrderService) {
+                                 FenqileSdkOrderService fenqileSdkOrderService) {
         this.bannerService = bannerService;
         this.userService = userService;
         this.fenqileAuthService = fenqileAuthService;
-        this.fenqileOrderService = fenqileOrderService;
+        this.fenqileSdkOrderService = fenqileSdkOrderService;
     }
 
 
@@ -175,7 +175,7 @@ public class FenqileHomeController extends BaseController {
     @GetMapping(value = "url/setting")
     public Result settingUrl(){
         log.info("执行分期乐修改订单回调通知接口");
-        fenqileOrderService.modifyPlatformUrl();
+        fenqileSdkOrderService.modifyPlatformUrl();
         return Result.success();
     }
 
