@@ -200,13 +200,15 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         for(UserTechAuth userTechAuth : techAuthList){
             if(userTechAuth.getIsActivate()&&TechAuthStatusEnum.NORMAL.getType().equals(userTechAuth.getStatus())){
                 Product product = productService.findAppProductByTech(userTechAuth.getId());
-                TechProductOrderVO.OtherProduct otherProduct = new TechProductOrderVO.OtherProduct();
-                otherProduct.setProductId(product.getId());
-                otherProduct.setProductName(product.getProductName());
-                otherProduct.setCategoryId(product.getCategoryId());
-                otherProduct.setPrice(product.getPrice());
-                otherProduct.setUnit(product.getUnit());
-                productList.add(otherProduct);
+                if(product!=null){
+                    TechProductOrderVO.OtherProduct otherProduct = new TechProductOrderVO.OtherProduct();
+                    otherProduct.setProductId(product.getId());
+                    otherProduct.setProductName(product.getProductName());
+                    otherProduct.setCategoryId(product.getCategoryId());
+                    otherProduct.setPrice(product.getPrice());
+                    otherProduct.setUnit(product.getUnit());
+                    productList.add(otherProduct);
+                }
             }
         }
         return productList;
