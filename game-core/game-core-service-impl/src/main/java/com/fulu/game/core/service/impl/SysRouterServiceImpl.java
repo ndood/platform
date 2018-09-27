@@ -53,7 +53,7 @@ public class SysRouterServiceImpl extends AbsCommonService<SysRouter,Integer> im
      * 获取用户菜单列表
      *
      * @param id
-     * @return
+     * @return 转为父子级关系
      */
     @Override
     public List<SysRouter> findSysRouterListByAdminId(Integer id) {
@@ -86,12 +86,13 @@ public class SysRouterServiceImpl extends AbsCommonService<SysRouter,Integer> im
      * 获取用户所有router，用户id不传表示获取所有
      *
      * @param userId
-     * @return
+     * @return 不转父子级关系
      */
     @Override
     public List<SysRouter> findByUserId(Integer userId) {
-        if(userId != null && userId.intValue() > 0){
-            return findSysRouterListByAdminId(userId);
+        Admin admin = adminService.findById(userId);
+        if(admin != null && !Constant.ADMIN_USERNAME.equals(admin.getUsername())){
+            return sysRouterDao.findSysRouterListByAdminId(userId);
         } else {
             return findAll();
         }

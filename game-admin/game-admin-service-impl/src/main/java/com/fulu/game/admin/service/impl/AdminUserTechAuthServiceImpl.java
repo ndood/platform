@@ -78,7 +78,7 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
     @Transactional
     public UserTechAuthTO save(UserTechAuthTO userTechAuthTO) {
         log.info("修改认证技能:userTechAuthVO:{}", userTechAuthTO);
-        User user = userService.findById(userService.getCurrentUser().getId());
+        User user = userService.findById(userTechAuthTO.getUserId());
         Category category = categoryService.findById(userTechAuthTO.getCategoryId());
         userTechAuthTO.setStatus(TechAuthStatusEnum.AUTHENTICATION_ING.getType());
         userTechAuthTO.setMobile(user.getMobile());

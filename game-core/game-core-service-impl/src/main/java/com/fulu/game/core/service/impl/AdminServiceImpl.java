@@ -49,9 +49,9 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
 
     @Override
     public Admin save(AdminVO adminVO) {
-        if(adminVO != null && (adminVO.getRoleId() == null || adminVO.getRoleId().intValue() <= 0)){
-            throw new UserException(UserException.ExceptionCode.NO_ROLE);
-        }
+//        if(adminVO != null && (adminVO.getRoleId() == null || adminVO.getRoleId().intValue() <= 0)){
+//            throw new UserException(UserException.ExceptionCode.NO_ROLE);
+//        }
         //判断username是否重名
         AdminVO requestVO = new AdminVO();
         requestVO.setName(adminVO.getName());
