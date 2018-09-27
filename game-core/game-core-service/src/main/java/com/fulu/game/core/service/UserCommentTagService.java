@@ -17,9 +17,9 @@ import java.util.List;
 public interface UserCommentTagService extends ICommonService<UserCommentTag,Integer>{
 
 
-    public void create(UserComment comment, List<Integer> tagIds);
+     void create(UserComment comment, List<Integer> tagIds);
 
-    public List<UserCommentTag> findByCommentId(int commentId);
+     List<UserCommentTag> findByCommentId(int commentId);
 
-    PageInfo<UserCommentTag> findByServerId(Integer pageNum, Integer pageSize, Integer serverId);
+     PageInfo<UserCommentTag> findByServerId(Integer pageNum, Integer pageSize, Integer serverId);
 }

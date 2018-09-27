@@ -1,9 +1,11 @@
 package com.fulu.game.core.entity.vo;
 
 import com.fulu.game.core.entity.Order;
+import com.fulu.game.core.entity.UserCommentTag;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class OrderDetailsVO extends Order {
@@ -45,9 +47,11 @@ public class OrderDetailsVO extends Order {
     private String statusStr;
     //订单状态描述
     private String statusNote;
+
     private String categoryIcon;
     //倒计时
     private Long countDown;
+
     private Integer productId;
 
     private Integer identity;
@@ -55,10 +59,14 @@ public class OrderDetailsVO extends Order {
     private Integer commentScore;
 
     private String commentContent;
-    
+
+    private List<UserCommentTag> commentTags;
+
+
     private Boolean waitingRead;
 
     private Integer productAmount;
     
     private String productUnit;
+
 }

@@ -56,13 +56,14 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
     private UserCommentService userCommentService;
     @Autowired
     private ServerCommentService serverCommentService;
+    @Autowired
+    private UserCommentTagService userCommentTagService;
 
     /**
      * 用户提交订单
      *
      * @param productId
      * @param num
-     * @param payment
      * @param platform
      * @param beginTime
      * @param remark
@@ -212,6 +213,8 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
         if (userComment != null) {
             orderDetailsVO.setCommentContent(userComment.getContent());
             orderDetailsVO.setCommentScore(userComment.getScore());
+            List<UserCommentTag> userCommentTags = userCommentTagService.findByCommentId(userComment.getId());
+            orderDetailsVO.setCommentTags(userCommentTags);
         }
         return orderDetailsVO;
     }
