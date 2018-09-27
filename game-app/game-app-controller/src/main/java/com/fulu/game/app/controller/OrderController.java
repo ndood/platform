@@ -17,14 +17,8 @@ import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.payment.model.PayRequestModel;
 import com.fulu.game.core.entity.payment.res.PayRequestRes;
-import com.fulu.game.core.entity.vo.OrderDetailsVO;
-import com.fulu.game.core.entity.vo.OrderEventVO;
-import com.fulu.game.core.entity.vo.ServerCommentVO;
-import com.fulu.game.core.entity.vo.UserCommentVO;
-import com.fulu.game.core.service.OrderEventService;
-import com.fulu.game.core.service.ServerCommentService;
-import com.fulu.game.core.service.UserCommentService;
-import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.entity.vo.*;
+import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.MobileAppPushServiceImpl;
 import com.github.pagehelper.PageInfo;
@@ -58,10 +52,12 @@ public class OrderController extends BaseController {
     @Autowired
     private MobileAppPushServiceImpl mobileAppPushService;
 
+    @Autowired
+    private UserTechAuthService userTechAuthService;
+
     /**
      * @param productId
      * @param num
-     * @param payment
      * @param beginTime
      * @param couponNo
      * @param sessionkey
@@ -72,7 +68,6 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "submit")
     public Result submit(@RequestParam(required = true) Integer productId,
                          @RequestParam(required = true) Integer num,
-                         @RequestParam(required = true) Integer payment,
                          @RequestParam(required = true) Date beginTime,
                          String couponNo,
                          @RequestParam(required = true) String sessionkey,
@@ -97,7 +92,7 @@ public class OrderController extends BaseController {
             }
 
             String ip = RequestUtil.getIpAdrress(request);
-            String orderNo = appOrderServiceImpl.submit(productId, num, payment, platform, beginTime, remark, couponNo, ip);
+            String orderNo = appOrderServiceImpl.submit(productId, num, platform, beginTime, remark, couponNo, ip);
             return Result.success().data(orderNo).msg("创建订单成功!");
         } finally {
             redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));
@@ -107,7 +102,6 @@ public class OrderController extends BaseController {
 
     /**
      * 订单支付接口
-     *
      * @param orderNo
      * @return
      */
@@ -152,8 +146,18 @@ public class OrderController extends BaseController {
 
 
     /**
+     * 下单页面接口
+     * @return
+     */
+    @RequestMapping(value = "/product")
+    public Result orderProduct(@RequestParam(required = true) Integer productId){
+        TechProductOrderVO techProductOrderVO = userTechAuthService.getTechProductByProductId(productId);
+        return Result.success().data(techProductOrderVO);
+    }
+
+
+    /**
      * 订单状态过滤
-     *
      * @return 封装结果集
      */
     @RequestMapping("/filter")

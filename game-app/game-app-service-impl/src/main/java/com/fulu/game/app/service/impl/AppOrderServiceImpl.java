@@ -72,7 +72,6 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
      */
     public String submit(int productId,
                          int num,
-                         int payment,
                          int platform,
                          Date beginTime,
                          String remark,
@@ -97,7 +96,6 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
         order.setCategoryId(product.getCategoryId());
         order.setRemark(remark);
         order.setBeginTime(beginTime);
-        order.setPayment(payment);
         order.setPlatform(platform);
         order.setIsPay(false);
         order.setIsPayCallback(false);
