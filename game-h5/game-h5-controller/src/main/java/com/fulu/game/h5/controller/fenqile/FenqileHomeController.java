@@ -186,35 +186,4 @@ public class FenqileHomeController extends BaseController {
         fenqileSdkOrderService.modifyPlatformUrl();
         return Result.success();
     }
-
-    /**
-     * 点击发送验证码接口
-     *
-     * @param mobile
-     * @return
-     */
-    @PostMapping("/sms/verify")
-    @ResponseBody
-    public Result sms(@RequestParam("mobile") String mobile) {
-        //缓存中查找该手机是否有验证码
-        if (redisOpenService.hasKey(RedisKeyEnum.SMS.generateKey(mobile))) {
-            String times = redisOpenService.get(RedisKeyEnum.SMS.generateKey(mobile));
-            if (Integer.parseInt(times) > Constant.MOBILE_CODE_SEND_TIMES) {
-                return Result.error().msg("半小时内发送次数不能超过" + Constant.MOBILE_CODE_SEND_TIMES + "次，请等待！");
-            } else {
-                String verifyCode = SMSUtil.sendVerificationCode(mobile);
-                log.info("发送验证码{}={}", mobile, verifyCode);
-                redisOpenService.set(RedisKeyEnum.SMS_VERIFY_CODE.generateKey(mobile), verifyCode, Constant.VERIFYCODE_CACHE_TIME);
-                times = String.valueOf(Integer.parseInt(times) + 1);
-                redisOpenService.set(RedisKeyEnum.SMS_VERIFY_CODE_TIMES.generateKey(mobile), times, Constant.MOBILE_CACHE_TIME);
-                return Result.success().data(verifyCode).msg("验证码发送成功！");
-            }
-        } else {
-            String verifyCode = SMSUtil.sendVerificationCode(mobile);
-            log.info("发送验证码{}={}", mobile, verifyCode);
-            redisOpenService.set(RedisKeyEnum.SMS_VERIFY_CODE.generateKey(mobile), verifyCode, Constant.VERIFYCODE_CACHE_TIME);
-            redisOpenService.set(RedisKeyEnum.SMS_VERIFY_CODE_TIMES.generateKey(mobile), "1", Constant.MOBILE_CACHE_TIME);
-            return Result.success().data(verifyCode).msg("验证码发送成功！");
-        }
-    }
 }

@@ -6,6 +6,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
+import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Advice;
 import com.fulu.game.core.entity.ImUser;
@@ -21,10 +22,7 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -58,6 +56,38 @@ public class UserController extends BaseController {
     private UserBodyAuthService userBodyAuthService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+
+    /**
+     * 点击发送验证码接口
+     *
+     * @param mobile
+     * @return
+     */
+    @RequestMapping("/mobile/sms")
+    @ResponseBody
+    public Result sms(@RequestParam("mobile") String mobile) {
+        String token = SubjectUtil.getToken();
+        //缓存中查找该手机是否有验证码
+        if (redisOpenService.hasKey(RedisKeyEnum.SMS.generateKey(mobile))) {
+            String times = redisOpenService.get(RedisKeyEnum.SMS.generateKey(mobile));
+            if (Integer.parseInt(times) > Constant.MOBILE_CODE_SEND_TIMES) {
+                return Result.error().msg("半小时内发送次数不能超过" + Constant.MOBILE_CODE_SEND_TIMES + "次，请等待！");
+            } else {
+                String verifyCode = SMSUtil.sendVerificationCode(mobile);
+                log.info("发送验证码{}={}", mobile, verifyCode);
+                redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode, Constant.VERIFYCODE_CACHE_TIME);
+                times = String.valueOf(Integer.parseInt(times) + 1);
+                redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), times, Constant.MOBILE_CACHE_TIME);
+                return Result.success().msg("验证码发送成功！");
+            }
+        } else {
+            String verifyCode = SMSUtil.sendVerificationCode(mobile);
+            log.info("发送验证码{}={}", mobile, verifyCode);
+            redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode, Constant.VERIFYCODE_CACHE_TIME);
+            redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), "1", Constant.MOBILE_CACHE_TIME);
+            return Result.success().msg("验证码发送成功！");
+        }
+    }
 
     /**
      * 绑定手机号
