@@ -74,6 +74,7 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
         admin.setName(adminVO.getName());
         admin.setUsername(adminVO.getUsername());
         admin.setStatus(adminVO.getStatus());
+        admin.setRoleId(adminVO.getRoleId());
         if(adminVO.getId() != null && adminVO.getId().intValue() > 0){
             admin.setId(adminVO.getId());
             //登录名不允许修改

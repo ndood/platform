@@ -3,12 +3,14 @@ package com.fulu.game.admin.controller;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
+import cn.hutool.core.date.DateUtil;
 import com.fulu.game.admin.service.AdminUserInfoAuthService;
 import com.fulu.game.admin.service.AdminUserTechAuthService;
 import com.fulu.game.admin.service.impl.AdminUserTechAuthServiceImpl;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.utils.CollectionUtil;
+import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
 import com.fulu.game.core.entity.to.UserTechAuthTO;
@@ -64,6 +66,8 @@ public class UserController extends BaseController {
     @Qualifier(value = "adminUserTechAuthServiceImpl")
     @Autowired
     private AdminUserTechAuthServiceImpl adminUserTechAuthService;
+    @Autowired
+    private OssUtil ossUtil;
 
     /**
      * 陪玩师认证信息列表
@@ -595,6 +599,97 @@ public class UserController extends BaseController {
                                  @RequestParam Integer salesModeId) {
         UserNightInfo info = userNightInfoService.setNightConfig(userId, sort, categoryId, salesModeId);
         return Result.success().data(info).msg("设置成功！");
+    }
+
+
+    /**
+     * 修改/填写资料
+     *
+     * @param userVO
+     * @return
+     */
+    @RequestMapping("update")
+    public Result update(UserVO userVO) {
+        User user = new User();
+        user.setId(userVO.getId());
+        if(userVO.getBirth() != null){
+            user.setAge(DateUtil.ageOfNow(userVO.getBirth()));
+        }
+        user.setGender(userVO.getGender());
+        user.setCity(userVO.getCity());
+        user.setProvince(userVO.getProvince());
+        user.setCountry(userVO.getCountry());
+        user.setBirth(userVO.getBirth());
+        user.setConstellation(userVO.getConstellation());
+        user.setNickname(userVO.getNickname());
+        user.setHeadPortraitsUrl(ossUtil.activateOssFile(userVO.getHeadPortraitsUrl()));
+        userService.update(user);
+        user = userService.findById(userVO.getId());
+        userService.updateRedisUser(user);
+        // 保存用户认证信息
+        saveUserInfoAuth(userVO);
+        user.setIdcard(null);
+        user.setRealname(null);
+        return Result.success().data(user).msg("个人信息设置成功！");
+    }
+
+    /**
+     * 保存用户认证信息
+     *
+     * @param userVO
+     */
+    private void saveUserInfoAuth(UserVO userVO) {
+        // 当存在用户认证信息时取修改
+        if (userVO != null && (userVO.getInterests() != null ||
+                userVO.getProfession() != null || userVO.getAbout() != null || userVO.getMainPicUrl() != null)) {
+            UserInfoAuth userInfoAuth = new UserInfoAuth();
+            userInfoAuth.setUserId(userVO.getId());
+            if (userVO.getInterests() != null) {
+                userInfoAuth.setInterests(userVO.getInterests());
+            }
+            if (userVO.getProfession() != null) {
+                userInfoAuth.setProfession(userVO.getProfession());
+            }
+            if (userVO.getAbout() != null) {
+                userInfoAuth.setAbout(userVO.getAbout());
+            }
+            if(userVO.getMainPicUrl() != null){
+                userInfoAuth.setMainPicUrl(userVO.getMainPicUrl());
+            }
+            // 判断认证信息是否存在，不存在就新增
+            UserInfoAuth tmp = userInfoAuthService.findByUserId(userVO.getId());
+            userInfoAuth.setUpdateTime(new Date());
+            if (tmp == null) {
+                userInfoAuth.setCreateTime(new Date());
+                userInfoAuthService.create(userInfoAuth);
+            } else {
+                userInfoAuthService.updateByUserId(userInfoAuth);
+            }
+        }
+        saveUserInfoAuthFile(userVO);
+    }
+
+    /**
+     * 保存用户认证文件信息（语音）
+     *
+     * @param userVO
+     */
+    private void saveUserInfoAuthFile(UserVO userVO) {
+        UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(userVO.getId());
+        if (userInfoAuth != null) {
+            // 先删除语音
+            userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(), 2);
+            if (userVO != null && ( userVO.getVoiceUrl() != null || userVO.getDuration() != null)) {
+                UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
+                userInfoAuthFile.setUrl(ossUtil.activateOssFile(userVO.getVoiceUrl()));
+                userInfoAuthFile.setDuration(userVO.getDuration());
+                userInfoAuthFile.setInfoAuthId(userInfoAuth.getId());
+                userInfoAuthFile.setType(2);
+                userInfoAuthFile.setName("语音");
+                userInfoAuthFile.setCreateTime(new Date());
+                userInfoAuthFileService.create(userInfoAuthFile);
+            }
+        }
     }
 
 }

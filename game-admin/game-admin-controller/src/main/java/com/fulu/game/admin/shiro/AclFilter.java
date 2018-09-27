@@ -84,15 +84,18 @@ public class AclFilter extends AccessControlFilter {
                 returnMsg = JSONObject.fromObject(Result.accessDeny().msg("账号已失效,请联系管理员")).toString();
             } else {
                 List<SysRole> roleList = sysRoleService.findByAdminId(admin.getId());
-                if(CollectionUtil.isNotEmpty(roleList)){
-                    SysRole sysRole = roleList.get(0);
-                    if(sysRole.getStatus().intValue() == 0){
-                        log.info("账号权限已关闭");
-                        returnMsg = JSONObject.fromObject(Result.accessDeny().msg("账号权限已关闭")).toString();
+                // 超管账号不验证角色信息
+                if(admin != null && !Constant.ADMIN_USERNAME.equals(admin.getUsername())){
+                    if(CollectionUtil.isNotEmpty(roleList)){
+                        SysRole sysRole = roleList.get(0);
+                        if(sysRole.getStatus().intValue() == 0){
+                            log.info("账号权限已关闭");
+                            returnMsg = JSONObject.fromObject(Result.accessDeny().msg("账号权限已关闭")).toString();
+                        }
+                    } else {
+                        log.info("用户未设置角色信息");
+                        returnMsg = JSONObject.fromObject(Result.accessDeny().msg("用户未设置角色信息")).toString();
                     }
-                } else {
-                    log.info("用户未设置角色信息");
-                    returnMsg = JSONObject.fromObject(Result.accessDeny().msg("用户未设置角色信息")).toString();
                 }
             }
         }

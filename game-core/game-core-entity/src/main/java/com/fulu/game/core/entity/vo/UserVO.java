@@ -74,4 +74,9 @@ public class UserVO extends User {
     private List<UserInfoAuthFile> voiceList;
     //用户封面图
     private String mainPicUrl;
+
+    /** 语音地址 */
+    private String voiceUrl;
+    /** 语音时长 */
+    private Integer duration;
 }

@@ -120,7 +120,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         UserInfoAuth userInfoAuth = new UserInfoAuth();
         BeanUtil.copyProperties(userInfoAuthTO, userInfoAuth);
         userInfoAuth.setUpdateTime(new Date());
-
         userInfoAuthDao.update(userInfoAuth);
 
         //主图不存userInfoAuth，改为存入临时表

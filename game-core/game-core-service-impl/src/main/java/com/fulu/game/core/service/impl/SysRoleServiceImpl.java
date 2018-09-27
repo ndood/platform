@@ -8,7 +8,6 @@ import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.SysRoleVO;
-import com.fulu.game.core.entity.vo.SysRouterVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.util.SysRouterUtil;
 import com.github.pagehelper.PageHelper;
@@ -126,12 +125,13 @@ public class SysRoleServiceImpl extends AbsCommonService<SysRole,Integer> implem
         params.setName(sysRoleVO.getName());
         params.setId(sysRoleVO.getId());
         List<SysRole> sysRoleList = sysRoleDao.findByParameter(params);
-        if(!CollectionUtil.isEmpty(sysRoleList)){
+        if(!CollectionUtil.isEmpty(sysRoleList) && sysRoleVO.getName() != null ){
             throw new UserException(UserException.ExceptionCode.ROLE_NAME_EXIST);
         }
         Admin admin = adminService.getCurrentUser();
         sysRole.setOperatorId(admin.getId());
         sysRole.setOperatorName(admin.getName());
+        sysRole.setStatus(sysRoleVO.getStatus());
         sysRole.setUpdateTime(new Date());
         if(sysRoleVO.getId() != null && sysRoleVO.getId().intValue() > 0){
             sysRoleDao.update(sysRole);

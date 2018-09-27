@@ -30,4 +30,6 @@ public class UserInfoAuthTO extends UserInfoAuth {
     private Integer[] tags;
 
     private String privatePicStr;
+    /** 陪玩师技能所属等级id */
+    private Integer techLevelId;
 }

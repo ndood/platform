@@ -161,7 +161,7 @@ public class AdminController extends BaseController {
     public Result techLevelSave(TechLevelVO techLevelVO) {
         String msgPrefix = techLevelVO != null && techLevelVO.getId() != null && techLevelVO.getId().intValue() > 0 ? "修改" :"新增";
         techLevelService.save(techLevelVO);
-        return Result.success().msg(msgPrefix + "成功！");
+        return Result.success().data(techLevelVO).msg(msgPrefix + "成功！");
     }
 
     /**

@@ -85,6 +85,9 @@
             <if test="isDel != null">
                 and is_del = #{isDel}
             </if>
+            <if test="id != null">
+                and id != #{id}
+            </if>
         </where>
     </select>
 
