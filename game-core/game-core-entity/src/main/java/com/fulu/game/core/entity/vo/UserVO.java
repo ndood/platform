@@ -72,4 +72,6 @@ public class UserVO extends User {
     private List<TagVO> groupTags;
     //声音文件
     private List<UserInfoAuthFile> voiceList;
+    //用户封面图
+    private String mainPicUrl;
 }

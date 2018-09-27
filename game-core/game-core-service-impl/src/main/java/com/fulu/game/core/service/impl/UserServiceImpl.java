@@ -947,6 +947,11 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             userVO.setServiceOrderCount(0);
             userVO.setIncomeUnitPrice(new BigDecimal("0.00"));
         }
+        userVO.setMainPicUrl("");
+        UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(id);
+        if(userInfoAuth != null){
+            userVO.setMainPicUrl(userInfoAuth.getMainPicUrl());
+        }
         return userVO;
     }
 }
