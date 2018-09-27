@@ -207,10 +207,13 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
      * @param orderNo
      * @return
      */
-    public OrderVO fenqileUserCancelOrder(String orderNo) {
+    public String fenqileUserCancelOrder(String orderNo) {
         log.info("分期乐用户取消订单orderNo:{}", orderNo);
         Order order = orderService.findByOrderNo(orderNo);
-        userService.isCurrentUser(order.getUserId());
+        if(order.getStatus()<200){
+            log.info("orderNo:{}该订单已经是取消状态",orderNo);
+            return orderNo;
+        }
         if (!order.getStatus().equals(NON_PAYMENT.getStatus())) {
             throw new OrderException(order.getOrderNo(), "未支付的订单才能取消!");
         }
@@ -223,7 +226,7 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         order.setCompleteTime(new Date());
         orderService.update(order);
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
-        return orderConvertVo(order);
+        return orderNo;
     }
 
 
@@ -252,7 +255,6 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
             refundType = "全部退款";
         } else {
             refundType = "部分退款";
-            throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_PORTION_REFUND,orderNo);
         }
 
         User user = userService.getCurrentUser();
