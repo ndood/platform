@@ -383,7 +383,12 @@
         t2.agent_admin_id as agentAdminId,
         t2.agent_admin_name as agentAdminName,
         t2.remark as proRemark
-        FROM t_order t1 LEFT JOIN t_order_admin_remark t2 ON t2.order_id = t1.id
+        FROM t_order t1
+        INNER JOIN t_user t3 ON t3.id = t1.user_id
+        INNER JOIN t_user t4 ON t4.id = t1.service_user_id
+        LEFT JOIN t_regist_source rs1 ON t3.source_id = rs1.id
+        LEFT JOIN t_regist_source rs2 ON t4.source_id = rs2.id
+        LEFT JOIN t_order_admin_remark t2 ON t2.order_id = t1.id
         <where>
             <if test="type != null">
                 and t1.type = #{type}
@@ -400,7 +405,6 @@
             <if test="userId != null">
                 and t1.user_id = #{userId}
             </if>
-
             <if test="serviceUserId != null">
                 and t1.service_user_id = #{serviceUserId}
             </if>
@@ -422,6 +426,19 @@
                     #{item}
                 </foreach>
             </if>
+
+            <if test="sourceName != null and chanType == 0">
+                and (rs1.name LIKE '%${sourceName}%' or rs2.name LIKE '%${sourceName}%')
+            </if>
+
+            <if test="sourceName != null and chanType == 1">
+                and rs1.name LIKE '%${sourceName}%'
+            </if>
+
+            <if test="sourceName != null and chanType == 2">
+                and rs2.name LIKE '%${sourceName}%'
+            </if>
+            
         </where>
     </select>
 

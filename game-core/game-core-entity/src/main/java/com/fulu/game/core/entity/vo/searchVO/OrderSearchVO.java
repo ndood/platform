@@ -36,4 +36,14 @@ public class OrderSearchVO {
      * 排序
      */
     private String orderBy;
+
+    /**
+     * 注册来源
+     */
+    private String sourceName;
+
+    /**
+     * 渠道角色
+     */
+    private Integer chanType;
 }
