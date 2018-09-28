@@ -1,4 +1,4 @@
-package com.fulu.game.h5.config;
+package com.fulu.game.h5.service.impl.config;
 
 
 import com.fulu.game.common.properties.Config;

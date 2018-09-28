@@ -13,7 +13,7 @@ public class FenqileOrderSearchVO extends OrderSearchVO {
     /**
      * 支付编号
      */
-    private String paymentNo;
+    private String fenqileNo;
 
     /**
      * 对账状态（0：未对账（默认）；1：已对账）
