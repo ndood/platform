@@ -36,6 +36,8 @@
         <result column="im_substitute_id" property="imSubstituteId"/>
         <result column="im_id" property="imId"/>
         <result column="im_psw" property="imPsw"/>
+        <result column="charm" property="charm"/>
+        <result column="login_time" property="loginTime"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -145,6 +147,8 @@
         u.gender,
         u.age,
         u.nickname,
+        u.login_time,
+        u.charm,
         IFNULL( sum( o.total_money ), 0 ) AS money_sum,
         count( o.service_user_id ) AS order_count,
         (select count(1) from t_user_tech_auth tuta where tuta.user_id = uia.user_id) AS tech_auth_count
