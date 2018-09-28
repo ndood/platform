@@ -3,8 +3,11 @@ package com.fulu.game.h5.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
+import com.fulu.game.common.utils.SMSUtil;
+import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Advice;
 import com.fulu.game.core.entity.ImUser;
 import com.fulu.game.core.entity.Product;
@@ -13,15 +16,13 @@ import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.UserInfoAuthServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -37,38 +38,92 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/api/v1/user")
 public class UserController extends BaseController {
-    private final UserCommentService commentService;
-
-    private AdviceService adviceService;
-
-    private UserService userService;
-
-    private OssUtil ossUtil;
-
-    private ImService imService;
-
-    private UserInfoAuthServiceImpl userInfoAuthService;
-
-    private ProductService productService;
-
-    private final UserBodyAuthService userBodyAuthService;
-
     @Autowired
-    public UserController(UserCommentService commentService,
-                          AdviceService adviceService,
-                          UserService userService,
-                          OssUtil ossUtil,
-                          ImService imService,
-                          UserInfoAuthServiceImpl userInfoAuthService,
-                          ProductService productService, UserBodyAuthService userBodyAuthService) {
-        this.commentService = commentService;
-        this.adviceService = adviceService;
-        this.userService = userService;
-        this.ossUtil = ossUtil;
-        this.imService = imService;
-        this.userInfoAuthService = userInfoAuthService;
-        this.productService = productService;
-        this.userBodyAuthService = userBodyAuthService;
+    private UserCommentService commentService;
+    @Autowired
+    private AdviceService adviceService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private OssUtil ossUtil;
+    @Autowired
+    private ImService imService;
+    @Autowired
+    private UserInfoAuthServiceImpl userInfoAuthService;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private UserBodyAuthService userBodyAuthService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
+
+    /**
+     * 点击发送验证码接口
+     *
+     * @param mobile
+     * @return
+     */
+    @RequestMapping("/mobile/sms")
+    @ResponseBody
+    public Result sms(@RequestParam("mobile") String mobile) {
+        String token = SubjectUtil.getToken();
+        //缓存中查找该手机是否有验证码
+        if (redisOpenService.hasKey(RedisKeyEnum.SMS.generateKey(mobile))) {
+            String times = redisOpenService.get(RedisKeyEnum.SMS.generateKey(mobile));
+            if (Integer.parseInt(times) > Constant.MOBILE_CODE_SEND_TIMES) {
+                return Result.error().msg("半小时内发送次数不能超过" + Constant.MOBILE_CODE_SEND_TIMES + "次，请等待！");
+            } else {
+                String verifyCode = SMSUtil.sendVerificationCode(mobile);
+                log.info("发送验证码{}={}", mobile, verifyCode);
+                redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode, Constant.VERIFYCODE_CACHE_TIME);
+                times = String.valueOf(Integer.parseInt(times) + 1);
+                redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), times, Constant.MOBILE_CACHE_TIME);
+                return Result.success().msg("验证码发送成功！");
+            }
+        } else {
+            String verifyCode = SMSUtil.sendVerificationCode(mobile);
+            log.info("发送验证码{}={}", mobile, verifyCode);
+            redisOpenService.hset(RedisKeyEnum.SMS.generateKey(token), mobile, verifyCode, Constant.VERIFYCODE_CACHE_TIME);
+            redisOpenService.set(RedisKeyEnum.SMS.generateKey(mobile), "1", Constant.MOBILE_CACHE_TIME);
+            return Result.success().msg("验证码发送成功！");
+        }
+    }
+
+    /**
+     * 绑定手机号
+     *
+     * @param mobile
+     * @param verifyCode
+     * @return
+     */
+    @PostMapping("/mobile/bind/new")
+    public Result mobileBind(String mobile,
+                             String verifyCode) {
+        String token = SubjectUtil.getToken();
+        //验证手机号的验证码
+        String redisVerifyCode = redisOpenService.hget(RedisKeyEnum.SMS.generateKey(token), mobile);
+        if (null == redisVerifyCode) {
+            return Result.error().msg("验证码失效");
+        }
+        if (verifyCode != null && !verifyCode.equals(redisVerifyCode)) {
+            return Result.error().msg("验证码提交错误");
+        }
+        User currentUser = userService.getCurrentUser();
+        User user = userService.findById(currentUser.getId());
+        //如果openId已经绑定手机号
+        if (user != null && user.getMobile() != null) {
+            return Result.error().msg("已经绑定过手机号！");
+        }
+        User mobileUser = userService.findByMobile(mobile);
+        if (mobileUser != null) {
+            return Result.error().msg("该手机号已经被绑定！");
+        } else {
+            user.setMobile(mobile);
+            user.setUpdateTime(new Date());
+            userService.update(user);
+            userService.updateRedisUser(user);
+        }
+        return Result.success().data(user).msg("手机号绑定成功！");
     }
 
     /**

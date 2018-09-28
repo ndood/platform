@@ -33,7 +33,7 @@ public interface PayService {
      * @return
      * @throws WxPayException
      */
-    Boolean refund(String orderNo, BigDecimal totalMoney, BigDecimal RefundMoney) throws WxPayException;
+    Boolean refund(String orderNo, BigDecimal totalMoney, BigDecimal RefundMoney);
 
     /**
      * 退全款
@@ -43,5 +43,4 @@ public interface PayService {
      * @return
      * @throws WxPayException
      */
-    Boolean refund(String orderNo, BigDecimal totalMoney) throws WxPayException;
 }

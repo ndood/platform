@@ -43,4 +43,9 @@ public class VirtualPayOrderVO extends VirtualPayOrder {
      * 订单支付成功结束时间
      */
     private Date payEndTime;
+
+    /**
+     * 充值路径(字符串)
+     */
+    private String payPathStr;
 }

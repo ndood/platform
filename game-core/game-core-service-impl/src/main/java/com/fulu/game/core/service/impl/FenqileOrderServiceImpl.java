@@ -66,7 +66,11 @@ public class FenqileOrderServiceImpl extends AbsCommonService<FenqileOrder, Inte
             searchVO.setServiceUserId(user.getId());
         }
 
-        PageHelper.startPage(pageNum, pageSize, orderBy);
+        if (pageNum != null && pageSize != null) {
+            PageHelper.startPage(pageNum, pageSize, orderBy);
+        } else {
+            PageHelper.orderBy(orderBy);
+        }
 
         Integer status = searchVO.getStatus();
         Integer[] statusList = OrderStatusGroupEnum.getByValue(status);
@@ -93,36 +97,36 @@ public class FenqileOrderServiceImpl extends AbsCommonService<FenqileOrder, Inte
         return new PageInfo<>(fenqileOrderVOList);
     }
 
-    @Override
-    public List<FenqileOrderVO> list(FenqileOrderSearchVO searchVO) {
-        String orderBy = "tor.create_time desc";
-        searchVO.setOrderBy(orderBy);
-
-        Integer status = searchVO.getStatus();
-        Integer[] statusList = OrderStatusGroupEnum.getByValue(status);
-        if (!Arrays.isNullOrEmpty(statusList)) {
-            searchVO.setStatusList(statusList);
-        }
-
-        List<FenqileOrderVO> fenqileOrderVOList = fenqileOrderDao.list(searchVO);
-        if (CollectionUtils.isNotEmpty(fenqileOrderVOList)) {
-            for (FenqileOrderVO meta : fenqileOrderVOList) {
-                if (meta.getProductName().contains(" ")) {
-                    meta.setProductName(meta.getProductName().split(" ")[0]);
-                }
-                meta.setStatusStr(OrderStatusEnum.getMsgByStatus(meta.getOrderStatus()));
-
-                //设置应付金额
-                Integer orderStatus = meta.getOrderStatus();
-                meta.setPayableMoney(meta.getActualMoney());
-                if (OrderStatusEnum.NON_PAYMENT.getStatus().equals(orderStatus)) {
-                    meta.setActualMoney(null);
-                }
-            }
-        }
-
-        return fenqileOrderVOList;
-    }
+//    @Override
+//    public List<FenqileOrderVO> list(FenqileOrderSearchVO searchVO) {
+//        String orderBy = "tor.create_time desc";
+//        searchVO.setOrderBy(orderBy);
+//
+//        Integer status = searchVO.getStatus();
+//        Integer[] statusList = OrderStatusGroupEnum.getByValue(status);
+//        if (!Arrays.isNullOrEmpty(statusList)) {
+//            searchVO.setStatusList(statusList);
+//        }
+//
+//        List<FenqileOrderVO> fenqileOrderVOList = fenqileOrderDao.list(searchVO);
+//        if (CollectionUtils.isNotEmpty(fenqileOrderVOList)) {
+//            for (FenqileOrderVO meta : fenqileOrderVOList) {
+//                if (meta.getProductName().contains(" ")) {
+//                    meta.setProductName(meta.getProductName().split(" ")[0]);
+//                }
+//                meta.setStatusStr(OrderStatusEnum.getMsgByStatus(meta.getOrderStatus()));
+//
+//                //设置应付金额
+//                Integer orderStatus = meta.getOrderStatus();
+//                meta.setPayableMoney(meta.getActualMoney());
+//                if (OrderStatusEnum.NON_PAYMENT.getStatus().equals(orderStatus)) {
+//                    meta.setActualMoney(null);
+//                }
+//            }
+//        }
+//
+//        return fenqileOrderVOList;
+//    }
 
     @Override
     public FenqileOrderVO getTotalReconAmount(FenqileOrderSearchVO searchVO) {
@@ -132,5 +136,16 @@ public class FenqileOrderServiceImpl extends AbsCommonService<FenqileOrder, Inte
         resultVO.setUnReconCount(resultVO.getUnReconCount() == null ? 0 : resultVO.getUnReconCount());
         resultVO.setTotalAmount(resultVO.getTotalAmount() == null ? new BigDecimal(0) : resultVO.getTotalAmount());
         return resultVO;
+    }
+
+    @Override
+    public FenqileOrder findByOrderNo(String orderNo) {
+        FenqileOrderVO param = new FenqileOrderVO();
+        param.setOrderNo(orderNo);
+        List<FenqileOrder> fenqileOrders =    fenqileOrderDao.findByParameter(param);
+        if(fenqileOrders.isEmpty()){
+            return null;
+        }
+        return fenqileOrders.get(0);
     }
 }

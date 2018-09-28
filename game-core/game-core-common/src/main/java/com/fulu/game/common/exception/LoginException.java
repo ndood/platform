@@ -14,7 +14,8 @@ public class LoginException extends RuntimeException {
     @Getter
     public enum ExceptionCode{
         VERIFY_CODE_ERROR(3001, "验证码错误!"),
-        WX_AUTH_ERROR(3002, "微信授权失效!");
+        WX_AUTH_ERROR(3002, "微信授权失效!"),
+        FENQILE_AUTH_ERROR(3003, "分期乐授权失效!");
         private int code;
         private String msg;
     }

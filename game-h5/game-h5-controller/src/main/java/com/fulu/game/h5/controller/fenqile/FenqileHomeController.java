@@ -1,19 +1,26 @@
 package com.fulu.game.h5.controller.fenqile;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.exception.LoginException;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserException;
+import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Banner;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.BannerVO;
 import com.fulu.game.core.service.BannerService;
 import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.h5.controller.BaseController;
 import com.fulu.game.h5.shiro.PlayUserToken;
 import com.fulu.game.h5.utils.RequestUtil;
 import com.fulu.game.thirdparty.fenqile.entity.CodeSessionResult;
+import com.fulu.game.thirdparty.fenqile.service.FenqileAuthService;
+import com.fulu.game.thirdparty.fenqile.service.FenqileSdkOrderService;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import org.apache.commons.lang.StringUtils;
@@ -44,19 +51,29 @@ public class FenqileHomeController extends BaseController {
 
     private final UserService userService;
 
+    private final FenqileAuthService fenqileAuthService;
 
+    private final FenqileSdkOrderService fenqileSdkOrderService;
+
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
 
 
     @Autowired
     public FenqileHomeController(BannerService bannerService,
-                                 UserService userService) {
+                                 UserService userService,
+                                 FenqileAuthService fenqileAuthService,
+                                 FenqileSdkOrderService fenqileSdkOrderService) {
         this.bannerService = bannerService;
         this.userService = userService;
+        this.fenqileAuthService = fenqileAuthService;
+        this.fenqileSdkOrderService = fenqileSdkOrderService;
     }
 
 
     /**
      * banner展示列表
+     *
      * @return 封装结果集
      */
     @PostMapping("/banner/list")
@@ -68,24 +85,36 @@ public class FenqileHomeController extends BaseController {
         return Result.success().data(bannerList);
     }
 
-
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    //todo 这个版本需要把订单平台属性加上
+    @RequestMapping(value = "/login")
     @ResponseBody
     public Result login(@RequestParam("code") String code,
-                        @RequestParam(value = "sourceId", required = false) Integer sourceId,
                         HttpServletRequest request) throws WxErrorException {
         if (StringUtils.isBlank(code)) {
             throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
         }
-        CodeSessionResult session = new CodeSessionResult();
-        session.setUid(code);
-        session.setAccessToken("tempaccesstoken");
-        String openId = session.getUid();
+        log.info("分期乐code:{}", code);
+        CodeSessionResult session = null;
+        if (code.length() <= 6) {
+            session = new CodeSessionResult();
+            session.setUid(code);
+            session.setAccessToken("tempaccesstoken");
+            log.info("使用假的分期乐code登录");
+        } else {
+            try {
+                session = fenqileAuthService.accessToken(code);
+                log.info("分期乐授权成功session:{}", session);
+
+            } catch (Exception e) {
+                log.error("分期乐授权错误", e);
+                throw new LoginException(LoginException.ExceptionCode.FENQILE_AUTH_ERROR);
+            }
+        }
         //1.认证和凭据的token
         PlayUserToken playUserToken = PlayUserToken.newBuilder(PlayUserToken.Platform.FENQILE)
-                                                        .fqlOpenid(openId)
-                                                        .accessToken(session.getAccessToken())
-                                                        .build();
+                .fqlOpenid(session.getUid())
+                .accessToken(session.getAccessToken())
+                .build();
 
         String ip = RequestUtil.getIpAdrress(request);
         playUserToken.setHost(ip);
@@ -100,23 +129,22 @@ public class FenqileHomeController extends BaseController {
             result.put("token", SubjectUtil.getToken());
             result.put("userId", user.getId());
             return Result.success().data(result).msg("登录成功!");
-        }
-        catch (AuthenticationException e) {
-            if(e.getCause() instanceof UserException){
-                if(UserException.ExceptionCode.USER_BANNED_EXCEPTION.equals(((UserException) e.getCause()).getExceptionCode())){
-                    log.error("用户被封禁,openId:{}", openId);
+        } catch (AuthenticationException e) {
+            if (e.getCause() instanceof UserException) {
+                if (UserException.ExceptionCode.USER_BANNED_EXCEPTION.equals(((UserException) e.getCause()).getExceptionCode())) {
+                    log.error("用户被封禁,openId:{}", session);
                     return Result.userBanned();
                 }
             }
             return Result.noLogin();
-        }  catch (Exception e) {
+        } catch (Exception e) {
             log.error("登录异常!", e);
             return Result.error().msg("登陆异常！");
         }
     }
 
 
-    @RequestMapping(value = "/test/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/test/login")
     @ResponseBody
     public Result testLogin(String openId,
                             @RequestParam(value = "sourceId", required = false) Integer sourceId,
@@ -147,5 +175,15 @@ public class FenqileHomeController extends BaseController {
         }
     }
 
-
+    /**
+     * 更新分期乐回调url
+     *
+     * @return
+     */
+    @GetMapping(value = "url/setting")
+    public Result settingUrl() {
+        log.info("执行分期乐修改订单回调通知接口");
+        fenqileSdkOrderService.modifyPlatformUrl();
+        return Result.success();
+    }
 }

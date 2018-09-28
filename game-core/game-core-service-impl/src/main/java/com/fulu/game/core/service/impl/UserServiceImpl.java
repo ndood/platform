@@ -271,8 +271,10 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         User user = new User();
         user.setRegistIp(ip);
         user.setSourceId(sourceId);
+        //todo gzc 修改昵称
+
         user.setNickname("游客");
-        user.setHeadPortraitsUrl("http://game-play.oss-cn-hangzhou.aliyuncs.com/2018/8/16/939794a1be2d46e9955db88716e24e54.png");
+        user.setHeadPortraitsUrl("http://game-play.oss-cn-hangzhou.aliyuncs.com/2018/9/28/2a0696764cf141a9b75d0afae7d09570.png");
         return createNewUser(user);
     }
 

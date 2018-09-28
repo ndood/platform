@@ -35,6 +35,7 @@ public class AclFilter extends AccessControlFilter {
         return false;
     }
 
+
     /**
      * 验证token的有效性
      *
@@ -79,7 +80,8 @@ public class AclFilter extends AccessControlFilter {
             return false;
         }
         Map<String, Object> map = redisOpenService.hget(RedisKeyEnum.PLAY_TOKEN.generateKey(token));
-        redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token), map);
+        //h5用户状态保存7天
+        redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token), map,60*60*24*7);
 
         //已登录的，就保存该token从redis查到的用户信息
         User user = BeanUtil.mapToBean(map, User.class, true);

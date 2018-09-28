@@ -1,10 +1,8 @@
 package com.fulu.game.h5.service.impl.fenqile;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.fulu.game.common.enums.OrderStatusEnum;
-import com.fulu.game.common.enums.OrderStatusGroupEnum;
-import com.fulu.game.common.enums.OrderTypeEnum;
-import com.fulu.game.common.enums.UserTypeEnum;
+import com.fulu.game.common.enums.*;
+import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.utils.SMSUtil;
@@ -14,6 +12,7 @@ import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
+import com.fulu.game.thirdparty.fenqile.service.FenqileSdkOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -27,52 +26,47 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static com.fulu.game.common.enums.OrderStatusEnum.NON_PAYMENT;
+
 @Service
 @Slf4j
 public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
 
-    private final UserService userService;
-    private final ProductService productService;
-    private final CategoryService categoryService;
-    private final UserContactService userContactService;
-    private final OrderProductService orderProductService;
-    private final OrderStatusDetailsService orderStatusDetailsService;
-    private final OrderDao orderDao;
-    private final UserCommentService userCommentService;
-    private final H5PushServiceImpl h5PushService;
-    private final H5OrderShareProfitServiceImpl h5OrderShareProfitService;
-    private final OrderService orderService;
-    private final CouponService couponService;
-    private final UserInfoAuthService userInfoAuthService;
-
     @Autowired
-    public H5OrderServiceImpl(UserService userService,
-                              ProductService productService,
-                              CategoryService categoryService,
-                              UserContactService userContactService,
-                              OrderProductService orderProductService,
-                              OrderStatusDetailsService orderStatusDetailsService,
-                              OrderDao orderDao,
-                              CouponService couponService,
-                              UserCommentService userCommentService,
-                              H5PushServiceImpl h5PushService,
-                              H5OrderShareProfitServiceImpl h5OrderShareProfitService,
-                              OrderService orderService, @Qualifier(value = "userInfoAuthServiceImpl") UserInfoAuthService userInfoAuthService) {
-        this.userService = userService;
-        this.productService = productService;
-        this.categoryService = categoryService;
-        this.userContactService = userContactService;
-        this.orderProductService = orderProductService;
-        this.orderStatusDetailsService = orderStatusDetailsService;
-        this.orderDao = orderDao;
-        this.userCommentService = userCommentService;
-        this.couponService = couponService;
-        this.h5PushService = h5PushService;
-        this.h5OrderShareProfitService = h5OrderShareProfitService;
-        this.orderService = orderService;
-        this.userInfoAuthService = userInfoAuthService;
-    }
-
+    private UserService userService;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private UserContactService userContactService;
+    @Autowired
+    private OrderProductService orderProductService;
+    @Autowired
+    private OrderStatusDetailsService orderStatusDetailsService;
+    @Autowired
+    private OrderDao orderDao;
+    @Autowired
+    private UserCommentService userCommentService;
+    @Autowired
+    private H5PushServiceImpl h5PushService;
+    @Autowired
+    private H5OrderShareProfitServiceImpl h5OrderShareProfitService;
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private CouponService couponService;
+    @Autowired
+    @Qualifier(value = "userInfoAuthServiceImpl")
+    private UserInfoAuthService userInfoAuthService;
+    @Autowired
+    private OrderEventService orderEventService;
+    @Autowired
+    private OrderDealService orderDealService;
+    @Autowired
+    private FenqileOrderService fenqileOrderService;
+    @Autowired
+    private FenqileSdkOrderService fenqileSdkOrderService;
 
     @Override
     protected MiniAppPushServiceImpl getMinAppPushService() {
@@ -85,13 +79,11 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
         //发送短信通知给陪玩师
         User server = userService.findById(order.getServiceUserId());
-
         UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(order.getServiceUserId());
         Boolean vestFlag = false;
         if (userInfoAuth != null) {
             vestFlag = userInfoAuth.getVestFlag() == null ? false : userInfoAuth.getVestFlag();
         }
-
         if (!vestFlag) {
             SMSUtil.sendOrderReceivingRemind(server.getMobile(), order.getName());
             //推送通知
@@ -99,14 +91,27 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         }
     }
 
+
     @Override
     protected void shareProfit(Order order) {
         h5OrderShareProfitService.shareProfit(order);
+        try {
+            //订单完成通知分期乐完成订单
+            FenqileOrder fenqileOrder = fenqileOrderService.findByOrderNo(order.getOrderNo());
+            if (fenqileOrder == null) {
+                log.info("没有对应的分期乐订单:order:{}", order);
+            }
+            fenqileSdkOrderService.completeFenqileOrder(order.getOrderNo(), fenqileOrder.getFenqileNo());
+        } catch (Exception e) {
+            log.error("订单分润异常", e);
+        }
+
     }
+
 
     @Override
     protected void orderRefund(Order order, BigDecimal refundMoney) {
-
+        h5OrderShareProfitService.orderRefund(order, refundMoney);
     }
 
     public String submit(Integer productId, Integer num, String couponNo, String userIp,
@@ -124,12 +129,14 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         //创建订单
         Order order = new Order();
         order.setName(product.getProductName() + " " + num + "*" + product.getUnit());
-        order.setType(OrderTypeEnum.H5.getType());
+        //分期乐订单属于陪玩订单
+        order.setType(OrderTypeEnum.PLATFORM.getType());
         order.setOrderNo(generateOrderNo());
         order.setUserId(user.getId());
         order.setServiceUserId(product.getUserId());
         order.setCategoryId(product.getCategoryId());
         order.setIsPay(false);
+        order.setPayment(PaymentEnum.FENQILE_PAY.getType());
         order.setIsPayCallback(false);
         order.setTotalMoney(totalMoney);
         order.setActualMoney(totalMoney);
@@ -161,6 +168,14 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         if (coupon != null) {
             couponService.updateCouponUseStatus(order.getOrderNo(), userIp, coupon);
         }
+
+        //新建分期乐订单数据
+        FenqileOrder fenqileOrder = new FenqileOrder();
+        fenqileOrder.setOrderNo(order.getOrderNo());
+        fenqileOrder.setUpdateTime(new Date());
+        fenqileOrder.setCreateTime(new Date());
+        fenqileOrderService.create(fenqileOrder);
+
         //创建订单商品
         orderProductService.create(order, product, num);
         //计算订单状态倒计时24小时
@@ -186,6 +201,94 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         }
         return new PageInfo<>(list);
     }
+
+
+    /**
+     * 分期乐用户取消订单
+     *
+     * @param orderNo
+     * @return
+     */
+    public String fenqileUserCancelOrder(String orderNo) {
+        log.info("分期乐用户取消订单orderNo:{}", orderNo);
+        Order order = orderService.findByOrderNo(orderNo);
+        if (order.getStatus() < 200) {
+            log.info("orderNo:{}该订单已经是取消状态", orderNo);
+            return orderNo;
+        }
+        if (!order.getStatus().equals(NON_PAYMENT.getStatus())) {
+            throw new OrderException(order.getOrderNo(), "未支付的订单才能取消!");
+        }
+        if (order.getIsPay()) {
+            order.setStatus(OrderStatusEnum.USER_CANCEL.getStatus());
+        } else {
+            order.setStatus(OrderStatusEnum.UNPAY_ORDER_CLOSE.getStatus());
+        }
+        order.setUpdateTime(new Date());
+        order.setCompleteTime(new Date());
+        orderService.update(order);
+        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
+        return orderNo;
+    }
+
+
+    /**
+     * 申请协商处理
+     *
+     * @param orderNo
+     * @param refundMoney
+     * @param remark
+     * @param fileUrls
+     * @return
+     */
+    @Override
+    public String userConsultOrder(String orderNo, BigDecimal refundMoney, String remark, String[] fileUrls) {
+        //todo 分期乐订单不能部分退款
+        log.info("用户协商订单orderNo:{}", orderNo);
+        Order order = orderService.findByOrderNo(orderNo);
+        if (refundMoney == null) {
+            throw new OrderException(orderNo, "协商处理金额不能为空!");
+        }
+        String refundType = "";
+        if (refundMoney.compareTo(order.getActualMoney()) > 0) {
+            throw new OrderException(orderNo, "协商处理金额不能大于订单支付金额!");
+        }
+        if (refundMoney.compareTo(order.getActualMoney()) == 0) {
+            refundType = "全部退款";
+        } else {
+            refundType = "部分退款";
+        }
+
+        User user = userService.getCurrentUser();
+        userService.isCurrentUser(order.getUserId());
+        if (!order.getStatus().equals(OrderStatusEnum.ALREADY_RECEIVING.getStatus()) &&
+                !order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus()) &&
+                !order.getStatus().equals(OrderStatusEnum.CHECK.getStatus())) {
+            throw new OrderException(OrderException.ExceptionCode.ORDER_STATUS_MISMATCHES, orderNo);
+        }
+        //提交申诉
+        OrderEvent orderEvent = orderEventService.createConsult(order, user, order.getStatus(), refundMoney);
+        order.setStatus(OrderStatusEnum.CONSULTING.getStatus());
+        order.setUpdateTime(new Date());
+        orderService.update(order);
+        //提交协商处理
+        String title = "发起了协商-" + refundType + " ￥" + refundMoney.toPlainString();
+        OrderDeal orderDeal = new OrderDeal();
+        orderDeal.setTitle(title);
+        orderDeal.setType(OrderDealTypeEnum.CONSULT.getType());
+        orderDeal.setUserId(user.getId());
+        orderDeal.setRemark(remark);
+        orderDeal.setOrderNo(order.getOrderNo());
+        orderDeal.setOrderEventId(orderEvent.getId());
+        orderDeal.setCreateTime(new Date());
+        orderDealService.create(orderDeal, fileUrls);
+        //倒计时24小时后处理
+        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
+        //推送通知
+        getMinAppPushService().consult(order);
+        return orderNo;
+    }
+
 
     /**
      * 获取订单详情

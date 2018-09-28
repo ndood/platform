@@ -1,4 +1,5 @@
 import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.play.PlayApplication;
 import lombok.extern.slf4j.Slf4j;
@@ -32,12 +33,7 @@ public class RedisTest {
      */
     @Test
     public void testValue() {
-        //default JdkSerializationRedisSerializer
-        //StringRedisSerializer
-        //Jackson2JsonRedisSerializer
-
-        Set<String> sets =  redisOpenServiceImpl.keys(RedisKeyEnum.PLAY_TOKEN.generateKey()+"*#48");
-        System.out.println(sets);
+        SMSUtil.sendLeaveInform("18801285391","hello","http://baidu.com");
     }
 
     /**

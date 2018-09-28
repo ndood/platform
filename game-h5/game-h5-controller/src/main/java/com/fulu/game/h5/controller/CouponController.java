@@ -72,4 +72,7 @@ public class CouponController extends BaseController {
         List<Coupon> list = couponService.availableCouponList(user.getId());
         return Result.success().data(list);
     }
+
+
+
 }

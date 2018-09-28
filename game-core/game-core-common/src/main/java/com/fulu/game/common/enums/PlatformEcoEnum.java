@@ -19,4 +19,12 @@ public enum PlatformEcoEnum implements TypeEnum<Integer> {
     private Integer type;
     private String msg;
 
+    public static String getMsgByType(Integer type) {
+        for (PlatformEcoEnum ecoEnum : PlatformEcoEnum.values()) {
+            if (ecoEnum.type.equals(type)) {
+                return ecoEnum.msg;
+            }
+        }
+        return null;
+    }
 }

@@ -90,7 +90,8 @@ public class ExceptionHandlerAdvice {
      */
     @ExceptionHandler(OrderException.class)
     public Result orderException(OrderException e) {
-        log.error(e.getMessage(), e);
+        log.error("订单异常:orderNo:{},ex:{};", e.getOrderNo(), e.getMessage());
+        log.error("订单异常", e);
         return Result.error().msg(e.getMessage());
     }
 

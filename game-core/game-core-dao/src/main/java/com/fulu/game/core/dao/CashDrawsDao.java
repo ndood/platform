@@ -23,10 +23,17 @@ public interface CashDrawsDao extends ICommonDao<CashDraws, Integer> {
     CashDraws findByCashNo(String cashNo);
 
     /**
-     * 获取未提现金额的汇总（运营未处理，财务未处理）
+     * 获取未提现金额的汇总
      *
      * @param cashDrawsVO 查询VO
      * @return 汇总金额
      */
     BigDecimal findUnCashDrawsSum(CashDrawsVO cashDrawsVO);
+
+    /**
+     * 获取未提现魅力值的汇总
+     *
+     * @return
+     */
+    Integer findUnDrawCharm(CashDrawsVO cashDrawsVO);
 }
