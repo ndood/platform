@@ -4,6 +4,7 @@ package com.fulu.game.core.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.fulu.game.common.Constant;
+import com.fulu.game.common.enums.RouterTypeEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Admin;
@@ -118,6 +119,9 @@ public class SysRouterServiceImpl extends AbsCommonService<SysRouter,Integer> im
         sysRouter.setOperatorId(admin.getId());
         sysRouter.setOperatorName(admin.getName());
         sysRouter.setUpdateTime(new Date());
+        if(sysRouter.getType() == null){
+            sysRouter.setType(RouterTypeEnum.MENU.getType());
+        }
         if(sysRouterVO.getId() != null && sysRouterVO.getId().intValue() > 0){
             sysRouterDao.update(sysRouter);
         } else {
