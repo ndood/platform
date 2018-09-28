@@ -1,9 +1,6 @@
 package com.fulu.game.schedule.service.impl;
 
-import com.fulu.game.common.enums.OrderDealTypeEnum;
-import com.fulu.game.common.enums.OrderEventTypeEnum;
-import com.fulu.game.common.enums.OrderStatusEnum;
-import com.fulu.game.common.enums.OrderTypeEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.entity.Order;
@@ -62,16 +59,19 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
     @Override
     protected void shareProfit(Order order) {
         if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
-            //陪玩订单
-            pointOrderShareProfitService.shareProfit(order);
+            //分期乐订单
+            if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
+                h5OrderShareProfitService.shareProfit(order);
+            } else {
+                //陪玩订单
+                pointOrderShareProfitService.shareProfit(order);
+            }
         } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
             //上分订单
             playOrderShareProfitService.shareProfit(order);
-        } else if (OrderTypeEnum.H5.getType().equals(order.getType())) {
-            h5OrderShareProfitService.shareProfit(order);
-        }else {
-            log.error("订单类型不匹配:{}",order);
-            throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING,order.getOrderNo());
+        } else {
+            log.error("订单类型不匹配:{}", order);
+            throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING, order.getOrderNo());
         }
     }
 
@@ -81,16 +81,19 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
             throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST, "");
         }
         if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
-            playOrderShareProfitService.orderRefund(order, refundMoney);
-            //陪玩订单
+            //分期乐订单
+            if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
+                h5OrderShareProfitService.orderRefund(order, refundMoney);
+            } else {
+                //陪玩订单
+                playOrderShareProfitService.orderRefund(order, refundMoney);
+            }
         } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
             //上分订单
             pointOrderShareProfitService.orderRefund(order, refundMoney);
-        } else if (OrderTypeEnum.H5.getType().equals(order.getType())) {
-            h5OrderShareProfitService.orderRefund(order,refundMoney);
-        }else {
-            log.error("订单类型不匹配:{}",order);
-            throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING,order.getOrderNo());
+        } else {
+            log.error("订单类型不匹配:{}", order);
+            throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING, order.getOrderNo());
         }
 
 
