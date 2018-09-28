@@ -198,12 +198,12 @@
         SELECT
         u.*,
         rs.name AS source_name,
-        IFNULL(sum(o.actual_money),0) AS pay_sum,
+        IFNULL(sum(o.total_money),0) AS pay_sum,
         count(o.user_id) AS order_count,
-        IFNULL(sum(o.actual_money),0) / count(o.user_id) as pay_unit_price,
-        IFNULL(sum(oo.actual_money),0) AS income_sum,
+        IFNULL(sum(o.total_money),0) / count(o.user_id) as pay_unit_price,
+        IFNULL(sum(oo.total_money),0) AS income_sum,
         count(oo.service_user_id) AS service_order_count,
-        IFNULL(sum(oo.actual_money),0) / count(oo.service_user_id) as income_unit_price
+        IFNULL(sum(oo.total_money),0) / count(oo.service_user_id) as income_unit_price
         FROM
         t_user u
         LEFT JOIN t_regist_source rs ON u.source_id = rs.id
@@ -241,12 +241,12 @@
         SELECT
         u.*,
         rs.name AS source_name,
-        IFNULL(sum(o.actual_money),0) AS pay_sum,
+        IFNULL(sum(o.total_money),0) AS pay_sum,
         count(o.user_id) AS order_count,
-        IFNULL(sum(o.actual_money),0) / count(o.user_id) as pay_unit_price,
-        IFNULL(sum(oo.actual_money),0) AS income_sum,
+        IFNULL(sum(o.total_money),0) / count(o.user_id) as pay_unit_price,
+        IFNULL(sum(oo.total_money),0) AS income_sum,
         count(oo.service_user_id) AS service_order_count,
-        IFNULL(sum(oo.actual_money),0) / count(oo.service_user_id) as income_unit_price
+        IFNULL(sum(oo.total_money),0) / count(oo.service_user_id) as income_unit_price
         FROM
         t_user u
         LEFT JOIN t_regist_source rs ON u.source_id = rs.id
