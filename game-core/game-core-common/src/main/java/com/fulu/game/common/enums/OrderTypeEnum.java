@@ -14,4 +14,12 @@ public enum  OrderTypeEnum  implements TypeEnum<Integer>{
     private Integer type;
     private String msg;
 
+    public static String getMsgByType(Integer type) {
+        for (OrderTypeEnum typeEnum : OrderTypeEnum.values()) {
+            if (typeEnum.type.equals(type)) {
+                return typeEnum.msg;
+            }
+        }
+        return null;
+    }
 }

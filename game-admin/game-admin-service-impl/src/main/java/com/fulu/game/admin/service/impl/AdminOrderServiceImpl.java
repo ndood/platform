@@ -2,10 +2,7 @@ package com.fulu.game.admin.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
-import com.fulu.game.common.enums.OrderEventTypeEnum;
-import com.fulu.game.common.enums.OrderStatusEnum;
-import com.fulu.game.common.enums.OrderStatusGroupEnum;
-import com.fulu.game.common.enums.UserScoreEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.dao.OrderDao;
@@ -464,6 +461,13 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
             if (OrderStatusEnum.NON_PAYMENT.getStatus().equals(orderStatus)) {
                 orderResVO.setActualMoney(null);
             }
+
+            //订单状态
+            if (orderResVO.getPayment() != null && orderResVO.getPayment().equals(PaymentEnum.FENQILE_PAY.getType())) {
+                orderResVO.setTypeStr("分期乐订单");
+            } else {
+                orderResVO.setTypeStr(OrderTypeEnum.getMsgByType(orderResVO.getType()));
+            }
         }
         return new PageInfo<>(list);
     }
@@ -475,15 +479,15 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
         OrderResVO orderResVO = new OrderResVO();
 
         BeanUtil.copyProperties(order, orderResVO);
-        
+
         //添加订单投诉和验证信息
-        
+
         this.setOrderDeal(orderResVO);
-        
+
         //添加用户和陪玩师信息
-        
+
         this.setOrderUserInfo(orderResVO);
-        
+
         //添加订单商品信息
         OrderProduct orderProduct = orderProductService.findByOrderNo(orderResVO.getOrderNo());
         orderResVO.setOrderProduct(orderProduct);
@@ -502,12 +506,12 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
         if (OrderStatusEnum.NON_PAYMENT.getStatus().equals(orderStatus)) {
             orderResVO.setActualMoney(null);
         }
-        
+
         return orderResVO;
     }
 
     //添加用户和陪玩师信息
-    public void setOrderUserInfo(OrderResVO orderResVO){
+    public void setOrderUserInfo(OrderResVO orderResVO) {
         User user = userService.findById(orderResVO.getUserId());
         orderResVO.setUser(user);
         User serviceUser = userService.findById(orderResVO.getServiceUserId());
@@ -515,13 +519,13 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
     }
 
     //添加订单投诉和验证信息
-    public void setOrderDeal(OrderResVO orderResVO){
+    public void setOrderDeal(OrderResVO orderResVO) {
         OrderDealVO userOrderDealVO = orderDealService.findByUserAndOrderNo(orderResVO.getUserId(), orderResVO.getOrderNo());
         orderResVO.setUserOrderDeal(userOrderDealVO);
         OrderDealVO serviceUserOrderDealVO = orderDealService.findByUserAndOrderNo(orderResVO.getServiceUserId(), orderResVO.getOrderNo());
         orderResVO.setServerOrderDeal(serviceUserOrderDealVO);
     }
-    
+
 
     public PageInfo<OrderResVO> delayList(OrderSearchVO orderSearchVO,
                                           Integer pageNum,
