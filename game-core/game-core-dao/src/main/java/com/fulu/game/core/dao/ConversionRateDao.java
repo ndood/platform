@@ -48,4 +48,7 @@ public interface ConversionRateDao extends ICommonDao<ConversionRate,Integer>{
      * @return
      */
     ConversionRate getNewPeopleCount(ConversionRateVO tmp);
+
+    /** 获取复购数据 */
+    ConversionRate getRepeatOrderCount(ConversionRateVO tmp);
 }

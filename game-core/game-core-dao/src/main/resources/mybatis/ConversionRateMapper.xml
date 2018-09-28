@@ -107,8 +107,8 @@
 
     <select id="getOrderCount" resultType="com.fulu.game.core.entity.ConversionRate"
             parameterType="com.fulu.game.core.entity.vo.ConversionRateVO">
-        select ifnull(count(1),0) as newOrders,ifnull(count(DISTINCT user_id),0) as newPeoples,
-        ifnull(sum(total_money),0) as newAmount from t_order
+        select ifnull(count(1),0) as orders,ifnull(count(DISTINCT user_id),0) as peoples,
+        ifnull(sum(total_money),0) as amount from t_order
         <where>
             <!--
             <if test="statusList != null">
@@ -126,7 +126,7 @@
             </if>
         </where>
         <if test="isRepeact != null">
-            HAVING ifnull(count(1),0) > 2
+            HAVING ifnull(count(1),0) &gt;= 2
         </if>
     </select>
 
@@ -156,7 +156,7 @@
             </if>
         </where>
         <if test="isRepeact != null">
-            HAVING ifnull(count(1),0) > 2
+            HAVING ifnull(count(1),0) &gt;= 2
         </if>
     </select>
 
@@ -211,6 +211,33 @@
                 and create_time &lt;= #{endTime}
             </if>
         </where>
+    </select>
+
+    <select id="getRepeatOrderCount" resultType="com.fulu.game.core.entity.ConversionRate">
+        SELECT
+        ifnull(sum(tmp.orders), 0) AS orders,
+        ifnull(count(tmp.user_id), 0) AS peoples,
+        ifnull(sum(tmp.total_money), 0) AS amount
+        FROM
+        (
+            select count(1) as orders,user_id, ifnull(sum(total_money), 0) AS total_money
+            from t_order
+            <where>
+                <if test="beginTime != null">
+                    and create_time &gt;= #{beginTime}
+                </if>
+                <if test="endTime != null">
+                    and create_time &lt;= #{endTime}
+                </if>
+                <if test="isPay != null">
+                    and is_pay = #{isPay}
+                </if>
+            </where>
+            GROUP BY user_id
+            <if test="isRepeact != null">
+                HAVING ifnull(count(1),0) &gt;= 2
+            </if>
+        ) tmp
     </select>
 
 

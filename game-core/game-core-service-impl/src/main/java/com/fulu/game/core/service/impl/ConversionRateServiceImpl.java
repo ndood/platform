@@ -57,13 +57,13 @@ public class ConversionRateServiceImpl extends AbsCommonService<ConversionRate,I
                 ConversionRate orderCounts = conversionRateDao.getOrderCount(tmp);
                 ConversionRate newOrderCounts = conversionRateDao.getNewOrderCount(tmp);
                 tmp.setIsRepeact(1);
-                ConversionRate repeatOrderCounts = conversionRateDao.getOrderCount(tmp);
+                ConversionRate repeatOrderCounts = conversionRateDao.getRepeatOrderCount(tmp);
 //                ConversionRate newRepeatOrderCounts = conversionRateDao.getNewOrderCount(tmp);
                 tmp.setIsRepeact(null);
                 tmp.setIsPay(1);
                 ConversionRate newOrderPayCounts = conversionRateDao.getNewOrderCount(tmp);
                 tmp.setIsRepeact(1);
-                ConversionRate repeatOrderPayCounts = conversionRateDao.getOrderCount(tmp);
+                ConversionRate repeatOrderPayCounts = conversionRateDao.getRepeatOrderCount(tmp);
                 ConversionRate conversionRate = new ConversionRate();
                 conversionRate.setName(tmp.getName());
                 conversionRate.setTimeBucket(tmp.getTimeBucket());
