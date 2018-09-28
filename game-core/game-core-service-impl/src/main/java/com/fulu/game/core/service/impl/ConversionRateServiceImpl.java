@@ -67,27 +67,27 @@ public class ConversionRateServiceImpl extends AbsCommonService<ConversionRate,I
                 ConversionRate conversionRate = new ConversionRate();
                 conversionRate.setName(tmp.getName());
                 conversionRate.setTimeBucket(tmp.getTimeBucket());
-                conversionRate.setOrders(orderCounts.getOrders());
-                conversionRate.setPeoples(orderCounts.getPeoples());
-                conversionRate.setAmount(orderCounts.getAmount());
-                conversionRate.setNewOrders(newOrderCounts.getNewPeoples());
+                conversionRate.setOrders(orderCounts != null && orderCounts.getOrders() != null ? orderCounts.getOrders() : 0);
+                conversionRate.setPeoples(orderCounts != null && orderCounts.getPeoples() != null ? orderCounts.getPeoples() : 0);
+                conversionRate.setAmount(orderCounts != null && orderCounts.getAmount() != null ? orderCounts.getAmount() : new BigDecimal("0.00"));
+                conversionRate.setNewOrders(newOrderCounts != null && newOrderCounts.getNewPeoples() != null ? newOrderCounts.getNewPeoples() : 0);
                 // 新人数
                 ConversionRate newPeopleCounts = conversionRateDao.getNewPeopleCount(tmp);
-                conversionRate.setNewPeoples(newPeopleCounts.getNewPeoples());
-                conversionRate.setNewAmount(newOrderCounts.getNewAmount());
-                conversionRate.setRepeatOrders(repeatOrderCounts.getPeoples());
-                conversionRate.setRepeatPays(repeatOrderPayCounts.getPeoples());
-                conversionRate.setNewPays(newOrderPayCounts.getPeoples());
-                if(orderCounts.getPeoples() != null && orderCounts.getPeoples().intValue() > 0){
-                    conversionRate.setRepeatOrderRate(new BigDecimal(repeatOrderCounts.getPeoples()/orderCounts.getPeoples()));
-                    conversionRate.setRepeatPayRate(new BigDecimal(repeatOrderPayCounts.getPeoples()/orderCounts.getPeoples()));
+                conversionRate.setNewPeoples(newPeopleCounts != null && newPeopleCounts.getNewPeoples() != null ? newPeopleCounts.getNewPeoples() : 0);
+                conversionRate.setNewAmount(newOrderCounts != null && newOrderCounts.getNewAmount() != null ? newOrderCounts.getNewAmount() : new BigDecimal("0.00"));
+                conversionRate.setRepeatOrders(repeatOrderCounts!= null && repeatOrderCounts.getPeoples() != null ? repeatOrderCounts.getPeoples() : 0);
+                conversionRate.setRepeatPays(repeatOrderPayCounts != null && repeatOrderPayCounts.getPeoples() != null ? repeatOrderPayCounts.getPeoples() : 0);
+                conversionRate.setNewPays(newOrderPayCounts != null &&  newOrderPayCounts.getPeoples() != null ? newOrderPayCounts.getPeoples() : 0);
+                if(conversionRate.getPeoples() != null && conversionRate.getPeoples().intValue() > 0){
+                    conversionRate.setRepeatOrderRate(new BigDecimal(conversionRate.getRepeatOrders()/conversionRate.getPeoples()));
+                    conversionRate.setRepeatPayRate(new BigDecimal(conversionRate.getRepeatPays()/conversionRate.getPeoples()));
                 } else {
                     conversionRate.setRepeatOrderRate(new BigDecimal("0.00"));
                     conversionRate.setRepeatPayRate(new BigDecimal("0.00"));
                 }
-                if(newPeopleCounts != null && newPeopleCounts.getNewPeoples() != null && newPeopleCounts.getNewPeoples().intValue() > 0){
-                    conversionRate.setNewOrderRate(new BigDecimal(newOrderCounts.getNewPeoples()/newPeopleCounts.getNewPeoples()));
-                    conversionRate.setNewPayRate(new BigDecimal(newOrderPayCounts.getPeoples()/newPeopleCounts.getNewPeoples()));
+                if(newOrderCounts != null && conversionRate.getNewPeoples() > 0){
+                    conversionRate.setNewOrderRate(new BigDecimal(conversionRate.getNewOrders()/conversionRate.getNewPeoples()));
+                    conversionRate.setNewPayRate(new BigDecimal(conversionRate.getNewPays()/conversionRate.getNewPeoples()));
                 } else {
                     conversionRate.setNewOrderRate(new BigDecimal("0.00"));
                     conversionRate.setNewPayRate(new BigDecimal("0.00"));
