@@ -124,7 +124,9 @@ public class UserController extends BaseController {
             user.setDelFlag(true);
             userService.update(user);
             userService.updateRedisUser(user);
+            log.info("同步用户信息中。逻辑删除userId为：{}的用户", user.getId());
             user = userService.findById(mobileUser.getId());
+            log.info("用户同步操作完成。目前登录用户useId：{}", user.getId());
         } else {
             user.setMobile(mobile);
             user.setUpdateTime(new Date());
