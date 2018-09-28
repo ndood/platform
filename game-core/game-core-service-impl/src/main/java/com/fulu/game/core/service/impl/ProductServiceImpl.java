@@ -774,6 +774,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         int userOrderCount = orderService.weekOrderCount(product.getUserId());
         productShowCaseDoc.setNickName(userInfoVO.getNickName());
         productShowCaseDoc.setGender(userInfoVO.getGender());
+        productShowCaseDoc.setAge(userInfoVO.getAge());
         productShowCaseDoc.setMainPhoto(userInfoVO.getMainPhotoUrl());
         productShowCaseDoc.setCity(userInfoVO.getCity());
         productShowCaseDoc.setIsIndexShow(isIndexShow);
