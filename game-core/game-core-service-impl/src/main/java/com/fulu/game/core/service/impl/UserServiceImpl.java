@@ -251,7 +251,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         user.setRegistIp(ip);
         user.setSourceId(sourceId);
         user.setNickname("游客");
-        user.setHeadPortraitsUrl("http://game-play.oss-cn-hangzhou.aliyuncs.com/2018/9/26/ae7d72062f6a4c78a1a8d20250bb64a5.png");
+        user.setHeadPortraitsUrl("http://game-play.oss-cn-hangzhou.aliyuncs.com/2018/9/28/2a0696764cf141a9b75d0afae7d09570.png");
         return createNewUser(user);
     }
 
