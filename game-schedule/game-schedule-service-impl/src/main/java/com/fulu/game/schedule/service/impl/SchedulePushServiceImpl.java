@@ -18,6 +18,7 @@ public class SchedulePushServiceImpl extends PushServiceImpl {
      */
     public void consultAgree(Order order) {
         if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
+            //todo gzc 给用户发留言短信
             pushServiceProcessMsg(PlatformEcoEnum.PLAY.getType(),
                     order.getUserId(),
                     order,
@@ -29,8 +30,6 @@ public class SchedulePushServiceImpl extends PushServiceImpl {
                     order,
                     WechatTemplateIdEnum.POINT_SERVICE_PROCESS_NOTICE,
                     WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE);
-        } else if (OrderTypeEnum.H5.getType().equals(order.getType())) {
-            //todo 给用户发留言短信
         }
     }
 
@@ -41,6 +40,7 @@ public class SchedulePushServiceImpl extends PushServiceImpl {
      */
     public void consultCancel(Order order) {
         if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
+            //todo gzc //todo 给用户发留言短信
             pushServiceProcessMsg(PlatformEcoEnum.PLAY.getType(),
                     order.getUserId(),
                     order,
@@ -52,8 +52,6 @@ public class SchedulePushServiceImpl extends PushServiceImpl {
                     order,
                     WechatTemplateIdEnum.POINT_SERVICE_PROCESS_NOTICE,
                     WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL);
-        } else if (OrderTypeEnum.H5.getType().equals(order.getType())) {
-            //todo 给用户发留言短信
         }
     }
 }

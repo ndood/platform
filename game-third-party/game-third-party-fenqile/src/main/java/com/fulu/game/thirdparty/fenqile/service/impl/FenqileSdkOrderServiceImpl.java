@@ -39,15 +39,15 @@ public class FenqileSdkOrderServiceImpl implements FenqileSdkOrderService {
         String sign = SignUtil.createSign(params, "MD5", getConfig().getPartnerKey());
         params.put("sign", sign);
         log.info("请求参数params:{}", HttpUtil.toParams(params));
-        Map<String,Object> resultMap = null;
+        Map<String, Object> resultMap = null;
         try {
             String result = HttpUtil.post(BASE_API, params);
-            if(result==null){
+            if (result == null) {
                 throw new ApiErrorException("API请求错误");
             }
             log.info("请求结果result:{}", result);
             JSONObject jso = JSONObject.parseObject(result);
-            if(jso.containsKey("error_response")){
+            if (jso.containsKey("error_response")) {
                 throw new ApiErrorException(result);
             }
             return result;
@@ -58,63 +58,65 @@ public class FenqileSdkOrderServiceImpl implements FenqileSdkOrderService {
 
     /**
      * 更改回调和详情url
+     *
      * @param noticeType
      * @param noticeUrl
      */
     @Override
-    public void noticeModify(Integer noticeType,String noticeUrl){
+    public void noticeModify(Integer noticeType, String noticeUrl) {
         String method = "fenqile.third.notice.modify";
-        Map<String,Object> params = getConfMap(method);
-        params.put("notice_type",noticeType);
-        params.put("notice_url",noticeUrl);
+        Map<String, Object> params = getConfMap(method);
+        params.put("notice_type", noticeType);
+        params.put("notice_url", noticeUrl);
         String sign = SignUtil.createSign(params, "MD5", getConfig().getPartnerKey());
         params.put("sign", sign);
         log.info("请求参数params:{}", HttpUtil.toParams(params));
         try {
             String result = HttpUtil.post(BASE_API, params);
-            if(result==null){
+            if (result == null) {
                 throw new ApiErrorException("API请求错误");
             }
             log.info("请求结果result:{}", result);
             JSONObject jso = JSONObject.parseObject(result);
-            if(jso.containsKey("error_response")){
+            if (jso.containsKey("error_response")) {
                 throw new ApiErrorException(result);
             }
         } catch (Exception e) {
             throw new ApiErrorException(e.getMessage());
         }
-        log.info("修改分期乐通知url:{}",noticeUrl);
+        log.info("修改分期乐通知url:{}", noticeUrl);
     }
 
 
     @Override
-    public void modifyPlatformUrl(){
+    public void modifyPlatformUrl() {
         //修改订单通知回调
-        noticeModify(1,getConfig().getOrderNoticeUrl());
+        noticeModify(1, getConfig().getOrderNoticeUrl());
         //修改订单详情页地址
-        noticeModify(2,getConfig().getOrderDetailsUrl());
+        noticeModify(2, getConfig().getOrderDetailsUrl());
     }
 
 
     /**
      * 通知查询
+     *
      * @param noticeType
      */
-    public void noticeQuery(Integer noticeType){
+    public void noticeQuery(Integer noticeType) {
         String method = "fenqile.third.notice.query";
-        Map<String,Object> params = getConfMap(method);
-        params.put("notice_type",noticeType);
+        Map<String, Object> params = getConfMap(method);
+        params.put("notice_type", noticeType);
         String sign = SignUtil.createSign(params, "MD5", getConfig().getPartnerKey());
         params.put("sign", sign);
         log.info("请求参数params:{}", HttpUtil.toParams(params));
         try {
             String result = HttpUtil.post(BASE_API, params);
-            if(result==null){
+            if (result == null) {
                 throw new ApiErrorException("API请求错误");
             }
             log.info("请求结果result:{}", result);
             JSONObject jso = JSONObject.parseObject(result);
-            if(jso.containsKey("error_response")){
+            if (jso.containsKey("error_response")) {
                 throw new ApiErrorException(result);
             }
         } catch (Exception e) {
@@ -124,26 +126,27 @@ public class FenqileSdkOrderServiceImpl implements FenqileSdkOrderService {
 
     /**
      * 通知分期乐订单状态
+     *
      * @param orderNo
      * @param merchSaleStat
      */
-    public void noticeFenqileOrderStatus(String orderNo,String fenqileOrderNo,Integer merchSaleStat){
+    public void noticeFenqileOrderStatus(String orderNo, String fenqileOrderNo, Integer merchSaleStat) {
         String method = "fenqile.third.order.notice";
-        Map<String,Object> params = getConfMap(method);
-        params.put("third_order_id",orderNo);
-        params.put("order_id",fenqileOrderNo);
-        params.put("merch_sale_state",merchSaleStat);
+        Map<String, Object> params = getConfMap(method);
+        params.put("third_order_id", orderNo);
+        params.put("order_id", fenqileOrderNo);
+        params.put("merch_sale_state", merchSaleStat);
         String sign = SignUtil.createSign(params, "MD5", getConfig().getPartnerKey());
         params.put("sign", sign);
         log.info("请求参数params:{}", HttpUtil.toParams(params));
         try {
             String result = HttpUtil.post(BASE_API, params);
-            if(result==null){
+            if (result == null) {
                 throw new ApiErrorException("API请求错误");
             }
             log.info("请求结果result:{}", result);
             JSONObject jso = JSONObject.parseObject(result);
-            if(jso.containsKey("error_response")){
+            if (jso.containsKey("error_response")) {
                 throw new ApiErrorException(result);
             }
         } catch (Exception e) {
@@ -154,27 +157,28 @@ public class FenqileSdkOrderServiceImpl implements FenqileSdkOrderService {
 
     /**
      * 分期乐退款接口
+     *
      * @param orderNo
      * @param fenqileOrderNo
      */
-    public boolean noticeFenqileRefund(String orderNo, String fenqileOrderNo, BigDecimal amount){
+    public boolean noticeFenqileRefund(String orderNo, String fenqileOrderNo, BigDecimal amount) {
         String method = "fenqile.third.order.refund";
-        Map<String,Object> params = getConfMap(method);
-        params.put("third_order_id",orderNo);
-        params.put("order_id",fenqileOrderNo);
-        params.put("third_refund_id","E"+orderNo);
-        params.put("amount",amount.toPlainString());
+        Map<String, Object> params = getConfMap(method);
+        params.put("third_order_id", orderNo);
+        params.put("order_id", fenqileOrderNo);
+        params.put("third_refund_id", "E" + orderNo);
+        params.put("amount", amount.toPlainString());
         String sign = SignUtil.createSign(params, "MD5", getConfig().getPartnerKey());
         params.put("sign", sign);
         log.info("请求参数params:{}", HttpUtil.toParams(params));
         try {
             String result = HttpUtil.post(BASE_API, params);
-            if(result==null){
+            if (result == null) {
                 throw new ApiErrorException("API请求错误");
             }
             log.info("请求结果result:{}", result);
             JSONObject jso = JSONObject.parseObject(result);
-            if(jso.containsKey("error_response")){
+            if (jso.containsKey("error_response")) {
                 throw new ApiErrorException(result);
             }
             return true;
@@ -186,41 +190,43 @@ public class FenqileSdkOrderServiceImpl implements FenqileSdkOrderService {
 
     /**
      * 分期乐取消订单
+     *
      * @param orderNo
      * @param fenqileOrderNo
      * @return
      */
-    public boolean cancelFenqileOrder(String orderNo,String fenqileOrderNo){
+    public boolean cancelFenqileOrder(String orderNo, String fenqileOrderNo) {
         try {
-            noticeFenqileOrderStatus(orderNo,fenqileOrderNo,15);
+            noticeFenqileOrderStatus(orderNo, fenqileOrderNo, 15);
             return true;
-        }catch (Exception e){
-            log.error("取消分期乐订单报错:",e);
+        } catch (Exception e) {
+            log.error("取消分期乐订单报错:", e);
             return false;
         }
     }
 
     /**
      * 分期乐玩成订单
+     *
      * @param orderNo
      * @param fenqileOrderNo
      * @return
      */
-    public boolean completeFenqileOrder(String orderNo,String fenqileOrderNo){
+    public boolean completeFenqileOrder(String orderNo, String fenqileOrderNo) {
         try {
-            noticeFenqileOrderStatus(orderNo,fenqileOrderNo,13);
+            noticeFenqileOrderStatus(orderNo, fenqileOrderNo, 13);
             return true;
-        }catch (Exception e){
-            log.error("取消分期乐订单报错:",e);
+        } catch (Exception e) {
+            log.error("取消分期乐订单报错:", e);
             return false;
         }
     }
 
 
-    private Map<String,Object> getConfMap(String method){
+    private Map<String, Object> getConfMap(String method) {
         Map<String, Object> confMap = new HashMap<>();
         confMap.put("method", method);
-        confMap.put("timestamp", new Date().getTime()/1000);
+        confMap.put("timestamp", new Date().getTime() / 1000);
         confMap.put("format", "json");
         confMap.put("v", getConfig().getV());
         confMap.put("partner_id", getConfig().getPartnerId());
