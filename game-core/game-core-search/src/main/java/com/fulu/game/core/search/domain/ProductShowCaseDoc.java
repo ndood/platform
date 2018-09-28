@@ -52,4 +52,6 @@ public class ProductShowCaseDoc {
     //段位
     private String dan;
 
+    /**  用户年龄 */
+    private Integer age;
 }
