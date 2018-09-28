@@ -46,4 +46,9 @@ public class OrderSearchVO {
      * 渠道角色
      */
     private Integer chanType;
+
+    /**
+     * 支付方式
+     */
+    private Integer payment;
 }

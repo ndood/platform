@@ -408,6 +408,12 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
     }
 
     public PageInfo<OrderResVO> list(OrderSearchVO orderSearchVO, Integer pageNum, Integer pageSize, String orderBy) {
+        //todo gzc 下个版本有平台字段后 修改此处逻辑
+        if(orderSearchVO.getType() != null && orderSearchVO.getType() == 3) {
+            orderSearchVO.setType(null);
+            orderSearchVO.setPayment(5);
+        }
+
         if (StringUtils.isBlank(orderBy)) {
             orderBy = "id DESC";
         }
