@@ -79,15 +79,15 @@ public class ConversionRateServiceImpl extends AbsCommonService<ConversionRate,I
                 conversionRate.setRepeatPays(repeatOrderPayCounts != null && repeatOrderPayCounts.getPeoples() != null ? repeatOrderPayCounts.getPeoples() : 0);
                 conversionRate.setNewPays(newOrderPayCounts != null &&  newOrderPayCounts.getPeoples() != null ? newOrderPayCounts.getPeoples() : 0);
                 if(conversionRate.getPeoples() != null && conversionRate.getPeoples().intValue() > 0){
-                    conversionRate.setRepeatOrderRate(new BigDecimal(conversionRate.getRepeatOrders()/conversionRate.getPeoples()));
-                    conversionRate.setRepeatPayRate(new BigDecimal(conversionRate.getRepeatPays()/conversionRate.getPeoples()));
+                    conversionRate.setRepeatOrderRate(new BigDecimal(conversionRate.getRepeatOrders() * 1.0/ conversionRate.getPeoples()));
+                    conversionRate.setRepeatPayRate(new BigDecimal(conversionRate.getRepeatPays() * 1.0 / conversionRate.getPeoples()));
                 } else {
                     conversionRate.setRepeatOrderRate(new BigDecimal("0.00"));
                     conversionRate.setRepeatPayRate(new BigDecimal("0.00"));
                 }
                 if(newOrderCounts != null && conversionRate.getNewPeoples() > 0){
-                    conversionRate.setNewOrderRate(new BigDecimal(conversionRate.getNewOrders()/conversionRate.getNewPeoples()));
-                    conversionRate.setNewPayRate(new BigDecimal(conversionRate.getNewPays()/conversionRate.getNewPeoples()));
+                    conversionRate.setNewOrderRate(new BigDecimal(conversionRate.getNewOrders() * 1.0 / conversionRate.getNewPeoples()));
+                    conversionRate.setNewPayRate(new BigDecimal(conversionRate.getNewPays() * 1.0 / conversionRate.getNewPeoples()));
                 } else {
                     conversionRate.setNewOrderRate(new BigDecimal("0.00"));
                     conversionRate.setNewPayRate(new BigDecimal("0.00"));
