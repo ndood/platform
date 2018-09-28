@@ -439,7 +439,9 @@
             <if test="sourceName != null and chanType == 2">
                 and rs2.name LIKE '%${sourceName}%'
             </if>
-            
+            <if test="payment != null">
+                and t1.payment = #{payment}
+            </if>
         </where>
     </select>
 
