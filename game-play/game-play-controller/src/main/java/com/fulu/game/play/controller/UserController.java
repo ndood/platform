@@ -22,6 +22,7 @@ import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.core.service.impl.UserInfoAuthServiceImpl;
 import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
 import com.fulu.game.play.service.impl.PlayCouponOpenServiceImpl;
 import com.fulu.game.play.utils.RequestUtil;
@@ -54,8 +55,9 @@ public class UserController extends BaseController {
     private UserTechAuthServiceImpl userTechAuthService;
     @Autowired
     private UserService userService;
+    @Qualifier(value = "userInfoAuthServiceImpl")
     @Autowired
-    private UserInfoAuthService userInfoAuthService;
+    private UserInfoAuthServiceImpl userInfoAuthService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
     @Autowired

@@ -43,7 +43,7 @@ public interface OrderOpenService {
      * @param orderNo
      * @return
      */
-    OrderEventVO findOrderEvent(String orderNo,User currentUser);
+    OrderEventVO findOrderEvent(String orderNo,Integer currentUserId);
 
     /**
      * 陪玩师拒绝协商订单

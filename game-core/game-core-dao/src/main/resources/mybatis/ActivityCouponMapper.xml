@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.ActivityCouponDao">
+    <resultMap id="ActivityCouponResultMap" type="com.fulu.game.core.entity.ActivityCoupon">
+        <id column="id" property="id"/>
+        <result column="coupon_group_id" property="couponGroupId"/>
+        <result column="official_activity_id" property="officialActivityId"/>
+        <result column="coupon_type" property="couponType"/>
+        <result column="redeem_code" property="redeemCode"/>
+        <result column="deduction" property="deduction"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="full_reduction" property="fullReduction"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="ActivityCouponResultVOMap" type="com.fulu.game.core.entity.vo.ActivityCouponVO"
+               extends="ActivityCouponResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,coupon_group_id,official_activity_id,coupon_type,redeem_code,deduction,category_id,category_name,full_reduction,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="ActivityCouponResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_activity_coupon
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="ActivityCouponResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_activity_coupon
+    </select>
+
+    <select id="findByParameter" resultMap="ActivityCouponResultMap"
+            parameterType="com.fulu.game.core.entity.vo.ActivityCouponVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_activity_coupon
+        <where>
+            <if test="couponGroupId != null">
+                and coupon_group_id = #{couponGroupId}
+            </if>
+            <if test="officialActivityId != null">
+                and official_activity_id = #{officialActivityId}
+            </if>
+            <if test="couponType != null">
+                and coupon_type = #{couponType}
+            </if>
+            <if test="redeemCode != null">
+                and redeem_code = #{redeemCode}
+            </if>
+            <if test="deduction != null">
+                and deduction = #{deduction}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="categoryName != null">
+                and category_name = #{categoryName}
+            </if>
+            <if test="fullReduction != null">
+                and full_reduction = #{fullReduction}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_activity_coupon
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.ActivityCoupon">
+        insert into
+        t_activity_coupon (coupon_group_id,official_activity_id,coupon_type,redeem_code,deduction,category_id,category_name,full_reduction,create_time,update_time)
+        values
+        (#{couponGroupId},#{officialActivityId},#{couponType},#{redeemCode},#{deduction},#{categoryId},#{categoryName},#{fullReduction},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.ActivityCoupon">
+        update t_activity_coupon
+        <set>
+
+            <if test="couponGroupId != null">
+                coupon_group_id = #{couponGroupId},
+            </if>
+
+            <if test="officialActivityId != null">
+                official_activity_id = #{officialActivityId},
+            </if>
+
+            <if test="couponType != null">
+                coupon_type = #{couponType},
+            </if>
+
+            <if test="redeemCode != null">
+                redeem_code = #{redeemCode},
+            </if>
+
+            <if test="deduction != null">
+                deduction = #{deduction},
+            </if>
+
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+
+            <if test="categoryName != null">
+                category_name = #{categoryName},
+            </if>
+
+            <if test="fullReduction != null">
+                full_reduction = #{fullReduction},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

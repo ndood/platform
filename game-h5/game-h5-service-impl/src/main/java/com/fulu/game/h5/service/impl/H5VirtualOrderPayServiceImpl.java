@@ -13,12 +13,12 @@ import java.math.BigDecimal;
 public class H5VirtualOrderPayServiceImpl extends VirtualOrderPayServiceImpl {
 
     @Autowired
-    private VirtualPayOrderServiceImpl virtualPayOrderService;
+    private H5VirtualPayOrderServiceImpl h5VirtualPayOrderService;
 
 
     @Override
     public void payOrder(String orderNo, BigDecimal actualMoney) {
-        virtualPayOrderService.successPayOrder(orderNo,actualMoney);
+        h5VirtualPayOrderService.successPayOrder(orderNo,actualMoney);
     }
 
 }

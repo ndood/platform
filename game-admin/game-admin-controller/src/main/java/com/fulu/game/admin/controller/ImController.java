@@ -247,7 +247,7 @@ public class ImController extends BaseController {
     public Result orderEvent(@RequestParam(required = true) String orderNo,Integer userId) {
         
         User user = userService.findById(userId);
-        OrderEventVO orderEventVO = playMiniAppOrderServiceImpl.findOrderEvent(orderNo,user);
+        OrderEventVO orderEventVO = playMiniAppOrderServiceImpl.findOrderEvent(orderNo,userId);
         return Result.success().data(orderEventVO);
         
     }

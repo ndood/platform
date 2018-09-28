@@ -30,6 +30,8 @@ import java.util.Map;
 @RequestMapping("/api/v1/auth")
 public class AuthController extends BaseController {
 
+
+    @Qualifier(value = "userInfoAuthServiceImpl")
     @Autowired
     private UserInfoAuthService userInfoAuthService;
     @Autowired

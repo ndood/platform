@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.fulu.game.core.entity.vo.TagVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 标签表
@@ -25,6 +26,6 @@ public interface TagDao extends ICommonDao<Tag,Integer>{
     boolean deleteByPid(Integer pid);
 
 
-    List<Tag> findByTagIds(List<Integer> tagIds);
+    List<Tag> findByTagIds(@Param(value = "tagIds") List<Integer> tagIds);
 
 }

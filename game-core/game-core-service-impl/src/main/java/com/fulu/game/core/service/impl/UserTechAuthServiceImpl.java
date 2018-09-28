@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-@Service
+@Service(value = "userTechAuthServiceImpl")
 @Slf4j
 public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Integer> implements UserTechAuthService {
 

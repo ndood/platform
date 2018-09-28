@@ -41,7 +41,7 @@ public class OrderEventServiceImpl extends AbsCommonService<OrderEvent, Integer>
     }
 
 
-    public OrderEventVO getOrderEvent(Order order, User user,Integer type) {
+    public OrderEventVO getOrderEvent(Order order, User oppUser,Integer type) {
         if (order == null) {
             return null;
         }
@@ -58,8 +58,8 @@ public class OrderEventServiceImpl extends AbsCommonService<OrderEvent, Integer>
         OrderEventVO orderEventVO = new OrderEventVO();
         BeanUtil.copyProperties(orderEvent, orderEventVO);
         orderEventVO.setCurrentOrderStatus(order.getStatus());
-        orderEventVO.setNickname(user.getNickname());
-        orderEventVO.setHeadUrl(user.getHeadPortraitsUrl());
+        orderEventVO.setNickname(oppUser.getNickname());
+        orderEventVO.setHeadUrl(oppUser.getHeadPortraitsUrl());
         orderEventVO.setCategoryName(category.getName());
         orderEventVO.setCurrentOrderStatus(order.getStatus());
         orderEventVO.setCurrentOrderStatusStr(OrderStatusEnum.getMsgByStatus(order.getStatus()));

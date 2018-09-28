@@ -20,6 +20,7 @@ import com.fulu.game.core.entity.payment.res.PayRequestRes;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
 import com.fulu.game.core.service.impl.push.MobileAppPushServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +53,7 @@ public class OrderController extends BaseController {
     @Autowired
     private MobileAppPushServiceImpl mobileAppPushService;
     @Autowired
-    private UserTechAuthService userTechAuthService;
+    private UserTechAuthServiceImpl userTechAuthService;
 
     /**
      * @param productId
@@ -336,7 +337,7 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/event")
     public Result orderEvent(@RequestParam(required = true) String orderNo) {
         User user = userService.getCurrentUser();
-        OrderEventVO orderEventVO = appOrderServiceImpl.findOrderEvent(orderNo,user);
+        OrderEventVO orderEventVO = appOrderServiceImpl.findOrderEvent(orderNo,user.getId());
         return Result.success().data(orderEventVO);
     }
 
@@ -478,4 +479,6 @@ public class OrderController extends BaseController {
         redisOpenService.setTimeInterval(orderNo, 5 * 60);
         return Result.success().msg("提醒开始成功!");
     }
+
+
 }

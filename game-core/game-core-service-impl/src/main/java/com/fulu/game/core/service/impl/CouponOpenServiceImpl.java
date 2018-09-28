@@ -18,7 +18,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-public abstract class CouponOpenServiceImpl implements CouponOpenService{
+public  class CouponOpenServiceImpl implements CouponOpenService{
 
     @Autowired
     private CouponGroupService couponGroupService;
@@ -28,13 +28,6 @@ public abstract class CouponOpenServiceImpl implements CouponOpenService{
     private CouponService couponService;
     @Autowired
     private CategoryService categoryService;
-    /**
-     * 发放完优惠券推送消息
-     *
-     * @param userId
-     * @param deduction
-     */
-    public abstract void pushMsgAfterGrantCoupon(int userId, String deduction);
 
 
     /**
@@ -122,8 +115,7 @@ public abstract class CouponOpenServiceImpl implements CouponOpenService{
         }
         log.info("生成优惠券:coupon:{}", coupon);
 
-        //发放优惠券通知
-        pushMsgAfterGrantCoupon(coupon.getUserId(), coupon.getDeduction().toString());
+        //todo 发放优惠券通知
         return coupon;
     }
 

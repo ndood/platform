@@ -64,5 +64,5 @@ public interface OrderEventService extends ICommonService<OrderEvent,Integer>{
     OrderEvent createCheckEvent(Order order, User applyUser,String remark,String... fileUrl);
 
 
-    OrderEventVO getOrderEvent(Order order, User user, Integer type);
+    OrderEventVO getOrderEvent(Order order, User oppUser, Integer type);
 }

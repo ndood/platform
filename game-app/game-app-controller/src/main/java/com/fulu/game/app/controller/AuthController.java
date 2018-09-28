@@ -16,6 +16,7 @@ import com.fulu.game.core.entity.vo.CategoryVO;
 import com.fulu.game.core.entity.vo.UserInfoAuthVO;
 import com.fulu.game.core.entity.vo.UserTechAuthVO;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.impl.UserInfoAuthServiceImpl;
 import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +39,10 @@ import java.util.Map;
 @RequestMapping("/api/v1/auth")
 public class AuthController extends BaseController {
 
+
+    @Qualifier(value = "userInfoAuthServiceImpl")
     @Autowired
-    private UserInfoAuthService userInfoAuthService;
+    private UserInfoAuthServiceImpl userInfoAuthService;
     @Autowired
     private UserService userService;
     @Autowired

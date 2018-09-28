@@ -51,6 +51,7 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
     private OrderService orderService;
     @Autowired
     private CouponService couponService;
+    @Qualifier(value = "userInfoAuthServiceImpl")
     @Autowired
     private UserInfoAuthService userInfoAuthService;
 

@@ -567,3 +567,48 @@ CREATE TABLE `t_order_msg` (
   PRIMARY KEY (`id`)
 ) comment '订单消息表';
 
+
+
+CREATE TABLE `t_activity_coupon` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `coupon_group_id` int(11) NOT NULL COMMENT '优惠券组ID',
+  `official_activity_id` int(11) DEFAULT NULL COMMENT '官方活动ID',
+  `coupon_type` tinyint(1) DEFAULT NULL COMMENT '优惠券类型(1满减，2折扣)',
+  `redeem_code` varchar(255) NOT NULL COMMENT '优惠券编码',
+  `deduction` decimal(10,2) DEFAULT NULL COMMENT '减额金额',
+  `category_id` int(11) DEFAULT NULL COMMENT '分类ID',
+  `category_name` varchar(255) DEFAULT NULL COMMENT '游戏分类内容',
+  `full_reduction` decimal(10,2) DEFAULT NULL COMMENT '多少金额可用(0为无门槛)',
+  `create_time` datetime NOT NULL,
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+)  COMMENT='活动优惠券表';
+
+
+CREATE TABLE `t_official_activity` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `platform` int(11) DEFAULT NULL COMMENT '平台',
+  `type` tinyint(4) DEFAULT NULL COMMENT '活动类型(1:优惠券，2:链接)',
+  `content` varchar(255) DEFAULT NULL COMMENT '活动文案',
+  `route` varchar(255) DEFAULT NULL COMMENT '路由地址',
+  `is_activate` tinyint(4) DEFAULT NULL COMMENT '激活(1激活,0不可用)',
+  `begin_time` datetime NOT NULL COMMENT '开始时间',
+  `end_time` datetime NOT NULL COMMENT '结束时间',
+  `remark` varchar(255) NOT NULL COMMENT '备注',
+  `create_time` datetime NOT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `is_del` tinyint(1) DEFAULT NULL COMMENT '是否逻辑删除(1是,0否)',
+  PRIMARY KEY (`id`)
+)  COMMENT='官方公告';
+
+
+
+CREATE TABLE `t_activity_user_award` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL COMMENT '用户ID',
+  `activity_id` int(11) NOT NULL COMMENT '活动ID',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id` (`user_id`,`activity_id`) USING BTREE
+)  COMMENT='用户活动奖励表';
+
