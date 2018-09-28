@@ -105,4 +105,6 @@ public class User implements Serializable {
     @Excel(name = "最后登录登录时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "13", width = 35)
     private Date loginTime;
 
+    //删除标记(false：未删除；true：已删除）
+    private Boolean delFlag;
 }
