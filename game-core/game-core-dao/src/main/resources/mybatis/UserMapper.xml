@@ -207,9 +207,9 @@
         FROM
         t_user u
         LEFT JOIN t_regist_source rs ON u.source_id = rs.id
-        LEFT JOIN (SELECT user_id,actual_money FROM t_order WHERE status &gt;=500 AND status &lt;= 600) o ON
+        LEFT JOIN (SELECT user_id,actual_money,total_money FROM t_order WHERE status &gt;=500 AND status &lt;= 600) o ON
         u.id=o.user_id
-        LEFT JOIN (SELECT service_user_id,actual_money FROM t_order WHERE status &gt;=500 AND status &lt;= 600) oo ON
+        LEFT JOIN (SELECT service_user_id,actual_money,total_money FROM t_order WHERE status &gt;=500 AND status &lt;= 600) oo ON
         u.id=oo.service_user_id
         <where>
             <if test="id != null">
@@ -250,9 +250,9 @@
         FROM
         t_user u
         LEFT JOIN t_regist_source rs ON u.source_id = rs.id
-        LEFT JOIN (SELECT user_id,actual_money FROM t_order WHERE status &gt;=500 AND status &lt;= 600) o ON
+        LEFT JOIN (SELECT user_id,actual_money,total_money FROM t_order WHERE status &gt;=500 AND status &lt;= 600) o ON
         u.id=o.user_id
-        LEFT JOIN (SELECT service_user_id,actual_money FROM t_order WHERE status &gt;=500 AND status &lt;= 600) oo ON
+        LEFT JOIN (SELECT service_user_id,actual_money,total_money FROM t_order WHERE status &gt;=500 AND status &lt;= 600) oo ON
         u.id=oo.service_user_id
         LEFT JOIN t_user_info_auth tuia ON u.id = tuia.user_id
         <where>
