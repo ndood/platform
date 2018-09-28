@@ -17,7 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 分类
@@ -181,6 +184,23 @@ public class CategoryController extends BaseController {
         return Result.success().data(priceRuleList);
     }
 
-
+    /**
+     * 查询游戏相关的扩展信息
+     * （包含段位以及价格信息）
+     * @return
+     */
+    @PostMapping(value = "/ext-info")
+    public Result extInfo(@RequestParam(required = true) Integer categoryId) {
+        Map<String, Object> extInfo = new HashMap<>();
+        TechAttr techAttr = techAttrService.findByCategoryAndType(categoryId, TechAttrTypeEnum.DAN.getType());
+        List<TechValue> techValueList = new ArrayList<>();
+        if (techAttr != null) {
+            techValueList = techValueService.findByTechAttrId(techAttr.getId());
+        }
+        extInfo.put("techValueList",techValueList);
+        List<PriceRule> priceRuleList = priceRuleService.findByCategoryId(categoryId);
+        extInfo.put("priceRuleList",priceRuleList);
+        return Result.success().data(extInfo);
+    }
 
 }
