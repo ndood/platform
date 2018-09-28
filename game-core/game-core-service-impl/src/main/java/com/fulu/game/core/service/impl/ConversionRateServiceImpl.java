@@ -159,7 +159,7 @@ public class ConversionRateServiceImpl extends AbsCommonService<ConversionRate,I
             endTime = DateUtils.dateFormat(DateUtils.maxDateOfMonth(DateUtils.dateAddMonths(null, -1)), DateUtils.DATE_PATTERN);
             threeMonth.setBeginTime(beginTime + " 00:00:00");
             threeMonth.setEndTime(endTime + " 23:59:59");
-            threeMonth.setName("本月");
+            threeMonth.setName("三月");
             threeMonth.setTimeBucket(beginTime + "至" + endTime);
             searchList.add(threeMonth);
 
