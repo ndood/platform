@@ -3,6 +3,7 @@ package com.fulu.game.core.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONObject;
 import com.alibaba.fastjson.JSONArray;
 import com.fulu.game.common.Constant;
@@ -25,6 +26,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -271,13 +273,20 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         User user = new User();
         user.setRegistIp(ip);
         user.setSourceId(sourceId);
-        //todo gzc 修改昵称
+        while (true) {
+            String nickname = "游客" + RandomUtil.randomNumbers(7);
 
-        user.setNickname("游客");
+            UserVO userVO = new UserVO();
+            userVO.setNickname(nickname);
+            List<User> userList = userDao.findByParameter(userVO);
+            if (CollectionUtils.isEmpty(userList)) {
+                user.setNickname(nickname);
+                break;
+            }
+        }
         user.setHeadPortraitsUrl("http://game-play.oss-cn-hangzhou.aliyuncs.com/2018/9/28/2a0696764cf141a9b75d0afae7d09570.png");
         return createNewUser(user);
     }
-
 
     private User createNewUser(User user) {
         user.setStatus(UserStatusEnum.NORMAL.getType());//默认账户解封状态

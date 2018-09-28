@@ -1,5 +1,6 @@
 package com.fulu.game.h5.controller;
 
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
@@ -8,10 +9,7 @@ import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
-import com.fulu.game.core.entity.Advice;
-import com.fulu.game.core.entity.ImUser;
-import com.fulu.game.core.entity.Product;
-import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.entity.vo.UserInfoVO;
 import com.fulu.game.core.entity.vo.UserVO;
@@ -56,6 +54,8 @@ public class UserController extends BaseController {
     private UserBodyAuthService userBodyAuthService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private ThirdpartyUserService thirdpartyUserService;
 
     /**
      * 点击发送验证码接口
@@ -116,7 +116,17 @@ public class UserController extends BaseController {
         }
         User mobileUser = userService.findByMobile(mobile);
         if (mobileUser != null) {
-            return Result.error().msg("该手机号已经被绑定！");
+            ThirdpartyUser thirdpartyUser = thirdpartyUserService.findByUserId(user.getId());
+            thirdpartyUser.setUserId(mobileUser.getId());
+            thirdpartyUser.setUpdateTime(DateUtil.date());
+            thirdpartyUserService.update(thirdpartyUser);
+
+            user.setDelFlag(true);
+            userService.update(user);
+            userService.updateRedisUser(user);
+            log.info("同步用户信息中。逻辑删除userId为：{}的用户", user.getId());
+            user = userService.findById(mobileUser.getId());
+            log.info("用户同步操作完成。目前登录用户useId：{}", user.getId());
         } else {
             user.setMobile(mobile);
             user.setUpdateTime(new Date());
