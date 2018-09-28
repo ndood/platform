@@ -46,4 +46,16 @@ public class GlobalController extends BaseController {
         return Result.success().data(sessionkey);
     }
 
+    @PostMapping("/update-user-index")
+    public Result bathUpdateIndex(){
+        userService.bathUpdateUserIndex();
+        return Result.success().msg("批量更新所有陪玩师索引完成!");
+    }
+
+    @PostMapping("/del-all-user-index")
+    public Result deleteAlluserIndex(){
+        userService.deleteAllUserIndex();
+        return Result.success().msg("删除所有陪玩师索引完成!");
+    }
+
 }

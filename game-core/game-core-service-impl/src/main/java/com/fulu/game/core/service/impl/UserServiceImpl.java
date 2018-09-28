@@ -18,6 +18,8 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.*;
+import com.fulu.game.core.search.component.UserSearchComponent;
+import com.fulu.game.core.search.domain.UserDoc;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
 import com.github.pagehelper.PageHelper;
@@ -80,6 +82,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Qualifier(value = "userTechAuthServiceImpl")
     @Autowired
     private UserTechAuthServiceImpl userTechAuthService;
+
+    @Autowired
+    private UserSearchComponent userSearchComponent;
 
 
     @Override
@@ -941,6 +946,28 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
                     return;
                 }
             }
+        }
+    }
+
+    /**
+     * 删除用户索引
+     */
+    @Override
+    public void deleteAllUserIndex() {
+        userSearchComponent.deleteIndexAll();
+    }
+
+    /**
+     * 更新用户索引
+     */
+    @Override
+    public void bathUpdateUserIndex() {
+        log.info("批量更新所有商品索引");
+        List<User> userList = findAllServeUser();
+        UserDoc userDoc = new UserDoc();
+        for (User user : userList) {
+            BeanUtil.copyProperties(user,userDoc);
+            userSearchComponent.saveIndex(userDoc);
         }
     }
 }

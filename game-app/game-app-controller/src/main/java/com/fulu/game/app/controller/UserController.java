@@ -1,5 +1,6 @@
 package com.fulu.game.app.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Constant;
@@ -14,8 +15,11 @@ import com.fulu.game.core.entity.vo.UserBodyAuthVO;
 import com.fulu.game.core.entity.vo.UserCommentVO;
 import com.fulu.game.core.entity.vo.UserOnlineVO;
 import com.fulu.game.core.entity.vo.UserVO;
+import com.fulu.game.core.search.component.UserSearchComponent;
+import com.fulu.game.core.search.domain.UserDoc;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -65,6 +70,9 @@ public class UserController extends BaseController {
     @Autowired
     private TagService tagService;
 
+    @Autowired
+    private UserSearchComponent userSearchComponent;
+
     /**
      * 修改/填写资料
      *
@@ -89,6 +97,10 @@ public class UserController extends BaseController {
         userService.update(user);
         user = userService.findById(userService.getCurrentUser().getId());
         userService.updateRedisUser(user);
+        // 保存用户ES信息
+        UserDoc userDoc = new UserDoc();
+        BeanUtil.copyProperties(user,userDoc);
+        userSearchComponent.saveIndex(userDoc);
         // 保存用户认证信息
         saveUserInfoAuth(userVO);
         user.setIdcard(null);
@@ -332,13 +344,19 @@ public class UserController extends BaseController {
      * @return
      */
     @PostMapping("/list")
-    public Result list(UserVO userVO,
+    public Result list(@RequestParam String nickname,
                        @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                        @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
         //只查陪玩师
-        userVO.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
-        PageInfo<UserVO> userList = userService.list(userVO, pageNum, pageSize);
-        return Result.success().data(userList).msg("查询用户列表成功！");
+//        userVO.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
+//        PageInfo<UserVO> userList = userService.list(userVO, pageNum, pageSize);
+        Page<UserDoc> list = null;
+        try {
+            list = userSearchComponent.findPlayerByNickName(pageNum,pageSize,nickname);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Result.success().data(list).msg("查询用户列表成功！");
     }
 
     /**

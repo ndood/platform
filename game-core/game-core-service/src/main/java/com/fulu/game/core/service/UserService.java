@@ -330,4 +330,14 @@ public interface UserService extends ICommonService<User, Integer> {
      * 判断用户是否需要取一个随机自动问好
      */
     void setUserRandStatus(Integer userId);
+
+    /**
+     * 删除所有用户索引
+     */
+    void deleteAllUserIndex();
+
+    /**
+     * 更新用户索引
+     */
+    void bathUpdateUserIndex();
 }
