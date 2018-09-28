@@ -107,6 +107,12 @@
             <if test="userId != null">
                 and uta.user_id = #{userId}
             </if>
+            <if test="isActivate != null">
+                and uta.is_activate = #{isActivate}
+            </if>
+            <if test="techLevelId != null">
+                and tl.id = #{techLevelId}
+            </if>
         </where>
     </select>
 

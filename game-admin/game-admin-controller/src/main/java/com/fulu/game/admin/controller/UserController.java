@@ -694,6 +694,20 @@ public class UserController extends BaseController {
                 userInfoAuthFile.setCreateTime(new Date());
                 userInfoAuthFileService.create(userInfoAuthFile);
             }
+            userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(), 1);
+            if (userVO != null && userVO.getPicUrls() != null){
+                int index = 1;
+                UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
+                for(String url: userVO.getPicUrls()){
+                    userInfoAuthFile.setUrl(ossUtil.activateOssFile(url));
+                    userInfoAuthFile.setDuration(null);
+                    userInfoAuthFile.setInfoAuthId(userInfoAuth.getId());
+                    userInfoAuthFile.setType(1);
+                    userInfoAuthFile.setName("私照" + index++);
+                    userInfoAuthFile.setCreateTime(new Date());
+                    userInfoAuthFileService.create(userInfoAuthFile);
+                }
+            }
         }
     }
 

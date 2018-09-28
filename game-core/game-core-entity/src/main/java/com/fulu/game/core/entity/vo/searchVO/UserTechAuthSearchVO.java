@@ -13,4 +13,6 @@ public class UserTechAuthSearchVO {
     private Integer status;
     private String orderBy;
     private Integer userId;
+    private Integer techLevelId;
+    private Integer isActivate;
 }

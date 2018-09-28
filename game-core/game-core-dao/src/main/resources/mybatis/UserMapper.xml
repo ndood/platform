@@ -198,18 +198,26 @@
         SELECT
         u.*,
         rs.name AS source_name,
-        IFNULL(sum(o.total_money),0) AS pay_sum,
-        count(o.user_id) AS order_count,
-        IFNULL(sum(o.total_money),0) / count(o.user_id) as pay_unit_price,
-        IFNULL(sum(oo.total_money),0) AS income_sum,
-        count(oo.service_user_id) AS service_order_count,
-        IFNULL(sum(oo.total_money),0) / count(oo.service_user_id) as income_unit_price
+        IFNULL(o.total_money,0) AS pay_sum,
+        o.order_count,
+        IFNULL(o.total_money,0) / o.order_count as pay_unit_price,
+        IFNULL(oo.total_money,0) AS income_sum,
+        oo.order_count AS service_order_count,
+        IFNULL(oo.total_money,0) / oo.order_count as income_unit_price
         FROM
         t_user u
         LEFT JOIN t_regist_source rs ON u.source_id = rs.id
-        LEFT JOIN (SELECT user_id,actual_money,total_money FROM t_order WHERE status &gt;=500 AND status &lt;= 600) o ON
+        LEFT JOIN (
+          SELECT user_id,count(user_id) as order_count,  IFNULL(sum(total_money),0) as total_money FROM t_order
+          WHERE status &gt;=500 AND status &lt;= 600
+          GROUP BY user_id
+        ) o ON
         u.id=o.user_id
-        LEFT JOIN (SELECT service_user_id,actual_money,total_money FROM t_order WHERE status &gt;=500 AND status &lt;= 600) oo ON
+        LEFT JOIN (
+          SELECT service_user_id,count(service_user_id) as order_count, IFNULL(sum(total_money),0) as total_money FROM t_order
+          WHERE status &gt;=500 AND status &lt;= 600
+          GROUP BY service_user_id
+        ) oo ON
         u.id=oo.service_user_id
         <where>
             <if test="id != null">
