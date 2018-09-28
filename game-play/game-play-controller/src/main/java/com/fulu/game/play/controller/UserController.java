@@ -24,7 +24,6 @@ import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.UserInfoAuthServiceImpl;
 import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
-import com.fulu.game.play.service.impl.PlayCouponOpenServiceImpl;
 import com.fulu.game.play.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -73,7 +72,7 @@ public class UserController extends BaseController {
     @Autowired
     private AdviceService adviceService;
     @Autowired
-    private PlayCouponOpenServiceImpl playCouponOpenServiceImpl;
+    private CouponOpenService couponOpenService;
     @Autowired
     private SpringThreadPoolExecutor springThreadPoolExecutor;
     @Autowired
@@ -278,7 +277,7 @@ public class UserController extends BaseController {
                 springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
                     @Override
                     public void run() {
-                        playCouponOpenServiceImpl.generateCoupon(Constant.NEW_POINT_USER_COUPON_GROUP_REDEEM_CODE, user.getId(), DateUtil.date(), ipStr);
+                        couponOpenService.generateCoupon(Constant.NEW_POINT_USER_COUPON_GROUP_REDEEM_CODE, user.getId(), DateUtil.date(), ipStr);
                     }
                 });
             }
