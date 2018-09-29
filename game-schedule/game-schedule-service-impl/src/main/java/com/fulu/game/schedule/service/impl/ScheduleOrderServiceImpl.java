@@ -151,6 +151,20 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
                 && !order.getStatus().equals(OrderStatusEnum.ALREADY_RECEIVING.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有等待陪玩和未支付的订单才能取消!");
         }
+
+        //如果是分期乐订单，短信通知老板
+        //todo gzc 下一版本会通过平台字段区分订单类型
+        if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
+            User user = userService.findById(order.getUserId());
+            if (user != null) {
+                if (OrderStatusEnum.WAIT_SERVICE.getStatus().equals(order.getStatus())) {
+                    SMSUtil.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.NOT_ACCEPT_ORDER.getMsg());
+                } else if (OrderStatusEnum.ALREADY_RECEIVING.getStatus().equals(order.getStatus())) {
+                    SMSUtil.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.NOT_START_ORDER.getMsg());
+                }
+            }
+        }
+
         order.setUpdateTime(new Date());
         order.setCompleteTime(new Date());
         // 全额退款用户
@@ -163,15 +177,6 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
         orderService.update(order);
         log.info("系统取消订单完成order:{}", order);
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
-
-        //如果是分期乐订单，短信通知老板
-        //todo gzc 下一版本会通过平台字段区分订单类型
-        if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
-            User user = userService.findById(order.getUserId());
-            if (user != null) {
-                SMSUtil.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.CANCEL_ORDER.getMsg());
-            }
-        }
     }
 
     /**
