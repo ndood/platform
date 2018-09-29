@@ -201,6 +201,9 @@
             <if test="openSubstituteIm != null">
                 and open_substitute_im = #{openSubstituteIm}
             </if>
+            <if test="sourceId != null">
+                and uia.source_id = #{sourceId}
+            </if>
         </where>
         GROUP BY
         uia.id
