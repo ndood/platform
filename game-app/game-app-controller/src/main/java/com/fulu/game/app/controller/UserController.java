@@ -350,13 +350,13 @@ public class UserController extends BaseController {
         //只查陪玩师
 //        userVO.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
 //        PageInfo<UserVO> userList = userService.list(userVO, pageNum, pageSize);
-        Page<UserDoc> list = null;
         try {
-            list = userSearchComponent.findPlayerByNickName(pageNum,pageSize,nickname);
+            PageInfo<UserDoc> page = userSearchComponent.findPlayerByNickName(pageNum,pageSize,nickname);
+            return Result.success().data(page).msg("查询用户列表成功！");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return Result.success().data(list).msg("查询用户列表成功！");
+        return Result.success().data(null).msg("查询用户列表成功！");
     }
 
     /**
