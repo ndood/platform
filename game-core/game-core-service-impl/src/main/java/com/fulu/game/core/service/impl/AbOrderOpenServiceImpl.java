@@ -636,7 +636,10 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
             //如果是分期乐订单，短信通知老板
             //todo gzc 下一版本会通过平台字段区分订单类型
             if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
-                SMSUtil.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.USER_APPEAL_ORDER.getMsg());
+                User bossUser = userService.findById(order.getUserId());
+                if (bossUser != null) {
+                    SMSUtil.sendLeaveInformNoUrl(bossUser.getMobile(), SMSContentEnum.USER_APPEAL_ORDER.getMsg());
+                }
             }
         }
 
