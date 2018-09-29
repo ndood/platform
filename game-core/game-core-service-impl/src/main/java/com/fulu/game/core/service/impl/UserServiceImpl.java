@@ -958,7 +958,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         List<TagVO> allPersonTagVos = userInfoAuthService.findAllUserTagSelected(id, false);
         userVO.setGroupTags(allPersonTagVos);
         UserVO params = new UserVO();
-        params.setId(id);
+        params.setUserId(id);
         //设置收入和消费信息
         List<UserVO> list = userDao.findBySearch(params);
         if (CollectionUtil.isNotEmpty(list)) {
