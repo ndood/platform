@@ -1,10 +1,11 @@
-package com.fulu.game.h5.service.impl.fenqile;
+package com.fulu.game.play.service.impl;
 
 import com.fulu.game.common.enums.OrderTypeEnum;
 import com.fulu.game.common.enums.PlatFormMoneyTypeEnum;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.OrderShareProfitServiceImpl;
+import com.fulu.game.play.service.impl.H5FenqilePayServiceImpl;
 import com.fulu.game.thirdparty.fenqile.service.FenqileSdkOrderService;
 import com.github.binarywang.wxpay.exception.WxPayException;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,6 @@ public class H5OrderShareProfitServiceImpl extends OrderShareProfitServiceImpl {
 
     @Override
     public Boolean refund(Order order, BigDecimal actualMoney, BigDecimal refundUserMoney) throws WxPayException {
-
         return h5FenqilePayService.refund(order.getOrderNo(), actualMoney, refundUserMoney);
     }
 
