@@ -1,26 +1,22 @@
 package com.fulu.game.core.search.component;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.exception.SearchException;
 import com.fulu.game.common.properties.Config;
-import com.fulu.game.core.search.domain.Criteria;
-import com.fulu.game.core.search.domain.ProductShowCaseDoc;
 import com.fulu.game.core.search.domain.UserDoc;
 import com.github.pagehelper.Page;
-import com.google.common.collect.Lists;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.FieldSortBuilder;
-import org.elasticsearch.search.sort.SortBuilders;
-import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -62,9 +58,9 @@ public class UserSearchComponent extends AbsSearchComponent<UserDoc, Integer> {
      * @return
      * @throws IOException
      */
-    public Page<UserDoc> findPlayerByNickName(Integer pageNum,
-                                        Integer pageSize,
-                                        String nickname) throws IOException {
+    public PageInfo<UserDoc> findPlayerByNickName(Integer pageNum,
+                                                  Integer pageSize,
+                                                  String nickname) throws IOException {
         return findByNickName( pageNum, pageSize, nickname, UserTypeEnum.ACCOMPANY_PLAYER.getType());
     }
 
@@ -76,7 +72,7 @@ public class UserSearchComponent extends AbsSearchComponent<UserDoc, Integer> {
      * @return
      * @throws IOException
      */
-    public Page<UserDoc> findByNickName(Integer pageNum,
+    public PageInfo<UserDoc> findByNickName(Integer pageNum,
                                         Integer pageSize,
                                         String nickname) throws IOException {
         return findByNickName( pageNum, pageSize, nickname, null);
@@ -91,7 +87,7 @@ public class UserSearchComponent extends AbsSearchComponent<UserDoc, Integer> {
      * @return type用户类型查询（目前首页只会查询type为2的即陪玩师）
      * @throws IOException
      */
-    public Page<UserDoc> findByNickName(Integer pageNum,
+    public PageInfo<UserDoc> findByNickName(Integer pageNum,
                                             Integer pageSize,
                                             String nickname,
                                         Integer type) throws IOException {
@@ -133,7 +129,8 @@ public class UserSearchComponent extends AbsSearchComponent<UserDoc, Integer> {
         Page<UserDoc> page = new Page<>(pageNum, pageSize);
         page.addAll(userDocList);
         page.setTotal(result.getTotal());
-        return page;
+        page.setOrderBy("id");
+        return new PageInfo<>(page);
     }
 
 
