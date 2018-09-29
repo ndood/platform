@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
@@ -96,16 +97,19 @@ public class UserSearchComponent extends AbsSearchComponent<UserDoc, Integer> {
                                         Integer type) throws IOException {
         //封装查询条件
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        MatchQueryBuilder matchQueryBuilder = matchQuery("nickname", nickname);
-        searchSourceBuilder.query(matchQueryBuilder);
 
+        MatchQueryBuilder matchQueryBuilder = matchQuery("nickname", nickname);
+        QueryBuilder queryBuilder = null;
         // 如果类型不为空
         if (type != null) {
             BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
             boolQueryBuilder.filter(QueryBuilders.termQuery("type", type));
-            searchSourceBuilder.query(boolQueryBuilder);
+            queryBuilder = QueryBuilders.boolQuery().must(matchQueryBuilder).must(boolQueryBuilder);
+        } else {
+            queryBuilder = QueryBuilders.boolQuery().must(matchQueryBuilder);
         }
 
+        searchSourceBuilder.query(queryBuilder);
 
         //排序
 //        FieldSortBuilder scoreSort = SortBuilders.fieldSort("_score").order(SortOrder.DESC);
