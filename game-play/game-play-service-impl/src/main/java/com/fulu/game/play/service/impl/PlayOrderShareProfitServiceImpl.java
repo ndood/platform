@@ -1,6 +1,7 @@
 package com.fulu.game.play.service.impl;
 
 
+import com.fulu.game.common.enums.PaymentEnum;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.service.impl.OrderShareProfitServiceImpl;
 import com.github.binarywang.wxpay.exception.WxPayException;
@@ -17,9 +18,16 @@ public class PlayOrderShareProfitServiceImpl extends OrderShareProfitServiceImpl
 
     @Autowired
     private PlayMiniAppPayServiceImpl playMiniAppPayService;
+    @Autowired
+    private H5FenqilePayServiceImpl h5FenqilePayService;
+
 
     @Override
     public Boolean refund(Order order, BigDecimal actualMoney, BigDecimal refundUserMoney) throws WxPayException {
-        return playMiniAppPayService.refund(order.getOrderNo(), actualMoney, refundUserMoney);
+        if(PaymentEnum.FENQILE_PAY.getType().equals(order.getType())){
+            return h5FenqilePayService.refund(order.getOrderNo(), actualMoney, refundUserMoney);
+        }else{
+            return playMiniAppPayService.refund(order.getOrderNo(), actualMoney, refundUserMoney);
+        }
     }
 }

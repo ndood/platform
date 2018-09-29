@@ -1,4 +1,4 @@
-package com.fulu.game.h5.service.impl.fenqile;
+package com.fulu.game.play.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import com.fulu.game.common.Constant;
