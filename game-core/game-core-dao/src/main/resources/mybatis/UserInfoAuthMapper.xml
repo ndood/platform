@@ -38,6 +38,7 @@
         <result column="im_psw" property="imPsw"/>
         <result column="charm" property="charm"/>
         <result column="login_time" property="loginTime"/>
+        <result column="source_id" property="sourceId"/>
     </resultMap>
 
     <sql id="Base_Column_List">

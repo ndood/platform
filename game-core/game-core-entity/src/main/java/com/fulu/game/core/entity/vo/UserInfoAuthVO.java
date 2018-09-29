@@ -89,5 +89,7 @@ public class UserInfoAuthVO extends UserInfoAuth {
     // 登录时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date loginTime;
+    //渠道来源id
+    private Integer sourceId;
 
 }
