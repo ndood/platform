@@ -37,5 +37,5 @@ public class CategoryVO extends Category {
     // 被拒绝原因
     private String reason;
     // 子分类集合
-    private List<CategoryVO> childCategoryList;
+    private List<UserTechAuthEntity> childCategoryList;
 }

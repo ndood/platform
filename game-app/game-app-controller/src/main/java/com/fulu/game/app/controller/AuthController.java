@@ -205,7 +205,7 @@ public class AuthController extends BaseController {
         map.put("reason", reason);
         // 2、获取用户已认证技能列表
         List<UserTechAuth> techAuthList = userTechAuthService.findByUserId(user.getId());
-        List<UserTechAuthVO> userTechAuthVOList = new ArrayList<>();
+        List<UserTechAuthEntity> userTechAuthVOList = new ArrayList<>();
         Map<String, UserTechAuthVO> authTechMap = new HashMap<>();
         for (UserTechAuth userTechAuth : techAuthList) {
             UserTechAuthVO userTechAuthVO = new UserTechAuthVO();
@@ -216,7 +216,12 @@ public class AuthController extends BaseController {
             }
             //认证通过的才放入集合中
             if(userTechAuthVO.getStatus() != null && userTechAuthVO.getStatus().intValue() == TechAuthStatusEnum.NORMAL.getType()){
-                userTechAuthVOList.add(userTechAuthVO);
+                UserTechAuthEntity userTechAuthEntity = UserTechAuthEntity.builder().
+                        techAuthId(userTechAuthVO.getId()).
+                        categoryId(userTechAuthVO.getCategoryId()).
+                        name(userTechAuthVO.getCategoryName()).status(userTechAuthVO.getStatus()).
+                        build();
+                userTechAuthVOList.add(userTechAuthEntity);
             }
             authTechMap.put(userTechAuthVO.getCategoryId() + "",userTechAuthVO);
         }
@@ -227,7 +232,7 @@ public class AuthController extends BaseController {
         if(list != null && list.size() > 0){
             for(Category category: list){
                 CategoryVO categoryVO = new CategoryVO();
-                List<CategoryVO> childCategoryList = new ArrayList<>();
+                List<UserTechAuthEntity> childCategoryList = new ArrayList<>();
                 BeanUtil.copyProperties(category, categoryVO);
                 List<Category> childList = categoryService.findByPid(category.getId(),true);
                 String key = "";
@@ -235,6 +240,10 @@ public class AuthController extends BaseController {
                     CategoryVO childCategoryVO = new CategoryVO();
                     BeanUtil.copyProperties(childCategory, childCategoryVO);
                     key = childCategory.getId() + "";
+                    Integer status = 0;
+                    String statusStr = "";
+                    Integer techAuthId = null;
+                    String authRefuseReason = "";
                     if(authTechMap.containsKey(key) && authTechMap.get(key) != null &&
                             authTechMap.get(key).getStatus().intValue() == TechAuthStatusEnum.NORMAL.getType()){ //已认证
                         continue;
@@ -242,16 +251,33 @@ public class AuthController extends BaseController {
                             authTechMap.get(key).getStatus().intValue() == TechAuthStatusEnum.AUTHENTICATION_ING.getType()){//审核中
                         childCategoryVO.setAuthStatus(CategoryAuthStatusEnum.AUTHING.getType());
                         childCategoryVO.setAuthStatusStr(CategoryAuthStatusEnum.AUTHING.getMsg());
+                        status = CategoryAuthStatusEnum.AUTHING.getType();
+                        statusStr = CategoryAuthStatusEnum.AUTHING.getMsg();
+                        techAuthId = authTechMap.get(key).getId();
                     } else if(authTechMap.containsKey(key) && authTechMap.get(key) != null &&
                             authTechMap.get(key).getStatus().intValue() == TechAuthStatusEnum.NO_AUTHENTICATION.getType() ){//被拒绝
                         childCategoryVO.setAuthStatus(CategoryAuthStatusEnum.REFUSED.getType());
+                        status = CategoryAuthStatusEnum.REFUSED.getType();
+                        statusStr = CategoryAuthStatusEnum.REFUSED.getMsg();
+                        techAuthId = authTechMap.get(key).getId();
                         childCategoryVO.setAuthStatusStr(CategoryAuthStatusEnum.REFUSED.getMsg());
                         childCategoryVO.setReason(authTechMap.get(key).getReason());
+                        authRefuseReason = authTechMap.get(key).getReason();
                     } else {
                         childCategoryVO.setAuthStatus(CategoryAuthStatusEnum.UNAUTH.getType());
                         childCategoryVO.setAuthStatusStr(CategoryAuthStatusEnum.UNAUTH.getMsg());
+                        status = CategoryAuthStatusEnum.UNAUTH.getType();
+                        statusStr = CategoryAuthStatusEnum.UNAUTH.getMsg();
                     }
-                    childCategoryList.add(childCategoryVO);
+                    UserTechAuthEntity userTechAuthEntity = UserTechAuthEntity.builder().
+                            techAuthId(techAuthId).
+                            categoryId(childCategory.getId()).
+                            name(childCategory.getName()).
+                            status(status).
+                            statusStr(statusStr).
+                            reason(authRefuseReason).
+                            build();
+                    childCategoryList.add(userTechAuthEntity);
                 }
                 // 如果子分类存在，才需添加
                 if(childCategoryList != null && childCategoryList.size() > 0){
