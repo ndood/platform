@@ -33,8 +33,9 @@ public class UserCommentTagServiceImpl extends AbsCommonService<UserCommentTag, 
         List<Tag> tagList = tagService.findByTagIds(tagIds);
         for (Tag tag : tagList) {
             UserCommentTag commentTag = new UserCommentTag();
+            commentTag.setUserId(comment.getServerUserId());
             commentTag.setCommentId(comment.getId());
-            commentTag.setTechAuthId(comment.getServerUserId());
+            commentTag.setTechAuthId(comment.getTechAuthId());
             commentTag.setTagId(tag.getId());
             commentTag.setTagName(tag.getName());
             commentTag.setTechAuthId(comment.getTechAuthId());

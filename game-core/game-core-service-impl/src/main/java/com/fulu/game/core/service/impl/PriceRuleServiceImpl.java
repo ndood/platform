@@ -8,6 +8,7 @@ import com.fulu.game.core.entity.vo.PriceRuleVO;
 import com.fulu.game.core.service.UserTechAuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 
@@ -28,8 +29,10 @@ public class PriceRuleServiceImpl extends AbsCommonService<PriceRule,Integer> im
 
     @Autowired
 	private PriceRuleDao priceRuleDao;
+
+    @Qualifier(value = "userTechAuthServiceImpl")
     @Autowired
-    private UserTechAuthService userTechAuthService;
+    private UserTechAuthServiceImpl userTechAuthService;
 
     @Override
     public ICommonDao<PriceRule, Integer> getDao() {

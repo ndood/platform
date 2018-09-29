@@ -373,7 +373,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
     }
 
     @Override
-    public OrderEventVO findOrderEvent(String orderNo,User currentUser) {
+    public OrderEventVO findOrderEvent(String orderNo,Integer currentUserId) {
         Order order = orderService.findByOrderNo(orderNo);
         if (order == null) {
             throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST, orderNo);
@@ -385,16 +385,23 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
             type = OrderEventTypeEnum.APPEAL.getType();
         }
 
-        OrderEventVO orderEventVO = orderEventService.getOrderEvent(order, currentUser, type);
+        User oppUser = null;
+        if(order.getUserId().equals(currentUserId)){
+            oppUser = userService.findById(order.getServiceUserId());
+        }else{
+            oppUser = userService.findById(order.getUserId());
+        }
+
+        OrderEventVO orderEventVO = orderEventService.getOrderEvent(order, oppUser, type);
         if (orderEventVO == null) {
             throw new OrderException(orderNo, "该协商已经被取消!");
         }
         orderEventVO.setActualMoney(order.getActualMoney());
         orderEventVO.setTotalMoney(order.getTotalMoney());
 
-        if (currentUser.getId().equals(orderEventVO.getUserId())) {
+        if (currentUserId.equals(orderEventVO.getUserId())) {
             orderEventVO.setIdentity(UserTypeEnum.GENERAL_USER.getType());
-        } else if (currentUser.getId().equals(orderEventVO.getServiceUserId())) {
+        } else if (currentUserId.equals(orderEventVO.getServiceUserId())) {
             orderEventVO.setIdentity(UserTypeEnum.ACCOMPANY_PLAYER.getType());
         } else {
             throw new ServiceErrorException("用户不匹配!");

@@ -62,7 +62,7 @@ public class UserCommentServiceImpl extends AbsCommonService<UserComment, Intege
         if (!order.getStatus().equals(OrderStatusEnum.SYSTEM_COMPLETE.getStatus()) && !order.getStatus().equals(OrderStatusEnum.COMPLETE.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有待评价的订单才能评价!");
         }
-        userService.isCurrentUser(order.getUserId());
+        //userService.isCurrentUser(order.getUserId());
         int serverUserId = order.getServiceUserId();
 
         UserTechAuth userTechAuth = userTechAuthService.findByCategoryAndUser(order.getCategoryId(),serverUserId).get(0);

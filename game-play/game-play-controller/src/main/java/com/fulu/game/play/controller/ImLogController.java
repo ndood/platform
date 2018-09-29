@@ -10,8 +10,10 @@ import com.fulu.game.core.entity.vo.UserOnlineVO;
 import com.fulu.game.core.entity.vo.VirtualProductAttachVO;
 import com.fulu.game.core.entity.vo.VirtualProductVO;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.impl.UserInfoAuthServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,8 +34,10 @@ public class ImLogController extends BaseController {
     private VirtualProductAttachService virtualProductAttachService;
     @Autowired
     private ImService imService;
+
+    @Qualifier(value = "userInfoAuthServiceImpl")
     @Autowired
-    private UserInfoAuthService userInfoAuthService;
+    private UserInfoAuthServiceImpl userInfoAuthService;
 
     @PostMapping(value = "collect")
     public Result log(String content) {

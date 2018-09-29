@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.OfficialActivityDao">
+    <resultMap id="OfficialActivityResultMap" type="com.fulu.game.core.entity.OfficialActivity">
+        <id column="id" property="id"/>
+        <result column="platform" property="platform"/>
+        <result column="type" property="type"/>
+        <result column="content" property="content"/>
+        <result column="route" property="route"/>
+        <result column="is_activate" property="isActivate"/>
+        <result column="begin_time" property="beginTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="is_del" property="isDel"/>
+    </resultMap>
+
+    <resultMap id="OfficialActivityResultVOMap" type="com.fulu.game.core.entity.vo.OfficialActivityVO"
+               extends="OfficialActivityResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,platform,type,content,route,is_activate,begin_time,end_time,remark,create_time,update_time,is_del    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="OfficialActivityResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_official_activity
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="OfficialActivityResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_official_activity
+    </select>
+
+    <select id="findByParameter" resultMap="OfficialActivityResultMap"
+            parameterType="com.fulu.game.core.entity.vo.OfficialActivityVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_official_activity
+        <where>
+             is_del = false
+            <if test="platform != null">
+                and platform = #{platform}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="content != null">
+                and content = #{content}
+            </if>
+            <if test="route != null">
+                and route = #{route}
+            </if>
+            <if test="isActivate != null">
+                and is_activate = #{isActivate}
+            </if>
+            <if test="beginTime != null">
+                and begin_time = #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and end_time = #{endTime}
+            </if>
+            <if test="remark != null">
+                and remark = #{remark}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_official_activity
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.OfficialActivity">
+        insert into
+        t_official_activity (platform,type,content,route,is_activate,begin_time,end_time,remark,create_time,update_time,is_del)
+        values
+        (#{platform},#{type},#{content},#{route},#{isActivate},#{beginTime},#{endTime},#{remark},#{createTime},#{updateTime},#{isDel})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.OfficialActivity">
+        update t_official_activity
+        <set>
+
+            <if test="platform != null">
+                platform = #{platform},
+            </if>
+
+            <if test="type != null">
+                type = #{type},
+            </if>
+
+            <if test="content != null">
+                content = #{content},
+            </if>
+
+            <if test="route != null">
+                route = #{route},
+            </if>
+
+            <if test="isActivate != null">
+                is_activate = #{isActivate},
+            </if>
+
+            <if test="beginTime != null">
+                begin_time = #{beginTime},
+            </if>
+
+            <if test="endTime != null">
+                end_time = #{endTime},
+            </if>
+
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+
+            <if test="isDel != null">
+                is_del = #{isDel},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

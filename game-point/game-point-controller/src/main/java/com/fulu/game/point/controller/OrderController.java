@@ -410,7 +410,7 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/event")
     public Result orderEvent(@RequestParam(required = true) String orderNo) {
         User user = userService.getCurrentUser();
-        OrderEventVO orderEventVO = pointMiniAppOrderServiceImpl.findOrderEvent(orderNo,user);
+        OrderEventVO orderEventVO = pointMiniAppOrderServiceImpl.findOrderEvent(orderNo,user.getId());
         return Result.success().data(orderEventVO);
     }
 

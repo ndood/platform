@@ -4,8 +4,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Result;
 import com.fulu.game.core.entity.DynamicPushMsg;
 import com.fulu.game.core.entity.PushMsg;
+import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.OrderMsgVO;
 import com.fulu.game.core.service.DynamicPushMsgService;
+import com.fulu.game.core.service.OrderMsgService;
 import com.fulu.game.core.service.PushMsgService;
+import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +30,19 @@ public class PushMsgController extends BaseController {
 
     private final PushMsgService pushMsgService;
     private final DynamicPushMsgService dynamicPushMsgService;
+    private final OrderMsgService orderMsgService;
+    private final UserService userService;
 
 
     @Autowired
-    public PushMsgController(PushMsgService pushMsgService,DynamicPushMsgService dynamicPushMsgService) {
+    public PushMsgController(PushMsgService pushMsgService,
+                             DynamicPushMsgService dynamicPushMsgService,
+                             UserService userService,
+                             OrderMsgService orderMsgService) {
         this.pushMsgService = pushMsgService;
         this.dynamicPushMsgService = dynamicPushMsgService;
+        this.orderMsgService = orderMsgService;
+        this.userService = userService;
     }
 
     /**
@@ -72,6 +83,16 @@ public class PushMsgController extends BaseController {
         DynamicPushMsg dynamicPushMsg = dynamicPushMsgService.newDynamicPushMsg();
         result.put("dynamic", dynamicPushMsg);
         return Result.success().data(result).msg("查询成功！");
+    }
+
+
+
+    @RequestMapping("/order/list")
+    public Result orderMsgList(@RequestParam Integer pageNum,
+                               @RequestParam Integer pageSize){
+        User user = userService.getCurrentUser();
+        PageInfo<OrderMsgVO>  msgVOPageInfo = orderMsgService.list(user.getId(),pageNum,pageSize);
+        return Result.success().data(msgVOPageInfo).msg("查询成功！");
     }
 
 }

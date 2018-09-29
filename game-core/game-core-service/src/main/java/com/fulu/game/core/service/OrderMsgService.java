@@ -2,7 +2,8 @@ package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderMsg;
-
+import com.fulu.game.core.entity.vo.OrderMsgVO;
+import com.github.pagehelper.PageInfo;
 
 
 /**
@@ -19,5 +20,6 @@ public interface OrderMsgService extends ICommonService<OrderMsg,Integer>{
 
 
     OrderMsg createUserOrderMsg(Order order, String message);
-	
+
+    public PageInfo<OrderMsgVO> list(int userId, int pageNum, int pageSize);
 }

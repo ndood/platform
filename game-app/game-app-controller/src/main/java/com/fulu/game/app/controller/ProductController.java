@@ -9,6 +9,7 @@ import com.fulu.game.core.entity.vo.PriceRuleVO;
 import com.fulu.game.core.entity.vo.ProductDetailsVO;
 import com.fulu.game.core.entity.vo.TechAuthProductVO;
 import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class ProductController extends BaseController {
     @Autowired
     private TechTagService techTagService;
     @Autowired
-    private UserTechAuthService userTechAuthService;
+    private UserTechAuthServiceImpl userTechAuthService;
     @Autowired
     private PriceRuleService priceRuleService;
     @Autowired
