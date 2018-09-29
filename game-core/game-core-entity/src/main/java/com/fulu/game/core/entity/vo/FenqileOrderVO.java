@@ -159,6 +159,11 @@ public class FenqileOrderVO extends FenqileOrder {
     private Integer reconStatus;
 
     /**
+     * 对账状态的文字描述
+     */
+    private String reconStatusStr;
+
+    /**
      * 对账时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

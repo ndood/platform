@@ -92,6 +92,12 @@ public class FenqileOrderServiceImpl extends AbsCommonService<FenqileOrder, Inte
                 if (OrderStatusEnum.NON_PAYMENT.getStatus().equals(orderStatus)) {
                     meta.setActualMoney(null);
                 }
+
+                if (meta.getReconStatus() != null && meta.getReconStatus().equals(0)) {
+                    meta.setReconStatusStr("未对账");
+                } else if (meta.getReconStatus() != null && meta.getReconStatus().equals(1)) {
+                    meta.setReconStatusStr("已对账");
+                }
             }
         }
         return new PageInfo<>(fenqileOrderVOList);
@@ -142,8 +148,8 @@ public class FenqileOrderServiceImpl extends AbsCommonService<FenqileOrder, Inte
     public FenqileOrder findByOrderNo(String orderNo) {
         FenqileOrderVO param = new FenqileOrderVO();
         param.setOrderNo(orderNo);
-        List<FenqileOrder> fenqileOrders =    fenqileOrderDao.findByParameter(param);
-        if(fenqileOrders.isEmpty()){
+        List<FenqileOrder> fenqileOrders = fenqileOrderDao.findByParameter(param);
+        if (fenqileOrders.isEmpty()) {
             return null;
         }
         return fenqileOrders.get(0);
