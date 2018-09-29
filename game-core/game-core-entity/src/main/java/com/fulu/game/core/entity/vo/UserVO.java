@@ -19,6 +19,10 @@ import java.util.List;
  */
 @Data
 public class UserVO extends User {
+    /**
+     * 用户id
+     */
+    private Integer userId;
 
     //推送时间间隔
     private Float pushTimeInterval;

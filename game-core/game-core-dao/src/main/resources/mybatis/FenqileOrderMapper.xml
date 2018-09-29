@@ -34,7 +34,8 @@
         from t_fenqile_order
     </select>
 
-    <select id="findByParameter" resultMap="FenqileOrderResultMap" parameterType="com.fulu.game.core.entity.vo.FenqileOrderVO">
+    <select id="findByParameter" resultMap="FenqileOrderResultMap"
+            parameterType="com.fulu.game.core.entity.vo.FenqileOrderVO">
         SELECT
         <include refid="Base_Column_List"/>
         FROM t_fenqile_order
@@ -188,7 +189,7 @@
         t_fenqile_reconciliation tfr
         LEFT JOIN `t_order` tor ON tfr.`order_no` = tor.`order_no`
         WHERE
-        tor.`type` = 3
+        tor.`payment` = 5
         <if test="startTime != null">
             AND tor.create_time &gt;= #{startTime}
         </if>
