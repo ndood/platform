@@ -24,7 +24,9 @@ public class PlayOrderShareProfitServiceImpl extends OrderShareProfitServiceImpl
 
     @Override
     public Boolean refund(Order order, BigDecimal actualMoney, BigDecimal refundUserMoney) throws WxPayException {
-        if(PaymentEnum.FENQILE_PAY.getType().equals(order.getType())){
+        log.info("订单退款:order:{}",order);
+        if(PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())){
+            log.info("通过订单支付方式判断为分期乐退款:order:{}",order);
             return h5FenqilePayService.refund(order.getOrderNo(), actualMoney, refundUserMoney);
         }else{
             return playMiniAppPayService.refund(order.getOrderNo(), actualMoney, refundUserMoney);
