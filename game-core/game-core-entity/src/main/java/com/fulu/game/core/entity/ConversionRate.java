@@ -28,6 +28,8 @@ public class ConversionRate implements Serializable {
 	private Integer peoples;
 	//下单数
 	private Integer orders;
+	//付款人数
+	private Integer pays;
 	//下单总金额
 	private BigDecimal amount;
 	//新人数
