@@ -35,4 +35,6 @@ public class ActivityCouponServiceImpl extends AbsCommonService<ActivityCoupon,I
         param.setOfficialActivityId(activityId);
         return activityCouponDao.findByParameter(param);
     }
+
+
 }

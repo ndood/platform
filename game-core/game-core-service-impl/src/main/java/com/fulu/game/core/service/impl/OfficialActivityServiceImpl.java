@@ -57,6 +57,8 @@ public class OfficialActivityServiceImpl extends AbsCommonService<OfficialActivi
             activityCoupon.setDeduction(couponGroup.getDeduction());
             activityCoupon.setFullReduction(couponGroup.getFullReduction());
             activityCoupon.setCouponType(couponGroup.getType());
+            activityCoupon.setStartUsefulTime(couponGroup.getStartUsefulTime());
+            activityCoupon.setEndUsefulTime(couponGroup.getEndUsefulTime());
             Category category = categoryService.findById(activityCoupon.getCategoryId());
             activityCoupon.setCategoryName(category.getName());
             activityCoupon.setCreateTime(new Date());

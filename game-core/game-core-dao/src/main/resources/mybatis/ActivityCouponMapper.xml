@@ -12,6 +12,8 @@
         <result column="category_id" property="categoryId"/>
         <result column="category_name" property="categoryName"/>
         <result column="full_reduction" property="fullReduction"/>
+        <result column="start_useful_time" property="startUsefulTime"/>
+        <result column="end_useful_time" property="endUsefulTime"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
     </resultMap>
@@ -21,7 +23,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,coupon_group_id,official_activity_id,coupon_type,redeem_code,deduction,category_id,category_name,full_reduction,create_time,update_time    </sql>
+        id,coupon_group_id,official_activity_id,coupon_type,redeem_code,deduction,category_id,category_name,full_reduction,start_useful_time,end_useful_time,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="ActivityCouponResultMap">
         select
@@ -68,6 +70,12 @@
             <if test="fullReduction != null">
                 and full_reduction = #{fullReduction}
             </if>
+            <if test="startUsefulTime != null">
+                and start_useful_time = #{startUsefulTime}
+            </if>
+            <if test="endUsefulTime != null">
+                and end_useful_time = #{endUsefulTime}
+            </if>
             <if test="createTime != null">
                 and create_time = #{createTime}
             </if>
@@ -87,9 +95,9 @@
     <insert id="create" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.fulu.game.core.entity.ActivityCoupon">
         insert into
-        t_activity_coupon (coupon_group_id,official_activity_id,coupon_type,redeem_code,deduction,category_id,category_name,full_reduction,create_time,update_time)
+        t_activity_coupon (coupon_group_id,official_activity_id,coupon_type,redeem_code,deduction,category_id,category_name,full_reduction,start_useful_time,end_useful_time,create_time,update_time)
         values
-        (#{couponGroupId},#{officialActivityId},#{couponType},#{redeemCode},#{deduction},#{categoryId},#{categoryName},#{fullReduction},#{createTime},#{updateTime})
+        (#{couponGroupId},#{officialActivityId},#{couponType},#{redeemCode},#{deduction},#{categoryId},#{categoryName},#{fullReduction},#{startUsefulTime},#{endUsefulTime},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.ActivityCoupon">
@@ -126,6 +134,14 @@
 
             <if test="fullReduction != null">
                 full_reduction = #{fullReduction},
+            </if>
+
+            <if test="startUsefulTime != null">
+                start_useful_time = #{startUsefulTime},
+            </if>
+
+            <if test="endUsefulTime != null">
+                end_useful_time = #{endUsefulTime},
             </if>
 
             <if test="createTime != null">
