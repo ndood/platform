@@ -150,7 +150,7 @@ public class SysRoleServiceImpl extends AbsCommonService<SysRole,Integer> implem
             }
             Integer[] routerIds = sysRoleVO.getRouterIds();
             RoleRouter roleRouter = new RoleRouter();
-            roleRouter.setRoleId(sysRoleVO.getId());
+            roleRouter.setRoleId(sysRole.getId());
             for(int i = 0; i < routerIds.length; i++){
                 roleRouter.setRouterId(routerIds[i]);
                 roleRouterService.create(roleRouter);
