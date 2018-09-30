@@ -1,6 +1,8 @@
 package com.fulu.game.h5.service.impl.fenqile;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ProductException;
@@ -11,6 +13,7 @@ import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
+import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
 import com.fulu.game.thirdparty.fenqile.service.FenqileSdkOrderService;
 import com.github.pagehelper.PageHelper;
@@ -67,6 +70,8 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
     private FenqileOrderService fenqileOrderService;
     @Autowired
     private FenqileSdkOrderService fenqileSdkOrderService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
 
     @Override
     protected MiniAppPushServiceImpl getMinAppPushService() {
@@ -84,6 +89,25 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         if (userInfoAuth != null) {
             vestFlag = userInfoAuth.getVestFlag() == null ? false : userInfoAuth.getVestFlag();
         }
+
+
+        //保存陪玩师的未读订单信息
+
+        JSONArray waitingReadOrderNo = null;
+
+        String wronJsonStr = redisOpenService.get(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(order.getServiceUserId()));
+
+        if (StringUtils.isBlank(wronJsonStr)) {
+            waitingReadOrderNo = new JSONArray();
+        } else {
+            waitingReadOrderNo = JSONObject.parseArray(wronJsonStr);
+        }
+
+        waitingReadOrderNo.add(order.getOrderNo());
+
+        redisOpenService.set(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(order.getServiceUserId()), waitingReadOrderNo.toJSONString());
+        
+        
         if (!vestFlag) {
             SMSUtil.sendOrderReceivingRemind(server.getMobile(), order.getName());
             //推送通知
