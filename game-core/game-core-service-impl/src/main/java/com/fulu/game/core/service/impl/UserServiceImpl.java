@@ -364,9 +364,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         String token = SubjectUtil.getToken();
         Map<String, Object> userMap = new HashMap<String, Object>();
         userMap = BeanUtil.beanToMap(user);
-        redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token + "#" + user.getId()), userMap);
+        redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token), userMap);
     }
-
 
     @Override
     public Boolean isCurrentUser(Integer userId) {
