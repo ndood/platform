@@ -44,7 +44,8 @@ public class H5PushServiceImpl extends MiniAppPushServiceImpl {
         }
 
         if (user.getOpenId() != null) {
-            pushWechatTemplateMsg(PlatformEcoEnum.PLAY.getType(), userId, WechatTemplateIdEnum.PLAY_LEAVE_MSG, wechatTemplateMsgEnum.getPage().getPlayPagePath(), wechatTemplateMsgEnum.getContent(), replaces);
+            playMiniAppPushService.push(userId,wechatTemplateMsgEnum,replaces);
+//            pushWechatTemplateMsg(PlatformEcoEnum.PLAY.getType(), userId, WechatTemplateIdEnum.PLAY_LEAVE_MSG, wechatTemplateMsgEnum.getPage().getPlayPagePath(), wechatTemplateMsgEnum.getContent(), replaces);
         } else {
             String content = StrUtil.format(wechatTemplateMsgEnum.getContent(), replaces);
             SMSUtil.sendLeaveInform(user.getMobile(), content, Constant.WEIXN_JUMP_URL);
@@ -53,7 +54,14 @@ public class H5PushServiceImpl extends MiniAppPushServiceImpl {
 
     @Override
     protected void push(int userId, Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum, WechatTemplateMsgTypeEnum wechatTemplateMsgTypeEnum, String... replaces) {
-
+        User user = userService.findById(userId);
+        if(user.getOpenId()!=null){
+            playMiniAppPushService.push(userId,order,wechatTemplateMsgEnum,wechatTemplateMsgTypeEnum,replaces);
+        }
+        else {
+            String content = StrUtil.format(wechatTemplateMsgEnum.getContent(), replaces);
+            SMSUtil.sendLeaveInform(user.getMobile(), content, Constant.WEIXN_JUMP_URL);
+        }
     }
 
     public void orderPay(Order order) {

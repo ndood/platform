@@ -16,6 +16,7 @@ import com.fulu.game.thirdparty.fenqile.entity.FenqileOrderNotice;
 import com.fulu.game.thirdparty.fenqile.entity.FenqileOrderRequest;
 import com.fulu.game.thirdparty.fenqile.service.FenqileSdkOrderService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,20 +65,24 @@ public class H5FenqilePayServiceImpl extends PayServiceImpl<FenqileOrderNotice> 
             // 结果正确
             String orderNo = getOrderNo(result);
             String totalYuan = getTotal(result);
+            FenqileOrder origOrder = fenqileOrderService.findByOrderNo(orderNo);
+            if(origOrder!=null){
+                if(StringUtils.isBlank(origOrder.getFenqileNo())){
+                    //更新分期乐订单数据
+                    origOrder.setFenqileNo(result.getOrderId());
+                    origOrder.setUpdateTime(new Date());
+                    fenqileOrderService.update(origOrder);
+                }
+            }
+
             if (Integer.valueOf(12).equals(result.getMerchSaleState())) {
                 payOrder(orderNo, new BigDecimal(totalYuan));
             } else if (Integer.valueOf(15).equals(result.getMerchSaleState())) {
                 //todo 取消订单
                 h5OrderService.fenqileUserCancelOrder(orderNo);
             } else if (Integer.valueOf(10).equals(result.getMerchSaleState())) {
-                FenqileOrder origOrder = fenqileOrderService.findByOrderNo(orderNo);
                 if (origOrder == null) {
                     throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST, origOrder.getOrderNo());
-                } else {
-                    //更新分期乐订单数据
-                    origOrder.setFenqileNo(result.getOrderId());
-                    origOrder.setUpdateTime(new Date());
-                    fenqileOrderService.update(origOrder);
                 }
             }
             return "{\"result\":0}";
