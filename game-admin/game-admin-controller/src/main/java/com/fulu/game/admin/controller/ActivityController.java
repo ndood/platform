@@ -19,11 +19,14 @@ public class ActivityController extends BaseController{
     private OfficialActivityService officialActivityService;
 
 
+
+
     @RequestMapping(value = "create")
     public Result create(OfficialActivityVO officialActivityVO){
         officialActivityService.create(officialActivityVO.getType(),officialActivityVO,officialActivityVO.getRedeemCodes());
         return Result.success();
     }
+
 
 
 
