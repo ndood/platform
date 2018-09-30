@@ -33,6 +33,7 @@
         select
         <include refid="Base_Column_List"/>
         from t_sys_role
+        where is_del = 0
     </select>
 
     <select id="findByParameter" resultMap="SysRoleResultMap" parameterType="com.fulu.game.core.entity.vo.SysRoleVO">

@@ -7,7 +7,7 @@ import com.fulu.game.core.dao.OrderShareProfitDao;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderShareProfit;
 import com.fulu.game.core.service.impl.OrderShareProfitServiceImpl;
-import com.fulu.game.h5.service.impl.fenqile.H5OrderShareProfitServiceImpl;
+import com.fulu.game.play.service.impl.H5OrderShareProfitServiceImpl;
 import com.fulu.game.play.service.impl.PlayOrderShareProfitServiceImpl;
 import com.fulu.game.point.service.impl.PointOrderShareProfitServiceImpl;
 import com.github.binarywang.wxpay.exception.WxPayException;

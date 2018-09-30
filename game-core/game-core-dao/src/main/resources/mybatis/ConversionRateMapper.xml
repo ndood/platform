@@ -124,6 +124,9 @@
             <if test="endTime != null">
                 and create_time &lt;= #{endTime}
             </if>
+            <if test="isPay != null">
+                and is_pay = #{isPay}
+            </if>
         </where>
         <if test="isRepeact != null">
             HAVING ifnull(count(1),0) &gt;= 2
