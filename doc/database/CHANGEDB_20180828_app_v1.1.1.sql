@@ -612,3 +612,51 @@ CREATE TABLE `t_activity_user_award` (
   UNIQUE KEY `user_id` (`user_id`,`activity_id`) USING BTREE
 )  COMMENT='用户活动奖励表';
 
+CREATE TABLE `t_room_manage` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `room_no` int(11) NOT NULL COMMENT '房间ID',
+  `user_id` int(11) NOT NULL COMMENT '用户ID',
+  `head_url` varchar(255) DEFAULT NULL,
+  `nickname` varchar(255) DEFAULT NULL COMMENT '用户昵称',
+  `gender` tinyint(1) DEFAULT NULL COMMENT '性别(1男,2女)',
+  `role` tinyint(1) NOT NULL COMMENT '角色类型(1房主,2管理,3主持)',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+)  COMMENT='房间管理表';
+
+CREATE TABLE `t_room_category` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `pid` int(11) DEFAULT NULL COMMENT '父类ID',
+  `name` varchar(255) NOT NULL COMMENT '分类名称',
+  `is_activate` tinyint(1) DEFAULT NULL COMMENT '是否激活(1是,0否)',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+)  COMMENT='房间分类表';
+
+CREATE TABLE `t_room` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `room_no` varchar(255) NOT NULL COMMENT '房间号码',
+  `icon` varchar(255) DEFAULT NULL COMMENT '图标',
+  `name` varchar(255) DEFAULT NULL COMMENT '房间名称',
+  `slogan` varchar(255) DEFAULT NULL COMMENT '房间标语',
+  `notice` varchar(255) DEFAULT NULL COMMENT '房间公告',
+  `is_lock` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否上锁',
+  `password` varchar(255) DEFAULT NULL COMMENT '房间密码',
+  `user_id` int(11) NOT NULL COMMENT '用户ID',
+  `owner_mobile` varchar(255) NOT NULL COMMENT '所有者手机号',
+  `virtual_people` int(11) DEFAULT NULL COMMENT '虚拟人数',
+  `is_activate` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否激活',
+  `is_hot` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否是热门推荐',
+  `sort` int(11) NOT NULL COMMENT '排序号',
+  `template` int(11) NOT NULL COMMENT '房间模板(1派单房，2娱乐房)',
+  `category_id` int(11) DEFAULT NULL COMMENT '游戏分类',
+  `room_category_id` int(11) NOT NULL COMMENT '房间分类',
+  `remark` varchar(255) DEFAULT NULL,
+  `create_time` datetime NOT NULL,
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+)  COMMENT='聊天室';
+
+
