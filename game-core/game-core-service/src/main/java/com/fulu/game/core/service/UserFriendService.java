@@ -43,7 +43,7 @@ public interface UserFriendService extends ICommonService<UserFriend,Integer> {
      * @param pageSize
      * @return
      */
-    public PageInfo<UserFriendVO> getBlacks(Integer pageNum, Integer pageSize);
+    public PageInfo<UserFriendVO> getBlacks(Integer pageNum, Integer pageSize,String nickname);
 
     /**
      * 是否是黑名单用户
