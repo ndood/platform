@@ -1,13 +1,10 @@
 package com.fulu.game.h5.controller.fenqile;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
-import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.LoginException;
 import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserException;
-import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Banner;
 import com.fulu.game.core.entity.User;
@@ -95,20 +92,12 @@ public class FenqileHomeController extends BaseController {
         }
         log.info("分期乐code:{}", code);
         CodeSessionResult session = null;
-        if (code.length() <= 6) {
-            session = new CodeSessionResult();
-            session.setUid(code);
-            session.setAccessToken("tempaccesstoken");
-            log.info("使用假的分期乐code登录");
-        } else {
-            try {
-                session = fenqileAuthService.accessToken(code);
-                log.info("分期乐授权成功session:{}", session);
-
-            } catch (Exception e) {
-                log.error("分期乐授权错误", e);
-                throw new LoginException(LoginException.ExceptionCode.FENQILE_AUTH_ERROR);
-            }
+        try {
+            session = fenqileAuthService.accessToken(code);
+            log.info("分期乐授权成功session:{}", session);
+        } catch (Exception e) {
+            log.error("分期乐授权错误", e);
+            throw new LoginException(LoginException.ExceptionCode.FENQILE_AUTH_ERROR);
         }
         //1.认证和凭据的token
         PlayUserToken playUserToken = PlayUserToken.newBuilder(PlayUserToken.Platform.FENQILE)
