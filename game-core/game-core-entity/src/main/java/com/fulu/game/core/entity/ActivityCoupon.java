@@ -34,6 +34,12 @@ public class ActivityCoupon implements Serializable {
 	private String categoryName;
 	//多少金额可用(0为无门槛)
 	private BigDecimal fullReduction;
+
+	//有效期开始时间
+	private Date startUsefulTime;
+	//有效期结束时间
+	private Date endUsefulTime;
+
 	//
 	private Date createTime;
 	//
