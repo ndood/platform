@@ -10,6 +10,8 @@ import com.fulu.game.core.dao.OfficialActivityDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OfficialActivityVO;
 import com.fulu.game.core.service.*;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -81,6 +83,15 @@ public class OfficialActivityServiceImpl extends AbsCommonService<OfficialActivi
         activity.setIsActivate(activate);
         update(activity);
         return activate;
+    }
+
+
+    @Override
+    public PageInfo<OfficialActivity> list(Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize,"id desc");
+        List<OfficialActivity> list = getDao().findAll();
+        PageInfo page = new PageInfo(list);
+        return page;
     }
 
 
