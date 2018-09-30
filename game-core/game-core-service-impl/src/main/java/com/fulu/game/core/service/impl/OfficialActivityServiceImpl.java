@@ -75,6 +75,14 @@ public class OfficialActivityServiceImpl extends AbsCommonService<OfficialActivi
         update(activity);
     }
 
+    @Override
+    public boolean activate(int activityId, boolean activate) {
+        OfficialActivity activity = findById(activityId);
+        activity.setIsActivate(activate);
+        update(activity);
+        return activate;
+    }
+
 
     /**
      * 获得可用的活动

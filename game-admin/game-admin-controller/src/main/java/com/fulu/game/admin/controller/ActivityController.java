@@ -21,10 +21,12 @@ public class ActivityController extends BaseController{
 
 
 
+
+
     @RequestMapping(value = "create")
     public Result create(OfficialActivityVO officialActivityVO){
         officialActivityService.create(officialActivityVO.getType(),officialActivityVO,officialActivityVO.getRedeemCodes());
-        return Result.success();
+        return Result.success().msg("活动创建成功!");
     }
 
 
@@ -33,9 +35,20 @@ public class ActivityController extends BaseController{
     @RequestMapping(value = "delete")
     public Result create(@RequestParam(required = true) Integer activityId){
         officialActivityService.delete(activityId);
-        return Result.success();
+        return Result.success().msg("活动删除成功");
     }
 
+
+    @RequestMapping(value = "activate")
+    public Result create(@RequestParam(required = true) Integer activityId,
+                         @RequestParam(required = true)Boolean activate){
+        officialActivityService.activate(activityId,activate);
+        String msg = "下架成功!";
+        if(activate){
+            msg ="上架成功!";
+        }
+        return Result.success().msg(msg);
+    }
 
 
 

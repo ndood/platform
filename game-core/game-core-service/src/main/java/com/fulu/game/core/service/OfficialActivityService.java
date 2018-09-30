@@ -21,6 +21,8 @@ public interface OfficialActivityService extends ICommonService<OfficialActivity
 
      void delete(int activityId);
 
+     boolean activate(int activityId,boolean activate);
+
      OfficialActivityVO getUsableActivity(PlatformEcoEnum platformEcoEnum);
 
      Boolean userJoinActivity(Integer userId,Integer activityId,String userIp);
