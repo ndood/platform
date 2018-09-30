@@ -137,12 +137,13 @@ public class UserFriendServiceImpl extends AbsCommonService<UserFriend, Integer>
      * @return
      */
     @Override
-    public PageInfo<UserFriendVO> getBlacks(Integer pageNum, Integer pageSize) {
+    public PageInfo<UserFriendVO> getBlacks(Integer pageNum, Integer pageSize, String nickname) {
         PageHelper.startPage(pageNum, pageSize, "id DESC");
         User user = userService.getCurrentUser();
         UserFriendVO userFriendVO = new UserFriendVO();
         userFriendVO.setIsBlack(1);
         userFriendVO.setFromUserId(user.getId());
+        userFriendVO.setNickname(nickname);
         userFriendVO.setType(1);
         log.info("检测空指针：userFriendVO.toJSONString: {}, pageNum: {}, pageSize: {}",JSONObject.toJSONString(userFriendVO),pageNum,pageSize);
         List<UserFriendVO> list = userFriendDao.findByParameter(userFriendVO);

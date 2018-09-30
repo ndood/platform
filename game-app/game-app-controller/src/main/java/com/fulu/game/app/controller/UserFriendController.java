@@ -85,8 +85,9 @@ public class UserFriendController extends BaseController  {
      */
     @RequestMapping(value = "get-blacks")
     public Result getBlacks(@RequestParam(required = true) Integer pageNum,
-                                @RequestParam(required = true) Integer pageSize) {
-        PageInfo<UserFriendVO> page = userFriendService.getBlacks( pageNum, pageSize);
+                            @RequestParam(required = true) Integer pageSize,
+                            @RequestParam(required = false) String nickname) {
+        PageInfo<UserFriendVO> page = userFriendService.getBlacks( pageNum, pageSize, nickname);
         return Result.success().data(page);
     }
 

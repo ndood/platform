@@ -38,7 +38,7 @@
         from t_user_friend
     </select>
 
-    <select id="findByFromAndToUserId" resultMap="FriendResultMap" parameterType="com.fulu.game.core.entity.vo.AdminVO">
+    <select id="findByFromAndToUserId" resultMap="FriendResultMap" parameterType="com.fulu.game.core.entity.vo.UserFriendVO">
         SELECT
         <include refid="Base_Column_List"/>
         FROM t_user_friend
@@ -53,7 +53,7 @@
         limit 1
     </select>
 
-    <select id="findByParameter" resultMap="FriendResultVOMap" parameterType="com.fulu.game.core.entity.vo.AdminVO">
+    <select id="findByParameter" resultMap="FriendResultVOMap" parameterType="com.fulu.game.core.entity.vo.UserFriendVO">
         SELECT friend.id,
         friend.from_user_id,
         friend.to_user_id,
@@ -88,6 +88,9 @@
             </if>
             <if test="isBlack != null">
                 and ifnull(friend.is_black,0) = #{isBlack}
+            </if>
+            <if test="nickname != null">
+                and tuser.nickname like CONCAT('%', #{nickname},'%')
             </if>
         </where>
     </select>
