@@ -810,8 +810,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             List<UserInfoAuthFile> voiceFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuth.getId(), 2);
             //设置用户语音信息
             userVO.setVoiceList(voiceFiles);
-            List<DynamicVO> newestDynamicList = dynamicService.getNewestDynamicList(userId);
-            userVO.setNewestDynamics(newestDynamicList);
+//            List<DynamicVO> newestDynamicList = dynamicService.getNewestDynamicList(userId);
+//            userVO.setNewestDynamics(newestDynamicList);
         }
     }
 
