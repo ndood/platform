@@ -107,7 +107,7 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
 //        if (category.getTagId() != null) {
 //            Tag parentTag = tagService.findById(category.getTagId());
 //            categoryVO.setMost(parentTag.getMost());
-//            List<Tag> tagList = tagService.findByPid(category.getTagId());
+//            List<Tag> tagList = tagService.findActivateRoomByPid(category.getTagId());
 //            categoryVO.setTagList(tagList);
 //        }
 
@@ -151,7 +151,7 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
         categoryVO.setPid(CategoryParentEnum.ACCOMPANY_PLAY.getType());
         categoryVO.setStatus(true);
         return categoryDao.findByFirstPidAndPrams(categoryVO);
-//        return findByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType(), true);
+//        return findActivateRoomByPid(CategoryParentEnum.ACCOMPANY_PLAY.getType(), true);
     }
 
 
