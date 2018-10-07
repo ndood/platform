@@ -14,6 +14,7 @@
         <result column="user_id" property="userId"/>
         <result column="owner_mobile" property="ownerMobile"/>
         <result column="virtual_people" property="virtualPeople"/>
+        <result column="is_show" property="isShow"/>
         <result column="is_activate" property="isActivate"/>
         <result column="is_hot" property="isHot"/>
         <result column="sort" property="sort"/>
@@ -29,7 +30,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,room_no,icon,name,slogan,notice,is_lock,password,user_id,owner_mobile,virtual_people,is_activate,is_hot,sort,template,category_id,room_category_id,remark,create_time,update_time    </sql>
+        id,room_no,icon,name,slogan,notice,is_lock,password,user_id,owner_mobile,virtual_people,is_show,is_activate,is_hot,sort,template,category_id,room_category_id,remark,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="RoomResultMap">
         select
@@ -81,6 +82,9 @@
             <if test="virtualPeople != null">
                 and virtual_people = #{virtualPeople}
             </if>
+            <if test="isShow != null">
+                and is_show = #{isShow}
+            </if>
             <if test="isActivate != null">
                 and is_activate = #{isActivate}
             </if>
@@ -120,9 +124,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Room">
         insert into
-        t_room (room_no,icon,name,slogan,notice,is_lock,password,user_id,owner_mobile,virtual_people,is_activate,is_hot,sort,template,category_id,room_category_id,remark,create_time,update_time)
+        t_room (room_no,icon,name,slogan,notice,is_lock,password,user_id,owner_mobile,virtual_people,is_show,is_activate,is_hot,sort,template,category_id,room_category_id,remark,create_time,update_time)
         values
-        (#{roomNo},#{icon},#{name},#{slogan},#{notice},#{isLock},#{password},#{userId},#{ownerMobile},#{virtualPeople},#{isActivate},#{isHot},#{sort},#{template},#{categoryId},#{roomCategoryId},#{remark},#{createTime},#{updateTime})
+        (#{roomNo},#{icon},#{name},#{slogan},#{notice},#{isLock},#{password},#{userId},#{ownerMobile},#{virtualPeople},#{isShow},#{isActivate},#{isHot},#{sort},#{template},#{categoryId},#{roomCategoryId},#{remark},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Room">
@@ -167,6 +171,10 @@
 
             <if test="virtualPeople != null">
                 virtual_people = #{virtualPeople},
+            </if>
+
+            <if test="isShow != null">
+                is_show = #{isShow},
             </if>
 
             <if test="isActivate != null">

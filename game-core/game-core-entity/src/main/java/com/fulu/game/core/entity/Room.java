@@ -9,7 +9,7 @@ import lombok.Data;
  * 聊天室
  * 
  * @author wangbin
- * @date 2018-10-07 00:25:52
+ * @date 2018-10-07 10:26:35
  */
 @Data
 public class Room implements Serializable {
@@ -37,10 +37,12 @@ public class Room implements Serializable {
 	private String ownerMobile;
 	//虚拟人数
 	private Integer virtualPeople;
+	//是否显示
+	private Boolean isShow;
 	//是否激活
-	private Integer isActivate;
+	private Boolean isActivate;
 	//是否是热门推荐
-	private Integer isHot;
+	private Boolean isHot;
 	//排序号
 	private Integer sort;
 	//房间模板(1派单房，2娱乐房)
