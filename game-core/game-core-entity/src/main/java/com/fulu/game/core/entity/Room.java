@@ -2,6 +2,8 @@ package com.fulu.game.core.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 
@@ -30,6 +32,7 @@ public class Room implements Serializable {
 	//是否上锁
 	private Integer isLock;
 	//房间密码
+	@JsonIgnore
 	private String password;
 	//用户ID
 	private Integer userId;
@@ -51,7 +54,7 @@ public class Room implements Serializable {
 	private Integer categoryId;
 	//房间分类
 	private Integer roomCategoryId;
-	//
+	//备注
 	private String remark;
 	//
 	private Date createTime;

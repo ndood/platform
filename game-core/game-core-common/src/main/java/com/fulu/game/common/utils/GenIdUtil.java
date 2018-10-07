@@ -54,7 +54,18 @@ public class GenIdUtil {
         }else{
             return evn+date + randomNum;
         }
+    }
 
+
+
+    public static String GetRoomNo() {
+        String randomNum = RandomUtil.randomNumbers(6);
+        String evn = getEvnPrefix();
+        if("PROD".equals(evn)){
+            return randomNum;
+        }else{
+            return evn+ randomNum;
+        }
     }
 
     /**

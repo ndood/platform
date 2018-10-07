@@ -56,6 +56,30 @@ public class RoomCategoryServiceImpl extends AbsCommonService<RoomCategory,Integ
 
 
 
+    public RoomCategory getRootCategory(){
+        RoomCategoryVO param = new RoomCategoryVO();
+        param.setPid(0);
+        List<RoomCategory> categoryList = roomCategoryDao.findByParameter(param);
+        if(categoryList.isEmpty()){
+            throw new IllegalArgumentException("没有设置根分类!");
+        }
+        return categoryList.get(0);
+    }
+
+
+    public List<RoomCategory> findByPid(int pid){
+        RoomCategoryVO param = new RoomCategoryVO();
+        param.setPid(pid);
+        List<RoomCategory> categoryList = roomCategoryDao.findByParameter(param);
+        return categoryList;
+    }
+
+
+    @Override
+    public List<RoomCategory> list() {
+        RoomCategory rootCategory = getRootCategory();
+        return findByPid(rootCategory.getId());
+    }
 
 
 }

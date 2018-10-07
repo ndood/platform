@@ -2,6 +2,8 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.bean.BeanUtil;
+import com.fulu.game.common.utils.CollectionUtil;
+import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.RoomDao;
 import com.fulu.game.core.entity.Room;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -43,11 +46,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         List<Room> roomList = roomDao.findByParameter(param);
         List<RoomVO> result = new ArrayList<>();
         for (Room room : roomList) {
-            //todo 获取房间人数
-            RoomVO roomVO = new RoomVO();
-            BeanUtil.copyProperties(room, roomVO);
-            RoomCategory roomCategory = roomCategoryService.findById(room.getId());
-            roomVO.setRoomCategoryName(roomCategory.getName());
+            RoomVO roomVO =room2VO(room);
             result.add(roomVO);
         }
         PageInfo page = new PageInfo(roomList);
@@ -55,9 +54,25 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         return page;
     }
 
+    @Override
+    public PageInfo<RoomVO> list(int pageNum, int pageSize, String name) {
+        PageHelper.startPage(pageNum, pageSize, "sort desc");
+        RoomVO param = new RoomVO();
+        param.setName(name);
+        List<Room> roomList = roomDao.findByParameter(param);
+        PageInfo page = new PageInfo(roomList);
+        List<RoomVO> roomVOList = new ArrayList<>();
+        for(Room room : roomList ){
+            RoomVO roomVO =room2VO(room);
+            roomVOList.add(roomVO);
+        }
+        page.setList(roomVOList);
+        return page;
+    }
+
 
     @Override
-    public PageInfo<RoomVO> findUsableRoomsByRoomCategory( int roomCategoryId) {
+    public PageInfo<RoomVO> findUsableRoomsByRoomCategory(int roomCategoryId) {
         PageHelper.startPage(1, 100, "sort desc");
         RoomVO param = new RoomVO();
         param.setIsActivate(true);
@@ -66,11 +81,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         List<Room> roomList = roomDao.findByParameter(param);
         List<RoomVO> result = new ArrayList<>();
         for (Room room : roomList) {
-            RoomVO roomVO = new RoomVO();
-            BeanUtil.copyProperties(room, roomVO);
-            //todo 获取房间人数
-            Integer people = room.getVirtualPeople();
-            roomVO.setPeople(people);
+            RoomVO roomVO = room2VO(room);
             result.add(roomVO);
         }
         result.sort((RoomVO r1, RoomVO r2) -> r1.getPeople().compareTo(r2.getPeople()));
@@ -80,18 +91,85 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     }
 
 
-
     @Override
     public RoomVO findByOwner(int userId) {
+        RoomVO roomVO = new RoomVO();
+        BeanUtil.copyProperties(findByUser(userId), roomVO);
+        return roomVO;
+    }
+
+
+    @Override
+    public Room findByUser(int userId) {
         RoomVO param = new RoomVO();
         param.setIsActivate(true);
         param.setUserId(userId);
         List<Room> roomList = roomDao.findByParameter(param);
-        if(roomList.isEmpty()){
+        if (roomList.isEmpty()) {
             return null;
         }
+        return roomList.get(0);
+    }
+
+    @Override
+    public RoomVO save(RoomVO roomVO) {
+        roomVO.setUpdateTime(new Date());
+        if (roomVO.getId() == null) {
+            roomVO.setIsShow(true);
+            roomVO.setIsActivate(false);
+            roomVO.setRoomNo(generateRoomNo());
+            roomVO.setCreateTime(new Date());
+            create(roomVO);
+        } else {
+            update(roomVO);
+        }
+        return roomVO;
+    }
+
+
+    public Room findByRoomNo(String roomNo) {
+        if (roomNo == null) {
+            return null;
+        }
+        RoomVO param = new RoomVO();
+        param.setRoomNo(roomNo);
+        List<Room> roomList = roomDao.findByParameter(param);
+        if (roomList.isEmpty()) {
+            return null;
+        }
+        return roomList.get(0);
+    }
+
+
+    /**
+     * 生成房间号
+     *
+     * @return
+     */
+    private String generateRoomNo() {
+        String roomNo = GenIdUtil.GetRoomNo();
+        if (findByRoomNo(roomNo) == null) {
+            return roomNo;
+        } else {
+            return generateRoomNo();
+        }
+    }
+
+
+    /**
+     * 房间实体转换成VO
+     * @param room
+     * @return
+     */
+    private RoomVO room2VO(Room room){
         RoomVO roomVO = new RoomVO();
-        BeanUtil.copyProperties(roomList.get(0),roomVO);
+        BeanUtil.copyProperties(room,roomVO);
+        //设置房间分类
+        RoomCategory roomCategory = roomCategoryService.findById(room.getId());
+        roomVO.setRoomCategoryName(roomCategory.getName());
+        //todo 设置房间人数
+        Integer people = room.getVirtualPeople();
+        roomVO.setPeople(people);
         return roomVO;
     }
 

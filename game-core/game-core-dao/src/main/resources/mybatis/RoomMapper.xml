@@ -59,7 +59,7 @@
                 and icon = #{icon}
             </if>
             <if test="name != null">
-                and name = #{name}
+                and name like CONCAT('%', #{name},'%'))
             </if>
             <if test="slogan != null">
                 and slogan = #{slogan}

@@ -35,6 +35,8 @@ public class RoomController extends BaseController {
     @RequestMapping("/category")
     public Result roomCategoryAll(){
         List<RoomCategory> list = roomCategoryService.findActivateRoomCategory();
+
+
         return Result.success().data(list);
     }
 

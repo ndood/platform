@@ -636,8 +636,6 @@ CREATE TABLE `t_room_category` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='房间分类表';
 
-
-
 CREATE TABLE `t_room` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `room_no` varchar(255) NOT NULL COMMENT '房间号码',
@@ -650,6 +648,7 @@ CREATE TABLE `t_room` (
   `user_id` int(11) NOT NULL COMMENT '用户ID',
   `owner_mobile` varchar(255) NOT NULL COMMENT '所有者手机号',
   `virtual_people` int(11) DEFAULT NULL COMMENT '虚拟人数',
+  `is_show` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
   `is_activate` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否激活',
   `is_hot` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否是热门推荐',
   `sort` int(11) NOT NULL COMMENT '排序号',
@@ -660,6 +659,6 @@ CREATE TABLE `t_room` (
   `create_time` datetime NOT NULL,
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-)  COMMENT='聊天室';
+) COMMENT='聊天室';
 
 

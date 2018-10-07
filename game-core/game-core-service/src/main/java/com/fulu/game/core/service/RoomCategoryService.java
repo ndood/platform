@@ -28,4 +28,26 @@ public interface RoomCategoryService extends ICommonService<RoomCategory,Integer
      */
      List<RoomCategory> findActivateRoomCategory();
 
+    /**
+     * 获取根分类
+     * @return
+     */
+     RoomCategory getRootCategory();
+
+    /**
+     * 通过pid查询分类
+      * @param pid
+     * @return
+     */
+     List<RoomCategory> findByPid(int pid);
+
+    /**
+     * 查询所有的房间分类
+     * @return
+     */
+    List<RoomCategory> list();
+
+
+
+
 }
