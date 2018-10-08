@@ -65,6 +65,7 @@ public class User implements Serializable {
     //虚拟零钱（对应钻石数量）
     private Integer virtualBalance;
     //魅力值
+    @Excel(name = "魅力值", orderNum = "18", width = 15)
     private Integer charm;
     //累计总提现魅力值
     private Integer charmDrawSum;
@@ -102,7 +103,7 @@ public class User implements Serializable {
     private Date updateTime;
     //最后登录时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Excel(name = "最后登录登录时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "13", width = 35)
+    @Excel(name = "最后登录时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "13", width = 20)
     private Date loginTime;
 
     //删除标记(false：未删除；true：已删除）

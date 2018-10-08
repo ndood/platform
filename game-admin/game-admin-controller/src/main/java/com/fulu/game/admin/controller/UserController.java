@@ -695,10 +695,10 @@ public class UserController extends BaseController {
                 userInfoAuthFileService.create(userInfoAuthFile);
             }
             userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(), 1);
-            if (userVO != null && userVO.getPicUrls() != null){
+            if (userVO != null && userVO.getPicUrls() != null) {
                 int index = 1;
                 UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
-                for(String url: userVO.getPicUrls()){
+                for (String url : userVO.getPicUrls()) {
                     userInfoAuthFile.setUrl(ossUtil.activateOssFile(url));
                     userInfoAuthFile.setDuration(null);
                     userInfoAuthFile.setInfoAuthId(userInfoAuth.getId());
