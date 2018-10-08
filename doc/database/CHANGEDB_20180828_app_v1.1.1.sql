@@ -608,9 +608,12 @@ CREATE TABLE `t_official_activity` (
   `remark` varchar(255) NOT NULL COMMENT '备注',
   `create_time` datetime NOT NULL,
   `update_time` datetime DEFAULT NULL,
+  `admin_id` int(11) DEFAULT NULL,
+  `admin_name` varchar(255) DEFAULT NULL,
   `is_del` tinyint(1) DEFAULT NULL COMMENT '是否逻辑删除(1是,0否)',
   PRIMARY KEY (`id`)
-)  COMMENT='官方公告';
+)  COMMENT='官方活动';
+
 
 
 
