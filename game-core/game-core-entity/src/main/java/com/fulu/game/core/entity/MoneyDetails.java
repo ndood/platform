@@ -25,7 +25,7 @@ public class MoneyDetails implements Serializable {
     private Integer targetId;
     //金额(默认0.00)
     private BigDecimal money;
-    //-1提现，1加零钱，2陪玩订单入账，3拒绝提现返款，4魅力值提现
+    //-1提现，1加零钱，2陪玩订单入账，3拒绝提现返款，4魅力值提现，5、余额兑换钻石，6、余额充值，7、扣除零钱
     private Integer action;
     //action为-1时关联t_cash_draws表
     private Integer cashId;
@@ -36,5 +36,8 @@ public class MoneyDetails implements Serializable {
     //记录生成时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
+
+    /** 用户类型（1：普通用户；2：马甲用户） */
+    private int userType;
 
 }

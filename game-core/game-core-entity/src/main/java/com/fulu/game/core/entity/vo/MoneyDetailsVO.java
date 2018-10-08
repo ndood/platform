@@ -4,6 +4,7 @@ import com.fulu.game.core.entity.MoneyDetails;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 零钱流水表
@@ -21,4 +22,5 @@ public class MoneyDetailsVO extends MoneyDetails {
 
     private Date startTime;
     private Date endTime;
+    private List<Integer> actions;
 }

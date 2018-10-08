@@ -11,6 +11,7 @@
         <result column="cash_id" property="cashId"/>
         <result column="sum" property="sum"/>
         <result column="remark" property="remark"/>
+        <result column="user_type" property="userType"/>
         <result column="create_time" property="createTime"/>
     </resultMap>
 
@@ -25,18 +26,31 @@
             parameterType="com.fulu.game.core.entity.vo.MoneyDetailsVO">
         SELECT
         tmd.id AS id,
+        tmd.action,
         tmd.operator_id AS operator_id,
         tmd.target_id AS target_id,
         tmd.money AS money,
         tmd.create_time AS create_time,
         tmd.remark AS remark,
+        tmp.user_type as user_type,
         tu.nickname AS nickname,
         tu.mobile AS mobile
         FROM t_money_details tmd LEFT JOIN t_user tu ON tmd.target_id = tu.id
         <where>
             <if test="id != null">and tmd.id = #{id}</if>
             <if test="action != null">and tmd.action = #{action}</if>
+            <if test="actions != null">
+                and tmd.action in
+                <foreach collection="actions" item="s" index="index" open="(" close=")" separator=",">
+                    #{s}
+                </foreach>
+            </if>
             <if test="operatorId != null">and tmd.operator_id = #{operatorId}</if>
+            <if test="userType != null">and tmd.user_type = #{userType}</if>
+            <if test="mobile != null">and tu.mobile = #{mobile}</if>
+            <if test="nickname != null">and tu.nickname like  CONCAT('%',#{nickname},'%')</if>
+            <if test="startTime != null">and tmd.create_time &gt;= #{startTime}</if>
+            <if test="endTime != null">and tmd.create_time &lt;= #{endTime}</if>
         </where>
     </select>
 
@@ -56,7 +70,7 @@
     </select>
 
     <sql id="Base_Column_List">
-        id,operator_id,target_id,money,action,cash_id,sum,remark,create_time
+        id,operator_id,target_id,money,action,cash_id,sum,remark,user_type,create_time
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="MoneyDetailsResultMap">
@@ -131,9 +145,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.MoneyDetails">
         insert into
-        t_money_details (operator_id,target_id,money,action,cash_id,sum,remark,create_time)
+        t_money_details (operator_id,target_id,money,action,cash_id,sum,remark,user_type,create_time)
         values
-        (#{operatorId},#{targetId},#{money},#{action},#{cashId},#{sum},#{remark},#{createTime})
+        (#{operatorId},#{targetId},#{money},#{action},#{cashId},#{sum},#{remark},#{userType},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.MoneyDetails">

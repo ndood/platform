@@ -1,7 +1,9 @@
 package com.fulu.game.admin.controller;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.MoneyOperateTypeEnum;
 import com.fulu.game.common.exception.CashException;
+import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.entity.MoneyDetails;
 import com.fulu.game.core.entity.User;
@@ -65,6 +67,22 @@ public class MoneyDetailsController extends BaseController{
         }
         MoneyDetails moneyDetails = moneyDetailsService.save(moneyDetailsVO);
         return Result.success().data(moneyDetails).msg("操作成功！");
+    }
+
+    /**
+     * 管理员-扣零钱
+     *
+     * @param moneyDetailsVO
+     * @return
+     */
+    @PostMapping("/subtract-save")
+    public Result subtractSave(MoneyDetailsVO moneyDetailsVO) {
+        if(moneyDetailsVO == null){
+            throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
+        } else {
+            moneyDetailsVO.setAction(MoneyOperateTypeEnum.ADMIN_SUBTRACT_CHANGE.getType());
+        }
+        return save(moneyDetailsVO);
     }
 
     /**
