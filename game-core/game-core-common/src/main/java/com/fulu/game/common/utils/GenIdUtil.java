@@ -68,6 +68,12 @@ public class GenIdUtil {
         }
     }
 
+
+    public static String GetVisitorNo() {
+        String randomNum = RandomUtil.randomNumbers(6);
+        return randomNum;
+    }
+
     /**
      * 生成优惠券编码
      *

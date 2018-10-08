@@ -20,7 +20,7 @@ public class AdminTest {
 
     @Test
     public void test1() {
-        Admin admin = createAdminAccount("王道波", "wangdaobo", "wdb.1345");
+        Admin admin = createAdminAccount("龚泽淳", "gongzc", "gongzc123456");
         log.info("admin:{}", admin);
 
 
@@ -29,7 +29,6 @@ public class AdminTest {
 
 
     public Admin createAdminAccount(String name, String username, String pword) {
-
         Admin admin = new Admin();
         admin.setName(name);
         admin.setUsername(username);

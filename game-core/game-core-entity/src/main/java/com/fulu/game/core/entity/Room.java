@@ -30,7 +30,7 @@ public class Room implements Serializable {
 	//房间公告
 	private String notice;
 	//是否上锁
-	private Integer isLock;
+	private Boolean isLock;
 	//房间密码
 	@JsonIgnore
 	private String password;

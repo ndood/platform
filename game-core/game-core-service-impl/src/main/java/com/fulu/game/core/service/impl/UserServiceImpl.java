@@ -12,6 +12,7 @@ import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
+import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.common.utils.ImgUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
@@ -302,6 +303,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         User user = new User();
         user.setRegistIp(host);
         user.setMobile(mobile);
+        user.setNickname("游客"+ GenIdUtil.GetVisitorNo());
         return createNewUser(user);
     }
 

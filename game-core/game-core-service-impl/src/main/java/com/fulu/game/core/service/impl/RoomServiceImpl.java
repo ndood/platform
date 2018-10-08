@@ -2,15 +2,18 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.bean.BeanUtil;
+import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.RoomDao;
 import com.fulu.game.core.entity.Room;
 import com.fulu.game.core.entity.RoomCategory;
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.RoomVO;
 import com.fulu.game.core.service.RoomCategoryService;
 import com.fulu.game.core.service.RoomService;
+import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +32,8 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
 
     @Autowired
     private RoomCategoryService roomCategoryService;
+    @Autowired
+    private UserService userService;
 
     @Override
     public ICommonDao<Room, Integer> getDao() {
@@ -115,8 +120,13 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     public RoomVO save(RoomVO roomVO) {
         roomVO.setUpdateTime(new Date());
         if (roomVO.getId() == null) {
+            User user= userService.findByMobile( roomVO.getOwnerMobile());
+            if(user==null){
+                throw new ServiceErrorException("手机号不存在!");
+            }
+            roomVO.setUserId(user.getId());
             roomVO.setIsShow(true);
-            roomVO.setIsActivate(false);
+            roomVO.setIsLock(false);
             roomVO.setRoomNo(generateRoomNo());
             roomVO.setCreateTime(new Date());
             create(roomVO);
@@ -165,13 +175,15 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         RoomVO roomVO = new RoomVO();
         BeanUtil.copyProperties(room,roomVO);
         //设置房间分类
-        RoomCategory roomCategory = roomCategoryService.findById(room.getId());
+        RoomCategory roomCategory = roomCategoryService.findById(room.getRoomCategoryId());
         roomVO.setRoomCategoryName(roomCategory.getName());
         //todo 设置房间人数
         Integer people = room.getVirtualPeople();
         roomVO.setPeople(people);
         return roomVO;
     }
+
+
 
 
 }
