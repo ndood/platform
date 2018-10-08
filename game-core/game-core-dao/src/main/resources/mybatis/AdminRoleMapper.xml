@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.AdminRoleDao">
+    <resultMap id="AdminRoleResultMap" type="com.fulu.game.core.entity.AdminRole">
+        <id column="id" property="id"/>
+        <result column="admin_id" property="adminId"/>
+        <result column="role_id" property="roleId"/>
+    </resultMap>
+
+    <resultMap id="AdminRoleResultVOMap" type="com.fulu.game.core.entity.vo.AdminRoleVO" extends="AdminRoleResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,admin_id,role_id    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="AdminRoleResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_admin_role
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="AdminRoleResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_admin_role
+    </select>
+
+    <select id="findByParameter" resultMap="AdminRoleResultMap"
+            parameterType="com.fulu.game.core.entity.vo.AdminRoleVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_admin_role
+        <where>
+            <if test="adminId != null">
+                and admin_id = #{adminId}
+            </if>
+            <if test="roleId != null">
+                and role_id = #{roleId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findByAdminId" resultMap="AdminRoleResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_admin_role
+        where admin_id = #{0}
+        limit 1
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_admin_role
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.AdminRole">
+        insert into
+        t_admin_role (admin_id,role_id)
+        values
+        (#{adminId},#{roleId})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.AdminRole">
+        update t_admin_role
+        <set>
+
+            <if test="adminId != null">
+                admin_id = #{adminId},
+            </if>
+
+            <if test="roleId != null">
+                role_id = #{roleId},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

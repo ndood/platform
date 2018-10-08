@@ -5,7 +5,7 @@
     <resultMap id="FenqileOrderResultMap" type="com.fulu.game.core.entity.FenqileOrder">
         <id column="id" property="id"/>
         <result column="order_no" property="orderNo"/>
-        <result column="payment_no" property="paymentNo"/>
+        <result column="fenqile_no" property="fenqileNo"/>
         <result column="remark" property="remark"/>
         <result column="update_time" property="updateTime"/>
         <result column="create_time" property="createTime"/>
@@ -16,7 +16,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,order_no,payment_no,remark,update_time,create_time    </sql>
+        id,order_no,fenqile_no,remark,update_time,create_time
+    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="FenqileOrderResultMap">
         select
@@ -42,8 +43,8 @@
             <if test="orderNo != null">
                 and order_no = #{orderNo}
             </if>
-            <if test="paymentNo != null">
-                and payment_no = #{paymentNo}
+            <if test="fenqileNo != null">
+                and fenqile_no = #{fenqileNo}
             </if>
             <if test="remark != null">
                 and remark = #{remark}
@@ -66,9 +67,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.FenqileOrder">
         insert into
-        t_fenqile_order (order_no,payment_no,remark,update_time,create_time)
+        t_fenqile_order (order_no,fenqile_no,remark,update_time,create_time)
         values
-        (#{orderNo},#{paymentNo},#{remark},#{updateTime},#{createTime})
+        (#{orderNo},#{fenqileNo},#{remark},#{updateTime},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.FenqileOrder">
@@ -79,8 +80,8 @@
                 order_no = #{orderNo},
             </if>
 
-            <if test="paymentNo != null">
-                payment_no = #{paymentNo},
+            <if test="fenqileNo != null">
+                fenqile_no = #{fenqileNo},
             </if>
 
             <if test="remark != null">
@@ -102,8 +103,9 @@
 
     <select id="list" resultType="com.fulu.game.core.entity.vo.FenqileOrderVO">
         SELECT
+        tfo.id,
         tor.order_no,
-        tfo.payment_no,
+        tfo.fenqile_no,
         tuser.nickname AS user_nickname,
         tor.contact_type,
         tor.contact_info,
@@ -127,51 +129,51 @@
         tfr.process_time,
         tfr.admin_name
         FROM
-        t_order tor
-        LEFT JOIN t_fenqile_order tfo ON tor.order_no = tfo.order_no
+        t_fenqile_order tfo
+        LEFT JOIN t_order tor ON tor.order_no = tfo.order_no
         LEFT JOIN t_user tuser ON tor.user_id = tuser.id
         LEFT JOIN t_user suser ON tor.service_user_id = suser.id
         LEFT JOIN t_order_product tpro ON tor.order_no = tpro.order_no
         LEFT JOIN t_fenqile_reconciliation tfr ON tor.order_no = tfr.order_no
         LEFT JOIN t_order_share_profit tosp ON tor.order_no = tosp.order_no
-        WHERE
-        tor.type = 3
-        <if test="startTime != null">
-            AND tor.create_time &gt;= #{startTime}
-        </if>
-        <if test="endTime != null">
-            AND tor.create_time &lt;= #{endTime}
-        </if>
-        <if test="orderNo != null">
-            AND tor.order_no = #{orderNo}
-        </if>
-        <if test="categoryId != null">
-            AND tor.category_id = #{categoryId}
-        </if>
-        <if test="paymentNo != null">
-            AND tfo.payment_no = #{paymentNo}
-        </if>
-        <if test="reconStatus != null">
-            AND tfr.`status` = #{reconStatus}
-        </if>
-        <if test="userId != null">
-            AND tor.user_id = #{userId}
-        </if>
-        <if test="serviceUserId != null">
-            AND tor.service_user_id = #{serviceUserId}
-        </if>
-        <if test="userMobile != null">
-            AND tuser.mobile = #{userMobile}
-        </if>
-        <if test="serviceUserMobile != null">
-            AND suser.mobile = #{serviceUserMobile}
-        </if>
-        <if test="statusList != null">
-            AND tor.status IN
-            <foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
+        <where>
+            <if test="startTime != null">
+                AND tor.create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND tor.create_time &lt;= #{endTime}
+            </if>
+            <if test="orderNo != null">
+                AND tor.order_no = #{orderNo}
+            </if>
+            <if test="categoryId != null">
+                AND tor.category_id = #{categoryId}
+            </if>
+            <if test="fenqileNo != null">
+                AND tfo.fenqile_no = #{fenqileNo}
+            </if>
+            <if test="reconStatus != null">
+                AND tfr.`status` = #{reconStatus}
+            </if>
+            <if test="userId != null">
+                AND tor.user_id = #{userId}
+            </if>
+            <if test="serviceUserId != null">
+                AND tor.service_user_id = #{serviceUserId}
+            </if>
+            <if test="userMobile != null">
+                AND tuser.mobile = #{userMobile}
+            </if>
+            <if test="serviceUserMobile != null">
+                AND suser.mobile = #{serviceUserMobile}
+            </if>
+            <if test="statusList != null">
+                AND tor.status IN
+                <foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
     </select>
 
     <select id="getTotalReconAmount" resultType="com.fulu.game.core.entity.vo.FenqileOrderVO">
@@ -187,7 +189,7 @@
         t_fenqile_reconciliation tfr
         LEFT JOIN `t_order` tor ON tfr.`order_no` = tor.`order_no`
         WHERE
-        tor.`type` = 3
+        tor.`payment` = 5
         <if test="startTime != null">
             AND tor.create_time &gt;= #{startTime}
         </if>
@@ -200,8 +202,8 @@
         <if test="categoryId != null">
             AND tor.category_id = #{categoryId}
         </if>
-        <if test="paymentNo != null">
-            AND tfo.payment_no = #{paymentNo}
+        <if test="fenqileNo != null">
+            AND tfo.fenqile_no = #{fenqileNo}
         </if>
         <if test="reconStatus != null">
             AND tfr.`status` = #{reconStatus}

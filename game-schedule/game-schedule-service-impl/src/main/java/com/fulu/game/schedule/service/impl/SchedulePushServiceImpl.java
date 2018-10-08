@@ -18,6 +18,7 @@ public class SchedulePushServiceImpl extends PushServiceImpl {
      */
     public void consultAgree(Order order) {
         if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
+            //todo gzc 给用户发留言短信
             pushServiceProcessMsg(PlatformEcoEnum.PLAY.getType(),
                     order.getUserId(),
                     order,
@@ -40,6 +41,7 @@ public class SchedulePushServiceImpl extends PushServiceImpl {
      */
     public void consultCancel(Order order) {
         if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
+            //todo gzc //todo 给用户发留言短信
             pushServiceProcessMsg(PlatformEcoEnum.PLAY.getType(),
                     order.getUserId(),
                     order,

@@ -76,7 +76,7 @@ public class FenqileOrderController extends BaseController {
     @RequestMapping("/export")
     public void export(FenqileOrderSearchVO searchVO, HttpServletResponse response) {
         String title = "分期乐订单列表";
-        List<FenqileOrderVO> resultList = fenqileOrderService.list(searchVO);
+        List<FenqileOrderVO> resultList = fenqileOrderService.list(null, null, null, searchVO).getList();
         ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
         Workbook workbook = ExcelExportUtil.exportExcel(exportParams, FenqileOrderVO.class, resultList);
         response.setCharacterEncoding("UTF-8");

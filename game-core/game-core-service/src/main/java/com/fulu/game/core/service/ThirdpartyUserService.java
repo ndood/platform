@@ -16,6 +16,8 @@ public interface ThirdpartyUserService extends ICommonService<ThirdpartyUser,Int
 
     ThirdpartyUser findByFqlOpenid(String fqlOpenId);
 
+    ThirdpartyUser findByUserId(Integer userId);
+
 
     ThirdpartyUser createFenqileUser(String fqlOpenId,String ip);
 }

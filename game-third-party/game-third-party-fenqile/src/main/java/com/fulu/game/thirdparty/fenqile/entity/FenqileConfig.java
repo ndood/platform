@@ -6,17 +6,21 @@ import lombok.Data;
 public class FenqileConfig {
 
 
+    private String sellerId;
+
     private String partnerId;
 
     private String partnerKey;
 
     private String v;
 
-
     private String clientId;
 
     private String clientSecret;
 
+    private String orderNoticeUrl;
+
+    private String orderDetailsUrl;
 
 
 }

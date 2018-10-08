@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.ConversionRateDao">
+    <resultMap id="ConversionRateResultMap" type="com.fulu.game.core.entity.ConversionRate">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="time_bucket" property="timeBucket"/>
+        <result column="peoples" property="peoples"/>
+        <result column="orders" property="orders"/>
+        <result column="amount" property="amount"/>
+        <result column="new_peoples" property="newPeoples"/>
+        <result column="new_orders" property="newOrders"/>
+        <result column="new_amount" property="newAmount"/>
+        <result column="new_pays" property="newPays"/>
+        <result column="new_order_rate" property="newOrderRate"/>
+        <result column="new_pay_rate" property="newPayRate"/>
+        <result column="repeat_orders" property="repeatOrders"/>
+        <result column="repeat_pays" property="repeatPays"/>
+        <result column="repeat_order_rate" property="repeatOrderRate"/>
+        <result column="repeat_pay_rate" property="repeatPayRate"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="ConversionRateResultVOMap" type="com.fulu.game.core.entity.vo.ConversionRateVO"
+               extends="ConversionRateResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,time_bucket,peoples,orders,amount,new_peoples,new_orders,new_amount,new_pays,new_order_rate,new_pay_rate,repeat_orders,repeat_pays,repeat_order_rate,repeat_pay_rate,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="ConversionRateResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_conversion_rate
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="ConversionRateResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_conversion_rate
+    </select>
+
+    <select id="findByParameter" resultMap="ConversionRateResultMap"
+            parameterType="com.fulu.game.core.entity.vo.ConversionRateVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_conversion_rate
+        <where>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="timeBucket != null">
+                and time_bucket = #{timeBucket}
+            </if>
+            <if test="peoples != null">
+                and peoples = #{peoples}
+            </if>
+            <if test="orders != null">
+                and orders = #{orders}
+            </if>
+            <if test="amount != null">
+                and amount = #{amount}
+            </if>
+            <if test="newPeoples != null">
+                and new_peoples = #{newPeoples}
+            </if>
+            <if test="newOrders != null">
+                and new_orders = #{newOrders}
+            </if>
+            <if test="newAmount != null">
+                and new_amount = #{newAmount}
+            </if>
+            <if test="newPays != null">
+                and new_pays = #{newPays}
+            </if>
+            <if test="newOrderRate != null">
+                and new_order_rate = #{newOrderRate}
+            </if>
+            <if test="newPayRate != null">
+                and new_pay_rate = #{newPayRate}
+            </if>
+            <if test="repeatOrders != null">
+                and repeat_orders = #{repeatOrders}
+            </if>
+            <if test="repeatPays != null">
+                and repeat_pays = #{repeatPays}
+            </if>
+            <if test="repeatOrderRate != null">
+                and repeat_order_rate = #{repeatOrderRate}
+            </if>
+            <if test="repeatPayRate != null">
+                and repeat_pay_rate = #{repeatPayRate}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="getOrderCount" resultType="com.fulu.game.core.entity.ConversionRate"
+            parameterType="com.fulu.game.core.entity.vo.ConversionRateVO">
+        select ifnull(count(1),0) as orders,ifnull(count(DISTINCT user_id),0) as peoples,
+        ifnull(sum(total_money),0) as amount from t_order
+        <where>
+            <!--
+            <if test="statusList != null">
+                and status in
+                <foreach collection="statusList" item="s" index="index" open="(" close=")" separator=",">
+                    #{s}
+                </foreach>
+            </if>
+            -->
+            <if test="beginTime != null">
+                and create_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime}
+            </if>
+            <if test="isPay != null">
+                and is_pay = #{isPay}
+            </if>
+        </where>
+        <if test="isRepeact != null">
+            HAVING ifnull(count(1),0) &gt;= 2
+        </if>
+    </select>
+
+    <select id="getNewOrderCount" resultType="com.fulu.game.core.entity.ConversionRate"
+            parameterType="com.fulu.game.core.entity.vo.ConversionRateVO">
+        select ifnull(count(1),0) as newOrders,ifnull(count(DISTINCT user_id),0) as newPeoples,
+        ifnull(sum(total_money),0) as newAmount from t_order
+        <where>
+            <!--
+            <if test="statusList != null">
+                and status in
+                <foreach collection="statusList" item="s" index="index" open="(" close=")" separator=",">
+                    #{s}
+                </foreach>
+            </if>
+            -->
+            <if test="beginTime != null">
+                and create_time &gt;= #{beginTime} and user_id in (select id from t_user where create_time &gt;=
+                #{beginTime})
+            </if>
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime} and user_id in (select id from t_user where create_time &lt;=
+                #{endTime})
+            </if>
+            <if test="isPay != null">
+                and is_pay = #{isPay}
+            </if>
+        </where>
+        <if test="isRepeact != null">
+            HAVING ifnull(count(1),0) &gt;= 2
+        </if>
+    </select>
+
+    <select id="selectInto">
+        INSERT INTO t_conversion_rate_history (
+            `name`,
+            `time_bucket`,
+            `peoples`,
+            `orders`,
+            `amount`,
+            `new_peoples`,
+            `new_orders`,
+            `new_amount`,
+            `new_pays`,
+            `new_order_rate`,
+            `new_pay_rate`,
+            `repeat_orders`,
+            `repeat_pays`,
+            `repeat_order_rate`,
+            `repeat_pay_rate`,
+            `create_time`,
+            `update_time`
+        ) SELECT
+            `name`,
+            `time_bucket`,
+            `peoples`,
+            `orders`,
+            `amount`,
+            `new_peoples`,
+            `new_orders`,
+            `new_amount`,
+            `new_pays`,
+            `new_order_rate`,
+            `new_pay_rate`,
+            `repeat_orders`,
+            `repeat_pays`,
+            `repeat_order_rate`,
+            `repeat_pay_rate`,
+            `create_time`,
+            `update_time`
+        FROM
+            t_conversion_rate
+    </select>
+
+    <select id="getNewPeopleCount" resultType="com.fulu.game.core.entity.ConversionRate">
+        select ifnull(count(1),0) as newPeoples  from t_user
+        <where>
+            <if test="beginTime != null">
+                and create_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="getRepeatOrderCount" resultType="com.fulu.game.core.entity.ConversionRate">
+        SELECT
+        ifnull(sum(tmp.orders), 0) AS orders,
+        ifnull(count(tmp.user_id), 0) AS peoples,
+        ifnull(sum(tmp.total_money), 0) AS amount
+        FROM
+        (
+            select count(1) as orders,user_id, ifnull(sum(total_money), 0) AS total_money
+            from t_order
+            <where>
+                <if test="beginTime != null">
+                    and create_time &gt;= #{beginTime}
+                </if>
+                <if test="endTime != null">
+                    and create_time &lt;= #{endTime}
+                </if>
+                <if test="isPay != null">
+                    and is_pay = #{isPay}
+                </if>
+            </where>
+            GROUP BY user_id
+            <if test="isRepeact != null">
+                HAVING ifnull(count(1),0) &gt;= 2
+            </if>
+        ) tmp
+    </select>
+
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_conversion_rate
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <delete id="deleteAll">
+        delete from t_conversion_rate
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.ConversionRate">
+        insert into
+        t_conversion_rate (name,time_bucket,peoples,orders,amount,new_peoples,new_orders,new_amount,new_pays,new_order_rate,new_pay_rate,repeat_orders,repeat_pays,repeat_order_rate,repeat_pay_rate,create_time,update_time)
+        values
+        (#{name},#{timeBucket},#{peoples},#{orders},#{amount},#{newPeoples},#{newOrders},#{newAmount},#{newPays},#{newOrderRate},#{newPayRate},#{repeatOrders},#{repeatPays},#{repeatOrderRate},#{repeatPayRate},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.ConversionRate">
+        update t_conversion_rate
+        <set>
+
+            <if test="name != null">
+                name = #{name},
+            </if>
+
+            <if test="timeBucket != null">
+                time_bucket = #{timeBucket},
+            </if>
+
+            <if test="peoples != null">
+                peoples = #{peoples},
+            </if>
+
+            <if test="orders != null">
+                orders = #{orders},
+            </if>
+
+            <if test="amount != null">
+                amount = #{amount},
+            </if>
+
+            <if test="newPeoples != null">
+                new_peoples = #{newPeoples},
+            </if>
+
+            <if test="newOrders != null">
+                new_orders = #{newOrders},
+            </if>
+
+            <if test="newAmount != null">
+                new_amount = #{newAmount},
+            </if>
+
+            <if test="newPays != null">
+                new_pays = #{newPays},
+            </if>
+
+            <if test="newOrderRate != null">
+                new_order_rate = #{newOrderRate},
+            </if>
+
+            <if test="newPayRate != null">
+                new_pay_rate = #{newPayRate},
+            </if>
+
+            <if test="repeatOrders != null">
+                repeat_orders = #{repeatOrders},
+            </if>
+
+            <if test="repeatPays != null">
+                repeat_pays = #{repeatPays},
+            </if>
+
+            <if test="repeatOrderRate != null">
+                repeat_order_rate = #{repeatOrderRate},
+            </if>
+
+            <if test="repeatPayRate != null">
+                repeat_pay_rate = #{repeatPayRate},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

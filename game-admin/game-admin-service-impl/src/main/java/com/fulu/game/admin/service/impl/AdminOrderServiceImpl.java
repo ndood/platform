@@ -408,6 +408,12 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
     }
 
     public PageInfo<OrderResVO> list(OrderSearchVO orderSearchVO, Integer pageNum, Integer pageSize, String orderBy) {
+        //todo gzc 下个版本有平台字段后 修改此处逻辑
+        if(orderSearchVO.getType() != null && orderSearchVO.getType() == 3) {
+            orderSearchVO.setType(null);
+            orderSearchVO.setPayment(5);
+        }
+
         if (StringUtils.isBlank(orderBy)) {
             orderBy = "id DESC";
         }
@@ -425,7 +431,11 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
             }
             orderSearchVO.setServiceUserId(user.getId());
         }
-        PageHelper.startPage(pageNum, pageSize, orderBy);
+        if (pageNum != null && pageSize != null) {
+            PageHelper.startPage(pageNum, pageSize, orderBy);
+        } else {
+            PageHelper.orderBy(orderBy);
+        }
         Integer status = orderSearchVO.getStatus();
         Integer[] statusList = OrderStatusGroupEnum.getByValue(status);
         if (null != statusList && statusList.length > 0) {
@@ -434,15 +444,9 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
         List<OrderResVO> list = orderDao.list(orderSearchVO);
         for (OrderResVO orderResVO : list) {
             //添加订单投诉和验证信息
-            OrderDealVO userOrderDealVO = orderDealService.findByUserAndOrderNo(orderResVO.getUserId(), orderResVO.getOrderNo());
-            orderResVO.setUserOrderDeal(userOrderDealVO);
-            OrderDealVO serviceUserOrderDealVO = orderDealService.findByUserAndOrderNo(orderResVO.getServiceUserId(), orderResVO.getOrderNo());
-            orderResVO.setServerOrderDeal(serviceUserOrderDealVO);
+            this.setOrderDeal(orderResVO);
             //添加用户和陪玩师信息
-            User user = userService.findById(orderResVO.getUserId());
-            orderResVO.setUser(user);
-            User serviceUser = userService.findById(orderResVO.getServiceUserId());
-            orderResVO.setServerUser(serviceUser);
+            this.setOrderUserInfo(orderResVO);
             //添加订单商品信息
             OrderProduct orderProduct = orderProductService.findByOrderNo(orderResVO.getOrderNo());
             orderResVO.setOrderProduct(orderProduct);
@@ -463,8 +467,69 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
             if (OrderStatusEnum.NON_PAYMENT.getStatus().equals(orderStatus)) {
                 orderResVO.setActualMoney(null);
             }
+
+            //订单状态
+            if (orderResVO.getPayment() != null && orderResVO.getPayment().equals(PaymentEnum.FENQILE_PAY.getType())) {
+                orderResVO.setTypeStr("分期乐订单");
+            } else {
+                orderResVO.setTypeStr(OrderTypeEnum.getMsgByType(orderResVO.getType()));
+            }
         }
         return new PageInfo<>(list);
+    }
+
+    public OrderResVO getOrderDetailById(Integer orderId) {
+
+        Order order = orderDao.findById(orderId);
+
+        OrderResVO orderResVO = new OrderResVO();
+
+        BeanUtil.copyProperties(order, orderResVO);
+
+        //添加订单投诉和验证信息
+
+        this.setOrderDeal(orderResVO);
+
+        //添加用户和陪玩师信息
+
+        this.setOrderUserInfo(orderResVO);
+
+        //添加订单商品信息
+        OrderProduct orderProduct = orderProductService.findByOrderNo(orderResVO.getOrderNo());
+        orderResVO.setOrderProduct(orderProduct);
+        //添加订单状态
+        orderResVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderResVO.getStatus()));
+
+        OrderShareProfitVO profitVO = new OrderShareProfitVO();
+        profitVO.setOrderNo(orderResVO.getOrderNo());
+
+        //订单状态过滤
+        getShareProfitMoney(orderResVO);
+
+        //设置应付金额
+        Integer orderStatus = orderResVO.getStatus();
+        orderResVO.setPayableMoney(orderResVO.getActualMoney());
+        if (OrderStatusEnum.NON_PAYMENT.getStatus().equals(orderStatus)) {
+            orderResVO.setActualMoney(null);
+        }
+
+        return orderResVO;
+    }
+
+    //添加用户和陪玩师信息
+    public void setOrderUserInfo(OrderResVO orderResVO) {
+        User user = userService.findById(orderResVO.getUserId());
+        orderResVO.setUser(user);
+        User serviceUser = userService.findById(orderResVO.getServiceUserId());
+        orderResVO.setServerUser(serviceUser);
+    }
+
+    //添加订单投诉和验证信息
+    public void setOrderDeal(OrderResVO orderResVO) {
+        OrderDealVO userOrderDealVO = orderDealService.findByUserAndOrderNo(orderResVO.getUserId(), orderResVO.getOrderNo());
+        orderResVO.setUserOrderDeal(userOrderDealVO);
+        OrderDealVO serviceUserOrderDealVO = orderDealService.findByUserAndOrderNo(orderResVO.getServiceUserId(), orderResVO.getOrderNo());
+        orderResVO.setServerOrderDeal(serviceUserOrderDealVO);
     }
 
 

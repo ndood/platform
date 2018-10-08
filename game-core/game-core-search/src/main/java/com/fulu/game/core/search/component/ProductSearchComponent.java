@@ -1,6 +1,5 @@
 package com.fulu.game.core.search.component;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.fulu.game.common.exception.SearchException;
 import com.fulu.game.common.properties.Config;
 import com.fulu.game.core.search.domain.Criteria;
@@ -67,7 +66,6 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
         List<Criteria> criterias = Lists.newArrayList(new Criteria("userId", userId));
         return search(criterias, ProductShowCaseDoc.class);
     }
-
 
     /**
      * 昵称查询

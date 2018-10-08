@@ -53,6 +53,8 @@ public enum RedisKeyEnum {
     ATTENTION_USERS,
     //被关注用户
     ATTENTIONED_USERS,
+    // 管理后台授权
+    ADMIN_AUTHED,
     //需要随机自动问好的用户
     AUTO_SAY_HELLO_USER_LIST,
     //用户未读订单

@@ -20,10 +20,9 @@ public interface AdminUserTechAuthService extends UserTechAuthService {
     /**
      * 技能审核通过
      * @param id
-     * @param maxPrice 最大定价价格
      * @return
      */
-    UserTechAuth pass(Integer id, BigDecimal maxPrice, String level);
+    UserTechAuth pass(Integer id, Integer techLevelId);
 
     /**
      * 冻结用户技能认证

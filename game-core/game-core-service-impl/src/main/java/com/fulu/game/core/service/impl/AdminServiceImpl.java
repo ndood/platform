@@ -9,6 +9,7 @@ import com.fulu.game.core.dao.AdminDao;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.vo.AdminVO;
+import com.fulu.game.core.service.AdminRoleService;
 import com.fulu.game.core.service.AdminService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -26,6 +27,9 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
 
     @Autowired
     private AdminDao adminDao;
+
+    @Autowired
+    private AdminRoleService adminRoleService;
 
     @Override
     public ICommonDao<Admin, Integer> getDao() {
@@ -45,30 +49,54 @@ public class AdminServiceImpl extends AbsCommonService<Admin, Integer> implement
 
     @Override
     public Admin save(AdminVO adminVO) {
+//        if(adminVO != null && (adminVO.getRoleId() == null || adminVO.getRoleId().intValue() <= 0)){
+//            throw new UserException(UserException.ExceptionCode.NO_ROLE);
+//        }
         //判断username是否重名
         AdminVO requestVO = new AdminVO();
         requestVO.setName(adminVO.getName());
+        if(adminVO.getId() != null){
+            requestVO.setId(adminVO.getId());
+        }
         List<Admin> adminList = adminDao.findByParameter(requestVO);
-        if (!CollectionUtil.isEmpty(adminList)) {
+        if (adminVO.getName()!= null && !CollectionUtil.isEmpty(adminList)) {
             throw new UserException(UserException.ExceptionCode.NAME_DUMPLICATE_EXCEPTION);
         } else {
             requestVO.setName(null);
             requestVO.setUsername(adminVO.getUsername());
             List<Admin> adminList1 = adminDao.findByParameter(requestVO);
-            if (!CollectionUtil.isEmpty(adminList1)) {
+            if (adminVO.getUsername() != null && !CollectionUtil.isEmpty(adminList1)) {
                 throw new UserException(UserException.ExceptionCode.USERNAME_DUMPLICATE_EXCEPTION);
             }
         }
+
         Admin admin = new Admin();
         admin.setName(adminVO.getName());
         admin.setUsername(adminVO.getUsername());
-        admin.setStatus(AdminStatus.ENABLE.getType());
-        Password password = EncryptUtil.PiecesEncode(adminVO.getPassword());
-        admin.setPassword(password.getPassword());
-        admin.setSalt(password.getSalt());
-        admin.setCreateTime(new Date());
-        admin.setUpdateTime(admin.getCreateTime());
-        adminDao.create(admin);
+        admin.setStatus(adminVO.getStatus());
+        admin.setRoleId(adminVO.getRoleId());
+        if(adminVO.getId() != null && adminVO.getId().intValue() > 0){
+            admin.setId(adminVO.getId());
+            //登录名不允许修改
+            admin.setUsername(null);
+            if(adminVO.getPassword() != null && !"".equals(adminVO.getPassword())){
+                Password password = EncryptUtil.PiecesEncode(adminVO.getPassword());
+                admin.setPassword(password.getPassword());
+                admin.setSalt(password.getSalt());
+            }
+            admin.setUpdateTime(new Date());
+            adminDao.update(admin);
+        } else {
+            Password password = EncryptUtil.PiecesEncode(adminVO.getPassword());
+            admin.setPassword(password.getPassword());
+            admin.setSalt(password.getSalt());
+            admin.setStatus(AdminStatus.ENABLE.getType());
+            admin.setCreateTime(new Date());
+            admin.setUpdateTime(admin.getCreateTime());
+            adminDao.create(admin);
+        }
+        //设置用户角色信息
+        adminRoleService.save(admin);
         return admin;
     }
 

@@ -45,21 +45,23 @@ public class OrderController extends BaseController {
     private final H5OrderServiceImpl orderService;
     private final OrderDealService orderDealService;
     private final H5PayServiceImpl h5PayService;
+    private final H5FenqilePayServiceImpl h5FenqilePayService;
     private final H5PushServiceImpl h5PushService;
 
 
     @Autowired
     public OrderController(UserService userService,
                            RedisOpenServiceImpl redisOpenService,
-                           H5OrderServiceImpl orderService,
+                           H5FenqilePayServiceImpl h5FenqilePayService,
                            OrderDealService orderDealService,
-                           H5PayServiceImpl fenqilePayService,
+                           H5OrderServiceImpl orderService,
                            H5PushServiceImpl h5PushService) {
         this.userService = userService;
         this.redisOpenService = redisOpenService;
         this.orderService = orderService;
         this.orderDealService = orderDealService;
         this.h5PayService = fenqilePayService;
+        this.h5FenqilePayService = h5FenqilePayService;
         this.h5PushService = h5PushService;
     }
 

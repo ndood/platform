@@ -16,7 +16,6 @@ import com.fulu.game.core.service.OrderService;
 import com.fulu.game.core.service.OrderStatusDetailsService;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
-import com.fulu.game.h5.service.impl.H5OrderShareProfitServiceImpl;
 import com.fulu.game.play.service.impl.PlayOrderShareProfitServiceImpl;
 import com.fulu.game.point.service.impl.PointOrderShareProfitServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +49,8 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
     private SchedulePushServiceImpl schedulePushService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private UserService userService;
 
     @Override
     protected void dealOrderAfterPay(Order order) {
@@ -144,6 +145,20 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
                 && !order.getStatus().equals(OrderStatusEnum.ALREADY_RECEIVING.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有等待陪玩和未支付的订单才能取消!");
         }
+
+        //如果是分期乐订单，短信通知老板
+        //todo gzc 下一版本会通过平台字段区分订单类型
+        if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
+            User user = userService.findById(order.getUserId());
+            if (user != null) {
+                if (OrderStatusEnum.WAIT_SERVICE.getStatus().equals(order.getStatus())) {
+                    SMSUtil.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.NOT_ACCEPT_ORDER.getMsg());
+                } else if (OrderStatusEnum.ALREADY_RECEIVING.getStatus().equals(order.getStatus())) {
+                    SMSUtil.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.NOT_START_ORDER.getMsg());
+                }
+            }
+        }
+
         order.setUpdateTime(new Date());
         order.setCompleteTime(new Date());
         // 全额退款用户

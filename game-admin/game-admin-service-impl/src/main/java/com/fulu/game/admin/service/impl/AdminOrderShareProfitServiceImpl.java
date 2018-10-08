@@ -1,6 +1,7 @@
 package com.fulu.game.admin.service.impl;
 
 import com.fulu.game.common.enums.OrderTypeEnum;
+import com.fulu.game.common.enums.PaymentEnum;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.core.dao.OrderShareProfitDao;
 import com.fulu.game.core.entity.Order;
@@ -24,8 +25,10 @@ public class AdminOrderShareProfitServiceImpl extends OrderShareProfitServiceImp
 
     @Autowired
     private PlayOrderShareProfitServiceImpl playOrderShareProfitService;
+
     @Autowired
     private PointOrderShareProfitServiceImpl pointOrderShareProfitService;
+
     @Autowired
     private OrderShareProfitDao orderShareProfitDao;
     @Autowired
@@ -36,7 +39,13 @@ public class AdminOrderShareProfitServiceImpl extends OrderShareProfitServiceImp
 
 
         if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
-            return playOrderShareProfitService.refund(order, actualMoney, refundUserMoney);
+            //分期乐订单
+            if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
+                return h5OrderShareProfitService.refund(order, actualMoney, refundUserMoney);
+            } else {
+                //陪玩订单
+                return playOrderShareProfitService.refund(order, actualMoney, refundUserMoney);
+            }
         } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
             return pointOrderShareProfitService.refund(order, actualMoney, refundUserMoney);
         }

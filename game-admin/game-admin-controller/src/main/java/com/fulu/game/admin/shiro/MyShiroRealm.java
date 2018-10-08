@@ -1,9 +1,19 @@
 package com.fulu.game.admin.shiro;
 
 
+import cn.hutool.core.collection.CollectionUtil;
+import com.alibaba.fastjson.JSONObject;
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.AdminStatus;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.core.entity.Admin;
+import com.fulu.game.core.entity.SysRole;
+import com.fulu.game.core.entity.SysRouter;
 import com.fulu.game.core.service.AdminService;
+import com.fulu.game.core.service.RoleRouterService;
+import com.fulu.game.core.service.SysRoleService;
+import com.fulu.game.core.service.SysRouterService;
+import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -13,27 +23,62 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.*;
+
 @Slf4j
 public class MyShiroRealm extends AuthorizingRealm {
 
     @Autowired
     private AdminService adminService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private SysRoleService sysRoleService;
+    @Autowired
+    private SysRouterService sysRouterService;
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         log.info("权限配置-->MyShiroRealm.doGetAuthorizationInfo()");
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-//
-//        SysUser sysUser  = (SysUser)principals.getPrimaryPrincipal();
-//        List<SysRole> sysRoleList =   sysUserRoleService.findSysUserByRoleId(sysUser.getId());
-//
-//        for(SysRole role:sysRoleList){
-//            authorizationInfo.addRole(role.getRole());
-//            List<SysPermission> sysPermissionList = sysRolePermissionService.findSysPermissionByRoleId(role.getId());
-//            for(SysPermission p:sysPermissionList){
-//                authorizationInfo.addStringPermission(p.getPermission());
+        // TODO 权限控制由前端控制，后端暂不做控制，当需要后端控制时，再打开注释
+//        Admin admin  = (Admin)principals.getPrimaryPrincipal();
+//        Set<String> permissionList = new HashSet<>();
+//        String key = RedisKeyEnum.ADMIN_AUTHED.generateKey(admin.getId());
+//        if(redisOpenService.hasKey(key)){
+//            permissionList = JSONObject.parseObject(redisOpenService.get(key),Set.class);
+//            for(String permission: permissionList){
+//                authorizationInfo.addStringPermission(permission);
+//            }
+//        } else {
+//            if(admin != null && admin.getUsername() != null &&
+//                    !Constant.ADMIN_USERNAME.equals(admin.getUsername())){
+//                List<SysRole> sysRoleList = sysRoleService.findByAdminId(admin.getId());
+//                if(CollectionUtil.isNotEmpty(sysRoleList)){
+//                    for(SysRole role: sysRoleList){
+//                        authorizationInfo.addRole(role.getName());
+//                        List<SysRouter> routerList = sysRouterService.findByRoleId(role.getId());
+//                        if(CollectionUtil.isNotEmpty(routerList)){
+//                            for(SysRouter router: routerList){
+//                                authorizationInfo.addStringPermission(router.getPath());
+//                                permissionList.add(router.getPath());
+//                            }
+//                        }
+//                    }
+//                }
+//                //此处可以不用设置，因为拦截器里面不会去验证超管权限
+//            } else if(admin != null && admin.getUsername() != null &&
+//                    Constant.ADMIN_USERNAME.equals(admin.getUsername())){
+//                List<SysRouter> routerList = sysRouterService.findAll();
+//                if(CollectionUtil.isNotEmpty(routerList)){
+//                    for(SysRouter router: routerList){
+//                        permissionList.add(router.getPath());
+//                    }
+//                }
 //            }
 //        }
+//        redisOpenService.set(key, JSONObject.toJSONString(permissionList));
+//        log.info("权限配置列表 {}",JSONObject.toJSONString(permissionList));
         return authorizationInfo;
     }
 

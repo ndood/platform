@@ -3,6 +3,7 @@ package com.fulu.game.play.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ProductException;
@@ -25,9 +26,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -62,6 +61,8 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
     @Qualifier(value = "userInfoAuthServiceImpl")
     @Autowired
     private UserInfoAuthService userInfoAuthService;
+    @Autowired
+    private ImService imService;
 
     /**
      * 陪玩师接单
@@ -273,9 +274,11 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
         //发送短信通知给陪玩师
         User server = userService.findById(order.getServiceUserId());
         UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(order.getServiceUserId());
-        Boolean vestFlag = false;
+        boolean vestFlag = false;
+        boolean agentIm = false;
         if (userInfoAuth != null) {
             vestFlag = userInfoAuth.getVestFlag() == null ? false : userInfoAuth.getVestFlag();
+            agentIm = userInfoAuth.getOpenSubstituteIm()==null?false:userInfoAuth.getOpenSubstituteIm();
         }
 
         if (!vestFlag) {
@@ -300,6 +303,18 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
         waitingReadOrderNo.add(order.getOrderNo());
 
         redisOpenService.set(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(order.getServiceUserId()), waitingReadOrderNo.toJSONString());
+        
+        
+        //判断陪玩师是否为马甲或者代聊陪玩师  如果是，则给陪玩师发送一条im消息告诉他被下单了
+        if (vestFlag||agentIm) {
+
+            User user = userService.findById(order.getUserId());
+
+            Map<String, String> extMap = new HashMap<>();
+            extMap.put("msg","系统提示：用户下了新订单");
+            
+            imService.sendMsgToImUser(new String[]{server.getImId()}, user.getImId() , Constant.SERVICE_USER_PAY_ORDER, extMap);
+        }
 
     }
 
