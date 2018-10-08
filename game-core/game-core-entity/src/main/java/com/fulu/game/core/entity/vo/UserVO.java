@@ -144,4 +144,7 @@ public class UserVO extends User {
                 ? BigDecimal.ZERO.setScale(2, BigDecimal.ROUND_HALF_DOWN)
                 : incomeUnitPrice.setScale(2, BigDecimal.ROUND_HALF_DOWN);
     }
+
+    /** 用户类型（1：普通用户；4：马甲） */
+    private Integer userType;
 }
