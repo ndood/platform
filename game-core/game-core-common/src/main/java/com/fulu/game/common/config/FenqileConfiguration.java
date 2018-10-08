@@ -1,4 +1,4 @@
-package com.fulu.game.play.service.impl.config;
+package com.fulu.game.common.config;
 
 
 import com.fulu.game.common.properties.Config;
