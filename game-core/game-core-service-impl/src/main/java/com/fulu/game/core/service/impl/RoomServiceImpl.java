@@ -77,8 +77,8 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
 
 
     @Override
-    public PageInfo<RoomVO> findUsableRoomsByRoomCategory(int roomCategoryId) {
-        PageHelper.startPage(1, 100, "sort desc");
+    public PageInfo<RoomVO> findUsableRoomsByRoomCategory(int pageNum, int pageSize,int roomCategoryId) {
+        PageHelper.startPage(pageNum, pageSize, "sort desc");
         RoomVO param = new RoomVO();
         param.setIsActivate(true);
         param.setIsShow(true);

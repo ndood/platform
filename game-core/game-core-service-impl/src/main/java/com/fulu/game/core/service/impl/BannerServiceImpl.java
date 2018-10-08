@@ -1,6 +1,7 @@
 package com.fulu.game.core.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.fulu.game.common.enums.PlatformBannerEnum;
 import com.fulu.game.common.exception.CommonException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.dao.BannerDao;
@@ -106,5 +107,15 @@ public class BannerServiceImpl extends AbsCommonService<Banner, Integer> impleme
         PageHelper.orderBy("sort DESC");
         return bannerDao.findByParameter(bannerVO);
     }
+
+
+    public List<Banner> findByPlatformType(Integer platformType){
+        PageHelper.orderBy("sort DESC");
+        BannerVO param = new BannerVO();
+        param.setDisable(true);
+        param.setPlatformType(platformType);
+        return bannerDao.findByParameter(param);
+    }
+
 
 }

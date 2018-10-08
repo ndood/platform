@@ -38,7 +38,7 @@ public interface RoomService extends ICommonService<Room, Integer> {
      *
      * @return
      */
-    PageInfo<RoomVO> findUsableRoomsByRoomCategory(int roomCategoryId);
+    PageInfo<RoomVO> findUsableRoomsByRoomCategory(int pageNum, int pageSize,int roomCategoryId);
 
 
     /**
