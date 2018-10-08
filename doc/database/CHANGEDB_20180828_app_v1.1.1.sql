@@ -568,7 +568,7 @@ CREATE TABLE `t_order_msg` (
 ) comment '订单消息表';
 
 
-
+DROP TABLE IF EXISTS `t_activity_coupon`;
 CREATE TABLE `t_activity_coupon` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `coupon_group_id` int(11) NOT NULL COMMENT '优惠券组ID',
@@ -584,7 +584,7 @@ CREATE TABLE `t_activity_coupon` (
   PRIMARY KEY (`id`)
 )  COMMENT='活动优惠券表';
 
-
+DROP TABLE IF EXISTS `t_official_activity`;
 CREATE TABLE `t_official_activity` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `platform` int(11) DEFAULT NULL COMMENT '平台',
@@ -602,7 +602,7 @@ CREATE TABLE `t_official_activity` (
 )  COMMENT='官方公告';
 
 
-
+DROP TABLE IF EXISTS `t_activity_user_award`;
 CREATE TABLE `t_activity_user_award` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL COMMENT '用户ID',
@@ -612,6 +612,7 @@ CREATE TABLE `t_activity_user_award` (
   UNIQUE KEY `user_id` (`user_id`,`activity_id`) USING BTREE
 )  COMMENT='用户活动奖励表';
 
+DROP TABLE IF EXISTS `t_room_manage`;
 CREATE TABLE `t_room_manage` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `room_no` int(11) NOT NULL COMMENT '房间ID',
@@ -625,6 +626,7 @@ CREATE TABLE `t_room_manage` (
   PRIMARY KEY (`id`)
 )  COMMENT='房间管理表';
 
+DROP TABLE IF EXISTS `t_room_category`;
 CREATE TABLE `t_room_category` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `pid` int(11) DEFAULT NULL COMMENT '父类ID',
@@ -636,6 +638,7 @@ CREATE TABLE `t_room_category` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='房间分类表';
 
+DROP TABLE IF EXISTS `t_room`;
 CREATE TABLE `t_room` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `room_no` varchar(255) NOT NULL COMMENT '房间号码',
