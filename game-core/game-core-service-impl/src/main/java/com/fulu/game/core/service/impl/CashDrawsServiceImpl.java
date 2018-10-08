@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -55,6 +56,9 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
     private WxMpServiceSupply wxMpServiceSupply;
     @Autowired
     private VirtualDetailsService virtualDetailsService;
+    @Qualifier(value = "userInfoAuthServiceImpl")
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
 
     @Override
     public ICommonDao<CashDraws, Integer> getDao() {
@@ -186,6 +190,11 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
                         .multiply(Constant.CHARM_TO_MONEY_RATE)
                         .setScale(2, BigDecimal.ROUND_HALF_DOWN));
                 meta.setBalance(meta.getBalance().add(unCashDrawsSum == null ? BigDecimal.ZERO : unCashDrawsSum));
+                if(meta.getCashNo() != null && !"".equals(meta.getCashNo()) && meta.getCashNo().startsWith(Constant.VEST_PREFIX)){
+                    meta.setUserType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
+                } else {
+                    meta.setUserType(UserTypeEnum.VEST_USER.getType());
+                }
             }
         }
 //        this.charmToMoney(list);
@@ -500,6 +509,16 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
      */
     private String generateCashNo() {
         String cashNo = GenIdUtil.GetOrderNo();
+        // 判断是否马甲账号
+        String prefix = "";
+        User user = userService.getCurrentUser();
+        if(user != null){
+            UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
+            if(userInfoAuth != null && userInfoAuth.getVestFlag()){
+                prefix = Constant.VEST_PREFIX;
+            }
+        }
+        cashNo = prefix + cashNo;
         if (findByCashNo(cashNo) == null) {
             return cashNo;
         } else {

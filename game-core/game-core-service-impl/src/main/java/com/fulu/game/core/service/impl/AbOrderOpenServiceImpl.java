@@ -728,7 +728,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         if(user != null){
             UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
             if(userInfoAuth != null && userInfoAuth.getVestFlag()){
-                prefix = Constant.VEST_ORDER_PREFIX;
+                prefix = Constant.VEST_PREFIX;
             }
         }
         orderNo = prefix + orderNo;

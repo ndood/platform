@@ -37,7 +37,7 @@ public class MoneyDetails implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
-    /** 用户类型（1：普通用户；2：马甲用户） */
+    /** 用户类型（1：普通用户；4：马甲用户） */
     private int userType;
 
 }
