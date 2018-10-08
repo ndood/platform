@@ -1,4 +1,4 @@
-package com.fulu.game.play.service.impl;
+package com.fulu.game.h5.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSONArray;
@@ -16,6 +16,7 @@ import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
+import com.fulu.game.play.service.impl.PlayMiniAppPushServiceImpl;
 import com.fulu.game.thirdparty.fenqile.service.FenqileSdkOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -51,7 +52,7 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
     @Autowired
     private UserCommentService userCommentService;
     @Autowired
-    private H5PushServiceImpl h5PushService;
+    private PlayMiniAppPushServiceImpl playMiniAppPushService;
     @Autowired
     private H5OrderShareProfitServiceImpl h5OrderShareProfitService;
     @Autowired
@@ -76,7 +77,7 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
 
     @Override
     protected MiniAppPushServiceImpl getMinAppPushService() {
-        return h5PushService;
+        return playMiniAppPushService;
     }
 
     @Override
@@ -113,7 +114,7 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         if (!vestFlag) {
             SMSUtil.sendOrderReceivingRemind(server.getMobile(), order.getName());
             //推送通知
-            h5PushService.orderPay(order);
+            playMiniAppPushService.orderPay(order);
         }
 
         //判断陪玩师是否为马甲或者代聊陪玩师  如果是，则给陪玩师发送一条im消息告诉他被下单了
@@ -169,6 +170,7 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         order.setOrderNo(generateOrderNo());
         order.setUserId(user.getId());
         order.setServiceUserId(product.getUserId());
+        order.setPlatform(PlatformEcoEnum.FENQILE.getType());
         order.setCategoryId(product.getCategoryId());
         order.setIsPay(false);
         order.setPayment(PaymentEnum.FENQILE_PAY.getType());
@@ -310,7 +312,7 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         String title = "发起了协商-" + refundType + " ￥" + refundMoney.toPlainString();
         OrderDeal orderDeal = new OrderDeal();
         orderDeal.setTitle(title);
-        orderDeal.setType(OrderDealTypeEnum.CONSULT.getType());
+        orderDeal.setType(OrderEventTypeEnum.CONSULT.getType());
         orderDeal.setUserId(user.getId());
         orderDeal.setRemark(remark);
         orderDeal.setOrderNo(order.getOrderNo());

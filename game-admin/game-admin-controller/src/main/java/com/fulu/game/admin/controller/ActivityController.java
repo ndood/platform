@@ -24,7 +24,6 @@ public class ActivityController extends BaseController{
 
 
 
-
     @RequestMapping(value = "create")
     public Result create(OfficialActivityVO officialActivityVO){
         officialActivityService.create(officialActivityVO.getType(),officialActivityVO,officialActivityVO.getRedeemCodes());

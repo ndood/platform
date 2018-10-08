@@ -382,7 +382,9 @@ public class OrderController extends BaseController {
     public Result serverAcceptanceOrder(@RequestParam(required = true) String orderNo,
                                         String remark,
                                         String[] fileUrl) {
-         orderService.serverAcceptanceOrder(orderNo, remark, fileUrl);
+        Order order = orderService.findByOrderNo(orderNo);
+        User user = userService.getCurrentUser();
+         orderService.serverAcceptanceOrder(order, remark,user, fileUrl);
         return Result.success().data(orderNo).msg("提交订单验收成功!");
     }
 

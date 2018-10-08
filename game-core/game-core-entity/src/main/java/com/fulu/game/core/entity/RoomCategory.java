@@ -24,7 +24,7 @@ public class RoomCategory implements Serializable {
 	// 房间图标
 	private String icon;
 	//是否激活(1是,0否)
-	private Integer isActivate;
+	private Boolean isActivate;
 	//创建时间
 	private Date createTime;
 	//

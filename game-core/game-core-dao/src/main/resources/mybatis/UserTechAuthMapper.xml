@@ -23,7 +23,6 @@
         <result column="is_main" property="isMain"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
-        <result column="order_count" property="orderCount"/>
         <result column="tech_level_id" property="techLevelId"/>
         <result column="tech_level_name" property="techLevelName"/>
     </resultMap>
@@ -33,7 +32,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,category_id,user_id,category_name,mobile,grade_pic_url,description,status,order_count,virtual_order_count,voice,voice_duration,resource_type,score_avg,max_price,level,is_activate,is_main,create_time,update_time,order_count
+        id,category_id,user_id,category_name,mobile,grade_pic_url,description,status,order_count,virtual_order_count,voice,voice_duration,resource_type,score_avg,max_price,level,is_activate,is_main,create_time,update_time
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserTechAuthResultMap">
@@ -101,9 +100,6 @@
             </if>
             <if test="level != null">
                 and level = #{level}
-            </if>
-            <if test="orderCount != null">
-                and order_count = #{orderCount}
             </if>
             <if test="isActivate != null">
                 and is_activate = #{isActivate}
@@ -268,11 +264,6 @@
             <if test="updateTime != null">
                 update_time = #{updateTime},
             </if>
-
-            <if test="orderCount != null">
-                order_count = #{orderCount},
-            </if>
-
         </set>
         <where>
             id = #{id}

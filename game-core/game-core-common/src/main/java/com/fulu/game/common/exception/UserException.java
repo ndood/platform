@@ -35,7 +35,7 @@ public class UserException extends BizException {
         NO_ROLE_CLOSE(21012, "账号权限已关闭"),
         ROLE_NAME_EXIST(21013,"角色名已存在"),
         ROUTER_NAME_EXIST(21014,"路由名已存在"),
-        USER_CUSTOM_TAG_OVERFLOW(21015, "不能创建太多的自定义标签"),
+        USER_CUSTOM_TAG_OVERFLOW(21015, "不能创建太多的自定义标签");
 
 
         private int code;

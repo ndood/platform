@@ -17,8 +17,8 @@ import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.h5.service.impl.H5OrderServiceImpl;
 import com.fulu.game.h5.service.impl.H5PayServiceImpl;
-import com.fulu.game.h5.service.impl.H5PushServiceImpl;
 import com.fulu.game.h5.utils.RequestUtil;
+import com.fulu.game.play.service.impl.PlayMiniAppPushServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,24 +45,22 @@ public class OrderController extends BaseController {
     private final H5OrderServiceImpl orderService;
     private final OrderDealService orderDealService;
     private final H5PayServiceImpl h5PayService;
-    private final H5FenqilePayServiceImpl h5FenqilePayService;
-    private final H5PushServiceImpl h5PushService;
+    private final PlayMiniAppPushServiceImpl playMiniAppPushService;
 
 
     @Autowired
     public OrderController(UserService userService,
                            RedisOpenServiceImpl redisOpenService,
-                           H5FenqilePayServiceImpl h5FenqilePayService,
                            OrderDealService orderDealService,
                            H5OrderServiceImpl orderService,
-                           H5PushServiceImpl h5PushService) {
+                           H5PayServiceImpl h5PayService,
+                           PlayMiniAppPushServiceImpl playMiniAppPushService) {
         this.userService = userService;
         this.redisOpenService = redisOpenService;
         this.orderService = orderService;
         this.orderDealService = orderDealService;
-        this.h5PayService = fenqilePayService;
-        this.h5FenqilePayService = h5FenqilePayService;
-        this.h5PushService = h5PushService;
+        this.h5PayService = h5PayService;
+        this.playMiniAppPushService = playMiniAppPushService;
     }
 
     /**
@@ -156,7 +154,7 @@ public class OrderController extends BaseController {
             return Result.error().msg("不能频繁提醒接单!");
         }
         Order order = orderService.findByOrderNo(orderNo);
-        h5PushService.remindReceive(order);
+        playMiniAppPushService.remindReceive(order);
         redisOpenService.setTimeInterval(orderNo, 5 * 60);
         return Result.success().msg("提醒接单成功!");
     }
@@ -192,7 +190,7 @@ public class OrderController extends BaseController {
             return Result.error().msg("不能频繁提醒开始!");
         }
         Order order = orderService.findByOrderNo(orderNo);
-        h5PushService.remindStart(order);
+        playMiniAppPushService.remindStart(order);
         redisOpenService.setTimeInterval(orderNo, 5 * 60);
         return Result.success().msg("提醒开始成功!");
     }

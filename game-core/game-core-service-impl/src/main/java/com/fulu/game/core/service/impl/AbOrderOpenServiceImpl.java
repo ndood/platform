@@ -673,11 +673,8 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
      * @return
      */
     @Override
-    public String serverAcceptanceOrder(String orderNo, String remark, String[] fileUrl) {
-        log.info("打手提交验收订单orderNo:{}", orderNo);
-        Order order = orderService.findByOrderNo(orderNo);
-        userService.isCurrentUser(order.getServiceUserId());
-        User user = userService.getCurrentUser();
+    public String serverAcceptanceOrder(Order order, String remark, User user,String[] fileUrl) {
+        log.info("打手提交验收订单order:{}", order);
         if (!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有陪玩中的订单才能验收!");
         }
@@ -690,7 +687,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         orderEventService.createCheckEvent(order, user, remark, fileUrl);
         //推送通知
         getMinAppPushService().checkOrder(order);
-        return orderNo;
+        return order.getOrderNo();
     }
 
     /**

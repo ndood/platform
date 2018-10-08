@@ -100,10 +100,10 @@ public interface OrderOpenService {
     /**
      * 订单验收
      *
-     * @param orderNo
+     * @param order
      * @return
      */
-    String serverAcceptanceOrder(String orderNo, String remark, String[] fileUrl);
+    public String serverAcceptanceOrder(Order order, String remark, User user,String[] fileUrl);
 
     /**
      * 用户验收订单

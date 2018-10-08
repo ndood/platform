@@ -34,6 +34,8 @@ public class OfficialActivityServiceImpl extends AbsCommonService<OfficialActivi
     private CategoryService categoryService;
     @Autowired
     private CouponOpenService couponOpenService;
+    @Autowired
+    private AdminService adminService;
 
     public OfficialActivity create(int type, OfficialActivity activity, List<String> redeemCodes) {
         if (ActivityTypeEnum.COUPON.getType().equals(type)) {
@@ -41,9 +43,13 @@ public class OfficialActivityServiceImpl extends AbsCommonService<OfficialActivi
                 throw new IllegalArgumentException("优惠券活动优惠券编码不能为空!");
             }
         }
+        Admin admin = adminService.getCurrentUser();
+
         activity.setIsActivate(false);
         activity.setCreateTime(new Date());
         activity.setUpdateTime(new Date());
+        activity.setAdminId(admin.getId());
+        activity.setAdminName(admin.getName());
         activity.setIsDel(false);
         create(activity);
         for (String redeemCode : redeemCodes) {

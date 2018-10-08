@@ -318,16 +318,15 @@ public class UserController extends BaseController {
      * 技能审核通过
      *
      * @param id
-     * @param maxPrice 最大定价价格
+     * @param techLevelId 最大定价价格
      * @return
      */
+
     @PostMapping(value = "/tech-auth/pass")
-    public Result techAuthPass(Integer id, @RequestParam(required = false) BigDecimal maxPrice,
-                               @RequestParam(required = false) String level) {
+    public Result techAuthPass(Integer id, Integer techLevelId) {
         userTechAuthService.pass(id, techLevelId);
         return Result.success().msg("技能审核通过!");
     }
-
     /**
      * 技能不通过
      *

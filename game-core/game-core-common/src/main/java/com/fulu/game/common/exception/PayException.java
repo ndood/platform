@@ -22,7 +22,8 @@ public class PayException extends BizException {
         WECHAT_CREATE_PAY_FAIL(90003, "微信创建支付订单失败！"),
         CHARGE_VALUE_ERROR(90004, "充值金额不正确"),
         APPLE_STORE_CHECK_ERROR(90005, "苹果内购信息验证失败!"),
-        REPETITION_PAY(90006, "不能重复支付!");
+        REPETITION_PAY(90006, "不能重复支付!"),
+        THIRD_REFUND_FAIL(90007, "第三方退款失败!");
 
         private int code;
         private String msg;
@@ -32,6 +33,13 @@ public class PayException extends BizException {
         super();
         this.code = exceptionCode.getCode();
         this.message = exceptionCode.getMsg();
+        this.exceptionCode = exceptionCode;
+    }
+
+    public PayException(ExceptionCode exceptionCode,String orderNo) {
+        super();
+        this.code = exceptionCode.getCode();
+        this.message = exceptionCode.getMsg()+"订单号["+orderNo+"]";
         this.exceptionCode = exceptionCode;
     }
 

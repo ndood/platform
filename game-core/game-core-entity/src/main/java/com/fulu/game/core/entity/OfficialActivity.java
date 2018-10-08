@@ -33,6 +33,11 @@ public class OfficialActivity implements Serializable {
 	private Date endTime;
 	//备注
 	private String remark;
+
+	private Integer adminId;
+
+	private String adminName;
+
 	//
 	private Date createTime;
 	//

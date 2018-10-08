@@ -335,8 +335,8 @@ public class ImController extends BaseController {
                                         @RequestParam(required = false)String[] fileUrl) {
         Order order = orderService.findByOrderNo(orderNo);
         User user = userService.findById(userId);
-        OrderVO orderVO = playMiniAppOrderServiceImpl.serverAcceptanceOrder(order, remark, user,fileUrl);
-        return Result.success().data(orderVO).msg("提交订单验收成功!");
+        playMiniAppOrderServiceImpl.serverAcceptanceOrder(order, remark, user,fileUrl);
+        return Result.success().data(orderNo).msg("提交订单验收成功!");
     }
     
 }
