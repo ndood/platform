@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.RoomManageDao">
+    <resultMap id="RoomManageResultMap" type="com.fulu.game.core.entity.RoomManage">
+        <id column="id" property="id"/>
+        <result column="room_no" property="roomNo"/>
+        <result column="user_id" property="userId"/>
+        <result column="head_url" property="headUrl"/>
+        <result column="nickname" property="nickname"/>
+        <result column="gender" property="gender"/>
+        <result column="role" property="role"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="RoomManageResultVOMap" type="com.fulu.game.core.entity.vo.RoomManageVO"
+               extends="RoomManageResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,room_no,user_id,head_url,nickname,gender,role,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="RoomManageResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_room_manage
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="RoomManageResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_room_manage
+    </select>
+
+    <select id="findByParameter" resultMap="RoomManageResultMap"
+            parameterType="com.fulu.game.core.entity.vo.RoomManageVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_room_manage
+        <where>
+            <if test="roomNo != null">
+                and room_no = #{roomNo}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="headUrl != null">
+                and head_url = #{headUrl}
+            </if>
+            <if test="nickname != null">
+                and nickname = #{nickname}
+            </if>
+            <if test="gender != null">
+                and gender = #{gender}
+            </if>
+            <if test="role != null">
+                and role = #{role}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_room_manage
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.RoomManage">
+        insert into
+        t_room_manage (room_no,user_id,head_url,nickname,gender,role,create_time,update_time)
+        values
+        (#{roomNo},#{userId},#{headUrl},#{nickname},#{gender},#{role},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.RoomManage">
+        update t_room_manage
+        <set>
+
+            <if test="roomNo != null">
+                room_no = #{roomNo},
+            </if>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="headUrl != null">
+                head_url = #{headUrl},
+            </if>
+
+            <if test="nickname != null">
+                nickname = #{nickname},
+            </if>
+
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+
+            <if test="role != null">
+                role = #{role},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

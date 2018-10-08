@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.RoomCategoryDao">
+    <resultMap id="RoomCategoryResultMap" type="com.fulu.game.core.entity.RoomCategory">
+        <id column="id" property="id"/>
+        <result column="pid" property="pid"/>
+        <result column="name" property="name"/>
+        <result column="icon" property="icon"/>
+        <result column="is_activate" property="isActivate"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="RoomCategoryResultVOMap" type="com.fulu.game.core.entity.vo.RoomCategoryVO"
+               extends="RoomCategoryResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,pid,name,icon,is_activate,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="RoomCategoryResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_room_category
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="RoomCategoryResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_room_category
+    </select>
+
+    <select id="findByParameter" resultMap="RoomCategoryResultMap"
+            parameterType="com.fulu.game.core.entity.vo.RoomCategoryVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_room_category
+        <where>
+            <if test="pid != null">
+                and pid = #{pid}
+            </if>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="icon != null">
+                and icon = #{icon}
+            </if>
+            <if test="isActivate != null">
+                and is_activate = #{isActivate}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_room_category
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.RoomCategory">
+        insert into
+        t_room_category (pid,name,icon,is_activate,create_time,update_time)
+        values
+        (#{pid},#{name},#{icon},#{isActivate},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.RoomCategory">
+        update t_room_category
+        <set>
+
+            <if test="pid != null">
+                pid = #{pid},
+            </if>
+
+            <if test="name != null">
+                name = #{name},
+            </if>
+
+            <if test="icon != null">
+                icon = #{icon},
+            </if>
+
+            <if test="isActivate != null">
+                is_activate = #{isActivate},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>
