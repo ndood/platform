@@ -48,7 +48,7 @@ public class PlatformMoneyDetailsServiceImpl implements PlatformMoneyDetailsServ
     @Override
     public synchronized PlatformMoneyDetails  createSmallChangeDetails(String remark,Integer userId,BigDecimal money){
         String remarkResult = PlatFormMoneyTypeEnum.SMALLCHANGE.getType()+"["+userId+"]"+remark;
-        if(money.compareTo(new BigDecimal(0)) == -1){
+        if(money.compareTo(new BigDecimal(0)) == 1){
             remarkResult = PlatFormMoneyTypeEnum.SMALL_CHANGE_SUBTRACT.getType()+"["+userId+"]"+remark;
         }
         return createPlatformMoneyDetails(remarkResult,money);
