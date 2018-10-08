@@ -51,4 +51,7 @@ public class OrderSearchVO {
      * 支付方式
      */
     private Integer payment;
+
+    /** 是否马甲订单 */
+    private Integer isVestOrder;
 }

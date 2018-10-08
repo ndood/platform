@@ -21,6 +21,7 @@ import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.async.DeferredResult;
 
@@ -62,6 +63,9 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
     private OrderService orderService;
     @Autowired
     private Config configProperties;
+    @Qualifier(value = "userInfoAuthServiceImpl")
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
 
 
     /**
@@ -718,6 +722,16 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
      */
     protected String generateOrderNo() {
         String orderNo = GenIdUtil.GetOrderNo();
+        // 判断是否马甲账号
+        String prefix = "";
+        User user = userService.getCurrentUser();
+        if(user != null){
+            UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
+            if(userInfoAuth != null && userInfoAuth.getVestFlag()){
+                prefix = Constant.VEST_ORDER_PREFIX;
+            }
+        }
+        orderNo = prefix + orderNo;
         if (orderService.findByOrderNo(orderNo) == null) {
             return orderNo;
         } else {
