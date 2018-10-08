@@ -63,7 +63,7 @@ public class RoomController extends BaseController {
         hotRoomCategory.setSort(998);
         list.add(collectRoomCategory);
         list.add(hotRoomCategory);
-        list.sort((RoomCategory c1, RoomCategory c2) -> c1.getSort().compareTo(c2.getSort()));
+        list.sort((RoomCategory c1, RoomCategory c2) -> c2.getSort().compareTo(c1.getSort()));
         return Result.success().data(list);
     }
 

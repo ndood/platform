@@ -626,17 +626,18 @@ CREATE TABLE `t_room_manage` (
   PRIMARY KEY (`id`)
 )  COMMENT='房间管理表';
 
-DROP TABLE IF EXISTS `t_room_category`;
 CREATE TABLE `t_room_category` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `pid` int(11) DEFAULT NULL COMMENT '父类ID',
   `name` varchar(255) NOT NULL COMMENT '分类名称',
   `icon` varchar(255) DEFAULT NULL COMMENT '房间图标',
   `is_activate` tinyint(1) DEFAULT NULL COMMENT '是否激活(1是,0否)',
+  `sort` int(11) DEFAULT NULL COMMENT '排序',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='房间分类表';
+) COMMENT='房间分类表';
+
 
 DROP TABLE IF EXISTS `t_room`;
 CREATE TABLE `t_room` (
