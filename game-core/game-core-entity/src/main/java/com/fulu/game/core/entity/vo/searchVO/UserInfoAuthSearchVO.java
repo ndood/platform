@@ -47,4 +47,5 @@ public class UserInfoAuthSearchVO {
     private String imId;
     private String imPsw;
     private Integer imSubstituteId;
+    private Integer techLevelId;
 }
