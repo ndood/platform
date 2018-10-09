@@ -22,6 +22,7 @@
         <result column="about" property="about"/>
         <result column="open_substitute_im" property="openSubstituteIm"/>
         <result column="virtual_fans_count" property="virtualFansCount"/>
+        <result column="tech_level_id" property="techLevelId"/>
     </resultMap>
 
     <resultMap id="UserInfoAuthResultVOMap" type="com.fulu.game.core.entity.vo.UserInfoAuthVO"
@@ -38,10 +39,13 @@
         <result column="im_substitute_id" property="imSubstituteId"/>
         <result column="im_id" property="imId"/>
         <result column="im_psw" property="imPsw"/>
+        <result column="charm" property="charm"/>
+        <result column="login_time" property="loginTime"/>
+        <result column="source_id" property="sourceId"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,auto_say_hello,sort,create_time,update_time,im_substitute_id,interests,profession,about,virtual_fans_count,open_substitute_im
+        id,user_id,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,auto_say_hello,vest_flag,sort,create_time,update_time,im_substitute_id,interests,profession,about,open_substitute_im,tech_level_id,virtual_fans_count,open_substitute_im
     </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="UserInfoAuthResultMap">
@@ -101,6 +105,9 @@
             <if test="about != null">
                 and about = #{about}
             </if>
+            <if test="techLevelId != null">
+                and tech_level_id = #{techLevelId}
+            </if>
             <if test="isRejectSubmit != null">
                 and is_reject_submit = #{isRejectSubmit}
             </if>
@@ -143,6 +150,8 @@
         u.gender,
         u.age,
         u.nickname,
+        u.login_time,
+        u.charm,
         IFNULL( sum( o.total_money ), 0 ) AS money_sum,
         count( o.service_user_id ) AS order_count,
         IFNULL( sum( expendOrder.total_money ), 0 ) AS expend_money_sum,
@@ -198,6 +207,9 @@
             <if test="openSubstituteIm != null">
                 and open_substitute_im = #{openSubstituteIm}
             </if>
+            <if test="sourceId != null">
+                and uia.source_id = #{sourceId}
+            </if>
         </where>
         GROUP BY
         uia.id
@@ -212,9 +224,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.UserInfoAuth">
         insert into
-        t_user_info_auth (user_id,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,auto_say_hello,vest_flag,sort,create_time,update_time,interests,profession,about,virtual_fans_count,open_substitute_im)
+        t_user_info_auth (user_id,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,auto_say_hello,vest_flag,sort,create_time,update_time,interests,profession,about,im_substitute_id,virtual_fans_count,open_substitute_im,tech_level_id)
         values
-        (#{userId},#{qq},#{wechat},#{isRejectSubmit},#{mainPicUrl},#{pushTimeInterval},#{allowExport},#{autoSayHello},#{vestFlag},#{sort},#{createTime},#{updateTime},#{interests},#{profession},#{about},#{virtualFansCount},#{openSubstituteIm})
+        (#{userId},#{qq},#{wechat},#{isRejectSubmit},#{mainPicUrl},#{pushTimeInterval},#{allowExport},#{autoSayHello},#{vestFlag},#{sort},#{createTime},#{updateTime},#{interests},#{profession},#{about},#{imSubstituteId},#{virtualFansCount},#{openSubstituteIm},#{techLevelId})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.UserInfoAuth">
@@ -267,6 +279,9 @@
             </if>
             <if test="about != null">
                 about = #{about},
+            </if>
+            <if test="techLevelId != null">
+                tech_level_id = #{techLevelId},
             </if>
             <if test="virtualFansCount != null">
                 virtual_fans_count = #{virtualFansCount},
@@ -332,6 +347,9 @@
             </if>
             <if test="about != null">
                 about = #{about},
+            </if>
+            <if test="techLevelId != null">
+                tech_level_id = #{techLevelId},
             </if>
             <if test="virtualFansCount != null">
                 virtual_fans_count = #{virtualFansCount},

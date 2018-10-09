@@ -121,4 +121,8 @@ public class GenIdUtil {
         return UUID.randomUUID().toString().replace("-", "");
     }
 
+    public static String get7RandomNumber() {
+        return null;
+    }
+
 }

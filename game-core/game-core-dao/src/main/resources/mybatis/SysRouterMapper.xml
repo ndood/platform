@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.SysRouterDao">
+    <resultMap id="SysRouterResultMap" type="com.fulu.game.core.entity.SysRouter">
+        <id column="id" property="id"/>
+        <result column="pid" property="pid"/>
+        <result column="type" property="type"/>
+        <result column="path" property="path"/>
+        <result column="component" property="component"/>
+        <result column="name" property="name"/>
+        <result column="iconCls" property="iconcls"/>
+        <result column="hidden" property="hidden"/>
+        <result column="sort" property="sort"/>
+        <result column="operator_id" property="operatorId"/>
+        <result column="operator_name" property="operatorName"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="is_del" property="isDel"/>
+    </resultMap>
+
+    <resultMap id="SysRouterResultVOMap" type="com.fulu.game.core.entity.vo.SysRouterVO" extends="SysRouterResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,pid,type,path,component,name,iconCls,hidden,sort,operator_id,operator_name,create_time,update_time,is_del    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="SysRouterResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_sys_router
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="SysRouterResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_sys_router
+        where is_del = 0
+    </select>
+
+    <select id="findByParameter" resultMap="SysRouterResultMap"
+            parameterType="com.fulu.game.core.entity.vo.SysRouterVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_sys_router
+        <where>
+            <if test="pid != null">
+                and pid = #{pid}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="path != null">
+                and path = #{path}
+            </if>
+            <if test="component != null">
+                and component = #{component}
+            </if>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="iconcls != null">
+                and iconCls = #{iconcls}
+            </if>
+            <if test="hidden != null">
+                and hidden = #{hidden}
+            </if>
+            <if test="sort != null">
+                and sort = #{sort}
+            </if>
+            <if test="operatorId != null">
+                and operator_id = #{operatorId}
+            </if>
+            <if test="operatorName != null">
+                and operator_name = #{operatorName}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="isDel != null">
+                and is_del = #{isDel}
+            </if>
+            <if test="id != null">
+                and id != #{id}
+            </if>
+        </where>
+    </select>
+
+    <select id="findByRoleId" resultMap="SysRouterResultMap">
+        select sysRouter.* from t_role_router roleRouter
+        LEFT JOIN t_sys_router sysRouter
+        on roleRouter.router_id = sysRouter.pid
+        where roleRouter.role_id = #{0}
+    </select>
+
+    <select id="findSysRouterListByAdminId" resultMap="SysRouterResultMap">
+        select sysRouter.* from t_admin_role adminRole
+        LEFT JOIN t_role_router roleRouter
+        on adminRole .role_id = roleRouter.role_id
+        LEFT JOIN t_sys_router sysRouter
+        on roleRouter.router_id = sysRouter.id
+        where adminRole.admin_id = #{0} and
+        sysRouter.type = 1 and
+        sysRouter.is_del = 0
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_sys_router
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.SysRouter">
+        insert into
+        t_sys_router (pid,type,path,component,name,iconCls,hidden,sort,operator_id,operator_name,create_time,update_time,is_del)
+        values
+        (#{pid},#{type},#{path},#{component},#{name},#{iconcls},#{hidden},#{sort},#{operatorId},#{operatorName},#{createTime},#{updateTime},#{isDel})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.SysRouter">
+        update t_sys_router
+        <set>
+
+            <if test="pid != null">
+                pid = #{pid},
+            </if>
+
+            <if test="type != null">
+                type = #{type},
+            </if>
+
+            <if test="path != null">
+                path = #{path},
+            </if>
+
+            <if test="component != null">
+                component = #{component},
+            </if>
+
+            <if test="name != null">
+                name = #{name},
+            </if>
+
+            <if test="iconcls != null">
+                iconCls = #{iconcls},
+            </if>
+
+            <if test="hidden != null">
+                hidden = #{hidden},
+            </if>
+
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+
+            <if test="operatorId != null">
+                operator_id = #{operatorId},
+            </if>
+
+            <if test="operatorName != null">
+                operator_name = #{operatorName},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+
+            <if test="isDel != null">
+                is_del = #{isDel},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

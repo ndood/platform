@@ -369,6 +369,17 @@ COMMENT '图片/视频高度' after `width`;
 ALTER TABLE `t_dynamic_file` ADD COLUMN `duration` int(11) DEFAULT '0'
 COMMENT '视频时长（单位秒）' after `height`;
 
+-- 添加用户职业表
+create table t_user_profession
+(
+   id                   int(11) not null auto_increment,
+   name                 varchar(32) comment '职业名称',
+   sort                 int(11) comment '排序号',
+   create_time          datetime comment '创建时间',
+   update_time          datetime comment '修改时间',
+   is_del               tinyint(1) comment '删除标志（1：删除；0：未删除）',
+   primary key (id)
+)comment '用户职业表';
 
 drop table if exists t_dynamic_push_msg;
 
@@ -597,9 +608,12 @@ CREATE TABLE `t_official_activity` (
   `remark` varchar(255) NOT NULL COMMENT '备注',
   `create_time` datetime NOT NULL,
   `update_time` datetime DEFAULT NULL,
+  `admin_id` int(11) DEFAULT NULL,
+  `admin_name` varchar(255) DEFAULT NULL,
   `is_del` tinyint(1) DEFAULT NULL COMMENT '是否逻辑删除(1是,0否)',
   PRIMARY KEY (`id`)
-)  COMMENT='官方公告';
+)  COMMENT='官方活动';
+
 
 
 DROP TABLE IF EXISTS `t_activity_user_award`;

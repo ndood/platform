@@ -1,8 +1,6 @@
 package com.fulu.game.core.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.*;
@@ -13,13 +11,13 @@ import com.fulu.game.common.properties.Config;
 import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.common.utils.MailUtil;
+import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OrderEventVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
 import com.fulu.game.core.service.impl.push.IBusinessPushService;
-import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +25,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.async.DeferredResult;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.fulu.game.common.enums.OrderStatusEnum.NON_PAYMENT;
 
@@ -314,6 +309,14 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(),24*60);
         //推送通知
         getMinAppPushService().start(order);
+        //如果是分期乐订单，短信通知老板
+        //todo gzc 下一版本会通过平台字段区分订单类型
+        if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
+            User user = userService.findById(order.getUserId());
+            if (user != null) {
+                SMSUtil.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.START_SERVER_ORDER.getMsg());
+            }
+        }
         return order.getOrderNo();
     }
 
@@ -448,6 +451,14 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
         //推送通知
         getMinAppPushService().rejectConsult(order);
+        //如果是分期乐订单，短信通知老板
+        //todo gzc 下一版本会通过平台字段区分订单类型
+        if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
+            User user = userService.findById(order.getUserId());
+            if (user != null) {
+                SMSUtil.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.CONSULT_REJECT.getMsg());
+            }
+        }
         return order.getOrderNo();
     }
 
@@ -461,7 +472,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
     @UserScore(type = UserScoreEnum.CONSULT)
     public String consultAgreeOrder(Order order, int orderEventId , Integer userId) {
         log.info("陪玩师同意协商处理订单orderNo:{}", order.getOrderNo());
-
+        
         OrderEvent orderEvent = orderEventService.findById(orderEventId);
         if (orderEvent == null || !order.getOrderNo().equals(orderEvent.getOrderNo())) {
             throw new OrderException(order.getOrderNo(), "拒绝协商订单不匹配!");
@@ -488,6 +499,15 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         //推送通知同意协商
         getMinAppPushService().agreeConsult(order);
+
+        //如果是分期乐订单，短信通知老板
+        //todo gzc 下一版本会通过平台字段区分订单类型
+        if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
+            User user = userService.findById(order.getUserId());
+            if (user != null) {
+                SMSUtil.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.CONSULT_APPEAL.getMsg());
+            }
+        }
         return order.getOrderNo();
     }
 
@@ -549,13 +569,20 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
             //TODO 退款
             orderRefund(order, order.getActualMoney());
         }
-        
+
         //发送邮件
-        MailUtil.sendMail(configProperties.getOrdermail().getAddress(),configProperties.getOrdermail().getPassword(),"陪玩师取消了订单："+order.getOrderNo(),"陪玩师取消了订单，订单号"+order.getOrderNo(),new String[]{configProperties.getOrdermail().getAddress()});
+        MailUtil.sendMail(configProperties.getOrdermail().getAddress(), configProperties.getOrdermail().getPassword(), "陪玩师取消了订单：" + order.getOrderNo(), "陪玩师取消了订单，订单号" + order.getOrderNo(), new String[]{configProperties.getOrdermail().getTargetAddress()});
+        //如果是分期乐订单，短信通知老板
+        //todo gzc 下一版本会通过平台字段区分订单类型
+        if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
+            User user = userService.findById(order.getUserId());
+            if (user != null) {
+                SMSUtil.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.SERVER_CANCEL_ORDER.getMsg());
+            }
+        }
         return orderConvertVo(order);
     }
-    
-    
+
 
     /**
      * 用户取消订单
@@ -624,6 +651,14 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
             getMinAppPushService().appealByUser(order);
         } else {
             getMinAppPushService().appealByServer(order);
+            //如果是分期乐订单，短信通知老板
+            //todo gzc 下一版本会通过平台字段区分订单类型
+            if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
+                User bossUser = userService.findById(order.getUserId());
+                if (bossUser != null) {
+                    SMSUtil.sendLeaveInformNoUrl(bossUser.getMobile(), SMSContentEnum.USER_APPEAL_ORDER.getMsg());
+                }
+            }
         }
 
         userAutoReceiveOrderService.addOrderDisputeNum(order.getServiceUserId(), order.getCategoryId());
@@ -635,15 +670,11 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
     /**
      * 陪玩师提交验收订单
      *
-     * @param orderNo
      * @return
      */
     @Override
-    public String serverAcceptanceOrder(String orderNo, String remark, String[] fileUrl) {
-        log.info("打手提交验收订单orderNo:{}", orderNo);
-        Order order = orderService.findByOrderNo(orderNo);
-        userService.isCurrentUser(order.getServiceUserId());
-        User user = userService.getCurrentUser();
+    public String serverAcceptanceOrder(Order order, String remark, User user,String[] fileUrl) {
+        log.info("打手提交验收订单order:{}", order);
         if (!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有陪玩中的订单才能验收!");
         }
@@ -656,7 +687,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         orderEventService.createCheckEvent(order, user, remark, fileUrl);
         //推送通知
         getMinAppPushService().checkOrder(order);
-        return orderNo;
+        return order.getOrderNo();
     }
 
     /**

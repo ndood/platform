@@ -162,18 +162,33 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
 
     @Override
     public PageInfo<CashDrawsVO> list(CashDrawsVO cashDrawsVO, Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(pageNum, pageSize, "t1.create_time DESC , FIELD(t1.cash_status, 0, 2, 1) , t1.server_auth DESC");
+        if (pageNum != null && pageSize != null) {
+            PageHelper.startPage(pageNum, pageSize, "t1.create_time DESC , FIELD(t1.cash_status, 0, 2, 1) , t1.server_auth DESC");
+        } else {
+            PageHelper.orderBy("t1.create_time DESC");
+        }
+
         List<CashDrawsVO> list = cashDrawsDao.findDetailByParameter(cashDrawsVO);
         if (CollectionUtils.isNotEmpty(list)) {
             for (CashDrawsVO meta : list) {
                 CashDrawsVO paramVO = new CashDrawsVO();
                 paramVO.setUserId(meta.getUserId());
                 BigDecimal unCashDrawsSum = cashDrawsDao.findUnCashDrawsSum(paramVO);
+
+                Integer unDrawCharm = cashDrawsDao.findUnDrawCharm(paramVO) == null ? 0 : cashDrawsDao.findUnDrawCharm(paramVO);
+                User user = userService.findById(meta.getUserId());
+                if (user == null) {
+                    continue;
+                }
+
+                Integer charm = (user.getCharm() == null ? 0 : user.getCharm()) - (user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum()) + unDrawCharm;
+                meta.setCharmMoney(new BigDecimal(charm)
+                        .multiply(Constant.CHARM_TO_MONEY_RATE)
+                        .setScale(2, BigDecimal.ROUND_HALF_DOWN));
                 meta.setBalance(meta.getBalance().add(unCashDrawsSum == null ? BigDecimal.ZERO : unCashDrawsSum));
             }
         }
-
-        this.charmToMoney(list);
+//        this.charmToMoney(list);
 
         //添加md5加密签名
         if (CollectionUtils.isNotEmpty(list)) {
@@ -318,20 +333,6 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
                 cashDraws.setCashStatus(CashProcessStatusEnum.DONE.getType());
                 cashDraws.setProcessTime(new Date());
                 cashDrawsDao.update(cashDraws);
-
-                //记录虚拟物品流水表
-                VirtualDetails details = new VirtualDetails();
-                details.setUserId(user.getId());
-                details.setRelevantNo(cashDraws.getCashNo());
-                Integer totalCharm = user.getCharm() == null ? 0 : user.getCharm();
-                Integer charmDrawSum = user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum();
-                Integer leftCharm = totalCharm - charmDrawSum;
-                details.setSum(leftCharm);
-                details.setMoney(cashDraws.getCharm());
-                details.setType(VirtualDetailsTypeEnum.CHARM.getType());
-                details.setRemark("魅力值提现");
-                details.setCreateTime(DateUtil.date());
-                virtualDetailsService.create(details);
                 return cashDraws;
             } catch (WxPayException e) {
                 e.printStackTrace();

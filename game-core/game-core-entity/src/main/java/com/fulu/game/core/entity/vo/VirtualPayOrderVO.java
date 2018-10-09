@@ -25,7 +25,7 @@ public class VirtualPayOrderVO extends VirtualPayOrder {
     /**
      * 申请者手机号
      */
-    @Excel(name = "手机号", orderNum = "5", width = 15)
+    @Excel(name = "手机号", orderNum = "5", replace = {"_null"}, width = 15)
     private String mobile;
 
     /**
@@ -43,4 +43,9 @@ public class VirtualPayOrderVO extends VirtualPayOrder {
      * 订单支付成功结束时间
      */
     private Date payEndTime;
+
+    /**
+     * 充值路径(字符串)
+     */
+    private String payPathStr;
 }

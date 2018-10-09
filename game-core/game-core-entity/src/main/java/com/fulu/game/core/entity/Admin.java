@@ -41,4 +41,13 @@ public class Admin implements Serializable {
 	//修改时间
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date updateTime;
+
+	/** 角色id */
+	private Integer roleId;
+
+	/** 角色名称 */
+	private String roleName;
+
+	/** 超管指定名字 */
+	private String adminName;
 }

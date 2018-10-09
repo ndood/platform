@@ -1,6 +1,7 @@
 package com.fulu.game.core.entity.payment.model;
 
 import com.fulu.game.common.enums.PayBusinessEnum;
+import com.fulu.game.thirdparty.fenqile.entity.FenqileOrderNotice;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
@@ -35,6 +36,10 @@ public class PayCallbackModel {
      * 微信回调参数
      */
     private String wechatXmlResult;
+    /**
+     * 分期乐回调参数
+     */
+    private FenqileOrderNotice fenqileOrderNotice;
 
 
 
@@ -45,6 +50,7 @@ public class PayCallbackModel {
         setPayBusinessEnum(builder.payBusinessEnum);
         setAliPayParameterMap(builder.aliPayParameterMap);
         setWechatXmlResult(builder.wechatXmlResult);
+        setFenqileOrderNotice(builder.fenqileOrderNotice);
     }
 
 
@@ -60,6 +66,7 @@ public class PayCallbackModel {
         private PayBusinessEnum payBusinessEnum;
         private Map<String, String> aliPayParameterMap;
         private String wechatXmlResult;
+        private FenqileOrderNotice fenqileOrderNotice;
 
         private Builder(Integer payment,PayBusinessEnum payBusinessEnum) {
             this.payment = payment;
@@ -80,6 +87,11 @@ public class PayCallbackModel {
 
         public Builder wechatXmlResult(String val) {
             wechatXmlResult = val;
+            return this;
+        }
+
+        public Builder fenqileOrderNotice(FenqileOrderNotice val) {
+            fenqileOrderNotice = val;
             return this;
         }
 

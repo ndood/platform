@@ -34,4 +34,6 @@ public class UserInfoAuthTO extends UserInfoAuth {
     private BigDecimal scoreAvg;
 
     private String privatePicStr;
+    /** 陪玩师技能所属等级id */
+    private Integer techLevelId;
 }

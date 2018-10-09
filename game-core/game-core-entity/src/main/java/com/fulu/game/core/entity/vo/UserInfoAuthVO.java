@@ -1,6 +1,7 @@
 package com.fulu.game.core.entity.vo;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fulu.game.common.enums.UserInfoAuthStatusEnum;
 import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.UserInfoAuthFile;
@@ -9,6 +10,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -105,4 +107,16 @@ public class UserInfoAuthVO extends UserInfoAuth {
     private BigDecimal chargeBalance;
 
     private List<PicGroupVO> groupList = new ArrayList<>();
+
+    List<UserTechAuthVO> userTechAuthVOList;
+
+    //魅力值
+    private Integer charm;
+
+    // 登录时间
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date loginTime;
+    //渠道来源id
+    private Integer sourceId;
+
 }

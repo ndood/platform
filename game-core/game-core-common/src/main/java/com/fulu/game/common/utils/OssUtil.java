@@ -125,11 +125,18 @@ public class OssUtil {
         if(fileUrl==null){
             return;
         }
+        List<String> deleteUrls = new ArrayList<>();
+        // 过滤掉非临时文件
+        for(String url : fileUrl){
+           if(url.contains("temp/")){
+               deleteUrls.add(url);
+           }
+        }
         String endpoint = configProperties.getOss().getEndpoint();
         String bucketName = configProperties.getOss().getBucketName();
         OSSClient ossClient = new OSSClient(endpoint, configProperties.getOss().getAccessKeyId(), configProperties.getOss().getAccessKeySecret());
         try {
-            DeleteObjectsResult deleteObjectsResult = ossClient.deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(formatOssKey(fileUrl)));
+            DeleteObjectsResult deleteObjectsResult = ossClient.deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(formatOssKey((String[])deleteUrls.toArray())));
             log.info("oss删除文件:{}", deleteObjectsResult.getDeletedObjects());
         } catch (Exception e) {
             log.error("oss删除异常", e);

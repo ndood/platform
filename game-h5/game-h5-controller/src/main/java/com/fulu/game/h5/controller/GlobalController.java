@@ -8,7 +8,6 @@ import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.fulu.game.h5.controller.BaseController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +35,7 @@ public class GlobalController extends BaseController {
     private UserService userService;
 
 
+
     @PostMapping(value = "upload")
     public Result upload(@RequestParam("file") MultipartFile file, String name) throws Exception {
         String fileName = ossUtil.uploadFile(file.getInputStream(), file.getOriginalFilename());
@@ -50,4 +50,6 @@ public class GlobalController extends BaseController {
         redisOpenService.set(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey), user.getId() + "", Constant.TIME_HOUR_FIVE);
         return Result.success().data(sessionkey);
     }
+
+
 }

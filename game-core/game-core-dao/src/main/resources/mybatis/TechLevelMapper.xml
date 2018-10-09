@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.TechLevelDao">
+    <resultMap id="TechLevelResultMap" type="com.fulu.game.core.entity.TechLevel">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="sort" property="sort"/>
+        <result column="operator_id" property="operatorId"/>
+        <result column="operator_name" property="operatorName"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="is_del" property="isDel"/>
+    </resultMap>
+
+    <resultMap id="TechLevelResultVOMap" type="com.fulu.game.core.entity.vo.TechLevelVO" extends="TechLevelResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,sort,operator_id,operator_name,create_time,update_time,is_del    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="TechLevelResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_tech_level
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="TechLevelResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_tech_level
+    </select>
+
+    <select id="findByParameter" resultMap="TechLevelResultMap"
+            parameterType="com.fulu.game.core.entity.vo.TechLevelVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_tech_level
+        <where>
+            <if test="name != null">
+                and name = #{name}
+            </if>
+            <if test="sort != null">
+                and sort = #{sort}
+            </if>
+            <if test="operatorId != null">
+                and operator_id = #{operatorId}
+            </if>
+            <if test="operatorName != null">
+                and operator_name = #{operatorName}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="isDel != null">
+                and is_del = #{isDel}
+            </if>
+            <if test="id != null">
+                and id != #{id}
+            </if>
+        </where>
+        order by sort desc
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_tech_level
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.TechLevel">
+        insert into
+        t_tech_level (name,sort,operator_id,operator_name,create_time,update_time,is_del)
+        values
+        (#{name},#{sort},#{operatorId},#{operatorName},#{createTime},#{updateTime},#{isDel})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.TechLevel">
+        update t_tech_level
+        <set>
+
+            <if test="name != null">
+                name = #{name},
+            </if>
+
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+
+            <if test="operatorId != null">
+                operator_id = #{operatorId},
+            </if>
+
+            <if test="operatorName != null">
+                operator_name = #{operatorName},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+
+            <if test="isDel != null">
+                is_del = #{isDel},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

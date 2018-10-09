@@ -26,7 +26,6 @@ public interface UserAutoReceiveOrderService extends ICommonService<UserAutoRece
     UserAutoReceiveOrder addAutoReceivingTech(Integer techAuthId, String remark);
 
 
-
     UserAutoReceiveOrder delAutoReceivingTech(Integer techAuthId);
 
 
@@ -82,14 +81,6 @@ public interface UserAutoReceiveOrderService extends ICommonService<UserAutoRece
     PageInfo<UserAutoReceiveOrderVO> autoReceiveUserInfoAuthList(Integer pageNum,
                                                                  Integer pageSize,
                                                                  UserInfoAuthSearchVO userInfoAuthSearchVO);
-
-    /**
-     * 自动接单陪玩师列表
-     *
-     * @param userInfoAuthSearchVO 查询VO
-     * @return 自动接单陪玩师VO列表
-     */
-    List<UserAutoReceiveOrderVO> autoReceiveUserInfoAuthListByVO(UserInfoAuthSearchVO userInfoAuthSearchVO);
 
     List<String> findAllAutoOrderUserHead();
 

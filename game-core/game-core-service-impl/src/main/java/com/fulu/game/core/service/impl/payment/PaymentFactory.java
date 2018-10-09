@@ -18,6 +18,8 @@ public class PaymentFactory {
     private BalancePaymentComponent balancePaymentComponent;
     @Autowired
     private WeChatPayPaymentComponent weChatPayPaymentComponent;
+    @Autowired
+    private FenqilePaymentComponent fenqilePaymentComponent;
 
     public PaymentComponent build(Integer payment) {
         PaymentEnum paymentEnum = PaymentEnum.getEnumByType(payment);
@@ -28,6 +30,8 @@ public class PaymentFactory {
                 return weChatPayPaymentComponent;
             case BALANCE_PAY:
                 return balancePaymentComponent;
+            case FENQILE_PAY:
+                return fenqilePaymentComponent;
             default:
                 throw new PayException(PayException.ExceptionCode.PAYMENT_UN_MATCH);
         }

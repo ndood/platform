@@ -44,6 +44,8 @@ public class Config {
 
     private AlipayPay alipayPay = new AlipayPay();
 
+    private Fenqile fenqile = new Fenqile();
+
     @Data
     public static class Evn {
         private String prefix;
@@ -118,6 +120,7 @@ public class Config {
     public static class Ordermail {
         private String address;
         private String password;
+        private String targetAddress;
     }
 
     @Data
@@ -144,4 +147,16 @@ public class Config {
         private String checkPayUrl;
     }
 
+
+    @Data
+    public static class Fenqile{
+        private String sellerId;
+        private String clientId;
+        private String clientSecret;
+        private String version;
+        private String partnerId;
+        private String partnerKey;
+        private String orderNoticeUrl;
+        private String orderDetailsUrl;
+    }
 }

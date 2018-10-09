@@ -1,22 +1,18 @@
 package com.fulu.game.schedule.service.impl;
 
-import com.fulu.game.common.enums.OrderEventTypeEnum;
-import com.fulu.game.common.enums.OrderStatusEnum;
-import com.fulu.game.common.enums.OrderTypeEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
+import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.entity.OrderEvent;
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
-import com.fulu.game.core.service.OrderDealService;
-import com.fulu.game.core.service.OrderEventService;
-import com.fulu.game.core.service.OrderService;
-import com.fulu.game.core.service.OrderStatusDetailsService;
+import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
-import com.fulu.game.h5.service.impl.H5OrderShareProfitServiceImpl;
 import com.fulu.game.play.service.impl.PlayOrderShareProfitServiceImpl;
 import com.fulu.game.point.service.impl.PointOrderShareProfitServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +46,8 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
     private SchedulePushServiceImpl schedulePushService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private UserService userService;
 
     @Override
     protected void dealOrderAfterPay(Order order) {
@@ -58,7 +56,7 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
 
     @Override
     protected void shareProfit(Order order) {
-        if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
+        if (OrderTypeEnum.PLAY.getType().equals(order.getType())) {
             //陪玩订单
             pointOrderShareProfitService.shareProfit(order);
         } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
@@ -67,8 +65,8 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
         }
         //todo 分润逻辑需要按照支付方式来而不是订单类型
         else {
-            log.error("订单类型不匹配:{}",order);
-            throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING,order.getOrderNo());
+            log.error("订单类型不匹配:{}", order);
+            throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING, order.getOrderNo());
         }
     }
 
@@ -77,7 +75,7 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
         if (order == null) {
             throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST, "");
         }
-        if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
+        if (OrderTypeEnum.PLAY.getType().equals(order.getType())) {
             playOrderShareProfitService.orderRefund(order, refundMoney);
             //陪玩订单
         } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
@@ -86,8 +84,8 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
         }
         //todo 退款逻辑需要按照支付方式来
         else {
-            log.error("订单类型不匹配:{}",order);
-            throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING,order.getOrderNo());
+            log.error("订单类型不匹配:{}", order);
+            throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING, order.getOrderNo());
         }
 
 
@@ -144,6 +142,20 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
                 && !order.getStatus().equals(OrderStatusEnum.ALREADY_RECEIVING.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有等待陪玩和未支付的订单才能取消!");
         }
+
+        //如果是分期乐订单，短信通知老板
+        //todo gzc 下一版本会通过平台字段区分订单类型
+        if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
+            User user = userService.findById(order.getUserId());
+            if (user != null) {
+                if (OrderStatusEnum.WAIT_SERVICE.getStatus().equals(order.getStatus())) {
+                    SMSUtil.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.NOT_ACCEPT_ORDER.getMsg());
+                } else if (OrderStatusEnum.ALREADY_RECEIVING.getStatus().equals(order.getStatus())) {
+                    SMSUtil.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.NOT_START_ORDER.getMsg());
+                }
+            }
+        }
+
         order.setUpdateTime(new Date());
         order.setCompleteTime(new Date());
         // 全额退款用户

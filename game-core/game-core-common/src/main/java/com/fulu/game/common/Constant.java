@@ -172,6 +172,11 @@ public interface Constant {
     String SERVICE_USER_ACCEPT_ORDER = "1";
 
     /**
+     * 用户订单已付款
+     */
+    String SERVICE_USER_PAY_ORDER = "2";
+
+    /**
      * 分期乐订单--已对账
      */
     Integer IS_RECON = 1;
@@ -205,4 +210,7 @@ public interface Constant {
     Map<String, Object> RSA_KEY_MAP = new HashMap<>();
 
     Map<String, Object> RSA_MAP = new HashMap<>();
+
+    /** 超级管理员用户名 */
+    String ADMIN_USERNAME = "admin";
 }

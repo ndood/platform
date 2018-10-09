@@ -29,7 +29,7 @@ public class FenqileOrder implements Serializable {
      * 分期乐支付编号
      */
     @Excel(name = "分期乐支付编号", orderNum = "2", width = 20)
-    private String paymentNo;
+    private String fenqileNo;
 
     //备注
     private String remark;

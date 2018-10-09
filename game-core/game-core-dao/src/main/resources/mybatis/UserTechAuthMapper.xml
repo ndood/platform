@@ -23,6 +23,8 @@
         <result column="is_main" property="isMain"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
+        <result column="tech_level_id" property="techLevelId"/>
+        <result column="tech_level_name" property="techLevelName"/>
     </resultMap>
 
     <resultMap id="UserTechAuthResultVOMap" type="com.fulu.game.core.entity.vo.UserTechAuthVO"
@@ -112,7 +114,10 @@
 
 
     <select id="search" resultMap="UserTechAuthResultMap"  parameterType="com.fulu.game.core.entity.vo.searchVO.UserTechAuthSearchVO">
-        SELECT uta.* FROM t_user_tech_auth uta LEFT JOIN t_user u ON uta.user_id = u.id
+        SELECT uta.*,uia.tech_level_id, tl.name as tech_level_name FROM t_user_tech_auth uta
+        LEFT JOIN t_user u ON uta.user_id = u.id
+        LEFT JOIN t_user_info_auth uia ON uta.user_id =  uia.user_id
+        LEFT JOIN t_tech_level tl ON uia.tech_level_id =  tl.id
         <where>
             <if test="mobile != null">
                 and uta.mobile = #{mobile}
@@ -131,6 +136,15 @@
             </if>
             <if test="status != null">
                 and uta.status = #{status}
+            </if>
+            <if test="userId != null">
+                and uta.user_id = #{userId}
+            </if>
+            <if test="isActivate != null">
+                and uta.is_activate = #{isActivate}
+            </if>
+            <if test="techLevelId != null">
+                and tl.id = #{techLevelId}
             </if>
         </where>
     </select>
@@ -250,7 +264,6 @@
             <if test="updateTime != null">
                 update_time = #{updateTime},
             </if>
-
         </set>
         <where>
             id = #{id}

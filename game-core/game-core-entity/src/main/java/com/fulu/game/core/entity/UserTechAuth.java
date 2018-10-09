@@ -68,5 +68,9 @@ public class UserTechAuth implements Serializable {
     private Date updateTime;
 
 
+    /** 技能等级id */
+    private Integer techLevelId;
 
+    /** 技能等级名称 */
+    private String techLevelName;
 }

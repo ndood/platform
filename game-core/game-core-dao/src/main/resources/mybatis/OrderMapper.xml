@@ -187,18 +187,19 @@
 
     <select id="fenqileOrderList" resultMap="OrderDetailsVOMap">
         SELECT
-            o.*, cu.nickname AS userNickName,
-            pu.nickname AS serverNickName,
-            cu.head_portraits_url AS userHeadUrl,
-            pu.head_portraits_url AS serverHeadUrl,
-            op.product_id AS productId
+            t1.*, t2.nickname AS userNickName,
+            t3.nickname AS serverNickName,
+            t2.head_portraits_url AS userHeadUrl,
+            t3.head_portraits_url AS serverHeadUrl,
+            t4.product_id AS productId
         FROM
-            t_order o
-        LEFT JOIN t_user cu ON o.user_id = cu.id
-        LEFT JOIN t_user pu ON o.service_user_id = pu.id
-        LEFT JOIN t_order_product op ON o.order_no = op.order_no
+            t_fenqile_order t5
+        LEFT JOIN t_order t1 ON t1.order_no = t5.order_no
+        LEFT JOIN t_user t2 ON t1.user_id = t2.id
+        LEFT JOIN t_user t3 ON t1.service_user_id = t3.id
+        LEFT JOIN t_order_product t4 ON t1.order_no = t4.order_no
         WHERE
-            o.type = 3 and o.user_id = #{userId}
+            t1.user_id = #{userId}
     </select>
 
     <select id="countByParameter" resultType="java.lang.Integer" parameterType="com.fulu.game.core.entity.vo.OrderVO">
@@ -402,11 +403,16 @@
 
     <select id="list" resultMap="OrderResVOMap" parameterType="com.fulu.game.core.entity.vo.searchVO.OrderSearchVO">
         SELECT
-        t1.* , 
+        t1.* ,
         t2.agent_admin_id as agentAdminId,
         t2.agent_admin_name as agentAdminName,
         t2.remark as proRemark
-        FROM t_order t1 LEFT JOIN t_order_admin_remark t2 ON t2.order_id = t1.id
+        FROM t_order t1
+        INNER JOIN t_user t3 ON t3.id = t1.user_id
+        INNER JOIN t_user t4 ON t4.id = t1.service_user_id
+        LEFT JOIN t_regist_source rs1 ON t3.source_id = rs1.id
+        LEFT JOIN t_regist_source rs2 ON t4.source_id = rs2.id
+        LEFT JOIN t_order_admin_remark t2 ON t2.order_id = t1.id
         <where>
             <if test="type != null">
                 and t1.type = #{type}
@@ -443,6 +449,21 @@
                 <foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
                     #{item}
                 </foreach>
+            </if>
+
+            <if test="sourceName != null and chanType == 0">
+                and (rs1.name LIKE '%${sourceName}%' or rs2.name LIKE '%${sourceName}%')
+            </if>
+
+            <if test="sourceName != null and chanType == 1">
+                and rs1.name LIKE '%${sourceName}%'
+            </if>
+
+            <if test="sourceName != null and chanType == 2">
+                and rs2.name LIKE '%${sourceName}%'
+            </if>
+            <if test="payment != null">
+                and t1.payment = #{payment}
             </if>
         </where>
     </select>
@@ -629,19 +650,17 @@
 
     <select id="findDayReconOrders" resultType="com.fulu.game.core.entity.Order">
         SELECT
-        *
+        t2.*
         FROM
-        t_order
-        WHERE
-        type = 3
-        and status in
+        t_fenqile_order t1
+        LEFT JOIN t_order t2 ON t1.order_no = t2.order_no
+        WHERE status in
         <foreach collection="statusList" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
-        AND DATE_FORMAT(complete_time, '%Y-%m-%d') = CURDATE()
-        OR DATE_FORMAT(complete_time, '%Y-%m-%d') = date_sub(curdate(), INTERVAL 1 DAY);
+        AND (DATE_FORMAT(complete_time, '%Y-%m-%d') = CURDATE()
+        OR DATE_FORMAT(complete_time, '%Y-%m-%d') = date_sub(CURDATE(), INTERVAL 1 DAY));
     </select>
-
 
     <select id="getBannerOrderList" resultMap="OrderDetailsVOMap">
         SELECT
@@ -653,17 +672,17 @@
         FROM
         t_order o
         INNER JOIN t_category c on c.id = o.category_id
-        INNER JOIN t_order_product p on p.order_no = o.order_no 
+        INNER JOIN t_order_product p on p.order_no = o.order_no
         where
-            o.type = 1 and o.service_user_id = #{authUserId} and o.user_id = #{bossUserId} 
-            <if test="statusList != null">
-                and o.status in
-                <foreach collection="statusList" item="s" index="index" open="(" close=")" separator=",">
-                    #{s}
-                </foreach>
-            </if>
+        o.type = 1 and o.service_user_id = #{authUserId} and o.user_id = #{bossUserId}
+        <if test="statusList != null">
+            and o.status in
+            <foreach collection="statusList" item="s" index="index" open="(" close=")" separator=",">
+                #{s}
+            </foreach>
+        </if>
         order by o.create_time limit 10
     </select>
-    
-    
+
+
 </mapper>

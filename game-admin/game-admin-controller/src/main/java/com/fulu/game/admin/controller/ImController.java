@@ -322,5 +322,21 @@ public class ImController extends BaseController {
         return Result.success().data(orderVO).msg("取消订单成功!");
     }
 
+
+    /**
+     * 陪玩师提交验收订单
+     *
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping(value = "/server/acceptance")
+    public Result serverAcceptanceOrder(@RequestParam(required = true) String orderNo,
+                                        String remark, Integer userId,
+                                        @RequestParam(required = false)String[] fileUrl) {
+        Order order = orderService.findByOrderNo(orderNo);
+        User user = userService.findById(userId);
+        playMiniAppOrderServiceImpl.serverAcceptanceOrder(order, remark, user,fileUrl);
+        return Result.success().data(orderNo).msg("提交订单验收成功!");
+    }
     
 }

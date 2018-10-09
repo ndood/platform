@@ -1,6 +1,5 @@
 package com.fulu.game.core.search.component;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.fulu.game.common.exception.SearchException;
 import com.fulu.game.common.properties.Config;
 import com.fulu.game.core.search.domain.Criteria;
@@ -8,8 +7,11 @@ import com.fulu.game.core.search.domain.ProductShowCaseDoc;
 import com.github.pagehelper.Page;
 import com.google.common.collect.Lists;
 import io.searchbox.client.JestClient;
+import io.searchbox.client.JestResult;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
+import io.searchbox.indices.CreateIndex;
+import io.searchbox.indices.mapping.PutMapping;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -64,7 +66,6 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
         List<Criteria> criterias = Lists.newArrayList(new Criteria("userId", userId));
         return search(criterias, ProductShowCaseDoc.class);
     }
-
 
     /**
      * 昵称查询
@@ -214,6 +215,29 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
         return searchShowCaseDoc( categoryId, gender, pageNum, pageSize, orderBy, null, null,type);
     }
 
+    /**
+     * Put映射
+     * @throws Exception
+     */
+    public void createIndexMapping() throws Exception {
+        String source = "{\"" + getIndexType() + "\":{\"properties\":{"
+                + "\"dan\":{\"type\":\"string\",\"index\":\"not_analyzed\"}"
+                + "}}}";
+        System.out.println(source);
+
+        PutMapping putMapping = new PutMapping.Builder(getIndexDB(), getIndexType(), source).build();
+        JestResult jr = jestClient.execute(putMapping);
+        System.out.println(jr.isSucceeded());
+    }
+
+    /**
+     * 创建索引
+     * @throws Exception
+     */
+    public void createIndex() throws Exception {
+        JestResult jr = jestClient.execute(new CreateIndex.Builder(getIndexDB()).build());
+        System.out.println(jr.isSucceeded());
+    }
 
     @Override
     protected String getIndexType() {

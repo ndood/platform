@@ -43,4 +43,9 @@ public class OrderResVO extends Order {
     private Integer agentAdminId;
     private String agentAdminName;
     private String proRemark;
+
+    /**
+     * 订单类型（字符串）
+     */
+    private String typeStr;
 }

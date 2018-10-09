@@ -42,6 +42,7 @@
         <result column="login_ip" property="loginIp"/>
         <result column="login_time" property="loginTime"/>
         <result column="server_score_avg" property="serverScoreAvg"/>
+        <result column="del_flag" property="delFlag"/>
     </resultMap>
 
     <resultMap id="UserResultVOMap" type="com.fulu.game.core.entity.vo.UserVO" extends="UserResultMap">
@@ -49,6 +50,10 @@
         <result column="source_name" property="sourceName"/>
         <result column="pay_sum" property="paySum"/>
         <result column="order_count" property="orderCount"/>
+        <result column="pay_unit_price" property="payUnitPrice"/>
+        <result column="income_sum" property="incomeSum"/>
+        <result column="service_order_count" property="serviceOrderCount"/>
+        <result column="income_unit_price" property="incomeUnitPrice"/>
     </resultMap>
 
     <resultMap id="ImUserMap" type="com.fulu.game.core.entity.ImUser">
@@ -171,6 +176,9 @@
             <if test="userScore != null">
                 and user_score = #{userScore}
             </if>
+            <if test="delFlag != null">
+                and del_flag = #{delFlag}
+            </if>
         </where>
     </select>
 
@@ -198,16 +206,31 @@
         SELECT
         u.*,
         rs.name AS source_name,
-        IFNULL(sum(o.actual_money),0) AS pay_sum,
-        count(o.user_id) AS order_count
+        IFNULL(o.total_money,0) AS pay_sum,
+        o.order_count,
+        IFNULL(o.total_money,0) / o.order_count as pay_unit_price,
+        IFNULL(oo.total_money,0) AS income_sum,
+        oo.order_count AS service_order_count,
+        IFNULL(oo.total_money,0) / oo.order_count as income_unit_price
         FROM
         t_user u
         LEFT JOIN t_regist_source rs ON u.source_id = rs.id
-        LEFT JOIN (SELECT user_id,actual_money FROM t_order WHERE status &gt;=500 AND status &lt;= 600) o ON
+        LEFT JOIN (
+        SELECT user_id,count(user_id) as order_count, IFNULL(sum(total_money),0) as total_money FROM t_order
+        WHERE status &gt;=500 AND status &lt;= 600
+        GROUP BY user_id
+        ) o ON
         u.id=o.user_id
+        LEFT JOIN (
+        SELECT service_user_id,count(service_user_id) as order_count, IFNULL(sum(total_money),0) as total_money FROM
+        t_order
+        WHERE status &gt;=500 AND status &lt;= 600
+        GROUP BY service_user_id
+        ) oo ON
+        u.id=oo.service_user_id
         <where>
-            <if test="id != null">
-                u.id = #{id}
+            <if test="userId != null">
+                u.id = #{userId}
             </if>
             <if test="mobile != null">
                 and u.mobile = #{mobile}
@@ -230,10 +253,108 @@
             <if test="endTime != null">
                 and u.login_time &lt;= #{endTime}
             </if>
+            <if test="gender != null">
+                and u.gender = #{gender}
+            </if>
         </where>
         GROUP BY u.id
     </select>
 
+    <select id="findServiceUserBySearch" parameterType="com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO"
+            resultType="com.fulu.game.core.entity.vo.UserVO">
+        SELECT
+        u.*, rs. NAME AS source_name,
+        IFNULL(o.total_money, 0) AS pay_sum,
+        o.order_count,
+        IFNULL(o.total_money, 0) / o.order_count AS pay_unit_price,
+        IFNULL(oo.total_money, 0) AS income_sum,
+        oo.order_count AS service_order_count,
+        IFNULL(oo.total_money, 0) / oo.order_count AS income_unit_price,
+        tuia.create_time AS register_time,
+        tuia.open_substitute_im,
+        tuia.vest_flag,
+        IF (isnull(t2.id), 0, 1) AS nigth_flag,
+        (
+        SELECT
+        count(*)
+        FROM
+        t_user_tech_auth
+        WHERE
+        user_id = u.id
+        AND STATUS = 1
+        ) AS tech_num
+        FROM
+        t_user u
+        LEFT JOIN t_regist_source rs ON u.source_id = rs.id
+        LEFT JOIN (
+        SELECT
+        user_id,
+        count(user_id) AS order_count,
+        IFNULL(sum(total_money), 0) AS total_money
+        FROM
+        t_order
+        WHERE
+        STATUS &gt;= 500
+        AND STATUS &lt;= 600
+        GROUP BY
+        user_id
+        ) o ON u.id = o.user_id
+        LEFT JOIN (
+        SELECT
+        service_user_id,
+        count(service_user_id) AS order_count,
+        IFNULL(sum(total_money), 0) AS total_money
+        FROM
+        t_order
+        WHERE
+        STATUS &gt;= 500
+        AND STATUS &lt;= 600
+        GROUP BY
+        service_user_id
+        ) oo ON u.id = oo.service_user_id
+        LEFT JOIN t_user_info_auth tuia ON u.id = tuia.user_id
+        LEFT JOIN t_user_night_info t2 ON u.id = t2.user_id
+        LEFT JOIN t_user_tech_auth t3 ON u.id = t3.user_id
+        <where>
+            <if test="userId != null">
+                u.id = #{userId}
+            </if>
+            <if test="mobile != null">
+                and u.mobile = #{mobile}
+            </if>
+            <if test="type != null">
+                and u.type = #{type}
+            </if>
+            <if test="nickname != null">
+                and u.nickname LIKE CONCAT('%', #{nickname},'%')
+            </if>
+            <if test="sourceName != null">
+                and rs.name LIKE CONCAT('%', #{sourceName},'%')
+            </if>
+            <if test="startTime != null">
+                and u.login_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and u.login_time &lt;= #{endTime}
+            </if>
+            <if test="startAge != null">
+                and u.age &gt;=#{startAge}
+            </if>
+            <if test="endAge != null">
+                and u.age &lt;= #{endAge}
+            </if>
+            <if test="userInfoAuth != null">
+                and u.user_info_auth = #{userInfoAuth}
+            </if>
+            <if test="gender != null">
+                and u.gender = #{gender}
+            </if>
+            <if test="imSubstituteId != null">
+                and tuia.im_substitute_id = #{imSubstituteId}
+            </if>
+        </where>
+        GROUP BY u.id
+    </select>
 
     <select id="countByParameter" resultType="java.lang.Integer" parameterType="com.fulu.game.core.entity.vo.UserVO">
         SELECT
@@ -300,9 +421,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.User">
         insert into
-        t_user (mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,register_type,user_info_auth,balance,charge_balance,virtual_balance,charm,charm_draw_sum,status,create_time,update_time,open_id,point_open_id,public_open_id,union_id,city,province,country,score_avg,server_score_avg,user_score,constellation,birth,im_id,im_psw,source_id,regist_ip,login_ip,login_time)
+        t_user (mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,register_type,user_info_auth,balance,charge_balance,virtual_balance,charm,charm_draw_sum,status,create_time,update_time,open_id,point_open_id,public_open_id,union_id,city,province,country,score_avg,server_score_avg,user_score,constellation,birth,im_id,im_psw,source_id,regist_ip,login_ip,login_time,del_flag)
         values
-        (#{mobile},#{nickname},#{gender},#{headPortraitsUrl},#{password},#{salt},#{realname},#{idcard},#{type},#{registerType},#{userInfoAuth},#{balance},#{virtualBalance},#{virtualBalance},#{charm},#{charmDrawSum},#{status},#{createTime},#{updateTime},#{openId},#{pointOpenId},#{publicOpenId},#{unionId},#{city},#{province},#{country},#{scoreAvg},#{serverScoreAvg},#{userScore},#{constellation},#{birth},#{imId},#{imPsw},#{sourceId},#{registIp},#{loginIp},#{loginTime})
+        (#{mobile},#{nickname},#{gender},#{headPortraitsUrl},#{password},#{salt},#{realname},#{idcard},#{type},#{registerType},#{userInfoAuth},#{balance},#{virtualBalance},#{virtualBalance},#{charm},#{charmDrawSum},#{status},#{createTime},#{updateTime},#{openId},#{pointOpenId},#{publicOpenId},#{unionId},#{city},#{province},#{country},#{scoreAvg},#{serverScoreAvg},#{userScore},#{constellation},#{birth},#{imId},#{imPsw},#{sourceId},#{registIp},#{loginIp},#{loginTime},#{delFlag})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.User">
@@ -441,6 +562,9 @@
             <if test="loginTime != null">
                 login_time = #{loginTime},
             </if>
+            <if test="delFlag != null">
+                del_flag = #{delFlag},
+            </if>
         </set>
         <where>
             id = #{id}
@@ -483,5 +607,5 @@
         where
         t1.id != #{currentAuthUserId} and (t1.id = #{searchWord} or t1.nickname like '%${searchWord}%')
     </select>
-    
+
 </mapper>

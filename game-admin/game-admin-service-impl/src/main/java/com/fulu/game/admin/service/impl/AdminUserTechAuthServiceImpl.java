@@ -24,8 +24,10 @@ import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,6 +68,10 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
     private AdminPushServiceImpl adminPushService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+
+    @Qualifier(value = "userInfoAuthServiceImpl")
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
 
     @Override
     public ICommonDao<UserTechAuth, Integer> getDao() {
@@ -173,35 +179,30 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
 
 
     @Override
-    public UserTechAuth pass(Integer id, BigDecimal maxPrice, String level) {
+    public UserTechAuth pass(Integer id, Integer techLevelId) {
         try {
             Admin admin = adminService.getCurrentUser();
-            log.info("技能审核通过:管理员操作:adminId:{};adminName:{};authInfoId:{};maxPrice:{};level:{}",admin.getId(),admin.getName(),id, maxPrice, level);
-        }catch (Exception e){
-            log.info("技能审核通过:用户好友操作:authInfoId:{}",id);
+            log.info("技能审核通过:管理员操作:adminId:{};adminName:{};authInfoId:{}", admin.getId(), admin.getName(), id);
+        } catch (Exception e) {
+            log.info("技能审核通过:用户好友操作:authInfoId:{}", id);
         }
         UserTechAuth userTechAuth = findById(id);
         if (userTechAuth.getStatus().equals(TechAuthStatusEnum.FREEZE.getType())) {
             throw new UserAuthException(UserAuthException.ExceptionCode.USER_TECH_FREEZE);
         }
-        Integer techStatus = userTechAuth.getStatus();
         userTechAuth.setStatus(TechAuthStatusEnum.NORMAL.getType());
-        //maxprice只可以改大，不可以该校
-        if(maxPrice != null && (userTechAuth.getMaxPrice() == null || maxPrice.compareTo(userTechAuth.getMaxPrice()) > 0)){
-            userTechAuth.setMaxPrice(maxPrice);
-        }
-        if(level != null){
-            userTechAuth.setLevel(level);
-        }
+        // 修改陪玩师技能等级
+        UserInfoAuth userInfoAuth = new UserInfoAuth();
+        userInfoAuth.setUserId(userTechAuth.getUserId());
+        userInfoAuth.setTechLevelId(techLevelId);
+        userInfoAuthService.updateByUserId(userInfoAuth);
+        // 修改用户技能认证信息
         update(userTechAuth);
-        // 当仅为修改最大价格或者修改技能等级时，不用发送推送信息，
-        if(techStatus == null || techStatus.intValue() != TechAuthStatusEnum.NORMAL.getType().intValue()){
-            //给用户推送通知
-            adminPushService.techAuthAuditSuccess(userTechAuth.getUserId());
+        //给用户推送通知
+        adminPushService.techAuthAuditSuccess(userTechAuth.getUserId());
 
-            //技能下商品置为正常
-            productService.recoverProductActivateByTechAuthId(userTechAuth.getId());
-        }
+        //技能下商品置为正常
+        productService.recoverProductActivateByTechAuthId(userTechAuth.getId());
         return userTechAuth;
     }
 
@@ -304,6 +305,20 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
         return userTechAuthDao.findByParameter(param);
     }
 
+    /** 获取用户所有技能认证信息列表 */
+    public List<UserTechAuthVO> findUserTechAuthList(Integer userId){
+        List<UserTechAuthVO> resultList = new ArrayList<>();
+        UserTechAuthVO param = new UserTechAuthVO();
+        param.setUserId(userId);
+        List<UserTechAuth> list = userTechAuthDao.findByParameter(param);
+        if(CollectionUtils.isNotEmpty(list)){
+            for(UserTechAuth tmp: list){
+                resultList.add(findTechAuthVOById(tmp.getId(), tmp.getCategoryId()));
+            }
+        }
+        return resultList;
+    }
+
 
     @Override
     public UserTechAuthVO findTechAuthVOById(Integer id, Integer categoryId) {
@@ -364,9 +379,14 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
         //段位和大区
         List<TechAttrVO> groupAttrs = findAllCategoryAttrSelected(userTechAuthVO.getCategoryId(), userTechAuthVO.getId(), Boolean.FALSE);
         userTechAuthVO.setGroupAttrs(groupAttrs);
-
+        // 设置用户技能对应商品信息 add by shijiaoyun begin
+        List<Product> productList = productService.findByTechId(userTechAuthVO.getId());
+        userTechAuthVO.setProductList(productList);
+        // 设置用户技能对应商品信息 add by shijiaoyun end
         return userTechAuthVO;
     }
+
+
 
     private List<TechAttrVO> findAllCategoryAttrSelected(int categoryId, Integer userTechAuthId, Boolean ignoreNotUser) {
         List<TechAttr> techAttrList = techAttrService.findByCategory(categoryId);

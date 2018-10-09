@@ -5,6 +5,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.entity.Product;
+import com.fulu.game.core.service.ConversionRateService;
 import com.fulu.game.core.service.ProductService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 
 @RestController
 @RequestMapping(value = "/api/v1/global")
@@ -26,6 +28,9 @@ public class GlobalController extends BaseController{
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
 
+
+    @Autowired
+    private ConversionRateService conversionRateService;
 
 
     @PostMapping(value = "upload")
@@ -68,6 +73,15 @@ public class GlobalController extends BaseController{
     public Result saveChatRoomVirtualCount(@RequestParam(required = true) String count){
         redisOpenService.set(RedisKeyEnum.CHAT_ROOM_VIRTUAL_COUNT.generateKey(),count,true);
         return Result.success().msg("设置聊天室虚拟人数成功!").data(count);
+    }
+    @PostMapping("/test/conversion")
+    public Result testConversion(){
+        try {
+            conversionRateService.statisticsConversionRate();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return Result.success().msg("手动测试转化率成功");
     }
 
 }

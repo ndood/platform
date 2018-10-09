@@ -131,7 +131,8 @@ public class Order implements Serializable {
             "手机号_1",
             "QQ号_2",
             "微信号_3",
-            " _0"}, width = 15)
+            " _0",
+            "_null"}, width = 15)
     private Integer contactType;
 
     //联系方式

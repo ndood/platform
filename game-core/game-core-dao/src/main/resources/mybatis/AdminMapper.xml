@@ -13,6 +13,8 @@
         <result column="im_pwd" property="imPwd"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
+        <result column="role_id" property="roleId"/>
+        <result column="role_name" property="roleName"/>
     </resultMap>
 
     <resultMap id="AdminResultVOMap" type="com.fulu.game.core.entity.vo.AdminVO" extends="AdminResultMap">
@@ -23,10 +25,14 @@
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="AdminResultMap">
         select
-        <include refid="Base_Column_List"/>
-        from t_admin
+        admin.id,admin.name,admin.username,admin.password,admin.salt,admin.status,admin.im_id,admin.im_pwd,admin.create_time,admin.update_time,sysRole.id as role_id, sysRole.name as role_name
+        from t_admin admin
+        LEFT JOIN  t_admin_role adminRole
+        on admin.id = adminRole.admin_id
+        LEFT JOIN t_sys_role sysRole
+        on adminRole.role_id = sysRole.id
         <where>
-            id = #{id}
+            admin.id = #{id}
         </where>
     </select>
 
@@ -38,11 +44,17 @@
 
     <select id="findByParameter" resultMap="AdminResultMap" parameterType="com.fulu.game.core.entity.vo.AdminVO">
         SELECT
-        <include refid="Base_Column_List"/>
-        FROM t_admin
+            admin.*,sysRole.id as role_id, sysRole.name as role_name
+        FROM t_admin admin
+        LEFT JOIN t_admin_role adminRole
+        on admin.id = adminRole.admin_id
+        LEFT JOIN t_sys_role sysRole
+        on adminRole.role_id = sysRole.id
         <where>
-            <if test="username != null">and username = #{username}</if>
-            <if test="name != null">and name = #{name}</if>
+            <if test="username != null">and admin.username = #{username}</if>
+            <if test="name != null">and admin.name = #{name}</if>
+            <if test="adminName != null">and admin.username != #{adminName}</if>
+            <if test="id != null">and admin.id != #{id}</if>
         </where>
     </select>
 

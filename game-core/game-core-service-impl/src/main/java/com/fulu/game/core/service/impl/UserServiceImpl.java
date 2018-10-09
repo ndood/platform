@@ -3,6 +3,7 @@ package com.fulu.game.core.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONObject;
 import com.alibaba.fastjson.JSONArray;
 import com.fulu.game.common.Constant;
@@ -19,6 +20,7 @@ import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.UserDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.*;
+import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.fulu.game.core.search.component.UserSearchComponent;
 import com.fulu.game.core.search.domain.UserDoc;
 import com.fulu.game.core.service.*;
@@ -27,6 +29,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service("userService")
@@ -253,21 +257,49 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         } else {
             orderBy = userVO.getOrderBy();
         }
-        PageHelper.startPage(pageNum, pageSize, orderBy);
+
+        if (pageNum != null && pageSize != null) {
+            PageHelper.startPage(pageNum, pageSize, orderBy);
+        } else {
+            PageHelper.orderBy(orderBy);
+        }
+
         List<UserVO> list = userDao.findBySearch(userVO);
         return new PageInfo(list);
     }
 
+    @Override
+    public List<UserVO> list(UserInfoAuthSearchVO userInfoAuthSearchVO) {
+        String orderBy;
+        if (StringUtils.isBlank(userInfoAuthSearchVO.getOrderBy())) {
+            orderBy = "u.create_time desc";
+        } else {
+            orderBy = userInfoAuthSearchVO.getOrderBy();
+        }
 
+        PageHelper.orderBy(orderBy);
+        return userDao.findServiceUserBySearch(userInfoAuthSearchVO);
+    }
+
+    @Override
     public User createThirdPartyUser(Integer sourceId, String ip) {
         User user = new User();
         user.setRegistIp(ip);
         user.setSourceId(sourceId);
-        user.setNickname("游客");
-        user.setHeadPortraitsUrl("http://game-play.oss-cn-hangzhou.aliyuncs.com/2018/8/16/939794a1be2d46e9955db88716e24e54.png");
+        while (true) {
+            String nickname = "游客" + RandomUtil.randomNumbers(7);
+
+            UserVO userVO = new UserVO();
+            userVO.setNickname(nickname);
+            List<User> userList = userDao.findByParameter(userVO);
+            if (CollectionUtils.isEmpty(userList)) {
+                user.setNickname(nickname);
+                break;
+            }
+        }
+        user.setHeadPortraitsUrl("http://game-play.oss-cn-hangzhou.aliyuncs.com/2018/9/28/2a0696764cf141a9b75d0afae7d09570.png");
         return createNewUser(user);
     }
-
 
     private User createNewUser(User user) {
         user.setStatus(UserStatusEnum.NORMAL.getType());//默认账户解封状态
@@ -346,9 +378,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         String token = SubjectUtil.getToken();
         Map<String, Object> userMap = new HashMap<String, Object>();
         userMap = BeanUtil.beanToMap(user);
-        redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token+"#"+user.getId()), userMap);
+        redisOpenService.hset(RedisKeyEnum.PLAY_TOKEN.generateKey(token), userMap);
     }
-
 
     @Override
     public Boolean isCurrentUser(Integer userId) {
@@ -671,7 +702,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     public User modifyCharm(Integer userId, Integer charm) {
         User user = findById(userId);
-        if(user == null) {
+        if (user == null) {
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
 
@@ -833,17 +864,17 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     public UserOnlineVO userOnline(Boolean active, String version) {
 
         UserOnlineVO uo = new UserOnlineVO();
-        
+
         User user = this.getCurrentUser();
         UserInfoAuth ua = userInfoAuthService.findByUserId(user.getId());
         if (active) {
-            
+
             uo.setNeedSayHello(this.getUserRandStatus(user.getId()));
-            
-            if( ua != null ){
+
+            if (ua != null) {
                 uo.setOpenAgentIm(ua.getOpenSubstituteIm());
             }
-            
+
             log.info("userId:{}用户上线了!;version:{}", user.getId(), version);
             redisOpenService.set(RedisKeyEnum.USER_ONLINE_KEY.generateKey(user.getId()), user.getType() + "");
 
@@ -869,9 +900,9 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
                 AdminImLogVO ail = new AdminImLogVO();
                 ail.setOwnerUserId(user.getId());
                 List<AdminImLog> list = adminImLogService.findByParameter(ail);
-                
+
                 uo.setImLogList(list);
-                
+
                 //删除带聊天记录
                 adminImLogService.deleteByOwnerUserId(user.getId());
 
@@ -886,12 +917,12 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public Boolean removeUserLoginToken(Integer userId) {
-        Set<String> keys =  redisOpenService.keys(RedisKeyEnum.PLAY_TOKEN.generateKey()+"*#"+userId);
-        log.info("查找到用户对应的token有:{}"+keys);
-        if(keys.isEmpty()){
+        Set<String> keys = redisOpenService.keys(RedisKeyEnum.PLAY_TOKEN.generateKey() + "*#" + userId);
+        log.info("查找到用户对应的token有:{}" + keys);
+        if (keys.isEmpty()) {
             return false;
         }
-        for(String key:keys){
+        for (String key : keys) {
             redisOpenService.delete(key);
         }
         return true;
@@ -899,20 +930,20 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
 
     @Override
-    public PageInfo<User> searchByAuthUserInfo(Integer pageNum, Integer pageSize,Integer currentAdminId ,String searchword) {
+    public PageInfo<User> searchByAuthUserInfo(Integer pageNum, Integer pageSize, Integer currentAdminId, String searchword) {
         PageHelper.startPage(pageNum, pageSize);
-        
-        List<User> list = userDao.searchByAuthUserInfo(searchword,currentAdminId);
-        
+
+        List<User> list = userDao.searchByAuthUserInfo(searchword, currentAdminId);
+
         return new PageInfo<User>(list);
     }
 
 
     @Override
-    public PageInfo<User> searchByUserInfo(Integer pageNum, Integer pageSize,Integer currentAuthUserId,String searchword) {
+    public PageInfo<User> searchByUserInfo(Integer pageNum, Integer pageSize, Integer currentAuthUserId, String searchword) {
         PageHelper.startPage(pageNum, pageSize);
 
-        List<User> list = userDao.searchByUserInfo(searchword , currentAuthUserId);
+        List<User> list = userDao.searchByUserInfo(searchword, currentAuthUserId);
 
         return new PageInfo<User>(list);
     }
@@ -921,11 +952,11 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     public boolean getUserRandStatus(Integer userId) {
         String userIdJsonStr = redisOpenService.get(RedisKeyEnum.AUTO_SAY_HELLO_USER_LIST.generateKey());
 
-        if(StringUtils.isNotBlank(userIdJsonStr)){
+        if (StringUtils.isNotBlank(userIdJsonStr)) {
             JSONArray userIdArr = com.alibaba.fastjson.JSONObject.parseArray(userIdJsonStr);
 
-            for(int i = 0 ; i <userIdArr.size() ; i++){
-                if(userIdArr.getIntValue(i) == userId.intValue()){
+            for (int i = 0; i < userIdArr.size(); i++) {
+                if (userIdArr.getIntValue(i) == userId.intValue()) {
                     return true;
                 }
             }
@@ -938,13 +969,13 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     public void setUserRandStatus(Integer userId) {
         String userIdJsonStr = redisOpenService.get(RedisKeyEnum.AUTO_SAY_HELLO_USER_LIST.generateKey());
 
-        if(StringUtils.isNotBlank(userIdJsonStr)){
+        if (StringUtils.isNotBlank(userIdJsonStr)) {
             JSONArray userIdArr = com.alibaba.fastjson.JSONObject.parseArray(userIdJsonStr);
 
-            for(int i = 0 ; i <userIdArr.size() ; i++){
-                if(userIdArr.getIntValue(i) == userId.intValue()){
+            for (int i = 0; i < userIdArr.size(); i++) {
+                if (userIdArr.getIntValue(i) == userId.intValue()) {
                     userIdArr.remove(i);
-                    redisOpenService.set(RedisKeyEnum.AUTO_SAY_HELLO_USER_LIST.generateKey(),userIdArr.toJSONString());
+                    redisOpenService.set(RedisKeyEnum.AUTO_SAY_HELLO_USER_LIST.generateKey(), userIdArr.toJSONString());
                     return;
                 }
             }
@@ -971,5 +1002,52 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             BeanUtil.copyProperties(user,userDoc);
             userSearchComponent.saveIndex(userDoc);
         }
+    }
+
+    /**
+     * 获取用户信息
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public UserVO findUserVOById(Integer id) {
+        UserVO userVO = new UserVO();
+        User user = findById(id);
+        if (user == null) {
+            throw new UserException(UserException.ExceptionCode.USER_INFO_NULL_EXCEPTION);
+        }
+        BeanUtil.copyProperties(user, userVO);
+        // 设置用户扩展信息（兴趣、职业、简介、视频、以及相册）
+        setUserExtInfo(userVO, id);
+        //查询用户所有标签
+        List<TagVO> allPersonTagVos = userInfoAuthService.findAllUserTagSelected(id, false);
+        userVO.setGroupTags(allPersonTagVos);
+        UserVO params = new UserVO();
+        params.setUserId(id);
+        //设置收入和消费信息
+        List<UserVO> list = userDao.findBySearch(params);
+        if (CollectionUtil.isNotEmpty(list)) {
+            UserVO tmp = list.get(0);
+            userVO.setPaySum(tmp.getPaySum());
+            userVO.setOrderCount(tmp.getOrderCount());
+            userVO.setPayUnitPrice(tmp.getPayUnitPrice());
+            userVO.setIncomeSum(tmp.getIncomeSum());
+            userVO.setServiceOrderCount(tmp.getServiceOrderCount());
+            userVO.setIncomeUnitPrice(tmp.getIncomeUnitPrice());
+        } else {
+            userVO.setPaySum(new BigDecimal("0.00"));
+            userVO.setOrderCount(0);
+            userVO.setPayUnitPrice(new BigDecimal("0.00"));
+            userVO.setIncomeSum(new BigDecimal("0.00"));
+            userVO.setServiceOrderCount(0);
+            userVO.setIncomeUnitPrice(new BigDecimal("0.00"));
+        }
+        userVO.setMainPicUrl("");
+        UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(id);
+        if (userInfoAuth != null) {
+            userVO.setMainPicUrl(userInfoAuth.getMainPicUrl());
+        }
+        return userVO;
     }
 }
