@@ -12,7 +12,8 @@ public class RoomException extends BizException {
     @Getter
     public enum ExceptionCode {
         ROOM_UPDATE_NO_PERMISSIONS(50001, "没有房间设置信息修改权限!"),
-        ROOM_NOT_EXIST(50002, "没有房间设置信息修改权限!");
+        ROOM_NOT_EXIST(50002, "没有房间设置信息修改权限!"),
+        ROOM_MANAGER_NOT_MATCHING(50004, "房间马甲类型不匹配!");
 
 
         private int code;

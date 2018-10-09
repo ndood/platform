@@ -2,6 +2,7 @@ package com.fulu.game.app.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.PlatformBannerEnum;
+import com.fulu.game.common.enums.RoomRoleTypeEnum;
 import com.fulu.game.common.exception.RoomException;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.RoomCategoryVO;
@@ -154,9 +155,24 @@ public class RoomController extends BaseController {
     public Result roomRoleAdd(@RequestParam(required = true) String  roomNo,
                               @RequestParam(required = true) Integer userId,
                               @RequestParam(required = true) Integer role){
+        RoomRoleTypeEnum roleTypeEnum = RoomRoleTypeEnum.findByType(role);
+        if(roleTypeEnum==null||roleTypeEnum.equals(RoomRoleTypeEnum.OWNER)){
+            throw  new RoomException(RoomException.ExceptionCode.ROOM_MANAGER_NOT_MATCHING);
+        }
+        roomManageService.createManage(roleTypeEnum,userId,roomNo);
+        return Result.success().msg("添加"+roleTypeEnum.getMsg()+"成功!");
+    }
 
 
-        return Result.success().msg("房间信息设置成功!");
+     /**
+     * 房间马甲设置
+     * @return
+     */
+    @RequestMapping("/role/del")
+    public Result roomRoleDel(@RequestParam(required = true) String  roomNo,
+                              @RequestParam(required = true) Integer userId){
+        roomManageService.deleteManage(userId,roomNo);
+        return Result.success().msg("解除成功!");
     }
 
 
