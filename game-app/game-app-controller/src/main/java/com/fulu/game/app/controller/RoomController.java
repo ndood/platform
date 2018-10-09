@@ -2,10 +2,12 @@ package com.fulu.game.app.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.PlatformBannerEnum;
+import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.core.entity.Banner;
 import com.fulu.game.core.entity.RoomCategory;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.BannerVO;
+import com.fulu.game.core.entity.vo.RoomCategoryVO;
 import com.fulu.game.core.entity.vo.RoomVO;
 import com.fulu.game.core.service.BannerService;
 import com.fulu.game.core.service.RoomCategoryService;
@@ -16,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -33,7 +36,10 @@ public class RoomController extends BaseController {
     private BannerService bannerService;
 
 
-
+    /**
+     * 房间banner
+     * @return
+     */
     @PostMapping("/banner")
     public Result list() {
         List<Banner> bannerList = bannerService.findByPlatformType(PlatformBannerEnum.APP_CHAT_ROOM.getType());
@@ -51,20 +57,27 @@ public class RoomController extends BaseController {
         RoomCategory collectRoomCategory = new RoomCategory();
         collectRoomCategory.setId(999);
         collectRoomCategory.setName("收藏");
-        collectRoomCategory.setIcon("");
+        collectRoomCategory.setIcon("https://game-play.oss-cn-hangzhou.aliyuncs.com/img/Chatroom_collect_default%403x.png");
+        collectRoomCategory.setSelectedIcon("https://game-play.oss-cn-hangzhou.aliyuncs.com/img/Chatroom_collect_selected%403x.png");
         collectRoomCategory.setIsActivate(true);
         collectRoomCategory.setSort(999);
 
         RoomCategory hotRoomCategory = new RoomCategory();
         hotRoomCategory.setId(998);
         hotRoomCategory.setName("热门");
-        hotRoomCategory.setIcon("");
+        hotRoomCategory.setIcon( "https://game-play.oss-cn-hangzhou.aliyuncs.com/img/Chatroom_hot_default%403x.png");
+        hotRoomCategory.setSelectedIcon("https://game-play.oss-cn-hangzhou.aliyuncs.com/img/Chatroom_hot_selected%403x.png");
         hotRoomCategory.setIsActivate(true);
         hotRoomCategory.setSort(998);
-        list.add(collectRoomCategory);
-        list.add(hotRoomCategory);
-        list.sort((RoomCategory c1, RoomCategory c2) -> c2.getSort().compareTo(c1.getSort()));
-        return Result.success().data(list);
+
+        if(!list.isEmpty()){
+            list.add(collectRoomCategory);
+            list.add(hotRoomCategory);
+            list.sort((RoomCategory c1, RoomCategory c2) -> c2.getSort().compareTo(c1.getSort()));
+        }
+        User user = userService.getCurrentUser();
+        List<RoomCategoryVO> result = roomCategoryService.getRoomListCategory(list,user.getId());
+        return Result.success().data(result);
     }
 
 
@@ -77,9 +90,9 @@ public class RoomController extends BaseController {
                                      @RequestParam(required = true) Integer pageSize,
                                      @RequestParam(required = true) Integer roomCategoryId) {
         if(Integer.valueOf(999).equals(roomCategoryId)){//收藏列表
-
-
-            return Result.success();
+            User user = userService.getCurrentUser();
+            PageInfo<RoomVO> roomVOList = roomService.findCollectRoomByUser(pageNum,pageSize,user.getId());
+            return Result.success().data(roomVOList);
         }else if(Integer.valueOf(998).equals(roomCategoryId)){//热门列表
             PageInfo<RoomVO> roomVOList = roomService.findUsableRoomsByHot(pageNum, pageSize);
             return Result.success().data(roomVOList);
@@ -92,7 +105,6 @@ public class RoomController extends BaseController {
 
     /**
      * 我的房间
-     *
      * @return
      */
     @RequestMapping("/mine")
@@ -102,5 +114,27 @@ public class RoomController extends BaseController {
         return Result.success().data(roomVO);
     }
 
+
+
+    /**
+     * 房间设置
+     * @return
+     */
+    @RequestMapping("/setting/update")
+    public Result roomSettingSave(String roomNo,
+                                  String icon,
+                                  String name,
+                                  Boolean isShow,
+                                  Boolean isLock,
+                                  String password,
+                                  String notice,
+                                  String slogan){
+        User user = userService.getCurrentUser();
+
+
+
+
+        return Result.success();
+    }
 
 }

@@ -21,8 +21,10 @@ public class RoomCategory implements Serializable {
 	private Integer pid;
 	//分类名称
 	private String name;
-	// 房间图标
+	// 分类图标
 	private String icon;
+	// 被选中的分类图标
+	private String selectedIcon;
 	//是否激活(1是,0否)
 	private Boolean isActivate;
 	//排序

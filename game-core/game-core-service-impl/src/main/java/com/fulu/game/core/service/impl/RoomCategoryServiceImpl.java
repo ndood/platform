@@ -1,8 +1,12 @@
 package com.fulu.game.core.service.impl;
 
 
+import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.entity.vo.RoomCategoryVO;
+import com.fulu.game.core.entity.vo.RoomVO;
+import com.fulu.game.core.service.RoomService;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +24,8 @@ public class RoomCategoryServiceImpl extends AbsCommonService<RoomCategory,Integ
 
     @Autowired
 	private RoomCategoryDao roomCategoryDao;
-
-
+    @Autowired
+    private RoomService roomService;
 
     @Override
     public ICommonDao<RoomCategory, Integer> getDao() {
@@ -79,6 +83,30 @@ public class RoomCategoryServiceImpl extends AbsCommonService<RoomCategory,Integ
     public List<RoomCategory> list() {
         RoomCategory rootCategory = getRootCategory();
         return findByPid(rootCategory.getId());
+    }
+
+
+    @Override
+    public List<RoomCategoryVO> getRoomListCategory(List<RoomCategory> roomCategoryList, Integer userId) {
+        if(roomCategoryList.isEmpty()){
+            return new ArrayList<>();
+        }
+        List<RoomCategoryVO> result  = CollectionUtil.copyNewCollections(roomCategoryList,RoomCategoryVO.class);
+        for(RoomCategoryVO roomCategoryVO : result){
+            List<RoomVO> roomVOList = null;
+            if(Integer.valueOf(999).equals(roomCategoryVO.getId())){//收藏列表
+                PageInfo<RoomVO> roomVOPage = roomService.findCollectRoomByUser(1,10,userId);
+                roomVOList = roomVOPage.getList();
+            }else if(Integer.valueOf(998).equals(roomCategoryVO.getId())){//热门列表
+                PageInfo<RoomVO> roomVOPage = roomService.findUsableRoomsByHot(1, 10);
+                roomVOList = roomVOPage.getList();
+            }else{
+                PageInfo<RoomVO> roomVOPage = roomService.findUsableRoomsByRoomCategory(1,10,roomCategoryVO.getId());
+                roomVOList = roomVOPage.getList();
+            }
+            roomCategoryVO.setRoomList(roomVOList);
+        }
+        return result;
     }
 
 

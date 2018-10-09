@@ -666,3 +666,13 @@ CREATE TABLE `t_room` (
 ) COMMENT='聊天室';
 
 
+DROP TABLE IF EXISTS `t_room_collect`;
+CREATE TABLE `t_room_collect` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `room_no` varchar(11) DEFAULT NULL,
+  `user_id` int(11) NOT NULL,
+  `create_time` datetime NOT NULL,
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+)  COMMENT='房间收藏';
+

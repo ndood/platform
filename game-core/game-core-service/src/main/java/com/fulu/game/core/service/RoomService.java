@@ -33,6 +33,7 @@ public interface RoomService extends ICommonService<Room, Integer> {
     PageInfo<RoomVO> list(int pageNum, int pageSize, String name);
 
 
+
     /**
      * 按照房间分类查找房间
      *
@@ -40,6 +41,15 @@ public interface RoomService extends ICommonService<Room, Integer> {
      */
     PageInfo<RoomVO> findUsableRoomsByRoomCategory(int pageNum, int pageSize,int roomCategoryId);
 
+
+    /**
+     * 用户收藏房间列表
+     * @param pageNum
+     * @param pageSize
+     * @param userId
+     * @return
+     */
+    PageInfo<RoomVO>  findCollectRoomByUser(int pageNum,int pageSize,int userId);
 
     /**
      * 房主房间

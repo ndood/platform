@@ -12,10 +12,12 @@ import com.fulu.game.core.entity.RoomCategory;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.RoomVO;
 import com.fulu.game.core.service.RoomCategoryService;
+import com.fulu.game.core.service.RoomManageService;
 import com.fulu.game.core.service.RoomService;
 import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +36,8 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     private RoomCategoryService roomCategoryService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private RoomManageService roomManageService;
 
     @Override
     public ICommonDao<Room, Integer> getDao() {
@@ -74,6 +78,22 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         page.setList(roomVOList);
         return page;
     }
+
+
+
+    public PageInfo<RoomVO>  findCollectRoomByUser(int pageNum,int pageSize,int userId){
+        PageHelper.startPage(pageNum, pageSize);
+        List<Room> roomList =roomDao.findCollectRoomByUser(userId);
+        List<RoomVO> result = new ArrayList<>();
+        for (Room room : roomList) {
+            RoomVO roomVO = room2VO(room);
+            result.add(roomVO);
+        }
+        PageInfo page = new PageInfo(roomList);
+        page.setList(result);
+        return page;
+    }
+
 
 
     @Override
@@ -120,7 +140,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     public RoomVO save(RoomVO roomVO) {
         roomVO.setUpdateTime(new Date());
         if (roomVO.getId() == null) {
-            User user= userService.findByMobile( roomVO.getOwnerMobile());
+            User user = userService.findByMobile( roomVO.getOwnerMobile());
             if(user==null){
                 throw new ServiceErrorException("手机号不存在!");
             }
@@ -130,6 +150,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
             roomVO.setRoomNo(generateRoomNo());
             roomVO.setCreateTime(new Date());
             create(roomVO);
+
         } else {
             update(roomVO);
         }

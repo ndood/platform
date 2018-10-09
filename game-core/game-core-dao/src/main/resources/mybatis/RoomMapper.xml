@@ -47,6 +47,17 @@
         from t_room
     </select>
 
+
+    <select id="findCollectRoomByUser" parameterType="java.lang.Integer" resultMap="RoomResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        FROM t_room
+        <where>
+            room_no in(SELECT room_no FROM t_room_collect  WHERE user_id = #{userId} order by create_time desc)
+            and is_activate = TRUE
+        </where>
+    </select>
+
     <select id="findByParameter" resultMap="RoomResultMap" parameterType="com.fulu.game.core.entity.vo.RoomVO">
         SELECT
         <include refid="Base_Column_List"/>

@@ -7,6 +7,7 @@
         <result column="pid" property="pid"/>
         <result column="name" property="name"/>
         <result column="icon" property="icon"/>
+        <result column="selected_icon" property="selectedIcon"/>
         <result column="is_activate" property="isActivate"/>
         <result column="sort" property="sort"/>
         <result column="create_time" property="createTime"/>
@@ -18,7 +19,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,pid,name,icon,is_activate,sort,create_time,update_time    </sql>
+        id,pid,name,icon,selected_icon,is_activate,sort,create_time,update_time
+    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="RoomCategoryResultMap">
         select
@@ -50,6 +52,9 @@
             <if test="icon != null">
                 and icon = #{icon}
             </if>
+            <if test="selectedIcon != null">
+                and selected_icon = #{selectedIcon}
+            </if>
             <if test="isActivate != null">
                 and is_activate = #{isActivate}
             </if>
@@ -74,9 +79,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.RoomCategory">
         insert into
-        t_room_category (pid,name,icon,is_activate,sort,create_time,update_time)
+        t_room_category (pid,name,icon,selected_icon,is_activate,sort,create_time,update_time)
         values
-        (#{pid},#{name},#{icon},#{isActivate},#{sort},#{createTime},#{updateTime})
+        (#{pid},#{name},#{icon},#{selectedIcon},#{isActivate},#{sort},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.RoomCategory">
@@ -93,6 +98,10 @@
 
             <if test="icon != null">
                 icon = #{icon},
+            </if>
+
+            <if test="selectedIcon != null">
+                selected_icon = #{selectedIcon},
             </if>
 
             <if test="isActivate != null">
