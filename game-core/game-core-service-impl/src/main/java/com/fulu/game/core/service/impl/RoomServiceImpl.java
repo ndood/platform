@@ -205,9 +205,10 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         //设置房间分类
         RoomCategory roomCategory = roomCategoryService.findById(room.getRoomCategoryId());
         roomVO.setRoomCategoryName(roomCategory.getName());
-        //todo 设置房间人数
-        Integer people = room.getVirtualPeople();
-        roomVO.setPeople(people);
+        //计算聊天室人数
+        Long realPeople =getChatRoomPeople(room.getRoomNo());
+        Integer virtualPeople = room.getVirtualPeople();
+        roomVO.setPeople(realPeople+virtualPeople);
         return roomVO;
     }
 
@@ -236,5 +237,15 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         return redisOpenService.setForDel(RedisKeyEnum.CHAT_ROOM_ONLINE_USER.generateKey(roomNo), userChatRoomVO);
     }
 
+    /**
+     * 获取聊天室真实人数
+     * @return
+     */
+    private long getChatRoomPeople(String roomNo){
+        if(!redisOpenService.hasKey(RedisKeyEnum.CHAT_ROOM_ONLINE_USER.generateKey(roomNo))){
+            return 0;
+        }
+        return redisOpenService.setForSize(RedisKeyEnum.CHAT_ROOM_ONLINE_USER.generateKey(roomNo));
+    }
 
 }

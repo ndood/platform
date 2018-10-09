@@ -21,7 +21,7 @@ public class RoomVO  extends Room {
     private String roomCategoryName;
 
     //房间人数
-    private Integer people;
+    private Long people;
 
     @NotNull(message = "[手机号]字段不能为空")
     private String ownerMobile;
