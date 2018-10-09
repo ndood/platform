@@ -47,6 +47,7 @@
             </if>
             <if test="operatorId != null">and tmd.operator_id = #{operatorId}</if>
             <if test="userType != null">and tmd.user_type = #{userType}</if>
+            <if test="targetId != null">and tu.id = #{targetId}</if>
             <if test="mobile != null">and tu.mobile = #{mobile}</if>
             <if test="nickname != null">and tu.nickname like  CONCAT('%',#{nickname},'%')</if>
             <if test="startTime != null">and tmd.create_time &gt;= #{startTime}</if>

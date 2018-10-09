@@ -60,7 +60,11 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         }
 //        moneyDetailsVO.setAction(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType());
         String orderBy = "tmd.create_time desc";
-        PageHelper.startPage(pageNum, pageSize, orderBy);
+        if (pageNum != null && pageSize != null) {
+            PageHelper.startPage(pageNum, pageSize, orderBy);
+        } else {
+            PageHelper.orderBy(orderBy);
+        }
         List<MoneyDetailsVO> list = moneyDetailsDao.findByAdmin(moneyDetailsVO);
         return new PageInfo(list);
     }
