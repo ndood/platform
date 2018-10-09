@@ -9,7 +9,7 @@ import lombok.Data;
  * 房间管理表
  * 
  * @author wangbin
- * @date 2018-10-07 00:25:52
+ * @date 2018-10-09 15:19:25
  */
 @Data
 public class RoomManage implements Serializable {
@@ -18,15 +18,9 @@ public class RoomManage implements Serializable {
 	//
 	private Integer id;
 	//房间ID
-	private Integer roomNo;
+	private String roomNo;
 	//用户ID
 	private Integer userId;
-	//
-	private String headUrl;
-	//用户昵称
-	private String nickname;
-	//性别(1男,2女)
-	private Integer gender;
 	//角色类型(1房主,2管理,3主持)
 	private Integer role;
 	//创建时间

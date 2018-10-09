@@ -8,9 +8,9 @@ import lombok.Getter;
 public enum  RoomRoleTypeEnum implements TypeEnum<Integer>{
 
 
-    owner(1, "手机号"),
-    manage(2, "QQ号"),
-    preside(3, "微信号");
+    OWNER(1, "房主"),
+    MANAGE(2, "管理"),
+    PRESIDE(3, "主持");
 
     private Integer type;
     private String msg;

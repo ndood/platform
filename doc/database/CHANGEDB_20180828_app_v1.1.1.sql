@@ -615,16 +615,14 @@ CREATE TABLE `t_activity_user_award` (
 DROP TABLE IF EXISTS `t_room_manage`;
 CREATE TABLE `t_room_manage` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `room_no` int(11) NOT NULL COMMENT '房间ID',
+  `room_no` varchar(11) NOT NULL COMMENT '房间ID',
   `user_id` int(11) NOT NULL COMMENT '用户ID',
-  `head_url` varchar(255) DEFAULT NULL,
-  `nickname` varchar(255) DEFAULT NULL COMMENT '用户昵称',
-  `gender` tinyint(1) DEFAULT NULL COMMENT '性别(1男,2女)',
   `role` tinyint(1) NOT NULL COMMENT '角色类型(1房主,2管理,3主持)',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-)  COMMENT='房间管理表';
+) COMMENT='房间管理表';
+
 
 CREATE TABLE `t_room_category` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

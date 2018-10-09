@@ -1,5 +1,7 @@
 package com.fulu.game.core.service;
 
+import com.fulu.game.common.enums.RoomRoleTypeEnum;
+import com.fulu.game.core.entity.Room;
 import com.fulu.game.core.entity.RoomManage;
 import com.fulu.game.core.entity.User;
 
@@ -14,10 +16,10 @@ import com.fulu.game.core.entity.User;
 public interface RoomManageService extends ICommonService<RoomManage,Integer>{
 
 
-    RoomManage createOwner(User user,String roomNo);
+    RoomManage createManage(RoomRoleTypeEnum roomRoleTypeEnum, int userId, String roomNo);
 
 
 
-
+    RoomManage findByUserAndRoomNo(int userId,String roomNo);
 
 }

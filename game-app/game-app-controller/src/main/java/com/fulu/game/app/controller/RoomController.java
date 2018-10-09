@@ -2,23 +2,16 @@ package com.fulu.game.app.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.PlatformBannerEnum;
-import com.fulu.game.common.utils.CollectionUtil;
-import com.fulu.game.core.entity.Banner;
-import com.fulu.game.core.entity.RoomCategory;
-import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.vo.BannerVO;
+import com.fulu.game.common.exception.RoomException;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.RoomCategoryVO;
 import com.fulu.game.core.entity.vo.RoomVO;
-import com.fulu.game.core.service.BannerService;
-import com.fulu.game.core.service.RoomCategoryService;
-import com.fulu.game.core.service.RoomService;
-import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -34,7 +27,8 @@ public class RoomController extends BaseController {
     private UserService userService;
     @Autowired
     private BannerService bannerService;
-
+    @Autowired
+    private RoomManageService roomManageService;
 
     /**
      * 房间banner
@@ -121,7 +115,7 @@ public class RoomController extends BaseController {
      * @return
      */
     @RequestMapping("/setting/update")
-    public Result roomSettingSave(String roomNo,
+    public Result roomSettingSave(@RequestParam(required = true) String roomNo,
                                   String icon,
                                   String name,
                                   Boolean isShow,
@@ -130,11 +124,25 @@ public class RoomController extends BaseController {
                                   String notice,
                                   String slogan){
         User user = userService.getCurrentUser();
-
-
-
-
-        return Result.success();
+        Room room = roomService.findByRoomNo(roomNo);
+        if(room==null){
+            throw new RoomException(RoomException.ExceptionCode.ROOM_NOT_EXIST);
+        }
+        RoomManage roomManage = roomManageService.findByUserAndRoomNo(user.getId(),roomNo);
+        if(roomManage==null){
+            throw new RoomException(RoomException.ExceptionCode.ROOM_UPDATE_NO_PERMISSIONS);
+        }
+        RoomVO roomVO = new RoomVO();
+        roomVO.setId(room.getId());
+        roomVO.setIcon(icon);
+        roomVO.setName(name);
+        roomVO.setIsShow(isShow);
+        roomVO.setIsLock(isLock);
+        roomVO.setPassword(password);
+        roomVO.setNotice(notice);
+        roomVO.setSlogan(slogan);
+        roomService.save(roomVO);
+        return Result.success().msg("房间信息设置成功!");
     }
 
 }

@@ -2,6 +2,7 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.bean.BeanUtil;
+import com.fulu.game.common.enums.RoomRoleTypeEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.common.utils.GenIdUtil;
@@ -71,7 +72,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         List<Room> roomList = roomDao.findByParameter(param);
         PageInfo page = new PageInfo(roomList);
         List<RoomVO> roomVOList = new ArrayList<>();
-        for(Room room : roomList ){
+        for(Room room : roomList){
             RoomVO roomVO =room2VO(room);
             roomVOList.add(roomVO);
         }
@@ -150,7 +151,8 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
             roomVO.setRoomNo(generateRoomNo());
             roomVO.setCreateTime(new Date());
             create(roomVO);
-
+            //创建管理员
+            roomManageService.createManage(RoomRoleTypeEnum.OWNER,user.getId(),roomVO.getRoomNo());
         } else {
             update(roomVO);
         }
@@ -203,6 +205,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         roomVO.setPeople(people);
         return roomVO;
     }
+
 
 
 

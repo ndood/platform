@@ -53,7 +53,6 @@ public interface RoomService extends ICommonService<Room, Integer> {
 
     /**
      * 房主房间
-     *
      * @param userId
      * @return
      */
