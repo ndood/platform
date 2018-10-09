@@ -21,7 +21,7 @@ import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
-import com.fulu.game.core.service.impl.push.MobileAppPushServiceImpl;
+import com.fulu.game.core.service.impl.push.AppPushServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +51,7 @@ public class OrderController extends BaseController {
     @Autowired
     private ServerCommentService serverCommentService;
     @Autowired
-    private MobileAppPushServiceImpl mobileAppPushService;
+    private AppPushServiceImpl mobileAppPushService;
     @Autowired
     private UserTechAuthServiceImpl userTechAuthService;
 

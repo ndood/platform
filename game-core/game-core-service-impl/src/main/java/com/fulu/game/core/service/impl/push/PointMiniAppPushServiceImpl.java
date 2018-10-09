@@ -1,4 +1,4 @@
-package com.fulu.game.point.service.impl;
+package com.fulu.game.core.service.impl.push;
 
 import com.fulu.game.common.enums.*;
 import com.fulu.game.core.entity.Category;
@@ -9,7 +9,6 @@ import com.fulu.game.core.service.CategoryService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
-import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

@@ -10,7 +10,7 @@ import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.AppPushMsgVO;
 import com.fulu.game.core.entity.vo.RewardVO;
 import com.fulu.game.core.service.*;
-import com.fulu.game.core.service.impl.push.MobileAppPushServiceImpl;
+import com.fulu.game.core.service.impl.push.AppPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
-import com.fulu.game.core.dao.RewardDao;
 import com.fulu.game.core.entity.Reward;
 
 import java.util.Date;
@@ -45,7 +44,7 @@ public class RewardServiceImpl extends AbsCommonService<Reward, Integer> impleme
     private VirtualProductService virtualProductService;
 
     @Autowired
-    private MobileAppPushServiceImpl mobileAppPushService;
+    private AppPushServiceImpl mobileAppPushService;
 
     @Autowired
     private DynamicPushMsgService dynamicPushMsgService;

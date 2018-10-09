@@ -20,7 +20,7 @@ import java.util.Date;
 
 @Service
 @Slf4j
-public class MobileAppPushServiceImpl extends PushServiceImpl implements IBusinessPushService {
+public class AppPushServiceImpl extends PushServiceImpl implements IBusinessPushService {
 
     @Autowired
     private AppPushContainer appPushContainer;
