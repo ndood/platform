@@ -1,7 +1,6 @@
 package com.fulu.game.admin.service.impl;
 
 import com.fulu.game.common.enums.*;
-import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.service.impl.push.PushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -18,12 +17,16 @@ public class AdminPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void appealUserWin(Order order) {
-        if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
+        if (OrderTypeEnum.PLAY.getType().equals(order.getType())) {
             //分期乐订单
             if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
                 //todo gzc 短信通知
 //                SMSUtil.sendLeaveInform();
-                pushWechatTemplateMsg(PlatformEcoEnum.POINT.getType(), order.getServiceUserId(), WechatTemplateIdEnum.POINT_LEAVE_MSG, WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_USER_WIN.getPage().getPointPagePath(), WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_USER_WIN.getContent());
+                pushWechatTemplateMsg(PlatformEcoEnum.POINT.getType(),
+                        order.getServiceUserId(),
+                        WechatTemplateIdEnum.POINT_LEAVE_MSG,
+                        WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_USER_WIN.getPage().getPointPagePath(),
+                        WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_USER_WIN.getContent());
             } else {
                 pushServiceProcessMsg(PlatformEcoEnum.PLAY.getType(),
                         order.getUserId(),
@@ -56,11 +59,15 @@ public class AdminPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void appealServiceWin(Order order) {
-        if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
+        if (OrderTypeEnum.PLAY.getType().equals(order.getType())) {
             //分期乐订单
             if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
                 //todo 给用户发送仲裁短信
-                pushWechatTemplateMsg(PlatformEcoEnum.POINT.getType(), order.getServiceUserId(), WechatTemplateIdEnum.POINT_LEAVE_MSG, WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_SERVICE_WIN.getPage().getPointPagePath(), WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_SERVICE_WIN.getContent());
+                pushWechatTemplateMsg(PlatformEcoEnum.POINT.getType(),
+                        order.getServiceUserId(),
+                        WechatTemplateIdEnum.POINT_LEAVE_MSG,
+                        WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_SERVICE_WIN.getPage().getPointPagePath(),
+                        WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_SERVICE_WIN.getContent());
             } else {
                 pushServiceProcessMsg(PlatformEcoEnum.PLAY.getType(),
                         order.getUserId(),
@@ -95,11 +102,14 @@ public class AdminPushServiceImpl extends PushServiceImpl {
      * @param msg
      */
     public void appealNegotiate(Order order, String msg) {
-        if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
+        if (OrderTypeEnum.PLAY.getType().equals(order.getType())) {
             //分期乐订单
             if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
                 //todo 给用户发送仲裁短信
-                pushWechatTemplateMsg(PlatformEcoEnum.POINT.getType(), order.getServiceUserId(), WechatTemplateIdEnum.POINT_LEAVE_MSG, WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE.getPage().getPointPagePath(), WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE.getContent(), msg);
+                pushWechatTemplateMsg(PlatformEcoEnum.POINT.getType(),
+                        order.getServiceUserId(), WechatTemplateIdEnum.POINT_LEAVE_MSG,
+                        WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE.getPage().getPointPagePath(),
+                        WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE.getContent(), msg);
             } else {
                 pushServiceProcessMsg(PlatformEcoEnum.PLAY.getType(),
                         order.getUserId(),
@@ -138,28 +148,46 @@ public class AdminPushServiceImpl extends PushServiceImpl {
      * @param deduction
      */
     public void grantCouponMsg(int userId, String deduction) {
-        pushWechatTemplateMsg(PlatformEcoEnum.PLAY.getType(), userId, WechatTemplateIdEnum.PLAY_LEAVE_MSG, WechatTemplateMsgEnum.GRANT_COUPON.getPage().getPlayPagePath(), WechatTemplateMsgEnum.GRANT_COUPON.getContent(), deduction);
+        pushWechatTemplateMsg(PlatformEcoEnum.PLAY.getType(),
+                userId,
+                WechatTemplateIdEnum.PLAY_LEAVE_MSG,
+                WechatTemplateMsgEnum.GRANT_COUPON.getPage().getPlayPagePath(),
+                WechatTemplateMsgEnum.GRANT_COUPON.getContent(),
+                deduction);
     }
 
     /**
      * 陪玩师技能审核通过
      */
     public void techAuthAuditSuccess(Integer userId) {
-        pushWechatTemplateMsg(PlatformEcoEnum.PLAY.getType(), userId, WechatTemplateIdEnum.PLAY_LEAVE_MSG, WechatTemplateMsgEnum.TECH_AUTH_AUDIT_SUCCESS.getPage().getPlayPagePath(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_SUCCESS.getContent());
+        pushWechatTemplateMsg(PlatformEcoEnum.PLAY.getType(),
+                userId, WechatTemplateIdEnum.PLAY_LEAVE_MSG,
+                WechatTemplateMsgEnum.TECH_AUTH_AUDIT_SUCCESS.getPage().getPlayPagePath(),
+                WechatTemplateMsgEnum.TECH_AUTH_AUDIT_SUCCESS.getContent());
     }
 
     /**
      * 陪玩师技能审核通过
      */
     public void techAuthAuditFail(Integer userId, String msg) {
-        pushWechatTemplateMsg(PlatformEcoEnum.PLAY.getType(), userId, WechatTemplateIdEnum.PLAY_LEAVE_MSG, WechatTemplateMsgEnum.TECH_AUTH_AUDIT_FAIL.getPage().getPlayPagePath(), WechatTemplateMsgEnum.TECH_AUTH_AUDIT_FAIL.getContent(), msg);
+        pushWechatTemplateMsg(PlatformEcoEnum.PLAY.getType(),
+                userId,
+                WechatTemplateIdEnum.PLAY_LEAVE_MSG,
+                WechatTemplateMsgEnum.TECH_AUTH_AUDIT_FAIL.getPage().getPlayPagePath(),
+                WechatTemplateMsgEnum.TECH_AUTH_AUDIT_FAIL.getContent(),
+                msg);
     }
 
     /**
      * 陪玩师个人信息审核不通过
      */
     public void userInfoAuthFail(Integer userId, String msg) {
-        pushWechatTemplateMsg(PlatformEcoEnum.PLAY.getType(), userId, WechatTemplateIdEnum.PLAY_LEAVE_MSG, WechatTemplateMsgEnum.USER_AUTH_INFO_REJECT.getPage().getPlayPagePath(), WechatTemplateMsgEnum.USER_AUTH_INFO_REJECT.getContent(), msg);
+        pushWechatTemplateMsg(PlatformEcoEnum.PLAY.getType(),
+                userId,
+                WechatTemplateIdEnum.PLAY_LEAVE_MSG,
+                WechatTemplateMsgEnum.USER_AUTH_INFO_REJECT.getPage().getPlayPagePath(),
+                WechatTemplateMsgEnum.USER_AUTH_INFO_REJECT.getContent(),
+                msg);
     }
 
     /**
@@ -168,7 +196,11 @@ public class AdminPushServiceImpl extends PushServiceImpl {
      * @param userId
      */
     public void userInfoAuthSuccess(Integer userId) {
-        pushWechatTemplateMsg(PlatformEcoEnum.PLAY.getType(), userId, WechatTemplateIdEnum.PLAY_LEAVE_MSG, WechatTemplateMsgEnum.USER_AUTH_INFO_PASS.getPage().getPlayPagePath(), WechatTemplateMsgEnum.USER_AUTH_INFO_PASS.getContent());
+        pushWechatTemplateMsg(PlatformEcoEnum.PLAY.getType(),
+                userId,
+                WechatTemplateIdEnum.PLAY_LEAVE_MSG,
+                WechatTemplateMsgEnum.USER_AUTH_INFO_PASS.getPage().getPlayPagePath(),
+                WechatTemplateMsgEnum.USER_AUTH_INFO_PASS.getContent());
     }
 
 

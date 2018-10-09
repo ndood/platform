@@ -56,7 +56,7 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
 
     @Override
     protected void shareProfit(Order order) {
-        if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
+        if (OrderTypeEnum.PLAY.getType().equals(order.getType())) {
             //陪玩订单
             pointOrderShareProfitService.shareProfit(order);
         } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
@@ -65,8 +65,8 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
         }
         //todo 分润逻辑需要按照支付方式来而不是订单类型
         else {
-            log.error("订单类型不匹配:{}",order);
-            throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING,order.getOrderNo());
+            log.error("订单类型不匹配:{}", order);
+            throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING, order.getOrderNo());
         }
     }
 
@@ -75,7 +75,7 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
         if (order == null) {
             throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST, "");
         }
-        if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
+        if (OrderTypeEnum.PLAY.getType().equals(order.getType())) {
             playOrderShareProfitService.orderRefund(order, refundMoney);
             //陪玩订单
         } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
@@ -84,8 +84,8 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
         }
         //todo 退款逻辑需要按照支付方式来
         else {
-            log.error("订单类型不匹配:{}",order);
-            throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING,order.getOrderNo());
+            log.error("订单类型不匹配:{}", order);
+            throw new OrderException(OrderException.ExceptionCode.ORDER_TYPE_MISMATCHING, order.getOrderNo());
         }
 
 

@@ -57,8 +57,6 @@ public class MiniAppPushContainer extends RedisTaskContainer {
     }
 
     private void process(WxMaTemplateMessageVO wxMaTemplateMessageVO) {
-        //TODO 直接贴的之前的消费小程序推送队列的代码，因为之前代码是把app和小程序推送揉到一起，所以这里需要拆分出来，
-        //TODO app的要单独拆开放到appPushContainer的process里
         try {
             log.info("推送消息队列推送消息:wxMaTemplateMessageVO:{}", wxMaTemplateMessageVO);
             WxMaTemplateMessage wxMaTemplateMessage = WxMaTemplateMessage.builder().templateId(wxMaTemplateMessageVO.getTemplateId())

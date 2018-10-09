@@ -69,7 +69,8 @@ public class PushServiceImpl implements PushService {
      * @param content
      * @param replaces
      */
-    protected void pushWechatTemplateMsg(int platform, int userId, WechatTemplateIdEnum templateIdEnum, String wechatPage, String content, String... replaces) {
+    protected void pushWechatTemplateMsg(int platform, int userId, WechatTemplateIdEnum templateIdEnum,
+                                         String wechatPage, String content, String... replaces) {
         if (replaces != null && replaces.length > 0) {
             content = StrUtil.format(content, replaces);
         }
@@ -77,10 +78,12 @@ public class PushServiceImpl implements PushService {
         List<WxMaTemplateMessage.Data> dataList;
         switch (templateIdEnum) {
             case PLAY_LEAVE_MSG:
-                dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", content), new WxMaTemplateMessage.Data("keyword2", date));
+                dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", content),
+                        new WxMaTemplateMessage.Data("keyword2", date));
                 break;
             default:
-                dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", content), new WxMaTemplateMessage.Data("keyword2", date));
+                dataList = CollectionUtil.newArrayList(new WxMaTemplateMessage.Data("keyword1", content),
+                        new WxMaTemplateMessage.Data("keyword2", date));
         }
 
         addTemplateMsg2Queue(platform, null, Collections.singletonList(userId), wechatPage, templateIdEnum, dataList);
@@ -124,9 +127,11 @@ public class PushServiceImpl implements PushService {
                 //备注（消息模板内容）
                 new WxMaTemplateMessage.Data("keyword6", content));
         if (PlatformEcoEnum.PLAY.getType().equals(platform)) {
-            addTemplateMsg2Queue(platform, null, Collections.singletonList(userId), wechatTemplateMsgEnum.getPage().getPlayPagePath(), wechatTemplateIdEnum, dataList);
+            addTemplateMsg2Queue(platform, null, Collections.singletonList(userId),
+                    wechatTemplateMsgEnum.getPage().getPlayPagePath(), wechatTemplateIdEnum, dataList);
         } else if (PlatformEcoEnum.POINT.getType().equals(platform)) {
-            addTemplateMsg2Queue(platform, null, Collections.singletonList(userId), wechatTemplateMsgEnum.getPage().getPointPagePath(), wechatTemplateIdEnum, dataList);
+            addTemplateMsg2Queue(platform, null, Collections.singletonList(userId),
+                    wechatTemplateMsgEnum.getPage().getPointPagePath(), wechatTemplateIdEnum, dataList);
         }
     }
 
@@ -258,40 +263,24 @@ public class PushServiceImpl implements PushService {
                     }
                 }
             }
-            return;
         }
     }
 
 
     /**
-     * 推送全体用户
+     * app推送全体用户
      *
      * @param title
      * @param alert
      * @param extras
      */
     public void pushMsg(String title, String alert, Map<String, String> extras) {
-        JPushClient jpushClient = new JPushClient(configProperties.getJpush().getAppSecret(), configProperties.getJpush().getAppKey());
-        PushPayload payload = buildPushPayload(title, alert, extras, Audience.all());
-        try {
-            PushResult result = jpushClient.sendPush(payload);
-            log.info("Got result - " + result);
-        } catch (APIConnectionException e) {
-            log.error("Connection error. Should retry later. ", e);
-            log.error("Sendno: " + payload.getSendno());
-        } catch (APIRequestException e) {
-            log.error("Error response from JPush server. Should review and fix it. ", e);
-            log.info("HTTP Status: " + e.getStatus());
-            log.info("Error Code: " + e.getErrorCode());
-            log.info("Error Message: " + e.getErrorMessage());
-            log.info("Msg ID: " + e.getMsgId());
-            log.error("Sendno: " + payload.getSendno());
-        }
+        push(title, alert, extras, null);
     }
 
 
     /**
-     * 指定用户ID推送消息
+     * 指定用户ID app推送消息
      *
      * @param title
      * @param alert
@@ -306,8 +295,20 @@ public class PushServiceImpl implements PushService {
         for (int i = 0; i < userIds.length; i++) {
             strUserIds[i] = String.valueOf(userIds[i]);
         }
+        push(title, alert, extras, strUserIds);
+    }
+
+    /**
+     * app推送方法
+     * @param title
+     * @param alert
+     * @param extras
+     * @param userIds
+     */
+    private void push(String title, String alert, Map<String, String> extras, String[] userIds) {
         JPushClient jpushClient = new JPushClient(configProperties.getJpush().getAppSecret(), configProperties.getJpush().getAppKey());
-        PushPayload payload = buildPushPayload(title, alert, extras, Audience.alias(strUserIds));
+        Audience audience = userIds == null ? Audience.all() : Audience.alias(userIds);
+        PushPayload payload = buildPushPayload(title, alert, extras, audience);
         try {
             PushResult result = jpushClient.sendPush(payload);
             log.info("Got result - " + result);

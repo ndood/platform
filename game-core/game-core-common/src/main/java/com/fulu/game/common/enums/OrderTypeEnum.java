@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum  OrderTypeEnum  implements TypeEnum<Integer>{
 
 
-    PLATFORM(1,"陪玩订单"),
+    PLAY(1,"陪玩订单"),
     POINT(2,"上分订单");
 
     private Integer type;
