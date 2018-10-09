@@ -38,6 +38,6 @@ public class MoneyDetails implements Serializable {
     private Date createTime;
 
     /** 用户类型（1：普通用户；4：马甲用户） */
-    private int userType;
+    private Integer userType;
 
 }

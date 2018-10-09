@@ -32,7 +32,7 @@
         tmd.money AS money,
         tmd.create_time AS create_time,
         tmd.remark AS remark,
-        tmp.user_type as user_type,
+        tmd.user_type as user_type,
         tu.nickname AS nickname,
         tu.mobile AS mobile
         FROM t_money_details tmd LEFT JOIN t_user tu ON tmd.target_id = tu.id

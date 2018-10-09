@@ -55,6 +55,7 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
             List<Integer> actions = new ArrayList<>();
             actions.add(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType());
             actions.add(MoneyOperateTypeEnum.ADMIN_SUBTRACT_CHANGE.getType());
+            moneyDetailsVO.setActions(actions);
         }
 //        moneyDetailsVO.setAction(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType());
         String orderBy = "tmd.create_time desc";
