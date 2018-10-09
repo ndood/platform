@@ -130,6 +130,36 @@ public class UserVO extends User {
      */
     private Integer duration;
 
+    /**
+     * 技能数量（审核通过的）
+     */
+    @Excel(name = "技能数量", orderNum = "19", replace = {"0_null"}, width = 15)
+    private Integer techNum;
+
+    /**
+     * 是否午夜场陪玩师（false：否；true：是）
+     */
+    @Excel(name = "是否午夜场陪玩师", orderNum = "17", replace = {"否_false", "是_true", "否_null"}, width = 15)
+    private Boolean nigthFlag;
+
+    /**
+     * 是否马甲（false：否；true：是）
+     */
+    @Excel(name = "是否马甲", orderNum = "16", replace = {"否_false", "是_true", "否_null"}, width = 15)
+    private Boolean vestFlag;
+
+    /**
+     * 是否开启代聊  0关闭  1开启
+     */
+    @Excel(name = "是否代聊", orderNum = "15", replace = {"否_false", "是_true", "否_null"}, width = 15)
+    private Boolean openSubstituteIm;
+
+    /**
+     * 陪玩师注册时间
+     */
+    @Excel(name = "陪玩师注册时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "14", width = 20)
+    private Date registerTime;
+
     @Excel(name = "钱包余额", orderNum = "12", width = 15)
     private String balanceStr;
 
