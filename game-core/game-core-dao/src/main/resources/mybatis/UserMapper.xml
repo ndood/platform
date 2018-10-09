@@ -60,7 +60,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,register_type,user_info_auth,balance,charge_balance,virtual_balance,charm,charm_draw_sum,status,create_time,update_time,open_id,point_open_id,public_open_id,union_id,city,province,country,score_avg,server_score_avg,user_score,constellation,birth,age,im_id,im_psw,source_id,regist_ip,login_ip,login_time,order_count
+        id,mobile,nickname,gender,head_portraits_url,password,salt,realname,idcard,type,register_type,user_info_auth,balance,charge_balance,virtual_balance,charm,charm_draw_sum,status,create_time,update_time,open_id,point_open_id,public_open_id,union_id,city,province,country,score_avg,server_score_avg,user_score,constellation,birth,age,im_id,im_psw,source_id,regist_ip,login_ip,login_time
     </sql>
 
     <select id="findUserVOByUserIds" resultMap="UserResultVOMap">
