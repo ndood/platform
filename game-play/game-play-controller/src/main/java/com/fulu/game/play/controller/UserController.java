@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.config.WxMaServiceSupply;
+import com.fulu.game.common.enums.FileTypeEnum;
 import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.UserBodyAuthStatusEnum;
@@ -20,6 +21,8 @@ import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.*;
+import com.fulu.game.core.search.component.UserSearchComponent;
+import com.fulu.game.core.search.domain.UserDoc;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.UserInfoAuthServiceImpl;
@@ -80,6 +83,11 @@ public class UserController extends BaseController {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private UserInfoAuthFileService userInfoAuthFileService;
+    @Autowired
+    private UserSearchComponent userSearchComponent;
+
     @RequestMapping("tech/list")
     public Result userTechList() {
         User user = userService.getCurrentUser();
@@ -122,9 +130,10 @@ public class UserController extends BaseController {
      * @return
      */
     @PostMapping("/get")
-    public Result get() {
-        User user = userService.findById(userService.getCurrentUser().getId());
-        return Result.success().data(user).msg("查询信息成功！");
+    public Result get(@RequestParam(required = false) Integer userId) {
+//        User user = userService.findById(userService.getCurrentUser().getId());
+        UserVO userVO = userService.getUserInfo(userId);
+        return Result.success().data(userVO).msg("查询信息成功！");
     }
 
     /**
@@ -135,8 +144,11 @@ public class UserController extends BaseController {
      */
     @RequestMapping("/update")
     public Result update(UserVO userVO) {
-        User user = userService.findById(userService.getCurrentUser().getId());
-        user.setAge(userVO.getAge());
+        User user = new User();
+        if (userVO.getBirth() != null) {
+            user.setAge(DateUtil.ageOfNow(userVO.getBirth()));
+        }
+        user.setId(userService.getCurrentUser().getId());
         user.setGender(userVO.getGender());
         user.setCity(userVO.getCity());
         user.setProvince(userVO.getProvince());
@@ -146,10 +158,111 @@ public class UserController extends BaseController {
         user.setNickname(userVO.getNickname());
         user.setHeadPortraitsUrl(ossUtil.activateOssFile(userVO.getHeadPortraitsUrl()));
         userService.update(user);
+        user = userService.findById(userService.getCurrentUser().getId());
         userService.updateRedisUser(user);
+        // 保存用户ES信息
+        UserDoc userDoc = new UserDoc();
+        BeanUtil.copyProperties(user,userDoc);
+        userSearchComponent.saveIndex(userDoc);
+        // 保存用户认证信息
+        saveUserInfoAuth(userVO);
         user.setIdcard(null);
         user.setRealname(null);
         return Result.success().data(user).msg("个人信息设置成功！");
+    }
+
+
+    /**
+     * 查询-用户-列表
+     * 只查陪玩师
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @PostMapping("/list")
+    public Result list(@RequestParam String nickname,
+                       @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+                       @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
+        try {
+            PageInfo<UserDoc> page = userSearchComponent.findPlayerByNickName(pageNum,pageSize,nickname);
+            return Result.success().data(page).msg("查询用户列表成功！");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Result.success().data(null).msg("查询用户列表成功！");
+    }
+
+    /**
+     * 保存用户认证信息
+     *
+     * @param userVO
+     */
+    private void saveUserInfoAuth(UserVO userVO) {
+        User user = userService.getCurrentUser();
+        // 当存在用户认证信息时取修改
+        if (userVO != null && (userVO.getInterests() != null ||
+                userVO.getProfession() != null || userVO.getAbout() != null ||
+                userVO.getPicUrls() != null || userVO.getVideoUrl() != null)) {
+            UserInfoAuth userInfoAuth = new UserInfoAuth();
+            userInfoAuth.setUserId(user.getId());
+            if (userVO.getInterests() != null) {
+                userInfoAuth.setInterests(userVO.getInterests());
+            }
+            if (userVO.getProfession() != null) {
+                userInfoAuth.setProfession(userVO.getProfession());
+            }
+            if (userVO.getAbout() != null) {
+                userInfoAuth.setAbout(userVO.getAbout());
+            }
+            // 判断认证信息是否存在，不存在就新增
+            UserInfoAuth tmp = userInfoAuthService.findByUserId(user.getId());
+            userInfoAuth.setUpdateTime(new Date());
+            if (tmp == null) {
+                userInfoAuth.setCreateTime(new Date());
+                userInfoAuthService.create(userInfoAuth);
+            } else {
+                userInfoAuthService.updateByUserId(userInfoAuth);
+            }
+            saveUserInfoAuthFile(userVO);
+        }
+    }
+
+    /**
+     * 保存用户认证文件信息（相册和视频）
+     *
+     * @param userVO
+     */
+    private void saveUserInfoAuthFile(UserVO userVO) {
+        User user = userService.getCurrentUser();
+        UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
+        if (userInfoAuth != null) {
+            // 先删除所有以前图片，然后插入
+            userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(), FileTypeEnum.PIC.getType());
+            userInfoAuthFileService.deleteByUserAuthIdAndType(userInfoAuth.getId(), FileTypeEnum.VIDEO.getType());
+            if (userVO != null) {
+                String[] picUrls = userVO.getPicUrls();
+                if (picUrls != null && picUrls.length > 0) {
+                    for (int i = 0; i < picUrls.length; i++) {
+                        UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
+                        userInfoAuthFile.setUrl(ossUtil.activateOssFile(picUrls[i]));
+                        userInfoAuthFile.setInfoAuthId(userInfoAuth.getId());
+                        userInfoAuthFile.setType(FileTypeEnum.PIC.getType());
+                        userInfoAuthFile.setName("相册" + (i + 1));
+                        userInfoAuthFile.setCreateTime(new Date());
+                        userInfoAuthFileService.create(userInfoAuthFile);
+                    }
+                }
+                if (userVO != null && userVO.getVideoUrl() != null) {
+                    UserInfoAuthFile userInfoAuthFile = new UserInfoAuthFile();
+                    userInfoAuthFile.setUrl(ossUtil.activateOssFile(userVO.getVideoUrl()));
+                    userInfoAuthFile.setInfoAuthId(userInfoAuth.getId());
+                    userInfoAuthFile.setType(FileTypeEnum.VIDEO.getType());
+                    userInfoAuthFile.setName("视频");
+                    userInfoAuthFile.setCreateTime(new Date());
+                    userInfoAuthFileService.create(userInfoAuthFile);
+                }
+            }
+        }
     }
 
 
