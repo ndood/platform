@@ -104,7 +104,7 @@ public class MoneyDetailsController extends BaseController{
         String title = "零钱列表";
         PageInfo<MoneyDetailsVO> list = moneyDetailsService.listByAdmin(moneyDetailsVO, null, null);
         ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
-        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, CashDrawsVO.class, list.getList());
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, MoneyDetailsVO.class, list.getList());
         response.setCharacterEncoding("UTF-8");
         response.setHeader("content-Type", "application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));

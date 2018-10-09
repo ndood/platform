@@ -717,16 +717,15 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
 
     /**
      * 生成订单号
-     *
+     * @param serviceUserId 陪玩师id
      * @return
      */
-    protected String generateOrderNo() {
+    protected String generateOrderNo(Integer serviceUserId) {
         String orderNo = GenIdUtil.GetOrderNo();
         // 判断是否马甲账号
         String suffix = "";
-        User user = userService.getCurrentUser();
-        if(user != null){
-            UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
+        if(serviceUserId != null && serviceUserId.intValue() > 0){
+            UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(serviceUserId);
             if(userInfoAuth != null && userInfoAuth.getVestFlag()){
                 suffix = Constant.VEST_SUFFIX;
             }
@@ -735,7 +734,16 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         if (orderService.findByOrderNo(orderNo) == null) {
             return orderNo;
         } else {
-            return generateOrderNo();
+            return generateOrderNo(serviceUserId);
         }
+    }
+
+    /**
+     * 生成订单号
+     *
+     * @return
+     */
+    protected String generateOrderNo() {
+        return generateOrderNo(null);
     }
 }
