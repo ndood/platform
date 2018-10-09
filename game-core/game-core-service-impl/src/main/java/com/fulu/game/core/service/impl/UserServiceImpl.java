@@ -957,6 +957,8 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             } else {
                 user.setUserType(UserTypeEnum.GENERAL_USER.getType());
             }
+        } else {
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
         return user;
     }
