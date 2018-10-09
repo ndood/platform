@@ -443,7 +443,7 @@
                 and t1.payment = #{payment}
             </if>
             <if test="isVestOrder != null">
-                and t1.order_no LIKE 'VEST_%'
+                and t1.order_no LIKE '%_VEST'
             </if>
         </where>
     </select>

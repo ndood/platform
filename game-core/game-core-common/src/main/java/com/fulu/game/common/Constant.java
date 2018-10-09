@@ -215,5 +215,5 @@ public interface Constant {
     String ADMIN_USERNAME = "admin";
 
     /** 马甲前缀(目前用户订单和提现号) */
-    String VEST_PREFIX = "VEST_";
+    String VEST_SUFFIX = "_VEST";
 }

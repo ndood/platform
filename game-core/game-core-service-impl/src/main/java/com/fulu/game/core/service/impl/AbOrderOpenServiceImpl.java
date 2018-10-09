@@ -723,15 +723,15 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
     protected String generateOrderNo() {
         String orderNo = GenIdUtil.GetOrderNo();
         // 判断是否马甲账号
-        String prefix = "";
+        String suffix = "";
         User user = userService.getCurrentUser();
         if(user != null){
             UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
             if(userInfoAuth != null && userInfoAuth.getVestFlag()){
-                prefix = Constant.VEST_PREFIX;
+                suffix = Constant.VEST_SUFFIX;
             }
         }
-        orderNo = prefix + orderNo;
+        orderNo = orderNo + suffix;
         if (orderService.findByOrderNo(orderNo) == null) {
             return orderNo;
         } else {

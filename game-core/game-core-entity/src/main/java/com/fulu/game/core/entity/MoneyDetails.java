@@ -16,7 +16,7 @@ import java.util.Date;
  */
 @Data
 public class MoneyDetails implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1234567890L;
 
     //主键id自增
     @Excel(name = "记录id", orderNum = "0", width = 15)

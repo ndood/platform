@@ -190,10 +190,10 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
                         .multiply(Constant.CHARM_TO_MONEY_RATE)
                         .setScale(2, BigDecimal.ROUND_HALF_DOWN));
                 meta.setBalance(meta.getBalance().add(unCashDrawsSum == null ? BigDecimal.ZERO : unCashDrawsSum));
-                if(meta.getCashNo() != null && !"".equals(meta.getCashNo()) && meta.getCashNo().startsWith(Constant.VEST_PREFIX)){
-                    meta.setUserType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
-                } else {
+                if(meta.getCashNo() != null && !"".equals(meta.getCashNo()) && meta.getCashNo().endsWith(Constant.VEST_SUFFIX)){
                     meta.setUserType(UserTypeEnum.VEST_USER.getType());
+                } else {
+                    meta.setUserType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
                 }
             }
         }
@@ -510,15 +510,15 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
     private String generateCashNo() {
         String cashNo = GenIdUtil.GetOrderNo();
         // 判断是否马甲账号
-        String prefix = "";
+        String suffix = "";
         User user = userService.getCurrentUser();
         if(user != null){
             UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
             if(userInfoAuth != null && userInfoAuth.getVestFlag()){
-                prefix = Constant.VEST_PREFIX;
+                suffix = Constant.VEST_SUFFIX;
             }
         }
-        cashNo = prefix + cashNo;
+        cashNo = cashNo + suffix;
         if (findByCashNo(cashNo) == null) {
             return cashNo;
         } else {
