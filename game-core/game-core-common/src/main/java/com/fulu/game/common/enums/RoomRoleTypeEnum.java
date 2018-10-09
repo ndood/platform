@@ -14,4 +14,15 @@ public enum  RoomRoleTypeEnum implements TypeEnum<Integer>{
 
     private Integer type;
     private String msg;
+
+
+    public RoomRoleTypeEnum findByType(Integer type){
+        for(RoomRoleTypeEnum roleTypeEnum : RoomRoleTypeEnum.values()){
+            if(roleTypeEnum.getType().equals(type)){
+                return roleTypeEnum;
+            }
+        }
+        return null;
+    }
+
 }

@@ -145,4 +145,21 @@ public class RoomController extends BaseController {
         return Result.success().msg("房间信息设置成功!");
     }
 
+
+     /**
+     * 房间马甲设置
+     * @return
+     */
+    @RequestMapping("/role/add")
+    public Result roomRoleAdd(@RequestParam(required = true) String  roomNo,
+                              @RequestParam(required = true) Integer userId,
+                              @RequestParam(required = true) Integer role){
+
+
+        return Result.success().msg("房间信息设置成功!");
+    }
+
+
+
+
 }

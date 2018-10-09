@@ -15,11 +15,28 @@ import com.fulu.game.core.entity.User;
  */
 public interface RoomManageService extends ICommonService<RoomManage,Integer>{
 
-
+    /**
+     * 创建房间马甲
+     * @param roomRoleTypeEnum
+     * @param userId
+     * @param roomNo
+     * @return
+     */
     RoomManage createManage(RoomRoleTypeEnum roomRoleTypeEnum, int userId, String roomNo);
 
+    /**
+     * 删除房间马甲
+     * @param userId
+     * @param roomNo
+     */
+    void deleteManage(int userId, String roomNo);
 
-
+    /**
+     * 通过用户和房间号查找马甲
+     * @param userId
+     * @param roomNo
+     * @return
+     */
     RoomManage findByUserAndRoomNo(int userId,String roomNo);
 
 }
