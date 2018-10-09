@@ -8,16 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.BoundListOperations;
-import org.springframework.data.redis.core.RedisCallback;
-import org.springframework.data.redis.core.RedisConnectionUtils;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -300,13 +294,60 @@ public class RedisOpenServiceImpl {
 
     /**
      * 获取listOps来操作list
-     *
      * @param key
      * @return
      */
     public <T, S> BoundListOperations<T, S> getListOps(String key) {
         return redisTemplate.boundListOps(key);
     }
+
+
+    /**
+     * 往list中插入元素
+     * @param key
+     * @param value
+     * @param <T>
+     */
+    public <T>long setForAdd(String key,T value){
+        SetOperations setOperations =redisTemplate.opsForSet();
+        return setOperations.add(key,value);
+    }
+
+    /**
+     * 在list中删除元素
+     * @param key
+     * @param value
+     * @param <T>
+     */
+    public <T>long setForDel(String key,T value){
+        SetOperations setOperations =redisTemplate.opsForSet();
+        return setOperations.remove(key,value);
+    }
+
+
+    /**
+     * 查询list的size
+     * @param key
+     */
+    public long setForSize(String key){
+        SetOperations setOperations =redisTemplate.opsForSet();
+        return setOperations.size(key);
+    }
+
+    /**
+     * 查询list的size
+     * @param key
+     */
+    public <T> Set<T> setForAll(String key){
+        SetOperations setOperations =redisTemplate.opsForSet();
+        long length = setOperations.size(key);
+        if(length<=0){
+            return new HashSet();
+        }
+        return setOperations.members(key);
+    }
+
+
 
     /**
      * blocking 一直阻塞直到队列里边有数据

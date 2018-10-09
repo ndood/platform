@@ -390,6 +390,15 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         throw new ServiceErrorException("用户不匹配!");
     }
 
+
+    @Override
+    public UserChatRoomVO getUserChatRoomVO(User user){
+        UserChatRoomVO userChatRoomVO = new UserChatRoomVO();
+        BeanUtil.copyProperties(user,userChatRoomVO);
+        return userChatRoomVO;
+    }
+
+
     @Override
     public void checkUserInfoAuthStatus(Integer userId, Integer... ignoreAuthStatus) {
         User user = findById(userId);

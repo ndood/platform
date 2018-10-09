@@ -1,6 +1,7 @@
 package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Room;
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.RoomVO;
 import com.github.pagehelper.PageInfo;
 
@@ -80,4 +81,28 @@ public interface RoomService extends ICommonService<Room, Integer> {
      * @return
      */
     Room findByRoomNo(String roomNo);
+
+    /**
+     * 聊天室对象转成vo对象
+     * @param room
+     * @return
+     */
+    RoomVO room2VO(Room room);
+
+    /**
+     * 用户进入聊天室
+     * @param user
+     * @param roomNo
+     * @param password
+     * @return
+     */
+    long userEnterChatRoom(User user, String roomNo, String password);
+
+    /**
+     * 用户退出聊天室
+     * @param user
+     * @param roomNo
+     * @return
+     */
+    long userQuitChatRoom(User user, String roomNo);
 }

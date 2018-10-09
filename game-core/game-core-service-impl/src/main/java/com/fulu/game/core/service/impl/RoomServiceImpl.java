@@ -2,9 +2,10 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.bean.BeanUtil;
+import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.enums.RoomRoleTypeEnum;
+import com.fulu.game.common.exception.RoomException;
 import com.fulu.game.common.exception.ServiceErrorException;
-import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.RoomDao;
@@ -12,13 +13,13 @@ import com.fulu.game.core.entity.Room;
 import com.fulu.game.core.entity.RoomCategory;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.RoomVO;
+import com.fulu.game.core.entity.vo.UserChatRoomVO;
 import com.fulu.game.core.service.RoomCategoryService;
 import com.fulu.game.core.service.RoomManageService;
 import com.fulu.game.core.service.RoomService;
 import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,13 +33,14 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
 
     @Autowired
     private RoomDao roomDao;
-
     @Autowired
     private RoomCategoryService roomCategoryService;
     @Autowired
     private UserService userService;
     @Autowired
     private RoomManageService roomManageService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
 
     @Override
     public ICommonDao<Room, Integer> getDao() {
@@ -56,7 +58,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         List<Room> roomList = roomDao.findByParameter(param);
         List<RoomVO> result = new ArrayList<>();
         for (Room room : roomList) {
-            RoomVO roomVO =room2VO(room);
+            RoomVO roomVO = room2VO(room);
             result.add(roomVO);
         }
         PageInfo page = new PageInfo(roomList);
@@ -72,8 +74,8 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         List<Room> roomList = roomDao.findByParameter(param);
         PageInfo page = new PageInfo(roomList);
         List<RoomVO> roomVOList = new ArrayList<>();
-        for(Room room : roomList){
-            RoomVO roomVO =room2VO(room);
+        for (Room room : roomList) {
+            RoomVO roomVO = room2VO(room);
             roomVOList.add(roomVO);
         }
         page.setList(roomVOList);
@@ -81,10 +83,9 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     }
 
 
-
-    public PageInfo<RoomVO>  findCollectRoomByUser(int pageNum,int pageSize,int userId){
+    public PageInfo<RoomVO> findCollectRoomByUser(int pageNum, int pageSize, int userId) {
         PageHelper.startPage(pageNum, pageSize);
-        List<Room> roomList =roomDao.findCollectRoomByUser(userId);
+        List<Room> roomList = roomDao.findCollectRoomByUser(userId);
         List<RoomVO> result = new ArrayList<>();
         for (Room room : roomList) {
             RoomVO roomVO = room2VO(room);
@@ -96,9 +97,8 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     }
 
 
-
     @Override
-    public PageInfo<RoomVO> findUsableRoomsByRoomCategory(int pageNum, int pageSize,int roomCategoryId) {
+    public PageInfo<RoomVO> findUsableRoomsByRoomCategory(int pageNum, int pageSize, int roomCategoryId) {
         PageHelper.startPage(pageNum, pageSize, "sort desc");
         RoomVO param = new RoomVO();
         param.setIsActivate(true);
@@ -119,6 +119,10 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
 
     @Override
     public RoomVO findByOwner(int userId) {
+        Room room = findByUser(userId);
+        if (room == null) {
+            return null;
+        }
         RoomVO roomVO = new RoomVO();
         BeanUtil.copyProperties(findByUser(userId), roomVO);
         return roomVO;
@@ -141,8 +145,8 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     public RoomVO save(RoomVO roomVO) {
         roomVO.setUpdateTime(new Date());
         if (roomVO.getId() == null) {
-            User user = userService.findByMobile( roomVO.getOwnerMobile());
-            if(user==null){
+            User user = userService.findByMobile(roomVO.getOwnerMobile());
+            if (user == null) {
                 throw new ServiceErrorException("手机号不存在!");
             }
             roomVO.setUserId(user.getId());
@@ -152,7 +156,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
             roomVO.setCreateTime(new Date());
             create(roomVO);
             //创建管理员
-            roomManageService.createManage(RoomRoleTypeEnum.OWNER,user.getId(),roomVO.getRoomNo());
+            roomManageService.createManage(RoomRoleTypeEnum.OWNER, user.getId(), roomVO.getRoomNo());
         } else {
             update(roomVO);
         }
@@ -191,12 +195,13 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
 
     /**
      * 房间实体转换成VO
+     *
      * @param room
      * @return
      */
-    private RoomVO room2VO(Room room){
+    public RoomVO room2VO(Room room) {
         RoomVO roomVO = new RoomVO();
-        BeanUtil.copyProperties(room,roomVO);
+        BeanUtil.copyProperties(room, roomVO);
         //设置房间分类
         RoomCategory roomCategory = roomCategoryService.findById(room.getRoomCategoryId());
         roomVO.setRoomCategoryName(roomCategory.getName());
@@ -207,7 +212,29 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     }
 
 
+    public long userEnterChatRoom(User user, String roomNo, String password) {
+        Room room = findByRoomNo(roomNo);
+        if (room == null) {
+            throw new RoomException(RoomException.ExceptionCode.ROOM_NOT_EXIST);
+        }
+        if (room.getIsLock()) {
+            if (password == null || !password.equals(room.getPassword())) {
+                throw new RoomException(RoomException.ExceptionCode.ROOM_PASSWORD_ERROR);
+            }
+        }
+        UserChatRoomVO userChatRoomVO = userService.getUserChatRoomVO(user);
+        return redisOpenService.setForAdd(RedisKeyEnum.CHAT_ROOM_ONLINE_USER.generateKey(roomNo), userChatRoomVO);
+    }
 
+
+    public long userQuitChatRoom(User user, String roomNo) {
+        Room room = findByRoomNo(roomNo);
+        if (room == null) {
+            throw new RoomException(RoomException.ExceptionCode.ROOM_NOT_EXIST);
+        }
+        UserChatRoomVO userChatRoomVO = userService.getUserChatRoomVO(user);
+        return redisOpenService.setForDel(RedisKeyEnum.CHAT_ROOM_ONLINE_USER.generateKey(roomNo), userChatRoomVO);
+    }
 
 
 }
