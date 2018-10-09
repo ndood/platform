@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.enums.CashProcessStatusEnum;
 import com.fulu.game.common.enums.MoneyOperateTypeEnum;
+import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.exception.CashException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
@@ -120,9 +121,9 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         moneyDetails.setOperatorId(admin.getId());
         moneyDetails.setTargetId(user.getId());
         if(userInfoAuth != null && userInfoAuth.getVestFlag()){
-            moneyDetails.setUserType(2);
+            moneyDetails.setUserType(UserTypeEnum.VEST_USER.getType());
         } else {
-            moneyDetails.setUserType(1);
+            moneyDetails.setUserType(UserTypeEnum.GENERAL_USER.getType());
         }
         // 当action为null时，设置为用户新增零钱
         BigDecimal money = null;
