@@ -7,6 +7,7 @@ import com.fulu.game.common.exception.RoomException;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.RoomCategoryVO;
 import com.fulu.game.core.entity.vo.RoomVO;
+import com.fulu.game.core.entity.vo.UserChatRoomVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @Slf4j
@@ -185,7 +187,6 @@ public class RoomController extends BaseController {
 
     /**
      * 查询聊天室信息
-     *
      * @param roomNo
      * @return
      */
@@ -218,7 +219,18 @@ public class RoomController extends BaseController {
     public Result quitRoom(@RequestParam(required = true) String roomNo) {
         User user = userService.getCurrentUser();
         roomService.userQuitChatRoom(user,roomNo);
-        return Result.success().msg("退出聊天室成功");
+        return Result.success().msg("退出聊天室成功!");
+    }
+
+    /**
+     * 聊天室在线用户
+     * @param roomNo
+     * @return
+     */
+    @RequestMapping("/user/online")
+    public Result roomUserOnline(@RequestParam(required = true) String roomNo) {
+        Set<UserChatRoomVO> userChatRoomVOSet =   roomService.getOnlineUser(roomNo);
+        return Result.success().data(userChatRoomVOSet);
     }
 
 

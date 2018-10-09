@@ -3,7 +3,11 @@ package com.fulu.game.core.service;
 import com.fulu.game.core.entity.Room;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.RoomVO;
+import com.fulu.game.core.entity.vo.UserChatRoomVO;
 import com.github.pagehelper.PageInfo;
+
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -105,4 +109,13 @@ public interface RoomService extends ICommonService<Room, Integer> {
      * @return
      */
     long userQuitChatRoom(User user, String roomNo);
+
+    /**
+     * 获取聊天室在线用户
+     * @param roomNo
+     * @return
+     */
+    Set<UserChatRoomVO> getOnlineUser(String roomNo);
+
+
 }

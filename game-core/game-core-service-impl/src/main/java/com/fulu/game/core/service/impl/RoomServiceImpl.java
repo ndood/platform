@@ -23,9 +23,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @Service
@@ -235,6 +233,16 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         }
         UserChatRoomVO userChatRoomVO = userService.getUserChatRoomVO(user);
         return redisOpenService.setForDel(RedisKeyEnum.CHAT_ROOM_ONLINE_USER.generateKey(roomNo), userChatRoomVO);
+    }
+
+
+    @Override
+    public Set<UserChatRoomVO> getOnlineUser(String roomNo) {
+        if(!redisOpenService.hasKey(RedisKeyEnum.CHAT_ROOM_ONLINE_USER.generateKey(roomNo))){
+            return new HashSet<>();
+        }
+        Set<UserChatRoomVO> userChatRoomVOS = redisOpenService.setForAll(RedisKeyEnum.CHAT_ROOM_ONLINE_USER.generateKey(roomNo));
+        return userChatRoomVOS;
     }
 
     /**
