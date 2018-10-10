@@ -2,6 +2,7 @@ package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Room;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.RoomMicVO;
 import com.fulu.game.core.entity.vo.RoomVO;
 import com.fulu.game.core.entity.vo.UserChatRoomVO;
 import com.github.pagehelper.PageInfo;
@@ -104,18 +105,67 @@ public interface RoomService extends ICommonService<Room, Integer> {
 
     /**
      * 用户退出聊天室
-     * @param user
+     * @param userId
      * @param roomNo
      * @return
      */
-    long userQuitChatRoom(User user, String roomNo);
+    long userQuitChatRoom(Integer userId, String roomNo);
 
     /**
      * 获取聊天室在线用户
      * @param roomNo
      * @return
      */
-    Set<UserChatRoomVO> getOnlineUser(String roomNo);
+    List<UserChatRoomVO> getOnlineUser(String roomNo);
+
+    /**
+     * 获取房间马甲用户列表
+     * @param roomNo
+     * @return
+     */
+    List<UserChatRoomVO> roomMangerList(String roomNo);
+
+    /**
+     * 更新用户进入的房间信息
+     * @param user
+     * @param roomNo
+     * @return
+     */
+    UserChatRoomVO setUserRoomInfo(User user, String roomNo);
+
+    /**
+     * 获取用户在聊天室信息
+     * @return
+     */
+    UserChatRoomVO getUserRoomInfo(Integer userId);
+
+    /**
+     * 房间所有麦位信息
+     * @param roomNo
+     * @return
+     */
+    List<RoomMicVO>  roomMicAll(String roomNo);
+
+
+    /**
+     * 抱用户上麦或者自己上麦
+     * @param roomNo
+     * @param index
+     * @param userId
+     * @return
+     */
+    RoomMicVO  roomMicHoldUp(String roomNo,int index,int userId);
+
+
+    /**
+     * 抱用户下麦或者设置麦位状态
+     * @param roomNo
+     * @param index
+     * @return
+     */
+    RoomMicVO  roomMicStatus(String roomNo,int index,int status);
+
+
 
 
 }

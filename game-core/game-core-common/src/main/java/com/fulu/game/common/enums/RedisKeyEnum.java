@@ -75,8 +75,12 @@ public enum RedisKeyEnum {
     DYNAMIC_COUNT,
     //聊天室虚拟人数
     CHAT_ROOM_VIRTUAL_COUNT,
-    //聊天室在线用户
-    CHAT_ROOM_ONLINE_USER;
+    //聊天室在线用户set
+    CHAT_ROOM_ONLINE_USER,
+    //在线用户信息
+    CHAT_ROOM_ONLINE_USER_INFO,
+    //聊天室麦位list
+    CHAT_ROOM_MIC;
 
 
 

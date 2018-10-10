@@ -40,7 +40,10 @@ public class UserChatRoomVO implements Serializable {
     //房间身份
     private Integer roomRole;
 
+    //房间名称
     private String roomName;
+    //房间图标
+    private String roomIcon;
 
     //房间公告
     private String notice;
@@ -53,9 +56,14 @@ public class UserChatRoomVO implements Serializable {
 
     //虚拟在线人数
     private Integer virtualPeople;
+
     //房间总人数
     private Long people;
 
+    //麦位置
+    private Integer micIndex;
 
+    //送出礼物数量
+    private BigDecimal giftPrice;
 
 }

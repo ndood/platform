@@ -60,4 +60,12 @@ public class RoomManageServiceImpl extends AbsCommonService<RoomManage, Integer>
         }
         return roomManageList.get(0);
     }
+
+
+    @Override
+    public List<RoomManage> findByRoomNo(String roomNo) {
+        RoomManageVO param = new RoomManageVO();
+        param.setRoomNo(roomNo);
+        return roomManageDao.findByParameter(param);
+    }
 }

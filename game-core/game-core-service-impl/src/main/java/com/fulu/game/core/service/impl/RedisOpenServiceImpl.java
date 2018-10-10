@@ -47,6 +47,7 @@ public class RedisOpenServiceImpl {
 
     /**
      * 统计bit位为1的总数
+     *
      * @param key
      */
     public Long bitCount(final String key) {
@@ -121,7 +122,7 @@ public class RedisOpenServiceImpl {
      * @param isPerpetual 是否永久保存（true：是；false：否）
      */
     public void set(String key, String value, boolean isPerpetual) {
-        if(isPerpetual){
+        if (isPerpetual) {
             redisTemplate.opsForValue().set(key, value);
         } else {
             set(key, value);
@@ -294,6 +295,7 @@ public class RedisOpenServiceImpl {
 
     /**
      * 获取listOps来操作list
+     *
      * @param key
      * @return
      */
@@ -303,50 +305,115 @@ public class RedisOpenServiceImpl {
 
 
     /**
-     * 往list中插入元素
-     * @param key
-     * @param value
+     * 初始化list
+     *
      * @param <T>
+     * @return
      */
-    public <T>long setForAdd(String key,T value){
-        SetOperations setOperations =redisTemplate.opsForSet();
-        return setOperations.add(key,value);
-    }
-
-    /**
-     * 在list中删除元素
-     * @param key
-     * @param value
-     * @param <T>
-     */
-    public <T>long setForDel(String key,T value){
-        SetOperations setOperations =redisTemplate.opsForSet();
-        return setOperations.remove(key,value);
+    public <T> long listForInit(String key, List<T> values) {
+        return redisTemplate.opsForList().rightPushAll(key, values);
     }
 
 
     /**
-     * 查询list的size
+     * 向list某个下标插入元素
+     *
+     * @param key
+     * @param index
+     * @param value
+     * @param <T>
+     */
+    public <T> void listSetForIndex(String key, int index, T value) {
+        redisTemplate.opsForList().set(key, index, value);
+    }
+
+    /**
+     * 查询list的大小
+     * @param key
+     * @param <T>
+     * @return
+     */
+    public <T> long listForSize(String key) {
+        return redisTemplate.opsForList().size(key);
+    }
+
+
+    /**
+     * 查询list所有元素
+     * @param key
+     * @param <T>
+     * @return
+     */
+    public <T> List<T> listForAll(String key) {
+        return redisTemplate.opsForList().range(key,0,-1);
+    }
+
+
+     /**
+     * 查询list所有元素
+     * @param key
+     * @param <T>
+     * @return
+     */
+    public <T> T listGetForIndex(String key, int index) {
+        try {
+            return (T)redisTemplate.opsForList().index(key,index);
+        }catch (Exception e){
+            return null;
+        }
+    }
+
+
+
+
+    /**
+     * 往SET中插入元素
+     *
+     * @param key
+     * @param value
+     * @param <T>
+     */
+    public <T> long setForAdd(String key, T value) {
+        SetOperations setOperations = redisTemplate.opsForSet();
+        return setOperations.add(key, value);
+    }
+
+    /**
+     * 在SET中删除元素
+     *
+     * @param key
+     * @param value
+     * @param <T>
+     */
+    public <T> long setForDel(String key, T value) {
+        SetOperations setOperations = redisTemplate.opsForSet();
+        return setOperations.remove(key, value);
+    }
+
+
+    /**
+     * 查询SET的size
+     *
      * @param key
      */
-    public long setForSize(String key){
-        SetOperations setOperations =redisTemplate.opsForSet();
+    public long setForSize(String key) {
+        SetOperations setOperations = redisTemplate.opsForSet();
         return setOperations.size(key);
     }
 
     /**
-     * 查询list的size
+     * 查询SET的所有元素
+     *
      * @param key
      */
-    public <T> Set<T> setForAll(String key){
-        SetOperations setOperations =redisTemplate.opsForSet();
+    public <T> Set<T> setForAll(String key) {
+        SetOperations setOperations = redisTemplate.opsForSet();
         long length = setOperations.size(key);
-        if(length<=0){
+        if (length <= 0) {
             return new HashSet();
         }
         return setOperations.members(key);
     }
-
 
 
     /**
@@ -402,19 +469,20 @@ public class RedisOpenServiceImpl {
     }
 
 
-
     /**
      * 自增
+     *
      * @param key
      * @return
      */
     public long incr(String key) {
-        return incr( key, 1);
+        return incr(key, 1);
     }
 
 
     /**
      * 递增
+     *
      * @param key
      * @param delta 递增因子，必须大于0
      * @return
@@ -428,21 +496,23 @@ public class RedisOpenServiceImpl {
 
     /**
      * 自减
+     *
      * @param key 键
      * @return
      */
-    public long decr(String key){
-        return decr( key, 1);
+    public long decr(String key) {
+        return decr(key, 1);
     }
 
     /**
      * 递减
-     * @param key 键
+     *
+     * @param key   键
      * @param delta 要减少几(小于0)
      * @return
      */
-    public long decr(String key, long delta){
-        if(delta<0){
+    public long decr(String key, long delta) {
+        if (delta < 0) {
             throw new RuntimeException("递减因子必须大于0");
         }
         return redisTemplate.opsForValue().increment(key, -delta);
@@ -451,6 +521,7 @@ public class RedisOpenServiceImpl {
 
     /**
      * 获取Integer类型的值
+     *
      * @param key
      * @return
      */

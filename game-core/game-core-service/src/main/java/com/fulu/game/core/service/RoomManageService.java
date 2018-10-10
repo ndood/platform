@@ -5,6 +5,8 @@ import com.fulu.game.core.entity.Room;
 import com.fulu.game.core.entity.RoomManage;
 import com.fulu.game.core.entity.User;
 
+import java.util.List;
+
 
 /**
  * 房间管理表
@@ -38,5 +40,12 @@ public interface RoomManageService extends ICommonService<RoomManage,Integer>{
      * @return
      */
     RoomManage findByUserAndRoomNo(int userId,String roomNo);
+
+    /**
+     * 聊天室马甲用户列表
+     * @param roomNo
+     * @return
+     */
+    List<RoomManage> findByRoomNo(String roomNo);
 
 }

@@ -2,7 +2,6 @@ package com.fulu.game.core.service;
 
 import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.vo.UserChatRoomVO;
 import com.fulu.game.core.entity.vo.UserOnlineVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;

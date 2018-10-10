@@ -4,8 +4,10 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.PlatformBannerEnum;
 import com.fulu.game.common.enums.RoomRoleTypeEnum;
 import com.fulu.game.common.exception.RoomException;
+import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.RoomCategoryVO;
+import com.fulu.game.core.entity.vo.RoomMicVO;
 import com.fulu.game.core.entity.vo.RoomVO;
 import com.fulu.game.core.entity.vo.UserChatRoomVO;
 import com.fulu.game.core.service.*;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -35,7 +38,8 @@ public class RoomController extends BaseController {
     private BannerService bannerService;
     @Autowired
     private RoomManageService roomManageService;
-
+    @Autowired
+    private RoomCollectService roomCollectService;
     /**
      * 房间banner
      * @return
@@ -71,14 +75,34 @@ public class RoomController extends BaseController {
         hotRoomCategory.setIsActivate(true);
         hotRoomCategory.setSort(998);
 
+        Integer userId = null;
         if (!list.isEmpty()) {
-            list.add(collectRoomCategory);
+            try {
+                User user = userService.getCurrentUser();
+                userId = user.getId();
+                list.add(collectRoomCategory);
+            }catch (UserException e){
+                //用户没有登录不显示收藏
+                log.info("用户没有登录不显示收藏分类");
+            }
             list.add(hotRoomCategory);
             list.sort((RoomCategory c1, RoomCategory c2) -> c2.getSort().compareTo(c1.getSort()));
         }
-        User user = userService.getCurrentUser();
-        List<RoomCategoryVO> result = roomCategoryService.getRoomListCategory(list, user.getId());
+
+        List<RoomCategoryVO> result = roomCategoryService.getRoomListCategory(list, userId);
         return Result.success().data(result);
+    }
+
+
+    /**
+     * 用户房间在线信息
+     * @return
+     */
+    @RequestMapping("/user/online")
+    public Result userRoomOnline(){
+        User user =  userService.getCurrentUser();
+        UserChatRoomVO userChatRoomVO = roomService.getUserRoomInfo(user.getId());
+        return Result.success().data(userChatRoomVO);
     }
 
 
@@ -92,8 +116,14 @@ public class RoomController extends BaseController {
                                      @RequestParam(required = true) Integer pageSize,
                                      @RequestParam(required = true) Integer roomCategoryId) {
         if (Integer.valueOf(999).equals(roomCategoryId)) {//收藏列表
-            User user = userService.getCurrentUser();
-            PageInfo<RoomVO> roomVOList = roomService.findCollectRoomByUser(pageNum, pageSize, user.getId());
+            PageInfo<RoomVO> roomVOList = new PageInfo<>(new ArrayList<>());
+            try {
+                User user = userService.getCurrentUser();
+                roomVOList = roomService.findCollectRoomByUser(pageNum, pageSize, user.getId());
+            }catch (UserException e){
+                //用户没有登录不显示收藏
+                log.info("用户没有登录不显示收藏列表");
+            }
             return Result.success().data(roomVOList);
         } else if (Integer.valueOf(998).equals(roomCategoryId)) {//热门列表
             PageInfo<RoomVO> roomVOList = roomService.findUsableRoomsByHot(pageNum, pageSize);
@@ -120,7 +150,6 @@ public class RoomController extends BaseController {
 
     /**
      * 房间设置
-     *
      * @return
      */
     @RequestMapping("/setting/update")
@@ -130,6 +159,7 @@ public class RoomController extends BaseController {
                                   Boolean isShow,
                                   Boolean isLock,
                                   String password,
+                                  Long micDuration,
                                   String notice,
                                   String slogan) {
         User user = userService.getCurrentUser();
@@ -147,6 +177,7 @@ public class RoomController extends BaseController {
         roomVO.setName(name);
         roomVO.setIsShow(isShow);
         roomVO.setIsLock(isLock);
+        roomVO.setMicDuration(micDuration);
         roomVO.setPassword(password);
         roomVO.setNotice(notice);
         roomVO.setSlogan(slogan);
@@ -218,7 +249,7 @@ public class RoomController extends BaseController {
     @RequestMapping("/quit")
     public Result quitRoom(@RequestParam(required = true) String roomNo) {
         User user = userService.getCurrentUser();
-        roomService.userQuitChatRoom(user,roomNo);
+        roomService.userQuitChatRoom(user.getId(),roomNo);
         return Result.success().msg("退出聊天室成功!");
     }
 
@@ -227,11 +258,81 @@ public class RoomController extends BaseController {
      * @param roomNo
      * @return
      */
-    @RequestMapping("/user/online")
-    public Result roomUserOnline(@RequestParam(required = true) String roomNo) {
-        Set<UserChatRoomVO> userChatRoomVOSet =   roomService.getOnlineUser(roomNo);
+    @RequestMapping("/user/list")
+    public Result roomUserOnline(@RequestParam(required = true) String roomNo,
+                                 Integer type) {
+        List<UserChatRoomVO> userChatRoomVOSet = new ArrayList<>();
+        if(Integer.valueOf(1).equals(type)){
+            userChatRoomVOSet = roomService.getOnlineUser(roomNo);
+        }else{
+            userChatRoomVOSet = roomService.roomMangerList(roomNo);
+        }
         return Result.success().data(userChatRoomVOSet);
     }
+
+    /**
+     * 聊天室所有麦位信息
+     * @return
+     */
+    @RequestMapping("/mic/all")
+    public Result roomMicAll(@RequestParam(required = true) String roomNo){
+        Room room = roomService.findByRoomNo(roomNo);
+        if(room==null){
+            throw new RoomException(RoomException.ExceptionCode.ROOM_NOT_EXIST);
+        }
+        List<RoomMicVO> roomMicVOList = roomService.roomMicAll(roomNo);
+        return Result.success().data(roomMicVOList);
+    }
+
+
+
+    /**
+     * 房间收藏
+     * @param roomNo
+     * @return
+     */
+    @RequestMapping("/collect")
+    public Result roomCollect(@RequestParam(required = true) String roomNo,
+                              @RequestParam(required = true)  Boolean flag){
+        User user = userService.getCurrentUser();
+        RoomCollect roomCollect =  roomCollectService.userCollect(roomNo,user.getId(),flag);
+        String msg = "取消收藏成功!";
+        if(flag){
+            msg = "收藏成功!";
+        }
+        return Result.success().data(roomCollect).msg(msg);
+    }
+
+
+    /**
+     * 抱上麦
+     * @param roomNo
+     * @return
+     */
+    @RequestMapping("/mic/hold/up")
+    public Result roomMicHoldUp(@RequestParam(required = true) String roomNo,
+                                @RequestParam(required = true) Integer index,
+                                @RequestParam(required = true) Integer userId){
+        //todo 查询操作用户权限
+        RoomMicVO roomMicVO = roomService.roomMicHoldUp(roomNo,index,userId);
+        return Result.success().data(roomMicVO);
+    }
+
+
+     /**
+     * 设置麦位状态
+     * @param roomNo
+     * @return
+     */
+    @RequestMapping("/mic/hold/status")
+    public Result roomMicHoldDown(@RequestParam(required = true) String roomNo,
+                                  @RequestParam(required = true) Integer index,
+                                  @RequestParam(required = true) Integer status){
+        //todo 查询操作用户权限
+        RoomMicVO roomMicVO = roomService.roomMicStatus(roomNo,index,status);
+        return Result.success().data(roomMicVO);
+    }
+
 
 
 }

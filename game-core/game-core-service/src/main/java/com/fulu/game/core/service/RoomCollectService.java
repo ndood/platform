@@ -17,5 +17,5 @@ public interface RoomCollectService extends ICommonService<RoomCollect,Integer>{
 
      RoomCollect findByRoomAndUser(String roomNo,Integer userId);
 
-
+     RoomCollect userCollect(String roomNo, Integer userId,Boolean flag);
 }

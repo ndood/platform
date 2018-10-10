@@ -95,8 +95,12 @@ public class RoomCategoryServiceImpl extends AbsCommonService<RoomCategory,Integ
         for(RoomCategoryVO roomCategoryVO : result){
             List<RoomVO> roomVOList = null;
             if(Integer.valueOf(999).equals(roomCategoryVO.getId())){//收藏列表
-                PageInfo<RoomVO> roomVOPage = roomService.findCollectRoomByUser(1,10,userId);
-                roomVOList = roomVOPage.getList();
+                if(userId==null){
+                    roomVOList = new ArrayList<>();
+                }else{
+                    PageInfo<RoomVO> roomVOPage = roomService.findCollectRoomByUser(1,10,userId);
+                    roomVOList = roomVOPage.getList();
+                }
             }else if(Integer.valueOf(998).equals(roomCategoryVO.getId())){//热门列表
                 PageInfo<RoomVO> roomVOPage = roomService.findUsableRoomsByHot(1, 10);
                 roomVOList = roomVOPage.getList();

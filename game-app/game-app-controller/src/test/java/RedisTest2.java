@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.List;
 import java.util.Set;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -33,12 +34,16 @@ public class RedisTest2 {
         User user2 = new User();
         user2.setId(2);
         user2.setNickname("zhangsan2");
-        redisTemplate.opsForSet().add(RedisKeyEnum.USER_ONLINE_KEY.generateKey("11111"), user1,user2);
+
+        redisTemplate.opsForList().leftPushAll(RedisKeyEnum.USER_ONLINE_KEY.generateKey("11111"),0,1,2,3,4,5,6,7,8);
+
+        redisTemplate.opsForList().set(RedisKeyEnum.USER_ONLINE_KEY.generateKey("11111"),0,user1);
+        redisTemplate.opsForList().set(RedisKeyEnum.USER_ONLINE_KEY.generateKey("11111"),5,user2);
     }
 
     @Test
     public void test2() {
-        long size = redisTemplate.opsForSet().size(RedisKeyEnum.USER_ONLINE_KEY.generateKey("11111"));
+        long size = redisTemplate.opsForList().size(RedisKeyEnum.USER_ONLINE_KEY.generateKey("11111"));
         System.out.println(size);
     }
 
@@ -47,12 +52,13 @@ public class RedisTest2 {
         User user = new User();
         user.setId(1);
         user.setNickname("zhangsan1");
-        redisTemplate.opsForSet().remove(RedisKeyEnum.USER_ONLINE_KEY.generateKey("11111"), user);
+        Object o =    redisTemplate.opsForList().index(RedisKeyEnum.USER_ONLINE_KEY.generateKey("11111"),5);
+        System.out.println(o);
     }
 
     @Test
     public void test4() {
-        Set<User> set = redisTemplate.opsForSet().members(RedisKeyEnum.USER_ONLINE_KEY.generateKey("11111"));
+        List<Object> set = redisTemplate.opsForList().range(RedisKeyEnum.USER_ONLINE_KEY.generateKey("11111"),0,-1);
         System.out.println(set);
     }
 
