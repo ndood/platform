@@ -7,17 +7,16 @@ import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.UserCommentTag;
 import com.fulu.game.core.entity.vo.ProductDetailsVO;
 import com.fulu.game.core.entity.vo.ProductShowCaseVO;
 import com.fulu.game.core.entity.vo.SimpleProductVO;
 import com.fulu.game.core.entity.vo.TechAuthProductVO;
-import com.fulu.game.core.service.MoneyDetailsService;
-import com.fulu.game.core.service.OrderService;
-import com.fulu.game.core.service.ProductService;
-import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,6 +40,8 @@ public class ProductController extends BaseController {
     private OrderService orderService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserCommentTagService userCommentTagService;
 
 
     @RequestMapping(value = "/search")
@@ -143,6 +144,21 @@ public class ProductController extends BaseController {
     }
 
     /**
+     * 获取商品列表
+     * @param userId
+     * @return
+     */
+    @PostMapping(value = "/user/list")
+    public Result productList(@RequestParam(required = false) Integer  userId) {
+        if(userId == null || userId.intValue() < 0){
+            User user = userService.getCurrentUser();
+            userId = user.getId();
+        }
+        List<Product> list = productService.findAppProductList(userId);
+        return Result.success().data(list);
+    }
+
+    /**
      * 查询用户商品详情页
      *
      * @param productId
@@ -150,8 +166,12 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "/details")
     public Result findByProductId(Integer productId) {
-        ProductDetailsVO serverCardVO = productService.findDetailsByProductId(productId);
-        return Result.success().data(serverCardVO);
+        ProductDetailsVO productDetailsVO = productService.findDetailsByProductId(productId);
+        if(productDetailsVO != null && productDetailsVO.getUserInfo() != null){
+            PageInfo<UserCommentTag> page = userCommentTagService.findByServerId(1, 10, productDetailsVO.getUserInfo().getUserId());
+            productDetailsVO.setUserCommentTagList(page.getList());
+        }
+        return Result.success().data(productDetailsVO);
     }
 
 

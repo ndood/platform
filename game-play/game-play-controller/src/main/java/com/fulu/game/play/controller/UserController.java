@@ -87,6 +87,8 @@ public class UserController extends BaseController {
     private UserInfoAuthFileService userInfoAuthFileService;
     @Autowired
     private UserSearchComponent userSearchComponent;
+    @Autowired
+    private UserCommentTagService userCommentTagService;
 
     @RequestMapping("tech/list")
     public Result userTechList() {
@@ -190,6 +192,22 @@ public class UserController extends BaseController {
             e.printStackTrace();
         }
         return Result.success().data(null).msg("查询用户列表成功！");
+    }
+
+    /**
+     * 查询陪玩师评论标签列表接口
+     *
+     * @param pageNum
+     * @param pageSize
+     * @param serverId
+     * @return
+     */
+    @RequestMapping(value = "/comment-tag/list")
+    public Result findCommentsTagList(Integer pageNum,
+                                      Integer pageSize,
+                                      Integer serverId) {
+        PageInfo<UserCommentTag> page = userCommentTagService.findByServerId(pageNum, pageSize, serverId);
+        return Result.success().data(page);
     }
 
     /**
