@@ -14,7 +14,9 @@ public enum MoneyOperateTypeEnum implements TypeEnum<Integer> {
     ORDER_COMPLETE(2, "陪玩订单完成"),
     ADMIN_REFUSE_REMIT(3, "管理员拒绝打款"),
     WITHDRAW_VIRTUAL_MONEY(5, "余额兑换钻石"),
-    WITHDRAW_BALANCE(6, "余额充值");
+    WITHDRAW_BALANCE(6, "余额充值"),
+    //管理员扣除零钱
+    ADMIN_SUBTRACT_CHANGE(7, "扣除零钱");
 
 
     private Integer type;

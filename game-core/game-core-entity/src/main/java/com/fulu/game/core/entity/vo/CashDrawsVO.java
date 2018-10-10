@@ -63,4 +63,7 @@ public class CashDrawsVO extends CashDraws {
      * 加密字符串
      */
     private String sign;
+
+    /** 用户类型（1：陪玩师；4：马甲） */
+    private Integer userType;
 }

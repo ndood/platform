@@ -21,6 +21,7 @@ import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.async.DeferredResult;
 
@@ -62,6 +63,9 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
     private OrderService orderService;
     @Autowired
     private Config configProperties;
+    @Qualifier(value = "userInfoAuthServiceImpl")
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
 
 
     /**
@@ -713,15 +717,33 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
 
     /**
      * 生成订单号
+     * @param serviceUserId 陪玩师id
+     * @return
+     */
+    protected String generateOrderNo(Integer serviceUserId) {
+        String orderNo = GenIdUtil.GetOrderNo();
+        // 判断是否马甲账号
+        String suffix = "";
+        if(serviceUserId != null && serviceUserId.intValue() > 0){
+            UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(serviceUserId);
+            if(userInfoAuth != null && userInfoAuth.getVestFlag()){
+                suffix = Constant.VEST_SUFFIX;
+            }
+        }
+        orderNo = orderNo + suffix;
+        if (orderService.findByOrderNo(orderNo) == null) {
+            return orderNo;
+        } else {
+            return generateOrderNo(serviceUserId);
+        }
+    }
+
+    /**
+     * 生成订单号
      *
      * @return
      */
     protected String generateOrderNo() {
-        String orderNo = GenIdUtil.GetOrderNo();
-        if (orderService.findByOrderNo(orderNo) == null) {
-            return orderNo;
-        } else {
-            return generateOrderNo();
-        }
+        return generateOrderNo(null);
     }
 }

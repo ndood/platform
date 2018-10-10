@@ -222,7 +222,7 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
         Order order = new Order();
         order.setName(product.getProductName() + " " + num + "*" + product.getUnit());
         order.setType(OrderTypeEnum.PLATFORM.getType());
-        order.setOrderNo(generateOrderNo());
+        order.setOrderNo(generateOrderNo(product.getUserId()));
         order.setUserId(user.getId());
         order.setServiceUserId(product.getUserId());
         order.setCategoryId(product.getCategoryId());

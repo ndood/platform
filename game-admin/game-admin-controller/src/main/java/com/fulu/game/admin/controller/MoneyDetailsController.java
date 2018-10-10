@@ -1,23 +1,32 @@
 package com.fulu.game.admin.controller;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.MoneyOperateTypeEnum;
 import com.fulu.game.common.exception.CashException;
+import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.entity.MoneyDetails;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.CashDrawsVO;
 import com.fulu.game.core.entity.vo.MoneyDetailsVO;
 import com.fulu.game.core.service.MoneyDetailsService;
 import com.fulu.game.core.service.UserService;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 
 @RestController
 @Slf4j
@@ -65,6 +74,42 @@ public class MoneyDetailsController extends BaseController{
         }
         MoneyDetails moneyDetails = moneyDetailsService.save(moneyDetailsVO);
         return Result.success().data(moneyDetails).msg("操作成功！");
+    }
+
+    /**
+     * 管理员-扣零钱
+     *
+     * @param moneyDetailsVO
+     * @return
+     */
+    @PostMapping("/subtract-save")
+    public Result subtractSave(MoneyDetailsVO moneyDetailsVO) {
+        if(moneyDetailsVO == null){
+            throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
+        } else {
+            moneyDetailsVO.setAction(MoneyOperateTypeEnum.ADMIN_SUBTRACT_CHANGE.getType());
+        }
+        return save(moneyDetailsVO);
+    }
+
+    /**
+     * 提现申请单导出
+     *
+     * @param response
+     * @throws Exception
+     */
+    @RequestMapping("/export")
+    public void orderExport(HttpServletResponse response,
+                            MoneyDetailsVO moneyDetailsVO) throws Exception {
+        String title = "零钱列表";
+        PageInfo<MoneyDetailsVO> list = moneyDetailsService.listByAdmin(moneyDetailsVO, null, null);
+        ExportParams exportParams = new ExportParams(title, "sheet1", ExcelType.XSSF);
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, MoneyDetailsVO.class, list.getList());
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("content-Type", "application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(title, "UTF-8"));
+        workbook.write(response.getOutputStream());
+        workbook.close();
     }
 
     /**

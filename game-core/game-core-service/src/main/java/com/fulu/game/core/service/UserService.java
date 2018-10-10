@@ -347,4 +347,12 @@ public interface UserService extends ICommonService<User, Integer> {
      * 判断用户是否需要取一个随机自动问好
      */
     void setUserRandStatus(Integer userId);
+
+    /**
+     * 查询-用户信息
+     * 只需要昵称、手机号、账户余额、身份
+     *
+     * @return
+     */
+    UserVO findUserVOByParams(UserVO userVO);
 }

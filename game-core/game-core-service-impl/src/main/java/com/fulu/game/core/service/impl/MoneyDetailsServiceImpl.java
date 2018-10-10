@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.enums.CashProcessStatusEnum;
 import com.fulu.game.common.enums.MoneyOperateTypeEnum;
+import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.exception.CashException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
@@ -12,19 +13,19 @@ import com.fulu.game.core.dao.MoneyDetailsDao;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.MoneyDetails;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.vo.MoneyDetailsVO;
-import com.fulu.game.core.service.AdminService;
-import com.fulu.game.core.service.MoneyDetailsService;
-import com.fulu.game.core.service.PlatformMoneyDetailsService;
-import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -40,6 +41,9 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
     private AdminService adminService;
     @Autowired
     private PlatformMoneyDetailsService platformMoneyDetailsService;
+    @Qualifier(value = "userInfoAuthServiceImpl")
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
 
     @Override
     public ICommonDao<MoneyDetails, Integer> getDao() {
@@ -48,9 +52,19 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
 
     @Override
     public PageInfo<MoneyDetailsVO> listByAdmin(MoneyDetailsVO moneyDetailsVO, Integer pageSize, Integer pageNum) {
-        moneyDetailsVO.setAction(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType());
+        if(moneyDetailsVO.getAction() == null){
+            List<Integer> actions = new ArrayList<>();
+            actions.add(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType());
+            actions.add(MoneyOperateTypeEnum.ADMIN_SUBTRACT_CHANGE.getType());
+            moneyDetailsVO.setActions(actions);
+        }
+//        moneyDetailsVO.setAction(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType());
         String orderBy = "tmd.create_time desc";
-        PageHelper.startPage(pageNum, pageSize, orderBy);
+        if (pageNum != null && pageSize != null) {
+            PageHelper.startPage(pageNum, pageSize, orderBy);
+        } else {
+            PageHelper.orderBy(orderBy);
+        }
         List<MoneyDetailsVO> list = moneyDetailsDao.findByAdmin(moneyDetailsVO);
         return new PageInfo(list);
     }
@@ -100,24 +114,41 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         if (null == user) {
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
+        UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
         //加钱之前该用户的零钱
         BigDecimal balance = user.getBalance();
         BigDecimal newBalance = balance.add(moneyDetailsVO.getMoney());
-        log.info("当前余额:{},加零钱金额:{}", balance, moneyDetailsVO.getMoney());
         MoneyDetails moneyDetails = new MoneyDetails();
         BeanUtil.copyProperties(moneyDetailsVO, moneyDetails);
         BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
         moneyDetails.setSum(newBalance.add(chargeBalance));
         moneyDetails.setOperatorId(admin.getId());
         moneyDetails.setTargetId(user.getId());
-        moneyDetails.setAction(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType());
+        if(userInfoAuth != null && userInfoAuth.getVestFlag()){
+            moneyDetails.setUserType(UserTypeEnum.VEST_USER.getType());
+        } else {
+            moneyDetails.setUserType(UserTypeEnum.GENERAL_USER.getType());
+        }
+        // 当action为null时，设置为用户新增零钱
+        BigDecimal money = null;
+        if(moneyDetails.getAction() == null){
+            moneyDetails.setAction(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType());
+            log.info("当前余额:{},加零钱金额:{}", balance, moneyDetailsVO.getMoney());
+            // 平台扣钱
+            money = moneyDetails.getMoney().negate();
+        } else {
+            log.info("当前余额:{},扣除零钱金额:{}", balance, moneyDetailsVO.getMoney());
+            newBalance = balance.subtract(moneyDetailsVO.getMoney());
+            // 平台加钱
+            money = moneyDetails.getMoney();
+        }
         moneyDetails.setCreateTime(new Date());
         moneyDetailsDao.create(moneyDetails);
         user.setBalance(newBalance);
         userService.update(user);
         log.info("更新用户余额完成，加零钱后余额:{}", user.getBalance());
         //计入平台支出流水
-        platformMoneyDetailsService.createSmallChangeDetails(moneyDetails.getRemark(), user.getId(), moneyDetails.getMoney().negate());
+        platformMoneyDetailsService.createSmallChangeDetails(moneyDetails.getRemark(), user.getId(), money);
         log.info("调用平台支出流水接口执行结束");
         return moneyDetails;
     }

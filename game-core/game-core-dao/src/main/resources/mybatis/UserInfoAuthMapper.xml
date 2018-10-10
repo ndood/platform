@@ -204,6 +204,9 @@
             <if test="sourceId != null">
                 and uia.source_id = #{sourceId}
             </if>
+            <if test="techLevelId != null">
+                and uia.tech_level_id = #{techLevelId}
+            </if>
         </where>
         GROUP BY
         uia.id

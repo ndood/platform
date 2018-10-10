@@ -69,9 +69,9 @@ public class ConversionRateServiceImpl extends AbsCommonService<ConversionRate,I
                 conversionRate.setName(tmp.getName());
                 conversionRate.setTimeBucket(tmp.getTimeBucket());
                 conversionRate.setOrders(orderCounts != null && orderCounts.getOrders() != null ? orderCounts.getOrders() : 0);
-                conversionRate.setPeoples(orderCounts != null && orderCounts.getPeoples() != null ? orderCounts.getPeoples() : 0);
+                conversionRate.setPeoples(orderPayCounts != null && orderPayCounts.getPeoples() != null ? orderPayCounts.getPeoples() : 0);
                 conversionRate.setPays(orderPayCounts != null && orderPayCounts.getPeoples() != null ? orderPayCounts.getPeoples(): 0);
-                conversionRate.setAmount(orderCounts != null && orderCounts.getAmount() != null ? orderCounts.getAmount() : new BigDecimal("0.00"));
+                conversionRate.setAmount(orderPayCounts != null && orderPayCounts.getAmount() != null ? orderPayCounts.getAmount() : new BigDecimal("0.00"));
                 conversionRate.setNewOrders(newOrderCounts != null && newOrderCounts.getNewPeoples() != null ? newOrderCounts.getNewPeoples() : 0);
                 // 新人数
                 ConversionRate newPeopleCounts = conversionRateDao.getNewPeopleCount(tmp);
