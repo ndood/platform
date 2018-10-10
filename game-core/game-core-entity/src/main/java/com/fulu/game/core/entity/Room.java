@@ -32,7 +32,6 @@ public class Room implements Serializable {
 	//是否上锁
 	private Boolean isLock;
 	//房间密码
-	@JsonIgnore
 	private String password;
 	//用户ID
 	private Integer userId;
@@ -56,9 +55,13 @@ public class Room implements Serializable {
 	private Integer roomCategoryId;
 	//备注
 	private String remark;
+	//默认麦序时长
+	private Long micDuration;
 	//
 	private Date createTime;
 	//
 	private Date updateTime;
+
+
 
 }

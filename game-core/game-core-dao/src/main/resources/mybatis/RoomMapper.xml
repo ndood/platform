@@ -22,6 +22,7 @@
         <result column="category_id" property="categoryId"/>
         <result column="room_category_id" property="roomCategoryId"/>
         <result column="remark" property="remark"/>
+        <result column="mic_duration" property="micDuration"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
     </resultMap>
@@ -30,7 +31,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,room_no,icon,name,slogan,notice,is_lock,password,user_id,owner_mobile,virtual_people,is_show,is_activate,is_hot,sort,template,category_id,room_category_id,remark,create_time,update_time    </sql>
+        id,room_no,icon,name,slogan,notice,is_lock,password,user_id,owner_mobile,virtual_people,is_show,is_activate,is_hot,sort,template,category_id,room_category_id,mic_duration,remark,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="RoomResultMap">
         select
@@ -135,9 +136,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Room">
         insert into
-        t_room (room_no,icon,name,slogan,notice,is_lock,password,user_id,owner_mobile,virtual_people,is_show,is_activate,is_hot,sort,template,category_id,room_category_id,remark,create_time,update_time)
+        t_room (room_no,icon,name,slogan,notice,is_lock,password,user_id,owner_mobile,virtual_people,is_show,is_activate,is_hot,sort,template,category_id,room_category_id,mic_duration,remark,create_time,update_time)
         values
-        (#{roomNo},#{icon},#{name},#{slogan},#{notice},#{isLock},#{password},#{userId},#{ownerMobile},#{virtualPeople},#{isShow},#{isActivate},#{isHot},#{sort},#{template},#{categoryId},#{roomCategoryId},#{remark},#{createTime},#{updateTime})
+        (#{roomNo},#{icon},#{name},#{slogan},#{notice},#{isLock},#{password},#{userId},#{ownerMobile},#{virtualPeople},#{isShow},#{isActivate},#{isHot},#{sort},#{template},#{categoryId},#{roomCategoryId},#{micDuration},#{remark},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Room">
@@ -212,6 +213,9 @@
                 room_category_id = #{roomCategoryId},
             </if>
 
+            <if test="micDuration != null">
+                mic_duration = #{micDuration},
+            </if>
             <if test="remark != null">
                 remark = #{remark},
             </if>
