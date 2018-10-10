@@ -50,6 +50,7 @@ public abstract class OrderShareProfitServiceImpl extends AbsCommonService<Order
 
     /**
      * 订单正常完成状态分润
+     *
      * @param order
      */
     @Override
@@ -155,36 +156,21 @@ public abstract class OrderShareProfitServiceImpl extends AbsCommonService<Order
     @Override
     public void orderRefundToUserAndServiceUser(Order order, ArbitrationDetails details) {
         log.info("订单协商退款:order:{};details:{}", order, details);
-        if (!order.getIsPay()) {
-            throw new OrderException(order.getOrderNo(), "未支付订单不允许退款!");
-        }
 
         String orderNo = order.getOrderNo();
         BigDecimal refundUserMoney = details.getRefundUserMoney();
-        BigDecimal refundServiceUserMoney = details.getRefundServiceUserMoney();
-        BigDecimal actualMoney = order.getActualMoney();
 
-        if (actualMoney.compareTo(refundUserMoney.add(refundServiceUserMoney)) < 0) {
-            throw new OrderException(orderNo, "退款金额不能大于用户实付金额!");
+        orderRefund(order, refundUserMoney);
+
+        BigDecimal surplusMoney = order.getActualMoney().subtract(refundUserMoney);
+
+        BigDecimal charges = order.getCharges();
+        if (charges == null) {
+            Category category = categoryService.findById(order.getCategoryId());
+            charges = category.getCharges();
         }
-
-        BigDecimal commissionMoney = actualMoney.subtract(refundUserMoney.add(refundServiceUserMoney));
-
-        //记录分润表
-        OrderShareProfit profit = new OrderShareProfit();
-        profit.setOrderNo(orderNo);
-        profit.setServerMoney(refundServiceUserMoney);
-        profit.setCommissionMoney(commissionMoney);
-        profit.setUserMoney(refundUserMoney);
-        profit.setUpdateTime(DateUtil.date());
-        profit.setCreateTime(DateUtil.date());
-        create(profit);
-
-        //记录平台流水
-        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_REFUND,
-                orderNo, refundUserMoney.negate());
-        platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_REFUND,
-                orderNo, refundServiceUserMoney.negate());
+        BigDecimal commissionMoney = surplusMoney.multiply(charges);
+        BigDecimal serverMoney = surplusMoney.subtract(commissionMoney);
 
         //记录仲裁结果流水表
         ArbitrationDetails arbitrationDetails = new ArbitrationDetails();
@@ -192,23 +178,12 @@ public abstract class OrderShareProfitServiceImpl extends AbsCommonService<Order
         arbitrationDetails.setUserId(details.getUserId());
         arbitrationDetails.setServiceUserId(details.getServiceUserId());
         arbitrationDetails.setRefundUserMoney(refundUserMoney);
-        arbitrationDetails.setRefundServiceUserMoney(refundServiceUserMoney);
+        arbitrationDetails.setRefundServiceUserMoney(serverMoney);
         arbitrationDetails.setCommissionMoney(commissionMoney);
         arbitrationDetails.setRemark(details.getRemark());
         arbitrationDetails.setUpdateTime(DateUtil.date());
         arbitrationDetails.setCreateTime(DateUtil.date());
         arbitrationDetailsDao.create(arbitrationDetails);
-
-        //记录陪玩师加零钱
-        moneyDetailsService.orderSave(refundServiceUserMoney, order.getServiceUserId(), orderNo);
-
-        //微信退款给用户
-        try {
-            refund(order, order.getActualMoney(), refundUserMoney);
-        } catch (Exception e) {
-            log.error("退款失败{}", orderNo, e.getMessage());
-            throw new OrderException(orderNo, "订单退款失败!");
-        }
     }
 
 
