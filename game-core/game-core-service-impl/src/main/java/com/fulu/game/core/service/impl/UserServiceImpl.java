@@ -391,13 +391,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
 
-    @Override
-    public UserChatRoomVO getUserChatRoomVO(User user){
-        UserChatRoomVO userChatRoomVO = new UserChatRoomVO();
-        BeanUtil.copyProperties(user,userChatRoomVO);
-        return userChatRoomVO;
-    }
-
 
     @Override
     public void checkUserInfoAuthStatus(Integer userId, Integer... ignoreAuthStatus) {

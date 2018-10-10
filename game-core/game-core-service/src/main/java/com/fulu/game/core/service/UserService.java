@@ -121,12 +121,6 @@ public interface UserService extends ICommonService<User, Integer> {
     void unlock(int id);
 
 
-    /**
-     * 获取聊天室用户对象
-     * @param user
-     * @return
-     */
-    UserChatRoomVO getUserChatRoomVO(User user);
 
     /**
      * 后台（条件）查询用户列表

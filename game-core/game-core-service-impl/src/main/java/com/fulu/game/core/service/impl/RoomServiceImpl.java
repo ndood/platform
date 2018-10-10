@@ -9,20 +9,16 @@ import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.RoomDao;
-import com.fulu.game.core.entity.Room;
-import com.fulu.game.core.entity.RoomCategory;
-import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.RoomVO;
 import com.fulu.game.core.entity.vo.UserChatRoomVO;
-import com.fulu.game.core.service.RoomCategoryService;
-import com.fulu.game.core.service.RoomManageService;
-import com.fulu.game.core.service.RoomService;
-import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -39,6 +35,8 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     private RoomManageService roomManageService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Autowired
+    private RoomCollectService roomCollectService;
 
     @Override
     public ICommonDao<Room, Integer> getDao() {
@@ -148,6 +146,9 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
                 throw new ServiceErrorException("手机号不存在!");
             }
             roomVO.setUserId(user.getId());
+            if(roomVO.getVirtualPeople()==null){
+                roomVO.setVirtualPeople(0);
+            }
             roomVO.setIsShow(true);
             roomVO.setIsLock(false);
             roomVO.setRoomNo(generateRoomNo());
@@ -211,7 +212,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     }
 
 
-    public long userEnterChatRoom(User user, String roomNo, String password) {
+    public UserChatRoomVO userEnterChatRoom(User user, String roomNo, String password) {
         Room room = findByRoomNo(roomNo);
         if (room == null) {
             throw new RoomException(RoomException.ExceptionCode.ROOM_NOT_EXIST);
@@ -221,18 +222,49 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
                 throw new RoomException(RoomException.ExceptionCode.ROOM_PASSWORD_ERROR);
             }
         }
-        UserChatRoomVO userChatRoomVO = userService.getUserChatRoomVO(user);
-        return redisOpenService.setForAdd(RedisKeyEnum.CHAT_ROOM_ONLINE_USER.generateKey(roomNo), userChatRoomVO);
+        //组装用户信息
+        UserChatRoomVO userChatRoomVO = new UserChatRoomVO();
+        userChatRoomVO.setUserId(user.getId());
+        userChatRoomVO.setNickname(user.getNickname());
+        userChatRoomVO.setGender(user.getGender());
+        userChatRoomVO.setAge(user.getAge());
+        userChatRoomVO.setHeadPortraitsUrl(user.getHeadPortraitsUrl());
+        userChatRoomVO.setOrderRate(new BigDecimal(100));
+        userChatRoomVO.setSatisfy(new BigDecimal(5.0));
+        userChatRoomVO.setRoomNo(roomNo);
+        userChatRoomVO.setRoomName(room.getName());
+        userChatRoomVO.setNotice(room.getNotice());
+        userChatRoomVO.setSlogan(room.getSlogan());
+        userChatRoomVO.setVirtualPeople(room.getVirtualPeople()==null?0:room.getVirtualPeople());
+        userChatRoomVO.setPeople(userChatRoomVO.getVirtualPeople()+getChatRoomPeople(roomNo));
+        //用户身份
+        RoomManage roomManage = roomManageService.findByUserAndRoomNo(user.getId(),roomNo);
+        if(roomManage!=null){
+            userChatRoomVO.setRoomRole(roomManage.getRole());
+        }
+        //是否收藏
+        RoomCollect roomCollect = roomCollectService.findByRoomAndUser(roomNo,user.getId());
+        userChatRoomVO.setIsCollect(roomCollect!=null);
+        redisOpenService.setForAdd(RedisKeyEnum.CHAT_ROOM_ONLINE_USER.generateKey(roomNo), userChatRoomVO);
+
+        return userChatRoomVO;
     }
 
 
+    /**
+     * 用户退出房间
+     * @param user
+     * @param roomNo
+     * @return
+     */
     public long userQuitChatRoom(User user, String roomNo) {
-        Room room = findByRoomNo(roomNo);
-        if (room == null) {
-            throw new RoomException(RoomException.ExceptionCode.ROOM_NOT_EXIST);
+        Set<UserChatRoomVO> onlineUserSet = getOnlineUser(roomNo);
+        for(UserChatRoomVO userChatRoomVO : onlineUserSet){
+            if(userChatRoomVO.getUserId().equals(user.getId())){
+                return redisOpenService.setForDel(RedisKeyEnum.CHAT_ROOM_ONLINE_USER.generateKey(roomNo), userChatRoomVO);
+            }
         }
-        UserChatRoomVO userChatRoomVO = userService.getUserChatRoomVO(user);
-        return redisOpenService.setForDel(RedisKeyEnum.CHAT_ROOM_ONLINE_USER.generateKey(roomNo), userChatRoomVO);
+        return 0;
     }
 
 

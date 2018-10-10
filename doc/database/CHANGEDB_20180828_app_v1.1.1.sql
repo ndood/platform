@@ -672,6 +672,7 @@ CREATE TABLE `t_room` (
   `category_id` int(11) DEFAULT NULL COMMENT '游戏分类',
   `room_category_id` int(11) NOT NULL COMMENT '房间分类',
   `remark` varchar(255) DEFAULT NULL,
+  `mic_duration` int(11) DEFAULT NULL COMMENT '默认麦序时长',
   `create_time` datetime NOT NULL,
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)

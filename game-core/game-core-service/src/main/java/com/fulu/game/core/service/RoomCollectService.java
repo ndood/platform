@@ -15,7 +15,7 @@ import com.github.pagehelper.PageInfo;
 public interface RoomCollectService extends ICommonService<RoomCollect,Integer>{
 
 
-
+     RoomCollect findByRoomAndUser(String roomNo,Integer userId);
 
 
 }

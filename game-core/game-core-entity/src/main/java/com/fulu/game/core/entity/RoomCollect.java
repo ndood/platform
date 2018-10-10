@@ -18,7 +18,7 @@ public class RoomCollect implements Serializable {
 	//
 	private Integer id;
 	//
-	private Integer roomNo;
+	private String roomNo;
 	//
 	private Integer userId;
 	//

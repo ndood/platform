@@ -100,7 +100,7 @@ public interface RoomService extends ICommonService<Room, Integer> {
      * @param password
      * @return
      */
-    long userEnterChatRoom(User user, String roomNo, String password);
+    UserChatRoomVO userEnterChatRoom(User user, String roomNo, String password);
 
     /**
      * 用户退出聊天室

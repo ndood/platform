@@ -206,8 +206,8 @@ public class RoomController extends BaseController {
     public Result enterRoom(@RequestParam(required = true) String roomNo,
                             String password) {
         User user = userService.getCurrentUser();
-        roomService.userEnterChatRoom(user,roomNo,password);
-        return Result.success().msg("进入聊天室成功!");
+        UserChatRoomVO roomVO =roomService.userEnterChatRoom(user,roomNo,password);
+        return Result.success().data(roomVO).msg("进入聊天室成功!");
     }
 
     /**
