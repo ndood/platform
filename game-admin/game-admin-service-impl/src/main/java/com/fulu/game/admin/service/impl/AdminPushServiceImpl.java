@@ -20,10 +20,8 @@ public class AdminPushServiceImpl extends PushServiceImpl {
     public void appealUserWin(Order order) {
         if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
             //分期乐订单
-            if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
-                //todo gzc 短信通知
-//                SMSUtil.sendLeaveInform();
-                pushWechatTemplateMsg(PlatformEcoEnum.POINT.getType(), order.getServiceUserId(), WechatTemplateIdEnum.POINT_LEAVE_MSG, WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_USER_WIN.getPage().getPointPagePath(), WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_USER_WIN.getContent());
+            if (!PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
+                //todo gzc 当前场景暂不需要触达用户
             } else {
                 pushServiceProcessMsg(PlatformEcoEnum.PLAY.getType(),
                         order.getUserId(),
@@ -59,8 +57,7 @@ public class AdminPushServiceImpl extends PushServiceImpl {
         if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
             //分期乐订单
             if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
-                //todo 给用户发送仲裁短信
-                pushWechatTemplateMsg(PlatformEcoEnum.POINT.getType(), order.getServiceUserId(), WechatTemplateIdEnum.POINT_LEAVE_MSG, WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_SERVICE_WIN.getPage().getPointPagePath(), WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_SERVICE_WIN.getContent());
+                //todo gzc 当前场景暂不需要触达用户
             } else {
                 pushServiceProcessMsg(PlatformEcoEnum.PLAY.getType(),
                         order.getUserId(),
@@ -98,8 +95,7 @@ public class AdminPushServiceImpl extends PushServiceImpl {
         if (OrderTypeEnum.PLATFORM.getType().equals(order.getType())) {
             //分期乐订单
             if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
-                //todo 给用户发送仲裁短信
-                pushWechatTemplateMsg(PlatformEcoEnum.POINT.getType(), order.getServiceUserId(), WechatTemplateIdEnum.POINT_LEAVE_MSG, WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE.getPage().getPointPagePath(), WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE.getContent(), msg);
+                //todo gzc 当前场景暂不需要触达用户
             } else {
                 pushServiceProcessMsg(PlatformEcoEnum.PLAY.getType(),
                         order.getUserId(),
