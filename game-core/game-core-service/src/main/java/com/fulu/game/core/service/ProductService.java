@@ -182,11 +182,25 @@ public interface ProductService extends ICommonService<Product, Integer> {
 
     /**
      * 查询商品橱窗
+     * @param categoryId
+     * @param gender
      * @param pageNum
      * @param pageSize
-     * @param categoryId
+     * @param orderBy
+     * @param dans
+     * @param prices
+     * @param online
      * @return
      */
+    PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId, Integer gender, Integer pageNum, Integer pageSize, String orderBy, String dans, String prices, Boolean online);
+
+        /**
+         * 查询商品橱窗
+         * @param pageNum
+         * @param pageSize
+         * @param categoryId
+         * @return
+         */
     PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId, Integer gender, Integer pageNum, Integer pageSize, String orderBy);
 
     /**
@@ -197,6 +211,17 @@ public interface ProductService extends ICommonService<Product, Integer> {
      * @return
      */
     PageInfo<ProductCollectVO> findAllProductByPage(Integer gender, Integer pageNum, Integer pageSize, String orderBy);
+
+    /**
+     * 查看首页所有商品
+     * @param gender
+     * @param pageNum
+     * @param pageSize
+     * @param orderBy
+     * @param online
+     * @return
+     */
+    PageInfo<ProductCollectVO> findAllProductByPage(Integer gender, Integer pageNum, Integer pageSize, String orderBy, Boolean online);
 
     /**
      * 通过昵称查找商品
