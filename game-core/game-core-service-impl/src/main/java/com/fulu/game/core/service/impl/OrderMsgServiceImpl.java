@@ -88,4 +88,12 @@ public class OrderMsgServiceImpl extends AbsCommonService<OrderMsg, Integer> imp
     }
 
 
+    /**
+     * 用户评价订单
+     * @param order
+     */
+    public void userCommentOrder(Order order) {
+        this.createServerOrderMsg(order,"订单已评价");
+        this.createUserOrderMsg(order,"订单已完成,已评价");
+    }
 }

@@ -83,12 +83,14 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
         order.setReceivingTime(new Date());
         orderService.update(order);
         //计算订单状态倒计时24小时
-        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
+        int minute = beginOrderTime(order.getReceivingTime(), order.getBeginTime());
+        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), minute);
 
         playMiniAppPushService.receiveOrder(order);
 
         return order.getOrderNo();
     }
+
 
     public PageInfo<OrderDetailsVO> list(int pageNum, int pageSize, Integer type) {
         PageHelper.startPage(pageNum, pageSize, "id DESC");
@@ -124,7 +126,8 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
         }
         return new PageInfo<>(list);
     }
-
+    
+    
     public OrderDetailsVO findOrderDetails(String orderNo) {
         OrderDetailsVO orderDetailsVO = new OrderDetailsVO();
 
@@ -204,6 +207,8 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
      */
     public String submit(int productId,
                          int num,
+                         int platform,
+                         Date beginTime,
                          String remark,
                          String couponNo,
                          String userIp,
@@ -227,6 +232,8 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
         order.setServiceUserId(product.getUserId());
         order.setCategoryId(product.getCategoryId());
         order.setRemark(remark);
+        order.setBeginTime(beginTime);
+        order.setPlatform(platform);
         order.setIsPay(false);
         order.setIsPayCallback(false);
         order.setTotalMoney(totalMoney);
@@ -262,7 +269,8 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
         //创建订单商品
         orderProductService.create(order, product, num);
         //计算订单状态倒计时24小时
-        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
+        int countdownMinute = waitForPayTime(order.getCreateTime(), beginTime);
+        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), countdownMinute);
 
         return order.getOrderNo();
     }
@@ -270,7 +278,8 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
     @Override
     protected void dealOrderAfterPay(Order order) {
         //订单状态倒计时
-        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
+        int minute = receiveOrderTime(order.getPayTime(), order.getBeginTime());
+        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), minute);
         //发送短信通知给陪玩师
         User server = userService.findById(order.getServiceUserId());
         UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(order.getServiceUserId());

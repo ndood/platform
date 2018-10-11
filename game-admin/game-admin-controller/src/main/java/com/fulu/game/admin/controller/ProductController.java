@@ -51,6 +51,13 @@ public class ProductController extends BaseController {
     }
 
 
+    @PostMapping(value = "/top/delete")
+    public Result topDelete(Integer id) {
+         productTopService.deleteById(id);
+        return Result.success().msg("删除成功!");
+    }
+
+
     @PostMapping(value = "/top/save")
     public Result save(@Valid ProductTopVO productTopVO) {
         Admin admin = adminService.getCurrentUser();

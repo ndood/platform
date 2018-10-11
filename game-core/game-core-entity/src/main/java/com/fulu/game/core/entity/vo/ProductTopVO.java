@@ -27,4 +27,6 @@ public class ProductTopVO  extends ProductTop {
     private Integer sort;
 
     private String categoryName;
+    
+    private String nickName;
 }

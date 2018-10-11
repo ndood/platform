@@ -1,6 +1,8 @@
 package com.fulu.game.core.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.*;
@@ -741,5 +743,79 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         } else {
             return generateOrderNo();
         }
+    }
+
+
+    /**
+     * 待开始倒计时时长
+     *
+     * @param receivingTime
+     * @param beginTime
+     * @return
+     */
+    public int beginOrderTime(Date receivingTime, Date beginTime) {
+        //todo 因为小程序没有提交开始时间 这里为了测试给一个开始时间
+
+        if (beginTime == null) {
+            beginTime = DateUtil.offsetMinute(receivingTime, 30);
+        }
+        int timeMinute = 15;
+        Long minute = DateUtil.between(receivingTime, beginTime, DateUnit.MINUTE);
+        if (minute < 15) {
+            timeMinute = 15;
+        } else {
+            Integer.valueOf(minute + "");
+        }
+        return timeMinute;
+    }
+
+
+    /**
+     * 待支付倒计时时间
+     *
+     * @param orderTime
+     * @param beginTime
+     * @return
+     */
+    public int waitForPayTime(Date orderTime, Date beginTime) {
+        //todo 因为小程序没有提交开始时间 这里为了测试给一个开始时间
+
+        if (beginTime == null) {
+            beginTime = DateUtil.offsetMinute(orderTime, 30);
+        }
+
+        int timeMinute = 30;
+        Long minute = DateUtil.between(orderTime, beginTime, DateUnit.MINUTE);
+        if (minute > 30) {
+            timeMinute = 30;
+        } else if (minute < 5) {
+            timeMinute = 5;
+        } else {
+            Integer.valueOf(minute + "");
+        }
+        return timeMinute;
+    }
+
+
+    /**
+     * 待接单倒计时
+     *
+     * @param payTime
+     * @param beginTime
+     * @return
+     */
+    public int receiveOrderTime(Date payTime, Date beginTime) {
+        //todo 因为小程序没有提交开始时间 这里为了测试给一个开始时间
+        if (beginTime == null) {
+            beginTime = DateUtil.offsetMinute(payTime, 30);
+        }
+        int timeMinute = 15;
+        Long minute = DateUtil.between(payTime, beginTime, DateUnit.MINUTE);
+        if (minute < 15) {
+            timeMinute = 15;
+        } else {
+            Integer.valueOf(minute + "");
+        }
+        return timeMinute;
     }
 }
