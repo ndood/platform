@@ -18,7 +18,8 @@ public class RoomException extends BizException {
         ROOM_MIC_INDEX_ERROR(50006, "麦位错误!"),
         ROOM_MIC_INDEX_EXIST(50007, "请先下麦再上麦!"),
         ROOM_USER_QUIT_EXCEPTION(50007, "用户已经退出房间无法操作!"),
-        ROOM_COLLECT_REPEAT(50008, "已经收藏过该房间!");
+        ROOM_COLLECT_REPEAT(50008, "已经收藏过该房间!"),
+        ROOM_MIC_UP_LIST_ERROR(50009, "麦序类型错误");
 
 
         private int code;

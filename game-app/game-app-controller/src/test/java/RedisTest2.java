@@ -77,11 +77,10 @@ public class RedisTest2 {
     }
 
 
-
     @Test
     public void test6() {
-        Set set1 = redisTemplate.opsForZSet().range(RedisKeyEnum.USER_ONLINE_KEY.generateKey("2222"),0,-1);
-        Set set2 =redisTemplate.opsForZSet().range(RedisKeyEnum.USER_ONLINE_KEY.generateKey("2222"),4,5);
+        //Set set2 =redisTemplate.opsForZSet().range(RedisKeyEnum.USER_ONLINE_KEY.generateKey("2222"),4,5);
+
     }
 
 

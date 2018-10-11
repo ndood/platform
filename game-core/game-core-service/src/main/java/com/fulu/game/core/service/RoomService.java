@@ -165,6 +165,33 @@ public interface RoomService extends ICommonService<Room, Integer> {
      */
     RoomMicVO  roomMicStatus(String roomNo,int index,int status);
 
+    /**
+     * 上麦
+     * @param roomNo
+     * @param type
+     * @return
+     */
+    long roomMicUp(String roomNo,Integer type,int userId);
+
+    /**
+     * 下麦
+     * @param roomNo
+     * @param type
+     * @param userId
+     * @return
+     */
+    long roomMicDown(String roomNo, Integer type,int userId);
+
+    /**
+     * 麦序列表大小
+     * @param roomNo
+     * @param type
+     * @return
+     */
+    long roomMicUpSize(String roomNo, Integer type);
+
+
+
 
 
 

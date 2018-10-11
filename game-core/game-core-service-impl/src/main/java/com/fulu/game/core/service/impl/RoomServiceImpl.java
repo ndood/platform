@@ -16,6 +16,7 @@ import com.fulu.game.core.entity.vo.UserChatRoomVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ import java.util.*;
 
 
 @Service
+@Slf4j
 public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements RoomService {
 
     @Autowired
@@ -213,11 +215,9 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     }
 
 
+
     public UserChatRoomVO userEnterChatRoom(User user, String roomNo, String password) {
-        Room room = findByRoomNo(roomNo);
-        if (room == null) {
-            throw new RoomException(RoomException.ExceptionCode.ROOM_NOT_EXIST);
-        }
+        Room room = checkRoomExists(roomNo);
         if (room.getIsLock()) {
             if (password == null || !password.equals(room.getPassword())) {
                 throw new RoomException(RoomException.ExceptionCode.ROOM_PASSWORD_ERROR);
@@ -235,10 +235,8 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
      * @return
      */
     public UserChatRoomVO setUserRoomInfo(User user, String roomNo) {
-        Room room = findByRoomNo(roomNo);
-        if (room == null) {
-            throw new RoomException(RoomException.ExceptionCode.ROOM_NOT_EXIST);
-        }
+        Room room = checkRoomExists(roomNo);
+
         //组装用户信息
         UserChatRoomVO userChatRoomVO = new UserChatRoomVO();
         userChatRoomVO.setUserId(user.getId());
@@ -306,7 +304,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
      * @return
      */
     public long userQuitChatRoom(Integer userId, String roomNo) {
-        //删除用户聊天室信息
+        //删除用户聊天室在线信息
         redisOpenService.delete(RedisKeyEnum.CHAT_ROOM_ONLINE_USER_INFO.generateKey(userId));
         //删除用户聊天室状态
         return redisOpenService.setForDel(RedisKeyEnum.CHAT_ROOM_ONLINE_USER.generateKey(roomNo), userId);
@@ -316,6 +314,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
      * 聊天室马甲用户列表
      * @return
      */
+    @Override
     public List<UserChatRoomVO> roomMangerList(String roomNo){
         List<RoomManage> roomManages =  roomManageService.findByRoomNo(roomNo);
         List<UserChatRoomVO> list = new ArrayList<>();
@@ -388,10 +387,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
 
     @Override
     public List<RoomMicVO> roomMicAll(String roomNo) {
-        Room room = findByRoomNo(roomNo);
-        if (room == null) {
-            throw new RoomException(RoomException.ExceptionCode.ROOM_NOT_EXIST);
-        }
+        checkRoomExists(roomNo);
         if (!redisOpenService.hasKey(RedisKeyEnum.CHAT_ROOM_MIC.generateKey(roomNo))) {
             List<RoomMicVO> roomMicVOList = new ArrayList<>();
             for (int i = 0; i < 9; i++) {
@@ -412,14 +408,16 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         if (index < 0 || index > 8) {
             throw new RoomException(RoomException.ExceptionCode.ROOM_MIC_INDEX_ERROR);
         }
-        Room room = findByRoomNo(roomNo);
-        if (room == null) {
-            throw new RoomException(RoomException.ExceptionCode.ROOM_NOT_EXIST);
-        }
+
+        checkRoomExists(roomNo);
+
         //如果麦位不存在初始化麦位
         if(!redisOpenService.hasKey(RedisKeyEnum.CHAT_ROOM_MIC.generateKey(roomNo))){
             roomMicAll(roomNo);
         }
+        //检查用户是否在该房间
+        checkRoomUserOnline(roomNo,userId);
+
         //查询该用户是否已经在麦位上了
         List<RoomMicVO> roomMicList = redisOpenService.listForAll(RedisKeyEnum.CHAT_ROOM_MIC.generateKey(roomNo));
         for (RoomMicVO micVO : roomMicList) {
@@ -433,10 +431,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
             roomMicVO.setStatus(RoomMicVO.MicStatus.OPEN.getStatus());
             roomMicVO.setIndex(index);
         }
-        UserChatRoomVO userChatRoomVO = getUserRoomInfo(userId);
-        if(userChatRoomVO==null){
-            throw new RoomException(RoomException.ExceptionCode.ROOM_USER_QUIT_EXCEPTION);
-        }
+
         User user = userService.findById(userId);
         RoomMicVO.MicUser micUser = new RoomMicVO.MicUser();
         micUser.setUserId(user.getId());
@@ -460,10 +455,9 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         if (index < 0 || index > 8) {
             throw new RoomException(RoomException.ExceptionCode.ROOM_MIC_INDEX_ERROR);
         }
-        Room room = findByRoomNo(roomNo);
-        if (room == null) {
-            throw new RoomException(RoomException.ExceptionCode.ROOM_NOT_EXIST);
-        }
+
+        checkRoomExists(roomNo);
+
         RoomMicVO roomMicVO = redisOpenService.listGetForIndex(RedisKeyEnum.CHAT_ROOM_MIC.generateKey(roomNo), index);
         //下麦用户
         if (Integer.valueOf(-1).equals(status)) {
@@ -473,6 +467,78 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         }
         redisOpenService.listSetForIndex(RedisKeyEnum.CHAT_ROOM_MIC.generateKey(roomNo), index, roomMicVO);
         return roomMicVO;
+    }
+
+
+
+    @Override
+    public long roomMicUp(String roomNo, Integer type,int userId){
+        log.info("用户上麦roomNo:{},type:{},userId:{}",roomNo,type,userId);
+        checkRoomExists(roomNo);
+        if(type>2||type<1){
+            throw new RoomException(RoomException.ExceptionCode.ROOM_MIC_UP_LIST_ERROR);
+        }
+        checkRoomUserOnline(roomNo,userId);
+
+        redisOpenService.setForAdd(RedisKeyEnum.CHAT_ROOM_MIC_UP_LIST.generateKey(roomNo,type),userId);
+        return roomMicUpSize(roomNo,type);
+    }
+
+
+    @Override
+    public long roomMicDown(String roomNo, Integer type, int userId){
+        log.info("用户下麦roomNo:{},type:{},userId:{}",roomNo,type,userId);
+        checkRoomExists(roomNo);
+        if(type>2||type<1){
+            throw new RoomException(RoomException.ExceptionCode.ROOM_MIC_UP_LIST_ERROR);
+        }
+        checkRoomUserOnline(roomNo,userId);
+
+        redisOpenService.setForDel(RedisKeyEnum.CHAT_ROOM_MIC_UP_LIST.generateKey(roomNo,type),userId);
+        return roomMicUpSize(roomNo,type);
+    }
+
+
+    /**
+     * 麦序列表大小
+      * @param roomNo
+     * @param type
+     * @return
+     */
+    public long roomMicUpSize(String roomNo, Integer type){
+        if(!redisOpenService.hasKey(RedisKeyEnum.CHAT_ROOM_MIC_UP_LIST.generateKey(roomNo,type))){
+            return 0;
+        }
+        return redisOpenService.setForSize(RedisKeyEnum.CHAT_ROOM_MIC_UP_LIST.generateKey(roomNo,type));
+    }
+
+
+
+    /**
+     * 检查用户是否在该房间
+     */
+    public UserChatRoomVO checkRoomUserOnline(String roomNo,int userId){
+        UserChatRoomVO userChatRoomVO = getUserRoomInfo(userId);
+        if(userChatRoomVO==null){
+            throw new RoomException(RoomException.ExceptionCode.ROOM_USER_QUIT_EXCEPTION);
+        }
+        if(userChatRoomVO.getRoomNo().equals(roomNo)){
+            throw new RoomException(RoomException.ExceptionCode.ROOM_USER_QUIT_EXCEPTION);
+        }
+        return userChatRoomVO;
+    }
+
+    /**
+     *
+     * @param roomNo
+     * @return
+     */
+    public Room checkRoomExists(String roomNo){
+        Room room = findByRoomNo(roomNo);
+        if (room == null) {
+            throw new RoomException(RoomException.ExceptionCode.ROOM_NOT_EXIST);
+        }
+        return room;
     }
 
 

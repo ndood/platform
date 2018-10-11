@@ -80,7 +80,9 @@ public enum RedisKeyEnum {
     //在线用户信息
     CHAT_ROOM_ONLINE_USER_INFO,
     //聊天室麦位list
-    CHAT_ROOM_MIC;
+    CHAT_ROOM_MIC,
+    //上麦列表
+    CHAT_ROOM_MIC_UP_LIST;
 
 
 
@@ -99,6 +101,11 @@ public enum RedisKeyEnum {
     }
 
     public String generateKey(String parentId,String id) {
+        return getEvnPrefix() + SPLIT + this.name() + SPLIT + parentId+SPLIT+id;
+    }
+
+
+    public String generateKey(String parentId,Integer id) {
         return getEvnPrefix() + SPLIT + this.name() + SPLIT + parentId+SPLIT+id;
     }
 
