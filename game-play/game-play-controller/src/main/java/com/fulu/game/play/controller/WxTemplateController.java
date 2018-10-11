@@ -6,8 +6,8 @@ import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.WechatFormid;
 import com.fulu.game.core.service.PushMsgService;
 import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.service.impl.push.PlayMiniAppPushServiceImpl;
 import com.fulu.game.core.service.queue.FormIdContainer;
-import com.fulu.game.play.service.impl.PlayMiniAppPushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +19,7 @@ import java.util.Date;
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/wxtemplate")
-public class WxTemplateController extends BaseController{
+public class WxTemplateController extends BaseController {
 
 
     @Autowired

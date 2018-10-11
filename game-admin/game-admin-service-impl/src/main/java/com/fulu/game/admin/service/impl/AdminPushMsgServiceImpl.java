@@ -5,7 +5,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.admin.service.AdminPushMsgService;
 import com.fulu.game.core.entity.vo.AppPushMsgVO;
-import com.fulu.game.core.service.impl.push.MobileAppPushServiceImpl;
+import com.fulu.game.core.service.impl.push.AppPushServiceImpl;
 import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.utils.AppRouteFactory;
@@ -38,7 +38,7 @@ public class AdminPushMsgServiceImpl extends PushMsgServiceImpl implements Admin
     private PushServiceImpl pushService;
 
     @Autowired
-    private MobileAppPushServiceImpl mobileAppPushService;
+    private AppPushServiceImpl mobileAppPushService;
 
     @Override
     public void push(PushMsgVO pushMsgVO) {

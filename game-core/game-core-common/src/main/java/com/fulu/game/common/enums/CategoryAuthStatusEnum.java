@@ -11,10 +11,10 @@ public enum CategoryAuthStatusEnum implements TypeEnum<Integer>{
     UNAUTH(0, "需审核"),
     // 审核中
     AUTHING(1, "审核中"),
-    //被拒绝
-    REFUSED(2, "被拒绝"),
     //暂用不到
-    PASS(3,"审核通过");
+    PASS(2,"审核通过"),
+    //被拒绝
+    REFUSED(3, "被拒绝");
 
     private Integer type;
     private String msg;

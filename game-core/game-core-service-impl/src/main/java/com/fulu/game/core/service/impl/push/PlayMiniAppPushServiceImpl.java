@@ -1,4 +1,4 @@
-package com.fulu.game.play.service.impl;
+package com.fulu.game.core.service.impl.push;
 
 import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.enums.WechatTemplateIdEnum;
@@ -7,7 +7,6 @@ import com.fulu.game.common.enums.WechatTemplateMsgTypeEnum;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.service.UserInfoAuthService;
-import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
