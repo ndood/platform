@@ -195,6 +195,8 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
     }
 
 
+
+
     public List<TechProductOrderVO.OtherProduct> findTechProductsByUser(List<UserTechAuth> techAuthList){
         List<TechProductOrderVO.OtherProduct> productList = new ArrayList<>();
         for(UserTechAuth userTechAuth : techAuthList){

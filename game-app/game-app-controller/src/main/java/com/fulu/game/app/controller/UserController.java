@@ -11,10 +11,7 @@ import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.entity.*;
-import com.fulu.game.core.entity.vo.UserBodyAuthVO;
-import com.fulu.game.core.entity.vo.UserCommentVO;
-import com.fulu.game.core.entity.vo.UserOnlineVO;
-import com.fulu.game.core.entity.vo.UserVO;
+import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.search.component.UserSearchComponent;
 import com.fulu.game.core.search.domain.UserDoc;
 import com.fulu.game.core.service.*;
@@ -117,6 +114,18 @@ public class UserController extends BaseController {
     @RequestMapping("get")
     public Result get(@RequestParam(required = false) Integer userId) {
         UserVO userVO = userService.getUserInfo(userId);
+        return Result.success().data(userVO).msg("获取个人信息成功！");
+    }
+
+
+    /**
+     * 获取简单的用户信息
+     * @param userId
+     * @return
+     */
+    @RequestMapping("/simple/get")
+    public Result simpleGet(@RequestParam(required = false) Integer userId) {
+        SimpleUserInfoVO userVO = userService.getSimpleUserInfo(userId);
         return Result.success().data(userVO).msg("获取个人信息成功！");
     }
 

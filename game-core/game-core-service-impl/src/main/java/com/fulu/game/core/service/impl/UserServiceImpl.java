@@ -792,6 +792,25 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     /**
+     * 获取简单的用户信息
+     * @param userId
+     * @return
+     */
+    public SimpleUserInfoVO getSimpleUserInfo(Integer userId){
+        SimpleUserInfoVO simpleUserInfoVO = new SimpleUserInfoVO();
+        User user = findById(userId);
+        BeanUtil.copyProperties(user,simpleUserInfoVO);
+        UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(userId);
+        if (userInfoAuth != null) {
+            simpleUserInfoVO.setAbout(userInfoAuth.getAbout());
+            List<Product> productList = productService.findAppProductList(userId);
+            simpleUserInfoVO.setUserProducts(productList);
+        }
+        return simpleUserInfoVO;
+    }
+
+
+    /**
      * 设置用户扩展信息
      *
      * @param userVO

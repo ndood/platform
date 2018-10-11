@@ -151,6 +151,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     }
 
 
+
     @Override
     public Product update(Integer id, Integer techAuthId, BigDecimal price, Integer unitId) {
         User user = userService.getCurrentUser();

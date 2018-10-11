@@ -2,6 +2,7 @@ package com.fulu.game.core.service;
 
 import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.vo.SimpleUserInfoVO;
 import com.fulu.game.core.entity.vo.UserOnlineVO;
 import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
@@ -305,6 +306,12 @@ public interface UserService extends ICommonService<User, Integer> {
      */
     UserVO getUserInfo(Integer userId);
 
+    /**
+     * 查询简单的用户信息
+     * @param userId
+     * @return
+     */
+    SimpleUserInfoVO getSimpleUserInfo(Integer userId);
 
     /**
      * 获取用户信息

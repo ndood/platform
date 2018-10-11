@@ -631,7 +631,7 @@ CREATE TABLE `t_activity_user_award` (
 DROP TABLE IF EXISTS `t_room`;
 CREATE TABLE `t_room` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `room_no` varchar(255) NOT NULL COMMENT '房间号码',
+  `room_no` varchar(128) NOT NULL COMMENT '房间号码',
   `icon` varchar(255) DEFAULT NULL COMMENT '图标',
   `name` varchar(255) DEFAULT NULL COMMENT '房间名称',
   `slogan` varchar(1000) DEFAULT NULL COMMENT '房间标语',
@@ -660,7 +660,7 @@ CREATE TABLE `t_room` (
 DROP TABLE IF EXISTS `t_room_manage`;
 CREATE TABLE `t_room_manage` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `room_no` varchar(11) NOT NULL COMMENT '房间ID',
+  `room_no` varchar(128) NOT NULL COMMENT '房间ID',
   `user_id` int(11) NOT NULL COMMENT '用户ID',
   `role` tinyint(1) NOT NULL COMMENT '角色类型(1房主,2管理,3主持)',
   `create_time` datetime NOT NULL COMMENT '创建时间',
@@ -688,7 +688,7 @@ CREATE TABLE `t_room_category` (
 DROP TABLE IF EXISTS `t_room_collect`;
 CREATE TABLE `t_room_collect` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `room_no` varchar(11) DEFAULT NULL,
+  `room_no` varchar(128) DEFAULT NULL,
   `user_id` int(11) NOT NULL,
   `create_time` datetime NOT NULL,
   `update_time` datetime DEFAULT NULL,
@@ -699,10 +699,9 @@ CREATE TABLE `t_room_collect` (
 
 CREATE TABLE `t_room_blacklist` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `room_no` varchar(255) NOT NULL COMMENT '房间',
+  `room_no` varchar(128) NOT NULL COMMENT '房间',
   `user_id` int(11) NOT NULL COMMENT '用户ID',
   `create_time` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `room_no` (`room_no`,`user_id`) USING BTREE
 )  COMMENT='房间黑名单';
-

@@ -128,4 +128,5 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
      */
     List<UserTechAuth> findUserActivateTechs(Integer userId);
 
+
 }
