@@ -43,29 +43,30 @@
         SELECT
         <include refid="Base_Column_List"/>
         FROM t_banner
-        <where>
-            <if test="disable != null">
-                and disable = #{disable}
-            </if>
-            <if test="sort != null">
-                and sort = #{sort}
-            </if>
-            <if test="operatorId != null">
-                and operator_id = #{operatorId}
-            </if>
-            <if test="operatorName != null">
-                and operator_name = #{operatorName}
-            </if>
-            <if test="redirectType != null">
-                and redirect_type = #{redirectType}
-            </if>
-            <if test="platformType != null" >
-                and platform_type = #{platformType}
-            </if>
-            <if test="redirectUrl != null">
-                and redirect_url = #{redirectUrl}
-            </if>
-        </where>
+        where
+        (start_time is null or start_time &lt;= NOW())
+        and (end_time is null or end_time &gt;= NOW())
+        <if test="disable != null">
+            and disable = #{disable}
+        </if>
+        <if test="sort != null">
+            and sort = #{sort}
+        </if>
+        <if test="operatorId != null">
+            and operator_id = #{operatorId}
+        </if>
+        <if test="operatorName != null">
+            and operator_name = #{operatorName}
+        </if>
+        <if test="redirectType != null">
+            and redirect_type = #{redirectType}
+        </if>
+        <if test="platformType != null" >
+            and platform_type = #{platformType}
+        </if>
+        <if test="redirectUrl != null">
+            and redirect_url = #{redirectUrl}
+        </if>
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">
