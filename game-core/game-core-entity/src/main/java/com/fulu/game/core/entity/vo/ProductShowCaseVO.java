@@ -49,6 +49,13 @@ public class ProductShowCaseVO {
     //周销售量
     private Integer orderCount;
 
-    /**  用户年龄 */
+    /**
+     * 用户年龄
+     */
     private Integer age;
+
+    /**
+     * 声音
+     */
+    private String voice;
 }

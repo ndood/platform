@@ -2,6 +2,7 @@ package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
+import com.fulu.game.core.entity.vo.OrderVO;
 
 import java.util.Date;
 import java.util.List;
@@ -69,7 +70,7 @@ public interface OrderService extends ICommonService<Order, Integer> {
      *
      * @return
      */
-    List<Order> findWaitSendEmailOrder(Integer status , Integer waitMins);
+    List<Order> findWaitSendEmailOrder(Integer status, Integer waitMins);
 
 
     /**
@@ -77,8 +78,11 @@ public interface OrderService extends ICommonService<Order, Integer> {
      *
      * @return
      */
-    List<Order> getBannerOrderList(Integer authUserId , Integer bossUserId);
+    List<Order> getBannerOrderList(Integer authUserId, Integer bossUserId);
 
 
-    List<OrderDetailsVO> orderList(int type, int userId,List<Integer> statusList);
+    List<OrderDetailsVO> orderList(int type, int userId, List<Integer> statusList);
+
+
+    OrderVO getThunderOrderInfo();
 }

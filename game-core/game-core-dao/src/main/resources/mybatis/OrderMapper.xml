@@ -225,6 +225,9 @@
             <if test="type != null">
                 and type = #{type}
             </if>
+            <if test="platform != null">
+                and platform = #{platform}
+            </if>
             <if test="channelId != null">
                 and channel_id = #{channelId}
             </if>
@@ -511,7 +514,8 @@
         </where>
     </select>
 
-    <select id="unacceptOrderList" resultType="com.fulu.game.core.entity.Order" parameterType="com.fulu.game.core.entity.vo.searchVO.OrderSearchVO">
+    <select id="unacceptOrderList" resultType="com.fulu.game.core.entity.Order"
+            parameterType="com.fulu.game.core.entity.vo.searchVO.OrderSearchVO">
         SELECT
         tor.*
         FROM
@@ -684,5 +688,26 @@
         order by o.create_time limit 10
     </select>
 
-
+    <select id="findMoneySum" resultType="com.fulu.game.core.entity.vo.OrderVO">
+        SELECT
+        IFNULL(sum(t1.actual_money), 0) sumActualMoney,
+        IFNULL(sum(t2.user_money), 0) sumUserMoney
+        FROM
+        t_order t1
+        LEFT JOIN t_order_share_profit t2 ON t1.order_no = t2.order_no
+        <where>
+            <if test="platform != null">
+                AND t1.platform = #{platform}
+            </if>
+            <if test="userId != null">
+                AND t1.user_id = #{userId}
+            </if>
+            <if test="statusList != null">
+                AND t1.`status` IN
+                <foreach collection="statusList" item="s" index="index" open="(" close=")" separator=",">
+                    #{s}
+                </foreach>
+            </if>
+        </where>
+    </select>
 </mapper>

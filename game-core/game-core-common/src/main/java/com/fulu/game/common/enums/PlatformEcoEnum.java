@@ -14,6 +14,7 @@ public enum PlatformEcoEnum implements TypeEnum<Integer> {
     IOS(4, "IOS"),
     ANDROID(5, "ANDROID"),
     FENQILE(6, "分期乐"),
+    THUNDER(7, "迅雷"),
     APP(45, "APP(android+ios)");
 
 
@@ -21,14 +22,13 @@ public enum PlatformEcoEnum implements TypeEnum<Integer> {
     private String msg;
 
 
-
-    public static PlatformEcoEnum getEnumByType(Integer type){
-        for(PlatformEcoEnum platformEcoEnum : PlatformEcoEnum.values()){
-            if(platformEcoEnum.getType().equals(type)){
+    public static PlatformEcoEnum getEnumByType(Integer type) {
+        for (PlatformEcoEnum platformEcoEnum : PlatformEcoEnum.values()) {
+            if (platformEcoEnum.getType().equals(type)) {
                 return platformEcoEnum;
             }
         }
-        throw new IllegalArgumentException("{"+type+"}平台不匹配");
+        throw new IllegalArgumentException("{" + type + "}平台不匹配");
     }
 
 

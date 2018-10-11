@@ -3,17 +3,21 @@ package com.fulu.game.core.service.impl;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
-import com.fulu.game.common.utils.GenIdUtil;
+import com.fulu.game.common.enums.PlatformEcoEnum;
+import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.entity.Order;
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.OrderService;
+import com.fulu.game.core.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,6 +29,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
 
     @Autowired
     private OrderDao orderDao;
+    @Autowired
+    private UserService userService;
 
 
     @Override
@@ -67,7 +73,6 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     }
 
 
-
     @Override
     public Order findByOrderNo(String orderNo) {
         if (orderNo == null) {
@@ -84,24 +89,50 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
     }
 
     @Override
-    public List<Order> findWaitSendEmailOrder(Integer status , Integer waitMins) {
+    public List<Order> findWaitSendEmailOrder(Integer status, Integer waitMins) {
 
         OrderVO params = new OrderVO();
         params.setStatus(status);
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(new Date());
-        rightNow.add(Calendar.MINUTE,waitMins.intValue()*-1);
+        rightNow.add(Calendar.MINUTE, waitMins.intValue() * -1);
         params.setEndTime(rightNow.getTime());
-        
+
         return orderDao.findByParameter(params);
     }
 
     @Override
-    public List<OrderDetailsVO> orderList(int type, int userId,List<Integer> statusList) {
-        List<OrderDetailsVO> list = orderDao.listOrderDetails(type, userId,statusList);
+    public List<OrderDetailsVO> orderList(int type, int userId, List<Integer> statusList) {
+        List<OrderDetailsVO> list = orderDao.listOrderDetails(type, userId, statusList);
         return list;
     }
 
+    @Override
+    public OrderVO getThunderOrderInfo() {
+        User user = userService.getCurrentUser();
+        if (user == null) {
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+
+
+        OrderVO paramOrderVO = new OrderVO();
+        paramOrderVO.setUserId(user.getId());
+        paramOrderVO.setPlatform(PlatformEcoEnum.THUNDER.getType());
+        paramOrderVO.setStatusList(OrderStatusGroupEnum.ADMIN_COMPLETE.getStatusList());
+        int orderCount = orderDao.countByParameter(paramOrderVO);
+
+        OrderVO orderVO = orderDao.findMoneySum(paramOrderVO);
+        orderVO.setOrderCount(orderCount);
+        BigDecimal userConsumeMoney = orderVO.getSumActualMoney().subtract(orderVO.getSumUserMoney()).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+        if (userConsumeMoney.compareTo(BigDecimal.ZERO) < 0) {
+            log.info("迅雷订单数据异常，累计实付金额：{}，累计退款用户金额：{}", orderVO.getSumActualMoney(), orderVO.getSumUserMoney());
+            userConsumeMoney = BigDecimal.ZERO;
+        }
+
+        orderVO.setUserConsumeMoney(userConsumeMoney);
+        orderVO.setOrderCount(orderCount);
+        return orderVO;
+    }
 
 
     @Override
@@ -117,7 +148,7 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         list.add(OrderStatusEnum.CONSULT_CANCEL.getStatus());
         list.add(OrderStatusEnum.APPEALING.getStatus());
 
-        List<Order> orderList = orderDao.getBannerOrderList(authUserId,bossUserId,list);
+        List<Order> orderList = orderDao.getBannerOrderList(authUserId, bossUserId, list);
 
         return orderList;
     }

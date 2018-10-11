@@ -173,15 +173,16 @@ public interface ProductService extends ICommonService<Product, Integer> {
      * @param pageNum
      * @param pageSize
      * @param categoryId
-     * @param orderBy 排序规则 sales，newnan
-     * @param dans 段位信息
-     * @param prices 价格信息
+     * @param orderBy    排序规则 sales，newnan
+     * @param dans       段位信息
+     * @param prices     价格信息
      * @return
      */
-    PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId,Integer gender,Integer pageNum,Integer pageSize,String orderBy, String dans, String prices);
+    PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId, Integer gender, Integer pageNum, Integer pageSize, String orderBy, String dans, String prices);
 
     /**
      * 查询商品橱窗
+     *
      * @param pageNum
      * @param pageSize
      * @param categoryId
@@ -284,7 +285,7 @@ public interface ProductService extends ICommonService<Product, Integer> {
      * @param userId
      * @return
      */
-    List<TechAuthProductVO> techAuthProductList(int userId,PlatformShowEnum platformShowEnum);
+    List<TechAuthProductVO> techAuthProductList(int userId, PlatformShowEnum platformShowEnum);
 
 
     /**
@@ -325,4 +326,13 @@ public interface ProductService extends ICommonService<Product, Integer> {
     PageInfo<ProductShowCaseVO> findAllNightProductByPage(Integer gender, Integer pageNum, Integer pageSize);
 
     List<Product> findByParameter(ProductVO productVO);
+
+    /**
+     * 迅雷约玩-首页-陪玩师列表
+     *
+     * @param categoryId 分类id
+     * @param size       显示数量
+     * @return 分页查询结果集
+     */
+    PageInfo<ProductShowCaseVO> thunderProductList(Integer categoryId, Integer size);
 }
