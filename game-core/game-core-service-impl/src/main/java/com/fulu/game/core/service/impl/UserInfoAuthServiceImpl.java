@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.Key;
 import java.util.*;
 
 
@@ -115,7 +114,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         user.setBirth(userInfoAuthTO.getBirth());
         user.setConstellation(userInfoAuthTO.getConstellation());
         user.setUserInfoAuth(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType());
-        if(userInfoAuthTO.getScoreAvg() != null){
+        if (userInfoAuthTO.getScoreAvg() != null) {
             user.setScoreAvg(userInfoAuthTO.getScoreAvg());
         }
         user.setUpdateTime(new Date());
@@ -239,8 +238,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     }
 
 
-
-
     /**
      * 保存用户认证的个人信息的排序号
      *
@@ -249,7 +246,7 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
      */
     @Override
     public void saveSort(UserInfoAuthTO userInfoAuthTO) {
-        userInfoAuthDao.updateUserSort(userInfoAuthTO.getUserId(),userInfoAuthTO.getSort());
+        userInfoAuthDao.updateUserSort(userInfoAuthTO.getUserId(), userInfoAuthTO.getSort());
     }
 
 
@@ -350,11 +347,12 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
     /**
      * 设置用户认证信息附加信息
      * add by shijiaoyun
+     *
      * @param userInfoAuthVO
      */
     private void setUserInfoAuthExtInfo(UserInfoAuthVO userInfoAuthVO, User user) {
-        if(userInfoAuthVO == null || userInfoAuthVO.getUserId() == null || user == null){
-            return ;
+        if (userInfoAuthVO == null || userInfoAuthVO.getUserId() == null || user == null) {
+            return;
         }
         int userId = user.getId();
         userInfoAuthVO.setNickname(user.getNickname());
@@ -392,8 +390,16 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     @Override
     public List<UserInfoAuth> findByUserIds(List<Integer> userIds) {
+        return findByUserIds(userIds, null, null);
+    }
+
+    @Override
+    public List<UserInfoAuth> findByUserIds(List<Integer> userIds, Integer pageNum, Integer pageSize) {
         if (userIds == null) {
             return new ArrayList<>();
+        }
+        if (pageNum != null && pageSize != null) {
+            PageHelper.startPage(pageNum, pageSize);
         }
         return userInfoAuthDao.findByUserIds(userIds);
     }

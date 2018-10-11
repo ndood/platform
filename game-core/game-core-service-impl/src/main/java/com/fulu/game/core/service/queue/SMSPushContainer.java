@@ -1,11 +1,16 @@
 package com.fulu.game.core.service.queue;
 
 import com.fulu.game.common.utils.SMSUtil;
+import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.vo.AppPushMsgVO;
 import com.fulu.game.core.entity.vo.SMSVO;
+import com.fulu.game.core.service.UserInfoAuthService;
+import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -29,6 +34,11 @@ public class SMSPushContainer extends RedisTaskContainer {
     protected static ExecutorService es = Executors.newFixedThreadPool(runTaskThreadNum);
 
     private RedisConsumer redisConsumer;
+    @Autowired
+    private UserService userService;
+    @Qualifier(value = "userInfoAuthServiceImpl")
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
 
     @PostConstruct
     private void init() {
@@ -51,6 +61,12 @@ public class SMSPushContainer extends RedisTaskContainer {
     }
 
     private void process(SMSVO smsvo) {
+        User user = userService.findByMobile(smsvo.getMobile());
+        UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
+        if (userInfoAuth != null && userInfoAuth.getVestFlag()) {
+            log.info("马甲用户，不发通知");
+            return;
+        }
         Boolean flag = SMSUtil.sendSMS(smsvo.getMobile(), smsvo.getTemplateEnum(), smsvo.getParams());
         if (!flag) {
             log.error("发送短信失败:user.getMobile:{};content:{};", smsvo.getMobile(), smsvo.getTemplateEnum().getType());

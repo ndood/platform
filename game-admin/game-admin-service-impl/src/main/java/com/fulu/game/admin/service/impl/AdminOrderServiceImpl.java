@@ -14,7 +14,8 @@ import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
-import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
+import com.fulu.game.core.service.impl.push.PushServiceImpl;
+import com.fulu.game.core.service.impl.push.SMSPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -63,6 +64,8 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
     private AdminPushServiceImpl adminPushService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private SMSPushServiceImpl smsPushService;
 
 
     @Override
@@ -80,8 +83,8 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
     }
 
     @Override
-    protected MiniAppPushServiceImpl getMinAppPushService() {
-        return null;
+    protected PushServiceImpl getPushService() {
+        return smsPushService;
     }
 
 
@@ -409,7 +412,7 @@ public class AdminOrderServiceImpl extends AbOrderOpenServiceImpl {
 
     public PageInfo<OrderResVO> list(OrderSearchVO orderSearchVO, Integer pageNum, Integer pageSize, String orderBy) {
         //todo gzc 下个版本有平台字段后 修改此处逻辑
-        if(orderSearchVO.getType() != null && orderSearchVO.getType() == 3) {
+        if (orderSearchVO.getType() != null && orderSearchVO.getType() == 3) {
             orderSearchVO.setType(null);
             orderSearchVO.setPayment(5);
         }

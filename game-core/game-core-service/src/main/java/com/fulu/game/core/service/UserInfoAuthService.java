@@ -41,7 +41,6 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
      */
     UserInfoAuth findByUserId(int userId);
 
-
     /**
      * 查找用户个人认证信息
      *
@@ -52,6 +51,15 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
 
 
     List<UserInfoAuth> findByUserIds(List<Integer> userIds);
+
+    /**
+     * 通过用户ID分页查询用户认证信息
+     * @param userIds
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    List<UserInfoAuth> findByUserIds(List<Integer> userIds, Integer pageNum, Integer pageSize);
 
     /**
      * 个人信息认证列表

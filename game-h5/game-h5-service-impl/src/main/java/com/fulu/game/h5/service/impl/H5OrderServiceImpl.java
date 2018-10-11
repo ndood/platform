@@ -17,6 +17,8 @@ import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
 import com.fulu.game.core.service.impl.push.PlayMiniAppPushServiceImpl;
+import com.fulu.game.core.service.impl.push.PushServiceImpl;
+import com.fulu.game.core.service.impl.push.SMSPushServiceImpl;
 import com.fulu.game.thirdparty.fenqile.service.FenqileSdkOrderService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -52,7 +54,7 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
     @Autowired
     private UserCommentService userCommentService;
     @Autowired
-    private PlayMiniAppPushServiceImpl playMiniAppPushService;
+    private SMSPushServiceImpl smsPushService;
     @Autowired
     private H5OrderShareProfitServiceImpl h5OrderShareProfitService;
     @Autowired
@@ -76,8 +78,8 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
     private ImService imService;
 
     @Override
-    protected MiniAppPushServiceImpl getMinAppPushService() {
-        return playMiniAppPushService;
+    protected PushServiceImpl getPushService() {
+        return smsPushService;
     }
 
     @Override
@@ -114,7 +116,7 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         if (!vestFlag) {
             SMSUtil.sendOrderReceivingRemind(server.getMobile(), order.getName());
             //推送通知
-            playMiniAppPushService.orderPay(order);
+            getPushService().orderPay(order);
         }
 
         //判断陪玩师是否为马甲或者代聊陪玩师  如果是，则给陪玩师发送一条im消息告诉他被下单了
@@ -322,7 +324,7 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         //倒计时24小时后处理
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
         //推送通知
-        getMinAppPushService().consult(order);
+        getPushService().consult(order);
         return orderNo;
     }
 

@@ -13,6 +13,8 @@ import com.fulu.game.core.entity.vo.searchVO.OrderSearchVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
+import com.fulu.game.core.service.impl.push.PushServiceImpl;
+import com.fulu.game.core.service.impl.push.SMSPushServiceImpl;
 import com.fulu.game.play.service.impl.PlayOrderShareProfitServiceImpl;
 import com.fulu.game.point.service.impl.PointOrderShareProfitServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +50,8 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
     private OrderService orderService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private SMSPushServiceImpl smsPushService;
 
     @Override
     protected void dealOrderAfterPay(Order order) {
@@ -92,8 +96,8 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
     }
 
     @Override
-    protected MiniAppPushServiceImpl getMinAppPushService() {
-        return null;
+    protected PushServiceImpl getPushService() {
+        return smsPushService;
     }
 
 

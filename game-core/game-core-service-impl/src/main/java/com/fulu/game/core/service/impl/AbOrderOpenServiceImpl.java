@@ -94,7 +94,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
      *
      * @return
      */
-    protected abstract PushServiceImpl getMinAppPushService();
+    protected abstract PushServiceImpl getPushService();
 
 
     /**
@@ -131,7 +131,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
             userAutoReceiveOrderService.addOrderNum(serviceUser.getId(), order.getCategoryId());
 
             //推送通知
-            getMinAppPushService().serviceUserAcceptOrder(order);
+            getPushService().serviceUserAcceptOrder(order);
 
             //开启新线程通知老板，陪玩师已接单
             springThreadPoolExecutor.getAsyncExecutor().execute(new Runnable() {
@@ -309,7 +309,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         orderService.update(order);
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
         //推送通知
-        getMinAppPushService().start(order);
+        getPushService().start(order);
         //如果是分期乐订单，短信通知老板
         //todo gzc 下一版本会通过平台字段区分订单类型
         if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
@@ -372,7 +372,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         //倒计时24小时后处理
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
         //推送通知
-        getMinAppPushService().consult(order);
+        getPushService().consult(order);
         return orderNo;
     }
 
@@ -451,7 +451,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         //倒计时24小时后处理
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
         //推送通知
-        getMinAppPushService().rejectConsult(order);
+        getPushService().rejectConsult(order);
         //如果是分期乐订单，短信通知老板
         //todo gzc 下一版本会通过平台字段区分订单类型
         if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
@@ -499,7 +499,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         //创建订单状态详情
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         //推送通知同意协商
-        getMinAppPushService().agreeConsult(order);
+        getPushService().agreeConsult(order);
 
         //如果是分期乐订单，短信通知老板
         //todo gzc 下一版本会通过平台字段区分订单类型
@@ -541,7 +541,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         orderService.update(order);
         log.info("取消协商处理更改订单状态后:{}", order);
         //推送通知
-        getMinAppPushService().cancelConsult(order);
+        getPushService().cancelConsult(order);
         return order.getOrderNo();
     }
 
@@ -564,7 +564,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         orderService.update(order);
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         //消息提醒
-        getMinAppPushService().cancelOrderByServer(order);
+        getPushService().cancelOrderByServer(order);
         // 全额退款用户
         if (order.getIsPay()) {
             //TODO 退款
@@ -613,7 +613,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         // 全额退款用户
         if (order.getIsPay()) {
             orderRefund(order, order.getActualMoney());
-            getMinAppPushService().cancelOrderByUser(order);
+            getPushService().cancelOrderByUser(order);
         }
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         return orderNo;
@@ -649,9 +649,9 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         //TODO 推送做抽象
         //推送通知
         if (user.getId().equals(order.getUserId())) {
-            getMinAppPushService().appealByUser(order);
+            getPushService().appealByUser(order);
         } else {
-            getMinAppPushService().appealByServer(order);
+            getPushService().appealByServer(order);
             //如果是分期乐订单，短信通知老板
             //todo gzc 下一版本会通过平台字段区分订单类型
             if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
@@ -687,7 +687,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         //提交验收订单
         orderEventService.createCheckEvent(order, user, remark, fileUrl);
         //推送通知
-        getMinAppPushService().checkOrder(order);
+        getPushService().checkOrder(order);
         return order.getOrderNo();
     }
 
@@ -713,7 +713,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         shareProfit(order);
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         //确认服务
-        getMinAppPushService().acceptOrder(order);
+        getPushService().acceptOrder(order);
         return orderNo;
     }
 

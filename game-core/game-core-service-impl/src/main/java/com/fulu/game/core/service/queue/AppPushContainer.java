@@ -13,20 +13,24 @@ import cn.jpush.api.push.model.notification.Notification;
 import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.SMSTemplateEnum;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.vo.AppPushMsgVO;
 import com.fulu.game.core.entity.vo.SMSVO;
+import com.fulu.game.core.service.UserInfoAuthService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.SMSPushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -55,6 +59,10 @@ public class AppPushContainer extends RedisTaskContainer {
     private SMSPushServiceImpl smsPushService;
 
     private static final int PAGESIZE = 100;
+
+    @Qualifier(value = "userInfoAuthServiceImpl")
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
 
     @PostConstruct
     private void init() {
@@ -90,11 +98,25 @@ public class AppPushContainer extends RedisTaskContainer {
             push(title, alert, extras, null);
             return;
         }
-        String[] strUserIds = new String[userIds.length];
-        for (int i = 0; i < userIds.length; i++) {
-            strUserIds[i] = String.valueOf(userIds[i]);
-        }
-        push(title, alert, extras, strUserIds);
+        //最终要推送的userIds
+        List<String> targetUids = new ArrayList<>();
+
+        int pageNum = 0;
+        List<UserInfoAuth> userInfoAuths;
+        do {
+            userInfoAuths = userInfoAuthService.findByUserIds(Arrays.asList(userIds), pageNum, PAGESIZE);
+            userInfoAuths.forEach(userInfoAuth -> {
+                if (userInfoAuth != null && userInfoAuth.getVestFlag()) {
+                    for (Integer userId : userIds) {
+                        if (!userInfoAuth.getUserId().equals(userId)) {
+                            targetUids.add(String.valueOf(userId));
+                        }
+                    }
+                    log.info("马甲用户，不发通知");
+                }
+            });
+            push(title, alert, extras, targetUids.toArray(new String[targetUids.size()]));
+        } while (CollectionUtils.isNotEmpty(userInfoAuths));
     }
 
     /**
@@ -158,7 +180,7 @@ public class AppPushContainer extends RedisTaskContainer {
                 SMSVO smsvo = new SMSVO(user.getMobile(), SMSTemplateEnum.SMS_REMIND, params);
                 smsPushService.pushMsg(smsvo);
             }
-        } while (CollectionUtils.isEmpty(users));
+        } while (CollectionUtils.isNotEmpty(users));
     }
 
     /**

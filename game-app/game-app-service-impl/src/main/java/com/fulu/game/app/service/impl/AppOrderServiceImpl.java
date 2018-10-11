@@ -17,6 +17,7 @@ import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.AppPushServiceImpl;
+import com.fulu.game.core.service.impl.push.PushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -257,7 +258,7 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
         shareProfit(order);
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus());
         //确认服务
-        getMinAppPushService().acceptOrder(order);
+        getPushService().acceptOrder(order);
         return orderNo;
     }
 
@@ -318,7 +319,7 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
 
 
     @Override
-    protected PushService getMinAppPushService() {
+    protected PushServiceImpl getPushService() {
         return appPushServiceImpl;
     }
 
