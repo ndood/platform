@@ -238,11 +238,11 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
         String source = "{\"" + getIndexType() + "\":{\"properties\":{"
                 + "\"dan\":{\"type\":\"string\",\"index\":\"not_analyzed\"}"
                 + "}}}";
-        System.out.println(source);
+        log.info("创建mapping的source：{}",source);
 
         PutMapping putMapping = new PutMapping.Builder(getIndexDB(), getIndexType(), source).build();
         JestResult jr = jestClient.execute(putMapping);
-        System.out.println(jr.isSucceeded());
+        log.info("创建mapping的结果：{}", jr.isSucceeded());
     }
 
     /**
@@ -251,7 +251,7 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
      */
     public void createIndex() throws Exception {
         JestResult jr = jestClient.execute(new CreateIndex.Builder(getIndexDB()).build());
-        System.out.println(jr.isSucceeded());
+        log.info("创建index的结果：{}", jr.isSucceeded());
     }
 
     @Override

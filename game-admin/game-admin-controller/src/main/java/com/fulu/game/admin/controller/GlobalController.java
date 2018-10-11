@@ -5,6 +5,7 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.utils.OssUtil;
 import com.fulu.game.core.entity.Product;
+import com.fulu.game.core.search.component.ProductSearchComponent;
 import com.fulu.game.core.service.ConversionRateService;
 import com.fulu.game.core.service.ProductService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
@@ -28,6 +29,9 @@ public class GlobalController extends BaseController{
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
 
+    @Autowired
+    private ProductSearchComponent productSearchComponent;
+
 
     @Autowired
     private ConversionRateService conversionRateService;
@@ -39,6 +43,22 @@ public class GlobalController extends BaseController{
         return Result.success().data(fileName).msg(name);
     }
 
+    /**
+     * 初始化商品索引
+     * 初始化之前需要先
+     * @return
+     */
+    @PostMapping("/bath/init-index")
+    public Result initIndex(){
+        try {
+            productSearchComponent.createIndex();
+            productSearchComponent.createIndexMapping();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error().msg("初始化商品索引失败!");
+        }
+        return Result.success().msg("初始化商品索引成功!");
+    }
 
 
     @PostMapping("/bath/updateindex")
