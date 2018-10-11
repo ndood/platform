@@ -93,7 +93,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
      *
      * @return
      */
-    protected abstract IBusinessPushService getMinAppPushService();
+    protected abstract PushService getMinAppPushService();
 
 
     /**

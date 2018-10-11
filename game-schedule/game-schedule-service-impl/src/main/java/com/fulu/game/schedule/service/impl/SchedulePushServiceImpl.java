@@ -17,20 +17,20 @@ public class SchedulePushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void consultAgree(Order order) {
-        if (OrderTypeEnum.PLAY.getType().equals(order.getType())) {
-            //todo gzc 给用户发留言短信
-            pushServiceProcessMsg(PlatformEcoEnum.PLAY.getType(),
-                    order.getUserId(),
-                    order,
-                    WechatTemplateIdEnum.PLAY_SERVICE_PROCESS_NOTICE,
-                    WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE);
-        } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
-            pushServiceProcessMsg(PlatformEcoEnum.POINT.getType(),
-                    order.getUserId(),
-                    order,
-                    WechatTemplateIdEnum.POINT_SERVICE_PROCESS_NOTICE,
-                    WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE);
-        }
+//        if (OrderTypeEnum.PLAY.getType().equals(order.getType())) {
+//            //todo gzc 给用户发留言短信
+//            pushServiceProcessMsg(PlatformEcoEnum.PLAY.getType(),
+//                    order.getUserId(),
+//                    order,
+//                    WechatTemplateIdEnum.PLAY_SERVICE_PROCESS_NOTICE,
+//                    WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE);
+//        } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
+//            pushServiceProcessMsg(PlatformEcoEnum.POINT.getType(),
+//                    order.getUserId(),
+//                    order,
+//                    WechatTemplateIdEnum.POINT_SERVICE_PROCESS_NOTICE,
+//                    WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE);
+//        }
         //todo 协商逻辑需要按照平台来
     }
 
@@ -40,20 +40,20 @@ public class SchedulePushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void consultCancel(Order order) {
-        if (OrderTypeEnum.PLAY.getType().equals(order.getType())) {
-            //todo gzc 给用户发留言短信
-            pushServiceProcessMsg(PlatformEcoEnum.PLAY.getType(),
-                    order.getUserId(),
-                    order,
-                    WechatTemplateIdEnum.PLAY_SERVICE_PROCESS_NOTICE,
-                    WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL);
-        } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
-            pushServiceProcessMsg(PlatformEcoEnum.POINT.getType(),
-                    order.getUserId(),
-                    order,
-                    WechatTemplateIdEnum.POINT_SERVICE_PROCESS_NOTICE,
-                    WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL);
-        }
+//        if (OrderTypeEnum.PLAY.getType().equals(order.getType())) {
+//            //todo gzc 给用户发留言短信
+//            pushServiceProcessMsg(PlatformEcoEnum.PLAY.getType(),
+//                    order.getUserId(),
+//                    order,
+//                    WechatTemplateIdEnum.PLAY_SERVICE_PROCESS_NOTICE,
+//                    WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL);
+//        } else if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
+//            pushServiceProcessMsg(PlatformEcoEnum.POINT.getType(),
+//                    order.getUserId(),
+//                    order,
+//                    WechatTemplateIdEnum.POINT_SERVICE_PROCESS_NOTICE,
+//                    WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL);
+//        }
         //todo 取消协商逻辑需要按照平台来
 
     }

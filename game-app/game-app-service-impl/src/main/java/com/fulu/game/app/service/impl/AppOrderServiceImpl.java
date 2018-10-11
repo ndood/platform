@@ -318,7 +318,7 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
 
 
     @Override
-    protected IBusinessPushService getMinAppPushService() {
+    protected PushService getMinAppPushService() {
         return appPushServiceImpl;
     }
 
