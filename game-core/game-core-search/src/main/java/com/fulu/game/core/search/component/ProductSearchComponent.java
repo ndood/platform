@@ -112,6 +112,17 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
         return page;
     }
 
+    public <T> Page<T> searchShowCaseDoc(int categoryId,
+                                         Integer gender,
+                                         Integer pageNum,
+                                         Integer pageSize,
+                                         String orderBy,
+                                         String dans,
+                                         String prices,
+                                         Class<T> type) throws IOException {
+        return searchShowCaseDoc( categoryId,gender,pageNum,pageSize,orderBy,dans,prices,null,type);
+    }
+
     /**
      * 分类商品查询
      *
@@ -130,6 +141,7 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
                                          String orderBy,
                                          String dans,
                                          String prices,
+                                         Boolean online,
                                          Class<T> type) throws IOException {
         //封装查询条件
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
@@ -140,6 +152,9 @@ public class ProductSearchComponent extends AbsSearchComponent<ProductShowCaseDo
 
         boolQueryBuilder.filter(QueryBuilders.termQuery("categoryId", categoryId));
         boolQueryBuilder.filter(QueryBuilders.termQuery("isIndexShow", true));
+        if(online != null){
+            boolQueryBuilder.filter(QueryBuilders.termQuery("onLine", online));
+        }
         if(dans != null && !"".equals(dans)){
             String[] dansArr = dans.split(",");
             boolQueryBuilder.filter(QueryBuilders.termsQuery("dan", dansArr));

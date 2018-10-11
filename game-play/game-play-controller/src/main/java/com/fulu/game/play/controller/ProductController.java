@@ -14,6 +14,7 @@ import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,6 +46,8 @@ public class ProductController extends BaseController {
     private PriceRuleService priceRuleService;
     @Autowired
     private AssignOrderSettingService assignOrderSettingService;
+    @Autowired
+    private UserCommentTagService userCommentTagService;
 
 
     @RequestMapping(value = "/search")
@@ -154,6 +157,22 @@ public class ProductController extends BaseController {
     }
     
     
+
+    /**
+     * 获取商品列表
+     * @param userId
+     * @return
+     */
+    @PostMapping(value = "/user/list")
+    public Result productList(@RequestParam(required = false) Integer  userId) {
+        if(userId == null || userId.intValue() < 0){
+            User user = userService.getCurrentUser();
+            userId = user.getId();
+        }
+        List<Product> list = productService.findAppProductList(userId);
+        return Result.success().data(list);
+    }
+
     /**
      * 查询用户商品详情页
      *
@@ -162,8 +181,12 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "/details")
     public Result findByProductId(Integer productId) {
-        ProductDetailsVO serverCardVO = productService.findDetailsByProductId(productId);
-        return Result.success().data(serverCardVO);
+        ProductDetailsVO productDetailsVO = productService.findDetailsByProductId(productId);
+        if(productDetailsVO != null && productDetailsVO.getUserInfo() != null){
+            PageInfo<UserCommentTag> page = userCommentTagService.findByServerId(1, 10, productDetailsVO.getUserInfo().getUserId());
+            productDetailsVO.setUserCommentTagList(page.getList());
+        }
+        return Result.success().data(productDetailsVO);
     }
 
 

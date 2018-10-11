@@ -643,6 +643,11 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     @Override
     public PageInfo<ProductCollectVO> findAllProductByPage(Integer gender, Integer pageNum, Integer pageSize, String orderBy) {
+        return findAllProductByPage( gender, pageNum, pageSize, orderBy, null);
+    }
+
+    @Override
+    public PageInfo<ProductCollectVO> findAllProductByPage(Integer gender, Integer pageNum, Integer pageSize, String orderBy, Boolean online) {
         String timeStr = redisOpenService.get(RedisKeyEnum.MIDNIGHT.generateKey());
         boolean showNightFlag;
         if (StringUtils.isBlank(timeStr)) {
@@ -691,7 +696,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             }
 
             PageInfo<ProductShowCaseVO> showCaseVOPageInfo = findProductShowCase(category.getId(),
-                    gender, pageNum, pageSize, orderBy);
+                    gender, pageNum, pageSize, orderBy, null, null, online);
             vo.setVoList(showCaseVOPageInfo.getList());
             voList.add(vo);
         }
@@ -816,6 +821,11 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         return productDao.findByParameter(productVO);
     }
 
+    @Override
+    public PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId, Integer gender, Integer pageNum, Integer pageSize, String orderBy, String dans, String prices) {
+        return findProductShowCase( categoryId, gender, pageNum, pageSize, orderBy, dans, prices, null);
+    }
+
     /**
      * 查询商品橱窗
      *
@@ -829,10 +839,10 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
      * @return
      */
     @Override
-    public PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId, Integer gender, Integer pageNum, Integer pageSize, String orderBy, String dans, String prices) {
+    public PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId, Integer gender, Integer pageNum, Integer pageSize, String orderBy, String dans, String prices, Boolean online) {
         PageInfo<ProductShowCaseVO> page = null;
         try {
-            Page<ProductShowCaseVO> searchResult = productSearchComponent.searchShowCaseDoc(categoryId, gender, pageNum, pageSize, orderBy, dans, prices, ProductShowCaseVO.class);
+            Page<ProductShowCaseVO> searchResult = productSearchComponent.searchShowCaseDoc(categoryId, gender, pageNum, pageSize, orderBy, dans, prices, online, ProductShowCaseVO.class);
             page = new PageInfo<ProductShowCaseVO>(searchResult);
         } catch (Exception e) {
             log.error("ProductShowCase查询异常:", e);

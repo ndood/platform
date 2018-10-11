@@ -18,6 +18,7 @@
         <result column="nickname" property="nickname"/>
         <result column="gender" property="gender"/>
         <result column="im_id" property="imId"/>
+        <result column="user_id" property="userId"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -65,6 +66,7 @@
         tuser.head_portraits_url,
         tuser.nickname,
         tuser.gender,
+        t_user.id as user_id,
         tuser.im_id
         from t_user_friend friend
         left join t_user tuser

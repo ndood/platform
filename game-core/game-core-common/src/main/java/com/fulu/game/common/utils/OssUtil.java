@@ -128,7 +128,7 @@ public class OssUtil {
         List<String> deleteUrls = new ArrayList<>();
         // 过滤掉非临时文件
         for(String url : fileUrl){
-           if(!url.contains("/temp/")){
+           if(url.contains("temp/")){
                deleteUrls.add(url);
            }
         }

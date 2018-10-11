@@ -78,6 +78,8 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
 
     @Autowired
     private Config configProperties;
+    @Autowired
+    private PriceRuleService priceRuleService;
 
 
     @Override
@@ -1026,5 +1028,44 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         u.setUserId(userInfo.getId());
 
         this.updateByUserId(u);
+    }
+
+    /**
+     * 修改用户接单数和允许最大定价价格
+     *
+     * @param order
+     */
+    @Override
+    public void updateOrderCountAndMaxPrice(Order order) {
+        if(order == null){
+            log.info("修改用户接单数时，订单为空");
+            return ;
+        }
+        UserInfoAuth userInfoAuth = findByUserId(order.getUserId());
+        if(userInfoAuth == null){
+            log.info("修改用户接单数时，未查询到用户id为{}的用户认证信息", order.getUserId());
+            return ;
+        }
+        Integer orderCount = userInfoAuth.getOrderCount() != null ? userInfoAuth.getOrderCount() + 1 : 1;
+        //修改用户接单数
+        userInfoAuth.setOrderCount(orderCount);
+        update(userInfoAuth);
+        //
+        UserTechAuth userTechAuth = userTechAuthService.findTechByCategoryAndUser(order.getCategoryId(),userInfoAuth.getUserId());
+        if(userTechAuth == null){
+            log.info("修改用户技能接单数和允许最大定价价格时，未查询到技能，分类id为{},用户id为{}", order.getCategoryId(),order.getUserId());
+            return ;
+        }
+        Integer techOrderCount = userTechAuth.getOrderCount() != null ? userTechAuth.getOrderCount() + 1 : 1;
+        userTechAuth.setOrderCount(techOrderCount);
+        PriceRuleVO priceRuleVO = new PriceRuleVO();
+        priceRuleVO.setCategoryId(order.getCategoryId());
+        priceRuleVO.setOrderCount(techOrderCount);
+        PriceRule priceRule = priceRuleService.findMaxPrice(priceRuleVO);
+        if(priceRule != null && priceRule.getPrice() != null){
+            userTechAuth.setMaxPrice(priceRule.getPrice());
+        }
+        userTechAuthService.update(userTechAuth);
+        log.info("修改用户技能接单数和允许最大定价价格时，未查询到技能，分类id为{},用户id为{}", order.getCategoryId(),order.getUserId());
     }
 }
