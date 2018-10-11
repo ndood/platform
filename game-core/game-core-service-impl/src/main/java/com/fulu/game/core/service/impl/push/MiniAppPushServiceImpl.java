@@ -1,26 +1,35 @@
 package com.fulu.game.core.service.impl.push;
 
+import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
+import cn.hutool.core.date.DateField;
+import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSONArray;
 import com.fulu.game.common.Constant;
-import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.enums.UserScoreEnum;
-import com.fulu.game.common.enums.WechatTemplateMsgEnum;
-import com.fulu.game.common.enums.WechatTemplateMsgTypeEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserInfoAuth;
-import com.fulu.game.core.service.UserInfoAuthService;
-import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.entity.WxMaTemplateMessageVO;
+import com.fulu.game.core.entity.vo.WechatFormidVO;
+import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.core.service.queue.MiniAppPushContainer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
 @Service
 @Slf4j
-public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements IBusinessPushService{
+public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
 
     @Autowired
     private UserService userService;
@@ -29,6 +38,10 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements 
     @Qualifier(value = "userInfoAuthServiceImpl")
     @Autowired
     private UserInfoAuthService userInfoAuthService;
+    @Autowired
+    private MiniAppPushContainer miniAppPushContainer;
+    @Autowired
+    private WechatFormidService wechatFormidService;
 
 
     /**
@@ -37,8 +50,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements 
      * @param order
      */
     public void receiveOrder(Order order) {
-        push(order.getUserId(), order, WechatTemplateMsgEnum.ORDER_TOUSER_AFFIRM_RECEIVE,
-                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
+        push(Collections.singletonList(order.getUserId()), order, WechatTemplateMsgEnum.ORDER_TOUSER_AFFIRM_RECEIVE);
     }
 
     /**
@@ -47,8 +59,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements 
      * @param order
      */
     public void remindReceive(Order order) {
-        push(order.getServiceUserId(), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_RECEIVE,
-                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
+        push(Collections.singletonList(order.getServiceUserId()), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_RECEIVE);
     }
 
     /**
@@ -57,8 +68,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements 
      * @param order
      */
     public void remindStart(Order order) {
-        push(order.getServiceUserId(), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_START_SERVICE,
-                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
+        push(Collections.singletonList(order.getServiceUserId()), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_REMIND_START_SERVICE);
     }
 
     /**
@@ -67,8 +77,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements 
      * @param order
      */
     public void serviceUserAcceptOrder(Order order) {
-        push(order.getServiceUserId(), order, WechatTemplateMsgEnum.POINT_TOSERVICE_ORDER_RECEIVING,
-                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
+        push(Collections.singletonList(order.getServiceUserId()), order, WechatTemplateMsgEnum.POINT_TOSERVICE_ORDER_RECEIVING);
     }
 
     /**
@@ -78,8 +87,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements 
      * @return
      */
     public void start(Order order) {
-        push(order.getUserId(), order, WechatTemplateMsgEnum.ORDER_TOUSER_START_SERVICE,
-                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
+        push(Collections.singletonList(order.getUserId()), order, WechatTemplateMsgEnum.ORDER_TOUSER_START_SERVICE);
     }
 
 
@@ -89,8 +97,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements 
      * @param order
      */
     public void consult(Order order) {
-        push(order.getServiceUserId(), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT,
-                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
+        push(Collections.singletonList(order.getServiceUserId()), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT);
     }
 
     /**
@@ -99,8 +106,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements 
      * @param order
      */
     public void rejectConsult(Order order) {
-        push(order.getUserId(), order, WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_REJECT,
-                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
+        push(Collections.singletonList(order.getUserId()), order, WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_REJECT);
     }
 
     /**
@@ -109,8 +115,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements 
      * @param order
      */
     public void agreeConsult(Order order) {
-        push(order.getUserId(), order, WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE,
-                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
+        push(Collections.singletonList(order.getUserId()), order, WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE);
     }
 
     /**
@@ -119,8 +124,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements 
      * @param order
      */
     public void cancelConsult(Order order) {
-        push(order.getServiceUserId(), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL,
-                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
+        push(Collections.singletonList(order.getServiceUserId()), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL);
     }
 
     /**
@@ -129,8 +133,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements 
      * @param order
      */
     public void cancelOrderByServer(Order order) {
-        push(order.getUserId(), order, WechatTemplateMsgEnum.ORDER_TOUSER_REJECT_RECEIVE,
-                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
+        push(Collections.singletonList(order.getUserId()), order, WechatTemplateMsgEnum.ORDER_TOUSER_REJECT_RECEIVE);
     }
 
     /**
@@ -140,8 +143,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements 
      */
     public void cancelOrderByUser(Order order) {
         if (order.getServiceUserId() != null) {
-            push(order.getServiceUserId(), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_ORDER_CANCEL,
-                    WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
+            push(Collections.singletonList(order.getServiceUserId()), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_ORDER_CANCEL);
         }
     }
 
@@ -151,8 +153,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements 
      * @param order
      */
     public void appealByServer(Order order) {
-        push(order.getUserId(), order, WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL,
-                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
+        push(Collections.singletonList(order.getUserId()), order, WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL);
     }
 
     /**
@@ -161,8 +162,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements 
      * @param order
      */
     public void appealByUser(Order order) {
-        push(order.getServiceUserId(), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL,
-                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
+        push(Collections.singletonList(order.getServiceUserId()), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL);
     }
 
     /**
@@ -171,28 +171,27 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements 
      * @param order
      */
     public void checkOrder(Order order) {
-        push(order.getUserId(), order, WechatTemplateMsgEnum.ORDER_TOUSER_CHECK,
-                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
+        push(Collections.singletonList(order.getUserId()), order, WechatTemplateMsgEnum.ORDER_TOUSER_CHECK);
     }
 
     /**
      * 订单支付
+     *
      * @param order
      */
     public void orderPay(Order order) {
-        push(order.getServiceUserId(),
+        push(Collections.singletonList(order.getServiceUserId()),
                 order,
-                WechatTemplateMsgEnum.ORDER_TOSERVICE_PAY,
-                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
+                WechatTemplateMsgEnum.ORDER_TOSERVICE_PAY);
     }
+
     /**
      * 用户验收订单
      *
      * @param order
      */
     public void acceptOrder(Order order) {
-        push(order.getServiceUserId(), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_AFFIRM_SERVER,
-                WechatTemplateMsgTypeEnum.SERVICE_PROCESS_NOTICE);
+        push(Collections.singletonList(order.getServiceUserId()), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_AFFIRM_SERVER);
     }
 
     /**
@@ -202,13 +201,12 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements 
      * @param deduction
      */
     public void grantCouponMsg(int userId, String deduction) {
-        push(userId, WechatTemplateMsgEnum.GRANT_COUPON, deduction);
+        push(Collections.singletonList(userId), WechatTemplateMsgEnum.GRANT_COUPON, deduction);
     }
 
-    protected abstract void push(int userId, WechatTemplateMsgEnum wechatTemplateMsgEnum, String... replaces);
+    protected abstract void push(List<Integer> userId, WechatTemplateMsgEnum wechatTemplateMsgEnum, String... replaces);
 
-    protected abstract void push(int userId, Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum,
-                                 WechatTemplateMsgTypeEnum wechatTemplateMsgTypeEnum, String... replaces);
+    protected abstract void push(List<Integer> userId, Order order, WechatTemplateMsgEnum wechatTemplateMsgEnum, String... replaces);
 
     /**
      * 推送IM消息通知
@@ -225,12 +223,12 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements 
         User acceptUser = userService.findByImId(acceptImId);
 
         UserInfoAuth uia = userInfoAuthService.findByUserId(acceptUser.getId());
-        
-        if(uia!=null && uia.getOpenSubstituteIm()!=null && uia.getOpenSubstituteIm().booleanValue() == true){
+
+        if (uia != null && uia.getOpenSubstituteIm() != null && uia.getOpenSubstituteIm().booleanValue()) {
             return "用户开启了代聊,不推送微信消息!";
         }
-        
-        if (acceptUser == null || acceptUser.getOpenId() == null) {
+
+        if (acceptUser.getOpenId() == null) {
             log.error("acceptImId为:{}", acceptImId);
             throw new ServiceErrorException("AcceptIM不存在!");
         }
@@ -239,10 +237,11 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements 
             return "用户在线,不推送微信消息!";
         }
 
-        String  sendUserName = "";
-        if("zhouxj".equals(imId)){
-            sendUserName ="小秘书";
-        }else{
+        String sendUserName;
+        //TODO 千万不要硬编码 @王彬 修改  2018-10-11
+        if ("zhouxj".equals(imId)) {
+            sendUserName = "小秘书";
+        } else {
             User sendUser = userService.findByImId(imId);
             if (sendUser == null) {
                 throw new ServiceErrorException("IM不存在!");
@@ -255,11 +254,76 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl implements 
         if (time >= 10) {
             return "推送次数太多不能推送!";
         }
-        push(acceptUser.getId(), WechatTemplateMsgEnum.IM_MSG_PUSH,sendUserName, content);
+        push(Collections.singletonList(acceptUser.getId()), WechatTemplateMsgEnum.IM_MSG_PUSH, sendUserName, content);
         time += 1;
         //推送状态缓存两个小时
         redisOpenService.set(RedisKeyEnum.WX_TEMPLATE_MSG.generateKey(imId + "|" + acceptImId), time + "", Constant.TIME_MINUTES_FIFE);
         return "消息推送成功!";
+    }
+
+    /**
+     * 批量写入推送模板消息
+     *
+     * @param pushId
+     * @param userIds
+     * @param page
+     * @param wechatTemplateEnum
+     * @param dataList
+     */
+    protected synchronized void addTemplateMsg2Queue(int platform,
+                                                     Integer pushId,
+                                                     List<Integer> userIds,
+                                                     String page,
+                                                     WechatTemplateIdEnum wechatTemplateEnum,
+                                                     List<WxMaTemplateMessage.Data> dataList) {
+        //删除表里面过期的formId
+        long startTime = System.currentTimeMillis();
+        Date date = DateUtil.offset(new Date(), DateField.HOUR, (-24 * 7) + 1);
+        wechatFormidService.deleteByExpireTime(date);
+        long endTime = System.currentTimeMillis();
+        log.info("pushTask:{}执行wechatFormidService.deleteByExpireTime方法耗时:{}", pushId, endTime - startTime);
+        int size = 1000;
+        for (int i = 0; ; i = +size) {
+            List<WechatFormidVO> wechatFormidVOS = null;
+            try {
+                long findStartTime = System.currentTimeMillis();
+                wechatFormidVOS = wechatFormidService.findByUserIds(platform, userIds, i, size);
+                long findEndTime = System.currentTimeMillis();
+                log.info("pushTask:{}执行wechatFormidService.findByUserIds:{}", pushId, findEndTime - findStartTime);
+                if (wechatFormidVOS.isEmpty()) {
+                    break;
+                }
+                List<String> formIds = new ArrayList<>();
+                //发送微信模板消息
+                for (WechatFormidVO wechatFormidVO : wechatFormidVOS) {
+                    if (StringUtils.isEmpty(wechatFormidVO.getFormId())) {
+                        continue;
+                    }
+                    WxMaTemplateMessageVO vo = WxMaTemplateMessageVO.builder()
+                            .templateId(wechatTemplateEnum.getTemplateId())
+                            .toUser(wechatFormidVO.getOpenId())
+                            .page(page)
+                            .formId(wechatFormidVO.getFormId())
+                            .dataJson(JSONArray.toJSONString(dataList))
+                            .platform(platform)
+                            .pushId(pushId)
+                            .build();
+                    miniAppPushContainer.add(vo);
+                    formIds.add(wechatFormidVO.getFormId());
+                }
+                //删除已经发过的formId
+                if (formIds.size() > 0) {
+                    long delStartTime = System.currentTimeMillis();
+                    wechatFormidService.deleteFormIds(formIds.toArray(new String[]{}));
+                    long delEndTime = System.currentTimeMillis();
+                    log.info("pushTask:{}执行wechatFormidService.deleteFormIds方法耗时:{}", pushId, delEndTime - delStartTime);
+                }
+            } catch (Exception e) {
+                log.error("批量写入推送模板消息异常wechatFormidVOS:{}", wechatFormidVOS);
+                log.error("批量写入推送模板消息异常", e);
+            }
+
+        }
     }
 
 }

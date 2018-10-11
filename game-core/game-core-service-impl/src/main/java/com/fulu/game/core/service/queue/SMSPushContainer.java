@@ -1,12 +1,10 @@
 package com.fulu.game.core.service.queue;
 
-import com.fulu.game.common.enums.SMSTemplateEnum;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.entity.vo.AppPushMsgVO;
 import com.fulu.game.core.entity.vo.SMSVO;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -53,7 +51,12 @@ public class SMSPushContainer extends RedisTaskContainer {
     }
 
     private void process(SMSVO smsvo) {
-        SMSUtil.sendSMS(smsvo.getMobile(), smsvo.getTemplateEnum(), smsvo.getParams());
+        Boolean flag = SMSUtil.sendSMS(smsvo.getMobile(), smsvo.getTemplateEnum(), smsvo.getParams());
+        if (!flag) {
+            log.error("发送短信失败:user.getMobile:{};content:{};", smsvo.getMobile(), smsvo.getTemplateEnum().getType());
+        } else {
+            log.info("发送短信成功:user.getMobile:{};content:{};", smsvo.getMobile(), smsvo.getTemplateEnum().getType());
+        }
     }
 
     /**

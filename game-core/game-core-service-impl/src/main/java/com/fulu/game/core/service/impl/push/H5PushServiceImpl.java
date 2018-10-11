@@ -6,6 +6,7 @@ import com.fulu.game.common.enums.SMSTemplateEnum;
 import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.OrderStatusDetails;
+import com.fulu.game.core.entity.PushMsg;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.AppPushMsgVO;
 import com.fulu.game.core.entity.vo.SMSVO;
@@ -18,11 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 
 @Service
 @Slf4j
-public class H5PushServiceImpl extends PushServiceImpl implements IBusinessPushService {
+public class H5PushServiceImpl extends PushServiceImpl {
 
     @Autowired
     private SMSPushContainer smsPushContainer;
@@ -197,15 +199,108 @@ public class H5PushServiceImpl extends PushServiceImpl implements IBusinessPushS
 
     }
 
+    /**
+     * 后台推送，暂不考虑短信
+     *
+     * @param pushMsg
+     * @param userIds
+     * @param page
+     */
+    @Override
+    public void adminPush(PushMsg pushMsg, List<Integer> userIds, String page) {
+        return;
+    }
 
+    /**
+     * 客服仲裁，用户胜
+     *
+     * @param order
+     */
+    @Override
+    public void appealUserWin(Order order) {
+
+    }
+
+    /**
+     * 客服仲裁，陪玩师胜
+     *
+     * @param order
+     */
+    @Override
+    public void appealServiceWin(Order order) {
+
+    }
+
+    /**
+     * 客服仲裁协商处理
+     *
+     * @param order
+     * @param msg
+     */
+    @Override
+    public void appealNegotiate(Order order, String msg) {
+
+    }
+
+    /**
+     * 发放优惠券
+     *
+     * @param userId
+     * @param deduction
+     */
     @Override
     public void grantCouponMsg(int userId, String deduction) {
-        String content = WechatTemplateMsgEnum.GRANT_COUPON.getContent();
-        content = StrUtil.format(content, deduction);
-        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(userId)
-                .title("优惠券消息")
-                .alert(content)
-                .build();
-//        pushMsg(appPushMsgVO);
+
     }
+
+    /**
+     * 陪玩师技能审核通过
+     */
+    @Override
+    public void techAuthAuditSuccess(Integer userId) {
+
+    }
+
+    /**
+     * 陪玩师技能审核通过
+     */
+    @Override
+    public void techAuthAuditFail(Integer userId, String msg) {
+
+    }
+
+    /**
+     * 陪玩师个人信息审核不通过
+     */
+    @Override
+    public void userInfoAuthFail(Integer userId, String msg) {
+
+    }
+
+    /**
+     * 陪玩师个人信息审核通过
+     *
+     * @param userId
+     */
+    @Override
+    public void userInfoAuthSuccess(Integer userId) {
+
+    }
+
+    /**
+     * 同意协商
+     *
+     * @param order
+     */
+    public void consultAgree(Order order) {
+    }
+
+    /**
+     * 取消协商
+     *
+     * @param order
+     */
+    public void consultCancel(Order order) {
+    }
+
 }

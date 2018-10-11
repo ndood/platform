@@ -93,7 +93,14 @@ public class AppPushContainer extends RedisTaskContainer {
      */
     private void push(String title, String alert, Map<String, String> extras, String[] userIds) {
         JPushClient jpushClient = new JPushClient(configProperties.getJpush().getAppSecret(), configProperties.getJpush().getAppKey());
-        Audience audience = userIds == null ? Audience.all() : Audience.alias(userIds);
+        Audience audience;
+        if(userIds == null || userIds.length == 0) {
+            audience = Audience.all();
+            log.info("app全部用户推送");
+        } else {
+            audience = Audience.alias(userIds);
+            log.info("app部分用户推送：{}", userIds);
+        }
         PushPayload payload = buildPushPayload(title, alert, extras, audience);
         try {
             PushResult result = jpushClient.sendPush(payload);

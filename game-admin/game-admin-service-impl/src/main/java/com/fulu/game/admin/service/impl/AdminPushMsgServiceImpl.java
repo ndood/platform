@@ -1,28 +1,25 @@
 package com.fulu.game.admin.service.impl;
 
-import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.date.DateUtil;
 import com.fulu.game.admin.service.AdminPushMsgService;
-import com.fulu.game.core.entity.vo.AppPushMsgVO;
-import com.fulu.game.core.service.impl.push.AppPushServiceImpl;
-import com.fulu.game.common.enums.*;
+import com.fulu.game.common.enums.PushMsgTypeEnum;
+import com.fulu.game.common.enums.WechatPagePathEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
-import com.fulu.game.common.utils.AppRouteFactory;
 import com.fulu.game.core.entity.Admin;
 import com.fulu.game.core.entity.PushMsg;
 import com.fulu.game.core.entity.vo.PushMsgVO;
 import com.fulu.game.core.service.AdminService;
+import com.fulu.game.core.service.PushService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.PushMsgServiceImpl;
-import com.fulu.game.core.service.impl.push.PushServiceImpl;
+import com.fulu.game.core.service.impl.push.PushFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -33,12 +30,8 @@ public class AdminPushMsgServiceImpl extends PushMsgServiceImpl implements Admin
     private AdminService adminService;
     @Autowired
     private UserService userService;
-    @Qualifier(value = "pushServiceImpl")
     @Autowired
-    private PushServiceImpl pushService;
-
-    @Autowired
-    private AppPushServiceImpl mobileAppPushService;
+    private PushFactory pushFactory;
 
     @Override
     public void push(PushMsgVO pushMsgVO) {
@@ -125,32 +118,8 @@ public class AdminPushMsgServiceImpl extends PushMsgServiceImpl implements Admin
 
 
     public void adminPushWxTemplateMsg(PushMsg pushMsg, List<Integer> userIds, String page) {
-        String date = DateUtil.format(new Date(), "yyyy年MM月dd日 HH:mm");
-        List<WxMaTemplateMessage.Data> dataList = CollectionUtil.newArrayList(
-                new WxMaTemplateMessage.Data("keyword1", pushMsg.getContent()),
-                new WxMaTemplateMessage.Data("keyword2", date));
-        if (PlatformEcoEnum.PLAY.getType().equals(pushMsg.getPlatform())) {
-            pushService.addTemplateMsg2Queue(pushMsg.getPlatform(), pushMsg.getId(), userIds, page, WechatTemplateIdEnum.PLAY_LEAVE_MSG, dataList);
-        } else if (PlatformEcoEnum.POINT.getType().equals(pushMsg.getPlatform())) {
-            pushService.addTemplateMsg2Queue(pushMsg.getPlatform(), pushMsg.getId(), userIds, page, WechatTemplateIdEnum.POINT_LEAVE_MSG, dataList);
-        } else if (PlatformEcoEnum.APP.getType().equals(pushMsg.getPlatform())) {
-            Map<String, String> extras = null;
-            switch (PushMsgJumpTypeEnum.convert(pushMsg.getJumpType())) {
-                case OFFICIAL_NOTICE:
-                    extras = AppRouteFactory.buildOfficialNoticeRoute();
-                    break;
-                default:
-                    extras = AppRouteFactory.buildIndexRoute();
-            }
-            AppPushMsgVO appPushMsgVO = null;
-            if (PushMsgTypeEnum.ALL_USER.getType().equals(pushMsg.getType())) {
-                appPushMsgVO = AppPushMsgVO.newSendAllBuilder().title(pushMsg.getTitle()).alert(pushMsg.getContent()).extras(extras).build();
-            } else {
-                appPushMsgVO = AppPushMsgVO.newBuilder(userIds.toArray(new Integer[]{})).title(pushMsg.getTitle()).alert(pushMsg.getContent()).extras(extras).build();
-            }
-            mobileAppPushService.pushMsg(appPushMsgVO);
-
-        }
+        PushService pushService = pushFactory.create(pushMsg.getPlatform());
+        pushService.adminPush(pushMsg, userIds, page);
     }
 
 }

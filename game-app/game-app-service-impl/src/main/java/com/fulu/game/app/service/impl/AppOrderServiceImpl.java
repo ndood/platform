@@ -16,7 +16,6 @@ import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
-import com.fulu.game.core.service.impl.push.IBusinessPushService;
 import com.fulu.game.core.service.impl.push.AppPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -319,7 +318,7 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
 
 
     @Override
-    protected IBusinessPushService getMinAppPushService() {
+    protected PushService getMinAppPushService() {
         return appPushServiceImpl;
     }
 

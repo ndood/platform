@@ -17,7 +17,6 @@ import com.fulu.game.core.entity.vo.OrderEventVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
-import com.fulu.game.core.service.impl.push.IBusinessPushService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,7 +93,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
      *
      * @return
      */
-    protected abstract IBusinessPushService getMinAppPushService();
+    protected abstract PushService getMinAppPushService();
 
 
     /**
@@ -169,7 +168,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         //超时时间:60秒
         DeferredResult<Result> deferredResult = new DeferredResult<>(Constant.MILLI_SECOND_60, defaultResult);
 
-        Order order = new Order();
+        Order order;
 
         long startTimeMillis = System.currentTimeMillis();
         while (true) {
@@ -388,7 +387,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
             type = OrderEventTypeEnum.APPEAL.getType();
         }
 
-        User oppUser = null;
+        User oppUser;
         if(order.getUserId().equals(currentUserId)){
             oppUser = userService.findById(order.getServiceUserId());
         }else{

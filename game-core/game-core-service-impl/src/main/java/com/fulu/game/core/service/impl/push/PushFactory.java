@@ -1,8 +1,15 @@
 package com.fulu.game.core.service.impl.push;
 
 import com.fulu.game.common.enums.PlatformEcoEnum;
+import com.fulu.game.core.service.AdminPushService;
+import com.fulu.game.core.service.PushService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by kevin on 2018/10/9.
@@ -19,10 +26,19 @@ public class PushFactory {
     private AppPushServiceImpl appPushService;
     @Autowired
     private H5PushServiceImpl h5PushService;
-    @Autowired
-    private AllPushServiceImpl allPushService;
 
-    public PushServiceImpl create(Integer platform) {
+    private static List<PushServiceImpl> pushServices = new ArrayList<>();
+
+    @PostConstruct
+    private void init() {
+        pushServices.add(playMiniAppPushService);
+        pushServices.add(pointMiniAppPushService);
+        pushServices.add(appPushService);
+        pushServices.add(h5PushService);
+
+    }
+
+    public PushService create(Integer platform) {
         PlatformEcoEnum platformEcoEnum = PlatformEcoEnum.getEnumByType(platform);
         switch (platformEcoEnum) {
             case PLAY:
@@ -36,8 +52,8 @@ public class PushFactory {
         }
     }
 
-    public PushServiceImpl create() {
-        return allPushService;
+    public List<PushServiceImpl> getPushIns() {
+        return pushServices;
     }
 
 
