@@ -386,7 +386,7 @@
         t2.remark as proRemark
         FROM t_order t1
         INNER JOIN t_user t3 ON t3.id = t1.user_id
-        INNER JOIN t_user t4 ON t4.id = t1.service_user_id
+        LEFT JOIN t_user t4 ON t4.id = t1.service_user_id
         LEFT JOIN t_regist_source rs1 ON t3.source_id = rs1.id
         LEFT JOIN t_regist_source rs2 ON t4.source_id = rs2.id
         LEFT JOIN t_order_admin_remark t2 ON t2.order_id = t1.id
