@@ -171,8 +171,9 @@ public class PointMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
     @Override
     public void appealUserWin(Order order) {
         List<Integer> userIds = Collections.singletonList(order.getUserId());
+        List<Integer> sUserIds = Collections.singletonList(order.getServiceUserId());
         push(userIds, order, WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_USER_WIN);
-        push(userIds, order, WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_USER_WIN);
+        push(sUserIds, order, WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_USER_WIN);
     }
 
     /**
@@ -183,8 +184,9 @@ public class PointMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
     @Override
     public void appealServiceWin(Order order) {
         List<Integer> userIds = Collections.singletonList(order.getUserId());
+        List<Integer> sUserIds = Collections.singletonList(order.getServiceUserId());
         push(userIds, order, WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_SERVICE_WIN);
-        push(userIds, order, WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_SERVICE_WIN);
+        push(sUserIds, order, WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_SERVICE_WIN);
     }
 
     /**
@@ -196,8 +198,9 @@ public class PointMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
     @Override
     public void appealNegotiate(Order order, String msg) {
         List<Integer> userIds = Collections.singletonList(order.getUserId());
+        List<Integer> sUserIds = Collections.singletonList(order.getServiceUserId());
         push(userIds, order, WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE, msg);
-        push(userIds, order, WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE, msg);
+        push(sUserIds, order, WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE, msg);
     }
 
     /**
@@ -222,7 +225,7 @@ public class PointMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
     }
 
     /**
-     * 陪玩师技能审核通过
+     * 陪玩师技能审核不通过
      */
     @Override
     public void techAuthAuditFail(Integer userId, String msg) {

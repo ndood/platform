@@ -99,6 +99,16 @@ public interface UserService extends ICommonService<User, Integer> {
     List<User> findByUserIds(List<Integer> userIds, Boolean disabled);
 
     /**
+     * 通过UserId分页查询一批用户
+     * @param userIds userId列表
+     * @param disabled 是否过滤
+     * @param pageNum 页码
+     * @param pageSize 每页数据量
+     * @return
+     */
+    List<User> findByUserIds(List<Integer> userIds, Boolean disabled, Integer pageNum, Integer pageSize);
+
+    /**
      * 更新redis用户
      *
      * @param user

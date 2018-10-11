@@ -12,6 +12,7 @@ import com.fulu.game.core.service.PushService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.PushMsgServiceImpl;
 import com.fulu.game.core.service.impl.push.PushFactory;
+import com.fulu.game.core.service.impl.push.PushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -118,7 +119,7 @@ public class AdminPushMsgServiceImpl extends PushMsgServiceImpl implements Admin
 
 
     public void adminPushWxTemplateMsg(PushMsg pushMsg, List<Integer> userIds, String page) {
-        PushService pushService = pushFactory.create(pushMsg.getPlatform());
+        PushServiceImpl pushService = pushFactory.create(pushMsg.getPlatform());
         pushService.adminPush(pushMsg, userIds, page);
     }
 

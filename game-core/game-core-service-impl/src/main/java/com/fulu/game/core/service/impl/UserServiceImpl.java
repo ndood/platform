@@ -220,8 +220,16 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
 
     @Override
     public List<User> findByUserIds(List<Integer> userIds, Boolean disabled) {
+        return findByUserIds(userIds, disabled, null, null);
+    }
+
+    @Override
+    public List<User> findByUserIds(List<Integer> userIds, Boolean disabled, Integer pageNum, Integer pageSize) {
         if (CollectionUtil.isEmpty(userIds)) {
             return new ArrayList<>();
+        }
+        if (pageNum != null && pageSize != null) {
+            PageHelper.startPage(pageNum, pageSize);
         }
         return userDao.findByUserIds(userIds, disabled);
     }
@@ -780,16 +788,16 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         } else {
             userId = currentUserId;
             String key = RedisKeyEnum.ACCESS_COUNT.generateKey(currentUserId);
-            if(redisOpenService.hasKey(key)){
+            if (redisOpenService.hasKey(key)) {
                 String accessCountStr = redisOpenService.get(key);
-                if(accessCountStr != null && !"".equals(accessCountStr)){
+                if (accessCountStr != null && !"".equals(accessCountStr)) {
                     accessCount = Integer.parseInt(accessCountStr);
                 }
             }
         }
         UserVO userVO = new UserVO();
         User user = findById(userId);
-        BeanUtil.copyProperties(user,userVO);
+        BeanUtil.copyProperties(user, userVO);
         userVO.setImPsw("");
         // 设置用户扩展信息（兴趣、职业、简介、视频、以及相册）
         setUserExtInfo(userVO, userId);
@@ -828,11 +836,11 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
                 userVO.setPicUrls(picArr);
             }
             List<Product> productList = productService.findByUserId(userId);
-            if(productList != null && !productList.isEmpty()){
+            if (productList != null && !productList.isEmpty()) {
                 UserTechAuth userTechAuth = null;
-                for(int i = 0; i < productList.size(); i++){
+                for (int i = 0; i < productList.size(); i++) {
                     userTechAuth = userTechAuthService.findById(productList.get(i).getTechAuthId());
-                    if(userTechAuth != null){
+                    if (userTechAuth != null) {
                         productList.get(i).setOrderCount(userTechAuth.getOrderCount());
                         productList.get(i).setVirtualOrderCount(userTechAuth.getVirtualOrderCount());
                         productList.get(i).setVoice(userTechAuth.getVoice());
@@ -847,7 +855,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         List<DynamicVO> newestDynamicList = dynamicService.getNewestDynamicList(userId);
         userVO.setNewestDynamics(newestDynamicList);
         Integer currentUserId = getCurrentUser().getId();
-        Integer isAttention = redisOpenService.getBitSet(RedisKeyEnum.ATTENTION_USERS.generateKey(currentUserId),userId) ? 1: 0;
+        Integer isAttention = redisOpenService.getBitSet(RedisKeyEnum.ATTENTION_USERS.generateKey(currentUserId), userId) ? 1 : 0;
         userVO.setIsAttention(isAttention);
         //获取关注数
         int attentions = redisOpenService.bitCount(RedisKeyEnum.ATTENTION_USERS.generateKey(userId)).intValue();
@@ -997,7 +1005,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         List<User> userList = findAllServeUser();
         UserDoc userDoc = new UserDoc();
         for (User user : userList) {
-            BeanUtil.copyProperties(user,userDoc);
+            BeanUtil.copyProperties(user, userDoc);
             userSearchComponent.saveIndex(userDoc);
         }
     }

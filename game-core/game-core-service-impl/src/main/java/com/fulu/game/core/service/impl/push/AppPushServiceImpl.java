@@ -37,6 +37,11 @@ public class AppPushServiceImpl extends PushServiceImpl {
     @Autowired
     protected OrderStatusDetailsService orderStatusDetailsService;
 
+    private static final String ORDER_MSG_TITLE = "订单消息";
+    private static final String COUPON_MSG_TITLE = "优惠券消息";
+    private static final String TECH_MSG_TITLE = "技能审核消息";
+    private static final String INFO_MSG_TITLE = "个人信息审核消息";
+
 
     /**
      * 执行推送方法
@@ -78,7 +83,7 @@ public class AppPushServiceImpl extends PushServiceImpl {
         String pushMessage = StrUtil.format("【触电】{}提示您尽快对“王者荣耀”进行接单，请快速处理(如已处理，请忽略)", user.getNickname());
         String orderMessage = StrUtil.format("请在{}前接单,否则订单取消", time);
         AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(order.getServiceUserId())
-                .title("订单消息")
+                .title(ORDER_MSG_TITLE)
                 .alert(pushMessage)
                 .build();
         pushMsg(appPushMsgVO);
@@ -97,7 +102,7 @@ public class AppPushServiceImpl extends PushServiceImpl {
         String pushMessage = StrUtil.format("【触电】{}提示您立即对“王者荣耀”进行开始，请快速处理(如已处理，请忽略)", user.getNickname());
         String orderMessage = StrUtil.format("请在{}前开始服务,否则订单取消", time);
         AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(order.getServiceUserId())
-                .title("订单消息")
+                .title(ORDER_MSG_TITLE)
                 .alert(pushMessage)
                 .build();
         pushMsg(appPushMsgVO);
@@ -108,7 +113,7 @@ public class AppPushServiceImpl extends PushServiceImpl {
     @Override
     public void serviceUserAcceptOrder(Order order) {
         AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(order.getServiceUserId())
-                .title("订单消息")
+                .title(ORDER_MSG_TITLE)
                 .alert(WechatTemplateMsgEnum.POINT_TOSERVICE_ORDER_RECEIVING.getContent())
                 .build();
         pushMsg(appPushMsgVO);
@@ -151,7 +156,7 @@ public class AppPushServiceImpl extends PushServiceImpl {
     @Override
     public void cancelConsult(Order order) {
         AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(order.getServiceUserId())
-                .title("订单消息")
+                .title(ORDER_MSG_TITLE)
                 .alert(WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL.getContent())
                 .build();
         pushMsg(appPushMsgVO);
@@ -184,7 +189,7 @@ public class AppPushServiceImpl extends PushServiceImpl {
     @Override
     public void checkOrder(Order order) {
         AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(order.getUserId())
-                .title("订单消息")
+                .title(ORDER_MSG_TITLE)
                 .alert(WechatTemplateMsgEnum.ORDER_TOUSER_CHECK.getContent())
                 .build();
         pushMsg(appPushMsgVO);
@@ -209,7 +214,7 @@ public class AppPushServiceImpl extends PushServiceImpl {
         String orderMessage = StrUtil.format("请在{}前接单,否则订单取消", time);
 
         AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(order.getServiceUserId())
-                .title("订单消息")
+                .title(ORDER_MSG_TITLE)
                 .alert(pushMessage)
                 .build();
         pushMsg(appPushMsgVO);
@@ -251,7 +256,10 @@ public class AppPushServiceImpl extends PushServiceImpl {
      */
     @Override
     public void appealUserWin(Order order) {
-
+        pushMsg(AppPushMsgVO.newBuilder(order.getUserId()).title(ORDER_MSG_TITLE)
+                .alert(WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_USER_WIN.getContent()).build());
+        pushMsg(AppPushMsgVO.newBuilder(order.getServiceUserId()).title(ORDER_MSG_TITLE)
+                .alert(WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_USER_WIN.getContent()).build());
     }
 
     /**
@@ -261,7 +269,10 @@ public class AppPushServiceImpl extends PushServiceImpl {
      */
     @Override
     public void appealServiceWin(Order order) {
-
+        pushMsg(AppPushMsgVO.newBuilder(order.getUserId()).title(ORDER_MSG_TITLE)
+                .alert(WechatTemplateMsgEnum.ORDER_TOUSER_APPEAL_SERVICE_WIN.getContent()).build());
+        pushMsg(AppPushMsgVO.newBuilder(order.getServiceUserId()).title(ORDER_MSG_TITLE)
+                .alert(WechatTemplateMsgEnum.ORDER_TOSERVICE_APPEAL_SERVICE_WIN.getContent()).build());
     }
 
     /**
@@ -272,7 +283,12 @@ public class AppPushServiceImpl extends PushServiceImpl {
      */
     @Override
     public void appealNegotiate(Order order, String msg) {
-
+        String content = WechatTemplateMsgEnum.ORDER_SYSTEM_APPEAL_NEGOTIATE.getContent();
+        content = StrUtil.format(content, msg);
+        pushMsg(AppPushMsgVO.newBuilder(order.getUserId()).title(ORDER_MSG_TITLE)
+                .alert(content).build());
+        pushMsg(AppPushMsgVO.newBuilder(order.getServiceUserId()).title(ORDER_MSG_TITLE)
+                .alert(content).build());
     }
 
     /**
@@ -285,10 +301,7 @@ public class AppPushServiceImpl extends PushServiceImpl {
     public void grantCouponMsg(int userId, String deduction) {
         String content = WechatTemplateMsgEnum.GRANT_COUPON.getContent();
         content = StrUtil.format(content, deduction);
-        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(userId)
-                .title("优惠券消息")
-                .alert(content)
-                .build();
+        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(userId).title(COUPON_MSG_TITLE).alert(content).build();
         pushMsg(appPushMsgVO);
     }
 
@@ -297,15 +310,20 @@ public class AppPushServiceImpl extends PushServiceImpl {
      */
     @Override
     public void techAuthAuditSuccess(Integer userId) {
-
+        String content = WechatTemplateMsgEnum.TECH_AUTH_AUDIT_SUCCESS.getContent();
+        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(userId).title(TECH_MSG_TITLE).alert(content).build();
+        pushMsg(appPushMsgVO);
     }
 
     /**
-     * 陪玩师技能审核通过
+     * 陪玩师技能审核不通过
      */
     @Override
     public void techAuthAuditFail(Integer userId, String msg) {
-
+        String content = WechatTemplateMsgEnum.TECH_AUTH_AUDIT_FAIL.getContent();
+        content = StrUtil.format(content, msg);
+        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(userId).title(TECH_MSG_TITLE).alert(content).build();
+        pushMsg(appPushMsgVO);
     }
 
     /**
@@ -313,7 +331,10 @@ public class AppPushServiceImpl extends PushServiceImpl {
      */
     @Override
     public void userInfoAuthFail(Integer userId, String msg) {
-
+        String content = WechatTemplateMsgEnum.USER_AUTH_INFO_REJECT.getContent();
+        content = StrUtil.format(content, msg);
+        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(userId).title(INFO_MSG_TITLE).alert(content).build();
+        pushMsg(appPushMsgVO);
     }
 
     /**
@@ -323,22 +344,30 @@ public class AppPushServiceImpl extends PushServiceImpl {
      */
     @Override
     public void userInfoAuthSuccess(Integer userId) {
-
+        String content = WechatTemplateMsgEnum.USER_AUTH_INFO_PASS.getContent();
+        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(userId).title(INFO_MSG_TITLE).alert(content).build();
+        pushMsg(appPushMsgVO);
     }
 
     /**
-     * 同意协商
+     * 同意协商，陪玩师傅不确认是否同意协商，schedule自动触发同意，所以跟用户发消息
      *
      * @param order
      */
     public void consultAgree(Order order) {
+        String content = WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE.getContent();
+        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(order.getUserId()).title(ORDER_MSG_TITLE).alert(content).build();
+        pushMsg(appPushMsgVO);
     }
 
     /**
-     * 取消协商
+     * 取消协商，陪玩师拒绝协商，用户规定时间内不确认是仲裁还是取消协商，schedule自动触发取消协商，所以跟陪玩师发消息
      *
      * @param order
      */
     public void consultCancel(Order order) {
+        String content = WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL.getContent();
+        AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(order.getServiceUserId()).title(ORDER_MSG_TITLE).alert(content).build();
+        pushMsg(appPushMsgVO);
     }
 }

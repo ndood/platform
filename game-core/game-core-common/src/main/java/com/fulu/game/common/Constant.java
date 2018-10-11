@@ -33,7 +33,8 @@ public interface Constant {
 
 
     String WEIXN_JUMP_URL = "https://t-open.wzpeilian.com/pc/weixin.html ";
-
+    //TODO APP收到的短信中url点击跳转到app
+    String APP_JUMP_URL = "触电约玩app";
 
     //默认评价分
     BigDecimal DEFAULT_SCORE_AVG = new BigDecimal(4);

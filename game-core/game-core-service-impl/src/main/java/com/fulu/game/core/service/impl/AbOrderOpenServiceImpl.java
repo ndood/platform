@@ -17,6 +17,7 @@ import com.fulu.game.core.entity.vo.OrderEventVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
+import com.fulu.game.core.service.impl.push.PushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,7 +94,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
      *
      * @return
      */
-    protected abstract PushService getMinAppPushService();
+    protected abstract PushServiceImpl getMinAppPushService();
 
 
     /**
@@ -232,12 +233,12 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         //判断是否是自己的优惠券
         userService.isCurrentUser(coupon.getUserId());
         //判断该优惠券是否可用
-        if (!couponService.couponIsAvailable(coupon,order.getTotalMoney(),order.getCategoryId())) {
-            log.error("该优惠券无法使用:orderNo:{},couponNo:{}",order.getOrderNo(),coupon.getCouponNo());
+        if (!couponService.couponIsAvailable(coupon, order.getTotalMoney(), order.getCategoryId())) {
+            log.error("该优惠券无法使用:orderNo:{},couponNo:{}", order.getOrderNo(), coupon.getCouponNo());
             return null;
         }
         order.setCouponNo(coupon.getCouponNo());
-        if(CouponTypeEnum.DERATE.getType().equals(coupon.getType()) ){
+        if (CouponTypeEnum.DERATE.getType().equals(coupon.getType())) {
             order.setCouponMoney(coupon.getDeduction());
             //判断优惠券金额是否大于订单总额
             if (coupon.getDeduction().compareTo(order.getTotalMoney()) >= 0) {
@@ -247,7 +248,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
                 BigDecimal actualMoney = order.getTotalMoney().subtract(coupon.getDeduction());
                 order.setActualMoney(actualMoney);
             }
-        }else if(CouponTypeEnum.DISCOUNT.getType().equals(coupon.getType())){
+        } else if (CouponTypeEnum.DISCOUNT.getType().equals(coupon.getType())) {
             BigDecimal actualMoney = order.getTotalMoney().multiply(coupon.getDeduction());
             BigDecimal couponMoney = order.getTotalMoney().subtract(actualMoney);
             order.setCouponMoney(couponMoney);
@@ -292,6 +293,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
 
     /**
      * 陪玩师开始服务
+     *
      * @return
      */
     @Override
@@ -305,7 +307,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         order.setStatus(OrderStatusEnum.SERVICING.getStatus());
         order.setUpdateTime(new Date());
         orderService.update(order);
-        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(),24*60);
+        orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 24 * 60);
         //推送通知
         getMinAppPushService().start(order);
         //如果是分期乐订单，短信通知老板
@@ -375,7 +377,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
     }
 
     @Override
-    public OrderEventVO findOrderEvent(String orderNo,Integer currentUserId) {
+    public OrderEventVO findOrderEvent(String orderNo, Integer currentUserId) {
         Order order = orderService.findByOrderNo(orderNo);
         if (order == null) {
             throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_EXIST, orderNo);
@@ -388,9 +390,9 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         }
 
         User oppUser;
-        if(order.getUserId().equals(currentUserId)){
+        if (order.getUserId().equals(currentUserId)) {
             oppUser = userService.findById(order.getServiceUserId());
-        }else{
+        } else {
             oppUser = userService.findById(order.getUserId());
         }
 
@@ -423,7 +425,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
     public String consultRejectOrder(Order order,
                                      int orderConsultId,
                                      String remark,
-                                     String[] fileUrls , Integer userId) {
+                                     String[] fileUrls, Integer userId) {
         log.info("拒绝协商处理订单orderNo:{}", order.getOrderNo());
 
         OrderEvent orderEvent = orderEventService.findById(orderConsultId);
@@ -469,9 +471,9 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
      */
     @Override
     @UserScore(type = UserScoreEnum.CONSULT)
-    public String consultAgreeOrder(Order order, int orderEventId , Integer userId) {
+    public String consultAgreeOrder(Order order, int orderEventId, Integer userId) {
         log.info("陪玩师同意协商处理订单orderNo:{}", order.getOrderNo());
-        
+
         OrderEvent orderEvent = orderEventService.findById(orderEventId);
         if (orderEvent == null || !order.getOrderNo().equals(orderEvent.getOrderNo())) {
             throw new OrderException(order.getOrderNo(), "拒绝协商订单不匹配!");
@@ -672,7 +674,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
      * @return
      */
     @Override
-    public String serverAcceptanceOrder(Order order, String remark, User user,String[] fileUrl) {
+    public String serverAcceptanceOrder(Order order, String remark, User user, String[] fileUrl) {
         log.info("打手提交验收订单order:{}", order);
         if (!order.getStatus().equals(OrderStatusEnum.SERVICING.getStatus())) {
             throw new OrderException(order.getOrderNo(), "只有陪玩中的订单才能验收!");

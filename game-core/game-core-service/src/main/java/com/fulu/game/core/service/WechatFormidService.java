@@ -8,30 +8,30 @@ import java.util.List;
 
 
 /**
- * 
- * 
  * @author wangbin
  * @email ${email}
  * @date 2018-05-11 10:35:21
  */
-public interface WechatFormidService extends ICommonService<WechatFormid,Integer>{
+public interface WechatFormidService extends ICommonService<WechatFormid, Integer> {
 
 
-    List<WechatFormid> findInSevenDaysFormIdByUser(Integer userId,int type);
+    List<WechatFormid> findInSevenDaysFormIdByUser(Integer userId, int type);
 
-    void  deleteNotAvailableFormIds(WechatFormid ... wechatFormid);
+    void deleteNotAvailableFormIds(WechatFormid... wechatFormid);
 
     /**
      * 分页查询formID
+     *
      * @param userIds
      * @param offset
      * @param size
      * @return
      */
-    List<WechatFormidVO> findByUserIds(int platform,List<Integer> userIds, int offset, int size);
+    List<WechatFormidVO> findByUserIds(int platform, List<Integer> userIds, int offset, int size);
 
     /**
      * 删除过期的formID
+     *
      * @param date
      */
     void deleteByExpireTime(Date date);

@@ -17,6 +17,7 @@ import com.fulu.game.core.service.PushMsgService;
 import com.fulu.game.core.service.UserInfoAuthService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.core.service.impl.push.SMSPushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import org.apache.commons.lang3.StringUtils;
@@ -53,7 +54,7 @@ public class MiniAppPushContainer extends RedisTaskContainer {
     @Autowired
     private UserInfoAuthService userInfoAuthService;
     @Autowired
-    private SMSPushContainer smsPushContainer;
+    private SMSPushServiceImpl smsPushService;
 
     @PostConstruct
     private void init() {
@@ -161,7 +162,7 @@ public class MiniAppPushContainer extends RedisTaskContainer {
             }
             String[] params = {content, Constant.WEIXN_JUMP_URL};
             SMSVO smsvo = new SMSVO(user.getMobile(), smsTemplate, params);
-            smsPushContainer.add(smsvo);
+            smsPushService.pushMsg(smsvo);
         }
     }
 

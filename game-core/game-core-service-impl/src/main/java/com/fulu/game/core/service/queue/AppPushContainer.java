@@ -10,14 +10,24 @@ import cn.jpush.api.push.model.audience.Audience;
 import cn.jpush.api.push.model.notification.AndroidNotification;
 import cn.jpush.api.push.model.notification.IosNotification;
 import cn.jpush.api.push.model.notification.Notification;
+import com.fulu.game.common.Constant;
+import com.fulu.game.common.enums.SMSTemplateEnum;
+import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.AppPushMsgVO;
+import com.fulu.game.core.entity.vo.SMSVO;
+import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.core.service.impl.push.SMSPushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,6 +49,13 @@ public class AppPushContainer extends RedisTaskContainer {
 
     private RedisConsumer redisConsumer;
 
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private SMSPushServiceImpl smsPushService;
+
+    private static final int PAGESIZE = 100;
+
     @PostConstruct
     private void init() {
         redisQueue = new RedisQueue<AppPushMsgVO>(APP_PUSH_QUEQUE, redisOpenService);
@@ -59,19 +76,16 @@ public class AppPushContainer extends RedisTaskContainer {
         }
     }
 
-    private void process(AppPushMsgVO appPushMsgVO) {
-        pushMsg(appPushMsgVO.getTitle(), appPushMsgVO.getAlert(), appPushMsgVO.getExtras(), appPushMsgVO.getUserIds());
-    }
-
     /**
      * app推送消息
      *
-     * @param title
-     * @param alert
-     * @param userIds
-     * @param extras
+     * @param appPushMsgVO
      */
-    public void pushMsg(String title, String alert, Map<String, String> extras, Integer... userIds) {
+    private void process(AppPushMsgVO appPushMsgVO) {
+        String title = appPushMsgVO.getTitle();
+        String alert = appPushMsgVO.getAlert();
+        Map<String, String> extras = appPushMsgVO.getExtras();
+        Integer[] userIds = appPushMsgVO.getUserIds();
         if (userIds.length == 0) {
             push(title, alert, extras, null);
             return;
@@ -94,7 +108,7 @@ public class AppPushContainer extends RedisTaskContainer {
     private void push(String title, String alert, Map<String, String> extras, String[] userIds) {
         JPushClient jpushClient = new JPushClient(configProperties.getJpush().getAppSecret(), configProperties.getJpush().getAppKey());
         Audience audience;
-        if(userIds == null || userIds.length == 0) {
+        if (userIds == null || userIds.length == 0) {
             audience = Audience.all();
             log.info("app全部用户推送");
         } else {
@@ -108,6 +122,7 @@ public class AppPushContainer extends RedisTaskContainer {
         } catch (APIConnectionException e) {
             log.error("Connection error. Should retry later. ", e);
             log.error("Sendno: " + payload.getSendno());
+            sendSMSIfFail(alert, userIds);
         } catch (APIRequestException e) {
             log.error("Error response from JPush server. Should review and fix it. ", e);
             log.info("HTTP Status: " + e.getStatus());
@@ -115,9 +130,36 @@ public class AppPushContainer extends RedisTaskContainer {
             log.info("Error Message: " + e.getErrorMessage());
             log.info("Msg ID: " + e.getMsgId());
             log.error("Sendno: " + payload.getSendno());
+            sendSMSIfFail(alert, userIds);
         }
     }
 
+    /**
+     * app推送失败，补发短信
+     *
+     * @param alert   内容
+     * @param userIds 发送对象
+     */
+    private void sendSMSIfFail(String alert, String[] userIds) {
+        int pagenum = 0;
+        List<Integer> userIdd = new ArrayList<>();
+        for (String userId : userIds) {
+            if (NumberUtils.isDigits(userId)) {
+                userIdd.add(Integer.valueOf(userId));
+            } else {
+                log.info("app推送失败补发短信，userId不是数字：{}", userId);
+            }
+        }
+        List<User> users;
+        do {
+            users = userService.findByUserIds(userIdd, Boolean.TRUE, pagenum, PAGESIZE);
+            for (User user : users) {
+                String[] params = {alert, Constant.APP_JUMP_URL};
+                SMSVO smsvo = new SMSVO(user.getMobile(), SMSTemplateEnum.SMS_REMIND, params);
+                smsPushService.pushMsg(smsvo);
+            }
+        } while (CollectionUtils.isEmpty(users));
+    }
 
     /**
      * 构建PushPayload对象

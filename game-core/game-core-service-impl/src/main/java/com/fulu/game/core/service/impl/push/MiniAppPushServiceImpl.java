@@ -5,14 +5,19 @@ import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.fulu.game.common.Constant;
-import com.fulu.game.common.enums.*;
+import com.fulu.game.common.enums.RedisKeyEnum;
+import com.fulu.game.common.enums.UserScoreEnum;
+import com.fulu.game.common.enums.WechatTemplateIdEnum;
+import com.fulu.game.common.enums.WechatTemplateMsgEnum;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.WxMaTemplateMessageVO;
 import com.fulu.game.core.entity.vo.WechatFormidVO;
-import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.UserInfoAuthService;
+import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.service.WechatFormidService;
 import com.fulu.game.core.service.aop.UserScore;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.queue.MiniAppPushContainer;
@@ -142,9 +147,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void cancelOrderByUser(Order order) {
-        if (order.getServiceUserId() != null) {
-            push(Collections.singletonList(order.getServiceUserId()), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_ORDER_CANCEL);
-        }
+        push(Collections.singletonList(order.getServiceUserId()), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_ORDER_CANCEL);
     }
 
     /**
@@ -180,9 +183,7 @@ public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void orderPay(Order order) {
-        push(Collections.singletonList(order.getServiceUserId()),
-                order,
-                WechatTemplateMsgEnum.ORDER_TOSERVICE_PAY);
+        push(Collections.singletonList(order.getServiceUserId()), order, WechatTemplateMsgEnum.ORDER_TOSERVICE_PAY);
     }
 
     /**
