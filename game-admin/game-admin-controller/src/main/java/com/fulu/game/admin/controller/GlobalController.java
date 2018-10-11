@@ -45,7 +45,7 @@ public class GlobalController extends BaseController{
 
     /**
      * 初始化商品索引
-     * 初始化之前需要先
+     * 初始化之前需要先删除索引
      * @return
      */
     @PostMapping("/bath/init-index")
