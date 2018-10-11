@@ -8,7 +8,6 @@ import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
-import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
@@ -16,8 +15,9 @@ import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
 import com.fulu.game.core.service.impl.push.PlayMiniAppPushServiceImpl;
+import com.fulu.game.core.service.impl.push.PushServiceImpl;
+import com.fulu.game.core.service.impl.push.SMSPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +64,8 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
     private UserInfoAuthService userInfoAuthService;
     @Autowired
     private ImService imService;
+    @Autowired
+    private SMSPushServiceImpl smsPushService;
 
     /**
      * 陪玩师接单
@@ -94,7 +96,7 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
     public PageInfo<OrderDetailsVO> list(int pageNum, int pageSize, Integer type) {
         PageHelper.startPage(pageNum, pageSize, "id DESC");
         User user = userService.getCurrentUser();
-        List<OrderDetailsVO> list = orderDao.listOrderDetails(type, user.getId(),null);
+        List<OrderDetailsVO> list = orderDao.listOrderDetails(type, user.getId(), null);
 
         //获取未读订单
         String wronJsonStr = redisOpenService.get(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(user.getId()));
@@ -279,11 +281,11 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
         boolean agentIm = false;
         if (userInfoAuth != null) {
             vestFlag = userInfoAuth.getVestFlag() == null ? false : userInfoAuth.getVestFlag();
-            agentIm = userInfoAuth.getOpenSubstituteIm()==null?false:userInfoAuth.getOpenSubstituteIm();
+            agentIm = userInfoAuth.getOpenSubstituteIm() == null ? false : userInfoAuth.getOpenSubstituteIm();
         }
 
         if (!vestFlag) {
-            SMSUtil.sendOrderReceivingRemind(server.getMobile(), order.getName());
+            smsPushService.sendOrderReceivingRemind(server.getMobile(), order.getName());
             //推送通知
             playMiniAppPushService.orderPay(order);
         }
@@ -304,17 +306,17 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
         waitingReadOrderNo.add(order.getOrderNo());
 
         redisOpenService.set(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(order.getServiceUserId()), waitingReadOrderNo.toJSONString());
-        
-        
+
+
         //判断陪玩师是否为马甲或者代聊陪玩师  如果是，则给陪玩师发送一条im消息告诉他被下单了
-        if (vestFlag||agentIm) {
+        if (vestFlag || agentIm) {
 
             User user = userService.findById(order.getUserId());
 
             Map<String, String> extMap = new HashMap<>();
-            extMap.put("msg","系统提示：用户下了新订单");
-            
-            imService.sendMsgToImUser(new String[]{server.getImId()}, user.getImId() , Constant.SERVICE_USER_PAY_ORDER, extMap);
+            extMap.put("msg", "系统提示：用户下了新订单");
+
+            imService.sendMsgToImUser(new String[]{server.getImId()}, user.getImId(), Constant.SERVICE_USER_PAY_ORDER, extMap);
         }
 
     }
@@ -325,7 +327,7 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
     }
 
     @Override
-    protected MiniAppPushServiceImpl getMinAppPushService() {
+    protected PushServiceImpl getPushService() {
         return playMiniAppPushService;
     }
 

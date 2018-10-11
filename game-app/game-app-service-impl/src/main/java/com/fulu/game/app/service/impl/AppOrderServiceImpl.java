@@ -11,13 +11,13 @@ import com.fulu.game.common.enums.UserTypeEnum;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
-import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.AppPushServiceImpl;
 import com.fulu.game.core.service.impl.push.PushServiceImpl;
+import com.fulu.game.core.service.impl.push.SMSPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -58,6 +58,8 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
     private ServerCommentService serverCommentService;
     @Autowired
     private UserCommentTagService userCommentTagService;
+    @Autowired
+    private SMSPushServiceImpl smsPushService;
 
     /**
      * 用户提交订单
@@ -194,7 +196,7 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
         orderDetailsVO.setServerAge(server.getAge());
         orderDetailsVO.setServerGender(server.getGender());
         orderDetailsVO.setServerScoreAvg(server.getScoreAvg());
-        if(orderDetailsVO.getCharges()==null){
+        if (orderDetailsVO.getCharges() == null) {
             orderDetailsVO.setCharges(new BigDecimal("0.1"));
         }
         orderDetailsVO.setServerIncome(orderDetailsVO.getTotalMoney().multiply(orderDetailsVO.getCharges()));
@@ -230,7 +232,7 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), minute);
         //发送短信通知给陪玩师
         User server = userService.findById(order.getServiceUserId());
-        SMSUtil.sendOrderReceivingRemind(server.getMobile(), order.getName());
+        smsPushService.sendOrderReceivingRemind(server.getMobile(), order.getName());
         //推送app通知
         appPushServiceImpl.orderPay(order);
     }

@@ -11,13 +11,13 @@ import com.fulu.game.common.properties.Config;
 import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.common.utils.MailUtil;
-import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OrderEventVO;
 import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.aop.UserScore;
 import com.fulu.game.core.service.impl.push.PushServiceImpl;
+import com.fulu.game.core.service.impl.push.SMSPushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +64,8 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
     private OrderService orderService;
     @Autowired
     private Config configProperties;
+    @Autowired
+    private SMSPushServiceImpl smsPushService;
 
 
     /**
@@ -315,7 +317,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
             User user = userService.findById(order.getUserId());
             if (user != null) {
-                SMSUtil.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.START_SERVER_ORDER.getMsg());
+                smsPushService.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.START_SERVER_ORDER.getMsg());
             }
         }
         return order.getOrderNo();
@@ -457,7 +459,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
             User user = userService.findById(order.getUserId());
             if (user != null) {
-                SMSUtil.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.CONSULT_REJECT.getMsg());
+                smsPushService.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.CONSULT_REJECT.getMsg());
             }
         }
         return order.getOrderNo();
@@ -506,7 +508,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
             User user = userService.findById(order.getUserId());
             if (user != null) {
-                SMSUtil.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.CONSULT_APPEAL.getMsg());
+                smsPushService.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.CONSULT_APPEAL.getMsg());
             }
         }
         return order.getOrderNo();
@@ -578,7 +580,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
             User user = userService.findById(order.getUserId());
             if (user != null) {
-                SMSUtil.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.SERVER_CANCEL_ORDER.getMsg());
+                smsPushService.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.SERVER_CANCEL_ORDER.getMsg());
             }
         }
         return orderConvertVo(order);
@@ -657,7 +659,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
             if (PaymentEnum.FENQILE_PAY.getType().equals(order.getPayment())) {
                 User bossUser = userService.findById(order.getUserId());
                 if (bossUser != null) {
-                    SMSUtil.sendLeaveInformNoUrl(bossUser.getMobile(), SMSContentEnum.USER_APPEAL_ORDER.getMsg());
+                    smsPushService.sendLeaveInformNoUrl(bossUser.getMobile(), SMSContentEnum.USER_APPEAL_ORDER.getMsg());
                 }
             }
         }

@@ -356,6 +356,7 @@ public class SMSPushServiceImpl extends PushServiceImpl {
      *
      * @param order
      */
+    @Override
     public void consultAgree(Order order) {
         agreeConsult(order);
     }
@@ -365,11 +366,37 @@ public class SMSPushServiceImpl extends PushServiceImpl {
      *
      * @param order
      */
+    @Override
     public void consultCancel(Order order) {
         User user = userService.findById(order.getUserId());
         String content = WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL.getContent();
         String[] params = {content, Constant.WEIXN_JUMP_URL};
         SMSVO smsvo = new SMSVO(user.getMobile(), SMSTemplateEnum.SMS_REMIND, params);
+        pushMsg(smsvo);
+    }
+
+    /**
+     * 发送接单提醒
+     *
+     * @param mobile
+     * @param orderName
+     */
+    public void sendOrderReceivingRemind(String mobile, String orderName) {
+        String[] params = {orderName};
+        SMSVO smsvo = new SMSVO(mobile, SMSTemplateEnum.ORDER_RECEIVING_REMIND, params);
+        pushMsg(smsvo);
+    }
+
+    /**
+     * 发送浏览通知短信（不带url）
+     *
+     * @param mobile 手机号码
+     * @param msg    留言内容
+     * @return
+     */
+    public void sendLeaveInformNoUrl(String mobile, String msg) {
+        String[] params = {msg};
+        SMSVO smsvo = new SMSVO(mobile, SMSTemplateEnum.SENDLEAVE_INFORM_NO_URL, params);
         pushMsg(smsvo);
     }
 

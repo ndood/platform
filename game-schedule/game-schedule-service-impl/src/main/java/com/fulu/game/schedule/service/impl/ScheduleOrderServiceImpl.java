@@ -153,9 +153,9 @@ public class ScheduleOrderServiceImpl extends AbOrderOpenServiceImpl {
             User user = userService.findById(order.getUserId());
             if (user != null) {
                 if (OrderStatusEnum.WAIT_SERVICE.getStatus().equals(order.getStatus())) {
-                    SMSUtil.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.NOT_ACCEPT_ORDER.getMsg());
+                    smsPushService.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.NOT_ACCEPT_ORDER.getMsg());
                 } else if (OrderStatusEnum.ALREADY_RECEIVING.getStatus().equals(order.getStatus())) {
-                    SMSUtil.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.NOT_START_ORDER.getMsg());
+                    smsPushService.sendLeaveInformNoUrl(user.getMobile(), SMSContentEnum.NOT_START_ORDER.getMsg());
                 }
             }
         }

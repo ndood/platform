@@ -354,6 +354,7 @@ public class AppPushServiceImpl extends PushServiceImpl {
      *
      * @param order
      */
+    @Override
     public void consultAgree(Order order) {
         String content = WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE.getContent();
         AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(order.getUserId()).title(ORDER_MSG_TITLE).alert(content).build();
@@ -365,6 +366,7 @@ public class AppPushServiceImpl extends PushServiceImpl {
      *
      * @param order
      */
+    @Override
     public void consultCancel(Order order) {
         String content = WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL.getContent();
         AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(order.getServiceUserId()).title(ORDER_MSG_TITLE).alert(content).build();

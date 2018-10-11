@@ -201,6 +201,7 @@ public class PlayMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
      *
      * @param order
      */
+    @Override
     public void consultAgree(Order order) {
         List<Integer> userIds = Collections.singletonList(order.getUserId());
         push(userIds, order, WechatTemplateMsgEnum.ORDER_TOUSER_CONSULT_AGREE);
@@ -211,6 +212,7 @@ public class PlayMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
      *
      * @param order
      */
+    @Override
     public void consultCancel(Order order) {
         List<Integer> userIds = Collections.singletonList(order.getServiceUserId());
         push(userIds, order, WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL);

@@ -8,15 +8,12 @@ import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
-import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
-import com.fulu.game.core.service.impl.push.PlayMiniAppPushServiceImpl;
 import com.fulu.game.core.service.impl.push.PushServiceImpl;
 import com.fulu.game.core.service.impl.push.SMSPushServiceImpl;
 import com.fulu.game.thirdparty.fenqile.service.FenqileSdkOrderService;
@@ -114,7 +111,7 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
 
 
         if (!vestFlag) {
-            SMSUtil.sendOrderReceivingRemind(server.getMobile(), order.getName());
+            smsPushService.sendOrderReceivingRemind(server.getMobile(), order.getName());
             //推送通知
             getPushService().orderPay(order);
         }

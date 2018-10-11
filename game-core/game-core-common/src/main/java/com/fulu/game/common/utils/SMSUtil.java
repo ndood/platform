@@ -47,36 +47,4 @@ public class SMSUtil {
         }
         return null;
     }
-
-    /**
-     * 发送接单提醒
-     *
-     * @param mobile
-     * @param orderName
-     */
-    public static Boolean sendOrderReceivingRemind(String mobile, String orderName) {
-        return sendSMS(mobile, SMSTemplateEnum.ORDER_RECEIVING_REMIND, orderName);
-    }
-
-    /**
-     * 发送留言通知短信
-     *
-     * @param mobile
-     * @param msg
-     * @return
-     */
-    public static Boolean sendLeaveInform(String mobile, String msg, String url) {
-        return sendSMS(mobile, SMSTemplateEnum.SENDLEAVE_INFORM, msg, url);
-    }
-
-    /**
-     * 发送浏览通知短信（不带url）
-     *
-     * @param mobile 手机号码
-     * @param msg    留言内容
-     * @return
-     */
-    public static Boolean sendLeaveInformNoUrl(String mobile, String msg) {
-        return sendSMS(mobile, SMSTemplateEnum.SENDLEAVE_INFORM_NO_URL, msg);
-    }
 }
