@@ -8,6 +8,7 @@ import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.entity.PriceRule;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
+import com.fulu.game.core.entity.UserCommentTag;
 import com.fulu.game.core.entity.vo.*;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
