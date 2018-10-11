@@ -14,13 +14,15 @@
         <result column="redirect_url" property="redirectUrl"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
     </resultMap>
 
     <resultMap id="BannerResultVOMap" type="com.fulu.game.core.entity.vo.BannerVO" extends="BannerResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,disable,sort,operator_id,operator_name,platform_type,pic_url,redirect_type,redirect_url,create_time,update_time    </sql>
+        id,disable,sort,operator_id,operator_name,platform_type,pic_url,redirect_type,redirect_url,create_time,update_time,start_time,end_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="BannerResultMap">
         select
@@ -75,9 +77,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Banner">
         insert into
-        t_banner (disable,sort,operator_id,operator_name,platform_type,pic_url,redirect_type,redirect_url,create_time,update_time)
+        t_banner (disable,sort,operator_id,operator_name,platform_type,pic_url,redirect_type,redirect_url,create_time,update_time,start_time,end_time)
         values
-        (#{disable},#{sort},#{operatorId},#{operatorName},#{platformType},#{picUrl},#{redirectType},#{redirectUrl},#{createTime},#{updateTime})
+        (#{disable},#{sort},#{operatorId},#{operatorName},#{platformType},#{picUrl},#{redirectType},#{redirectUrl},#{createTime},#{updateTime},#{startTime},#{endTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Banner">
@@ -120,6 +122,14 @@
 
             <if test="updateTime != null">
                 update_time = #{updateTime},
+            </if>
+
+            <if test="startTime != null">
+                start_time = #{startTime},
+            </if>
+
+            <if test="endTime != null">
+                end_time = #{endTime},
             </if>
         </set>
         <where>
