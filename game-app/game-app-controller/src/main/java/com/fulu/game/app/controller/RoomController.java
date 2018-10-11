@@ -235,7 +235,6 @@ public class RoomController extends BaseController {
 
     /**
      * 进入聊天室
-     *
      * @param roomNo
      * @param password
      * @return

@@ -263,6 +263,9 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         //是否收藏
         RoomCollect roomCollect = roomCollectService.findByRoomAndUser(roomNo, user.getId());
         userChatRoomVO.setIsCollect(roomCollect != null);
+
+
+
         //存储
         Map<String, Object> userMap = BeanUtil.beanToMap(userChatRoomVO);
         redisOpenService.hset(RedisKeyEnum.CHAT_ROOM_ONLINE_USER_INFO.generateKey(user.getId()), userMap, true);
