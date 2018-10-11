@@ -10,7 +10,9 @@ import com.fulu.game.core.entity.PushMsg;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.AppPushMsgVO;
 import com.fulu.game.core.entity.vo.SMSVO;
-import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.OrderMsgService;
+import com.fulu.game.core.service.OrderStatusDetailsService;
+import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.queue.SMSPushContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class H5PushServiceImpl implements PushService, AdminPushService {
+public class H5PushServiceImpl extends PushServiceImpl {
 
     @Autowired
     private SMSPushContainer smsPushContainer;
@@ -283,6 +285,22 @@ public class H5PushServiceImpl implements PushService, AdminPushService {
     @Override
     public void userInfoAuthSuccess(Integer userId) {
 
+    }
+
+    /**
+     * 同意协商
+     *
+     * @param order
+     */
+    public void consultAgree(Order order) {
+    }
+
+    /**
+     * 取消协商
+     *
+     * @param order
+     */
+    public void consultCancel(Order order) {
     }
 
 }

@@ -168,7 +168,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         //超时时间:60秒
         DeferredResult<Result> deferredResult = new DeferredResult<>(Constant.MILLI_SECOND_60, defaultResult);
 
-        Order order = new Order();
+        Order order;
 
         long startTimeMillis = System.currentTimeMillis();
         while (true) {
@@ -387,7 +387,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
             type = OrderEventTypeEnum.APPEAL.getType();
         }
 
-        User oppUser = null;
+        User oppUser;
         if(order.getUserId().equals(currentUserId)){
             oppUser = userService.findById(order.getServiceUserId());
         }else{

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class AdminPushServiceImpl extends PushServiceImpl {
+public class AdminPushServiceImpl {
 
     @Autowired
     private PushFactory pushFactory;
@@ -20,7 +20,7 @@ public class AdminPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void appealUserWin(Order order) {
-        pushFactory.getAdminIns().forEach(adminPushService ->
+        pushFactory.getPushIns().forEach(adminPushService ->
                 adminPushService.appealUserWin(order)
         );
     }
@@ -31,7 +31,7 @@ public class AdminPushServiceImpl extends PushServiceImpl {
      * @param order
      */
     public void appealServiceWin(Order order) {
-        pushFactory.getAdminIns().forEach(adminPushService ->
+        pushFactory.getPushIns().forEach(adminPushService ->
                 adminPushService.appealServiceWin(order)
         );
     }
@@ -43,7 +43,7 @@ public class AdminPushServiceImpl extends PushServiceImpl {
      * @param msg
      */
     public void appealNegotiate(Order order, String msg) {
-        pushFactory.getAdminIns().forEach(adminPushService ->
+        pushFactory.getPushIns().forEach(adminPushService ->
                 adminPushService.appealNegotiate(order, msg)
         );
     }
@@ -55,7 +55,7 @@ public class AdminPushServiceImpl extends PushServiceImpl {
      * @param deduction
      */
     public void grantCouponMsg(int userId, String deduction) {
-        pushFactory.getAdminIns().forEach(adminPushService ->
+        pushFactory.getPushIns().forEach(adminPushService ->
                 adminPushService.grantCouponMsg(userId, deduction)
         );
     }
@@ -64,7 +64,7 @@ public class AdminPushServiceImpl extends PushServiceImpl {
      * 陪玩师技能审核通过
      */
     public void techAuthAuditSuccess(Integer userId) {
-        pushFactory.getAdminIns().forEach(adminPushService ->
+        pushFactory.getPushIns().forEach(adminPushService ->
                 adminPushService.techAuthAuditSuccess(userId)
         );
     }
@@ -73,7 +73,7 @@ public class AdminPushServiceImpl extends PushServiceImpl {
      * 陪玩师技能审核通过
      */
     public void techAuthAuditFail(Integer userId, String msg) {
-        pushFactory.getAdminIns().forEach(adminPushService ->
+        pushFactory.getPushIns().forEach(adminPushService ->
                 adminPushService.techAuthAuditFail(userId, msg)
         );
     }
@@ -82,7 +82,7 @@ public class AdminPushServiceImpl extends PushServiceImpl {
      * 陪玩师个人信息审核不通过
      */
     public void userInfoAuthFail(Integer userId, String msg) {
-        pushFactory.getAdminIns().forEach(adminPushService ->
+        pushFactory.getPushIns().forEach(adminPushService ->
                 adminPushService.userInfoAuthFail(userId, msg)
         );
     }
@@ -93,7 +93,7 @@ public class AdminPushServiceImpl extends PushServiceImpl {
      * @param userId
      */
     public void userInfoAuthSuccess(Integer userId) {
-        pushFactory.getAdminIns().forEach(adminPushService ->
+        pushFactory.getPushIns().forEach(adminPushService ->
                 adminPushService.techAuthAuditSuccess(userId)
         );
     }

@@ -250,4 +250,26 @@ public class PointMiniAppPushServiceImpl extends MiniAppPushServiceImpl {
         push(userIds, WechatTemplateMsgEnum.USER_AUTH_INFO_PASS);
     }
 
+    /**
+     * 同意协商
+     *
+     * @param order
+     */
+    @Override
+    public void consultAgree(Order order) {
+        List<Integer> userIds = Collections.singletonList(order.getUserId());
+        push(userIds, order, WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL);
+    }
+
+    /**
+     * 取消协商
+     *
+     * @param order
+     */
+    @Override
+    public void consultCancel(Order order) {
+        List<Integer> userIds = Collections.singletonList(order.getUserId());
+        push(userIds, order, WechatTemplateMsgEnum.ORDER_TOSERVICE_CONSULT_CANCEL);
+    }
+
 }
