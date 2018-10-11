@@ -27,7 +27,7 @@ public class PushFactory {
     @Autowired
     private H5PushServiceImpl h5PushService;
 
-    private static List<AdminPushService> pushServices = new ArrayList<>();
+    private static List<PushServiceImpl> pushServices = new ArrayList<>();
 
     @PostConstruct
     private void init() {
@@ -52,7 +52,7 @@ public class PushFactory {
         }
     }
 
-    public List<AdminPushService> getAdminIns() {
+    public List<PushServiceImpl> getPushIns() {
         return pushServices;
     }
 

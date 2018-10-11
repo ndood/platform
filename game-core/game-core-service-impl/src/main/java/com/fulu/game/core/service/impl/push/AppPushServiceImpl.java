@@ -11,13 +11,14 @@ import com.fulu.game.core.entity.OrderStatusDetails;
 import com.fulu.game.core.entity.PushMsg;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.AppPushMsgVO;
-import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.OrderMsgService;
+import com.fulu.game.core.service.OrderStatusDetailsService;
+import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.queue.AppPushContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,7 @@ import java.util.Map;
 
 @Service
 @Slf4j
-public class AppPushServiceImpl implements PushService, AdminPushService {
+public class AppPushServiceImpl extends PushServiceImpl {
 
     @Autowired
     private AppPushContainer appPushContainer;
@@ -249,7 +250,7 @@ public class AppPushServiceImpl implements PushService, AdminPushService {
      * @param order
      */
     @Override
-    public void appealUserWin(Order order){
+    public void appealUserWin(Order order) {
 
     }
 
@@ -259,7 +260,7 @@ public class AppPushServiceImpl implements PushService, AdminPushService {
      * @param order
      */
     @Override
-    public void appealServiceWin(Order order){
+    public void appealServiceWin(Order order) {
 
     }
 
@@ -270,7 +271,7 @@ public class AppPushServiceImpl implements PushService, AdminPushService {
      * @param msg
      */
     @Override
-    public void appealNegotiate(Order order, String msg){
+    public void appealNegotiate(Order order, String msg) {
 
     }
 
@@ -281,7 +282,7 @@ public class AppPushServiceImpl implements PushService, AdminPushService {
      * @param deduction
      */
     @Override
-    public void grantCouponMsg(int userId, String deduction){
+    public void grantCouponMsg(int userId, String deduction) {
         String content = WechatTemplateMsgEnum.GRANT_COUPON.getContent();
         content = StrUtil.format(content, deduction);
         AppPushMsgVO appPushMsgVO = AppPushMsgVO.newBuilder(userId)
@@ -295,7 +296,7 @@ public class AppPushServiceImpl implements PushService, AdminPushService {
      * 陪玩师技能审核通过
      */
     @Override
-    public void techAuthAuditSuccess(Integer userId){
+    public void techAuthAuditSuccess(Integer userId) {
 
     }
 
@@ -303,7 +304,7 @@ public class AppPushServiceImpl implements PushService, AdminPushService {
      * 陪玩师技能审核通过
      */
     @Override
-    public void techAuthAuditFail(Integer userId, String msg){
+    public void techAuthAuditFail(Integer userId, String msg) {
 
     }
 
@@ -311,7 +312,7 @@ public class AppPushServiceImpl implements PushService, AdminPushService {
      * 陪玩师个人信息审核不通过
      */
     @Override
-    public void userInfoAuthFail(Integer userId, String msg){
+    public void userInfoAuthFail(Integer userId, String msg) {
 
     }
 
@@ -321,7 +322,23 @@ public class AppPushServiceImpl implements PushService, AdminPushService {
      * @param userId
      */
     @Override
-    public void userInfoAuthSuccess(Integer userId){
+    public void userInfoAuthSuccess(Integer userId) {
 
+    }
+
+    /**
+     * 同意协商
+     *
+     * @param order
+     */
+    public void consultAgree(Order order) {
+    }
+
+    /**
+     * 取消协商
+     *
+     * @param order
+     */
+    public void consultCancel(Order order) {
     }
 }

@@ -29,7 +29,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public abstract class MiniAppPushServiceImpl implements PushService, AdminPushService {
+public abstract class MiniAppPushServiceImpl extends PushServiceImpl {
 
     @Autowired
     private UserService userService;
