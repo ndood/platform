@@ -3,6 +3,8 @@ package com.fulu.game.play.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.OrderStatusGroupEnum;
+import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.DataException;
 import com.fulu.game.core.entity.Order;
@@ -10,14 +12,10 @@ import com.fulu.game.core.entity.OrderDeal;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.payment.model.PayRequestModel;
 import com.fulu.game.core.entity.payment.res.PayRequestRes;
-import com.fulu.game.core.entity.vo.OrderDealVO;
-import com.fulu.game.core.entity.vo.OrderDetailsVO;
-import com.fulu.game.core.entity.vo.OrderEventVO;
-import com.fulu.game.core.entity.vo.OrderVO;
-import com.fulu.game.core.service.OrderDealService;
-import com.fulu.game.core.service.OrderEventService;
-import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.entity.vo.*;
+import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
+import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
 import com.fulu.game.play.service.impl.PlayMiniAppPayServiceImpl;
 import com.fulu.game.play.service.impl.PilotMiniAppOrderServiceImpl;
 import com.fulu.game.play.service.impl.PlayMiniAppOrderServiceImpl;
@@ -34,6 +32,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -55,7 +56,12 @@ public class OrderController extends BaseController {
     private RedisOpenServiceImpl redisOpenService;
     @Autowired
     private PlayMiniAppPushServiceImpl playMiniAppPushService;
-
+    @Autowired
+    private UserTechAuthServiceImpl userTechAuthService;
+    @Autowired
+    private UserCommentService userCommentService;
+    
+    
 
     /**
      * 查询陪玩是否是服务状态
@@ -86,6 +92,7 @@ public class OrderController extends BaseController {
     public Result submit(@RequestParam(required = true) Integer productId,
                          HttpServletRequest request,
                          @RequestParam(required = true) Integer num,
+                         @RequestParam(required = true) Date beginTime,
                          String couponNo,
                          @RequestParam(required = true) String sessionkey,
                          String remark,
@@ -98,7 +105,7 @@ public class OrderController extends BaseController {
         }
         try {
             String ip = RequestUtil.getIpAdrress(request);
-            String orderNo = orderService.submit(productId, num, remark, couponNo, ip, contactType, contactInfo);
+            String orderNo = orderService.submit(productId, num, PlatformEcoEnum.PLAY.getType(), beginTime ,remark, couponNo, ip, contactType, contactInfo);
             return Result.success().data(orderNo).msg("创建订单成功!");
         } finally {
             redisOpenService.delete(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey));
@@ -171,7 +178,8 @@ public class OrderController extends BaseController {
         PageInfo<OrderDetailsVO> page = orderService.list(pageNum, pageSize, type);
         return Result.success().data(page);
     }
-
+    
+    
     /**
      * 用户取消订单
      *
@@ -179,7 +187,8 @@ public class OrderController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/user/cancel")
-    public Result userCancelOrder(@RequestParam(required = true) String orderNo) {
+    public Result userCancelOrder(@RequestParam(required = true) String orderNo, String reason) {
+        log.info("{}订单取消,原因:{}", reason);
         orderService.userCancelOrder(orderNo);
         return Result.success().data(orderNo).msg("取消订单成功!");
     }
@@ -363,14 +372,15 @@ public class OrderController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/server/cancel")
-    public Result serverCancelOrder(@RequestParam(required = true) String orderNo) {
+    public Result serverCancelOrder(@RequestParam(required = true) String orderNo, String reason) {
 
         Order order = orderService.findByOrderNo(orderNo);
         userService.isCurrentUser(order.getServiceUserId());
-
+        log.info("{}订单取消,原因:{}", reason);
         OrderVO orderVO = orderService.serverCancelOrder(order);
         return Result.success().data(orderVO).msg("取消订单成功!");
     }
+
 
     /**
      * 陪玩师提交验收订单
@@ -384,7 +394,7 @@ public class OrderController extends BaseController {
                                         String[] fileUrl) {
         Order order = orderService.findByOrderNo(orderNo);
         User user = userService.getCurrentUser();
-         orderService.serverAcceptanceOrder(order, remark,user, fileUrl);
+        orderService.serverAcceptanceOrder(order, remark,user, fileUrl);
         return Result.success().data(orderNo).msg("提交订单验收成功!");
     }
 
@@ -474,4 +484,30 @@ public class OrderController extends BaseController {
 
     }
 
+
+    /**
+     * 下单页面接口
+     * @return
+     */
+    @RequestMapping(value = "/product")
+    public Result orderProduct(@RequestParam(required = true) Integer productId){
+        TechProductOrderVO techProductOrderVO = userTechAuthService.getTechProductByProductId(productId);
+        return Result.success().data(techProductOrderVO);
+    }
+
+
+    /**
+     * 查看订单评论
+     *
+     * @return
+     */
+    @RequestMapping("/comment/get")
+    public Result get(@RequestParam("orderNo") String orderNo) {
+        UserCommentVO comment = userCommentService.findByOrderNo(orderNo);
+        if (null == comment) {
+            return Result.error().msg("该评论不存在！");
+        }
+        return Result.success().data(comment).msg("查询成功！");
+    }
+    
 }

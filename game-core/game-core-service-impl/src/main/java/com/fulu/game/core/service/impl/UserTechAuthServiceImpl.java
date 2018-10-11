@@ -439,6 +439,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         param.setStatus(TechAuthStatusEnum.NORMAL.getType());
         param.setUserId(userId);
         param.setIsActivate(true);
+        PageHelper.orderBy("order_count DESC");
         return userTechAuthDao.findByParameter(param);
     }
 

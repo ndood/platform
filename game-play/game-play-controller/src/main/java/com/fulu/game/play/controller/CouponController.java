@@ -1,6 +1,7 @@
 package com.fulu.game.play.controller;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.CouponTypeEnum;
 import com.fulu.game.core.entity.Coupon;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.service.CouponOpenService;
@@ -74,15 +75,21 @@ public class CouponController extends BaseController {
 
     /**
      * 查询用户所有可用的优惠券
-     * @return
+     *
+     * @return 封装结果集
      */
     @PostMapping(value = "/user")
-    public Result userCoupons(@RequestParam( required = false) BigDecimal orderMoney,
-                              @RequestParam( required = false) Integer categoryId) {
+    public Result userCoupons(@RequestParam( required = false)BigDecimal orderMoney,
+                              @RequestParam( required = false)Integer categoryId) {
         User user = userService.getCurrentUser();
-        List<Coupon> list = couponService.availableCouponList(user.getId(), orderMoney, categoryId);
+        List<Coupon> list = couponService.availableCouponList(user.getId(),orderMoney,categoryId);
+        for(Coupon coupon : list){
+            if(CouponTypeEnum.DISCOUNT.getType().equals(coupon.getType())){
+                coupon.setDeduction(coupon.getDeduction().multiply(new BigDecimal(10)));
+            }
+        }
         return Result.success().data(list);
     }
-
+    
 
 }

@@ -1,4 +1,4 @@
-package com.fulu.game.app.util;
+package com.fulu.game.app.utils;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;

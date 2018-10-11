@@ -41,16 +41,6 @@ public class MobileAppPushServiceImpl extends PushServiceImpl implements IBusine
     }
 
 
-    /**
-     * 用户评价订单
-     * @param order
-     */
-    public void userCommentOrder(Order order) {
-        orderMsgService.createServerOrderMsg(order,"订单已评价");
-        orderMsgService.createUserOrderMsg(order,"订单已完成,已评价");
-    }
-
-
     @Override
     public void receiveOrder(Order order) {
         orderMsgService.createUserOrderMsg(order,"陪玩师已接单");

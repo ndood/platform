@@ -24,6 +24,7 @@ import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.UserInfoAuthServiceImpl;
 import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
+import com.fulu.game.core.service.impl.push.MobileAppPushServiceImpl;
 import com.fulu.game.play.utils.RequestUtil;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -39,10 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @Slf4j
@@ -79,6 +77,12 @@ public class UserController extends BaseController {
     private UserBodyAuthService userBodyAuthService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private TechTagService techTagService;
+    @Autowired
+    private ServerCommentService serverCommentService;
+    @Autowired
+    private OrderMsgService orderMsgService;
 
     @RequestMapping("tech/list")
     public Result userTechList() {
@@ -495,6 +499,19 @@ public class UserController extends BaseController {
     }
 
     /**
+     * 陪玩师-添加评价
+     *
+     * @return
+     */
+    @RequestMapping("/server-comment/save")
+    public Result serverCommentSave(ServerCommentVO serverCommentVO) {
+        serverCommentService.save(serverCommentVO);
+        Order order = orderService.findByOrderNo(serverCommentVO.getOrderNo());
+        orderMsgService.userCommentOrder(order);
+        return Result.success().msg("评论成功！");
+    }
+
+    /**
      * 用户-查询评论
      *
      * @return
@@ -508,6 +525,19 @@ public class UserController extends BaseController {
         comment.setServerUserId(null);
         comment.setScoreAvg(null);
         return Result.success().data(comment).msg("查询成功！");
+    }
+
+
+    /**
+     * 陪玩师-查询评价
+     *
+     * @return
+     */
+    @RequestMapping("/server-comment/get")
+    public Result serverCommentGet(@RequestParam("orderNo") String orderNo) {
+        //此处评论信息不存在的话，也需要返回用户昵称、头像、性别、年龄和im信息
+        ServerCommentVO serverCommentVO = serverCommentService.findCommentInfoByOrderNo(orderNo);
+        return Result.success().data(serverCommentVO).msg("获取评论成功！");
     }
 
 
@@ -674,4 +704,22 @@ public class UserController extends BaseController {
 
         return Result.success().msg("设置成功！");
     }
+
+
+    /**
+     * 陪玩师技能标签列表
+     *
+     * @return
+     */
+    @PostMapping("/tech/tags")
+    public Result getUserTechTags(@RequestParam(required = true) Integer userId,
+                                  @RequestParam(required = true) Integer categoryId) {
+        UserTechAuth userTechAuth = userTechAuthService.findTechByCategoryAndUser(categoryId, userId);
+        List<TechTag> techTags = new ArrayList<>();
+        if (userTechAuth != null) {
+            techTags = techTagService.findByTechAuthId(userTechAuth.getId());
+        }
+        return Result.success().data(techTags);
+    }
+    
 }

@@ -4,10 +4,9 @@ package com.fulu.game.app.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
-import com.fulu.game.common.enums.OrderStatusEnum;
-import com.fulu.game.common.enums.OrderStatusGroupEnum;
-import com.fulu.game.common.enums.OrderTypeEnum;
-import com.fulu.game.common.enums.UserTypeEnum;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
@@ -16,6 +15,7 @@ import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
+import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.IBusinessPushService;
 import com.fulu.game.core.service.impl.push.MobileAppPushServiceImpl;
 import com.github.pagehelper.PageHelper;
@@ -58,6 +58,8 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
     private ServerCommentService serverCommentService;
     @Autowired
     private UserCommentTagService userCommentTagService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
 
     /**
      * 用户提交订单
@@ -134,7 +136,64 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
         return order.getOrderNo();
     }
 
+    /**
+     * 订单列表
+     *
+     * @param pageNum
+     * @param pageSize
+     * @param type     1是用户2是陪玩师
+     * @return
+     */
+    public PageInfo<OrderDetailsVO> orderList(int pageNum, int pageSize, Integer type, List<Integer> statusList) {
+        PageHelper.startPage(pageNum, pageSize, "id DESC");
+        User user = userService.getCurrentUser();
+        List<OrderDetailsVO> list = orderService.orderList(type, user.getId(), statusList);
+        
+        //获取未读订单
+        String wronJsonStr = redisOpenService.get(RedisKeyEnum.USER_WAITING_READ_ORDER.generateKey(user.getId()));
+        
+        for (OrderDetailsVO orderDetailsVO : list) {
+            String categoryName = orderDetailsVO.getName().substring(0, orderDetailsVO.getName().indexOf(" "));
+            orderDetailsVO.setCategoryName(categoryName);
+            orderDetailsVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderDetailsVO.getStatus()));
+            orderDetailsVO.setStatusNote(OrderStatusEnum.getNoteByStatus(orderDetailsVO.getStatus()));
+            OrderProduct orderProduct = orderProductService.findByOrderNo(orderDetailsVO.getOrderNo());
+            orderDetailsVO.setPriceUnit(orderProduct.getUnit() + "/" + orderProduct.getPrice() + "元*" + orderProduct.getAmount());
+            //订单已评价状态显示订单评价的分数
+            if (orderDetailsVO.getStatus().equals(OrderStatusEnum.ALREADY_APPRAISE.getStatus())) {
+                UserComment userComment = userCommentService.findByOrderNo(orderDetailsVO.getOrderNo());
+                if (userComment != null) {
+                    orderDetailsVO.setCommentScore(userComment.getScore());
+                }
+            }
 
+            if (orderDetailsVO.getStatus().equals(OrderStatusEnum.COMPLETE.getStatus())
+                    || orderDetailsVO.getStatus().equals(OrderStatusEnum.SYSTEM_COMPLETE.getStatus())
+                    || orderDetailsVO.getStatus().equals(OrderStatusEnum.ALREADY_APPRAISE.getStatus())) {
+                ServerComment serverComment = serverCommentService.findByOrderNo(orderDetailsVO.getOrderNo());
+                boolean flag = (serverComment != null);
+                orderDetailsVO.setIsCommentedUser(flag);
+            }
+
+            //设置订单未读状态
+
+            if (StringUtils.isNotBlank(wronJsonStr)) {
+                JSONArray waitingReadOrderNo = JSONObject.parseArray(wronJsonStr);
+
+                for (int i = 0; i < waitingReadOrderNo.size(); i++) {
+                    if (waitingReadOrderNo.getString(i).equals(orderDetailsVO.getOrderNo())) {
+                        orderDetailsVO.setWaitingRead(true);
+                        break;
+                    }
+                }
+            }
+            
+
+        }
+        return new PageInfo<>(list);
+    }
+    
+    
     /**
      * 陪玩师接收订单
      *
@@ -263,47 +322,6 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
     }
 
 
-    /**
-     * 订单列表
-     *
-     * @param pageNum
-     * @param pageSize
-     * @param type     1是用户2是陪玩师
-     * @return
-     */
-    public PageInfo<OrderDetailsVO> orderList(int pageNum, int pageSize, Integer type, List<Integer> statusList) {
-        PageHelper.startPage(pageNum, pageSize, "id DESC");
-        User user = userService.getCurrentUser();
-        List<OrderDetailsVO> list = orderService.orderList(type, user.getId(), statusList);
-        for (OrderDetailsVO orderDetailsVO : list) {
-            String categoryName = orderDetailsVO.getName().substring(0, orderDetailsVO.getName().indexOf(" "));
-            orderDetailsVO.setCategoryName(categoryName);
-            orderDetailsVO.setStatusStr(OrderStatusEnum.getMsgByStatus(orderDetailsVO.getStatus()));
-            orderDetailsVO.setStatusNote(OrderStatusEnum.getNoteByStatus(orderDetailsVO.getStatus()));
-            OrderProduct orderProduct = orderProductService.findByOrderNo(orderDetailsVO.getOrderNo());
-            orderDetailsVO.setPriceUnit(orderProduct.getUnit() + "/" + orderProduct.getPrice() + "元*" + orderProduct.getAmount());
-            //订单已评价状态显示订单评价的分数
-            if (orderDetailsVO.getStatus().equals(OrderStatusEnum.ALREADY_APPRAISE.getStatus())) {
-                UserComment userComment = userCommentService.findByOrderNo(orderDetailsVO.getOrderNo());
-                if (userComment != null) {
-                    orderDetailsVO.setCommentScore(userComment.getScore());
-                }
-            }
-
-            if (orderDetailsVO.getStatus().equals(OrderStatusEnum.COMPLETE.getStatus())
-                    || orderDetailsVO.getStatus().equals(OrderStatusEnum.SYSTEM_COMPLETE.getStatus())
-                    || orderDetailsVO.getStatus().equals(OrderStatusEnum.ALREADY_APPRAISE.getStatus())) {
-                ServerComment serverComment = serverCommentService.findByOrderNo(orderDetailsVO.getOrderNo());
-                boolean flag = (serverComment != null);
-                orderDetailsVO.setIsCommentedUser(flag);
-            }
-
-
-        }
-        return new PageInfo<>(list);
-    }
-
-
     @Override
     protected void shareProfit(Order order) {
         appOrderShareProfitService.shareProfit(order);
@@ -321,79 +339,6 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
     @Override
     protected IBusinessPushService getMinAppPushService() {
         return mobileAppPushServiceImpl;
-    }
-
-
-    /**
-     * 待接单倒计时
-     *
-     * @param payTime
-     * @param beginTime
-     * @return
-     */
-    private int receiveOrderTime(Date payTime, Date beginTime) {
-        //todo 因为小程序没有提交开始时间 这里为了测试给一个开始时间
-        if (beginTime == null) {
-            beginTime = DateUtil.offsetMinute(payTime, 30);
-        }
-        int timeMinute = 15;
-        Long minute = DateUtil.between(payTime, beginTime, DateUnit.MINUTE);
-        if (minute < 15) {
-            timeMinute = 15;
-        } else {
-            Integer.valueOf(minute + "");
-        }
-        return timeMinute;
-    }
-
-    /**
-     * 待开始倒计时时长
-     *
-     * @param receivingTime
-     * @param beginTime
-     * @return
-     */
-    private int beginOrderTime(Date receivingTime, Date beginTime) {
-        //todo 因为小程序没有提交开始时间 这里为了测试给一个开始时间
-
-        if (beginTime == null) {
-            beginTime = DateUtil.offsetMinute(receivingTime, 30);
-        }
-        int timeMinute = 15;
-        Long minute = DateUtil.between(receivingTime, beginTime, DateUnit.MINUTE);
-        if (minute < 15) {
-            timeMinute = 15;
-        } else {
-            Integer.valueOf(minute + "");
-        }
-        return timeMinute;
-    }
-
-
-    /**
-     * 待支付倒计时时间
-     *
-     * @param orderTime
-     * @param beginTime
-     * @return
-     */
-    private int waitForPayTime(Date orderTime, Date beginTime) {
-        //todo 因为小程序没有提交开始时间 这里为了测试给一个开始时间
-
-        if (beginTime == null) {
-            beginTime = DateUtil.offsetMinute(orderTime, 30);
-        }
-
-        int timeMinute = 30;
-        Long minute = DateUtil.between(orderTime, beginTime, DateUnit.MINUTE);
-        if (minute > 30) {
-            timeMinute = 30;
-        } else if (minute < 5) {
-            timeMinute = 5;
-        } else {
-            Integer.valueOf(minute + "");
-        }
-        return timeMinute;
     }
 
 }

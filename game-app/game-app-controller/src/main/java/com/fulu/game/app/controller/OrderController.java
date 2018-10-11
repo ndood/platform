@@ -3,7 +3,7 @@ package com.fulu.game.app.controller;
 
 import com.fulu.game.app.service.impl.AppOrderPayServiceImpl;
 import com.fulu.game.app.service.impl.AppOrderServiceImpl;
-import com.fulu.game.app.util.RequestUtil;
+import com.fulu.game.app.utils.RequestUtil;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.domain.ClientInfo;
 import com.fulu.game.common.enums.OrderStatusGroupEnum;
@@ -54,6 +54,8 @@ public class OrderController extends BaseController {
     private MobileAppPushServiceImpl mobileAppPushService;
     @Autowired
     private UserTechAuthServiceImpl userTechAuthService;
+    @Autowired
+    private OrderMsgService orderMsgService;
 
     /**
      * @param productId
@@ -428,7 +430,7 @@ public class OrderController extends BaseController {
     public Result serverCommentSave(ServerCommentVO serverCommentVO) {
         serverCommentService.save(serverCommentVO);
         Order order = appOrderServiceImpl.findByOrderNo(serverCommentVO.getOrderNo());
-        mobileAppPushService.userCommentOrder(order);
+        orderMsgService.userCommentOrder(order);
         return Result.success().msg("评论成功！");
     }
 

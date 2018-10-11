@@ -22,4 +22,7 @@ public interface OrderMsgService extends ICommonService<OrderMsg,Integer>{
     OrderMsg createUserOrderMsg(Order order, String message);
 
     public PageInfo<OrderMsgVO> list(int userId, int pageNum, int pageSize);
+
+
+    void userCommentOrder(Order order);
 }
