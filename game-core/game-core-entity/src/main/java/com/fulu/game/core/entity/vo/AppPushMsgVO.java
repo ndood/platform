@@ -25,6 +25,10 @@ public class AppPushMsgVO {
         setUserIds(builder.userIds);
     }
 
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
     public static Builder newBuilder(Integer userId) {
         return new Builder(userId);
     }
@@ -39,6 +43,10 @@ public class AppPushMsgVO {
         private String alert;
         private Map<String, String> extras;
         private Integer[] userIds;
+
+        private Builder() {
+            this.userIds = new Integer[]{};
+        }
 
         private Builder(Integer userId) {
             this.userIds = new Integer[]{userId};
