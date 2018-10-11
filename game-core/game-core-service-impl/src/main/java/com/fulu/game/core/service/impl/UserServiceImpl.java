@@ -288,7 +288,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         user.setSourceId(sourceId);
         while (true) {
             String nickname = "游客" + RandomUtil.randomNumbers(7);
-
             UserVO userVO = new UserVO();
             userVO.setNickname(nickname);
             List<User> userList = userDao.findByParameter(userVO);

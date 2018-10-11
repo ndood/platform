@@ -697,5 +697,12 @@ CREATE TABLE `t_room_collect` (
   CONSTRAINT `t_room_collect_ibfk_1` FOREIGN KEY (`room_no`) REFERENCES `t_room` (`room_no`)
 )  COMMENT='房间收藏';
 
-
+CREATE TABLE `t_room_blacklist` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `room_no` varchar(255) NOT NULL COMMENT '房间',
+  `user_id` int(11) NOT NULL COMMENT '用户ID',
+  `create_time` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `room_no` (`room_no`,`user_id`) USING BTREE
+)  COMMENT='房间黑名单';
 

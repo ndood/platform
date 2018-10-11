@@ -67,7 +67,14 @@ public class UserChatRoomVO implements Serializable {
     //送出礼物数量
     private BigDecimal giftPrice;
 
-    //技能图标列表
-    private List<String> techIcons;
+    //是否是黑名单用户
+    private Boolean blackList;
+
+    //用户认证游戏图标列表
+    private List<String>  techCategoryIcons;
+    //用户认证技能分类列表
+    private List<Integer> techCategoryIds;
+
+
 
 }

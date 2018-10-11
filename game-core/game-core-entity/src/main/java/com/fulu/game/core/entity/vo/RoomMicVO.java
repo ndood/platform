@@ -43,6 +43,8 @@ public class RoomMicVO implements Serializable {
         private Integer age;
 
         private Integer roomRole;
+
+        private Boolean blackList;
     }
 
 }

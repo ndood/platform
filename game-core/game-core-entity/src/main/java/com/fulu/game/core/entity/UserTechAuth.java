@@ -73,4 +73,7 @@ public class UserTechAuth implements Serializable {
 
     /** 技能等级名称 */
     private String techLevelName;
+
+
+
 }

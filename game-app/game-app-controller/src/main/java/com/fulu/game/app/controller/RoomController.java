@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @RestController
 @Slf4j
@@ -41,6 +40,8 @@ public class RoomController extends BaseController {
     private RoomManageService roomManageService;
     @Autowired
     private RoomCollectService roomCollectService;
+
+
 
     /**
      * 房间banner
@@ -368,7 +369,7 @@ public class RoomController extends BaseController {
     public Result roomMicUp(@RequestParam(required = true) String roomNo,
                             @RequestParam(required = true) Integer type) {
         User user = userService.getCurrentUser();
-        Long size = roomService.roomMicUp(roomNo,type,user.getId());
+        Long size = roomService.roomMicListUp(roomNo,type,user.getId());
         return Result.success().data(size);
     }
 
@@ -383,11 +384,16 @@ public class RoomController extends BaseController {
     public Result roomMicDown(@RequestParam(required = true) String roomNo,
                               @RequestParam(required = true) Integer type) {
         User user = userService.getCurrentUser();
-        Long size = roomService.roomMicDown(roomNo,type,user.getId());
+        Long size = roomService.roomMicListDown(roomNo,type,user.getId());
         return Result.success().data(size);
     }
 
-
+    /**
+     * 查询麦序上的数量
+     * @param roomNo
+     * @param types
+     * @return
+     */
     @RequestMapping("/mic/up/size")
     public Result roomMicUpSize(@RequestParam(required = true) String roomNo,
                                 @RequestParam(required = true) String types) {
@@ -402,6 +408,25 @@ public class RoomController extends BaseController {
         Map<Integer,Long> map =  roomService.roomMicUpSize(roomNo,typeList);
         return Result.success().data(map);
     }
+
+
+
+    @RequestMapping("/blacklist/handle")
+    public Result addBlackList(@RequestParam(required = true) String roomNo,
+                                @RequestParam(required = true) Integer userId,
+                               Boolean flag) {
+        if(flag){
+            roomService.addBlackList(userId,roomNo);
+            return Result.success().msg("禁言用户成功");
+        }else{
+            roomService.delBlackList(userId,roomNo);
+            return Result.success().msg("解除用户禁言成功");
+        }
+    }
+
+
+
+
 
 
 }

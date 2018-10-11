@@ -167,31 +167,30 @@ public interface RoomService extends ICommonService<Room, Integer> {
     RoomMicVO  roomMicStatus(String roomNo,int index,int status);
 
     /**
-     * 上麦
+     * 上麦麦序列表
      * @param roomNo
      * @param type
      * @return
      */
-    long roomMicUp(String roomNo,Integer type,int userId);
+    long roomMicListUp(String roomNo, Integer type, int userId);
 
 
     /**
      * 上麦列表list
      * @param roomNo
      * @param type
-     * @param userId
      * @return
      */
     List<UserChatRoomVO> roomMicUpList(String roomNo,Integer type);
 
     /**
-     * 下麦
+     * 下麦麦序列表
      * @param roomNo
      * @param type
      * @param userId
      * @return
      */
-    long roomMicDown(String roomNo, Integer type,int userId);
+    long roomMicListDown(String roomNo, Integer type, int userId);
 
     /**
      * 麦序列表大小
@@ -208,6 +207,20 @@ public interface RoomService extends ICommonService<Room, Integer> {
      * @return
      */
     Map<Integer,Long> roomMicUpSize(String roomNo, List<Integer> types);
+
+    /**
+     * 把用户加入黑名单
+     * @param userId
+     * @param roomNo
+     */
+    void addBlackList(int userId,String roomNo);
+
+    /**
+     * 用户移出黑名单
+     * @param userId
+     * @param roomNo
+     */
+    void delBlackList(int userId,String roomNo);
 
 
 
