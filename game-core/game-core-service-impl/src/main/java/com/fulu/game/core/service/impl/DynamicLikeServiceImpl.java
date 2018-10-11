@@ -10,11 +10,10 @@ import com.fulu.game.core.entity.DynamicPushMsg;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.AppPushMsgVO;
 import com.fulu.game.core.entity.vo.DynamicLikeVO;
-import com.fulu.game.core.search.component.DynamicSearchComponent;
 import com.fulu.game.core.service.DynamicPushMsgService;
 import com.fulu.game.core.service.DynamicService;
 import com.fulu.game.core.service.UserService;
-import com.fulu.game.core.service.impl.push.MobileAppPushServiceImpl;
+import com.fulu.game.core.service.impl.push.AppPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +43,7 @@ public class DynamicLikeServiceImpl extends AbsCommonService<DynamicLike,Integer
     private DynamicService dynamicService;
 
     @Autowired
-    private MobileAppPushServiceImpl mobileAppPushService;
+    private AppPushServiceImpl mobileAppPushService;
 
     @Autowired
     private DynamicPushMsgService dynamicPushMsgService;

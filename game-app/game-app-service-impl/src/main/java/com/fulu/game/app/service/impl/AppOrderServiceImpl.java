@@ -17,7 +17,7 @@ import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.IBusinessPushService;
-import com.fulu.game.core.service.impl.push.MobileAppPushServiceImpl;
+import com.fulu.game.core.service.impl.push.AppPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +49,7 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
     @Autowired
     private OrderStatusDetailsService orderStatusDetailsService;
     @Autowired
-    private MobileAppPushServiceImpl mobileAppPushServiceImpl;
+    private AppPushServiceImpl appPushServiceImpl;
     @Autowired
     private AppOrderShareProfitServiceImpl appOrderShareProfitService;
     @Autowired
@@ -157,7 +157,7 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
         int minute = beginOrderTime(order.getReceivingTime(), order.getBeginTime());
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), minute);
         //todo 陪玩师接单通知
-        mobileAppPushServiceImpl.receiveOrder(order);
+        appPushServiceImpl.receiveOrder(order);
         return order.getOrderNo();
     }
 
@@ -232,7 +232,7 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
         User server = userService.findById(order.getServiceUserId());
         SMSUtil.sendOrderReceivingRemind(server.getMobile(), order.getName());
         //推送app通知
-        mobileAppPushServiceImpl.orderPay(order);
+        appPushServiceImpl.orderPay(order);
     }
 
 
@@ -320,7 +320,7 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
 
     @Override
     protected IBusinessPushService getMinAppPushService() {
-        return mobileAppPushServiceImpl;
+        return appPushServiceImpl;
     }
 
 

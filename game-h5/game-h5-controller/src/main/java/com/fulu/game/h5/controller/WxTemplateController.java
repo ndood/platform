@@ -1,7 +1,7 @@
 package com.fulu.game.h5.controller;
 
 import com.fulu.game.common.Result;
-import com.fulu.game.play.service.impl.PlayMiniAppPushServiceImpl;
+import com.fulu.game.core.service.impl.push.PlayMiniAppPushServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

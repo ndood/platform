@@ -15,6 +15,7 @@ import com.fulu.game.core.entity.vo.PointOrderDetailsVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
+import com.fulu.game.core.service.impl.push.PointMiniAppPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;

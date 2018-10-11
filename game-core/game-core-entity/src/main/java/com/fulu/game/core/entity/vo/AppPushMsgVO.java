@@ -18,30 +18,19 @@ public class AppPushMsgVO {
 
     private Integer[] userIds;
 
-    private Boolean sendAll;
-
-    public AppPushMsgVO(){};
-
-
     private AppPushMsgVO(Builder builder) {
         setTitle(builder.title);
         setAlert(builder.alert);
         setExtras(builder.extras);
         setUserIds(builder.userIds);
-        setSendAll(builder.sendAll);
-    }
-
-
-    public static Builder newSendAllBuilder() {
-        return new Builder(Boolean.TRUE);
     }
 
     public static Builder newBuilder(Integer userId) {
-        return new Builder(Boolean.FALSE,userId);
+        return new Builder(userId);
     }
 
     public static Builder newBuilder(Integer[] userIds) {
-        return new Builder(Boolean.FALSE,userIds);
+        return new Builder(userIds);
     }
 
 
@@ -50,22 +39,14 @@ public class AppPushMsgVO {
         private String alert;
         private Map<String, String> extras;
         private Integer[] userIds;
-        private Boolean sendAll;
 
-        private Builder(Boolean sendAll) {
-            this.sendAll = sendAll;
-        }
-
-        private Builder(Boolean sendAll,Integer userId) {
-            this.sendAll = sendAll;
+        private Builder(Integer userId) {
             this.userIds = new Integer[]{userId};
         }
 
-        private Builder(Boolean sendAll,Integer[] userIds) {
-            this.sendAll = sendAll;
+        private Builder(Integer[] userIds) {
             this.userIds = userIds;
         }
-
 
 
         public Builder title(String val) {
@@ -84,9 +65,8 @@ public class AppPushMsgVO {
         }
 
 
-
         public AppPushMsgVO build() {
-            if(extras==null){
+            if (extras == null) {
                 extras = new HashMap<>();
             }
             return new AppPushMsgVO(this);
