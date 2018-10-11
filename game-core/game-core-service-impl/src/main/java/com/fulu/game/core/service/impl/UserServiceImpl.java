@@ -395,24 +395,11 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     @Override
     public void checkUserInfoAuthStatus(Integer userId, Integer... ignoreAuthStatus) {
         User user = findById(userId);
-        UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(userId);
         if (ignoreAuthStatus != null) {
             if (Arrays.asList(ignoreAuthStatus).contains(user.getUserInfoAuth())) {
                 return;
             }
         }
-        if (userInfoAuth == null) {
-            throw new UserAuthException(UserAuthException.ExceptionCode.NOT_EXIST_USER_AUTH);
-        }
-        if (userInfoAuth.getMainPicUrl() == null) {
-            throw new UserAuthException(UserAuthException.ExceptionCode.NOT_EXIST_USER_AUTH);
-        }
-//        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.NOT_PERFECT.getType())) {
-//            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_REJECT);
-//        }
-//        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType())) {
-//            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_AUTHING);
-//        }
         if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
             throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE);
         }

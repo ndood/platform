@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @RestController
 @Slf4j
@@ -330,7 +332,6 @@ public class RoomController extends BaseController {
 
     /**
      * 设置麦位状态
-     *
      * @param roomNo
      * @return
      */
@@ -344,18 +345,22 @@ public class RoomController extends BaseController {
     }
 
 
-
-
+    /**
+     * 上麦列表
+     * @param roomNo
+     * @param type
+     * @return
+     */
     @RequestMapping("/mic/up/list")
     public Result roomMicUpMicList(@RequestParam(required = true) String roomNo,
                                    Integer type) {
-
-        return Result.success();
+        List<UserChatRoomVO> set = roomService.roomMicUpList(roomNo,type);
+        return Result.success().data(set);
     }
 
 
     /**
-     * 房间上麦
+     * 房间麦序上麦
      * @param roomNo
      * @param type
      * @return
@@ -363,14 +368,14 @@ public class RoomController extends BaseController {
     @RequestMapping("/mic/up")
     public Result roomMicUp(@RequestParam(required = true) String roomNo,
                             @RequestParam(required = true) Integer type) {
-
-
-        return Result.success();
+        User user = userService.getCurrentUser();
+        Long size = roomService.roomMicUp(roomNo,type,user.getId());
+        return Result.success().data(size);
     }
 
 
     /**
-     * 房间下麦
+     * 房间麦序下麦
      * @param roomNo
      * @param type
      * @return
@@ -378,9 +383,25 @@ public class RoomController extends BaseController {
     @RequestMapping("/mic/down")
     public Result roomMicDown(@RequestParam(required = true) String roomNo,
                               @RequestParam(required = true) Integer type) {
+        User user = userService.getCurrentUser();
+        Long size = roomService.roomMicDown(roomNo,type,user.getId());
+        return Result.success().data(size);
+    }
 
 
-        return Result.success();
+    @RequestMapping("/mic/up/size")
+    public Result roomMicUpSize(@RequestParam(required = true) String roomNo,
+                                @RequestParam(required = true) String types) {
+        if(types==null){
+            return Result.error().msg("上麦列表类型错误!");
+        }
+        String[] typeStrs =  types.split(",");
+        List<Integer> typeList = new ArrayList<>();
+        for(String typeStr: typeStrs){
+            typeList.add(Integer.valueOf(typeStr));
+        }
+        Map<Integer,Long> map =  roomService.roomMicUpSize(roomNo,typeList);
+        return Result.success().data(map);
     }
 
 

@@ -388,6 +388,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     @Override
     public List<RoomMicVO> roomMicAll(String roomNo) {
         checkRoomExists(roomNo);
+
         if (!redisOpenService.hasKey(RedisKeyEnum.CHAT_ROOM_MIC.generateKey(roomNo))) {
             List<RoomMicVO> roomMicVOList = new ArrayList<>();
             for (int i = 0; i < 9; i++) {
@@ -405,10 +406,10 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
 
     @Override
     public RoomMicVO roomMicHoldUp(String roomNo, int index, int userId) {
+        log.info("用户上麦:roomNo:{},index:{},userId:{}",roomNo,index,userId);
         if (index < 0 || index > 8) {
             throw new RoomException(RoomException.ExceptionCode.ROOM_MIC_INDEX_ERROR);
         }
-
         checkRoomExists(roomNo);
 
         //如果麦位不存在初始化麦位
@@ -452,12 +453,12 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
 
     @Override
     public RoomMicVO roomMicStatus(String roomNo, int index, int status) {
+        log.info("更改麦位状态:roomNo:{},index:{},status:{}",roomNo,index,status);
+
         if (index < 0 || index > 8) {
             throw new RoomException(RoomException.ExceptionCode.ROOM_MIC_INDEX_ERROR);
         }
-
         checkRoomExists(roomNo);
-
         RoomMicVO roomMicVO = redisOpenService.listGetForIndex(RedisKeyEnum.CHAT_ROOM_MIC.generateKey(roomNo), index);
         //下麦用户
         if (Integer.valueOf(-1).equals(status)) {
@@ -472,6 +473,34 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
 
 
     @Override
+    public List<UserChatRoomVO> roomMicUpList(String roomNo, Integer type) {
+        checkRoomExists(roomNo);
+        if(type>2||type<1){
+            throw new RoomException(RoomException.ExceptionCode.ROOM_MIC_UP_LIST_ERROR);
+        }
+
+        List<UserChatRoomVO> userChatRoomVOS = new ArrayList<>();
+        Set<Integer> userIds =  redisOpenService.zsetForAll(RedisKeyEnum.CHAT_ROOM_MIC_UP_LIST.generateKey(roomNo,type),true);
+        for(Integer userId : userIds){
+            UserChatRoomVO userChatRoomVO =getUserRoomInfo(userId);
+            if(userChatRoomVO!=null){
+                //查询用户所在房间的麦位
+                Integer micIndex = getUserMicIndex(roomNo,userId);
+                if(micIndex!=null){
+                    userChatRoomVO.setMicIndex(micIndex);
+                }
+                userChatRoomVOS.add(userChatRoomVO);
+            }else{
+                //同步删除在房间用户
+                redisOpenService.setForDel(RedisKeyEnum.CHAT_ROOM_ONLINE_USER.generateKey(roomNo), userId);
+            }
+        }
+        return userChatRoomVOS;
+    }
+
+
+
+    @Override
     public long roomMicUp(String roomNo, Integer type,int userId){
         log.info("用户上麦roomNo:{},type:{},userId:{}",roomNo,type,userId);
         checkRoomExists(roomNo);
@@ -479,10 +508,10 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
             throw new RoomException(RoomException.ExceptionCode.ROOM_MIC_UP_LIST_ERROR);
         }
         checkRoomUserOnline(roomNo,userId);
-
-        redisOpenService.setForAdd(RedisKeyEnum.CHAT_ROOM_MIC_UP_LIST.generateKey(roomNo,type),userId);
+        redisOpenService.zsetForAdd(RedisKeyEnum.CHAT_ROOM_MIC_UP_LIST.generateKey(roomNo,type),Integer.valueOf(userId));
         return roomMicUpSize(roomNo,type);
     }
+
 
 
     @Override
@@ -493,8 +522,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
             throw new RoomException(RoomException.ExceptionCode.ROOM_MIC_UP_LIST_ERROR);
         }
         checkRoomUserOnline(roomNo,userId);
-
-        redisOpenService.setForDel(RedisKeyEnum.CHAT_ROOM_MIC_UP_LIST.generateKey(roomNo,type),userId);
+        redisOpenService.zsetForDel(RedisKeyEnum.CHAT_ROOM_MIC_UP_LIST.generateKey(roomNo,type),userId);
         return roomMicUpSize(roomNo,type);
     }
 
@@ -502,16 +530,29 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     /**
      * 麦序列表大小
       * @param roomNo
-     * @param type
+     * @param types
      * @return
      */
+    public Map<Integer,Long> roomMicUpSize(String roomNo, List<Integer> types){
+        if(types==null){
+            return new HashMap<>();
+        }
+        Map<Integer,Long>  result = new HashMap<>();
+        for(Integer type : types){
+            result.put(type,roomMicUpSize(roomNo,type));
+        }
+
+        return result;
+    }
+
+
+
     public long roomMicUpSize(String roomNo, Integer type){
         if(!redisOpenService.hasKey(RedisKeyEnum.CHAT_ROOM_MIC_UP_LIST.generateKey(roomNo,type))){
             return 0;
         }
-        return redisOpenService.setForSize(RedisKeyEnum.CHAT_ROOM_MIC_UP_LIST.generateKey(roomNo,type));
+        return redisOpenService.zsetForSize(RedisKeyEnum.CHAT_ROOM_MIC_UP_LIST.generateKey(roomNo,type));
     }
-
 
 
     /**
@@ -522,7 +563,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         if(userChatRoomVO==null){
             throw new RoomException(RoomException.ExceptionCode.ROOM_USER_QUIT_EXCEPTION);
         }
-        if(userChatRoomVO.getRoomNo().equals(roomNo)){
+        if(!userChatRoomVO.getRoomNo().equals(roomNo)){
             throw new RoomException(RoomException.ExceptionCode.ROOM_USER_QUIT_EXCEPTION);
         }
         return userChatRoomVO;

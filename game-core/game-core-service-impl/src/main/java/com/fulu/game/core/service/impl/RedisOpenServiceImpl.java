@@ -417,6 +417,76 @@ public class RedisOpenServiceImpl {
 
 
     /**
+     * 往ZSET中插入元素
+     * @param key
+     * @param value
+     * @param score 排序分数
+     * @param <T>
+     */
+    public <T> boolean zsetForAdd(String key, T value,double score) {
+        ZSetOperations setOperations = redisTemplate.opsForZSet();
+        return setOperations.add(key,value,score);
+    }
+
+    /**
+     * 往ZSET中插入元素(按照集合元素size来定义顺序)
+     * @param key
+     * @param value
+     * @param <T>
+     */
+    public <T> boolean zsetForAdd(String key, T value) {
+        ZSetOperations setOperations = redisTemplate.opsForZSet();
+        long score = 1;
+        if(hasKey(key)){
+            score = zsetForSize(key)+1;
+        }
+        return setOperations.add(key,value,score);
+    }
+
+
+    /**
+     * 在ZSET中删除元素
+     *
+     * @param key
+     * @param value
+     * @param <T>
+     */
+    public <T> long zsetForDel(String key, T value) {
+        ZSetOperations setOperations = redisTemplate.opsForZSet();
+        return setOperations.remove(key, value);
+    }
+
+
+    /**
+     * 查询SET的size
+     * @param key
+     */
+    public long zsetForSize(String key) {
+        ZSetOperations setOperations = redisTemplate.opsForZSet();
+        return setOperations.size(key);
+    }
+
+    /**
+     * 获取ZSet全部元素
+     * @param key
+     * @param reverse  是否需要相反排序获取元素
+     * @param <T>
+     * @return
+     */
+    public <T> Set<T> zsetForAll(String key,Boolean reverse) {
+        ZSetOperations setOperations = redisTemplate.opsForZSet();
+        long length = setOperations.size(key);
+        if (length <= 0) {
+            return new HashSet();
+        }
+        if(reverse){
+            return setOperations.reverseRange(key,0,-1);
+        }
+        return setOperations.range(key,0,-1);
+    }
+
+
+    /**
      * blocking 一直阻塞直到队列里边有数据
      * remove and get last item from queue:BRPOP
      *

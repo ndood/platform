@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 聊天室redis缓存的vo
@@ -65,5 +66,8 @@ public class UserChatRoomVO implements Serializable {
 
     //送出礼物数量
     private BigDecimal giftPrice;
+
+    //技能图标列表
+    private List<String> techIcons;
 
 }

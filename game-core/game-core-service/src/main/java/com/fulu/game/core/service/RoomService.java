@@ -8,6 +8,7 @@ import com.fulu.game.core.entity.vo.UserChatRoomVO;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -173,6 +174,16 @@ public interface RoomService extends ICommonService<Room, Integer> {
      */
     long roomMicUp(String roomNo,Integer type,int userId);
 
+
+    /**
+     * 上麦列表list
+     * @param roomNo
+     * @param type
+     * @param userId
+     * @return
+     */
+    List<UserChatRoomVO> roomMicUpList(String roomNo,Integer type);
+
     /**
      * 下麦
      * @param roomNo
@@ -190,8 +201,13 @@ public interface RoomService extends ICommonService<Room, Integer> {
      */
     long roomMicUpSize(String roomNo, Integer type);
 
-
-
+    /**
+     * 获取房间所有上麦列表
+     * @param roomNo
+     * @param types
+     * @return
+     */
+    Map<Integer,Long> roomMicUpSize(String roomNo, List<Integer> types);
 
 
 
