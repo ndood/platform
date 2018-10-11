@@ -1066,5 +1066,6 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
             userTechAuth.setMaxPrice(priceRule.getPrice());
         }
         userTechAuthService.update(userTechAuth);
+        log.info("修改用户技能接单数和允许最大定价价格时，未查询到技能，分类id为{},用户id为{}", order.getCategoryId(),order.getUserId());
     }
 }
