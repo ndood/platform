@@ -70,4 +70,6 @@ public class UserInfoAuth implements Serializable {
     private Integer virtualFansCount;
     /** 陪玩师技能所属等级id */
     private Integer techLevelId;
+    //总单数
+    private Integer orderCount;
 }

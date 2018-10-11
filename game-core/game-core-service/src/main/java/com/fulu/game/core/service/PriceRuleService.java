@@ -23,4 +23,11 @@ public interface PriceRuleService extends ICommonService<PriceRule,Integer>{
     List<PriceRule> findByCategoryId(Integer id);
 
     List<PriceRuleVO> findUserPriceByCategoryId(Integer id,int userId);
+
+    /**
+     * 查找当前技能和订单量的最大定价价格
+     * @param priceRuleVO
+     * @return
+     */
+    PriceRule findMaxPrice(PriceRuleVO priceRuleVO);
 }

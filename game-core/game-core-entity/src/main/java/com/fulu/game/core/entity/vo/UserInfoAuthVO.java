@@ -41,8 +41,6 @@ public class UserInfoAuthVO extends UserInfoAuth {
 
     //总服务金额
     private BigDecimal moneySum;
-    //总单数
-    private Integer orderCount;
     //技能认证数
     private Integer techAuthCount;
     //审核状态
