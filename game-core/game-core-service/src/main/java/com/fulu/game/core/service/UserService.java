@@ -367,4 +367,11 @@ public interface UserService extends ICommonService<User, Integer> {
      * 更新用户索引
      */
     void bathUpdateUserIndex();
+    /**
+     * 查询-用户信息
+     * 只需要昵称、手机号、账户余额、身份
+     *
+     * @return
+     */
+    UserVO findUserVOByParams(UserVO userVO);
 }

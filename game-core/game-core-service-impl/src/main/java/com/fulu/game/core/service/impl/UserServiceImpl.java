@@ -1011,6 +1011,32 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     /**
+     * 查询-用户信息
+     * 只需要昵称、手机号、账户余额、身份
+     *
+     * @param userVO
+     * @return
+     */
+    @Override
+    public UserVO findUserVOByParams(UserVO userVO) {
+        List<User> users = userDao.findByParameter(userVO);
+        UserVO user = new UserVO();
+        if(users != null && users.size() > 0){
+            BeanUtil.copyProperties(users.get(0),user);
+            //设置用户是否马甲信息
+            UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
+            if(userInfoAuth != null && userInfoAuth.getVestFlag()){
+                user.setUserType(UserTypeEnum.VEST_USER.getType());
+            } else {
+                user.setUserType(UserTypeEnum.GENERAL_USER.getType());
+            }
+        } else {
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+        return user;
+    }
+
+    /**
      * 获取用户信息
      *
      * @param id

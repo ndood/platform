@@ -214,4 +214,7 @@ public interface Constant {
 
     /** 超级管理员用户名 */
     String ADMIN_USERNAME = "admin";
+
+    /** 马甲前缀(目前用户订单和提现号) */
+    String VEST_SUFFIX = "_VEST";
 }

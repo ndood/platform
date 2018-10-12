@@ -469,9 +469,21 @@ public class UserController extends BaseController {
      * @return
      */
     @PostMapping("/query")
-    public Result list(@RequestParam Integer id) {
+    public Result queryUser(@RequestParam Integer id) {
         UserVO userVO = userService.findUserVOById(id);
         return Result.success().data(userVO).msg("查询用户成功！");
+    }
+
+    /**
+     * 查询-用户信息
+     * 只需要昵称、手机号、账户余额、身份
+     *
+     * @return
+     */
+    @PostMapping("/query-user-by-params")
+    public Result queryUserByIdOrMobile(UserVO userVO) {
+        UserVO user = userService.findUserVOByParams(userVO);
+        return Result.success().data(user).msg("查询用户成功！");
     }
 
     /**
