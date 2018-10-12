@@ -2,7 +2,7 @@ package com.fulu.game.app.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.PlatformBannerEnum;
-import com.fulu.game.common.enums.RoomRoleTypeEnum;
+import com.fulu.game.common.enums.RoomEnum;
 import com.fulu.game.common.exception.RoomException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.entity.*;
@@ -201,8 +201,8 @@ public class RoomController extends BaseController {
     public Result roomRoleAdd(@RequestParam(required = true) String roomNo,
                               @RequestParam(required = true) Integer userId,
                               @RequestParam(required = true) Integer role) {
-        RoomRoleTypeEnum roleTypeEnum = RoomRoleTypeEnum.findByType(role);
-        if (roleTypeEnum == null || roleTypeEnum.equals(RoomRoleTypeEnum.OWNER)) {
+        RoomEnum.RoomRoleTypeEnum roleTypeEnum = RoomEnum.RoomRoleTypeEnum.findByType(role);
+        if (roleTypeEnum == null || roleTypeEnum.equals(RoomEnum.RoomRoleTypeEnum.OWNER)) {
             throw new RoomException(RoomException.ExceptionCode.ROOM_MANAGER_NOT_MATCHING);
         }
         roomManageService.createManage(roleTypeEnum, userId, roomNo);
@@ -369,7 +369,7 @@ public class RoomController extends BaseController {
     public Result roomMicUp(@RequestParam(required = true) String roomNo,
                             @RequestParam(required = true) Integer type) {
         User user = userService.getCurrentUser();
-        Long size = roomService.roomMicListUp(roomNo,type,user.getId());
+        Long size = roomService.micRankListUp(roomNo,type,user.getId());
         return Result.success().data(size);
     }
 
@@ -384,7 +384,7 @@ public class RoomController extends BaseController {
     public Result roomMicDown(@RequestParam(required = true) String roomNo,
                               @RequestParam(required = true) Integer type) {
         User user = userService.getCurrentUser();
-        Long size = roomService.roomMicListDown(roomNo,type,user.getId());
+        Long size = roomService.micRankListDown(roomNo,type,user.getId());
         return Result.success().data(size);
     }
 

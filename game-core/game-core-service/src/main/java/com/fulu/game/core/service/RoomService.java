@@ -172,8 +172,17 @@ public interface RoomService extends ICommonService<Room, Integer> {
      * @param type
      * @return
      */
-    long roomMicListUp(String roomNo, Integer type, int userId);
+    long micRankListUp(String roomNo, Integer type, int userId);
 
+
+    /**
+     * 下麦麦序列表
+     * @param roomNo
+     * @param type
+     * @param userId
+     * @return
+     */
+    long micRankListDown(String roomNo, Integer type, int userId);
 
     /**
      * 上麦列表list
@@ -183,14 +192,6 @@ public interface RoomService extends ICommonService<Room, Integer> {
      */
     List<UserChatRoomVO> roomMicUpList(String roomNo,Integer type);
 
-    /**
-     * 下麦麦序列表
-     * @param roomNo
-     * @param type
-     * @param userId
-     * @return
-     */
-    long roomMicListDown(String roomNo, Integer type, int userId);
 
     /**
      * 麦序列表大小
