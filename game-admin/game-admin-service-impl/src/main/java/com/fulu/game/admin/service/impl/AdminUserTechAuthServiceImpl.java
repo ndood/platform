@@ -2,9 +2,7 @@ package com.fulu.game.admin.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.fulu.game.admin.service.AdminUserTechAuthService;
-import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.enums.TechAttrTypeEnum;
-import com.fulu.game.common.enums.TechAuthStatusEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.utils.CollectionUtil;
@@ -200,6 +198,13 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
         update(userTechAuth);
         //给用户推送通知
         adminPushService.techAuthAuditSuccess(userTechAuth.getUserId());
+        // 修改用户认证状态为通过，用户类型为陪玩师
+        User user = userService.findById(userTechAuth.getUserId());
+        if(user != null && user.getType() != null && user.getType().intValue() != 2){
+            user.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
+            user.setUserInfoAuth(UserInfoAuthStatusEnum.VERIFIED.getType());
+            userService.update(user);
+        }
 
         //技能下商品置为正常
         productService.recoverProductActivateByTechAuthId(userTechAuth.getId());
