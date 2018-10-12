@@ -108,6 +108,8 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
         order.setOrderNo(generateVirtualProductOrderNo());
         order.setVirtualProductId(virtualProductId);
         order.setPrice(price);
+        order.setUnitPrice(price);
+        order.setAmount(1);
         order.setFromUserId(fromUser.getId());
         order.setTargetUserId(targetUserId);
         order.setRemark(VirtualProductTypeEnum.getMsgByType(type));

@@ -7,6 +7,8 @@
         <result column="order_no" property="orderNo"/>
         <result column="virtual_product_id" property="virtualProductId"/>
         <result column="price" property="price"/>
+        <result column="amount" property="amount"/>
+        <result column="unit_price" property="unitPrice"/>
         <result column="from_user_id" property="fromUserId"/>
         <result column="target_user_id" property="targetUserId"/>
         <result column="remark" property="remark"/>
@@ -19,7 +21,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,order_no,virtual_product_id,price,from_user_id,target_user_id,remark,update_time,create_time    </sql>
+        id,order_no,virtual_product_id,price,amount,unit_price,from_user_id,target_user_id,remark,update_time,create_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="VirtualProductOrderResultMap">
         select
@@ -51,6 +53,12 @@
             <if test="price != null">
                 and price = #{price}
             </if>
+            <if test="amount != null">
+                and amount = #{amount}
+            </if>
+            <if test="unitPrice != null">
+                and unit_price = #{unitPrice}
+            </if>
             <if test="fromUserId != null">
                 and from_user_id = #{fromUserId}
             </if>
@@ -79,9 +87,9 @@
     <insert id="create" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.fulu.game.core.entity.VirtualProductOrder">
         insert into
-        t_virtual_product_order (order_no,virtual_product_id,price,from_user_id,target_user_id,remark,update_time,create_time)
+        t_virtual_product_order (order_no,virtual_product_id,price,amount,unit_price,from_user_id,target_user_id,remark,update_time,create_time)
         values
-        (#{orderNo},#{virtualProductId},#{price},#{fromUserId},#{targetUserId},#{remark},#{updateTime},#{createTime})
+        (#{orderNo},#{virtualProductId},#{price},#{amount},#{unitPrice},#{fromUserId},#{targetUserId},#{remark},#{updateTime},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.VirtualProductOrder">
@@ -98,6 +106,14 @@
 
             <if test="price != null">
                 price = #{price},
+            </if>
+
+            <if test="amount != null">
+                amount = #{amount},
+            </if>
+
+            <if test="unitPrice != null">
+                unit_price = #{unitPrice},
             </if>
 
             <if test="fromUserId != null">
