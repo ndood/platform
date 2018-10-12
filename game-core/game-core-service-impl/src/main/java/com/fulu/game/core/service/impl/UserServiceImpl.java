@@ -795,6 +795,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         userVO.setMonthIncome(moneyDetailsService.monthIncome(userId));
         //设置用户来访次数
         userVO.setAccessCount(accessCount);
+        userVO.setMobile(null);
         // 获取新增属性信息
         return userVO;
     }
