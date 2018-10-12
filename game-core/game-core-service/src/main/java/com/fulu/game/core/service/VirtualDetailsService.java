@@ -16,6 +16,8 @@ import java.util.List;
  */
 public interface VirtualDetailsService extends ICommonService<VirtualDetails, Integer> {
 
+    PageInfo<VirtualDetails> getVirtualDetailsList(VirtualDetailsVO virtualDetailsVO, Integer pageSize, Integer pageNum , String orderBy);
+
+
     PageInfo<VirtualDetails> findByParameterWithPage(VirtualDetailsVO virtualDetailsVO, Integer pageSize, Integer pageNum , String orderBy);
-    
 }
