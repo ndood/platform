@@ -749,7 +749,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         String suffix = "";
         if(serviceUserId != null && serviceUserId.intValue() > 0){
             UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(serviceUserId);
-            if(userInfoAuth != null && userInfoAuth.getVestFlag()){
+            if(userInfoAuth != null && userInfoAuth.getVestFlag() != null && userInfoAuth.getVestFlag()){
                 suffix = Constant.VEST_SUFFIX;
             }
         }

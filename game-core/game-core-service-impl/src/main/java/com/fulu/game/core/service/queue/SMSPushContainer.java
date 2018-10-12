@@ -63,7 +63,7 @@ public class SMSPushContainer extends RedisTaskContainer {
     private void process(SMSVO smsvo) {
         User user = userService.findByMobile(smsvo.getMobile());
         UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
-        if (userInfoAuth != null && userInfoAuth.getVestFlag()) {
+        if (userInfoAuth != null && userInfoAuth.getVestFlag() != null && userInfoAuth.getVestFlag()) {
             log.info("马甲用户，不发通知");
             return;
         }

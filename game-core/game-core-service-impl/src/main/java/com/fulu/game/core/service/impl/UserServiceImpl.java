@@ -1034,7 +1034,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
             BeanUtil.copyProperties(users.get(0),user);
             //设置用户是否马甲信息
             UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
-            if(userInfoAuth != null && userInfoAuth.getVestFlag()){
+            if(userInfoAuth != null && userInfoAuth.getVestFlag() != null && userInfoAuth.getVestFlag()){
                 user.setUserType(UserTypeEnum.VEST_USER.getType());
             } else {
                 user.setUserType(UserTypeEnum.GENERAL_USER.getType());

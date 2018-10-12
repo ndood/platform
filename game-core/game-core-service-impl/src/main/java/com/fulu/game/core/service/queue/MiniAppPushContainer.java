@@ -80,7 +80,7 @@ public class MiniAppPushContainer extends RedisTaskContainer {
         User user = userService.findByOpenId(wxMaTemplateMessageVO.getToUser(),
                 PlatformEcoEnum.getEnumByType(wxMaTemplateMessageVO.getPlatform()));
         UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
-        if (userInfoAuth != null && userInfoAuth.getVestFlag()) {
+        if (userInfoAuth != null && userInfoAuth.getVestFlag() != null && userInfoAuth.getVestFlag()) {
             log.info("马甲用户，不发通知");
             return;
         }

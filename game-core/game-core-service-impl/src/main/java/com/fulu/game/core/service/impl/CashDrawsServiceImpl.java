@@ -542,7 +542,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         User user = userService.getCurrentUser();
         if(user != null){
             UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
-            if(userInfoAuth != null && userInfoAuth.getVestFlag()){
+            if(userInfoAuth != null && userInfoAuth.getVestFlag() != null && userInfoAuth.getVestFlag()){
                 suffix = Constant.VEST_SUFFIX;
             }
         }
