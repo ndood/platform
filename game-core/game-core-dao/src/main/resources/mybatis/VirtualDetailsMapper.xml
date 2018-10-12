@@ -62,6 +62,9 @@
             <if test="createTime != null">
                 and create_time = #{createTime}
             </if>
+            <if test="startTime != null">
+                <![CDATA[ and create_time >= #{startTime} ]]>
+            </if>
         </where>
     </select>
 

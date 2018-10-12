@@ -33,7 +33,7 @@ public class RedisTest {
      */
     @Test
     public void testValue() {
-        SMSUtil.sendLeaveInform("18801285391","hello","http://baidu.com");
+//        SMSUtil.sendLeaveInform("18801285391","hello","http://baidu.com");
     }
 
     /**

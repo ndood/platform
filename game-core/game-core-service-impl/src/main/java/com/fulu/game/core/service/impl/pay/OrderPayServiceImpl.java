@@ -2,6 +2,7 @@ package com.fulu.game.core.service.impl.pay;
 
 import com.fulu.game.common.enums.OrderStatusEnum;
 import com.fulu.game.common.exception.OrderException;
+import com.fulu.game.common.exception.PayException;
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.payment.model.PayCallbackModel;
 import com.fulu.game.core.entity.payment.model.PayRequestModel;
@@ -52,6 +53,9 @@ public abstract class OrderPayServiceImpl implements BusinessPayService {
             return res;
         } catch (Exception e) {
             log.error("订单支付错误", e);
+            if(e instanceof PayException){
+                throw e;
+            }
             throw new OrderException(order.getOrderNo(), "订单无法支付!");
         }
     }
