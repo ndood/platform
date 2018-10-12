@@ -18,7 +18,6 @@ import com.fulu.game.core.service.impl.push.AppPushServiceImpl;
 import com.fulu.game.core.service.impl.push.PushServiceImpl;
 import com.fulu.game.core.service.impl.push.SMSPushServiceImpl;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.fulu.game.core.service.impl.push.MobileAppPushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;

@@ -3,7 +3,7 @@ package com.fulu.game.app.controller;
 
 import com.fulu.game.app.service.impl.AppVirtualOrderPayServiceImpl;
 import com.fulu.game.app.service.impl.AppVirtualPayOrderServiceImpl;
-import com.fulu.game.app.util.RequestUtil;
+import com.fulu.game.app.utils.RequestUtil;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.domain.ClientInfo;
 import com.fulu.game.common.enums.PlatformEcoEnum;

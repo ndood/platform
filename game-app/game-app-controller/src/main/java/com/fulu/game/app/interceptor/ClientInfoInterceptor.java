@@ -1,6 +1,6 @@
 package com.fulu.game.app.interceptor;
 
-import com.fulu.game.app.util.RequestUtil;
+import com.fulu.game.app.utils.RequestUtil;
 import com.fulu.game.common.domain.ClientInfo;
 import com.fulu.game.common.utils.SubjectUtil;
 import lombok.extern.slf4j.Slf4j;

@@ -16,6 +16,7 @@ import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.push.MiniAppPushServiceImpl;
 import com.fulu.game.core.service.impl.push.PointMiniAppPushServiceImpl;
+import com.fulu.game.core.service.impl.push.PushServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -233,11 +234,11 @@ public class PointMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
         pointOrderShareProfitService.orderRefund(order, refundMoney);
     }
 
-
     @Override
-    protected MiniAppPushServiceImpl getMinAppPushService(){
+    protected PushServiceImpl getPushService() {
         return pointMiniAppPushService;
     }
+
 
 
 
