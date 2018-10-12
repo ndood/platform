@@ -16,12 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
 import java.util.Date;
 
 @Controller
@@ -33,6 +33,7 @@ public class FenqileCallbackController {
     private H5PayServiceImpl h5PayServiceImpl;
     @Autowired
     private FenqileOrderService fenqileOrderService;
+    @Qualifier("h5OrderServiceImpl")
     @Autowired
     private H5OrderServiceImpl h5OrderService;
 
@@ -43,11 +44,11 @@ public class FenqileCallbackController {
         String result = "";
         try {
             result = IOUtils.toString(request.getInputStream(), request.getCharacterEncoding());
-            FenqileOrderNotice fenqileOrderNotice =  parseResult(result);
+            FenqileOrderNotice fenqileOrderNotice = parseResult(result);
 
             FenqileOrder origOrder = fenqileOrderService.findByOrderNo(fenqileOrderNotice.getThirdOrderId());
-            if(origOrder!=null){
-                if(StringUtils.isBlank(origOrder.getFenqileNo())){
+            if (origOrder != null) {
+                if (StringUtils.isBlank(origOrder.getFenqileNo())) {
                     //更新分期乐订单数据
                     origOrder.setFenqileNo(fenqileOrderNotice.getOrderId());
                     origOrder.setUpdateTime(new Date());
@@ -57,7 +58,7 @@ public class FenqileCallbackController {
 
             if (Integer.valueOf(12).equals(fenqileOrderNotice.getMerchSaleState())) {
                 PayCallbackModel payCallbackModel = PayCallbackModel.newBuilder(PaymentEnum.FENQILE_PAY.getType(), PayBusinessEnum.ORDER).fenqileOrderNotice(fenqileOrderNotice).build();
-                if(h5PayServiceImpl.payResult(payCallbackModel)){
+                if (h5PayServiceImpl.payResult(payCallbackModel)) {
                     return "{\"result\":0}";
                 }
             } else if (Integer.valueOf(15).equals(fenqileOrderNotice.getMerchSaleState())) {
@@ -69,7 +70,7 @@ public class FenqileCallbackController {
                 }
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("回调报文:{}", result);
             log.error("回调结果异常,异常原因:", e);
         }
@@ -83,7 +84,6 @@ public class FenqileCallbackController {
         FenqileOrderNotice fenqileOrderNotice = BeanUtil.fillBeanWithMap(jso.getInnerMap(), new FenqileOrderNotice(), true, true);
         return fenqileOrderNotice;
     }
-
 
 
 }

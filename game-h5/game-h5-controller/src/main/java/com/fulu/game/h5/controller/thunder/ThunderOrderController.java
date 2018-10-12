@@ -24,6 +24,7 @@ import com.fulu.game.play.service.impl.PlayMiniAppPushServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,6 +46,7 @@ public class ThunderOrderController extends BaseController {
     private UserService userService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
+    @Qualifier("thunderOrderServiceImpl")
     @Autowired
     private H5OrderServiceImpl orderService;
     @Autowired

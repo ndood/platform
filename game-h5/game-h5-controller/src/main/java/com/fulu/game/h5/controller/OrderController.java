@@ -22,6 +22,7 @@ import com.fulu.game.play.service.impl.PlayMiniAppPushServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,29 +40,19 @@ import java.math.BigDecimal;
 @Slf4j
 @RequestMapping("/api/v1/order")
 public class OrderController extends BaseController {
-
-    private final UserService userService;
-    private final RedisOpenServiceImpl redisOpenService;
-    private final H5OrderServiceImpl orderService;
-    private final OrderDealService orderDealService;
-    private final H5PayServiceImpl h5PayService;
-    private final PlayMiniAppPushServiceImpl playMiniAppPushService;
-
-
     @Autowired
-    public OrderController(UserService userService,
-                           RedisOpenServiceImpl redisOpenService,
-                           OrderDealService orderDealService,
-                           H5OrderServiceImpl orderService,
-                           H5PayServiceImpl h5PayService,
-                           PlayMiniAppPushServiceImpl playMiniAppPushService) {
-        this.userService = userService;
-        this.redisOpenService = redisOpenService;
-        this.orderService = orderService;
-        this.orderDealService = orderDealService;
-        this.h5PayService = h5PayService;
-        this.playMiniAppPushService = playMiniAppPushService;
-    }
+    private UserService userService;
+    @Autowired
+    private RedisOpenServiceImpl redisOpenService;
+    @Qualifier("h5OrderServiceImpl")
+    @Autowired
+    private H5OrderServiceImpl orderService;
+    @Autowired
+    private OrderDealService orderDealService;
+    @Autowired
+    private H5PayServiceImpl h5PayService;
+    @Autowired
+    private PlayMiniAppPushServiceImpl playMiniAppPushService;
 
     /**
      * 提交订单
@@ -172,7 +163,7 @@ public class OrderController extends BaseController {
         String ip = RequestUtil.getIpAdrress(request);
         Order order = orderService.findByOrderNo(orderNo);
         User user = userService.findById(order.getUserId());
-        PayRequestModel model =  PayRequestModel.newBuilder().order(order).user(user).build();
+        PayRequestModel model = PayRequestModel.newBuilder().order(order).user(user).build();
         PayRequestRes res = h5PayService.payRequest(model);
         return Result.success().data(res);
     }
@@ -252,7 +243,7 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/event")
     public Result orderEvent(@RequestParam(required = true) String orderNo) {
         User user = userService.getCurrentUser();
-        OrderEventVO orderEventVO = orderService.findOrderEvent(orderNo,user.getId());
+        OrderEventVO orderEventVO = orderService.findOrderEvent(orderNo, user.getId());
         return Result.success().data(orderEventVO);
     }
 
