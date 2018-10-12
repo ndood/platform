@@ -190,7 +190,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
                         .multiply(Constant.CHARM_TO_MONEY_RATE)
                         .setScale(2, BigDecimal.ROUND_HALF_DOWN));
                 meta.setBalance(meta.getBalance().add(unCashDrawsSum == null ? BigDecimal.ZERO : unCashDrawsSum));
-                if(meta.getCashNo() != null && !"".equals(meta.getCashNo()) && meta.getCashNo().endsWith(Constant.VEST_SUFFIX)){
+                if (meta.getCashNo() != null && !"".equals(meta.getCashNo()) && meta.getCashNo().endsWith(Constant.VEST_SUFFIX)) {
                     meta.setUserType(UserTypeEnum.VEST_USER.getType());
                 } else {
                     meta.setUserType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
@@ -540,9 +540,9 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         // 判断是否马甲账号
         String suffix = "";
         User user = userService.getCurrentUser();
-        if(user != null){
+        if (user != null) {
             UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
-            if(userInfoAuth != null && userInfoAuth.getVestFlag()){
+            if (userInfoAuth != null && userInfoAuth.getVestFlag() != null && userInfoAuth.getVestFlag()) {
                 suffix = Constant.VEST_SUFFIX;
             }
         }
