@@ -106,7 +106,7 @@ public class AppPushContainer extends RedisTaskContainer {
         do {
             userInfoAuths = userInfoAuthService.findByUserIds(Arrays.asList(userIds), pageNum, PAGESIZE);
             userInfoAuths.forEach(userInfoAuth -> {
-                if (userInfoAuth != null && userInfoAuth.getVestFlag()) {
+                if (userInfoAuth != null && userInfoAuth.getVestFlag() != null && userInfoAuth.getVestFlag()) {
                     for (Integer userId : userIds) {
                         if (!userInfoAuth.getUserId().equals(userId)) {
                             targetUids.add(String.valueOf(userId));

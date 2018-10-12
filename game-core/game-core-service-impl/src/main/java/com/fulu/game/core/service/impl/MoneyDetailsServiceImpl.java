@@ -121,7 +121,7 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         moneyDetails.setSum(newBalance.add(chargeBalance));
         moneyDetails.setOperatorId(admin.getId());
         moneyDetails.setTargetId(user.getId());
-        if(userInfoAuth != null && userInfoAuth.getVestFlag()){
+        if(userInfoAuth != null && userInfoAuth.getVestFlag() != null && userInfoAuth.getVestFlag()){
             moneyDetails.setUserType(UserTypeEnum.VEST_USER.getType());
         } else {
             moneyDetails.setUserType(UserTypeEnum.GENERAL_USER.getType());
