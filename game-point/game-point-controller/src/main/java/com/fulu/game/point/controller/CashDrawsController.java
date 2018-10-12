@@ -34,7 +34,7 @@ public class CashDrawsController extends BaseController {
      */
     @PostMapping("/save")
     public Result save(CashDrawsVO cashDrawsVO) {
-//        CashDraws cashDraws = cashDrawsService.save(cashDrawsVO);
+//        CashDraws cashDraws = cashDrawsService.addBalance(cashDrawsVO);
         return Result.error().msg("因提现需要实名认证，请到开黑陪玩小程序进行提现！");
     }
 

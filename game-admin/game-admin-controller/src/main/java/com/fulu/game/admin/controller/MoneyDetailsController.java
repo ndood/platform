@@ -10,7 +10,6 @@ import com.fulu.game.common.exception.ParamsException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.entity.MoneyDetails;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.vo.CashDrawsVO;
 import com.fulu.game.core.entity.vo.MoneyDetailsVO;
 import com.fulu.game.core.service.MoneyDetailsService;
 import com.fulu.game.core.service.UserService;
@@ -72,7 +71,7 @@ public class MoneyDetailsController extends BaseController{
         if (StringUtils.isEmpty(user.getOpenId())) {
             return Result.error().msg("该用户尚未绑定微信！");
         }
-        MoneyDetails moneyDetails = moneyDetailsService.save(moneyDetailsVO);
+        MoneyDetails moneyDetails = moneyDetailsService.addBalance(moneyDetailsVO);
         return Result.success().data(moneyDetails).msg("操作成功！");
     }
 
@@ -89,7 +88,8 @@ public class MoneyDetailsController extends BaseController{
         } else {
             moneyDetailsVO.setAction(MoneyOperateTypeEnum.ADMIN_SUBTRACT_CHANGE.getType());
         }
-        return save(moneyDetailsVO);
+        MoneyDetails moneyDetails = moneyDetailsService.subtractBalance(moneyDetailsVO);
+        return Result.success().data(moneyDetails).msg("操作成功！");
     }
 
     /**
