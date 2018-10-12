@@ -2,6 +2,7 @@ package com.fulu.game.play.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.fulu.game.common.enums.OrderTypeEnum;
+import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.core.entity.*;
@@ -75,6 +76,7 @@ public class PilotMiniAppOrderServiceImpl extends PlayMiniAppOrderServiceImpl {
         order.setServiceUserId(product.getUserId());
         order.setCategoryId(product.getCategoryId());
         order.setRemark(remark);
+        order.setPlatform(PlatformEcoEnum.PLAY.getType());
         order.setIsPay(false);
         order.setIsPayCallback(false);
         order.setTotalMoney(pilotTotalMoney);
