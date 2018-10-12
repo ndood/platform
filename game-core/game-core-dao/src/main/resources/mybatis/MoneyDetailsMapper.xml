@@ -67,6 +67,7 @@
         <where>
             tmd.action != 4
             <if test="targetId != null">and tmd.target_id = #{targetId}</if>
+            <if test="startTime != null"> <![CDATA[ and tmd.create_time >= #{startTime} ]]></if>
         </where>
     </select>
 
