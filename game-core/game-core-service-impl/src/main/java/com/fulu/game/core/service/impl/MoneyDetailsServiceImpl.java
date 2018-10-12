@@ -179,7 +179,6 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         }
 
         BigDecimal money = moneyDetails.getMoney();
-        ;
         log.info("当前余额:{},扣除零钱金额:{}", balance, moneyDetailsVO.getMoney());
         moneyDetails.setCreateTime(new Date());
         moneyDetailsDao.create(moneyDetails);
