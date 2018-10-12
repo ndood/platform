@@ -18,6 +18,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -41,7 +42,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     @Autowired
     private RoomCollectService roomCollectService;
     @Autowired
-    private UserTechAuthService userTechAuthService;
+    private UserTechAuthServiceImpl userTechAuthServiceImpl;
     @Autowired
     private CategoryService categoryService;
     @Autowired
@@ -276,7 +277,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         //查询用户是不是陪玩师,如果是陪玩师添加陪玩师的技能分类
         List<String> techIcons = new ArrayList<>();
         List<Integer> techCategoryIds = new ArrayList<>();
-        List<UserTechAuth> techAuthList = userTechAuthService.findUserActivateTechs(user.getId());
+        List<UserTechAuth> techAuthList = userTechAuthServiceImpl.findUserActivateTechs(user.getId());
         if (!techAuthList.isEmpty()) {
             for (UserTechAuth userTechAuth : techAuthList) {
                 Category category = categoryService.findById(userTechAuth.getCategoryId());
