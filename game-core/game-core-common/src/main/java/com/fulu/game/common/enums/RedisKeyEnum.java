@@ -75,6 +75,12 @@ public enum RedisKeyEnum {
     DYNAMIC_COUNT,
     //聊天室虚拟人数
     CHAT_ROOM_VIRTUAL_COUNT,
+    //迅雷福利(满2小时)
+    THUNDER_WELFARE_2_HOURS,
+    //迅雷福利(满1单)
+    THUNDER_WELFARE_1_ORDER,
+    //迅雷福利(满3单)
+    THUNDER_WELFARE_3_ORDER,
     //聊天室在线用户set
     CHAT_ROOM_ONLINE_USER,
     //在线用户信息

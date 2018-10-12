@@ -8,14 +8,14 @@ import java.util.List;
 
 /**
  * 分类表
- * 
+ *
  * @author wangbin
  * @date 2018-04-18 15:55:39
  */
 @Data
 public class CategoryVO extends Category {
 
-    private List<SalesMode>  salesModeList;
+    private List<SalesMode> salesModeList;
 
     private List<TechValue> danList;
 
@@ -38,4 +38,14 @@ public class CategoryVO extends Category {
     private String reason;
     // 子分类集合
     private List<UserTechAuthEntity> childCategoryList;
+
+    /**
+     * 迅雷约玩-游戏陪玩-分类列表
+     */
+    private List<Category> playCategory;
+
+    /**
+     * 迅雷约玩-娱乐陪玩-分类列表
+     */
+    private List<Category> chatCategory;
 }

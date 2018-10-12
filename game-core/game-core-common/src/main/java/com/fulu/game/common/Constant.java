@@ -212,9 +212,32 @@ public interface Constant {
 
     Map<String, Object> RSA_MAP = new HashMap<>();
 
-    /** 超级管理员用户名 */
+    /**
+     * 超级管理员用户名
+     */
     String ADMIN_USERNAME = "admin";
 
     /** 马甲前缀(目前用户订单和提现号) */
     String VEST_SUFFIX = "_VEST";
+
+    //todo gzc 迅雷首页专区
+    Integer THUNDER_PLAY_AREA = 1;
+    Integer THUNDER_CHAT_AREA = 2;
+    Integer[] THUNDER_PLAY_AREA_CATEGORY = {33, 30, 32, 31};
+    Integer[] THUNDER_CHAT_AREA_CATEGORY = {35, 39, 36};
+
+    /**
+     * 迅雷约玩首页banner
+     */
+    Integer THUNDER_HOMEPAGE_BANNER = 1;
+
+    /**
+     * 迅雷约玩列表页banner
+     */
+    Integer THUNDER_LISTPAGE_BANNER = 2;
+
+    /**
+     * 迅雷优惠券
+     */
+    String THUNDER_COUPON_REDEEM_CODE = "thunder";
 }

@@ -61,4 +61,28 @@ public class OrderVO extends Order {
     //上分分类
     private Integer pointType;
 
+    /**
+     * 累计订单数量
+     */
+    private Integer orderCount;
+
+    /**
+     * 累计实付金额
+     */
+    private BigDecimal sumActualMoney;
+
+    /**
+     * 累计退款到用户（老板）的金额
+     */
+    private BigDecimal sumUserMoney;
+
+    /**
+     * 用户消费金额
+     */
+    private BigDecimal userConsumeMoney;
+
+    /**
+     * 累计订单小时数
+     */
+    private BigDecimal sumOrderHours;
 }

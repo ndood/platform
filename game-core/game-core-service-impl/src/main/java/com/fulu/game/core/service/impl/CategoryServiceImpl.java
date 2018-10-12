@@ -1,6 +1,8 @@
 package com.fulu.game.core.service.impl;
 
 
+import cn.hutool.core.bean.BeanUtil;
+import com.fulu.game.common.Constant;
 import com.fulu.game.common.enums.CategoryParentEnum;
 import com.fulu.game.common.enums.TechAttrTypeEnum;
 import com.fulu.game.common.utils.OssUtil;
@@ -13,7 +15,6 @@ import com.fulu.game.core.entity.vo.TagVO;
 import com.fulu.game.core.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import cn.hutool.core.bean.BeanUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +22,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 
 @Service
@@ -57,6 +55,7 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
     public ICommonDao<Category, Integer> getDao() {
         return categoryDao;
     }
+
     @Override
     public PageInfo<Category> list(int pageNum, int pageSize) {
         return list(pageNum, pageSize, true, null);
@@ -117,18 +116,18 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
         List<Tag> pTagList = tagDao.findByParameter(tagVO);
         List<TagVO> tagVOList = new ArrayList<>();
 
-        if(CollectionUtils.isEmpty(pTagList)) {
+        if (CollectionUtils.isEmpty(pTagList)) {
             return categoryVO;
         }
-        for(Tag pTag : pTagList) {
+        for (Tag pTag : pTagList) {
             TagVO vo = new TagVO();
             BeanUtil.copyProperties(pTag, vo);
 
             //查询子标签
             List<Tag> sonTags = tagService.findByPid(pTag.getId());
             List<TagVO> sonTagVOList = new ArrayList<>();
-            if(CollectionUtils.isNotEmpty(sonTags)) {
-                for(Tag meta : sonTags) {
+            if (CollectionUtils.isNotEmpty(sonTags)) {
+                for (Tag meta : sonTags) {
                     TagVO vo1 = new TagVO();
                     BeanUtil.copyProperties(meta, vo1);
                     sonTagVOList.add(vo1);
@@ -158,21 +157,21 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
     @Override
     public Category save(CategoryVO categoryVO) {
         Category category = new Category();
-        BeanUtil.copyProperties(categoryVO,category);
+        BeanUtil.copyProperties(categoryVO, category);
         // 如果pid不存在默认为一级分类
-        if(category != null && category.getPid() == null){
+        if (category != null && category.getPid() == null) {
             category.setPid(CategoryParentEnum.ACCOMPANY_PLAY.getType());
         }
-        if(category.getId()==null){
+        if (category.getId() == null) {
             category.setCreateTime(new Date());
             category.setUpdateTime(new Date());
             create(category);
-        }else{
+        } else {
             Category origCategory = findById(categoryVO.getId());
-            if(!Objects.equals(origCategory.getIcon(),category.getIcon())){
+            if (!Objects.equals(origCategory.getIcon(), category.getIcon())) {
                 ossUtil.deleteFile(origCategory.getIcon());
             }
-            if(!Objects.equals(origCategory.getIndexIcon(),category.getIndexIcon())){
+            if (!Objects.equals(origCategory.getIndexIcon(), category.getIndexIcon())) {
                 ossUtil.deleteFile(origCategory.getIndexIcon());
             }
             category.setUpdateTime(new Date());
@@ -197,7 +196,7 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
      * 通过一级分类pid查询改分类下的所有子分类
      */
     @Override
-    public List<Category> findByFirstPid(Integer pid,Boolean status) {
+    public List<Category> findByFirstPid(Integer pid, Boolean status) {
         PageHelper.orderBy("sort desc");
         CategoryVO categoryVO = new CategoryVO();
         categoryVO.setPid(pid);
@@ -217,20 +216,46 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
         return categoryList;
     }
 
-
-    public Boolean isInParentCategory(int parentCategoryId,int categoryId){
-        if(parentCategoryId==categoryId){
+    @Override
+    public Boolean isInParentCategory(int parentCategoryId, int categoryId) {
+        if (parentCategoryId == categoryId) {
             return true;
         }
         Category category = findById(categoryId);
-        if(category.getPid().equals(parentCategoryId)){
+        if (category.getPid().equals(parentCategoryId)) {
             return true;
         }
         Category parentCategory = findById(category.getPid());
-        if(parentCategory.getPid().equals(parentCategoryId)){
+        if (parentCategory.getPid().equals(parentCategoryId)) {
             return true;
         }
         return false;
     }
 
+    @Override
+    public CategoryVO findThunderCategory() {
+        CategoryVO vo = new CategoryVO();
+
+        List<Integer> playCategoryIdList = new ArrayList<>(5);
+        playCategoryIdList.addAll(Arrays.asList(Constant.THUNDER_PLAY_AREA_CATEGORY));
+        List<Category> playCategoryList = categoryDao.findByIdList(playCategoryIdList);
+        for (Category category : playCategoryList) {
+            if (category.getIndexIcon() != null) {
+                category.setIcon(category.getIndexIcon());
+            }
+        }
+
+        List<Integer> chatCategoryIdList = new ArrayList<>(5);
+        chatCategoryIdList.addAll(Arrays.asList(Constant.THUNDER_CHAT_AREA_CATEGORY));
+        List<Category> chatCategoryList = categoryDao.findByIdList(chatCategoryIdList);
+        for (Category category : chatCategoryList) {
+            if (category.getIndexIcon() != null) {
+                category.setIcon(category.getIndexIcon());
+            }
+        }
+
+        vo.setPlayCategory(playCategoryList);
+        vo.setChatCategory(chatCategoryList);
+        return vo;
+    }
 }

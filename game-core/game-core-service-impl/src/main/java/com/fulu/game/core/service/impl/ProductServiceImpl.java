@@ -2,12 +2,12 @@ package com.fulu.game.core.service.impl;
 
 
 import cn.hutool.core.bean.BeanUtil;
-import com.fulu.game.common.enums.PlatformShowEnum;
-import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import com.fulu.game.common.Constant;
+import com.fulu.game.common.enums.PlatformShowEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
@@ -320,6 +320,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     /**
      * 陪玩师技能设置的全部技能列表
+     *
      * @param userId
      * @param platformShowEnum
      * @return
@@ -337,7 +338,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             List<Integer> platformShowList = null;
             if (PlatformShowEnum.PLAY.equals(platformShowEnum)) {
                 platformShowList = Arrays.asList(new Integer[]{PlatformShowEnum.PLAY.getType(), PlatformShowEnum.PLAY_APP.getType()});
-            }else{
+            } else {
                 platformShowList = Arrays.asList(new Integer[]{PlatformShowEnum.APP.getType(), PlatformShowEnum.PLAY_APP.getType()});
             }
             List<SalesMode> salesModeList = salesModeService.findByCategoryAndPlatformShow(techAuthProductVO.getCategoryId(), platformShowList);
@@ -355,7 +356,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
             List<TechTag> techTagList = techTagService.findByTechAuthId(userTechAuth.getId());
             techAuthProductVO.setTechTagList(techTagList);
             //添加每一个技能的价格规则
-            List<PriceRuleVO> priceRuleList = priceRuleService.findUserPriceByCategoryId(userTechAuth.getCategoryId(),userId);
+            List<PriceRuleVO> priceRuleList = priceRuleService.findUserPriceByCategoryId(userTechAuth.getCategoryId(), userId);
             techAuthProductVO.setPriceRuleList(priceRuleList);
 
             resultList.add(techAuthProductVO);
@@ -503,7 +504,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
                 .build();
 
         UserTechInfo userTechInfo = userTechAuthService.findDanInfo(product.getTechAuthId());
-        if(userTechInfo!=null){
+        if (userTechInfo != null) {
             productDetailsVO.setDan(userTechInfo.getValue());
         }
         return productDetailsVO;
@@ -1031,5 +1032,22 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     @Override
     public List<Product> findByParameter(ProductVO productVO) {
         return productDao.findByParameter(productVO);
+    }
+
+    @Override
+    public PageInfo<ProductShowCaseVO> thunderProductList(Integer categoryId, Integer gender, Integer pageNum, Integer pageSize, String orderBy) {
+        PageInfo<ProductShowCaseVO> pageInfo = findProductShowCase(categoryId, gender, pageNum, pageSize, orderBy);
+
+        List<ProductShowCaseVO> productList = pageInfo.getList();
+        if (CollectionUtil.isNotEmpty(productList)) {
+            for (ProductShowCaseVO caseVO : productList) {
+                //查询用户信息
+                UserInfoVO userInfo = userInfoAuthService.findUserCardByUserId(caseVO.getUserId(), false, true, false, false);
+                if (userInfo != null) {
+                    caseVO.setVoice(userInfo.getVoice());
+                }
+            }
+        }
+        return pageInfo;
     }
 }

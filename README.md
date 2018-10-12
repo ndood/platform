@@ -65,7 +65,8 @@
 APP前端 https://pro.modao.cc/app/2f3dfb774f6cfe0ed6cb2f9ab0b922de5a543931
 APP后台 https://pro.modao.cc/app/19c7ac819667a38edd828d9fd7c68b57c88af3b7
 
-
+### 迅雷
+迅雷前端  https://pro.modao.cc/app/bYGzMbO8nzPX9Ye7kKNlHwNFPEWIvXr
 
 ##订单状态
 |订单状态|状态注释|

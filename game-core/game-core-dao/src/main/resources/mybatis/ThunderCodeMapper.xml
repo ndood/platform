@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.ThunderCodeDao">
+    <resultMap id="ThunderCodeResultMap" type="com.fulu.game.core.entity.ThunderCode">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="is_use" property="isUse"/>
+        <result column="code" property="code"/>
+        <result column="account" property="account"/>
+        <result column="password" property="password"/>
+        <result column="type" property="type"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="del_flag" property="delFlag"/>
+    </resultMap>
+
+    <resultMap id="ThunderCodeResultVOMap" type="com.fulu.game.core.entity.vo.ThunderCodeVO"
+               extends="ThunderCodeResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,is_use,code,account,password,type,update_time,create_time,del_flag    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="ThunderCodeResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_thunder_code
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="ThunderCodeResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_thunder_code
+    </select>
+
+    <select id="findByParameter" resultMap="ThunderCodeResultMap"
+            parameterType="com.fulu.game.core.entity.vo.ThunderCodeVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_thunder_code
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="isUse != null">
+                and is_use = #{isUse}
+            </if>
+            <if test="code != null">
+                and code = #{code}
+            </if>
+            <if test="account != null">
+                and account = #{account}
+            </if>
+            <if test="password != null">
+                and password = #{password}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="delFlag != null">
+                and del_flag = #{delFlag}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_thunder_code
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.ThunderCode">
+        insert into
+        t_thunder_code (user_id,is_use,code,account,password,type,update_time,create_time,del_flag)
+        values
+        (#{userId},#{isUse},#{code},#{account},#{password},#{type},#{updateTime},#{createTime},#{delFlag})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.ThunderCode">
+        update t_thunder_code
+        <set>
+
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+
+            <if test="isUse != null">
+                is_use = #{isUse},
+            </if>
+
+            <if test="code != null">
+                code = #{code},
+            </if>
+
+            <if test="account != null">
+                account = #{account},
+            </if>
+
+            <if test="password != null">
+                password = #{password},
+            </if>
+
+            <if test="type != null">
+                type = #{type},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="delFlag != null">
+                del_flag = #{delFlag},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

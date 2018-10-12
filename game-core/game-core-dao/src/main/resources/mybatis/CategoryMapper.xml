@@ -82,7 +82,8 @@
         </where>
     </select>
 
-    <select id="findByFirstPidAndPrams" resultMap="CategoryResultMap" parameterType="com.fulu.game.core.entity.vo.CategoryVO">
+    <select id="findByFirstPidAndPrams" resultMap="CategoryResultMap"
+            parameterType="com.fulu.game.core.entity.vo.CategoryVO">
         SELECT
         <include refid="Base_Column_List"/>
         FROM t_category
@@ -124,6 +125,18 @@
                 and update_time = #{updateTime}
             </if>
         </where>
+    </select>
+
+    <select id="findByIdList" resultType="com.fulu.game.core.entity.Category">
+        SELECT
+        *
+        FROM
+        t_category
+        WHERE
+        id IN
+        <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">

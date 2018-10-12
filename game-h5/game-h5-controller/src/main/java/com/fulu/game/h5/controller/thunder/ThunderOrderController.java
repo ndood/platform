@@ -1,4 +1,4 @@
-package com.fulu.game.h5.controller;
+package com.fulu.game.h5.controller.thunder;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.RedisKeyEnum;
@@ -11,14 +11,16 @@ import com.fulu.game.core.entity.payment.res.PayRequestRes;
 import com.fulu.game.core.entity.vo.OrderDealVO;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
 import com.fulu.game.core.entity.vo.OrderEventVO;
+import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.OrderDealService;
 import com.fulu.game.core.service.OrderEventService;
 import com.fulu.game.core.service.UserService;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
-import com.fulu.game.core.service.impl.push.PlayMiniAppPushServiceImpl;
+import com.fulu.game.h5.controller.BaseController;
 import com.fulu.game.h5.service.impl.H5OrderServiceImpl;
 import com.fulu.game.h5.service.impl.H5PayServiceImpl;
 import com.fulu.game.h5.utils.RequestUtil;
+import com.fulu.game.play.service.impl.PlayMiniAppPushServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,20 +33,20 @@ import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 
 /**
- * 订单Controller
+ * 迅雷订单Controller
  *
  * @author Gong ZeChun
- * @date 2018/8/13 17:54
+ * @date 2018/10/12 12:10
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/v1/order")
-public class OrderController extends BaseController {
+@RequestMapping("/api/v1/thunder/order")
+public class ThunderOrderController extends BaseController {
     @Autowired
     private UserService userService;
     @Autowired
     private RedisOpenServiceImpl redisOpenService;
-    @Qualifier("h5OrderServiceImpl")
+    @Qualifier("thunderOrderServiceImpl")
     @Autowired
     private H5OrderServiceImpl orderService;
     @Autowired
@@ -303,5 +305,14 @@ public class OrderController extends BaseController {
         return Result.success().data(orderDetailsVO);
     }
 
-
+    /**
+     * 获取用户总下单数和总消费金额
+     *
+     * @return 封装结果集
+     */
+    @RequestMapping("/total-info/get")
+    public Result thunderOrderInfo() {
+        OrderVO orderVO = orderService.getThunderOrderInfo();
+        return Result.success().data(orderVO).msg("查询成功！");
+    }
 }
