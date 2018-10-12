@@ -705,3 +705,24 @@ CREATE TABLE `t_room_blacklist` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `room_no` (`room_no`,`user_id`) USING BTREE
 )  COMMENT='房间黑名单';
+
+CREATE TABLE `t_room_order` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` int(11) NOT NULL COMMENT '1:订单,2:礼物',
+  `room_no` varchar(128) NOT NULL COMMENT '房间号',
+  `order_no` varchar(128) NOT NULL COMMENT '订单号',
+  `create_time` datetime NOT NULL COMMENT '订单创建时间',
+  PRIMARY KEY (`id`)
+)  COMMENT='聊天室产生的订单表';
+
+CREATE TABLE `t_room_assign_order` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `room_no` varchar(128) NOT NULL COMMENT '房间号码',
+  `content` varchar(255) NOT NULL COMMENT '派单内容',
+  `category_id` int(11) NOT NULL COMMENT '派单游戏',
+  `room_manager_user_id` int(11) NOT NULL COMMENT '那个房间管理发的派单',
+  `create_time` datetime NOT NULL,
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) COMMENT='聊天室派单表';
+
