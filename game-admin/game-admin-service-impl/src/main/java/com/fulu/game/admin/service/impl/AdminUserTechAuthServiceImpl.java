@@ -2,9 +2,7 @@ package com.fulu.game.admin.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.fulu.game.admin.service.AdminUserTechAuthService;
-import com.fulu.game.common.enums.RedisKeyEnum;
-import com.fulu.game.common.enums.TechAttrTypeEnum;
-import com.fulu.game.common.enums.TechAuthStatusEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.utils.CollectionUtil;
@@ -82,22 +80,22 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
     @Override
     @Transactional
     public UserTechAuthTO save(UserTechAuthTO userTechAuthTO) {
-        log.info("修改认证技能:userTechAuthVO:{}",userTechAuthTO);
+        log.info("修改认证技能:userTechAuthVO:{}", userTechAuthTO);
 //        User user = userService.getCurrentUser();
         User user = userService.findById(userTechAuthTO.getUserId());
-        if(userTechAuthTO.getUserScoreAvg() != null){
+        if (userTechAuthTO.getUserScoreAvg() != null) {
             user.setScoreAvg(userTechAuthTO.getUserScoreAvg());
         }
-        if(userTechAuthTO.getBirth() != null){
+        if (userTechAuthTO.getBirth() != null) {
             user.setBirth(userTechAuthTO.getBirth());
         }
-        if(userTechAuthTO.getGender() != null){
+        if (userTechAuthTO.getGender() != null) {
             user.setGender(userTechAuthTO.getGender());
         }
-        if(userTechAuthTO.getMobile() != null){
+        if (userTechAuthTO.getMobile() != null) {
             user.setMobile(userTechAuthTO.getMobile());
         }
-        if(userTechAuthTO.getNickname() != null){
+        if (userTechAuthTO.getNickname() != null) {
             user.setNickname(userTechAuthTO.getNickname());
         }
         userService.update(user);
@@ -169,7 +167,7 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
         userTechAuthReject.setCreateTime(new Date());
         userTechAuthRejectService.create(userTechAuthReject);
         //给用户推送通知
-        adminPushService.techAuthAuditFail(userTechAuth.getUserId(),reason);
+        adminPushService.techAuthAuditFail(userTechAuth.getUserId(), reason);
 
         //同步下架用户该技能商品
         productService.disabledProductByTech(userTechAuth.getId());
@@ -200,6 +198,13 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
         update(userTechAuth);
         //给用户推送通知
         adminPushService.techAuthAuditSuccess(userTechAuth.getUserId());
+        // 修改用户认证状态为通过，用户类型为陪玩师
+        User user = userService.findById(userTechAuth.getUserId());
+        if (user != null && user.getType() != null && user.getType().intValue() != UserTypeEnum.ACCOMPANY_PLAYER.getType().intValue()) {
+            user.setType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
+            user.setUserInfoAuth(UserInfoAuthStatusEnum.VERIFIED.getType());
+            userService.update(user);
+        }
 
         //技能下商品置为正常
         productService.recoverProductActivateByTechAuthId(userTechAuth.getId());
@@ -305,14 +310,16 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
         return userTechAuthDao.findByParameter(param);
     }
 
-    /** 获取用户所有技能认证信息列表 */
-    public List<UserTechAuthVO> findUserTechAuthList(Integer userId){
+    /**
+     * 获取用户所有技能认证信息列表
+     */
+    public List<UserTechAuthVO> findUserTechAuthList(Integer userId) {
         List<UserTechAuthVO> resultList = new ArrayList<>();
         UserTechAuthVO param = new UserTechAuthVO();
         param.setUserId(userId);
         List<UserTechAuth> list = userTechAuthDao.findByParameter(param);
-        if(CollectionUtils.isNotEmpty(list)){
-            for(UserTechAuth tmp: list){
+        if (CollectionUtils.isNotEmpty(list)) {
+            for (UserTechAuth tmp : list) {
                 resultList.add(findTechAuthVOById(tmp.getId(), tmp.getCategoryId()));
             }
         }
@@ -340,7 +347,7 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
             }
         }
         User user = userService.findById(userTechAuthVO.getUserId());
-        if(user != null){
+        if (user != null) {
             userTechAuthVO.setGender(user.getGender());
             userTechAuthVO.setBirth(user.getBirth());
             userTechAuthVO.setNickname(user.getNickname());
@@ -357,10 +364,10 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
             userTechAuthVO.setHistoryAccessedCount(redisOpenService.getInteger(RedisKeyEnum.HISTORY_ACCESSED_COUNT.generateKey(userId)));
             userTechAuthVO.setDynamicCount(redisOpenService.getInteger(RedisKeyEnum.DYNAMIC_COUNT.generateKey(userId)));
             //查询是否存在开始接单
-            UserAutoReceiveOrder autoReceiveOrder =   userAutoReceiveOrderService.findByTechId(userTechAuth.getId());
-            if(autoReceiveOrder == null){
+            UserAutoReceiveOrder autoReceiveOrder = userAutoReceiveOrderService.findByTechId(userTechAuth.getId());
+            if (autoReceiveOrder == null) {
                 userTechAuthVO.setAutoOrder(false);
-            }else{
+            } else {
                 userTechAuthVO.setAutoOrder(true);
             }
         }
@@ -385,7 +392,6 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
         // 设置用户技能对应商品信息 add by shijiaoyun end
         return userTechAuthVO;
     }
-
 
 
     private List<TechAttrVO> findAllCategoryAttrSelected(int categoryId, Integer userTechAuthId, Boolean ignoreNotUser) {
@@ -415,26 +421,26 @@ public class AdminUserTechAuthServiceImpl extends UserTechAuthServiceImpl implem
         return techAttrVOList;
     }
 
-    private List<TagVO> findAllCategoryTagSelected(int categoryId, Integer userTechAuthId,Boolean ignoreNotUser) {
+    private List<TagVO> findAllCategoryTagSelected(int categoryId, Integer userTechAuthId, Boolean ignoreNotUser) {
         List<TechTag> techTagList = techTagService.findByTechAuthId(userTechAuthId);
         List<Tag> categoryTags = tagService.findCategoryParentTags(categoryId);
-        List<TagVO> groupTags = CollectionUtil.copyNewCollections(categoryTags,TagVO.class);
-        for(TagVO groupTag : groupTags){
-           List<Tag> sonTags = tagService.findByPid(groupTag.getId());
-           List<TagVO> sonTagVos = CollectionUtil.copyNewCollections(sonTags,TagVO.class);
-           Iterator<TagVO> sonTagVosIt = sonTagVos.iterator();
-           while (sonTagVosIt.hasNext()){
-               TagVO sonTag = sonTagVosIt.next();
-               if(isUserSelectTechTag(techTagList,sonTag)){
-                   sonTag.setSelected(true);
-               }else{
-                   sonTag.setSelected(false);
-                   if(ignoreNotUser){
-                       sonTagVosIt.remove();
-                   }
-               }
-           }
-           groupTag.setSonTags(sonTagVos);
+        List<TagVO> groupTags = CollectionUtil.copyNewCollections(categoryTags, TagVO.class);
+        for (TagVO groupTag : groupTags) {
+            List<Tag> sonTags = tagService.findByPid(groupTag.getId());
+            List<TagVO> sonTagVos = CollectionUtil.copyNewCollections(sonTags, TagVO.class);
+            Iterator<TagVO> sonTagVosIt = sonTagVos.iterator();
+            while (sonTagVosIt.hasNext()) {
+                TagVO sonTag = sonTagVosIt.next();
+                if (isUserSelectTechTag(techTagList, sonTag)) {
+                    sonTag.setSelected(true);
+                } else {
+                    sonTag.setSelected(false);
+                    if (ignoreNotUser) {
+                        sonTagVosIt.remove();
+                    }
+                }
+            }
+            groupTag.setSonTags(sonTagVos);
         }
         return groupTags;
     }
