@@ -49,7 +49,7 @@ public class MoneyDetailsController extends BaseController {
         vd.setUserId(user.getId());
         vd.setType(type);
 
-        PageInfo<VirtualDetails> list = virtualDetailsService.findByParameterWithPage(vd , pageSize , pageNum , " create_time desc" );
+        PageInfo<VirtualDetails> list = virtualDetailsService.getVirtualDetailsList(vd , pageSize , pageNum , " create_time desc" );
         
         return Result.success().data(list).msg("查询列表成功！");
     }

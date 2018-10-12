@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -73,6 +74,13 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
     public PageInfo<MoneyDetailsVO> listByUser(MoneyDetailsVO moneyDetailsVO, Integer pageSize, Integer pageNum) {
         String orderBy = "tmd.create_time desc";
         PageHelper.startPage(pageNum, pageSize, orderBy);
+
+        Date date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.MONTH, -6);//获取6个月前的时间
+        moneyDetailsVO.setStartTime(calendar.getTime());
+        
         List<MoneyDetailsVO> list = moneyDetailsDao.findByUser(moneyDetailsVO);
         for (MoneyDetailsVO vo : list) {
             if (vo.getAction().equals(MoneyOperateTypeEnum.USER_DRAW_CASH.getType())) {
