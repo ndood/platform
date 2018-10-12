@@ -81,5 +81,16 @@ public class PriceRuleServiceImpl extends AbsCommonService<PriceRule,Integer> im
         return priceRuleVOList;
     }
 
+    /**
+     * 查找当前技能和订单量的最大定价价格
+     *
+     * @param priceRuleVO
+     * @return
+     */
+    @Override
+    public PriceRule findMaxPrice(PriceRuleVO priceRuleVO) {
+        return priceRuleDao.findMaxPrice(priceRuleVO);
+    }
+
 
 }

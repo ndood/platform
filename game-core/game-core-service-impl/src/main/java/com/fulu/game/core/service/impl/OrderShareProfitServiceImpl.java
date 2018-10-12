@@ -14,6 +14,7 @@ import com.fulu.game.core.entity.*;
 import com.fulu.game.core.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -40,6 +41,9 @@ public abstract class OrderShareProfitServiceImpl extends AbsCommonService<Order
     private ArbitrationDetailsDao arbitrationDetailsDao;
     @Autowired
     private UserAutoReceiveOrderService userAutoReceiveOrderService;
+    @Qualifier(value = "userInfoAuthServiceImpl")
+    @Autowired
+    private UserInfoAuthService userInfoAuthService;
 
 
     @Override
@@ -86,6 +90,8 @@ public abstract class OrderShareProfitServiceImpl extends AbsCommonService<Order
         if (OrderTypeEnum.POINT.getType().equals(order.getType())) {
             userAutoReceiveOrderService.addOrderCompleteNum(order.getServiceUserId(), order.getCategoryId());
         }
+        //修改用户接单数和允许最大定价价格
+        userInfoAuthService.updateOrderCountAndMaxPrice(order);
     }
 
 

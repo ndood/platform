@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import sun.font.TrueTypeFont;
 
 import java.util.List;
 
@@ -102,7 +103,7 @@ public class CategoryController extends BaseController {
                                  @RequestParam Integer pageNum,
                                  @RequestParam Integer pageSize,
                                  String orderBy) {
-        PageInfo<ProductCollectVO> pageInfo = productService.findAllProductByPage(gender, pageNum, pageSize, orderBy);
+        PageInfo<ProductCollectVO> pageInfo = productService.findAllProductByPage(gender, pageNum, pageSize, orderBy, true);
         return Result.success().data(pageInfo).msg("查询成功！");
     }
 

@@ -1,12 +1,12 @@
-package com.fulu.game.app.controller;
+package com.fulu.game.play.controller;
 
-import com.fulu.game.app.utils.RequestUtil;
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.vo.OfficialActivityVO;
 import com.fulu.game.core.service.OfficialActivityService;
 import com.fulu.game.core.service.UserService;
+import com.fulu.game.play.utils.RequestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

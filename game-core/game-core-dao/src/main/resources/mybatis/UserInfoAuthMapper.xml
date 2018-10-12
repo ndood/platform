@@ -23,12 +23,12 @@
         <result column="open_substitute_im" property="openSubstituteIm"/>
         <result column="virtual_fans_count" property="virtualFansCount"/>
         <result column="tech_level_id" property="techLevelId"/>
+        <result column="order_count" property="orderCount"/>
     </resultMap>
 
     <resultMap id="UserInfoAuthResultVOMap" type="com.fulu.game.core.entity.vo.UserInfoAuthVO"
                extends="UserInfoAuthResultMap">
         <result column="money_sum" property="moneySum"/>
-        <result column="order_count" property="orderCount"/>
         <result column="expend_money_sum" property="expendMoneySum"/>
         <result column="expend_order_count" property="expendOrderCount"/>
         <result column="user_info_auth" property="userInfoAuth"/>

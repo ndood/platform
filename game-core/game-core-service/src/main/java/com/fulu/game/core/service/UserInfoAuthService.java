@@ -1,5 +1,6 @@
 package com.fulu.game.core.service;
 
+import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.User;
 import com.fulu.game.core.entity.UserInfoAuth;
 import com.fulu.game.core.entity.to.UserInfoAuthTO;
@@ -135,4 +136,10 @@ public interface UserInfoAuthService extends ICommonService<UserInfoAuth, Intege
     
     
     void setUserAgentImStatus(boolean agentStatus , User userInfo);
+
+    /**
+     * 修改用户接单数和允许最大定价价格
+     * @param order
+     */
+    void updateOrderCountAndMaxPrice(Order order);
 }

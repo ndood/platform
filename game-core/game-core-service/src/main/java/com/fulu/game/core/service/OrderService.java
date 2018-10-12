@@ -2,6 +2,7 @@ package com.fulu.game.core.service;
 
 import com.fulu.game.core.entity.Order;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
+import com.github.pagehelper.PageInfo;
 
 import java.util.Date;
 import java.util.List;

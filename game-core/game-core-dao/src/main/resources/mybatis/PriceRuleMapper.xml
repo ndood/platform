@@ -3,15 +3,15 @@
 
 <mapper namespace="com.fulu.game.core.dao.PriceRuleDao">
     <resultMap id="PriceRuleResultMap" type="com.fulu.game.core.entity.PriceRule">
-                                    <id column="id"  property="id" />
-                                            <result column="category_id"  property="categoryId" />
-                                            <result column="platform_show"  property="platformShow" />
-                                            <result column="order_count"  property="orderCount" />
-                                            <result column="price"  property="price" />
-                                            <result column="create_time"  property="createTime" />
-                                            <result column="update_time"  property="updateTime" />
-                                            <result column="is_del"  property="isDel" />
-                        </resultMap>
+        <id column="id" property="id"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="platform_show" property="platformShow"/>
+        <result column="order_count" property="orderCount"/>
+        <result column="price" property="price"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="is_del" property="isDel"/>
+    </resultMap>
 
     <resultMap id="PriceRuleResultVOMap" type="com.fulu.game.core.entity.vo.PriceRuleVO" extends="PriceRuleResultMap">
     </resultMap>
@@ -21,46 +21,54 @@
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="PriceRuleResultMap">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from t_price_rule
         <where>
-        id = #{id}
+            id = #{id}
         </where>
     </select>
 
-    <select id="findAll"  resultMap="PriceRuleResultMap">
+    <select id="findAll" resultMap="PriceRuleResultMap">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from t_price_rule
     </select>
 
-    <select id="findByParameter" resultMap="PriceRuleResultMap" parameterType="com.fulu.game.core.entity.vo.PriceRuleVO">
+    <select id="findByParameter" resultMap="PriceRuleResultMap"
+            parameterType="com.fulu.game.core.entity.vo.PriceRuleVO">
         SELECT
         <include refid="Base_Column_List"/>
         FROM t_price_rule
         <where>
-                                                                            <if test="categoryId != null">
-                       and category_id = #{categoryId}
-                    </if>
-                                                                <if test="platformShow != null">
-                       and platform_show = #{platformShow}
-                    </if>
-                                                                <if test="orderCount != null">
-                       and order_count = #{orderCount}
-                    </if>
-                                                                <if test="price != null">
-                       and price = #{price}
-                    </if>
-                                                                <if test="createTime != null">
-                       and create_time = #{createTime}
-                    </if>
-                                                                <if test="updateTime != null">
-                       and update_time = #{updateTime}
-                    </if>
-                                                                <if test="isDel != null">
-                       and is_del = #{isDel}
-                    </if>
-                                    </where>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="platformShow != null">
+                and platform_show = #{platformShow}
+            </if>
+            <if test="orderCount != null">
+                and order_count = #{orderCount}
+            </if>
+            <if test="price != null">
+                and price = #{price}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="isDel != null">
+                and is_del = #{isDel}
+            </if>
+        </where>
+    </select>
+
+    <select id="findMaxPrice" resultType="com.fulu.game.core.entity.PriceRule">
+        select * from t_price_rule
+        WHERE category_id = #{categoryId} and order_count &gt;= #{orderCount} and is_del = 0
+        order by order_count
+        limit 1
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">
@@ -80,35 +88,35 @@
     <update id="update" parameterType="com.fulu.game.core.entity.PriceRule">
         update t_price_rule
         <set>
-                                                        
-                    <if test="categoryId != null">
-                        category_id = #{categoryId},
-                    </if>
-                                            
-                    <if test="platformShow != null">
-                        platform_show = #{platformShow},
-                    </if>
-                                            
-                    <if test="orderCount != null">
-                        order_count = #{orderCount},
-                    </if>
-                                            
-                    <if test="price != null">
-                        price = #{price},
-                    </if>
-                                            
-                    <if test="createTime != null">
-                        create_time = #{createTime},
-                    </if>
-                                            
-                    <if test="updateTime != null">
-                        update_time = #{updateTime},
-                    </if>
-                                            
-                    <if test="isDel != null">
-                        is_del = #{isDel},
-                    </if>
-                                    </set>
+
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+
+            <if test="platformShow != null">
+                platform_show = #{platformShow},
+            </if>
+
+            <if test="orderCount != null">
+                order_count = #{orderCount},
+            </if>
+
+            <if test="price != null">
+                price = #{price},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+
+            <if test="isDel != null">
+                is_del = #{isDel},
+            </if>
+        </set>
         <where>
             id = #{id}
         </where>

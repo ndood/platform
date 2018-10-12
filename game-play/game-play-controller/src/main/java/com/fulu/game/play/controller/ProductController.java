@@ -5,19 +5,17 @@ import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.PlatformShowEnum;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.utils.SubjectUtil;
+import com.fulu.game.core.entity.PriceRule;
 import com.fulu.game.core.entity.Product;
 import com.fulu.game.core.entity.User;
-import com.fulu.game.core.entity.vo.ProductDetailsVO;
-import com.fulu.game.core.entity.vo.ProductShowCaseVO;
-import com.fulu.game.core.entity.vo.SimpleProductVO;
-import com.fulu.game.core.entity.vo.TechAuthProductVO;
-import com.fulu.game.core.service.MoneyDetailsService;
-import com.fulu.game.core.service.OrderService;
-import com.fulu.game.core.service.ProductService;
-import com.fulu.game.core.service.UserService;
+import com.fulu.game.core.entity.UserCommentTag;
+import com.fulu.game.core.entity.vo.*;
+import com.fulu.game.core.service.*;
+import com.fulu.game.core.service.impl.UserTechAuthServiceImpl;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,6 +39,16 @@ public class ProductController extends BaseController {
     private OrderService orderService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private TechTagService techTagService;
+    @Autowired
+    private UserTechAuthServiceImpl userTechAuthService;
+    @Autowired
+    private PriceRuleService priceRuleService;
+    @Autowired
+    private AssignOrderSettingService assignOrderSettingService;
+    @Autowired
+    private UserCommentTagService userCommentTagService;
 
 
     @RequestMapping(value = "/search")
@@ -94,23 +102,27 @@ public class ProductController extends BaseController {
 
     /**
      * 保存用户接单方式价格
-     *
-     * @param techAuthId
+     * @param techId
      * @param price
      * @param unitId
      * @return
      */
     @RequestMapping(value = "/order-receive/save")
-    public Result save(@RequestParam(required = true) Integer techAuthId,
+    public Result save(@RequestParam(required = true) Integer techId,
                        @RequestParam(required = true) BigDecimal price,
+                       @RequestParam(required = true) Integer priceId,
                        @RequestParam(required = true) Integer unitId) {
         if (new BigDecimal(Constant.DEF_RECEIVING_ORDER_PRICE).compareTo(price) > 0) {
             return Result.error().msg("接单价格不能低于" + Constant.DEF_RECEIVING_ORDER_PRICE + "元");
         }
-        productService.save(techAuthId, price, unitId);
-        return Result.success().msg("修改接单方式成功!");
+        PriceRule priceRule = priceRuleService.findById(priceId);
+        if(priceRule==null){
+            return Result.error().msg("修改价格失败!");
+        }
+        productService.save(techId, priceRule.getPrice(), unitId);
+        return Result.success().msg("修改价格成功!");
     }
-
+    
     /**
      * 技能接单方式激活
      *
@@ -132,14 +144,34 @@ public class ProductController extends BaseController {
 
     /**
      * 用户所有接单方式列表
-     *
      * @return
      */
     @RequestMapping(value = "/order-receive/tech/list")
     public Result techList() {
         User user = userService.getCurrentUser();
-        List<TechAuthProductVO> techAuthProductVOS = productService.techAuthProductList(user.getId(), PlatformShowEnum.PLAY);
-        return Result.success().data(techAuthProductVOS);
+        Map<String,Object> map = new HashMap<>();
+        AssignOrderSettingVO assignOrderSettingVO = assignOrderSettingService.findByUserId(user.getId());
+        List<TechAuthProductVO> techAuthProductVOS = productService.techAuthProductList(user.getId(), PlatformShowEnum.APP);
+        map.put("assignOrderSetting",assignOrderSettingVO);
+        map.put("techList",techAuthProductVOS);
+        return Result.success().data(map);
+    }
+    
+    
+
+    /**
+     * 获取商品列表
+     * @param userId
+     * @return
+     */
+    @PostMapping(value = "/user/list")
+    public Result productList(@RequestParam(required = false) Integer  userId) {
+        if(userId == null || userId.intValue() < 0){
+            User user = userService.getCurrentUser();
+            userId = user.getId();
+        }
+        List<Product> list = productService.findAppProductList(userId);
+        return Result.success().data(list);
     }
 
     /**
@@ -150,8 +182,12 @@ public class ProductController extends BaseController {
      */
     @RequestMapping(value = "/details")
     public Result findByProductId(Integer productId) {
-        ProductDetailsVO serverCardVO = productService.findDetailsByProductId(productId);
-        return Result.success().data(serverCardVO);
+        ProductDetailsVO productDetailsVO = productService.findDetailsByProductId(productId);
+        if(productDetailsVO != null && productDetailsVO.getUserInfo() != null){
+            PageInfo<UserCommentTag> page = userCommentTagService.findByServerId(1, 10, productDetailsVO.getUserInfo().getUserId());
+            productDetailsVO.setUserCommentTagList(page.getList());
+        }
+        return Result.success().data(productDetailsVO);
     }
 
 
@@ -276,4 +312,38 @@ public class ProductController extends BaseController {
         return Result.success().data(pageInfo);
     }
 
+
+    /**
+     * 保存陪玩师的技能标签
+     * @param techId
+     * @return
+     */
+    @RequestMapping(value = "/tech-tag/save")
+    public Result saveTechTag(@RequestParam(required = true) Integer techId,
+                              @RequestParam(required = true) Integer[] tagIds) {
+        techTagService.saveTechTag(techId,tagIds);
+        return Result.success().msg("开启");
+    }
+
+
+    /**
+     * 设置技能为主要技能
+     * @param techId
+     * @return
+     */
+    @RequestMapping(value = "/order-receive/tech/main")
+    public Result techMain(@RequestParam(required = true) Integer techId) {
+        userTechAuthService.settingsTechMain(techId);
+        return Result.success().msg("设置成功!");
+    }
+
+
+    @RequestMapping(value = "/order-receive/assign_order_sett/save")
+    public Result assignOrder(AssignOrderSettingVO assignOrderSettingVO){
+        User user = userService.getCurrentUser();
+        assignOrderSettingVO.setUserId(user.getId());
+        assignOrderSettingService.save(assignOrderSettingVO);
+        return Result.success().data(assignOrderSettingVO).msg("设置成功！");
+    }
+    
 }

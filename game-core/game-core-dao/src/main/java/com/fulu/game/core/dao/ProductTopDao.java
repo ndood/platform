@@ -20,7 +20,7 @@ public interface ProductTopDao extends ICommonDao<ProductTop,Integer>{
     List<ProductTop> findByParameter(ProductTopVO productTopVO);
 
 
-    List<ProductTop> list(@Param(value = "nickname") String nickname,
+    List<ProductTopVO> list(@Param(value = "nickname") String nickname,
                           @Param(value = "mobile")  String mobile,
                           @Param(value = "categoryId") Integer categoryId);
 }

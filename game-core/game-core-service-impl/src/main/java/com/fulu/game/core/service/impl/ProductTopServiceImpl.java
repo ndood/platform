@@ -76,17 +76,9 @@ public class ProductTopServiceImpl extends AbsCommonService<ProductTop, Integer>
     public PageInfo<ProductTop> productList(int pageNum, int pageSize, String nickname, String mobile, Integer categoryId) {
         PageHelper.startPage(pageNum, pageSize,"id desc");
 
-        List<ProductTop>  list = productTopDao.list(nickname,mobile,categoryId);
-        List<ProductTopVO> voList = CollectionUtil.copyNewCollections(list,ProductTopVO.class);
-        for(ProductTopVO productTop : voList){
-            Category category =categoryService.findById(productTop.getCategoryId());
-            productTop.setCategoryName(category.getName());
-        }
+        List<ProductTopVO>  list = productTopDao.list(nickname,mobile,categoryId);
 
-        PageInfo page = new PageInfo(list);
-        page.setList(voList);
-        return page;
+        return new PageInfo(list);
     }
-
 
 }

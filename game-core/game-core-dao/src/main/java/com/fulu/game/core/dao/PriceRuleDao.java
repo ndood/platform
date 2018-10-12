@@ -18,4 +18,6 @@ public interface PriceRuleDao extends ICommonDao<PriceRule,Integer>{
 
     List<PriceRule> findByParameter(PriceRuleVO priceRuleVO);
 
+    PriceRule findMaxPrice(PriceRuleVO priceRuleVO);
+
 }
