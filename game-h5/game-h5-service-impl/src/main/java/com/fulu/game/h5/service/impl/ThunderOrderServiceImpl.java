@@ -59,7 +59,7 @@ public class ThunderOrderServiceImpl extends H5OrderServiceImpl {
         Order order = new Order();
         order.setName(product.getProductName() + " " + num + "*" + product.getUnit());
         //分期乐订单属于陪玩订单
-        order.setType(OrderTypeEnum.PLATFORM.getType());
+        order.setType(OrderTypeEnum.PLAY.getType());
         order.setOrderNo(generateOrderNo());
         order.setUserId(user.getId());
         order.setServiceUserId(product.getUserId());
