@@ -6,6 +6,7 @@ import com.fulu.game.core.entity.vo.RoomVO;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 聊天室
@@ -17,5 +18,7 @@ import org.apache.ibatis.annotations.Mapper;
 public interface RoomDao extends ICommonDao<Room,Integer>{
 
     List<Room> findByParameter(RoomVO roomVO);
+
+    List<Room>  findCollectRoomByUser(@Param("userId")Integer userId);
 
 }

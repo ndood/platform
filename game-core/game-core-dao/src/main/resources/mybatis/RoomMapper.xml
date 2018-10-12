@@ -14,6 +14,7 @@
         <result column="user_id" property="userId"/>
         <result column="owner_mobile" property="ownerMobile"/>
         <result column="virtual_people" property="virtualPeople"/>
+        <result column="is_show" property="isShow"/>
         <result column="is_activate" property="isActivate"/>
         <result column="is_hot" property="isHot"/>
         <result column="sort" property="sort"/>
@@ -21,6 +22,7 @@
         <result column="category_id" property="categoryId"/>
         <result column="room_category_id" property="roomCategoryId"/>
         <result column="remark" property="remark"/>
+        <result column="mic_duration" property="micDuration"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
     </resultMap>
@@ -29,7 +31,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,room_no,icon,name,slogan,notice,is_lock,password,user_id,owner_mobile,virtual_people,is_activate,is_hot,sort,template,category_id,room_category_id,remark,create_time,update_time    </sql>
+        id,room_no,icon,name,slogan,notice,is_lock,password,user_id,owner_mobile,virtual_people,is_show,is_activate,is_hot,sort,template,category_id,room_category_id,mic_duration,remark,create_time,update_time    </sql>
 
     <select id="findById" parameterType="java.lang.Integer" resultMap="RoomResultMap">
         select
@@ -46,6 +48,17 @@
         from t_room
     </select>
 
+
+    <select id="findCollectRoomByUser" parameterType="java.lang.Integer" resultMap="RoomResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        FROM t_room
+        <where>
+            room_no in(SELECT room_no FROM t_room_collect  WHERE user_id = #{userId} order by create_time desc)
+            and is_activate = TRUE
+        </where>
+    </select>
+
     <select id="findByParameter" resultMap="RoomResultMap" parameterType="com.fulu.game.core.entity.vo.RoomVO">
         SELECT
         <include refid="Base_Column_List"/>
@@ -58,7 +71,7 @@
                 and icon = #{icon}
             </if>
             <if test="name != null">
-                and name = #{name}
+                and name like CONCAT('%', #{name},'%'))
             </if>
             <if test="slogan != null">
                 and slogan = #{slogan}
@@ -80,6 +93,9 @@
             </if>
             <if test="virtualPeople != null">
                 and virtual_people = #{virtualPeople}
+            </if>
+            <if test="isShow != null">
+                and is_show = #{isShow}
             </if>
             <if test="isActivate != null">
                 and is_activate = #{isActivate}
@@ -120,9 +136,9 @@
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.Room">
         insert into
-        t_room (room_no,icon,name,slogan,notice,is_lock,password,user_id,owner_mobile,virtual_people,is_activate,is_hot,sort,template,category_id,room_category_id,remark,create_time,update_time)
+        t_room (room_no,icon,name,slogan,notice,is_lock,password,user_id,owner_mobile,virtual_people,is_show,is_activate,is_hot,sort,template,category_id,room_category_id,mic_duration,remark,create_time,update_time)
         values
-        (#{roomNo},#{icon},#{name},#{slogan},#{notice},#{isLock},#{password},#{userId},#{ownerMobile},#{virtualPeople},#{isActivate},#{isHot},#{sort},#{template},#{categoryId},#{roomCategoryId},#{remark},#{createTime},#{updateTime})
+        (#{roomNo},#{icon},#{name},#{slogan},#{notice},#{isLock},#{password},#{userId},#{ownerMobile},#{virtualPeople},#{isShow},#{isActivate},#{isHot},#{sort},#{template},#{categoryId},#{roomCategoryId},#{micDuration},#{remark},#{createTime},#{updateTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Room">
@@ -169,6 +185,10 @@
                 virtual_people = #{virtualPeople},
             </if>
 
+            <if test="isShow != null">
+                is_show = #{isShow},
+            </if>
+
             <if test="isActivate != null">
                 is_activate = #{isActivate},
             </if>
@@ -193,6 +213,9 @@
                 room_category_id = #{roomCategoryId},
             </if>
 
+            <if test="micDuration != null">
+                mic_duration = #{micDuration},
+            </if>
             <if test="remark != null">
                 remark = #{remark},
             </if>

@@ -13,6 +13,7 @@ import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.exception.UserAuthException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
+import com.fulu.game.common.utils.GenIdUtil;
 import com.fulu.game.common.utils.ImgUtil;
 import com.fulu.game.common.utils.SubjectUtil;
 import com.fulu.game.core.dao.ICommonDao;
@@ -295,7 +296,6 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         user.setSourceId(sourceId);
         while (true) {
             String nickname = "游客" + RandomUtil.randomNumbers(7);
-
             UserVO userVO = new UserVO();
             userVO.setNickname(nickname);
             List<User> userList = userDao.findByParameter(userVO);
@@ -342,6 +342,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         User user = new User();
         user.setRegistIp(host);
         user.setMobile(mobile);
+        user.setNickname("游客"+ GenIdUtil.GetVisitorNo());
         return createNewUser(user);
     }
 
@@ -396,27 +397,16 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         throw new ServiceErrorException("用户不匹配!");
     }
 
+
+
     @Override
     public void checkUserInfoAuthStatus(Integer userId, Integer... ignoreAuthStatus) {
         User user = findById(userId);
-        UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(userId);
         if (ignoreAuthStatus != null) {
             if (Arrays.asList(ignoreAuthStatus).contains(user.getUserInfoAuth())) {
                 return;
             }
         }
-        if (userInfoAuth == null) {
-            throw new UserAuthException(UserAuthException.ExceptionCode.NOT_EXIST_USER_AUTH);
-        }
-        if (userInfoAuth.getMainPicUrl() == null) {
-            throw new UserAuthException(UserAuthException.ExceptionCode.NOT_EXIST_USER_AUTH);
-        }
-//        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.NOT_PERFECT.getType())) {
-//            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_REJECT);
-//        }
-//        if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.ALREADY_PERFECT.getType())) {
-//            throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_AUTHING);
-//        }
         if (user.getUserInfoAuth().equals(UserInfoAuthStatusEnum.FREEZE.getType())) {
             throw new UserAuthException(UserAuthException.ExceptionCode.SERVICE_USER_FREEZE);
         }
@@ -808,6 +798,25 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         // 获取新增属性信息
         return userVO;
     }
+
+    /**
+     * 获取简单的用户信息
+     * @param userId
+     * @return
+     */
+    public SimpleUserInfoVO getSimpleUserInfo(Integer userId){
+        SimpleUserInfoVO simpleUserInfoVO = new SimpleUserInfoVO();
+        User user = findById(userId);
+        BeanUtil.copyProperties(user,simpleUserInfoVO);
+        UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(userId);
+        if (userInfoAuth != null) {
+            simpleUserInfoVO.setAbout(userInfoAuth.getAbout());
+            List<Product> productList = productService.findAppProductList(userId);
+            simpleUserInfoVO.setUserProducts(productList);
+        }
+        return simpleUserInfoVO;
+    }
+
 
     /**
      * 设置用户扩展信息

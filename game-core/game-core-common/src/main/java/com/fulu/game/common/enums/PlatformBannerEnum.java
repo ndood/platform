@@ -7,8 +7,9 @@ import lombok.Getter;
 @Getter
 public enum PlatformBannerEnum implements TypeEnum<Integer>{
 
-    PLAY(1, "小程序"),
-    APP(2, "APP");
+    PLAY(1, "小程序首页"),
+    APP(2, "APP首页"),
+    APP_CHAT_ROOM(5, "APP聊天室");
 
     private Integer type;
     private String msg;

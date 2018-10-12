@@ -74,8 +74,15 @@ public enum RedisKeyEnum {
     //发布动态数
     DYNAMIC_COUNT,
     //聊天室虚拟人数
-    CHAT_ROOM_VIRTUAL_COUNT;
-
+    CHAT_ROOM_VIRTUAL_COUNT,
+    //聊天室在线用户set
+    CHAT_ROOM_ONLINE_USER,
+    //在线用户信息
+    CHAT_ROOM_ONLINE_USER_INFO,
+    //聊天室麦位list
+    CHAT_ROOM_MIC,
+    //上麦列表
+    CHAT_ROOM_MIC_UP_LIST;
 
 
 
@@ -85,8 +92,21 @@ public enum RedisKeyEnum {
         return getEvnPrefix() + SPLIT + this.name() + SPLIT + id;
     }
 
+    public String generateKey(int parentId,int id) {
+        return getEvnPrefix() + SPLIT + this.name() + SPLIT + parentId+SPLIT+id;
+    }
+
     public String generateKey(String id) {
         return getEvnPrefix() + SPLIT + this.name() + SPLIT + id;
+    }
+
+    public String generateKey(String parentId,String id) {
+        return getEvnPrefix() + SPLIT + this.name() + SPLIT + parentId+SPLIT+id;
+    }
+
+
+    public String generateKey(String parentId,Integer id) {
+        return getEvnPrefix() + SPLIT + this.name() + SPLIT + parentId+SPLIT+id;
     }
 
     public String generateKey() {

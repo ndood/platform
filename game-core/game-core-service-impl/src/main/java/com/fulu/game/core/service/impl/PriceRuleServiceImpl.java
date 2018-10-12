@@ -54,7 +54,7 @@ public class PriceRuleServiceImpl extends AbsCommonService<PriceRule,Integer> im
 
     @Override
     public List<PriceRuleVO> findUserPriceByCategoryId(Integer categoryId,int userId) {
-        List<UserTechAuth> userTechAuths =    userTechAuthService.findByCategoryAndUser(categoryId,userId);
+        List<UserTechAuth> userTechAuths =  userTechAuthService.findByCategoryAndUser(categoryId,userId);
         if(userTechAuths.isEmpty()){
             log.error("用户没有设置该分类的技能:categoryId:{}",categoryId);
             return new ArrayList<>();
@@ -67,11 +67,15 @@ public class PriceRuleServiceImpl extends AbsCommonService<PriceRule,Integer> im
         List<PriceRule> priceRuleList = findByCategoryId(categoryId);
         List<PriceRuleVO> priceRuleVOList  = CollectionUtil.copyNewCollections(priceRuleList,PriceRuleVO.class);
         for(PriceRuleVO ruleVO : priceRuleVOList){
+            if(ruleVO.getOrderCount().equals(0)){
+                ruleVO.setUsable(true);
+                continue;
+            }
             if(maxPrice.compareTo(ruleVO.getPrice())>=0){
                 ruleVO.setUsable(true);
             }else{
                 ruleVO.setUsable(false);
-                ruleVO.setMsg("订单完成数大于"+ruleVO.getOrderCount()+"单才可以设置此价格!");
+                ruleVO.setMsg("累计完成"+ruleVO.getOrderCount()+"单时，可以设置此价格!");
             }
         }
         return priceRuleVOList;

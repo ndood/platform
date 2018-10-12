@@ -26,7 +26,7 @@ public class Banner implements Serializable {
     private Integer operatorId;
     //操作人用户名
     private String operatorName;
-    // 平台类型（1：小程序；2：App）
+    // 平台类型（1：小程序首页；2：App首页；5:App聊天室banner）
     private Integer platformType;
     //图片url
     private String picUrl;

@@ -2,6 +2,7 @@ package com.fulu.game.app.controller;
 
 
 import com.fulu.game.app.service.impl.AppOrderPayServiceImpl;
+import com.fulu.game.app.service.impl.AppVirtualOrderPayServiceImpl;
 import com.fulu.game.common.enums.PayBusinessEnum;
 import com.fulu.game.common.enums.PaymentEnum;
 import com.fulu.game.common.enums.PlatformEcoEnum;
@@ -24,6 +25,8 @@ public class WechatController {
 
     @Autowired
     private AppOrderPayServiceImpl appOrderPayService;
+    @Autowired
+    private AppVirtualOrderPayServiceImpl appVirtualOrderPayService;
 
     @ResponseBody
     @RequestMapping("/pay/order/callback")
@@ -40,7 +43,7 @@ public class WechatController {
                 return WxPayNotifyResponse.success("支付成功");
             }
         } catch (Exception e) {
-            log.error("xml消息转换异常", e);
+            log.error("支付回调执行异常", e);
         }
         return WxPayNotifyResponse.fail("支付失败");
     }
@@ -56,12 +59,12 @@ public class WechatController {
                     .platform(PlatformEcoEnum.APP.getType())
                     .wechatXmlResult(xmlResult)
                     .build();
-            boolean res = appOrderPayService.payResult(payCallbackModel);
+            boolean res = appVirtualOrderPayService.payResult(payCallbackModel);
             if (res) {
                 return WxPayNotifyResponse.success("支付成功");
             }
         } catch (Exception e) {
-            log.error("xml消息转换异常", e);
+            log.error("支付回调执行异常", e);
         }
         return WxPayNotifyResponse.fail("支付失败");
     }

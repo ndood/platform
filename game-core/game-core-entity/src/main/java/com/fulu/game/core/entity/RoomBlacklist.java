@@ -6,26 +6,22 @@ import lombok.Data;
 
 
 /**
- * 房间管理表
+ * 房间黑名单
  * 
  * @author wangbin
- * @date 2018-10-09 15:19:25
+ * @date 2018-10-11 17:21:16
  */
 @Data
-public class RoomManage implements Serializable {
+public class RoomBlacklist implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	//
 	private Integer id;
-	//房间ID
+	//房间
 	private String roomNo;
 	//用户ID
 	private Integer userId;
-	//角色类型(1房主,2管理,3主持)
-	private Integer role;
-	//创建时间
-	private Date createTime;
 	//
-	private Date updateTime;
+	private Date createTime;
 
 }

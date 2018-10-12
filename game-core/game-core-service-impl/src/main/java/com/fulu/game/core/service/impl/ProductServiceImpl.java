@@ -151,6 +151,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     }
 
 
+
     @Override
     public Product update(Integer id, Integer techAuthId, BigDecimal price, Integer unitId) {
         User user = userService.getCurrentUser();
@@ -250,7 +251,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         userTechAuthService.update(userTechAuth);
         List<Product> products = findByTechId(techId);
         if (status && products.isEmpty()) {
-            throw new ServiceErrorException("必须先填写价格才能激活!");
+            throw new ServiceErrorException("开启技能必须设置价格与标签!");
         }
         for (Product product : products) {
             enable(product, status, user.getId());

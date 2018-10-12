@@ -121,4 +121,12 @@ public interface UserTechAuthService extends ICommonService<UserTechAuth, Intege
      */
     TechProductOrderVO getTechProductByProductId(Integer productId);
 
+    /**
+     * 查询激活用户技能列表
+     * @param userId
+     * @return
+     */
+    List<UserTechAuth> findUserActivateTechs(Integer userId);
+
+
 }

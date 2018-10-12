@@ -1,43 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.fulu.game.core.dao.RoomManageDao">
-    <resultMap id="RoomManageResultMap" type="com.fulu.game.core.entity.RoomManage">
+<mapper namespace="com.fulu.game.core.dao.RoomBlacklistDao">
+    <resultMap id="RoomBlacklistResultMap" type="com.fulu.game.core.entity.RoomBlacklist">
         <id column="id" property="id"/>
         <result column="room_no" property="roomNo"/>
         <result column="user_id" property="userId"/>
-        <result column="role" property="role"/>
         <result column="create_time" property="createTime"/>
-        <result column="update_time" property="updateTime"/>
     </resultMap>
 
-    <resultMap id="RoomManageResultVOMap" type="com.fulu.game.core.entity.vo.RoomManageVO"
-               extends="RoomManageResultMap">
+    <resultMap id="RoomBlacklistResultVOMap" type="com.fulu.game.core.entity.vo.RoomBlacklistVO"
+               extends="RoomBlacklistResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,room_no,user_id,role,create_time,update_time    </sql>
+        id,room_no,user_id,create_time    </sql>
 
-    <select id="findById" parameterType="java.lang.Integer" resultMap="RoomManageResultMap">
+    <select id="findById" parameterType="java.lang.Integer" resultMap="RoomBlacklistResultMap">
         select
         <include refid="Base_Column_List"/>
-        from t_room_manage
+        from t_room_blacklist
         <where>
             id = #{id}
         </where>
     </select>
 
-    <select id="findAll" resultMap="RoomManageResultMap">
+    <select id="findAll" resultMap="RoomBlacklistResultMap">
         select
         <include refid="Base_Column_List"/>
-        from t_room_manage
+        from t_room_blacklist
     </select>
 
-    <select id="findByParameter" resultMap="RoomManageResultMap"
-            parameterType="com.fulu.game.core.entity.vo.RoomManageVO">
+    <select id="findByParameter" resultMap="RoomBlacklistResultMap"
+            parameterType="com.fulu.game.core.entity.vo.RoomBlacklistVO">
         SELECT
         <include refid="Base_Column_List"/>
-        FROM t_room_manage
+        FROM t_room_blacklist
         <where>
             <if test="roomNo != null">
                 and room_no = #{roomNo}
@@ -45,34 +43,29 @@
             <if test="userId != null">
                 and user_id = #{userId}
             </if>
-            <if test="role != null">
-                and role = #{role}
-            </if>
             <if test="createTime != null">
                 and create_time = #{createTime}
-            </if>
-            <if test="updateTime != null">
-                and update_time = #{updateTime}
             </if>
         </where>
     </select>
 
     <delete id="deleteById" parameterType="java.lang.Integer">
-        delete from t_room_manage
+        delete from t_room_blacklist
         <where>
             id = #{id}
         </where>
     </delete>
 
-    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.RoomManage">
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.RoomBlacklist">
         insert into
-        t_room_manage (room_no,user_id,role,create_time,update_time)
+        t_room_blacklist (room_no,user_id,create_time)
         values
-        (#{roomNo},#{userId},#{role},#{createTime},#{updateTime})
+        (#{roomNo},#{userId},#{createTime})
     </insert>
 
-    <update id="update" parameterType="com.fulu.game.core.entity.RoomManage">
-        update t_room_manage
+    <update id="update" parameterType="com.fulu.game.core.entity.RoomBlacklist">
+        update t_room_blacklist
         <set>
 
             <if test="roomNo != null">
@@ -83,16 +76,8 @@
                 user_id = #{userId},
             </if>
 
-            <if test="role != null">
-                role = #{role},
-            </if>
-
             <if test="createTime != null">
                 create_time = #{createTime},
-            </if>
-
-            <if test="updateTime != null">
-                update_time = #{updateTime},
             </if>
         </set>
         <where>

@@ -188,11 +188,13 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         techProductOrderVO.setServerHeadUrl(serverUser.getHeadPortraitsUrl());
         techProductOrderVO.setServerNickname(serverUser.getNickname());
         //
-        List<UserTechAuth> userTechAuthList = findUserUsableTechs(serverUser.getId());
+        List<UserTechAuth> userTechAuthList = findUserActivateTechs(serverUser.getId());
         List<TechProductOrderVO.OtherProduct> otherProducts= findTechProductsByUser(userTechAuthList);
         techProductOrderVO.setOtherProductList(otherProducts);
         return techProductOrderVO;
     }
+
+
 
 
     public List<TechProductOrderVO.OtherProduct> findTechProductsByUser(List<UserTechAuth> techAuthList){
@@ -434,7 +436,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
      * @param userId
      * @return
      */
-    private List<UserTechAuth> findUserUsableTechs(Integer userId){
+    public List<UserTechAuth> findUserActivateTechs(Integer userId){
         UserTechAuthVO param = new UserTechAuthVO();
         param.setStatus(TechAuthStatusEnum.NORMAL.getType());
         param.setUserId(userId);

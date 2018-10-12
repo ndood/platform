@@ -77,6 +77,7 @@ public class UserVO extends User {
      * 用户接单节能
      */
     private List<Product> userProducts;
+
     /**
      * 用户最新动态列表
      */

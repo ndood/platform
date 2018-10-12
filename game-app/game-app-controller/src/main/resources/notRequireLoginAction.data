@@ -1,1 +1,4 @@
 /api/v1/dynamic/list
+/api/v1/room/banner
+/api/v1/room/category
+/api/v1/room/list

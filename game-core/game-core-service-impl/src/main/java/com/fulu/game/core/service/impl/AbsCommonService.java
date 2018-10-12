@@ -41,4 +41,5 @@ public abstract class AbsCommonService<T,K> implements ICommonService<T,K> {
     public int update(T t){
         return getDao().update(t);
     }
+
 }

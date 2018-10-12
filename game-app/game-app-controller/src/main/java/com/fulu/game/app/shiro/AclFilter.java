@@ -55,8 +55,7 @@ public class AclFilter extends AccessControlFilter {
             String token = httpRequest.getHeader("token");
             boolean flag = false;
             for(String url: urls){
-                if(action != null && !"".equals(action) && url != null &&
-                        !"".equals(url) && url.equals(action)){
+                if(action != null && !"".equals(action) && url != null && !"".equals(url) && url.equals(action)){
                     log.info("notRequireLoginAction: " + action);
                     flag = true;
                     break;

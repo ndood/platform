@@ -579,7 +579,7 @@ CREATE TABLE `t_order_msg` (
 ) comment '订单消息表';
 
 
-
+DROP TABLE IF EXISTS `t_activity_coupon`;
 CREATE TABLE `t_activity_coupon` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `coupon_group_id` int(11) NOT NULL COMMENT '优惠券组ID',
@@ -595,7 +595,7 @@ CREATE TABLE `t_activity_coupon` (
   PRIMARY KEY (`id`)
 )  COMMENT='活动优惠券表';
 
-
+DROP TABLE IF EXISTS `t_official_activity`;
 CREATE TABLE `t_official_activity` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `platform` int(11) DEFAULT NULL COMMENT '平台',
@@ -616,7 +616,7 @@ CREATE TABLE `t_official_activity` (
 
 
 
-
+DROP TABLE IF EXISTS `t_activity_user_award`;
 CREATE TABLE `t_activity_user_award` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL COMMENT '用户ID',
@@ -626,44 +626,22 @@ CREATE TABLE `t_activity_user_award` (
   UNIQUE KEY `user_id` (`user_id`,`activity_id`) USING BTREE
 )  COMMENT='用户活动奖励表';
 
-CREATE TABLE `t_room_manage` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `room_no` int(11) NOT NULL COMMENT '房间ID',
-  `user_id` int(11) NOT NULL COMMENT '用户ID',
-  `head_url` varchar(255) DEFAULT NULL,
-  `nickname` varchar(255) DEFAULT NULL COMMENT '用户昵称',
-  `gender` tinyint(1) DEFAULT NULL COMMENT '性别(1男,2女)',
-  `role` tinyint(1) NOT NULL COMMENT '角色类型(1房主,2管理,3主持)',
-  `create_time` datetime NOT NULL COMMENT '创建时间',
-  `update_time` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
-)  COMMENT='房间管理表';
-
-CREATE TABLE `t_room_category` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `pid` int(11) DEFAULT NULL COMMENT '父类ID',
-  `name` varchar(255) NOT NULL COMMENT '分类名称',
-  `icon` varchar(255) DEFAULT NULL COMMENT '房间图标',
-  `is_activate` tinyint(1) DEFAULT NULL COMMENT '是否激活(1是,0否)',
-  `create_time` datetime NOT NULL COMMENT '创建时间',
-  `update_time` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='房间分类表';
 
 
-
+DROP TABLE IF EXISTS `t_room`;
 CREATE TABLE `t_room` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `room_no` varchar(255) NOT NULL COMMENT '房间号码',
+  `room_no` varchar(128) NOT NULL COMMENT '房间号码',
   `icon` varchar(255) DEFAULT NULL COMMENT '图标',
   `name` varchar(255) DEFAULT NULL COMMENT '房间名称',
-  `slogan` varchar(255) DEFAULT NULL COMMENT '房间标语',
-  `notice` varchar(255) DEFAULT NULL COMMENT '房间公告',
+  `slogan` varchar(1000) DEFAULT NULL COMMENT '房间标语',
+  `notice` varchar(1000) DEFAULT NULL COMMENT '房间公告',
   `is_lock` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否上锁',
   `password` varchar(255) DEFAULT NULL COMMENT '房间密码',
   `user_id` int(11) NOT NULL COMMENT '用户ID',
   `owner_mobile` varchar(255) NOT NULL COMMENT '所有者手机号',
   `virtual_people` int(11) DEFAULT NULL COMMENT '虚拟人数',
+  `is_show` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
   `is_activate` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否激活',
   `is_hot` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否是热门推荐',
   `sort` int(11) NOT NULL COMMENT '排序号',
@@ -671,9 +649,59 @@ CREATE TABLE `t_room` (
   `category_id` int(11) DEFAULT NULL COMMENT '游戏分类',
   `room_category_id` int(11) NOT NULL COMMENT '房间分类',
   `remark` varchar(255) DEFAULT NULL,
+  `mic_duration` int(11) DEFAULT NULL COMMENT '默认麦序时长',
   `create_time` datetime NOT NULL,
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-)  COMMENT='聊天室';
+) COMMENT='聊天室';
 
 
+
+DROP TABLE IF EXISTS `t_room_manage`;
+CREATE TABLE `t_room_manage` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `room_no` varchar(128) NOT NULL COMMENT '房间ID',
+  `user_id` int(11) NOT NULL COMMENT '用户ID',
+  `role` tinyint(1) NOT NULL COMMENT '角色类型(1房主,2管理,3主持)',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `room_no` (`room_no`),
+  CONSTRAINT `t_room_manage_ibfk_1` FOREIGN KEY (`room_no`) REFERENCES `t_room` (`room_no`)
+)  COMMENT='房间管理表';
+
+
+
+CREATE TABLE `t_room_category` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `pid` int(11) DEFAULT NULL COMMENT '父类ID',
+  `name` varchar(255) NOT NULL COMMENT '分类名称',
+  `icon` varchar(255) DEFAULT NULL COMMENT '房间图标',
+  `is_activate` tinyint(1) DEFAULT NULL COMMENT '是否激活(1是,0否)',
+  `sort` int(11) DEFAULT NULL COMMENT '排序',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) COMMENT='房间分类表';
+
+
+DROP TABLE IF EXISTS `t_room_collect`;
+CREATE TABLE `t_room_collect` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `room_no` varchar(128) DEFAULT NULL,
+  `user_id` int(11) NOT NULL,
+  `create_time` datetime NOT NULL,
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `room_no` (`room_no`),
+  CONSTRAINT `t_room_collect_ibfk_1` FOREIGN KEY (`room_no`) REFERENCES `t_room` (`room_no`)
+)  COMMENT='房间收藏';
+
+CREATE TABLE `t_room_blacklist` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `room_no` varchar(128) NOT NULL COMMENT '房间',
+  `user_id` int(11) NOT NULL COMMENT '用户ID',
+  `create_time` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `room_no` (`room_no`,`user_id`) USING BTREE
+)  COMMENT='房间黑名单';

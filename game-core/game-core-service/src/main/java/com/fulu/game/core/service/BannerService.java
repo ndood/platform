@@ -25,4 +25,6 @@ public interface BannerService extends ICommonService<Banner, Integer> {
 
     List<Banner> findByParam(BannerVO bannerVO);
 
+    public List<Banner> findByPlatformType(Integer platformType);
+
 }

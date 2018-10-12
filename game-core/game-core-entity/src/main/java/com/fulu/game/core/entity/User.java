@@ -93,7 +93,7 @@ public class User implements Serializable {
     @JsonIgnore
     private String unionId;
 
-    //综合得星评分数
+    //用户给该陪玩师打的综合评分
     private BigDecimal scoreAvg;
     //用户总积分
     private Integer userScore;
@@ -101,7 +101,7 @@ public class User implements Serializable {
     private String registIp;
     //登录ip
     private String loginIp;
-    /** 陪玩师综合评分 */
+    //陪玩师给用户打的综合评分
     private BigDecimal serverScoreAvg;
     //注册时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
