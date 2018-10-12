@@ -412,7 +412,7 @@
         t2.remark as proRemark
         FROM t_order t1
         INNER JOIN t_user t3 ON t3.id = t1.user_id
-        INNER JOIN t_user t4 ON t4.id = t1.service_user_id
+        LEFT JOIN t_user t4 ON t4.id = t1.service_user_id
         LEFT JOIN t_regist_source rs1 ON t3.source_id = rs1.id
         LEFT JOIN t_regist_source rs2 ON t4.source_id = rs2.id
         LEFT JOIN t_order_admin_remark t2 ON t2.order_id = t1.id
@@ -688,13 +688,16 @@
         order by o.create_time limit 10
     </select>
 
-    <select id="findMoneySum" resultType="com.fulu.game.core.entity.vo.OrderVO">
+    <select id="findOrderSum" resultType="com.fulu.game.core.entity.vo.OrderVO">
         SELECT
+        count(t1.id) AS orderCount,
         IFNULL(sum(t1.actual_money), 0) sumActualMoney,
-        IFNULL(sum(t2.user_money), 0) sumUserMoney
+        IFNULL(sum(t2.user_money), 0) sumUserMoney,
+        sum(IF(t3.unit = '小时', t3.amount, 0)) as sumOrderHours
         FROM
         t_order t1
         LEFT JOIN t_order_share_profit t2 ON t1.order_no = t2.order_no
+        LEFT JOIN t_order_product t3 ON t1.order_no = t3.order_no
         <where>
             <if test="platform != null">
                 AND t1.platform = #{platform}

@@ -231,4 +231,9 @@ public interface Constant {
      * 迅雷约玩列表页banner
      */
     Integer THUNDER_LISTPAGE_BANNER = 2;
+
+    /**
+     * 迅雷优惠券
+     */
+    String THUNDER_COUPON_REDEEM_CODE = "thunder";
 }

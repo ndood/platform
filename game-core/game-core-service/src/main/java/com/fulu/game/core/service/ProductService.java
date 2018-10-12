@@ -334,5 +334,5 @@ public interface ProductService extends ICommonService<Product, Integer> {
      * @param size       显示数量
      * @return 分页查询结果集
      */
-    PageInfo<ProductShowCaseVO> thunderProductList(Integer categoryId, Integer size);
+    PageInfo<ProductShowCaseVO> thunderProductList(Integer categoryId, Integer gender, Integer pageNum, Integer pageSize, String orderBy);
 }

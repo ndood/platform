@@ -92,7 +92,7 @@ public class ThunderHomeController extends BaseController {
      * @return 封装结果集
      */
     @RequestMapping("/banner/list")
-    public Result homePageList(@RequestParam(defaultValue = "1") Integer type) {
+    public Result bannerList(@RequestParam(defaultValue = "1") Integer type) {
         BannerVO bannerVO = new BannerVO();
         bannerVO.setDisable(true);
         if (Constant.THUNDER_HOMEPAGE_BANNER.equals(type)) {
@@ -107,7 +107,7 @@ public class ThunderHomeController extends BaseController {
     /**
      * 查询首页-陪玩专区-分类信息
      *
-     * @return
+     * @return 封装结果集
      */
     @RequestMapping(value = "/category/all")
     public Result allCategory() {
@@ -116,16 +116,22 @@ public class ThunderHomeController extends BaseController {
     }
 
     /**
-     * 首页陪玩师专区-商品列表
+     * 商品列表
      *
      * @param categoryId 分类id
-     * @param size       显示数量
+     * @param gender
+     * @param pageNum
+     * @param pageSize
+     * @param orderBy
      * @return 封装结果集
      */
     @RequestMapping("/product/list")
     public Result productList(@RequestParam Integer categoryId,
-                              @RequestParam(defaultValue = "4") Integer size) {
-        PageInfo<ProductShowCaseVO> pageInfo = productService.thunderProductList(categoryId, size);
+                              Integer gender,
+                              Integer pageNum,
+                              @RequestParam(defaultValue = "4") Integer pageSize,
+                              String orderBy) {
+        PageInfo<ProductShowCaseVO> pageInfo = productService.thunderProductList(categoryId, gender, pageNum, pageSize, orderBy);
         return Result.success().data(pageInfo).msg("查询成功！");
     }
 }

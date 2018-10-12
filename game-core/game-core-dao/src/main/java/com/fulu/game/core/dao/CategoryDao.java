@@ -25,5 +25,11 @@ public interface CategoryDao extends ICommonDao<Category, Integer> {
      */
     List<Category> findByFirstPidAndPrams(CategoryVO categoryVO);
 
+    /**
+     * 根据id列表获取对应的分类列表
+     *
+     * @param ids id列表
+     * @return 分类列表
+     */
     List<Category> findByIdList(@Param(value = "ids") List<Integer> ids);
 }

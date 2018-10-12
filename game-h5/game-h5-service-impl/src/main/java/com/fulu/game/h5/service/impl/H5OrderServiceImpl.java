@@ -8,10 +8,12 @@ import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.OrderException;
 import com.fulu.game.common.exception.ProductException;
 import com.fulu.game.common.exception.ServiceErrorException;
+import com.fulu.game.common.exception.UserException;
 import com.fulu.game.common.utils.SMSUtil;
 import com.fulu.game.core.dao.OrderDao;
 import com.fulu.game.core.entity.*;
 import com.fulu.game.core.entity.vo.OrderDetailsVO;
+import com.fulu.game.core.entity.vo.OrderVO;
 import com.fulu.game.core.service.*;
 import com.fulu.game.core.service.impl.AbOrderOpenServiceImpl;
 import com.fulu.game.core.service.impl.RedisOpenServiceImpl;
@@ -382,5 +384,25 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         return orderDetailsVO;
     }
 
+    public OrderVO getThunderOrderInfo() {
+        User user = userService.getCurrentUser();
+        if (user == null) {
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
 
+        OrderVO paramOrderVO = new OrderVO();
+        paramOrderVO.setUserId(user.getId());
+        paramOrderVO.setPlatform(PlatformEcoEnum.THUNDER.getType());
+        paramOrderVO.setStatusList(OrderStatusGroupEnum.ADMIN_COMPLETE.getStatusList());
+
+        OrderVO orderVO = orderDao.findOrderSum(paramOrderVO);
+        BigDecimal userConsumeMoney = orderVO.getSumActualMoney().subtract(orderVO.getSumUserMoney()).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+        if (userConsumeMoney.compareTo(BigDecimal.ZERO) < 0) {
+            log.info("迅雷订单数据异常，累计实付金额：{}，累计退款用户金额：{}", orderVO.getSumActualMoney(), orderVO.getSumUserMoney());
+            userConsumeMoney = BigDecimal.ZERO;
+        }
+
+        orderVO.setUserConsumeMoney(userConsumeMoney);
+        return orderVO;
+    }
 }

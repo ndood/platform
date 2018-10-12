@@ -1024,8 +1024,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     }
 
     @Override
-    public PageInfo<ProductShowCaseVO> thunderProductList(Integer categoryId, Integer size) {
-        PageInfo<ProductShowCaseVO> pageInfo = findProductShowCase(categoryId, null, 1, size, null);
+    public PageInfo<ProductShowCaseVO> thunderProductList(Integer categoryId, Integer gender, Integer pageNum, Integer pageSize, String orderBy) {
+        PageInfo<ProductShowCaseVO> pageInfo = findProductShowCase(categoryId, gender, pageNum, pageSize, orderBy);
 
         List<ProductShowCaseVO> productList = pageInfo.getList();
         if (CollectionUtil.isNotEmpty(productList)) {

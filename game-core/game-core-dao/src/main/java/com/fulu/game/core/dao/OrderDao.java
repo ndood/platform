@@ -68,5 +68,11 @@ public interface OrderDao extends ICommonDao<Order, Integer> {
 
     List<Order> getBannerOrderList(@Param(value = "authUserId") Integer authUserId, @Param(value = "bossUserId") Integer bossUserId, @Param(value = "statusList") List<Integer> statusList);
 
-    OrderVO findMoneySum(OrderVO orderVO);
+    /**
+     * 查找订单统计数据
+     *
+     * @param orderVO 查询VO
+     * @return 订单VO
+     */
+    OrderVO findOrderSum(OrderVO orderVO);
 }

@@ -114,15 +114,12 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
 
-
         OrderVO paramOrderVO = new OrderVO();
         paramOrderVO.setUserId(user.getId());
         paramOrderVO.setPlatform(PlatformEcoEnum.THUNDER.getType());
         paramOrderVO.setStatusList(OrderStatusGroupEnum.ADMIN_COMPLETE.getStatusList());
-        int orderCount = orderDao.countByParameter(paramOrderVO);
 
-        OrderVO orderVO = orderDao.findMoneySum(paramOrderVO);
-        orderVO.setOrderCount(orderCount);
+        OrderVO orderVO = orderDao.findOrderSum(paramOrderVO);
         BigDecimal userConsumeMoney = orderVO.getSumActualMoney().subtract(orderVO.getSumUserMoney()).setScale(2, BigDecimal.ROUND_HALF_DOWN);
         if (userConsumeMoney.compareTo(BigDecimal.ZERO) < 0) {
             log.info("迅雷订单数据异常，累计实付金额：{}，累计退款用户金额：{}", orderVO.getSumActualMoney(), orderVO.getSumUserMoney());
@@ -130,10 +127,8 @@ public class OrderServiceImpl extends AbsCommonService<Order, Integer> implement
         }
 
         orderVO.setUserConsumeMoney(userConsumeMoney);
-        orderVO.setOrderCount(orderCount);
         return orderVO;
     }
-
 
     @Override
     public List<Order> getBannerOrderList(Integer authUserId, Integer bossUserId) {

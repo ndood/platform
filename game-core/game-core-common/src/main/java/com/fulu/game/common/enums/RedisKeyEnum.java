@@ -74,10 +74,13 @@ public enum RedisKeyEnum {
     //发布动态数
     DYNAMIC_COUNT,
     //聊天室虚拟人数
-    CHAT_ROOM_VIRTUAL_COUNT;
-
-
-
+    CHAT_ROOM_VIRTUAL_COUNT,
+    //迅雷福利(满2小时)
+    THUNDER_WELFARE_2_HOURS,
+    //迅雷福利(满1单)
+    THUNDER_WELFARE_1_ORDER,
+    //迅雷福利(满3单)
+    THUNDER_WELFARE_3_ORDER;
 
     public static final String SPLIT = "-";
 

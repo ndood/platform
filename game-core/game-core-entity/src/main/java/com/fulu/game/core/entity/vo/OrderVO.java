@@ -80,4 +80,9 @@ public class OrderVO extends Order {
      * 用户消费金额
      */
     private BigDecimal userConsumeMoney;
+
+    /**
+     * 累计订单小时数
+     */
+    private BigDecimal sumOrderHours;
 }
