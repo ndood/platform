@@ -19,7 +19,7 @@ public enum VirtualDetailsRemarkEnum implements TypeEnum<Integer> {
     LOGIN_BOUNS(5, "登录奖励"),
     GIFT_RECEIVE(6, "接收礼物"),
     CHARGE(7, "钻石充值"),
-    CHARM_DRAW(8, "提现");
+    CHARM_DRAW(8, "魅力值提现");
 
     private Integer type;
     private String msg;
