@@ -151,14 +151,19 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
     @Override
     public MoneyDetails subtractBalance(MoneyDetailsVO moneyDetailsVO) {
         Admin admin = adminService.getCurrentUser();
-        log.info("调用管理员加零钱接口，管理员id:{}", admin.getId());
+        log.info("调用管理员扣零钱接口，管理员id:{}", admin.getId());
         User user = userService.findByMobile(moneyDetailsVO.getMobile());
         if (null == user) {
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
+
         UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
-        //加钱之前该用户的零钱
+        //扣钱之前该用户的零钱
         BigDecimal balance = user.getBalance();
+        if (balance.compareTo(moneyDetailsVO.getMoney()) < 0) {
+            throw new CashException(CashException.ExceptionCode.CASH_CUT_EXCEPTION);
+        }
+
         BigDecimal newBalance = balance.subtract(moneyDetailsVO.getMoney());
         MoneyDetails moneyDetails = new MoneyDetails();
         BeanUtil.copyProperties(moneyDetailsVO, moneyDetails);
@@ -171,14 +176,15 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         } else {
             moneyDetails.setUserType(UserTypeEnum.GENERAL_USER.getType());
         }
-        // 当action为null时，设置为用户新增零钱
-        BigDecimal money =  moneyDetails.getMoney();;
+
+        BigDecimal money = moneyDetails.getMoney();
+        ;
         log.info("当前余额:{},扣除零钱金额:{}", balance, moneyDetailsVO.getMoney());
         moneyDetails.setCreateTime(new Date());
         moneyDetailsDao.create(moneyDetails);
         user.setBalance(newBalance);
         userService.update(user);
-        log.info("更新用户余额完成，加零钱后余额:{}", user.getBalance());
+        log.info("更新用户余额完成，扣零钱后余额:{}", user.getBalance());
         //计入平台支出流水
         platformMoneyDetailsService.createSmallChangeDetails(moneyDetails.getRemark(), user.getId(), money);
         log.info("调用平台支出流水接口执行结束");
