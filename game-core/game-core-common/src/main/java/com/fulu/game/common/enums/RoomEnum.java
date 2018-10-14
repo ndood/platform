@@ -39,6 +39,18 @@ public enum RoomEnum{
     }
 
 
+    @Getter
+    @AllArgsConstructor
+    public enum  RoomTemplateEnum implements TypeEnum<Integer>{
+        ORDER(1, "派单房"),
+        RECREATION(2, "娱乐房");
+        private Integer type;
+        private String msg;
+    }
+
+
+
+
 }
 
 

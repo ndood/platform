@@ -198,10 +198,10 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
     @Override
     public List<Category> findByFirstPid(Integer pid, Boolean status) {
         PageHelper.orderBy("sort desc");
-        CategoryVO categoryVO = new CategoryVO();
-        categoryVO.setPid(pid);
-        categoryVO.setStatus(status);
-        List<Category> categoryList = categoryDao.findByFirstPidAndPrams(categoryVO);
+        CategoryVO param = new CategoryVO();
+        param.setPid(pid);
+        param.setStatus(status);
+        List<Category> categoryList = categoryDao.findByFirstPidAndPrams(param);
         return categoryList;
     }
 
@@ -209,12 +209,25 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
     @Override
     public List<Category> findByPid(Integer pid, Boolean status) {
         PageHelper.orderBy("sort desc");
-        CategoryVO categoryVO = new CategoryVO();
-        categoryVO.setPid(pid);
-        categoryVO.setStatus(status);
-        List<Category> categoryList = categoryDao.findByParameter(categoryVO);
+        CategoryVO param = new CategoryVO();
+        param.setPid(pid);
+        param.setStatus(status);
+        List<Category> categoryList = categoryDao.findByParameter(param);
         return categoryList;
     }
+
+    @Override
+    public List<Category> findThreeLevelCategory(Integer pid) {
+        Category category = findById(pid);
+        if (category == null || !category.getStatus()) {
+            return new ArrayList<>();
+        }
+        if (category.getPid() < 10) {
+            return findByFirstPid(pid, true);
+        }
+        return findByPid(pid,true);
+    }
+
 
     @Override
     public Boolean isInParentCategory(int parentCategoryId, int categoryId) {

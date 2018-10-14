@@ -657,6 +657,7 @@ CREATE TABLE `t_room` (
 
 
 
+
 DROP TABLE IF EXISTS `t_room_manage`;
 CREATE TABLE `t_room_manage` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -720,9 +721,9 @@ CREATE TABLE `t_room_assign_order` (
   `room_no` varchar(128) NOT NULL COMMENT '房间号码',
   `content` varchar(255) NOT NULL COMMENT '派单内容',
   `category_id` int(11) NOT NULL COMMENT '派单游戏',
-  `room_manager_user_id` int(11) NOT NULL COMMENT '那个房间管理发的派单',
+  `room_manager_user_id` int(11) DEFAULT NULL COMMENT '那个房间管理发的派单',
+  `status` int(11) NOT NULL DEFAULT '0' COMMENT '派单状态',
   `create_time` datetime NOT NULL,
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) COMMENT='聊天室派单表';
-
+)  COMMENT='聊天室派单表';

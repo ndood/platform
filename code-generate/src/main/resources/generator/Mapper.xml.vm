@@ -12,7 +12,7 @@
         #end
     </resultMap>
 
-    <resultMap id="${className}ResultVOMap" type="${package}.entity.vo.${className}VO" extends="${className}ResultMap">
+    <resultMap id="${className}ResultBOMap" type="${package}.entity.bo.${className}BO" extends="${className}ResultMap">
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -34,7 +34,7 @@
         from ${tableName}
     </select>
 
-    <select id="findByParameter" resultMap="${className}ResultMap" parameterType="${package}.entity.vo.${className}VO">
+    <select id="findByParameter" resultMap="${className}ResultMap" parameterType="${package}.entity.bo.${className}BO">
         SELECT
         <include refid="Base_Column_List"/>
         FROM ${tableName}

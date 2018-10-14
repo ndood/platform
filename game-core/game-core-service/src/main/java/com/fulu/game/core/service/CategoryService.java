@@ -24,6 +24,15 @@ public interface CategoryService extends ICommonService<Category, Integer> {
 
     List<Category> findByPid(Integer pid, Boolean status);
 
+
+    /**
+     * 查询三级分类
+     * @param pid
+     * @return
+     */
+    List<Category> findThreeLevelCategory(Integer pid);
+
+
     List<Category> findAllAccompanyPlayCategory();
 
     Category save(CategoryVO categoryVO);

@@ -25,7 +25,7 @@
 - 1.0.13 后台: https://pro.modao.cc/app/FSV59Hq1epQmGFhM9NlhPA6wD9V6t9b
 
 ### 集市版本**
-- web端: https://pro.modao.cc/app/KmU8Jxs1hdjFFFBxDUe4Ub0VdD7CmaI#screen=s65673F5B931528367962571_
+- web端: https://pro.modao.cc/app/KmU8Jxs1hdjFFFBxDUe4Ub0VdD7CmaI#screen=s65673F5B931528367962571
 - 小程序：https://pro.modao.cc/app/RbJqmuzihjULlKr3lsOG6ygKwjmTHGB
 - 后台：https://pro.modao.cc/app/Mg0mx6NJPbtNr8X5aBM5eC4N4KssLpC
 
@@ -48,8 +48,8 @@
 - 后台https://pro.modao.cc/app/CaoYOOGUwrv2hx6SXIUiaZKdDA50dse
 
 ### 分期乐原型
-分期乐前端原型：https://pro.modao.cc/app/BPfF8hfMbXILPIlNxFBfHHUe50YbRHq
-分期乐后台原型：https://pro.modao.cc/app/iYMJFWOPAGsuN9EGRTpknyHfiQPjq9L
+- 分期乐前端原型：https://pro.modao.cc/app/BPfF8hfMbXILPIlNxFBfHHUe50YbRHq
+- 分期乐后台原型：https://pro.modao.cc/app/iYMJFWOPAGsuN9EGRTpknyHfiQPjq9L
 
 ### app+v1.1.1原型
 前端原型：https://pro.modao.cc/app/2f3dfb774f6cfe0ed6cb2f9ab0b922de5a543931#screen=sA42C9163501535098955667
@@ -68,22 +68,5 @@ APP后台 https://pro.modao.cc/app/19c7ac819667a38edd828d9fd7c68b57c88af3b7
 ### 迅雷
 迅雷前端  https://pro.modao.cc/app/bYGzMbO8nzPX9Ye7kKNlHwNFPEWIvXr
 
-##订单状态
-|订单状态|状态注释|
-|---|:----:|
-|100|系统关闭订单|
-|101|用户取消订单|
-|160|陪玩师取消订单|
-|200|待付款|
-|210|等待陪玩|
-|220|陪玩中|
-|300|等待验收| 
-|400|申诉中|
-|410|申诉：全额退款|
-|420|申诉：协商处理|
-|500|待评价:用户验收订单|
-|501|待评价:系统自动完成订单|
-|502|申诉：订单完成|
-|600|已评价|
 
 
