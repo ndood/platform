@@ -190,7 +190,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
                         .multiply(Constant.CHARM_TO_MONEY_RATE)
                         .setScale(2, BigDecimal.ROUND_HALF_DOWN));
                 meta.setBalance(meta.getBalance().add(unCashDrawsSum == null ? BigDecimal.ZERO : unCashDrawsSum));
-                if(meta.getCashNo() != null && !"".equals(meta.getCashNo()) && meta.getCashNo().endsWith(Constant.VEST_SUFFIX)){
+                if (meta.getCashNo() != null && !"".equals(meta.getCashNo()) && meta.getCashNo().endsWith(Constant.VEST_SUFFIX)) {
                     meta.setUserType(UserTypeEnum.VEST_USER.getType());
                 } else {
                     meta.setUserType(UserTypeEnum.ACCOMPANY_PLAYER.getType());
@@ -336,8 +336,12 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
             try {
                 String resultStr = this.wxMpServiceSupply.wxMpPayService().getEntPayService().entPay(request).toString();
                 log.info("微信打款返回：" + resultStr);
-                updateCashDraws(cashDraws, admin, comment);
-                createVirtualDetails(cashDraws);
+                cashDraws.setOperator(admin.getName());
+                cashDraws.setComment(comment);
+                //修改为已处理状态
+                cashDraws.setCashStatus(CashProcessStatusEnum.DONE.getType());
+                cashDraws.setProcessTime(new Date());
+                cashDrawsDao.update(cashDraws);
                 return cashDraws;
             } catch (WxPayException e) {
                 e.printStackTrace();
@@ -351,8 +355,12 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
             try {
                 String resultStr = this.wxMaServiceSupply.playWxPayService().getEntPayService().entPay(request).toString();
                 log.info("微信打款返回：" + resultStr);
-                updateCashDraws(cashDraws, admin, comment);
-                createVirtualDetails(cashDraws);
+                cashDraws.setOperator(admin.getName());
+                cashDraws.setComment(comment);
+                //修改为已处理状态
+                cashDraws.setCashStatus(CashProcessStatusEnum.DONE.getType());
+                cashDraws.setProcessTime(new Date());
+                cashDrawsDao.update(cashDraws);
                 return cashDraws;
             } catch (WxPayException e) {
                 e.printStackTrace();
@@ -366,8 +374,12 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
             try {
                 String resultStr = this.wxMaServiceSupply.pointWxPayService().getEntPayService().entPay(request).toString();
                 log.info("微信打款返回：" + resultStr);
-                updateCashDraws(cashDraws, admin, comment);
-                createVirtualDetails(cashDraws);
+                cashDraws.setOperator(admin.getName());
+                cashDraws.setComment(comment);
+                //修改为已处理状态
+                cashDraws.setCashStatus(CashProcessStatusEnum.DONE.getType());
+                cashDraws.setProcessTime(new Date());
+                cashDrawsDao.update(cashDraws);
                 return cashDraws;
             } catch (WxPayException e) {
                 e.printStackTrace();
@@ -387,46 +399,6 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
                 .checkName(WxPayConstants.CheckNameOption.NO_CHECK)
                 .description(msg)
                 .build();
-    }
-
-    /**
-     * 更新提现状态
-     *
-     * @param cashDraws
-     * @param admin
-     * @param comment
-     * @return
-     */
-    private CashDraws updateCashDraws(CashDraws cashDraws, Admin admin, String comment) {
-        cashDraws.setOperator(admin.getName());
-        cashDraws.setComment(comment);
-        //修改为已处理状态
-        cashDraws.setCashStatus(CashProcessStatusEnum.DONE.getType());
-        cashDraws.setProcessTime(new Date());
-        cashDrawsDao.update(cashDraws);
-        return cashDraws;
-    }
-
-    /**
-     * 创建魅力值提现流水
-     *
-     * @param cashDraws
-     */
-    private void createVirtualDetails(CashDraws cashDraws) {
-        User user = userService.findById(cashDraws.getUserId());
-        if (user == null) {
-            return;
-        }
-
-        VirtualDetails details = new VirtualDetails();
-        details.setUserId(cashDraws.getUserId());
-        details.setRelevantNo(cashDraws.getCashNo());
-        details.setSum(user.getCharm() - user.getCharmDrawSum());
-        details.setMoney(Math.negateExact(cashDraws.getCharm()));
-        details.setType(VirtualDetailsTypeEnum.CHARM.getType());
-        details.setRemark(VirtualDetailsRemarkEnum.CHARM_DRAW.getMsg());
-        details.setCreateTime(DateUtil.date());
-        virtualDetailsService.create(details);
     }
 
     @Override
@@ -542,7 +514,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
         User user = userService.getCurrentUser();
         if(user != null){
             UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
-            if(userInfoAuth != null && userInfoAuth.getVestFlag() != null && userInfoAuth.getVestFlag()){
+            if(userInfoAuth != null && userInfoAuth.getVestFlag()){
                 suffix = Constant.VEST_SUFFIX;
             }
         }

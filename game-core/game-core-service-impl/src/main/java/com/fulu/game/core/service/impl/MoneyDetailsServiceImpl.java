@@ -53,7 +53,7 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
 
     @Override
     public PageInfo<MoneyDetailsVO> listByAdmin(MoneyDetailsVO moneyDetailsVO, Integer pageSize, Integer pageNum) {
-        if(moneyDetailsVO.getAction() == null){
+        if (moneyDetailsVO.getAction() == null) {
             List<Integer> actions = new ArrayList<>();
             actions.add(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType());
             actions.add(MoneyOperateTypeEnum.ADMIN_SUBTRACT_CHANGE.getType());
@@ -80,8 +80,11 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         calendar.setTime(date);
         calendar.add(Calendar.MONTH, -6);//获取6个月前的时间
         moneyDetailsVO.setStartTime(calendar.getTime());
-        
+
         List<MoneyDetailsVO> list = moneyDetailsDao.findByUser(moneyDetailsVO);
+        if (CollectionUtil.isEmpty(list)) {
+            return null;
+        }
         for (MoneyDetailsVO vo : list) {
             if (vo.getAction().equals(MoneyOperateTypeEnum.USER_DRAW_CASH.getType())) {
                 if (vo.getCashStatus() == null) {
@@ -98,7 +101,7 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
                 //todo gzc 判断逻辑很繁琐、后续优化
             } else if (vo.getAction().equals(MoneyOperateTypeEnum.ADMIN_REFUSE_REMIT.getType())) {
                 vo.setCashStatusMsg(CashProcessStatusEnum.REFUND.getMsg());
-            }else{
+            } else {
                 vo.setCashStatusMsg(MoneyOperateTypeEnum.getMsgByType(vo.getAction()));
             }
         }
@@ -112,7 +115,7 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
      * @return
      */
     @Override
-    public MoneyDetails save(MoneyDetailsVO moneyDetailsVO) {
+    public MoneyDetails addBalance(MoneyDetailsVO moneyDetailsVO) {
         Admin admin = adminService.getCurrentUser();
         log.info("调用管理员加零钱接口，管理员id:{}", admin.getId());
         User user = userService.findByMobile(moneyDetailsVO.getMobile());
@@ -129,29 +132,67 @@ public class MoneyDetailsServiceImpl extends AbsCommonService<MoneyDetails, Inte
         moneyDetails.setSum(newBalance.add(chargeBalance));
         moneyDetails.setOperatorId(admin.getId());
         moneyDetails.setTargetId(user.getId());
-        if(userInfoAuth != null && userInfoAuth.getVestFlag() != null && userInfoAuth.getVestFlag()){
+        if(userInfoAuth != null && userInfoAuth.getVestFlag()){
             moneyDetails.setUserType(UserTypeEnum.VEST_USER.getType());
         } else {
             moneyDetails.setUserType(UserTypeEnum.GENERAL_USER.getType());
         }
         // 当action为null时，设置为用户新增零钱
         BigDecimal money = null;
-        if(moneyDetails.getAction() == null){
-            moneyDetails.setAction(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType());
-            log.info("当前余额:{},加零钱金额:{}", balance, moneyDetailsVO.getMoney());
-            // 平台扣钱
-            money = moneyDetails.getMoney().negate();
-        } else {
-            log.info("当前余额:{},扣除零钱金额:{}", balance, moneyDetailsVO.getMoney());
-            newBalance = balance.subtract(moneyDetailsVO.getMoney());
-            // 平台加钱
-            money = moneyDetails.getMoney();
-        }
+        moneyDetails.setAction(MoneyOperateTypeEnum.ADMIN_ADD_CHANGE.getType());
+        log.info("当前余额:{},加零钱金额:{}", balance, moneyDetailsVO.getMoney());
+        // 平台扣钱
+        money = moneyDetails.getMoney().negate();
+
         moneyDetails.setCreateTime(new Date());
         moneyDetailsDao.create(moneyDetails);
         user.setBalance(newBalance);
         userService.update(user);
         log.info("更新用户余额完成，加零钱后余额:{}", user.getBalance());
+        //计入平台支出流水
+        platformMoneyDetailsService.createSmallChangeDetails(moneyDetails.getRemark(), user.getId(), money);
+        log.info("调用平台支出流水接口执行结束");
+        return moneyDetails;
+    }
+
+
+    @Override
+    public MoneyDetails subtractBalance(MoneyDetailsVO moneyDetailsVO) {
+        Admin admin = adminService.getCurrentUser();
+        log.info("调用管理员扣零钱接口，管理员id:{}", admin.getId());
+        User user = userService.findByMobile(moneyDetailsVO.getMobile());
+        if (null == user) {
+            throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
+        }
+
+        UserInfoAuth userInfoAuth = userInfoAuthService.findByUserId(user.getId());
+        //扣钱之前该用户的零钱
+        BigDecimal balance = user.getBalance();
+        if (balance.compareTo(moneyDetailsVO.getMoney()) < 0) {
+            throw new CashException(CashException.ExceptionCode.CASH_CUT_EXCEPTION);
+        }
+
+        BigDecimal newBalance = balance.subtract(moneyDetailsVO.getMoney());
+        MoneyDetails moneyDetails = new MoneyDetails();
+        BeanUtil.copyProperties(moneyDetailsVO, moneyDetails);
+        BigDecimal chargeBalance = user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance();
+        moneyDetails.setSum(newBalance.add(chargeBalance));
+        moneyDetails.setOperatorId(admin.getId());
+        moneyDetails.setTargetId(user.getId());
+        moneyDetails.setMoney(moneyDetails.getMoney().negate());
+        if (userInfoAuth != null && userInfoAuth.getVestFlag()) {
+            moneyDetails.setUserType(UserTypeEnum.VEST_USER.getType());
+        } else {
+            moneyDetails.setUserType(UserTypeEnum.GENERAL_USER.getType());
+        }
+
+        BigDecimal money = moneyDetails.getMoney();
+        log.info("当前余额:{},扣除零钱金额:{}", balance, moneyDetailsVO.getMoney());
+        moneyDetails.setCreateTime(new Date());
+        moneyDetailsDao.create(moneyDetails);
+        user.setBalance(newBalance);
+        userService.update(user);
+        log.info("更新用户余额完成，扣零钱后余额:{}", user.getBalance());
         //计入平台支出流水
         platformMoneyDetailsService.createSmallChangeDetails(moneyDetails.getRemark(), user.getId(), money);
         log.info("调用平台支出流水接口执行结束");
