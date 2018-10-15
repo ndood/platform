@@ -26,7 +26,14 @@ public interface MoneyDetailsService extends ICommonService<MoneyDetails, Intege
      * @param moneyDetailsVO
      * @return
      */
-    MoneyDetails save(MoneyDetailsVO moneyDetailsVO);
+    MoneyDetails addBalance(MoneyDetailsVO moneyDetailsVO);
+
+    /**
+     * 扣零钱
+     * @param moneyDetailsVO
+     * @return
+     */
+    MoneyDetails subtractBalance(MoneyDetailsVO moneyDetailsVO);
 
     /**
      * 入款-完成陪玩订单

@@ -1,7 +1,7 @@
 package com.fulu.game.core.service;
 
 
-import com.fulu.game.common.enums.RoomRoleTypeEnum;
+import com.fulu.game.common.enums.RoomEnum;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.RoomManageDao;
 import com.fulu.game.core.entity.RoomManage;
@@ -28,7 +28,7 @@ public class RoomManageServiceImpl extends AbsCommonService<RoomManage, Integer>
 
 
     @Override
-    public RoomManage createManage(RoomRoleTypeEnum roomRoleTypeEnum, int userId, String roomNo) {
+    public RoomManage createManage(RoomEnum.RoomRoleTypeEnum roomRoleTypeEnum, int userId, String roomNo) {
         RoomManage roomManage = new RoomManage();
         roomManage.setRoomNo(roomNo);
         roomManage.setRole(roomRoleTypeEnum.getType());

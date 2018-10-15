@@ -2,7 +2,7 @@ package com.fulu.game.app.controller;
 
 import com.fulu.game.common.Result;
 import com.fulu.game.common.enums.PlatformBannerEnum;
-import com.fulu.game.common.enums.RoomRoleTypeEnum;
+import com.fulu.game.common.enums.RoomEnum;
 import com.fulu.game.common.exception.RoomException;
 import com.fulu.game.common.exception.UserException;
 import com.fulu.game.core.entity.*;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -164,6 +165,7 @@ public class RoomController extends BaseController {
                                   String name,
                                   Boolean isShow,
                                   Boolean isLock,
+                                  Boolean isOpenChat,
                                   String password,
                                   Long micDuration,
                                   String notice,
@@ -179,10 +181,12 @@ public class RoomController extends BaseController {
         }
         RoomVO roomVO = new RoomVO();
         roomVO.setId(room.getId());
+        roomVO.setRoomNo(room.getRoomNo());
         roomVO.setIcon(icon);
         roomVO.setName(name);
         roomVO.setIsShow(isShow);
         roomVO.setIsLock(isLock);
+        roomVO.setIsOpenChat(isOpenChat);
         roomVO.setMicDuration(micDuration);
         roomVO.setPassword(password);
         roomVO.setNotice(notice);
@@ -201,8 +205,8 @@ public class RoomController extends BaseController {
     public Result roomRoleAdd(@RequestParam(required = true) String roomNo,
                               @RequestParam(required = true) Integer userId,
                               @RequestParam(required = true) Integer role) {
-        RoomRoleTypeEnum roleTypeEnum = RoomRoleTypeEnum.findByType(role);
-        if (roleTypeEnum == null || roleTypeEnum.equals(RoomRoleTypeEnum.OWNER)) {
+        RoomEnum.RoomRoleTypeEnum roleTypeEnum = RoomEnum.RoomRoleTypeEnum.findByType(role);
+        if (roleTypeEnum == null || roleTypeEnum.equals(RoomEnum.RoomRoleTypeEnum.OWNER)) {
             throw new RoomException(RoomException.ExceptionCode.ROOM_MANAGER_NOT_MATCHING);
         }
         roomManageService.createManage(roleTypeEnum, userId, roomNo);
@@ -297,7 +301,6 @@ public class RoomController extends BaseController {
 
     /**
      * 房间收藏
-     *
      * @param roomNo
      * @return
      */
@@ -316,7 +319,6 @@ public class RoomController extends BaseController {
 
     /**
      * 抱上麦
-     *
      * @param roomNo
      * @return
      */
@@ -369,7 +371,7 @@ public class RoomController extends BaseController {
     public Result roomMicUp(@RequestParam(required = true) String roomNo,
                             @RequestParam(required = true) Integer type) {
         User user = userService.getCurrentUser();
-        Long size = roomService.roomMicListUp(roomNo,type,user.getId());
+        Long size = roomService.micRankListUp(roomNo,type,user.getId());
         return Result.success().data(size);
     }
 
@@ -384,7 +386,7 @@ public class RoomController extends BaseController {
     public Result roomMicDown(@RequestParam(required = true) String roomNo,
                               @RequestParam(required = true) Integer type) {
         User user = userService.getCurrentUser();
-        Long size = roomService.roomMicListDown(roomNo,type,user.getId());
+        Long size = roomService.micRankListDown(roomNo,type,user.getId());
         return Result.success().data(size);
     }
 
@@ -400,15 +402,22 @@ public class RoomController extends BaseController {
         if(types==null){
             return Result.error().msg("上麦列表类型错误!");
         }
+        User user = userService.getCurrentUser();
         String[] typeStrs =  types.split(",");
         List<Integer> typeList = new ArrayList<>();
         for(String typeStr: typeStrs){
             typeList.add(Integer.valueOf(typeStr));
         }
         Map<Integer,Long> map =  roomService.roomMicUpSize(roomNo,typeList);
-        return Result.success().data(map);
+        Map<Integer,Object> sizeObject = new HashMap<>();
+        map.forEach((Integer key,Long val)->{
+            Map<String,Object>  data = new HashMap<>();
+            data.put("people",val);
+            data.put("alreadyInList",roomService.isUserInMicRankList(roomNo,key,user.getId()));
+            sizeObject.put(key,data);
+        });
+        return Result.success().data(sizeObject);
     }
-
 
 
     @RequestMapping("/blacklist/handle")
@@ -423,10 +432,6 @@ public class RoomController extends BaseController {
             return Result.success().msg("解除用户禁言成功");
         }
     }
-
-
-
-
 
 
 }

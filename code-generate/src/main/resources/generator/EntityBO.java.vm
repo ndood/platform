@@ -1,0 +1,16 @@
+package ${package}.entity;
+
+
+import ${package}.entity.${className};
+
+
+
+/**
+ * ${comments}
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+public class ${className}BO  extends ${className} {
+
+}

@@ -45,6 +45,8 @@ public class Room implements Serializable {
 	private Boolean isActivate;
 	//是否是热门推荐
 	private Boolean isHot;
+	//是否开公屏聊天
+	private Boolean isOpenChat;
 	//排序号
 	private Integer sort;
 	//房间模板(1派单房，2娱乐房)

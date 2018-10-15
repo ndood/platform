@@ -1,9 +1,7 @@
 package com.fulu.game.core.service;
 
-import com.fulu.game.common.enums.RoomRoleTypeEnum;
-import com.fulu.game.core.entity.Room;
+import com.fulu.game.common.enums.RoomEnum;
 import com.fulu.game.core.entity.RoomManage;
-import com.fulu.game.core.entity.User;
 
 import java.util.List;
 
@@ -24,7 +22,7 @@ public interface RoomManageService extends ICommonService<RoomManage,Integer>{
      * @param roomNo
      * @return
      */
-    RoomManage createManage(RoomRoleTypeEnum roomRoleTypeEnum, int userId, String roomNo);
+    RoomManage createManage(RoomEnum.RoomRoleTypeEnum roomRoleTypeEnum, int userId, String roomNo);
 
     /**
      * 删除房间马甲

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.RoomAssignOrderDao">
+    <resultMap id="RoomAssignOrderResultMap" type="com.fulu.game.core.entity.RoomAssignOrder">
+        <id column="id" property="id"/>
+        <result column="room_no" property="roomNo"/>
+        <result column="content" property="content"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="room_manager_user_id" property="roomManagerUserId"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="RoomAssignOrderResultBOMap" type="com.fulu.game.core.entity.bo.RoomAssignOrderBO"
+               extends="RoomAssignOrderResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,room_no,content,category_id,room_manager_user_id,status,create_time,update_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="RoomAssignOrderResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_room_assign_order
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="RoomAssignOrderResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_room_assign_order
+    </select>
+
+    <select id="findByParameter" resultMap="RoomAssignOrderResultMap"
+            parameterType="com.fulu.game.core.entity.bo.RoomAssignOrderBO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_room_assign_order
+        <where>
+            <if test="roomNo != null">
+                and room_no = #{roomNo}
+            </if>
+            <if test="content != null">
+                and content = #{content}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="roomManagerUserId != null">
+                and room_manager_user_id = #{roomManagerUserId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_room_assign_order
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.fulu.game.core.entity.RoomAssignOrder">
+        insert into
+        t_room_assign_order (room_no,content,category_id,room_manager_user_id,status,create_time,update_time)
+        values
+        (#{roomNo},#{content},#{categoryId},#{roomManagerUserId},#{status},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.RoomAssignOrder">
+        update t_room_assign_order
+        <set>
+
+            <if test="roomNo != null">
+                room_no = #{roomNo},
+            </if>
+
+            <if test="content != null">
+                content = #{content},
+            </if>
+
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+
+            <if test="roomManagerUserId != null">
+                room_manager_user_id = #{roomManagerUserId},
+            </if>
+
+            <if test="status != null">
+                status = #{status},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

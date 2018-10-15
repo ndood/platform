@@ -129,10 +129,10 @@ public interface RoomService extends ICommonService<Room, Integer> {
     /**
      * 更新用户进入的房间信息
      * @param user
-     * @param roomNo
+     * @param room
      * @return
      */
-    UserChatRoomVO setUserRoomInfo(User user, String roomNo);
+    UserChatRoomVO setUserRoomInfo(User user, Room room);
 
     /**
      * 获取用户在聊天室信息
@@ -172,8 +172,17 @@ public interface RoomService extends ICommonService<Room, Integer> {
      * @param type
      * @return
      */
-    long roomMicListUp(String roomNo, Integer type, int userId);
+    long micRankListUp(String roomNo, Integer type, int userId);
 
+
+    /**
+     * 下麦麦序列表
+     * @param roomNo
+     * @param type
+     * @param userId
+     * @return
+     */
+    long micRankListDown(String roomNo, Integer type, int userId);
 
     /**
      * 上麦列表list
@@ -183,14 +192,6 @@ public interface RoomService extends ICommonService<Room, Integer> {
      */
     List<UserChatRoomVO> roomMicUpList(String roomNo,Integer type);
 
-    /**
-     * 下麦麦序列表
-     * @param roomNo
-     * @param type
-     * @param userId
-     * @return
-     */
-    long roomMicListDown(String roomNo, Integer type, int userId);
 
     /**
      * 麦序列表大小
@@ -207,6 +208,24 @@ public interface RoomService extends ICommonService<Room, Integer> {
      * @return
      */
     Map<Integer,Long> roomMicUpSize(String roomNo, List<Integer> types);
+
+    /**
+     * 获取麦序上所有用户ID
+     * @param roomNo
+     * @param type
+     * @return
+     */
+    Set<Integer> getMicRankListUser(String roomNo,Integer type);
+
+
+    /**
+     * 用户是否存在麦序里
+     * @param roomNo
+     * @param type
+     * @param userId
+     * @return
+     */
+    boolean isUserInMicRankList(String roomNo,int type,int userId);
 
     /**
      * 把用户加入黑名单

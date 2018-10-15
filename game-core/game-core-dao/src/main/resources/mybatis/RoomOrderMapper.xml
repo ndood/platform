@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fulu.game.core.dao.RoomOrderDao">
+    <resultMap id="RoomOrderResultMap" type="com.fulu.game.core.entity.RoomOrder">
+        <id column="id" property="id"/>
+        <result column="type" property="type"/>
+        <result column="room_no" property="roomNo"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="RoomOrderResultBOMap" type="com.fulu.game.core.entity.bo.RoomOrderBO" extends="RoomOrderResultMap">
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,type,room_no,order_no,create_time    </sql>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="RoomOrderResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_room_order
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <select id="findAll" resultMap="RoomOrderResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_room_order
+    </select>
+
+    <select id="findByParameter" resultMap="RoomOrderResultMap"
+            parameterType="com.fulu.game.core.entity.bo.RoomOrderBO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_room_order
+        <where>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="roomNo != null">
+                and room_no = #{roomNo}
+            </if>
+            <if test="orderNo != null">
+                and order_no = #{orderNo}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from t_room_order
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="com.fulu.game.core.entity.RoomOrder">
+        insert into
+        t_room_order (type,room_no,order_no,create_time)
+        values
+        (#{type},#{roomNo},#{orderNo},#{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.fulu.game.core.entity.RoomOrder">
+        update t_room_order
+        <set>
+
+            <if test="type != null">
+                type = #{type},
+            </if>
+
+            <if test="roomNo != null">
+                room_no = #{roomNo},
+            </if>
+
+            <if test="orderNo != null">
+                order_no = #{orderNo},
+            </if>
+
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>
