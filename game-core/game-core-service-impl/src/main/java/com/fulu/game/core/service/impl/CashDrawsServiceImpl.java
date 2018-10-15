@@ -185,7 +185,7 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
                     continue;
                 }
 
-                Integer charm = (user.getCharm() == null ? 0 : user.getCharm()) - (user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum()) + unDrawCharm;
+                Long charm = (user.getCharm() == null ? 0 : user.getCharm()) - (user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum()) + unDrawCharm;
                 meta.setCharmMoney(new BigDecimal(charm)
                         .multiply(Constant.CHARM_TO_MONEY_RATE)
                         .setScale(2, BigDecimal.ROUND_HALF_DOWN));
@@ -467,9 +467,9 @@ public class CashDrawsServiceImpl extends AbsCommonService<CashDraws, Integer> i
             throw new UserException(UserException.ExceptionCode.BODY_NO_AUTH);
         }
 
-        Integer totalCharm = user.getCharm() == null ? 0 : user.getCharm();
-        Integer charmDrawSum = user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum();
-        Integer leftCharm = totalCharm - charmDrawSum;
+        Long totalCharm = user.getCharm() == null ? 0 : user.getCharm();
+        Long charmDrawSum = user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum();
+        Long leftCharm = totalCharm - charmDrawSum;
         if (leftCharm <= 0 || leftCharm < charm) {
             log.error("用户id：{}魅力值提现异常，总魅力值：{}，累计总提现魅力值：{}，剩余魅力值：{}，此次提现魅力值：{}",
                     user.getId(), totalCharm, charmDrawSum, leftCharm, charm);

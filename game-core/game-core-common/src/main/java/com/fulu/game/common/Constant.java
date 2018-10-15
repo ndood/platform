@@ -201,7 +201,7 @@ public interface Constant {
     /**
      * 登录用户获取的虚拟币数量
      */
-    Integer LOGIN_VIRTUAL_MONEY = 10;
+    Long LOGIN_VIRTUAL_MONEY = 10L;
 
     /**
      * 魅力值转化为可提现金额的比例

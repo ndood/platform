@@ -109,7 +109,7 @@ public class VirtualProductServiceImpl extends AbsCommonService<VirtualProduct, 
         boolean isUnlock = virtualProductOrderService.isAlreadyUnlock(userId, virtualProductId);
 
         if (!isUnlock) {
-            virtualProductOrderService.createVirtualOrder(userId, vpaList.get(0).getUserId(), virtualProductId);
+            virtualProductOrderService.createVirtualOrder(userId, vpaList.get(0).getUserId(), virtualProductId,1);
 
         }
     }

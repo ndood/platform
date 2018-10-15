@@ -24,9 +24,9 @@ public class VirtualDetails implements Serializable {
     //关联编号
     private String relevantNo;
     //剩余虚拟币或者魅力值余额
-    private Integer sum;
+    private Long sum;
     //虚拟币或魅力值的增加和消费记录
-    private Integer money;
+    private Long money;
     //类型（1：虚拟币；2：魅力值）
     private Integer type;
     //备注

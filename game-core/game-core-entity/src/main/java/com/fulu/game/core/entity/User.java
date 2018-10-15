@@ -70,12 +70,12 @@ public class User implements Serializable {
     //充值零钱（不可提现）
     private BigDecimal chargeBalance;
     //虚拟零钱（对应钻石数量）
-    private Integer virtualBalance;
+    private Long virtualBalance;
     //魅力值
     @Excel(name = "魅力值", orderNum = "18", width = 15)
-    private Integer charm;
+    private Long charm;
     //累计总提现魅力值
-    private Integer charmDrawSum;
+    private Long charmDrawSum;
     //状态(0封禁,1为解封)
 //    @Excel(name = "用户状态", orderNum = "5", replace = {"封禁_false", "解封_true"}, width = 15)
     private Integer status;

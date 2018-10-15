@@ -685,7 +685,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public User modifyCharm(User user, Integer charm) {
+    public User modifyCharm(User user, Long charm) {
         if (user == null) {
             return null;
         }
@@ -696,7 +696,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
         return user;
     }
 
-    public User modifyCharm(Integer userId, Integer charm) {
+    public User modifyCharm(Integer userId, Long charm) {
         User user = findById(userId);
         if (user == null) {
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
@@ -709,7 +709,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public User modifyVirtualBalance(Integer userId, Integer price) {
+    public User modifyVirtualBalance(Integer userId, Long price) {
         User user = findById(userId);
         if (user == null) {
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
@@ -719,7 +719,7 @@ public class UserServiceImpl extends AbsCommonService<User, Integer> implements 
     }
 
     @Override
-    public User modifyVirtualBalance(User user, Integer price) {
+    public User modifyVirtualBalance(User user, Long price) {
         user.setVirtualBalance(((user.getVirtualBalance() == null) ? 0 : user.getVirtualBalance()) + price);
         user.setUpdateTime(DateUtil.date());
         update(user);

@@ -12,18 +12,18 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum VirtualMoneyPriceEnum {
-    VIRTUAL_MONEY_42(42, "6yuan"),
-    VIRTUAL_MONEY_210(210, "30yuan"),
-    VIRTUAL_MONEY_686(686, "98yuan"),
-    VIRTUAL_MONEY_2086(2086, "298yuan"),
-    VIRTUAL_MONEY_4116(4116, "588yuan"),
-    VIRTUAL_MONEY_6286(6286, "898yuan");
+    VIRTUAL_MONEY_42(42L, "6yuan"),
+    VIRTUAL_MONEY_210(210L, "30yuan"),
+    VIRTUAL_MONEY_686(686L, "98yuan"),
+    VIRTUAL_MONEY_2086(2086L, "298yuan"),
+    VIRTUAL_MONEY_4116(4116L, "588yuan"),
+    VIRTUAL_MONEY_6286(6286L, "898yuan");
 
-    private Integer number;
+    private Long number;
     private String priceStr;
 
 
-    public static int getNumberByPriceStr(String priceStr){
+    public static long getNumberByPriceStr(String priceStr){
         for(VirtualMoneyPriceEnum priceEnum : VirtualMoneyPriceEnum.values()){
             if(priceEnum.getPriceStr().equals(priceStr)){
                 return priceEnum.getNumber();

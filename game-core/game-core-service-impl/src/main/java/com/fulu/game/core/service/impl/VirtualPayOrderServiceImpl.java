@@ -43,11 +43,11 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
     private PlatformMoneyDetailsService platformMoneyDetailsService;
     @Autowired
     private OrderMoneyDetailsService orderMoneyDetailsService;
-
     @Override
     public ICommonDao<VirtualPayOrder, Integer> getDao() {
         return virtualPayOrderDao;
     }
+
 
 
     /**
@@ -59,7 +59,7 @@ public class VirtualPayOrderServiceImpl extends AbsCommonService<VirtualPayOrder
      * @return
      */
     @Override
-    public VirtualPayOrder diamondCharge(Integer userId, Integer virtualMoney, Integer payment, Integer payPath, String ip) {
+    public VirtualPayOrder diamondCharge(Integer userId, Long virtualMoney, Integer payment, Integer payPath, String ip) {
         BigDecimal actualMoney = new BigDecimal(virtualMoney).divide(new BigDecimal(10)).setScale(2, BigDecimal.ROUND_HALF_UP);
         VirtualPayOrder order = new VirtualPayOrder();
         order.setName("虚拟币充值订单：付款金额：¥" + actualMoney + "，虚拟币数量：" + virtualMoney + "");

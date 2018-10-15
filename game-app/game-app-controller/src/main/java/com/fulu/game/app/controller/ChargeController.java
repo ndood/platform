@@ -93,7 +93,7 @@ public class ChargeController extends BaseController {
     @RequestMapping(value = "diamond")
     public Result diamondCharge(HttpServletRequest request,
                                 @RequestParam(required = true) String sessionkey,
-                                @RequestParam(required = true) Integer virtualMoney,
+                                @RequestParam(required = true) Long virtualMoney,
                                 @RequestParam(required = true) Integer payment) {
         User user = userService.getCurrentUser();
         if (!redisOpenService.hasKey(RedisKeyEnum.GLOBAL_FORM_TOKEN.generateKey(sessionkey))) {

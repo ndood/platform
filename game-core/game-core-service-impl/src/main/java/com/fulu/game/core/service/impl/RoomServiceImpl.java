@@ -46,6 +46,10 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     private CategoryService categoryService;
     @Autowired
     private RoomBlacklistService roomBlacklistService;
+    @Autowired
+    private  VirtualProductOrderService virtualProductOrderService;
+    @Autowired
+    private RoomOrderService roomOrderService;
 
 
     @Override
@@ -212,6 +216,10 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     public RoomVO room2VO(Room room) {
         RoomVO roomVO = new RoomVO();
         BeanUtil.copyProperties(room, roomVO);
+
+        roomVO.setOrderRate(new BigDecimal(100));
+        roomVO.setSatisfy(new BigDecimal(5));
+
         //设置房间分类
         RoomCategory roomCategory = roomCategoryService.findById(room.getRoomCategoryId());
         roomVO.setRoomCategoryName(roomCategory.getName());
@@ -249,16 +257,9 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         userChatRoomVO.setGender(user.getGender());
         userChatRoomVO.setAge(user.getAge());
         userChatRoomVO.setHeadPortraitsUrl(user.getHeadPortraitsUrl());
-        userChatRoomVO.setOrderRate(new BigDecimal(100));
-        userChatRoomVO.setSatisfy(new BigDecimal(5.0));
         userChatRoomVO.setRoomNo(room.getRoomNo());
         userChatRoomVO.setRoomName(room.getName());
         userChatRoomVO.setRoomIcon(room.getIcon());
-        userChatRoomVO.setNotice(room.getNotice());
-        userChatRoomVO.setIsOpenChat(room.getIsOpenChat());
-        userChatRoomVO.setSlogan(room.getSlogan());
-        userChatRoomVO.setVirtualPeople(room.getVirtualPeople() == null ? 0 : room.getVirtualPeople());
-        userChatRoomVO.setPeople(userChatRoomVO.getVirtualPeople() + getChatRoomPeople(room.getRoomNo()));
         //todo 计算用户在房间送出礼物数量
         userChatRoomVO.setGiftPrice(new BigDecimal(0));
         //用户身份
@@ -638,6 +639,14 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
                 micObj.getMicUser().setBlackList(false);
                 setMicObj(roomNo, micIndex, micObj);
             }
+        }
+    }
+
+    @Override
+    public void roomSendGift(String roomNo,int productId,int amount,int fromUserId,List<Integer> targetUserIds) {
+        for(Integer userId : targetUserIds){
+            VirtualProductOrder virtualProductOrder = virtualProductOrderService.createVirtualOrder(fromUserId,userId,productId,amount);
+            roomOrderService.createRoomGiftOrder(roomNo,virtualProductOrder.getOrderNo());
         }
     }
 

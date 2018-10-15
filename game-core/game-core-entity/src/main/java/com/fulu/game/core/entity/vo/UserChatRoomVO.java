@@ -29,12 +29,6 @@ public class UserChatRoomVO implements Serializable {
     //年龄
     private Integer age;
 
-    //接单率
-    private BigDecimal orderRate;
-
-    //满意度评分
-    private BigDecimal satisfy;
-
     //房间号
     private String roomNo;
 
@@ -47,23 +41,8 @@ public class UserChatRoomVO implements Serializable {
     //房间图标
     private String roomIcon;
 
-    //是否开公屏
-    private Boolean isOpenChat;
-
-    //房间公告
-    private String notice;
-
-    //房间标语
-    private String slogan;
-
     //是否收藏
     private Boolean isCollect;
-
-    //虚拟在线人数
-    private Integer virtualPeople;
-
-    //房间总人数
-    private Long people;
 
     //麦位置
     private Integer micIndex;

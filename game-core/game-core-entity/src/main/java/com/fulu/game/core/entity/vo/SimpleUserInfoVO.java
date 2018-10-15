@@ -36,7 +36,7 @@ public class SimpleUserInfoVO extends User{
     private BigDecimal chargeBalance;
     //虚拟零钱（对应钻石数量）
     @JsonIgnore
-    private Integer virtualBalance;
+    private Long virtualBalance;
 
     //注册ip
     @JsonIgnore

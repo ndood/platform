@@ -64,7 +64,7 @@ public class MpOrderController extends BaseController {
     @PostMapping("/submit")
     public Result submit(HttpServletRequest request,
                          @RequestParam String sessionkey,
-                         @RequestParam Integer virtualMoney,
+                         @RequestParam Long virtualMoney,
                          @RequestParam Integer payment) {
 
         User user = userService.getCurrentUser();
