@@ -294,18 +294,6 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     }
 
 
-    /**
-     * 更新用户在聊天室信息
-     *
-     * @param userChatRoomVO
-     * @return
-     */
-    public UserChatRoomVO setUserRoomInfo(UserChatRoomVO userChatRoomVO) {
-        Map<String, Object> userMap = BeanUtil.beanToMap(userChatRoomVO);
-        redisOpenService.hset(RedisKeyEnum.CHAT_ROOM_ONLINE_USER_INFO.generateKey(userChatRoomVO.getUserId()), userMap, true);
-        return userChatRoomVO;
-    }
-
 
     /**
      * 获取用户在聊天室信息
@@ -313,8 +301,11 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
      * @return
      */
     public UserChatRoomVO getUserRoomInfo(Integer userId) {
+        if(!redisOpenService.hasKey(RedisKeyEnum.CHAT_ROOM_ONLINE_USER_INFO.generateKey(userId))){
+            return null;
+        }
         Map<String, Object> userMap = redisOpenService.hget(RedisKeyEnum.CHAT_ROOM_ONLINE_USER_INFO.generateKey(userId));
-        if (userMap == null) {
+        if (userMap == null||userMap.isEmpty()) {
             return null;
         }
         return BeanUtil.mapToBean(userMap, UserChatRoomVO.class, true);
@@ -512,7 +503,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
      * @return
      */
     @Override
-    public List<UserChatRoomVO> roomMicUpList(String roomNo, Integer type) {
+    public List<UserChatRoomVO> roomMicUpList(String roomNo, int type) {
         checkRoomExists(roomNo);
         if (type > 2 || type < 1) {
             throw new RoomException(RoomException.ExceptionCode.ROOM_MIC_UP_LIST_ERROR);

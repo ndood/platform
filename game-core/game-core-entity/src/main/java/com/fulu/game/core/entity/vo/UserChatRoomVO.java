@@ -43,6 +43,7 @@ public class UserChatRoomVO implements Serializable {
 
     //房间名称
     private String roomName;
+
     //房间图标
     private String roomIcon;
 
@@ -75,9 +76,9 @@ public class UserChatRoomVO implements Serializable {
 
     //用户认证游戏图标列表
     private List<String>  techCategoryIcons;
+
     //用户认证技能分类列表
     private List<Integer> techCategoryIds;
-
 
 
 }

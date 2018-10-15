@@ -190,7 +190,7 @@ public interface RoomService extends ICommonService<Room, Integer> {
      * @param type
      * @return
      */
-    List<UserChatRoomVO> roomMicUpList(String roomNo,Integer type);
+    List<UserChatRoomVO> roomMicUpList(String roomNo,int type);
 
 
     /**
