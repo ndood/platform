@@ -129,10 +129,10 @@ public interface RoomService extends ICommonService<Room, Integer> {
     /**
      * 更新用户进入的房间信息
      * @param user
-     * @param roomNo
+     * @param room
      * @return
      */
-    UserChatRoomVO setUserRoomInfo(User user, String roomNo);
+    UserChatRoomVO setUserRoomInfo(User user, Room room);
 
     /**
      * 获取用户在聊天室信息

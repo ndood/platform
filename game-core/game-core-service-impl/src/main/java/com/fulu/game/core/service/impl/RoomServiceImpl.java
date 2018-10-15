@@ -159,6 +159,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
             if (roomVO.getVirtualPeople() == null) {
                 roomVO.setVirtualPeople(0);
             }
+            roomVO.setIsOpenChat(true);
             roomVO.setIsShow(true);
             roomVO.setIsLock(false);
             roomVO.setRoomNo(generateRoomNo());
@@ -230,20 +231,17 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
             }
         }
         redisOpenService.setForAdd(RedisKeyEnum.CHAT_ROOM_ONLINE_USER.generateKey(roomNo), user.getId());
-        return setUserRoomInfo(user, roomNo);
+        return setUserRoomInfo(user, room);
     }
 
 
     /**
      * 更新用户进入的房间信息
-     *
      * @param user
-     * @param roomNo
+     * @param room
      * @return
      */
-    public UserChatRoomVO setUserRoomInfo(User user, String roomNo) {
-        Room room = checkRoomExists(roomNo);
-
+    public UserChatRoomVO setUserRoomInfo(User user, Room room) {
         //组装用户信息
         UserChatRoomVO userChatRoomVO = new UserChatRoomVO();
         userChatRoomVO.setUserId(user.getId());
@@ -253,22 +251,23 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         userChatRoomVO.setHeadPortraitsUrl(user.getHeadPortraitsUrl());
         userChatRoomVO.setOrderRate(new BigDecimal(100));
         userChatRoomVO.setSatisfy(new BigDecimal(5.0));
-        userChatRoomVO.setRoomNo(roomNo);
+        userChatRoomVO.setRoomNo(room.getRoomNo());
         userChatRoomVO.setRoomName(room.getName());
         userChatRoomVO.setRoomIcon(room.getIcon());
         userChatRoomVO.setNotice(room.getNotice());
+        userChatRoomVO.setIsOpenChat(room.getIsOpenChat());
         userChatRoomVO.setSlogan(room.getSlogan());
         userChatRoomVO.setVirtualPeople(room.getVirtualPeople() == null ? 0 : room.getVirtualPeople());
-        userChatRoomVO.setPeople(userChatRoomVO.getVirtualPeople() + getChatRoomPeople(roomNo));
+        userChatRoomVO.setPeople(userChatRoomVO.getVirtualPeople() + getChatRoomPeople(room.getRoomNo()));
         //todo 计算用户在房间送出礼物数量
         userChatRoomVO.setGiftPrice(new BigDecimal(0));
         //用户身份
-        RoomManage roomManage = roomManageService.findByUserAndRoomNo(user.getId(), roomNo);
+        RoomManage roomManage = roomManageService.findByUserAndRoomNo(user.getId(), room.getRoomNo());
         if (roomManage != null) {
             userChatRoomVO.setRoomRole(roomManage.getRole());
         }
         //是否收藏
-        RoomCollect roomCollect = roomCollectService.findByRoomAndUser(roomNo, user.getId());
+        RoomCollect roomCollect = roomCollectService.findByRoomAndUser(room.getRoomNo(), user.getId());
         userChatRoomVO.setIsCollect(roomCollect != null);
 
         //查询用户是不是陪玩师,如果是陪玩师添加陪玩师的技能分类
@@ -285,7 +284,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         userChatRoomVO.setTechCategoryIcons(techIcons);
         userChatRoomVO.setTechCategoryIds(techCategoryIds);
         //用户是否是黑名单
-        RoomBlacklist roomBlacklist = roomBlacklistService.findByUserAndRoomNo(user.getId(), roomNo);
+        RoomBlacklist roomBlacklist = roomBlacklistService.findByUserAndRoomNo(user.getId(), room.getRoomNo());
         userChatRoomVO.setBlackList(!(roomBlacklist == null));
 
         //存储
@@ -618,10 +617,11 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     @Override
     public void addBlackList(int userId, String roomNo) {
         log.info("把用户添加黑名单:userId:{},roomNo:{}", userId, roomNo);
+        Room room = checkRoomExists(roomNo);
         User user = userService.findById(userId);
         roomBlacklistService.create(userId, roomNo);
         //更新用户在聊天室禁言状态
-        setUserRoomInfo(user, roomNo);
+        setUserRoomInfo(user, room);
         Integer micIndex = getUserMicIndex(roomNo, userId);
         if (micIndex != null) {
             RoomMicVO micObj = getMicObj(roomNo, micIndex);
@@ -636,9 +636,10 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     @Override
     public void delBlackList(int userId, String roomNo) {
         log.info("把用户删除黑名单:userId:{},roomNo:{}", userId, roomNo);
+        Room room = checkRoomExists(roomNo);
         User user = userService.findById(userId);
         roomBlacklistService.delete(userId, roomNo);
-        setUserRoomInfo(user, roomNo);
+        setUserRoomInfo(user, room);
         Integer micIndex = getUserMicIndex(roomNo, userId);
         if (micIndex != null) {
             RoomMicVO micObj = getMicObj(roomNo, micIndex);

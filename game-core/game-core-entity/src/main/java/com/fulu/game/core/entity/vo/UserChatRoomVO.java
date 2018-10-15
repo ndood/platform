@@ -46,6 +46,9 @@ public class UserChatRoomVO implements Serializable {
     //房间图标
     private String roomIcon;
 
+    //是否开公屏
+    private Boolean isOpenChat;
+
     //房间公告
     private String notice;
 

@@ -165,6 +165,7 @@ public class RoomController extends BaseController {
                                   String name,
                                   Boolean isShow,
                                   Boolean isLock,
+                                  Boolean isOpenChat,
                                   String password,
                                   Long micDuration,
                                   String notice,
@@ -180,10 +181,12 @@ public class RoomController extends BaseController {
         }
         RoomVO roomVO = new RoomVO();
         roomVO.setId(room.getId());
+        roomVO.setRoomNo(room.getRoomNo());
         roomVO.setIcon(icon);
         roomVO.setName(name);
         roomVO.setIsShow(isShow);
         roomVO.setIsLock(isLock);
+        roomVO.setIsOpenChat(isOpenChat);
         roomVO.setMicDuration(micDuration);
         roomVO.setPassword(password);
         roomVO.setNotice(notice);
@@ -298,7 +301,6 @@ public class RoomController extends BaseController {
 
     /**
      * 房间收藏
-     *
      * @param roomNo
      * @return
      */
@@ -414,9 +416,8 @@ public class RoomController extends BaseController {
             data.put("alreadyInList",roomService.isUserInMicRankList(roomNo,key,user.getId()));
             sizeObject.put(key,data);
         });
-        return Result.success().data(map);
+        return Result.success().data(sizeObject);
     }
-
 
 
     @RequestMapping("/blacklist/handle")
@@ -431,10 +432,6 @@ public class RoomController extends BaseController {
             return Result.success().msg("解除用户禁言成功");
         }
     }
-
-
-
-
 
 
 }
