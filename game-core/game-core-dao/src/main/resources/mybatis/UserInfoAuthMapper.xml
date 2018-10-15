@@ -223,7 +223,7 @@
         insert into
         t_user_info_auth (user_id,qq,wechat,is_reject_submit,main_pic_url,push_time_interval,allow_export,auto_say_hello,vest_flag,sort,create_time,update_time,interests,profession,about,im_substitute_id,open_substitute_im,tech_level_id)
         values
-        (#{userId},#{qq},#{wechat},#{isRejectSubmit},#{mainPicUrl},#{pushTimeInterval},#{allowExport},#{autoSayHello},#{vestFlag},#{sort},#{createTime},#{updateTime},#{interests},#{profession},#{about},#{imSubstituteId},#{openSubstituteIm},#{techLevelId})
+        (#{userId},#{qq},#{wechat},#{isRejectSubmit},#{mainPicUrl},#{pushTimeInterval},#{allowExport},#{autoSayHello},IFNULL(#{vestFlag},0),#{sort},#{createTime},#{updateTime},#{interests},#{profession},#{about},#{imSubstituteId},#{openSubstituteIm},#{techLevelId})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.UserInfoAuth">
