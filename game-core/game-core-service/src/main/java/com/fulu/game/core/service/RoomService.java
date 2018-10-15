@@ -210,6 +210,24 @@ public interface RoomService extends ICommonService<Room, Integer> {
     Map<Integer,Long> roomMicUpSize(String roomNo, List<Integer> types);
 
     /**
+     * 获取麦序上所有用户ID
+     * @param roomNo
+     * @param type
+     * @return
+     */
+    Set<Integer> getMicRankListUser(String roomNo,Integer type);
+
+
+    /**
+     * 用户是否存在麦序里
+     * @param roomNo
+     * @param type
+     * @param userId
+     * @return
+     */
+    boolean isUserInMicRankList(String roomNo,int type,int userId);
+
+    /**
      * 把用户加入黑名单
      * @param userId
      * @param roomNo

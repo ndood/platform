@@ -338,12 +338,12 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
 
         if (userChatRoomVO != null && userChatRoomVO.getRoomNo().equals(roomNo)) {
             //删除麦位信息
-            roomMicStatus(roomNo, userChatRoomVO.getMicIndex(), -1);
+            if(userChatRoomVO.getMicIndex()!=null){
+                roomMicStatus(roomNo, userChatRoomVO.getMicIndex(), -1);
+            }
             //删除用户聊天室在线信息
             redisOpenService.delete(RedisKeyEnum.CHAT_ROOM_ONLINE_USER_INFO.generateKey(userId));
-
         }
-
         //删除用户聊天室在线状态
         return redisOpenService.setForDel(RedisKeyEnum.CHAT_ROOM_ONLINE_USER.generateKey(roomNo), userId);
     }
@@ -506,7 +506,12 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         return roomMicVO;
     }
 
-
+    /**
+     * 麦序列表
+     * @param roomNo
+     * @param type
+     * @return
+     */
     @Override
     public List<UserChatRoomVO> roomMicUpList(String roomNo, Integer type) {
         checkRoomExists(roomNo);
@@ -514,7 +519,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
             throw new RoomException(RoomException.ExceptionCode.ROOM_MIC_UP_LIST_ERROR);
         }
         List<UserChatRoomVO> userChatRoomVOS = new ArrayList<>();
-        Set<Integer> userIds = redisOpenService.zsetForAll(RedisKeyEnum.CHAT_ROOM_MIC_UP_LIST.generateKey(roomNo, type), true);
+        Set<Integer> userIds = getMicRankListUser(roomNo, type);
         for (Integer userId : userIds) {
             UserChatRoomVO userChatRoomVO = getUserRoomInfo(userId);
             if (userChatRoomVO != null) {
@@ -533,6 +538,35 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     }
 
 
+    /**
+     * 获取麦序上所有用户ID
+     * @param roomNo
+     * @param type
+     * @return
+     */
+    public Set<Integer> getMicRankListUser(String roomNo,Integer type){
+        Set<Integer> userIds = redisOpenService.zsetForAll(RedisKeyEnum.CHAT_ROOM_MIC_UP_LIST.generateKey(roomNo, type), true);
+        return userIds;
+    }
+
+
+    @Override
+    public boolean isUserInMicRankList(String roomNo, int type, int userId) {
+        Set<Integer> sets = getMicRankListUser(roomNo,type);
+        if(sets.contains(userId)){
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * 用户上麦序
+     * @param roomNo
+     * @param type
+     * @param userId
+     * @return
+     */
     @Override
     public long micRankListUp(String roomNo, Integer type, int userId) {
         log.info("用户上麦序roomNo:{},type:{},userId:{}", roomNo, type, userId);
@@ -545,7 +579,13 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         return roomMicUpSize(roomNo, type);
     }
 
-
+    /**
+     * 用户下麦序
+     * @param roomNo
+     * @param type
+     * @param userId
+     * @return
+     */
     @Override
     public long micRankListDown(String roomNo, Integer type, int userId) {
         log.info("用户下麦序roomNo:{},type:{},userId:{}", roomNo, type, userId);
@@ -559,7 +599,6 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
 
     /**
      * 麦序列表大小
-     *
      * @param roomNo
      * @param types
      * @return

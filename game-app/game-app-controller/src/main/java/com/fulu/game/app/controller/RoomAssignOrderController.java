@@ -43,8 +43,7 @@ public class RoomAssignOrderController extends BaseController {
         if(room.getCategoryId()==null){
             return Result.error().msg("该房间没有设置派单类型!");
         }
-        Category category = categoryService.findById(room.getCategoryId());
-        List<Category> categoryList =  categoryService.findThreeLevelCategory(category.getId());
+        List<Category> categoryList =  categoryService.findThreeLevelCategory(room.getCategoryId());
         return Result.success().data(categoryList);
     }
 

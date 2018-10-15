@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -316,7 +317,6 @@ public class RoomController extends BaseController {
 
     /**
      * 抱上麦
-     *
      * @param roomNo
      * @return
      */
@@ -400,12 +400,20 @@ public class RoomController extends BaseController {
         if(types==null){
             return Result.error().msg("上麦列表类型错误!");
         }
+        User user = userService.getCurrentUser();
         String[] typeStrs =  types.split(",");
         List<Integer> typeList = new ArrayList<>();
         for(String typeStr: typeStrs){
             typeList.add(Integer.valueOf(typeStr));
         }
         Map<Integer,Long> map =  roomService.roomMicUpSize(roomNo,typeList);
+        Map<Integer,Object> sizeObject = new HashMap<>();
+        map.forEach((Integer key,Long val)->{
+            Map<String,Object>  data = new HashMap<>();
+            data.put("people",val);
+            data.put("alreadyInList",roomService.isUserInMicRankList(roomNo,key,user.getId()));
+            sizeObject.put(key,data);
+        });
         return Result.success().data(map);
     }
 

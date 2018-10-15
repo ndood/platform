@@ -159,7 +159,7 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
         Category category = new Category();
         BeanUtil.copyProperties(categoryVO, category);
         // 如果pid不存在默认为一级分类
-        if (category != null && category.getPid() == null) {
+        if (category.getPid() == null) {
             category.setPid(CategoryParentEnum.ACCOMPANY_PLAY.getType());
         }
         if (category.getId() == null) {
@@ -222,10 +222,15 @@ public class CategoryServiceImpl extends AbsCommonService<Category, Integer> imp
         if (category == null || !category.getStatus()) {
             return new ArrayList<>();
         }
-        if (category.getPid() < 10) {
+        if (category.getPid() == 0) {
             return findByFirstPid(pid, true);
+        } else if (category.getPid() < 10) {
+            return findByPid(pid, true);
+        } else {
+            List<Category> categoryList = new ArrayList<>();
+            categoryList.add(category);
+            return categoryList;
         }
-        return findByPid(pid,true);
     }
 
 

@@ -707,6 +707,7 @@ CREATE TABLE `t_room_blacklist` (
   UNIQUE KEY `room_no` (`room_no`,`user_id`) USING BTREE
 )  COMMENT='房间黑名单';
 
+DROP TABLE IF EXISTS `t_room_order`;
 CREATE TABLE `t_room_order` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `type` int(11) NOT NULL COMMENT '1:订单,2:礼物',
@@ -716,6 +717,7 @@ CREATE TABLE `t_room_order` (
   PRIMARY KEY (`id`)
 )  COMMENT='聊天室产生的订单表';
 
+DROP TABLE IF EXISTS `t_room_assign_order`;
 CREATE TABLE `t_room_assign_order` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `room_no` varchar(128) NOT NULL COMMENT '房间号码',
@@ -727,3 +729,12 @@ CREATE TABLE `t_room_assign_order` (
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 )  COMMENT='聊天室派单表';
+
+
+
+-- 虚拟商品订单表增加字段
+ALTER TABLE `t_virtual_product_order`
+ADD COLUMN `amount` int(11) NOT NULL DEFAULT '1' COMMENT '数量' AFTER `price`;
+
+ALTER TABLE `t_virtual_product_order`
+ADD COLUMN `unit_price` int(11) DEFAULT NULL COMMENT '虚拟商品单价' AFTER `amount`;
