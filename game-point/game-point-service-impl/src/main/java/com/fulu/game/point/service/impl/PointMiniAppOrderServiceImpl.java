@@ -188,6 +188,10 @@ public class PointMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
                 throw new ServiceErrorException("该优惠券不能使用!");
             }
         }
+        //若支付金额为小于等于0，设置支付类型为零钱
+        if(order.getActualMoney() != null && order.getActualMoney().compareTo(new BigDecimal("0")) != 1){
+            order.setPayment(PaymentEnum.BALANCE_PAY.getType());
+        }
         //创建订单
         orderService.create(order);
         //保存联系方式
@@ -199,10 +203,6 @@ public class PointMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
         orderPointProductVO.setOrderNo(order.getOrderNo());
         orderPointProductVO.setCreateTime(new Date());
         orderPointProductVO.setUpdateTime(new Date());
-        //若支付金额为小于等于0，设置支付类型为零钱
-        if(totalMoney.compareTo(new BigDecimal("0")) != 1){
-            order.setPayment(PaymentEnum.BALANCE_PAY.getType());
-        }
         orderPointProductService.create(orderPointProductVO);
         //计算订单状态倒计时十分钟
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 10);

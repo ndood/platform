@@ -198,7 +198,7 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
             throw new ServiceErrorException("不能给自己下单哦!");
         }
         //若支付金额为小于等于0，设置支付类型为零钱
-        if(totalMoney.compareTo(new BigDecimal("0")) != 1){
+        if(order.getActualMoney() != null && order.getActualMoney().compareTo(new BigDecimal("0")) != 1){
             order.setPayment(PaymentEnum.BALANCE_PAY.getType());
         }
         //创建订单

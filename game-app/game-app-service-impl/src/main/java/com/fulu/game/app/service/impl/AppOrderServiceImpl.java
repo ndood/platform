@@ -123,7 +123,7 @@ public class AppOrderServiceImpl extends AbOrderOpenServiceImpl {
             throw new OrderException(OrderException.ExceptionCode.ORDER_NOT_MYSELF);
         }
         //若支付金额为小于等于0，设置支付类型为零钱
-        if(totalMoney.compareTo(new BigDecimal("0")) != 1){
+        if(order.getActualMoney() != null && order.getActualMoney().compareTo(new BigDecimal("0")) != 1){
             order.setPayment(PaymentEnum.BALANCE_PAY.getType());
         }
         //创建订单
