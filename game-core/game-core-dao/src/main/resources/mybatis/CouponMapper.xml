@@ -196,7 +196,7 @@
         insert into
         t_coupon (coupon_no,coupon_group_id,deduction,is_new_user,category_id,category_name,type,full_reduction,user_id,mobile,is_use,order_no,start_useful_time,end_useful_time,receive_time,is_first_receive,use_time,receive_ip,use_ip,create_time)
         values
-        (#{couponNo},#{couponGroupId},#{deduction},#{isNewUser},#{categoryId},#{categoryName},type,#{fullReduction},#{userId},#{mobile},#{isUse},#{orderNo},#{startUsefulTime},#{endUsefulTime},#{receiveTime},#{isFirstReceive},#{useTime},#{receiveIp},#{useIp},#{createTime})
+        (#{couponNo},#{couponGroupId},#{deduction},#{isNewUser},#{categoryId},#{categoryName},#{type},#{fullReduction},#{userId},#{mobile},#{isUse},#{orderNo},#{startUsefulTime},#{endUsefulTime},#{receiveTime},#{isFirstReceive},#{useTime},#{receiveIp},#{useIp},#{createTime})
     </insert>
 
     <update id="update" parameterType="com.fulu.game.core.entity.Coupon">
