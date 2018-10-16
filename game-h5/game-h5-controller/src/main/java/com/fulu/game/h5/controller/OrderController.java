@@ -165,8 +165,9 @@ public class OrderController extends BaseController {
         String ip = RequestUtil.getIpAdrress(request);
         Order order = orderService.findByOrderNo(orderNo);
         User user = userService.findById(order.getUserId());
+        //h5支付方式默认为分期乐
         if(payment==null){
-            payment = PaymentEnum.WECHAT_PAY.getType();
+            payment = PaymentEnum.FENQILE_PAY.getType();
         }
         order.setPayment(payment);
         PayRequestModel model = PayRequestModel.newBuilder().order(order).user(user).build();
