@@ -5,7 +5,6 @@ import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.RoomAssignOrderDao;
 import com.fulu.game.core.entity.RoomAssignOrder;
-import com.fulu.game.core.entity.RoomManage;
 import com.fulu.game.core.entity.bo.RoomAssignOrderBO;
 import com.fulu.game.core.entity.vo.RoomAssignOrderVO;
 import com.fulu.game.core.service.*;
@@ -59,15 +58,7 @@ public class RoomAssignOrderServiceImpl extends AbsCommonService<RoomAssignOrder
         create(roomAssignOrder);
 
         //发送派单消息
-        Set<Integer> userIdSet = assignOrderSettingService.findOpenAssignUserByCategoryId(categoryId);
-        List<RoomManage> list = roomManageService.findByRoomNo(roomNo);
-        for(RoomManage roomManage : list){
-            userIdSet.add(roomManage.getUserId());
-        }
-        List<Integer> userIdList = new ArrayList(userIdSet);
-        List<String> imIds = userService.findImIdsByUserIds(userIdList);
-        //发送派单消息
-        messageCenterService.sendAssignOrderMsg(roomAssignOrder.getCategoryId(),roomAssignOrder.getRoomNo(),roomAssignOrder.getContent(),true,imIds.toArray(new String[]{}));
+        messageCenterService.sendAssignOrderMsg(roomAssignOrder);
     }
 
 
@@ -84,6 +75,7 @@ public class RoomAssignOrderServiceImpl extends AbsCommonService<RoomAssignOrder
             roomAssignOrder.setStatus(false);
             roomAssignOrder.setUpdateTime(new Date());
             update(roomAssignOrder);
+            messageCenterService.updateSendAssignOrderMsg(roomAssignOrder);
         }
 
     }
