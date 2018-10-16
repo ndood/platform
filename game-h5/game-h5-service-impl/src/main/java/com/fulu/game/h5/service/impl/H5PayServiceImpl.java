@@ -16,7 +16,7 @@ public class H5PayServiceImpl extends OrderPayServiceImpl {
 
     @Override
     public void payOrder(Integer payment, String orderNo, BigDecimal actualMoney) {
-        h5OrderService.payOrder(orderNo, actualMoney);
+        h5OrderService.payOrder(payment, orderNo, actualMoney);
     }
 
 

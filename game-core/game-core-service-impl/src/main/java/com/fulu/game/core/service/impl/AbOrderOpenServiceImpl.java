@@ -273,7 +273,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
      * @return
      */
     @Override
-    public OrderVO payOrder(String orderNo, BigDecimal orderMoney) {
+    public OrderVO payOrder(Integer payment, String orderNo, BigDecimal orderMoney) {
         log.info("用户支付订单orderNo:{},orderMoney:{}", orderNo, orderMoney);
         Order order = orderService.findByOrderNo(orderNo);
         if (order.getIsPay()) {
@@ -284,6 +284,7 @@ public abstract class AbOrderOpenServiceImpl implements OrderOpenService {
         order.setStatus(OrderStatusEnum.WAIT_SERVICE.getStatus());
         order.setUpdateTime(new Date());
         order.setPayTime(new Date());
+        order.setPayment(payment);
         orderService.update(order);
         //记录平台流水
         platformMoneyDetailsService.createOrderDetails(PlatFormMoneyTypeEnum.ORDER_PAY, order.getOrderNo(), order.getTotalMoney());

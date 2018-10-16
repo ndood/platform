@@ -19,7 +19,7 @@ public interface OrderOpenService {
      * @param orderNo
      * @return
      */
-    OrderVO payOrder(String orderNo, BigDecimal orderMoney);
+    OrderVO payOrder(Integer payment, String orderNo, BigDecimal orderMoney);
 
     /**
      * 陪玩师开始服务

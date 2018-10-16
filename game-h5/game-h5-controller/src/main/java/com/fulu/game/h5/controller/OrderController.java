@@ -1,6 +1,7 @@
 package com.fulu.game.h5.controller;
 
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.PaymentEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.DataException;
 import com.fulu.game.core.entity.Order;
@@ -159,10 +160,16 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/pay")
     @Deprecated
     public Result pay(@RequestParam(required = true) String orderNo,
-                      HttpServletRequest request) {
+                      HttpServletRequest request,
+                      @RequestParam(required = false)Integer payment) {
         String ip = RequestUtil.getIpAdrress(request);
         Order order = orderService.findByOrderNo(orderNo);
         User user = userService.findById(order.getUserId());
+        //h5支付方式默认为分期乐
+        if(payment==null){
+            payment = PaymentEnum.FENQILE_PAY.getType();
+        }
+        order.setPayment(payment);
         PayRequestModel model = PayRequestModel.newBuilder().order(order).user(user).build();
         PayRequestRes res = h5PayService.payRequest(model);
         return Result.success().data(res);

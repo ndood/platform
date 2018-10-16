@@ -380,14 +380,22 @@ public class UserInfoAuthServiceImpl extends AbsCommonService<UserInfoAuth, Inte
         userInfoAuthVO.setHistoryAccessedCount(redisOpenService.getInteger(RedisKeyEnum.HISTORY_ACCESSED_COUNT.generateKey(userId)));
         userInfoAuthVO.setDynamicCount(redisOpenService.getInteger(RedisKeyEnum.DYNAMIC_COUNT.generateKey(userId)));
         // 新增用户认证图片、语音、和视频文件列表
-        List<UserInfoAuthFile> portraitFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthVO.getId(), FileTypeEnum.PIC.getType());
+        List<UserInfoAuthFile> portraitFiles = new ArrayList<>();
+        if(userInfoAuthVO != null && userInfoAuthVO.getId() != null){
+            portraitFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthVO.getId(), FileTypeEnum.PIC.getType());
+        }
         userInfoAuthVO.setPortraitList(portraitFiles);
-        List<UserInfoAuthFile> voiceFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthVO.getId(), FileTypeEnum.VOICE.getType());
+        List<UserInfoAuthFile> voiceFiles = new ArrayList<>();
+        if(userInfoAuthVO != null && userInfoAuthVO.getId() != null) {
+            voiceFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthVO.getId(), FileTypeEnum.VOICE.getType());
+        }
         userInfoAuthVO.setVoiceList(voiceFiles);
         //添加视频信息
-        List<UserInfoAuthFile> videoFiles = userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthVO.getId(), FileTypeEnum.VIDEO.getType());
+        List<UserInfoAuthFile> videoFiles = new ArrayList<>();
+        if(userInfoAuthVO != null && userInfoAuthVO.getId() != null) {
+            videoFiles =userInfoAuthFileService.findByUserAuthIdAndType(userInfoAuthVO.getId(), FileTypeEnum.VIDEO.getType());
+        }
         userInfoAuthVO.setVideoList(videoFiles);
-        // TODO shijiaoyun 此处还需要添加主接单技能和订单信息
     }
 
     @Override

@@ -19,7 +19,7 @@ public class PlayMiniAppPayServiceImpl extends OrderPayServiceImpl {
 
     @Override
     public void payOrder(Integer payment, String orderNo, BigDecimal actualMoney) {
-        playMiniAppOrderService.payOrder(orderNo, actualMoney);
+        playMiniAppOrderService.payOrder(payment,orderNo, actualMoney);
     }
 
 
