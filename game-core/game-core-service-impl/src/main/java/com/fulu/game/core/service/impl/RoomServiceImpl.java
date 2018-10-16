@@ -698,6 +698,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     public Room checkRoomExists(String roomNo) {
         Room room = findByRoomNo(roomNo);
         if (room == null) {
+            log.error("房间:{}，不存在",roomNo);
             throw new RoomException(RoomException.ExceptionCode.ROOM_NOT_EXIST);
         }
         return room;

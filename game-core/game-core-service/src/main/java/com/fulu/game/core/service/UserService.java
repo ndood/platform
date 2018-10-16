@@ -8,6 +8,7 @@ import com.fulu.game.core.entity.vo.UserVO;
 import com.fulu.game.core.entity.vo.searchVO.UserInfoAuthSearchVO;
 import com.github.pagehelper.PageInfo;
 import me.chanjar.weixin.common.exception.WxErrorException;
+import org.apache.ibatis.annotations.Param;
 
 import java.io.IOException;
 import java.util.Date;
@@ -36,6 +37,14 @@ public interface UserService extends ICommonService<User, Integer> {
      * @return
      */
     User findByUnionId(String unionId);
+
+    /**
+     * 通过UserId查询IMIds
+     * @param userIds
+     * @return
+     */
+    List<String> findImIdsByUserIds(List<Integer> userIds);
+
 
     /**
      * 查询所有陪玩师

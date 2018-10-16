@@ -4,6 +4,7 @@ import com.fulu.game.core.entity.AssignOrderSetting;
 import com.fulu.game.core.entity.vo.AssignOrderSettingVO;
 
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -19,4 +20,12 @@ public interface AssignOrderSettingService extends ICommonService<AssignOrderSet
      void save(AssignOrderSettingVO assignOrderSettingVO);
 
      AssignOrderSettingVO findByUserId(Integer userId);
+
+
+     /**
+      * 通过游戏ID查询所有打开派单的用户ID
+      * @return
+      */
+     Set<Integer> findOpenAssignUserByCategoryId(Integer categoryId);
+
 }

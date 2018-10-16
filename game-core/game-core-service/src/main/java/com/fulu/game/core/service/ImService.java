@@ -39,7 +39,7 @@ public interface ImService {
      */
     boolean sendMsgToImUser(String targetImId, String action);
 
-    boolean sendMsgToImUser(String[] targetImId, String fromImId , String action , Map<String, String> extMap);
+    boolean sendMsgToImUser(String[] targetImId, String fromImId , String action , Map<String, Object> extMap);
 
     /**
      * 增加陪玩师未读消息

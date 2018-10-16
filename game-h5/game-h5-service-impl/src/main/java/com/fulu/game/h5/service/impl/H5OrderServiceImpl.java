@@ -123,7 +123,7 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         if (vestFlag || agentIm) {
             log.info("系统提示：用户下了新订单, orderNo:{}", order.getOrderNo());
             User user = userService.findById(order.getUserId());
-            Map<String, String> extMap = new HashMap<>();
+            Map<String, Object> extMap = new HashMap<>();
             extMap.put("msg", "系统提示：用户下了新订单");
             imService.sendMsgToImUser(new String[]{server.getImId()}, user.getImId(), Constant.SERVICE_USER_PAY_ORDER, extMap);
         }

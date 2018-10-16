@@ -65,6 +65,19 @@
         </where>
     </select>
 
+    <select id="findEnableByUserIds" resultMap="AssignOrderSettingResultMap" >
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_assign_order_setting
+        <where>
+            enable = true
+            and  user_id in
+            <foreach collection="userIds" item="userId" separator="," open="(" close=")">
+                #{userId}
+            </foreach>
+        </where>
+    </select>
+
     <delete id="deleteById" parameterType="java.lang.Integer">
         delete from t_assign_order_setting
         <where>
