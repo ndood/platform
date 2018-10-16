@@ -208,10 +208,15 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/pay")
     @Deprecated
     public Result pay(@RequestParam(required = true) String orderNo,
-                      HttpServletRequest request) {
+                      HttpServletRequest request,
+                      @RequestParam(required = false)Integer payment) {
         String ip = RequestUtil.getIpAdrress(request);
         Order order = pointMiniAppOrderServiceImpl.findByOrderNo(orderNo);
         User user = userService.findById(order.getUserId());
+        if(payment==null){
+            payment = PaymentEnum.WECHAT_PAY.getType();
+        }
+        order.setPayment(payment);
         PayRequestModel model =  PayRequestModel.newBuilder().order(order).user(user).build();
         PayRequestRes res = pointMiniAppPayService.payRequest(model);
         return Result.success().data(res.getRequestParameter());

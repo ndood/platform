@@ -18,7 +18,7 @@ public class PointMiniAppPayServiceImpl extends OrderPayServiceImpl {
 
     @Override
     public void payOrder(Integer payment, String orderNo, BigDecimal actualMoney) {
-        pointMiniAppOrderService.payOrder(orderNo, actualMoney);
+        pointMiniAppOrderService.payOrder(payment, orderNo, actualMoney);
     }
 
 }

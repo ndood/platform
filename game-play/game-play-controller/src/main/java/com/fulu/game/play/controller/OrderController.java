@@ -3,6 +3,7 @@ package com.fulu.game.play.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fulu.game.common.Result;
+import com.fulu.game.common.enums.PaymentEnum;
 import com.fulu.game.common.enums.PlatformEcoEnum;
 import com.fulu.game.common.enums.RedisKeyEnum;
 import com.fulu.game.common.exception.DataException;
@@ -155,9 +156,14 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/pay")
     @Deprecated
     public Result pay(@RequestParam(required = true) String orderNo,
-                      HttpServletRequest request) {
+                      HttpServletRequest request,
+                      @RequestParam(required = false)Integer payment) {
         Order order = orderService.findByOrderNo(orderNo);
         User user = userService.findById(order.getUserId());
+        if(payment==null){
+            payment = PaymentEnum.WECHAT_PAY.getType();
+        }
+        order.setPayment(payment);
         PayRequestModel model =  PayRequestModel.newBuilder().order(order).user(user).build();
         PayRequestRes res = playMiniAppPayService.payRequest(model);
         return Result.success().data(res.getRequestParameter());
