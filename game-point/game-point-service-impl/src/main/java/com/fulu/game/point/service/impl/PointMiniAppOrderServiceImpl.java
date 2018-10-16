@@ -1,10 +1,7 @@
 package com.fulu.game.point.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.fulu.game.common.enums.OrderStatusEnum;
-import com.fulu.game.common.enums.OrderStatusGroupEnum;
-import com.fulu.game.common.enums.OrderTypeEnum;
-import com.fulu.game.common.enums.UserTypeEnum;
+import com.fulu.game.common.enums.*;
 import com.fulu.game.common.exception.ServiceErrorException;
 import com.fulu.game.common.threadpool.SpringThreadPoolExecutor;
 import com.fulu.game.core.dao.OrderDao;
@@ -202,6 +199,10 @@ public class PointMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
         orderPointProductVO.setOrderNo(order.getOrderNo());
         orderPointProductVO.setCreateTime(new Date());
         orderPointProductVO.setUpdateTime(new Date());
+        //若支付金额为小于等于0，设置支付类型为零钱
+        if(totalMoney.compareTo(new BigDecimal("0")) != 1){
+            order.setPayment(PaymentEnum.BALANCE_PAY.getType());
+        }
         orderPointProductService.create(orderPointProductVO);
         //计算订单状态倒计时十分钟
         orderStatusDetailsService.create(order.getOrderNo(), order.getStatus(), 10);

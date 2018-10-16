@@ -248,6 +248,10 @@ public class PlayMiniAppOrderServiceImpl extends AbOrderOpenServiceImpl {
         order.setCharges(category.getCharges());
         order.setContactType(contactType);
         order.setContactInfo(contactInfo);
+        //若支付金额为小于等于0，设置支付类型为零钱
+        if(totalMoney.compareTo(new BigDecimal("0")) != 1){
+            order.setPayment(PaymentEnum.BALANCE_PAY.getType());
+        }
         //使用优惠券
         Coupon coupon = null;
         if (StringUtils.isNotBlank(couponNo)) {

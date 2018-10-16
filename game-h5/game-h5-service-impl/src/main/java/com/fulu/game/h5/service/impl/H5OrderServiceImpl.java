@@ -197,6 +197,10 @@ public class H5OrderServiceImpl extends AbOrderOpenServiceImpl {
         if (order.getUserId().equals(order.getServiceUserId())) {
             throw new ServiceErrorException("不能给自己下单哦!");
         }
+        //若支付金额为小于等于0，设置支付类型为零钱
+        if(totalMoney.compareTo(new BigDecimal("0")) != 1){
+            order.setPayment(PaymentEnum.BALANCE_PAY.getType());
+        }
         //创建订单
         orderService.create(order);
 
