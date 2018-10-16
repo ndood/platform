@@ -6,6 +6,7 @@ import com.fulu.game.core.entity.vo.AssignOrderSettingVO;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 派单设置
@@ -18,4 +19,6 @@ public interface AssignOrderSettingDao extends ICommonDao<AssignOrderSetting,Int
 
     List<AssignOrderSetting> findByParameter(AssignOrderSettingVO assignOrderSettingVO);
 
+
+    List<AssignOrderSetting> findEnableByUserIds(@Param(value = "userIds") List<Integer> userIds);
 }

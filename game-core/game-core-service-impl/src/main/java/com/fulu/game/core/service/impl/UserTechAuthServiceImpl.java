@@ -401,6 +401,7 @@ public class UserTechAuthServiceImpl extends AbsCommonService<UserTechAuth, Inte
         UserTechAuthVO param = new UserTechAuthVO();
         param.setCategoryId(categoryId);
         param.setStatus(TechAuthStatusEnum.NORMAL.getType());
+        param.setIsActivate(true);
         return userTechAuthDao.findByParameter(param);
     }
 

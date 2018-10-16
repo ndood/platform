@@ -1,3 +1,4 @@
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
@@ -8,6 +9,7 @@ import org.junit.Test;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -43,13 +45,17 @@ public class Test1 {
 
     @Test
     public void test2() {
-        try {
-            String url1 = "http:\\/\\/test-game-play.oss-cn-hangzhou.aliyuncs.com\\/temp\\/2018\\/9\\/20\\/7a2ecd4ea2d34fe2a5fbca2eea6943de.png";
-            URL url = new URL(url1);
-            System.out.println(url.getPath().substring(1));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Date date = DateUtil.parseTime("02:00:00");
+
+        Date date1 = new Date();
+        String midateStr = DateUtil.format(new Date(),"HH:mm:ss");
+
+        Date date2 = DateUtil.parseTime(midateStr);
+
+        int res = date.compareTo(date2);
+        System.out.println(res);
+
+        System.out.println(date);
     }
 
     @Test

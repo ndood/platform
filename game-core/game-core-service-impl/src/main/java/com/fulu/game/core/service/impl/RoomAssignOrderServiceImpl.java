@@ -5,15 +5,15 @@ import com.fulu.game.common.utils.CollectionUtil;
 import com.fulu.game.core.dao.ICommonDao;
 import com.fulu.game.core.dao.RoomAssignOrderDao;
 import com.fulu.game.core.entity.RoomAssignOrder;
+import com.fulu.game.core.entity.RoomManage;
 import com.fulu.game.core.entity.bo.RoomAssignOrderBO;
 import com.fulu.game.core.entity.vo.RoomAssignOrderVO;
-import com.fulu.game.core.service.RoomAssignOrderService;
+import com.fulu.game.core.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @Service
@@ -22,7 +22,14 @@ public class RoomAssignOrderServiceImpl extends AbsCommonService<RoomAssignOrder
 
     @Autowired
     private RoomAssignOrderDao roomAssignOrderDao;
-
+    @Autowired
+    private AssignOrderSettingService assignOrderSettingService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private RoomManageService roomManageService;
+    @Autowired
+    private MessageCenterService messageCenterService;
 
     @Override
     public ICommonDao<RoomAssignOrder, Integer> getDao() {
@@ -50,6 +57,17 @@ public class RoomAssignOrderServiceImpl extends AbsCommonService<RoomAssignOrder
         roomAssignOrder.setUpdateTime(new Date());
         log.info("[{}]房间创建了一个派单消息:roomAssignOrder:{}", roomAssignOrder);
         create(roomAssignOrder);
+
+        //发送派单消息
+        Set<Integer> userIdSet = assignOrderSettingService.findOpenAssignUserByCategoryId(categoryId);
+        List<RoomManage> list = roomManageService.findByRoomNo(roomNo);
+        for(RoomManage roomManage : list){
+            userIdSet.add(roomManage.getUserId());
+        }
+        List<Integer> userIdList = new ArrayList(userIdSet);
+        List<String> imIds = userService.findImIdsByUserIds(userIdList);
+        //发送派单消息
+        messageCenterService.sendAssignOrderMsg(roomAssignOrder.getCategoryId(),roomAssignOrder.getRoomNo(),roomAssignOrder.getContent(),true,imIds.toArray(new String[]{}));
     }
 
 
@@ -79,5 +97,6 @@ public class RoomAssignOrderServiceImpl extends AbsCommonService<RoomAssignOrder
         List<RoomAssignOrder> roomAssignOrderList = roomAssignOrderDao.findByParameter(param);
         return CollectionUtil.copyNewCollections(roomAssignOrderList, RoomAssignOrderVO.class);
     }
+
 
 }

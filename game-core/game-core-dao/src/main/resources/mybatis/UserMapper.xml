@@ -571,6 +571,18 @@
         </where>
     </update>
 
+
+    <select id="findImIdsByUserIds" resultType="java.lang.String">
+        SELECT im_id from t_user
+        <where>
+            id in
+            <foreach collection="userIds" item="userId" separator="," open="(" close=")">
+                #{userId}
+            </foreach>
+        </where>
+    </select>
+
+
     <select id="findImNullUser" resultMap="ImUserMap">
         SELECT id AS userId,im_id AS username,im_psw as imPsw from t_user WHERE im_id IS NULL OR im_id = ''
     </select>

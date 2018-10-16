@@ -34,6 +34,13 @@ public interface UserDao extends ICommonDao<User, Integer> {
     List<ImUser> findImNullUser();
 
     /**
+     * 通过userIds查询imId
+     * @param userIds
+     * @return
+     */
+    List<String> findImIdsByUserIds(@Param(value = "userIds") List<Integer> userIds);
+
+    /**
      * 查询userVo,vo包含用户推送间隔字段
      *
      * @param userIds

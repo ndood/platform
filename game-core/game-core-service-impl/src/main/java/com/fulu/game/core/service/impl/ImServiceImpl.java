@@ -106,8 +106,7 @@ public class ImServiceImpl implements ImService {
 
     @Override
     public boolean sendMsgToImUser(String targetImId, String action) {
-
-        Map<String, String> extMap = new HashMap<>();
+        Map<String, Object> extMap = new HashMap<>();
         extMap.put("flag", Constant.SERVICE_USER_ACCEPT_ORDER);
         return sendMsgToImUser(new String[]{targetImId}, "admin" ,action,extMap);
     }
@@ -115,13 +114,12 @@ public class ImServiceImpl implements ImService {
 
 
     @Override
-    public boolean sendMsgToImUser(String[] targetImId, String fromImId , String action , Map<String, String> extMap) {
+    public boolean sendMsgToImUser(String[] targetImId, String fromImId , String action , Map<String, Object> extMap) {
         log.info("正在发送IM通知消息给老板，imId:{}", targetImId);
         String token = imUtil.getImToken();
         if (StringUtils.isBlank(token)) {
             token = getToken();
         }
-
         String Authorization = "Bearer " + token;
         Map<String, Object> headerMap = new HashMap();
         headerMap.put("Authorization", Authorization);
@@ -138,11 +136,8 @@ public class ImServiceImpl implements ImService {
         msgMap.put("type", "cmd");
         msgMap.put("action", action);
         paramMap.put("msg", msgMap);
-
         paramMap.put("ext", extMap);
-
         paramMap.put("from", fromImId);
-
         JSONObject jsonObject = new JSONObject(paramMap);
         String body = jsonObject.toString();
         HttpResponse httpResponse = HttpUtils.post(userUrl, body, headerMap);

@@ -456,7 +456,7 @@ public class RoomController extends BaseController {
             idList.add(Integer.valueOf(idVal));
         }
         roomService.roomSendGift(roomNo,productId,amount,user.getId(),idList);
-        return Result.success();
+        return Result.success().msg("赠送礼物成功!");
     }
 
 }
