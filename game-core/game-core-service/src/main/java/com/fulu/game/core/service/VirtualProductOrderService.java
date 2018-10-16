@@ -31,7 +31,7 @@ public interface VirtualProductOrderService extends ICommonService<VirtualProduc
      * @param virtualProductId 虚拟商品id
      * @return 虚拟商品订单
      */
-    VirtualProductOrder createVirtualOrder(Integer fromUserId, Integer targetUserId, Integer virtualProductId);
+    VirtualProductOrder createVirtualOrder(int fromUserId, int targetUserId, int virtualProductId,int amount);
     
     
     boolean isAlreadyUnlock(Integer userId , Integer virtualProductId);

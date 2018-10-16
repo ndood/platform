@@ -45,7 +45,7 @@ public class VirtualPayOrder implements Serializable {
     //实付金额
     private BigDecimal actualMoney;
     //虚拟商品价格（对应钻石数量）
-    private Integer virtualMoney;
+    private Long virtualMoney;
     //充值到平台的金额
     @Excel(name = "充值金额", orderNum = "6", width = 15)
     private BigDecimal money;

@@ -190,7 +190,7 @@ public interface RoomService extends ICommonService<Room, Integer> {
      * @param type
      * @return
      */
-    List<UserChatRoomVO> roomMicUpList(String roomNo,Integer type);
+    List<UserChatRoomVO> roomMicUpList(String roomNo,int type);
 
 
     /**
@@ -241,6 +241,13 @@ public interface RoomService extends ICommonService<Room, Integer> {
      */
     void delBlackList(int userId,String roomNo);
 
-
+    /**
+     * 聊天室赠送礼物
+     * @param roomNo
+     * @param productId
+     * @param amount
+     * @param targetUserIds
+     */
+    void roomSendGift(String roomNo,int productId,int amount,int fromUserId,List<Integer> targetUserIds);
 
 }

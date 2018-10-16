@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -56,7 +57,7 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
      */
     @Override
     public VirtualProductOrder sendGift(Integer targetUserId, Integer virtualProductId) {
-        return createVirtualOrder(userService.getCurrentUser().getId(), targetUserId, virtualProductId);
+        return createVirtualOrder(userService.getCurrentUser().getId(), targetUserId, virtualProductId,1);
     }
 
     /**
@@ -65,29 +66,25 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
      * @param fromUserId       发起人id
      * @param targetUserId     接收人id
      * @param virtualProductId 虚拟商品id
+     * @param amount 虚拟商品数量
      * @return 虚拟商品订单
      */
     @Override
-    public VirtualProductOrder createVirtualOrder(Integer fromUserId, Integer targetUserId, Integer virtualProductId) {
-        boolean paramFlag = fromUserId == null || targetUserId == null || virtualProductId == null;
-        if (paramFlag) {
-            throw new ParamsException(ParamsException.ExceptionCode.PARAM_NULL_EXCEPTION);
-        }
-
+    public VirtualProductOrder createVirtualOrder(int fromUserId, int targetUserId, int virtualProductId,int amount) {
         User fromUser = userService.findById(fromUserId);
         if (fromUser == null) {
             log.info("发起人用户id：{}查询数据库不存在", fromUserId);
             throw new UserException(UserException.ExceptionCode.USER_NOT_EXIST_EXCEPTION);
         }
 
-        Integer virtualBalance = fromUser.getVirtualBalance() == null ? 0 : fromUser.getVirtualBalance();
+        Long virtualBalance = fromUser.getVirtualBalance() == null ? 0 : fromUser.getVirtualBalance();
         VirtualProduct virtualProduct = virtualProductService.findById(virtualProductId);
         if (virtualProduct == null) {
             log.error("虚拟商品id：{}不存在", virtualProductId);
             throw new VirtualProductException(VirtualProductException.ExceptionCode.NOT_EXIST);
         }
 
-        Integer price = virtualProduct.getPrice();
+        Long price = new BigDecimal(virtualProduct.getPrice()).multiply(new BigDecimal(amount)).longValue();
         if (virtualBalance < price) {
             log.error("用户userId：{}的钻石余额不够支付虚拟商品，钻石余额：{}，虚拟商品价格：{}",
                     fromUser.getId(), virtualBalance, price);
@@ -101,15 +98,14 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
         }
 
         Integer type = virtualProduct.getType();
-        //发起人扣钻石
-        fromUser = userService.modifyVirtualBalance(fromUser, Math.negateExact(price));
+
         //记录订单
         VirtualProductOrder order = new VirtualProductOrder();
         order.setOrderNo(generateVirtualProductOrderNo());
         order.setVirtualProductId(virtualProductId);
         order.setPrice(price);
-        order.setUnitPrice(price);
-        order.setAmount(1);
+        order.setUnitPrice(virtualProduct.getPrice());
+        order.setAmount(amount);
         order.setFromUserId(fromUser.getId());
         order.setTargetUserId(targetUserId);
         order.setRemark(VirtualProductTypeEnum.getMsgByType(type));
@@ -117,25 +113,28 @@ public class VirtualProductOrderServiceImpl extends AbsCommonService<VirtualProd
         order.setCreateTime(DateUtil.date());
         create(order);
 
+        //发起人扣钻石
+        fromUser = userService.modifyVirtualBalance(fromUser, Math.negateExact(order.getPrice()));
+
         //记录发起人流水
         VirtualDetails details = new VirtualDetails();
         details.setUserId(fromUser.getId());
         details.setRelevantNo(order.getOrderNo());
         details.setSum(fromUser.getVirtualBalance());
-        details.setMoney(Math.negateExact(price));
+        details.setMoney(Math.negateExact(order.getPrice()));
         details.setType(VirtualDetailsTypeEnum.VIRTUAL_MONEY.getType());
         details.setRemark(VirtualDetailsRemarkEnum.getMsgByType(type));
         details.setCreateTime(DateUtil.date());
         virtualDetailsService.create(details);
 
         //接收人加魅力值
-        targetUser = userService.modifyCharm(targetUser, price);
+        targetUser = userService.modifyCharm(targetUser, order.getPrice());
         //记录接收人流水
         VirtualDetails targetDetails = new VirtualDetails();
         targetDetails.setUserId(targetUser.getId());
         targetDetails.setRelevantNo(order.getOrderNo());
         targetDetails.setSum(targetUser.getCharm());
-        targetDetails.setMoney(price);
+        targetDetails.setMoney(Math.negateExact(order.getPrice()));
         targetDetails.setType(VirtualDetailsTypeEnum.CHARM.getType());
         //设置接收人的remark备注信息
         String targetUserRemark;

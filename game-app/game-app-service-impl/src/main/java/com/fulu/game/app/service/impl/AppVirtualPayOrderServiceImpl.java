@@ -25,7 +25,6 @@ public class AppVirtualPayOrderServiceImpl extends VirtualPayOrderServiceImpl {
 
     /**
      * 苹果内购充值钻石
-     *
      * @param receiptData
      * @param userId
      * @param ip
@@ -40,7 +39,7 @@ public class AppVirtualPayOrderServiceImpl extends VirtualPayOrderServiceImpl {
         if (appstorePayDetailService.findByTransactionId(detail.getTransactionId()) != null) {
             throw new PayException(PayException.ExceptionCode.REPETITION_PAY);
         }
-        int virtualMoney = VirtualMoneyPriceEnum.getNumberByPriceStr(detail.getProductId());
+        long virtualMoney = VirtualMoneyPriceEnum.getNumberByPriceStr(detail.getProductId());
         VirtualPayOrder virtualPayOrder = diamondCharge(userId, virtualMoney, PaymentEnum.APPLE_STORE_PAY.getType(), PlatformEcoEnum.IOS.getType(), ip);
         detail.setOrderNo(virtualPayOrder.getOrderNo());
         detail.setCreateDate(new Date());

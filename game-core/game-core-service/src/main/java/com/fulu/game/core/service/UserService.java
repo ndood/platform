@@ -271,7 +271,7 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param price  金额
      * @return 是否修改成功
      */
-    User modifyVirtualBalance(Integer userId, Integer price);
+    User modifyVirtualBalance(Integer userId, Long price);
 
     /**
      * 修改用户虚拟币余额
@@ -280,7 +280,7 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param price 金额
      * @return 是否修改成功
      */
-    User modifyVirtualBalance(User user, Integer price);
+    User modifyVirtualBalance(User user, Long price);
 
     /**
      * 修改用户魅力值
@@ -289,7 +289,7 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param price 魅力值修改量
      * @return 用户Bean
      */
-    User modifyCharm(User user, Integer price);
+    User modifyCharm(User user, Long price);
 
     /**
      * 修改用户魅力值
@@ -298,7 +298,7 @@ public interface UserService extends ICommonService<User, Integer> {
      * @param charm  魅力值修改量
      * @return 用户Bean
      */
-    User modifyCharm(Integer userId, Integer charm);
+    User modifyCharm(Integer userId, Long charm);
 
     /**
      * 登录用户获取虚拟币奖励

@@ -12,5 +12,10 @@ import com.fulu.game.core.entity.RoomOrder;
  * @date 2018-10-14 15:22:05
  */
 public interface RoomOrderService extends ICommonService<RoomOrder,Integer>{
-	
+
+
+    public void createRoomGiftOrder(String roomNo,String orderNo);
+
+    public void createRoomPlayOrder(String roomNo,String orderNo);
+
 }

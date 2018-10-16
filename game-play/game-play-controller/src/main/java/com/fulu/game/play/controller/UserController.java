@@ -116,9 +116,9 @@ public class UserController extends BaseController {
                 .add(user.getChargeBalance() == null ? BigDecimal.ZERO : user.getChargeBalance())
                 .setScale(2, BigDecimal.ROUND_HALF_DOWN));
         data.put("virtualBalance", user.getVirtualBalance() == null ? 0 : user.getVirtualBalance());
-        Integer totalCharm = user.getCharm() == null ? 0 : user.getCharm();
-        Integer charmDrawSum = user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum();
-        Integer leftCharm = totalCharm - charmDrawSum;
+        Long totalCharm = user.getCharm() == null ? 0 : user.getCharm();
+        Long charmDrawSum = user.getCharmDrawSum() == null ? 0 : user.getCharmDrawSum();
+        Long leftCharm = totalCharm - charmDrawSum;
         data.put("charm", leftCharm);
         data.put("charmMoney", new BigDecimal(leftCharm)
                 .multiply(Constant.CHARM_TO_MONEY_RATE).setScale(2, BigDecimal.ROUND_HALF_DOWN));

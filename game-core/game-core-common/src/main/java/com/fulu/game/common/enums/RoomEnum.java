@@ -48,6 +48,15 @@ public enum RoomEnum{
         private String msg;
     }
 
+    @Getter
+    @AllArgsConstructor
+    public enum  RoomOrderEnum implements TypeEnum<Integer>{
+        ORDER(1, "陪玩订单"),
+        GIFT(2, "礼物");
+        private Integer type;
+        private String msg;
+    }
+
 
 
 

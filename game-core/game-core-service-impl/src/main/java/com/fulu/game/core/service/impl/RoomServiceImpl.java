@@ -46,6 +46,10 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     private CategoryService categoryService;
     @Autowired
     private RoomBlacklistService roomBlacklistService;
+    @Autowired
+    private  VirtualProductOrderService virtualProductOrderService;
+    @Autowired
+    private RoomOrderService roomOrderService;
 
 
     @Override
@@ -212,6 +216,10 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     public RoomVO room2VO(Room room) {
         RoomVO roomVO = new RoomVO();
         BeanUtil.copyProperties(room, roomVO);
+
+        roomVO.setOrderRate(new BigDecimal(100));
+        roomVO.setSatisfy(new BigDecimal(5));
+
         //设置房间分类
         RoomCategory roomCategory = roomCategoryService.findById(room.getRoomCategoryId());
         roomVO.setRoomCategoryName(roomCategory.getName());
@@ -249,16 +257,9 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
         userChatRoomVO.setGender(user.getGender());
         userChatRoomVO.setAge(user.getAge());
         userChatRoomVO.setHeadPortraitsUrl(user.getHeadPortraitsUrl());
-        userChatRoomVO.setOrderRate(new BigDecimal(100));
-        userChatRoomVO.setSatisfy(new BigDecimal(5.0));
         userChatRoomVO.setRoomNo(room.getRoomNo());
         userChatRoomVO.setRoomName(room.getName());
         userChatRoomVO.setRoomIcon(room.getIcon());
-        userChatRoomVO.setNotice(room.getNotice());
-        userChatRoomVO.setIsOpenChat(room.getIsOpenChat());
-        userChatRoomVO.setSlogan(room.getSlogan());
-        userChatRoomVO.setVirtualPeople(room.getVirtualPeople() == null ? 0 : room.getVirtualPeople());
-        userChatRoomVO.setPeople(userChatRoomVO.getVirtualPeople() + getChatRoomPeople(room.getRoomNo()));
         //todo 计算用户在房间送出礼物数量
         userChatRoomVO.setGiftPrice(new BigDecimal(0));
         //用户身份
@@ -294,18 +295,6 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
     }
 
 
-    /**
-     * 更新用户在聊天室信息
-     *
-     * @param userChatRoomVO
-     * @return
-     */
-    public UserChatRoomVO setUserRoomInfo(UserChatRoomVO userChatRoomVO) {
-        Map<String, Object> userMap = BeanUtil.beanToMap(userChatRoomVO);
-        redisOpenService.hset(RedisKeyEnum.CHAT_ROOM_ONLINE_USER_INFO.generateKey(userChatRoomVO.getUserId()), userMap, true);
-        return userChatRoomVO;
-    }
-
 
     /**
      * 获取用户在聊天室信息
@@ -313,8 +302,11 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
      * @return
      */
     public UserChatRoomVO getUserRoomInfo(Integer userId) {
+        if(!redisOpenService.hasKey(RedisKeyEnum.CHAT_ROOM_ONLINE_USER_INFO.generateKey(userId))){
+            return null;
+        }
         Map<String, Object> userMap = redisOpenService.hget(RedisKeyEnum.CHAT_ROOM_ONLINE_USER_INFO.generateKey(userId));
-        if (userMap == null) {
+        if (userMap == null||userMap.isEmpty()) {
             return null;
         }
         return BeanUtil.mapToBean(userMap, UserChatRoomVO.class, true);
@@ -512,7 +504,7 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
      * @return
      */
     @Override
-    public List<UserChatRoomVO> roomMicUpList(String roomNo, Integer type) {
+    public List<UserChatRoomVO> roomMicUpList(String roomNo, int type) {
         checkRoomExists(roomNo);
         if (type > 2 || type < 1) {
             throw new RoomException(RoomException.ExceptionCode.ROOM_MIC_UP_LIST_ERROR);
@@ -647,6 +639,14 @@ public class RoomServiceImpl extends AbsCommonService<Room, Integer> implements 
                 micObj.getMicUser().setBlackList(false);
                 setMicObj(roomNo, micIndex, micObj);
             }
+        }
+    }
+
+    @Override
+    public void roomSendGift(String roomNo,int productId,int amount,int fromUserId,List<Integer> targetUserIds) {
+        for(Integer userId : targetUserIds){
+            VirtualProductOrder virtualProductOrder = virtualProductOrderService.createVirtualOrder(fromUserId,userId,productId,amount);
+            roomOrderService.createRoomGiftOrder(roomNo,virtualProductOrder.getOrderNo());
         }
     }
 

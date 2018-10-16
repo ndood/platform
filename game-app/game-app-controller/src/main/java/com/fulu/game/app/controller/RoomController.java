@@ -43,10 +43,8 @@ public class RoomController extends BaseController {
     private RoomCollectService roomCollectService;
 
 
-
     /**
      * 房间banner
-     *
      * @return
      */
     @PostMapping("/banner")
@@ -56,9 +54,9 @@ public class RoomController extends BaseController {
     }
 
 
+
     /**
      * 查找所有可用的房间分类
-     *
      * @return
      */
     @RequestMapping("/category")
@@ -248,8 +246,13 @@ public class RoomController extends BaseController {
     public Result enterRoom(@RequestParam(required = true) String roomNo,
                             String password) {
         User user = userService.getCurrentUser();
-        UserChatRoomVO roomVO = roomService.userEnterChatRoom(user, roomNo, password);
-        return Result.success().data(roomVO).msg("进入聊天室成功!");
+        UserChatRoomVO userChatRoomVO = roomService.userEnterChatRoom(user, roomNo, password);
+        Room room = roomService.findByRoomNo(roomNo);
+        RoomVO roomVO =roomService.room2VO(room);
+        Map<String,Object> data = new HashMap<>();
+        data.put("roomInfo",roomVO);
+        data.put("userInfo",userChatRoomVO);
+        return Result.success().data(data).msg("进入聊天室成功!");
     }
 
     /**
@@ -420,9 +423,11 @@ public class RoomController extends BaseController {
     }
 
 
+
+
     @RequestMapping("/blacklist/handle")
     public Result addBlackList(@RequestParam(required = true) String roomNo,
-                                @RequestParam(required = true) Integer userId,
+                               @RequestParam(required = true) Integer userId,
                                Boolean flag) {
         if(flag){
             roomService.addBlackList(userId,roomNo);
@@ -433,5 +438,25 @@ public class RoomController extends BaseController {
         }
     }
 
+
+
+    /**
+     * 赠送礼物接口
+     * @return
+     */
+    @PostMapping("/gift/send")
+    public Result sendGift(@RequestParam(required = true) String roomNo,
+                           @RequestParam(required = true) String userIds,
+                           @RequestParam(required = true) Integer productId,
+                           @RequestParam(required = true) Integer amount){
+        User user = userService.getCurrentUser();
+        String[]  userIdVals =   userIds.split(",");
+        List<Integer> idList = new ArrayList<>();
+        for(String idVal: userIdVals){
+            idList.add(Integer.valueOf(idVal));
+        }
+        roomService.roomSendGift(roomNo,productId,amount,user.getId(),idList);
+        return Result.success();
+    }
 
 }

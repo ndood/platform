@@ -41,7 +41,7 @@ public interface VirtualPayOrderService extends ICommonService<VirtualPayOrder, 
     VirtualPayOrder balanceCharge(Integer userId, BigDecimal money, Integer payment, Integer payPath, String ip);
 
 
-    VirtualPayOrder diamondCharge(Integer userId,Integer virtualMoney, Integer payment,Integer payPath,String ip );
+    VirtualPayOrder diamondCharge(Integer userId,Long virtualMoney, Integer payment,Integer payPath,String ip );
 
 
 
