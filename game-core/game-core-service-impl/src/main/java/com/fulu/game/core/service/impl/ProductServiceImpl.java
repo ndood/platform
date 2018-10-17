@@ -151,7 +151,6 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
     }
 
 
-
     @Override
     public Product update(Integer id, Integer techAuthId, BigDecimal price, Integer unitId) {
         User user = userService.getCurrentUser();
@@ -482,7 +481,8 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
         //查询用户认证的技能
         UserTechAuth userTechAuth = userTechAuthService.findById(product.getTechAuthId());
         //查询完成订单数
-        int orderCount = orderService.allOrderCount(userInfo.getUserId());
+//        int orderCount = orderService.allOrderCount(userInfo.getUserId());
+        int orderCount = userTechAuth != null && userTechAuth.getOrderCount() != null ? userTechAuth.getOrderCount() : 0;
         int isAttention = redisOpenService.getBitSet(RedisKeyEnum.ATTENTION_USERS.generateKey(user.getId()), product.getUserId()) ? 1 : 0;
         //查询用户段位信息
         ProductDetailsVO productDetailsVO = ProductDetailsVO.builder()
@@ -645,7 +645,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     @Override
     public PageInfo<ProductCollectVO> findAllProductByPage(Integer gender, Integer pageNum, Integer pageSize, String orderBy) {
-        return findAllProductByPage( gender, pageNum, pageSize, orderBy, null);
+        return findAllProductByPage(gender, pageNum, pageSize, orderBy, null);
     }
 
     @Override
@@ -825,7 +825,7 @@ public class ProductServiceImpl extends AbsCommonService<Product, Integer> imple
 
     @Override
     public PageInfo<ProductShowCaseVO> findProductShowCase(Integer categoryId, Integer gender, Integer pageNum, Integer pageSize, String orderBy, String dans, String prices) {
-        return findProductShowCase( categoryId, gender, pageNum, pageSize, orderBy, dans, prices, null);
+        return findProductShowCase(categoryId, gender, pageNum, pageSize, orderBy, dans, prices, null);
     }
 
     /**
