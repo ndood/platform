@@ -13,6 +13,10 @@ public class SMSVO {
 
     private String[] params;
 
+    public SMSVO(){
+        super();
+    }
+
     public SMSVO(String mobile, SMSTemplateEnum smsTemplateEnum, String[] params) {
         this.mobile = mobile;
         this.templateEnum = smsTemplateEnum;
