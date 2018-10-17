@@ -82,6 +82,7 @@ public class ServerCommentServiceImpl extends AbsCommonService<ServerComment,Int
 
     public ServerComment findByOrderNo(String orderNo){
         ServerCommentVO param = new ServerCommentVO();
+        param.setOrderNo(orderNo);
         List<ServerComment> list = serverCommentDao.findByParameter(param);
         ServerComment serverComment = (list != null && list.size() > 0) ? list.get(0) : null;
         return serverComment;
