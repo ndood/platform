@@ -295,6 +295,9 @@
             <if test="openSubstituteIm != null">
                 open_substitute_im = #{openSubstituteIm},
             </if>
+            <if test="orderCount != null">
+                order_count = #{orderCount},
+            </if>
         </set>
         <where>
             id = #{id}
